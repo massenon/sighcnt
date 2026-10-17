@@ -1,0 +1,31 @@
+# ---- dépendances et sorties de build ----
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+apps/poste/src-tauri/target/
+target/
+
+# ---- secrets et configuration locale (jamais versionnés) ----
+.env
+.env.*
+!.env.exemple
+*.local.php
+!*.local.exemple.php
+prototype_html/api/config.local.php
+
+# ---- données : un export de base est une donnée, pas du code ----
+*.sql
+!packages/schema/**/*.sql
+!infra/**/*.sql
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+
+# ---- outillage ----
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/

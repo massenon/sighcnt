@@ -2,6 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Monorepo (initialisé le 17/10/2026)
+
+Le dépôt `sighcnt` est un **monorepo npm** (ADR-0002) : `apps/` (poste, hub, vitrine), `packages/`
+(domaine, schema, rbac, sync, referentiels, impression), `infra/`, `docs/` et la maquette gelée
+`prototype_html/` — hors workspaces, avec son outillage propre (`npm run prototype:*` depuis la
+racine). **La cible est hors ligne d'abord** : postes autonomes (SQLite chiffré), hub de clinique
+en étoile (PostgreSQL), synchronisation par **journal d'opérations** — lire
+`docs/architecture/ARCHITECTURE-CIBLE.md` et `docs/architecture/adr/` avant toute décision de
+structure. Les skills SDLC du dépôt (`.claude/skills/` : `/prd`, `/adr`, `/spec`, `/plan`,
+`/test-plan`, `/review`, `/release`) écrivent dans `docs/` et portent la doctrine ci-dessous.
+
+**Jamais versionnés** : `node_modules`, `*.local.php`, `.env`, exports `*.sql` (voir `.gitignore`).
+Le mot de passe PostgreSQL commis le 17/10/2026 dans `prototype_html/api/config.local.php` est à
+**changer** sur le poste : il reste dans l'historique du commit initial.
+
+Le reste de ce fichier décrit la **maquette** (`prototype_html/`) : sa doctrine, ses règles de
+gestion et ses pièges s'appliquent tels quels au portage vers `apps/poste`.
+
+
 ## État du dépôt
 
 Trois ensembles : la documentation de cadrage (`docs/`, plus les notes d'exigences `draf1.txt` / `draft2.txt`), le prototype applicatif **`prototype_html/`** — 305 pages couvrant les 14 modules — et le site vitrine public **`frontend_html/`** — 25 pages engendrées depuis `build/site.js`.

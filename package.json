@@ -1,0 +1,22 @@
+{
+  "name": "sighcnt",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SIGH-CNT — monorepo du Système Intégré de Gestion Hospitalière de la CLINIQUE NASSIERA TOO SARL (Natitingou, Bénin)",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=22" },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "build": "npm run build --workspaces --if-present",
+    "prototype:install": "npm install --prefix prototype_html",
+    "prototype:verify": "npm run verify --prefix prototype_html",
+    "prototype:check": "npm run check --prefix prototype_html",
+    "prototype:test": "npm run test --prefix prototype_html",
+    "prototype:serveur": "npm run serveur --prefix prototype_html"
+  }
+}
