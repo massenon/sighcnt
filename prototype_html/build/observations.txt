@@ -1,0 +1,21 @@
+
+
+ EN-TETE DE LA FICHE DE DEMANDE DE DEMANDE D’EXAMEN 
+
+NOM, prénoms, Age, sexe, indication, mention urgente, lieu de résidence
+Pour l’aspect urgent : permettre de choisir soit un examen urgent ou tout le bilan comme une urgence. 
+Pourvoir choisir le service demandeur : 1-maternité, 2-médecine ou 3-médecine et spécialité 
+Mettre tous ces paramètres obligatoires 
+Prévoir l’option hospitalisé
+
+Insérer tous les examens figurant sur le bulletin d’analyse biomédical qui sera transmis avec les valeurs de référence ainsi que les unités qui figue sur le fichier PDF qui va vous parvenir. 
+
+Classer les examens qui figure sur le bulletin d’analyse par section comme c’est catégorisé sur la fiche (hématologie, sérologie, parasitologie, biochimie, bactériologie, hormonologie)
+
+Pourvoir ressortir les statistiques des examens réalisés en fonction des services, de l’âge, du sexe, période, interne ou externe. 
+
+Donner la possibilité d’ajouter ou de modifier les paramètres d’un examen (car en fonction des réactifs les valeurs peuvent changer). 
+
+
+
+

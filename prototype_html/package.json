@@ -1,0 +1,25 @@
+{
+  "name": "sigh-cnt-prototype",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Prototype HTML du Systeme Integre de Gestion Hospitaliere — Clinique NASSIERA TOO SARL",
+  "scripts": {
+    "pages": "node build/gen-pages.js",
+    "safelist": "node build/gen-safelist.js",
+    "compta": "node build/gen-compta.js",
+    "css": "tailwindcss -i src/input.css -o assets/css/tailwind.css --minify",
+    "build": "npm run pages && npm run safelist && npm run css",
+    "watch": "tailwindcss -i src/input.css -o assets/css/tailwind.css --watch",
+    "lint": "node build/lint.js",
+    "check": "node build/check.js",
+    "test": "node build/test-fonctionnel.js",
+    "verify": "npm run lint && npm run build && npm run check && npm run test",
+    "audit-rbac": "node build/audit-rbac.js",
+    "inventaire-rbac": "node build/inventaire-rbac.js",
+    "serveur": "node build/serveur.js"
+  },
+  "devDependencies": {
+    "puppeteer": "^25.7.0",
+    "tailwindcss": "^3.4.17"
+  }
+}

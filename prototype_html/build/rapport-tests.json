@@ -1,0 +1,5873 @@
+[
+  {
+    "nom": "M1 — Cycle de vie complet d’un dossier patient",
+    "etapes": [
+      {
+        "libelle": "La page se charge sans erreur JavaScript",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau affiche le compteur d’enregistrements",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bouton « Nouveau » est présent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il conduit à la PAGE d’ouverture de dossier, et non à une fenêtre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le code patient est pré-attribué au format CNT[n°]/[année]",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le champ code est en lecture seule (RG-01)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La validation bloque une création incomplète",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page revient au répertoire une fois le dossier ouvert",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le patient créé apparaît dans le tableau",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un message de confirmation est affiché",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La recherche retrouve le patient créé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’action « Modifier » ouvre le formulaire d’édition",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modification est enregistrée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’archivage demande confirmation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un motif est demandé (journalisé)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’enregistrement disparaît de la liste active",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le message propose une annulation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’annulation restaure l’enregistrement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le répertoire complet retrouve son effectif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur tout le parcours",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Navigation par sous-onglets",
+    "etapes": [
+      {
+        "libelle": "Les sous-onglets sont présents",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet « Par catégorie » s’ouvre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le contenu de l’onglet est rendu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet « Archivés » s’ouvre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet archivés affiche un état vide ou une liste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Tri, filtres et pagination",
+    "etapes": [
+      {
+        "libelle": "Le référentiel produits est chargé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tri par colonne s’applique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le filtre par catégorie réduit le jeu de résultats",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pagination change de page",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "RG-03 — le stock ne peut pas devenir négatif",
+    "etapes": [
+      {
+        "libelle": "L’écran des transferts se charge",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bouton « Nouveau transfert » est présent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le transfert excédentaire est refusé avec la mention RG-03",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le refus NOMME l’article — un refus anonyme ferait chercher la panne ailleurs",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plusieurs articles tiennent sur un même bon de transfert",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modale reste ouverte pour correction",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "RG-07 — signatures obligatoires à la sortie d’hospitalisation",
+    "etapes": [
+      {
+        "libelle": "Le tiroir de préparation de sortie s’ouvre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La finalisation est refusée sans les trois signatures (RG-07)",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "RG-10 — équilibre débit/crédit avant validation",
+    "etapes": [
+      {
+        "libelle": "Le bouton « Nouvelle écriture » est présent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le déséquilibre est signalé en direct",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La validation est refusée tant que débit ≠ crédit (RG-10)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le JOURNAL du jeu de démonstration est équilibré — RG-10 vaut aussi pour les données montrées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune ligne ne porte à la fois un débit ET un crédit — une ligne a UN sens",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune charge au crédit, aucun produit au débit — d’où des charges qui restent positives",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une pièce est validée ENTIÈRE, jamais à moitié",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Édition d’un état officiel",
+    "etapes": [
+      {
+        "libelle": "Le bouton d’impression est présent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La feuille A4 est générée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’entête officielle est reprise",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’IFU figure sur le document",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le RCCM figure sur le document",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le numéro d’autorisation figure sur le document",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bloc de signatures est présent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le pied de page normalisé est présent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’identifiant unique du document est généré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les montants de la grille NS 132 sont repris",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La prévisualisation propose l’impression",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La prévisualisation se ferme",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La feuille est retirée après fermeture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Export des données",
+    "etapes": [
+      {
+        "libelle": "Le bouton « Exporter » est présent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modale d’export propose CSV et PDF",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le fichier CSV est généré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Recherche globale et périmètre RBAC",
+    "etapes": [
+      {
+        "libelle": "La recherche globale retourne des résultats",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chercher « actes » propose la rubrique du référentiel tarifaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La recherche atteint le contenu des référentiels",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un tarif repris d’une grille montre ses deux prix",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tarif cherché est arrêté (vague 49) — un prix, sans marque d’attente",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chercher « corbeille » mène à l’onglet des éléments archivés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le lien profond ouvre l’écran sur le bon onglet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans ancre, l’écran garde son onglet par défaut",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le périmètre RBAC restreint la navigation du caissier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accès à un écran non habilité est refusé (403)",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "M8 — Facturation et sortie de stock automatique",
+    "etapes": [
+      {
+        "libelle": "L’écran de facturation se charge",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un médicament disponible est identifié",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La prestation est ajoutée à la facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le récapitulatif calcule la répartition patient / assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture normalisée est éditée après encaissement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture porte un identifiant MECeF",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le parcours de facturation",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Méga-menu horizontal et accès rapides",
+    "etapes": [
+      {
+        "libelle": "Le méga-menu est déployé par défaut",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il s’ouvre sur le domaine de l’écran courant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les modules du domaine forment des rangées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le panneau reste compact (moins du tiers de la fenêtre)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque rangée ouvre la page d’accueil de son module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre postes de travail sont accessibles en permanence",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran courant est signalé dans le menu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque entrée porte son icône",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un clic sur un onglet déploie son domaine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un second clic replie le panneau",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le repli est mémorisé d’un écran à l’autre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un accès rapide du bandeau pose le repli transitoire du ruban",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La préférence durable du ruban n’est pas écrasée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La barre supérieure propose le mode plein écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Accès rapides » précède les indicateurs",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la navigation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page d’accueil du module présente un écran par carte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque carte porte icône, titre et description",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le fil d’Ariane renvoie à l’accueil du module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les pages hub",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Listes déroulantes avec recherche",
+    "etapes": [
+      {
+        "libelle": "Le choix du patient et de la prestation passe par une liste à recherche",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une valeur est présélectionnée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La saisie filtre la liste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le choix se répercute sur le champ",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le panneau se referme après la sélection",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La liste à recherche fonctionne dans une modale",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les listes",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Fiches consultables et modifiables",
+    "etapes": [
+      {
+        "libelle": "Un registre en consultation propose la modification",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modification est enregistrée et le tableau rafraîchi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’annulation est proposée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modale se referme après enregistrement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche patient présente les antécédents et allergies",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche patient présente les soins reçus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche patient présente la couverture assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le dossier patient est modifiable depuis sa fiche",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le formulaire du dossier couvre antécédents, allergies et assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche d’évaluation propose sa modification",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les fiches",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Aide, contact éditeur et affichage responsive",
+    "etapes": [
+      {
+        "libelle": "Le menu profil ouvre l’aide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le menu profil ouvre le contact éditeur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque module est présenté par une carte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La FAQ est repliable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’aide renvoie vers l’éditeur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le message est envoyé avec une référence",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La demande apparaît dans le suivi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les coordonnées de l’éditeur sont affichées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’anomalie est enregistrée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sur téléphone, le menu est replié à l’arrivée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’en-tête reste compact sur téléphone",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun débordement horizontal sur téléphone",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le menu se déploie à la demande sur téléphone",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les écrans passent sous l’intitulé du module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sur tablette, le menu reste déployé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sur tablette, les écrans restent à droite du module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun débordement horizontal sur tablette",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Parcours de prescription — M2 → M5 / M6 / M8",
+    "etapes": [
+      {
+        "libelle": "La prescription engendre une ordonnance numérotée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les trois demandes d’analyses sont établies d’office",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture part à la caisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre files d’attente sont alimentées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les actes tarifés sont valorisés depuis le catalogue",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les demandes portent leur origine « ordonnance »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le prélèvement est bloqué avant encaissement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le laboratoire voit sa file de prélèvements",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La saisie manuelle reste ouverte au laboratoire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La délivrance est refusée tant que la facture n’est pas réglée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le stock n’a pas bougé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture passe à « soldée »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’encaissement débloque les trois postes d’aval",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plus aucune analyse n’est bloquée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une sortie de stock par ligne est enregistrée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-03 — la sortie porte le numéro d’ordonnance comme justificatif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le stock de détail est décrémenté des quantités servies",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’ordonnance est marquée servie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-03 — une délivrance à découvert est refusée, ligne nommée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-03 — le stock reste intact après le refus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le parcours",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Référentiels administrables — actes, secteurs, natures, centres",
+    "etapes": [
+      {
+        "libelle": "Le catalogue des actes vient du document de répartition",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les tarifs d’attente sont ARRÊTÉS (vague 49) — plus un provisoire au vivant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les tarifs inventés ont disparu de l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un acte créé survit au rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’acte archivé est retrouvé dans la corbeille sous son libellé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les 14 secteurs de la NS 145 sont administrables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque secteur porte son responsable désigné",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’organigramme est devenu une collection de postes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un département créé apparaît dans l’arbre après rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Maternité » figure aux natures de facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Mise en observation » figure aux natures de facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La consultation prénatale figure aux natures de facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La nature de la facture est choisie dans le référentiel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une nature se crée sans quitter l’émission de facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les centres de coûts sont administrables et couvrent les six secteurs plus la Direction",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le code d’un centre EST l’imputation portée par les écritures — un seul référentiel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les référentiels",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Prise en charge — grille par convention, plafonds et exclusions",
+    "etapes": [
+      {
+        "libelle": "Les souscripteurs existent sous les compagnies",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque assuré est rattaché à un souscripteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les conventions non saisies sont signalées, pas supposées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans convention saisie, la facture reste au patient et le dit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le taux varie selon la nature de la prestation — 80 % soins, 60 % vitamines",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La bonne garantie est retenue dans une catégorie qui en compte plusieurs",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le plafond par acte est appliqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un produit exclu est facturé intégralement au patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un acte soumis à accord préalable non obtenu reste au patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La répartition totale est calculée ligne par ligne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-09 — carte non valide à la date : facturation intégrale au patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran des assurés affiche souscripteur et catégorie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la prise en charge",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Facturation — parts par ligne, remises, double facture, MECeF",
+    "etapes": [
+      {
+        "libelle": "Le tableau de saisie porte les colonnes Remise et P.U net",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau de saisie porte les parts assureur et patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un assuré reçoit deux factures : couvert et non couvert",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pièce « couvert » porte une part assureur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pièce « non couvert » est intégralement à la charge du patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La remise est appliquée et tracée sur sa pièce",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La base MECeF n’excède jamais la part patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture porte la mention « Arrêtée la présente facture »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture porte la formule de la clinique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un SEUL RCCM figure sur la pièce — décision du 26/08/2026",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le ticket de caisse est un rouleau, non un A4",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le ticket porte OPÉRATEUR, TYPE VENTE, ASSUREUR et ASSURÉ",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le ticket distingue part assureur et part assuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la facturation",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "États de caisse et pièces assureur — relevé, facture, recettes",
+    "etapes": [
+      {
+        "libelle": "Le relevé et la facture mensuelle sont deux vues du même mois",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le relevé est organisé par souscripteur avec son n° de police",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran contrôle que les deux pièces se recoupent avant transmission",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’historique par assureur croise compagnie, souscripteur et assuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il situe chaque compagnie dans l’ensemble",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les opérations de caisse s’arrêtent au jour, à la semaine ou au mois",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les encaissements sont ventilés par mode de règlement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un inventaire de caisse peut être arrêté sur la période",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les recettes se déclinent en six périodicités",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une plage de dates libre est possible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le taux de recouvrement est calculé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un engagement de paiement échelonné peut être pris",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un patient peut être déclaré client insolvable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La créance reste due après la déclaration d’insolvabilité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les états de caisse",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "RBAC métier — habilitations par fonction et par secteur",
+    "etapes": [
+      {
+        "libelle": "Le médecin accède à tous les résultats RENDUS, quel que soit le prescripteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un résultat non validé biologiquement est masqué au médecin, avec son motif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La sage-femme n’accède qu’aux résultats de son secteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’infirmier n’accède à aucun résultat d’analyse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’aide-soignant n’accède à aucun résultat d’analyse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le laboratoire voit les résultats qu’il produit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une restriction est toujours annoncée, jamais muette",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’infirmier exécute les soins prescrits, pas l’aide-soignant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Médecin et sage-femme prescrivent, les autres non",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’aide-soignante voit la règle plutôt que le bouton de validation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La consultation ouvre ses catalogues de prescription — médicaments, analyses, imagerie — et l’orientation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les catalogues sont complets — médicaments, analyses, actes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La DA accède à la caisse et au magasin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le gestionnaire de stock accède à la caisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le comptable accède au magasin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-13 — l’infirmier reste hors de la paie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque rôle porte ses trois commandes : droits, renommage, archivage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran expose les habilitations métier et les tentatives refusées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le module Patients était ouvert au laborantin avant restriction",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Fermer M1 au laborantin prend effet sur les droits",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le module fermé disparaît du méga-menu du rôle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un écran du module fermé n’est plus habilité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un module ouvert sans édition ni annulation passe en lecture seule",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La matrice est remise en place après l’épreuve de fermeture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un rôle peut être renommé sans toucher au code",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Retirer la surcharge rend son intitulé d’origine au rôle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le laboratoire porte « Biologiste médical » DEPUIS LE MANIFESTE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le RBAC métier",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Mise en observation — surveillance, constantes et orientation",
+    "etapes": [
+      {
+        "libelle": "L’écran de mise en observation existe et distingue en cours et clos",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les unités d’observation sont suivies en occupation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Quatre orientations de sortie sont prévues",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Mise en observation » figure à la rubrique Soins",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Mise en observation » figure aux natures de facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’heure d’entrée fait courir la durée de surveillance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La feuille de constantes horodate chaque relevé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une prescription ciblée part au laboratoire depuis l’observation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La demande porte l’unité d’observation comme secteur prescripteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’orientation clôt l’observation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’hospitalisation complète ouvre une admission rattachée à l’observation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un séjour au-delà de la durée de référence est signalé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la mise en observation",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Dossier patient — statut d’assurance, parcours agrégé et accueil",
+    "etapes": [
+      {
+        "libelle": "Le répertoire porte une colonne d’assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les patients sans couverture sont marqués « Non assuré »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une carte expirée est signalée en clair dans la liste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bandeau de la fiche signale la carte non valide en rouge",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche agrège les parcours du patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche ouvre la fiche de consultation et les documents",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un document peut être déposé au dossier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le document déposé est conservé avec son fichier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le document survit au rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accueil enregistre un passage sans rendez-vous",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’ancienne page du registre RENVOIE — elle ne tient plus un second registre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’agenda se règle sur une plage de dates",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un rendez-vous se prend depuis l’agenda",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une alerte sonore est disponible pour les échéances",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un événement de la clinique peut être créé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le dossier patient",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "RH, fiscalité, certificats et exploitation",
+    "etapes": [
+      {
+        "libelle": "Un ordre de mission porte sa structure de prise en charge",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La Directrice Administrative valide avant le départ",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les ordres en attente de validation sont signalés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La redevance ORTB Radio vaut 1 000 F pour TOUS les salariés, en mars",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La redevance ORTB Télé vaut 3 000 F au-delà de 60 000 F, en juin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un salaire sous le seuil ne doit que la radio",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un salaire au-dessus du seuil doit les DEUX, soit 4 000 F",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les deux catégories sont distinguées à l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le prélèvement reste annuel : mars pour la radio, juin pour la télé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les cotisations distinguent ORTB Radio, ORTB Télé et le total",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les deux catégories ont leur indicateur et leur état imprimable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un petit salaire supporte 1 000 F en mars et rien en juin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un salaire élevé supporte 1 000 F en mars PUIS 3 000 F en juin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun autre mois n’est prélevé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bulletin de mars porte la radio prélevée et la télé annoncée pour juin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le personnel a ses propres couvertures, hors des recettes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "ITS, AIB, VPS et CNSS sont au 10 du mois suivant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’impôt sur les sociétés se paie en quatre acomptes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le calendrier couvre patente, CCIB, TVM et liquidation du solde",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le catalogue des certificats couvre les types énumérés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un certificat délivré est numéroté et conserve son texte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La table des sauvegardes porte fichier, date, tables et action",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une sauvegarde peut être générée et une autre importée par module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le fichier généré s’ajoute au registre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un onglet « Jeux de test » figure aux paramètres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Verrouillée, la réinitialisation est indisponible — pas seulement refusée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Déverrouillée, elle devient possible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran distingue ce qui serait effacé de ce qui serait conservé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Valorisation des sorties et états de la Direction",
+    "etapes": [
+      {
+        "libelle": "La valorisation des sorties est un paramètre, non une règle figée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le prix de vente est retenu par défaut, comme demandé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran mesure ce que le choix change réellement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les sept familles viennent de l’inventaire SAGE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre groupes d’articles sont CONFIRMÉS (vague 49)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une sortie porte les deux valorisations, pas seulement celle retenue",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les six périodicités du cahier de charge sont proposées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les états se déclinent par client, article, famille et groupe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’axe famille produit un état",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’axe groupe rappelle qu’il s’agit d’une proposition",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le cumul global et la quantité vendue sont totalisés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces états",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Obligations fiscales — documentation, échéancier et validation",
+    "etapes": [
+      {
+        "libelle": "La patente est documentée : déclaration au 31 janvier, deux tranches",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La CCIB est documentée : 300 000 F en deux tranches, mars et juin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre acomptes d’impôt sur les sociétés sont datés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La TVM est documentée : une fois par an, au 30 avril",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les redevances ORTB Radio et Télé sont documentées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Liquidation du solde et dépôt des états financiers sont distingués",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le report au jour ouvrable est énoncé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les obligations sont déroulées sur l’exercice",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les obligations mensuelles donnent douze échéances chacune",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les échéances tombant un week-end sont reportées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une barre de notification signale ce qui est dû",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un paiement se valide avec montant, quittance et auteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La validation reste annulable — l’échéance redevient due",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Tous les actes portent désormais un tarif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les actes reprennent les prix des grilles imprimées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un acte rapproché n’est plus une valeur d’attente",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rapprochement passe par le libellé ou par une correspondance nommée, jamais par approximation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Dans tous les actes rapprochés, l’assuré paie moins que le non-assuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les actes déclinés par la grille disent pourquoi ils restent sans prix",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La semence garde la distinction du 20/08 ; le catalogue vivant est arrêté (vague 49)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran montre les deux colonnes de la grille",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "RH étendue — régimes, primes datées, événements et verrouillage",
+    "etapes": [
+      {
+        "libelle": "Les régimes de travail vivent dans le magasin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le régime d’incinération des déchets porte son honoraire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau des régimes offre création, modification et archivage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le planning porte ses graphiques de charge",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les statistiques de garde comptent par agent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le décompte distingue gardes, permanences et soirées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les repos sont explicitement exclus du comptage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les périodicités vont de la semaine à l’année",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La grille des primes est modifiable depuis l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une prime relevée ne réécrit PAS le mois déjà calculé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La nouvelle valeur s’applique à compter de sa date d’effet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Créer un événement engendre une participation par agent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bénéficiaire ne cotise pas à son propre événement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La participation standard est de 1 000 FCFA",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les natures d’événement couvrent mariage, naissance et décès",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le détail du calcul porte une colonne « Avance sur salaire »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le détail du calcul porte une colonne « Événements »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La participation ne vise qu’un seul mois de retenue",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un règlement au comptant est encaissé avec son reçu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Des agents disposent d’un dossier patient rattaché",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les prestations au personnel sont listées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La prise en charge est de 100 % et se dit telle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran n’ouvre aucune saisie — il se remplit seul",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les prestations sont annoncées hors recettes et hors comptabilité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le délai de verrouillage est de quinze minutes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran verrouillé conserve la session ouverte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le verrouillage suspend la session sans la fermer",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran annonce où l’utilisateur reviendra",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le déverrouillage est proposé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la RH étendue",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Laboratoire — modèle de résultat, prélèvement et activité des modules",
+    "etapes": [
+      {
+        "libelle": "Le catalogue reprend les examens du bulletin papier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les six sections du bulletin sont respectées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque examen porte ses variables et sous-variables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les unités sont pré-insérées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les bornes suppléées portent la validation du biologiste (01/09) — provenances distinctes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les valeurs hors bornes de la fiche réelle sont retrouvées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune valeur normale n’est signalée à tort",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La formule leucocytaire est en valeurs absolues (G/l), pas en pourcentages",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les références sont celles du laboratoire, pas celles des manuels",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le VIH porte trois tests, comme la fiche réelle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque test VIH porte son réactif, son lot et son expiration",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le Widal porte ses huit antigènes, son réactif et son commentaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une variable de réactif ou de commentaire se ferme sans se supprimer",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La salle de prélèvement déroule les trois étapes du circuit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le prélèvement n’est possible qu’après encaissement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le patient peut partir une fois prélevé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les statistiques couvrent service, sexe, âge et origine du patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La périodicité va de la semaine à l’année, semestre compris",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les réactifs se créent depuis l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le seuil d’alerte est annoncé comme relevant de la clinique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le stock se filtre par niveau, seuil absent compris",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La consommation se lit du semaine au semestre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La banque de sang est retirée du méga-menu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les donneurs et transfusions sont retirés du méga-menu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le reste du laboratoire demeure accessible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une activité fermée l’est aussi pour l’administrateur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Rouvrir une activité rend immédiatement son écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le laboratoire",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Chaîne complète — consultation, pathologie, caisse, comptable, labo, stock",
+    "etapes": [
+      {
+        "libelle": "Le référentiel des pathologies est en place",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les pathologies à déclaration obligatoire sont signalées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les libellés sont ARRÊTÉS par les médecins (01/09) — la provenance datée reste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran distingue le référentiel du tableau de morbidité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La consultation code une pathologie et rédige un diagnostic",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le médecin prescrit médicaments, analyses et imagerie depuis la fiche — et là seulement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La prescription ouvre une facture à la caisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Avant encaissement, les analyses sont bloquées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’encaissement débloque le prélèvement et la dispensation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le laboratoire passe en ATTENTE DE PRÉLÈVEMENT, pas seulement débloqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le comptable est informé par une écriture, pas par un message",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-10 — l’écriture d’encaissement est équilibrée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La caisse est débitée et les prestations créditées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écriture naît en brouillon — la validation reste humaine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une sortie qui passe sous le seuil alerte le stock",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’alerte devient une tâche pour le gestionnaire de stock",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La tâche porte le stock restant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Réalerter sur le même article ne crée pas de doublon",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la chaîne complète",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Caisse ligne par ligne, reçu détaillé et patient externe",
+    "etapes": [
+      {
+        "libelle": "La facture porte une ligne par prestation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque ligne d’analyse connaît la demande qu’elle couvre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La somme des lignes égale la part patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un paiement partiel laisse la facture « partielle »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "SEULS les examens réglés passent au laboratoire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le reste dû est nommément identifié",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le comptable est informé dès le versement partiel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le solde du reliquat clôt la facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plus aucun examen ne reste bloqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pièce de caisse ne fait plus signer le patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le patient externe reçoit un dossier CNT",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Son identité et son prescripteur extérieur sont enregistrés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les examens cochés au catalogue deviennent des lignes payables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La demande externe est tracée comme telle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le paiement partiel d’un externe libère les seuls examens réglés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accueil ouvre les demandes externes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La caisse ne peut pas créer de demande — elle encaisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la caisse",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Laboratoire — validation technique, validation biologique, rectification",
+    "etapes": [
+      {
+        "libelle": "La validation technique n’est pas la validation biologique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Entre les deux verrous, le médecin ne voit RIEN",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La validation biologique rend le résultat au prescripteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le TSL peut valider en l’absence du biologiste, et l’intérim est tracé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une rectification sans motif est refusée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La rectification numérote une nouvelle version",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La version que le médecin a lue est CONSERVÉE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le motif de la rectification est conservé avec la version remplacée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le prescripteur est averti que ce qu’il a lu a changé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page des résultats offre une plage de dates, pas un simple tri",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le filtre restreint réellement le tableau",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les raccourcis de date évitent la saisie la plus fréquente",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les deux verrous",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "RBAC par écran, création de rôle et raccourcis filtrés",
+    "etapes": [
+      {
+        "libelle": "Le laborantin consulte le répertoire des patients",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il ne peut RIEN y modifier — lecture seule",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Dossier médical, antécédents, documents et numérisation lui sont fermés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le circuit d’achat lui reste ouvert SAUF le bon de livraison — geste du magasinier (02/09)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le reste du module Achats lui reste fermé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une fermeture d’écran l’emporte sur un module ouvert",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un écran non réglé continue de suivre son module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un rôle créé entre dans le manifeste comme les autres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il n’hérite PAS des modules ouverts « à tous les rôles »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Lui ouvrir un module le rend immédiatement visible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Assurés & cartes » figure aux actions rapides",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Patient externe » y figure aussi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les raccourcis se restreignent selon le profil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le RBAC par écran",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Ajouts — emplacements, pertes, barème NS 131 et participations",
+    "etapes": [
+      {
+        "libelle": "Les emplacements forment un référentiel administrable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le référentiel régularise l’existant plutôt que de partir de zéro",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque emplacement porte sa zone de conservation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une perte se déclare depuis l’écran des pertes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Elle s’enregistre comme un mouvement de stock, pas dans un registre parallèle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le stock décroît d’autant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le barème vit dans le magasin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sa modification est fermée par défaut",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Porte fermée, la modification est ABSENTE et non grisée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran dit où ouvrir la porte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Porte ouverte, la modification apparaît",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La version antérieure du barème est conservée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’événement se crée depuis l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La portée « tout le personnel » est un choix explicite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une sélection d’agents est possible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal de paie porte une ligne de total général",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les ajouts",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Deux prix, prescription de soins et relais d’administration",
+    "etapes": [
+      {
+        "libelle": "Le catalogue porte les six familles tarifaires",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque acte porte DEUX prix, non assuré et assuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’assuré paie MOINS que le non-assuré — règle arrêtée par la Direction le 26/08/2026",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et la lecture littérale de la grille est CONSERVÉE sur chaque ligne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les 41 analyses de laboratoire sont tarifées — l’anomalie des colonnes vierges est levée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’échographie abdomino-pelvienne : 20 000 non assuré, 11 000 assuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plus aucun acte n’est sans prix — les trois manquants ont été arbitrés le 26/08/2026",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque prix arbitré porte SON MOTIF — une valeur décidée n’est pas une valeur relevée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le VIH est tarifé et sa décision est tracée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un acte NON COUVERT est facturé à l’assuré au tarif NON assuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et la ligne en porte le MOTIF — une part patient à 100 % doit pouvoir s’expliquer au guichet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La planification familiale n’est couverte par aucune compagnie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les certificats ne sont couverts QUE par SOS",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un assuré ordinaire est facturé au tarif assuré — moins cher que le guichet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le référentiel des variantes d’en-tête est retiré du magasin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "cfg-entetes ne présente plus qu’UN IFU",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et qu’UN RCCM — l’ancien n’apparaît plus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran date et assume l’arbitrage d’unification",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatorze pièces certifiantes sont au référentiel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les deux collisions de sigles des documents sources sont CONSERVÉES et signalées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le certificat prénuptial est adossé à six examens de laboratoire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les effectifs de la Direction se retrouvent : 3 médecins prescripteurs",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…3 sages-femmes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…7 infirmiers exécutants, le Surveillant Général mis à part",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La sage-femme est la seule qualité à PRESCRIRE et à EXÉCUTER",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le moteur REFUSE une prescription signée par un infirmier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le refus NOMME l’agent et son poste — un refus muet ferait croire à une panne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une prescription de SOINS se distingue d’une ordonnance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un patient non assuré est facturé au tarif non assuré : pansement moyen 5 000 F",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Traitement AMBULATOIRE : toutes les administrations reviennent à la salle de soins",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une prescription naît NON RÉGLÉE, donc non exécutable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une prescription NON RÉGLÉE ne s’administre pas",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La PREMIÈRE administration d’un traitement hospitalier revient à la SALLE DE SOINS",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les SUIVANTES reviennent à l’HOSPITALISATION",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’hospitalisation qui tente de prendre la PREMIÈRE administration est refusée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le refus explique POURQUOI : c’est le rang qui décide du secteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un médecin ne peut pas exécuter un soin — il prescrit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La salle de soins ne voit QUE ce qui lui revient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’hospitalisation ne voit QUE ce qui lui revient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compte rendu opératoire porte ses huit rubriques",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il porte le NIP, recopié du dossier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il porte ses intervenants NOMMÉS — sans eux il n’a aucune valeur de preuve",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compte rendu se crée depuis l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les deux check-listes du bloc sont DISTINCTES, à deux moments distincts",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Elles sont ARRÊTÉES par les praticiens du bloc (01/09) — la provenance reste dite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La maternité produit TROIS comptes rendus aux rubriques propres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chacun a ses rubriques — un gabarit unique aurait fait remplir des champs sans objet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran rappelle que la planification familiale n’est couverte par aucune assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Toute navigation programmatique replie le méga-menu — les boutons ne sont pas des ancres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Laborantin est renommé Biologiste médical — le libellé suit dans tout le prototype",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et ce nom vient du MANIFESTE, pour qu’il paraisse dès l’écran de connexion",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compte Pharmacie est ARCHIVÉ, pas effacé (RG-14) — ses mouvements restent attribuables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compte RH est archivé de la même façon, et recréable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre comptes demandés par la Direction sont créés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pharmacie est transférée au Caissier — l’archivage ne laisse pas le poste sans personne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les RH et la paie sont transférées à la Directrice Administrative",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le technicien d’échographie n’a AUCUN accès financier — ni caisse, ni assurances, ni comptabilité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…il crée bien ses comptes rendus d’imagerie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…mais son module de consultations reste en LECTURE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et il ne rédige ni ordonnance ni soin — ce serait un exercice illégal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…le dossier patient lui est ouvert en LECTURE SEULE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et il ne modifie pas les prescriptions d’un autre service",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le surveillant tient le planning et les présences — par ÉCRAN, son module M10 étant fermé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…mais ni les contrats ni le financier — ce sont les gestes de la DAF",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’assistant de direction a PERDU le financier — caisse, créances, comptabilité et paie fermées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et il garde ce qui EST son poste : le secrétariat et la bibliothèque documentaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…l’inventaire des réactifs lui est ouvert, mais le LABORATOIRE lui est fermé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’aide-soignante participe aux soins — constantes et feuille de température en écriture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…elle LIT le plan des lits sans le modifier, et ne voit AUCUN dossier médical",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un compte archivé n’ouvre plus de session et la tentative est journalisée (RG-12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le total d’un état imprimé est CALCULÉ depuis les lignes réellement imprimées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…y compris les quantités",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le prix UNITAIRE n’est pas totalisé — un total faux se lit comme un total juste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans colonne totalisable, aucun pied de total n’est fabriqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le ticket porte la PART ASSUREUR",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…la PART ASSURÉ",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…la PART NON ASSURÉE, qui n’est pas la même chose que la part assuré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le TOTAL DÛ — sans lui, un règlement partiel laisse repartir sans savoir ce qu’on doit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La BASE MECeF est imprimée : elle ne porte que la part réglée par le patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une opération de caisse SANS dossier patient est possible et le dit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La base MECeF vaut la part patient, jamais le total",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…donc la part assureur n’entre pas dans la base MECeF",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le circuit clinique",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Caisse — détail du reçu, règlement partiel et libération au laboratoire",
+    "etapes": [
+      {
+        "libelle": "Toute facture porte ses LIGNES — une facture sans lignes est un total, pas une facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le total d’une facture est la SOMME de ses lignes, jamais un nombre choisi à part",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les pièces portent plusieurs prestations en moyenne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le reçu de caisse s’imprime depuis le registre de la journée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il porte la section « Prestations réglées »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et la section « Reste à régler » — pour que le patient sache ce qu’il doit encore",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il NOMME les prestations réglées — « quel examen a été payé, on doit savoir »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et NOMME celles qui restent dues",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune signature du patient : un encaissement est attesté par celui qui encaisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le pied de tableau porte un total — il était vide, ses clés ne correspondant à aucune colonne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Trois prestations réglées sur cinq",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le laboratoire reçoit EXACTEMENT les trois examens payés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et ce sont bien LES MÊMES que celles réglées, nom par nom",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pièce reste « partielle » et annonce son reste dû",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La base MECeF ne porte que la part réglée par le patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur la caisse",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Facture mère, répertoire des ambulances et dossier de consultation étendu",
+    "etapes": [
+      {
+        "libelle": "La facture mère présente la consolidation ET le détail par ligne d’assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran énonce la règle du rapprochement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’aperçu est toujours offert — on doit pouvoir regarder avant d’émettre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les factures assurées se recoupent avec leur détail ligne à ligne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une facture mère émise fige les NUMÉROS de ses filles",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et fige son contrôle de concordance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Elle naît « transmise », jamais « réglée »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le répertoire des ambulances est amorcé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "AUCUN numéro d’urgence n’est inventé — ceux présents viennent de l’en-tête officiel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les fiches sans numéro le DISENT au lieu de rester vides",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les numéros sont cliquables pour l’appel rapide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les moyens DISPONIBLES remontent en tête — deux minutes perdues comptent en urgence",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les antécédents sont en TROIS catégories strictes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’examen physique suit ses QUATRE temps, dans l’ordre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le dossier a QUATRE états",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« EN ATTENTE » mène à « EN CONSULTATION »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…mais PAS directement à « CLÔTURÉ » — cela signerait une consultation qui n’a pas eu lieu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« EN CONSULTATION » mène à « EN ATTENTE LABO »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« EN ATTENTE LABO » mène à la clôture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un dossier clôturé ne mène nulle part",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le généraliste NE PEUT PAS écrire les actes chirurgicaux",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…mais le motif précise qu’il peut les LIRE — c’est son patient aussi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le chirurgien les écrit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le généraliste écrit tout le reste du dossier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accueil voit l’identité et la couverture d’assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et NE VOIT PAS le diagnostic ni les antécédents (RG-13)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La restriction s’annonce : la fonction retourne toujours son motif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque consultation de dossier par l’accueil est journalisée (RG-12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…y compris les recherches INFRUCTUEUSES — chercher un dossier inexistant est une information",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ce lot",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Tableaux de bord par profil et premier regard",
+    "etapes": [
+      {
+        "libelle": "Le calendrier fiscal est disponible SANS être passé par son écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune échéance ne tombe un samedi ni un dimanche",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau de bord de la Direction compte les échéances DÉPASSÉES, pas toutes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau de bord porte un bandeau « à regarder en premier »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…placé AVANT les indicateurs — l’ordre de lecture est ce qu’un tableau contrôle vraiment",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et il mène directement à l’écran concerné",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "À zéro, le bandeau énonce une phrase — un vide gris ferait douter de l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rôle « aide_soignant » ouvre SON tableau de bord, pas celui d’un autre profil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rôle « echographiste » ouvre SON tableau de bord, pas celui d’un autre profil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rôle « surveillant » ouvre SON tableau de bord, pas celui d’un autre profil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rôle « assistant_comptable » ouvre SON tableau de bord, pas celui d’un autre profil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rôle « biomedical » ouvre SON tableau de bord, pas celui d’un autre profil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compteur des ruptures ne retient que les articles AYANT un seuil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compteur du comptable distingue les écritures en brouillon des validées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau d’un compte fermé le dit, au lieu de faire comme si de rien n’était",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et indique où la fonction a été transférée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les tableaux de bord OUVERTS se montent tous",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les tableaux de bord",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Parcours métier, parc technique et corrections du classeur 2025",
+    "etapes": [
+      {
+        "libelle": "Les treize postes portent leurs parcours métier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un tableau de bord cesse d’être un menu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste qui prend la suite est nommé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une étape fermée au profil est signalée, pas masquée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque étape cliquable pointe vers un écran du manifeste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le parc technique est amorcé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune donnée de plaque n’est inventée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran dit que le parc est une proposition",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le filtre de suivi porte ses trois lectures",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une panne est visible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le détail du classeur est cohérent avec lui-même",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écart correspond à une seule échéance identifiable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écart est expliqué et sa ligne nommée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les trois postes sans compte reçoivent une proposition",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Trente-deux références sont sans prix au document",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran dit qu’aucun document ne les tarife",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il dit que la saisie ne réécrit pas le document",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La valorisation est saisissable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modale demande le prix ET son origine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une valorisation saisie fait retomber le compteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran distingue le document de ce que la clinique a décidé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Points de vente et de stock, trois parts et accès à la caisse",
+    "etapes": [
+      {
+        "libelle": "Des remises existent réellement dans les pièces",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Des agents sont pris en charge par l’établissement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-02 — aucune remise sur une ligne de médicament",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La prise en charge du personnel n’est PAS une assurance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque ligne se recoupe — brut moins remise = assureur + personnel + patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le total de chaque pièce est la somme de ses lignes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le montant brut affiché est celui des pièces de la période",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre axes et l’évolution sont présents",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre axes rendent leur contenu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La quantité vendue d’un article est exacte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’état détaillé porte les trois colonnes de pourcentage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il énonce les trois parts et distingue la créance du reste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Son pied totalise ce qu’il imprime",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les cinq vues du stock portent leurs lignes ET leur montant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un état à date ne varie pas avec la périodicité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le DA, le comptable, le gestionnaire de stock ET le Directeur Médical ont la caisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le gestionnaire de stock accède à ses deux points",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’échographiste ÉCRIT son écran d’imagerie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il ne rédige ni ordonnance ni soin, et ne voit pas la caisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le technicien d’échographie a son jeu de test",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Son tableau de bord porte son parcours et annonce ses limites",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Dépenses, compte de résultat, seuil, statistiques RH et droits des commandes",
+    "etapes": [
+      {
+        "libelle": "Aucun état d’analyse hors référentiel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Des résultats sont OPPOSABLES au prescripteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La saisie est verrouillée tant que l’échantillon n’est pas reçu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Administration » et « Direction » ne font plus qu’un",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un historique de dépenses est peuplé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les comptes de trésorerie sont disponibles depuis cet écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les dépenses sans justificatif sont comptées et dites contestables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau affiche ses lignes et sa commande de création",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une dépense saisie est conservée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La cascade des soldes intermédiaires est complète",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les brouillons de la période sont ÉCARTÉS et le dire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les charges financières restent hors exploitation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les cinq grandeurs du seuil sont affichées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La répartition fixe/variable se présente comme une PROPOSITION",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La réserve sur la structure constante est énoncée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les charges sont détaillées compte par compte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre des présences est disponible depuis cet écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le taux par service est calculé et représenté",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le taux annonce son assiette et distingue le retard de l’absence",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les permanences sont comptées à part des gardes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les sources « Actes réalisés » et « Soins exécutés » existent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Ni l’échographiste ni le biologiste ne modifient le dossier patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pharmacie est transférée en entier au caissier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le Directeur Médical accède à la caisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un écran restreint DIT qu’il est en lecture seule",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et n’offre pas la commande qu’il refuserait",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Rôles, RBAC par écran, circuit du prélèvement et moteur de notification",
+    "etapes": [
+      {
+        "libelle": "« Laborantin » est devenu « Biologiste médical » jusqu’à la connexion",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste d’ingénieur biomédical a disparu des écrans",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le caissier est « Dispensaire (Pharmacie) »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les trois profils créés ouvrent une session",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le hub respecte les activités fermées — un écran fermé n’y figure plus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une seule fiche RBAC pour le biologiste, avec tous ses réglages d’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le magasin (stock gros) est FERMÉ au caissier — lecture comprise (02/09)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et garde le stock détail, qui est sa pharmacie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il n’accède ni au dossier médical ni aux antécédents (RG-13)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il voit SES DEUX tableaux — caisse et pharmacie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le biologiste ne voit aucun des six écrans hors de son périmètre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun horodatage de prélèvement sous un second nom",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet « À transmettre » compte ce que les données portent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet « Reçus au laboratoire » aussi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une modale rend son gras et n’affiche AUCUNE balise",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le moteur compte EXACTEMENT ce que le module compte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il conserve les priorités existantes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il route par poste — chacun reçoit sa part, pas tout",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune alerte ne renvoie vers un écran interdit au profil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le badge de la cloche porte le VRAI compte, jamais un nombre écrit en dur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Couper le son ne coupe pas l’alerte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une même alerte ne resonne pas dans la temporisation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Tester le son ne crée AUCUNE notification métier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Acquitter retire du badge…",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…mais l’alerte reste au centre : entendre n’est pas traiter",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "On peut la reprendre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rappel du biologiste s’ouvre à la prise de poste et porte ses DEUX questions",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et ne se rouvre pas au passage suivant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Socle — miniTable, vérité tarifaire, KPI comptés et en-tête unique",
+    "etapes": [
+      {
+        "libelle": "miniTable en colonnes-chaînes rend ses en-têtes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et ses cellules — plus de tableau de tirets",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La forme en colonnes-objets est inchangée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le catalogue des actes est amorcé SANS ouvrir cfg-tarifs",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un tarif modifié dans le catalogue est celui que PR.prescrire facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Courriers du mois » affiche le compte de la collection, plus un nombre en dur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les documents « à valider » existent au socle sans ouvrir la GED",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque courrier porte un traitement tri-état lisible par l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque intervention d’ambulance porte dateHeure, kilométrage, tarif et état",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les réunions sont semées au socle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le référentiel des variantes d’en-tête est retiré — arbitrage du 31/08/2026",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un seul RCCM au socle, caisse comprise",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "AUCUNE donnée métier ne persiste dans le navigateur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le navigateur ne garde que le jeton et le pointeur de session",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le magasin vit au serveur, et sans panne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 2 — rôles chirurgien, anesthésiste, assistant comptable et fermetures caissier",
+    "etapes": [
+      {
+        "libelle": "Les trois rôles de la phase 2 ont leur fiche au manifeste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Caissier : transferts, mouvements et lots FERMÉS — même la lecture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et les trois écrans sont inatteignables, pas seulement absents du menu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le chirurgien ouvre le bloc — CRO et check-listes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…mais ni la maternité, ni la caisse — matrice cible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’imagerie se lit sans s’écrire pour le chirurgien",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’anesthésiste tient Glasgow et lit les résultats",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…sans consultations générales, caisse ni maternité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’assistant comptable saisit les écritures SANS pouvoir d’annulation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La clôture annuelle lui est fermée nommément",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun écran clinique ne s’ouvre à lui (RG-13)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Son tableau de bord, lui, s’ouvre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau dash-chirurgien monte et porte son premier regard",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau dash-anesthesiste monte et porte son premier regard",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau dash-aide-comptable monte et porte son premier regard",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune option du sélecteur ne répète le rôle après le nom (Bug 0)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les trois nouveaux profils ouvrent une session",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 3a — domaine Accueil, alias de manifeste, tarifs publics et six boutons",
+    "etapes": [
+      {
+        "libelle": "L’ACCUEIL est le premier domaine du ruban de la réception",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Pilotage passe en dernier — l’ordre cible des Instructions",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le domaine réunit rendez-vous, file, appels, courriers, ambulances, tarifs et constantes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les tarifs publics s’ouvrent à la réception EN LECTURE — surcharge d’écran, module CFG fermé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un alias n’invente aucun droit : pas de constantes pour le caissier via l’Accueil",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran garde son entrée CANONIQUE : cfg-tarifs reste au domaine Système",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Patient externe » est renommé (Bug 6)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les SIX boutons d’accès rapide du Bug 2 sont présents",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et la barre précède la section des parcours",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La réception OUVRE le référentiel tarifaire — plus de porte fermée promise",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le 4ᵉ onglet « Certificats et Attestations » existe (Bug 12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet lit le catalogue : six pièces, couverture « SOS seule » sur chacune",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et dit qu’il LIT sans dupliquer — une seule vérité tarifaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 3b — fusion Rendez-vous & visites, individu non enregistré, plage de dates",
+    "etapes": [
+      {
+        "libelle": "L’écran fusionné porte la barre de plage de dates (Bug 11)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et son titre dit la fusion (Bug 3)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le formulaire porte le champ « individu non enregistré »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une venue « affaire privée » se tient SANS dossier patient",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et ne consomme aucun code CNT (RG-01 protégé)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche du rendez-vous porte Modifier ET Archiver au pied (Bug 10)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Passage sans rendez-vous » ouvre la modale sur m2-rendezvous.php (Bug 0a)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Passage sans rendez-vous » ouvre la modale sur m2-agenda.php (Bug 0a)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le passage sans rendez-vous porte nom, prénom, quartier ET numéro du client",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le champ Patient reste offert, sans être obligatoire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La venue d’une personne non enregistrée porte son identité complète",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Elle n’ouvre AUCUN dossier patient et ne consomme aucun code CNT (RG-01)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tiroir de l’agenda porte « Éditer le rendez-vous » et « Annuler le rendez-vous » (Bug 10)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 3c — répertoire fusionné à deux zones et constantes reprises de l’accueil",
+    "etapes": [
+      {
+        "libelle": "Le répertoire ne porte PLUS l’onglet des dossiers de consultation (écran propre depuis le 14/09)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran des dossiers rend les états du dossier et annonce le cycle ordonné",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet est ABSENT pour le biologiste — la fusion ne rouvre pas ce que la Direction a fermé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page m1-dossier-etendu renvoie vers son écran de destination",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page m1-dossier-medical renvoie vers son écran de destination",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les deux pastilles ont quitté le ruban",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Température, tension et pouls de l’accueil s’affichent sur la fiche (Bug 14)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…en LECTURE SEULE — aucun champ de ressaisie — et la fiche DIT d’où viennent les valeurs",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 4 — maternité : SONU, CPN, partogramme, PF, PTME et indicateurs calculés",
+    "etapes": [
+      {
+        "libelle": "Les 10 fonctions SONU — 7 SONUB et 3 SONUC — sont au référentiel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fonction 7 est la réanimation du nouveau-né",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les 15 méthodes contraceptives et les 3 CPoN sont déclarées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les bornes du rapport : PC 32-38, PT 30-36, Apgar 5 min ≥ 7",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’acte Avortement / SAA est au catalogue (tarif d’ATTENTE aligné AMIU — arbitrage du 01/09)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les sept collections maternité sont semées AU SOCLE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque naissance porte PC, PT et Apgar à 5 min — plus d’Apgar unique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran CPN monte — GAR en badge, doses SP visibles",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche CPN porte la grille des visites et le geste « Ajouter une visite »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plus aucun « [object HTMLElement] » : K.section accepte un nœud comme contenu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le partogramme monte — graphique, mesures horaires et compteur de franchissements",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La CPoN porte la variable NOUVELLE — hémorragie ante-partum avec son étiologie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’admission maternité EXIGE le poids (verrou du rapport, Module A)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre SONU distingue SONUB et SONUC à l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La PF affiche la codification A/N et compte ses méthodes sur 15",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les statistiques maternité montent sous Pilotage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La couverture SP3 affichée est CELLE du registre — recalculée, jamais fournie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 5 — dépenses multi-lignes, facture d’avoir et PV de réception",
+    "etapes": [
+      {
+        "libelle": "Des pièces multi-lignes existent, et le total est LA SOMME de leurs lignes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "QUATRE indicateurs, pas cinq — la « dépense moyenne » est retirée (arbitrage)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche de la dépense porte ses « Lignes de la pièce »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le comptable, lui, dispose de la commande d’émission",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’avoir s’émet sur des lignes NOMMÉES et son montant est leur somme",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La contre-passation est PLATE, équilibrée (RG-10) et en BROUILLON",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture PORTE son avoir — elle n’est jamais réécrite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre MECeF lit la MÊME collection — une pièce, deux vues",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une fille consolidée dans une mère émise est refusée EN NOMMANT la mère",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le cumul des avoirs est plafonné à la facture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le caissier CONSULTE l’avoir sans pouvoir l’émettre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "M8.annuler est FERMÉ au caissier — l’arbitrage différé est soldé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Au guichet, le registre s’ouvre et la commande d’émission est ABSENTE — pas grisée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les PV existent pour les DEUX natures, et les réactifs portent la chaîne du froid",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le magasinier peut dresser un PV — l’écran monte avec sa commande",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’assistant comptable accède aux PV par sa fiche RBAC (M7), sans figurer au manifeste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 6 — laboratoire : code unique, impression filtrée, plages par lot",
+    "etapes": [
+      {
+        "libelle": "Chaque demande porte son code NNNNN-AAAA, sans doublon",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fabrique UNIQUE (PR.codeAnalyse) continue la série annuelle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le code se lit au registre des demandes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La vue maternité monte et le registre porte des demandes du service",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La vue hospitalisation monte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran d’impression classe rendus / imprimables / verrouillés / sans pièce",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un examen non réglé est verrouillé EN LE DISANT — jamais masqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le comparatif s’ouvre sur le choix du patient — la colonne « Antériorités » de la fiche",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une plage de lot DÉCALE les bornes des demandes postérieures à sa mise en service",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un résultat ANTÉRIEUR au lot garde les bornes de son époque — versionné comme les primes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La référence affichée NOMME le lot",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les statistiques des réactifs sont CALCULÉES depuis stock, lots et demandes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le caissier n’imprime pas de résultats ; la sage-femme voit sa vue maternité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 7 — CPA, demande d’examen du service et bons de pansement",
+    "etapes": [
+      {
+        "libelle": "La CPA est amorcée et chaque réserve est NOMMÉE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une intervention sans CPA est SIGNALÉE — jamais bloquée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les échelles ASA/Mallampati sont ARRÊTÉES par les praticiens du bloc (01/09)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le CR d’anesthésie monte et renvoie la surveillance d’étage à m3-surveillance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche du service crée des demandes SERVICE, codées, au secteur du prescripteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La chaîne existante est réutilisée : lignes payables, caisse saisie, prélèvement bloqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre des fiches monte avec sa commande d’émission",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bon porte UNE ligne payable par séance, au tarif de la grille (9 000 F non assuré)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un règlement partiel libère la séance NOMMÉE — une sur trois",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre des bons montre le bon et ses séances réglées « 1 / 3 »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’anesthésiste ouvre la CPA (sa surcharge ACCORDE M3) ; le caissier non",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 8 — imagerie éclatée : états du labo, galerie et catalogue",
+    "etapes": [
+      {
+        "libelle": "La demande naît bloquée, ses lignes payables NOMMENT chaque examen",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-09 sur la grille inversée : pelvienne 9 000, ECG 15 000 (non assuré)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un examen sans tarif est refusé EN LE NOMMANT",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le règlement partiel libère l’examen NOMMÉ : pelvienne payée, ECG en attente",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’échographiste EXÉCUTE (Saisir le CR) mais ne PRESCRIT pas (Nouvelle demande absente)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un examen non réglé garde son bouton VERROUILLÉ, visible",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Saisir le CR » conduit à la PAGE du compte rendu, conclusion comprise",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le CR se crée depuis la demande et l’enregistrement passe la demande en EXÉCUTÉE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rendu au prescripteur passe la demande en VALIDÉE — les états du labo, tenus",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La galerie est l’instrument de l’échographiste : commande présente, cliché rendu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le catalogue de l’imagerie vit AU MAGASIN — semé du brouillon, administrable",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les statistiques de l’échographie sont CALCULÉES, sous Pilotage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RBAC : le caissier ne voit pas les demandes ; l’échographiste a ses stats, pas le catalogue CFG",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 9 — pilotage : stats multi-axes, coût de l’agent, files et agendas",
+    "etapes": [
+      {
+        "libelle": "L’axe « service demandeur » FILTRE la population — le compte affiché est recalculé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La source nomme la demande écrite du laboratoire (reunions/)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les consultations se lisent par praticien, le « secteur » annoncé comme proxy",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bloc compte les interventions sans CPA — signalées, jamais bloquées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le coût de l’agent sépare coût employeur et retenues — et renvoie l’ITS au bulletin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les recettes affichées SONT la somme des lignes payables du magasin",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rapprochement est ARRÊTÉ (01/09) : bénéfice brut par groupe, transverses non ventilés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’agenda suit le praticien choisi — une vue du registre, pas une copie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La file par cabinet tient les DEUX listes — nommés et vivier commun",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre des certificats porte les quatre onglets — toutes, clinique, externes, archives",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les certificats des externes : une VUE qui renvoie la délivrance au registre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RBAC : le caissier ne lit pas le coût de l’agent ; le labo a ses stats, pas l’échographiste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Phase 10 — enquêtes générées du modèle, sondes M7 / M13 / GED",
+    "etapes": [
+      {
+        "libelle": "Le formulaire de recueil NAÎT du modèle — six questions, saisie enregistrée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une question ajoutée au MODÈLE paraît à la saisie suivante — rien n’est codé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La satisfaction est CALCULÉE et le questionnaire porte sa validation (vague 49)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "M7 : la quantité ACCORDÉE se distingue de la demandée, le circuit est affiché",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "M13 : le registre des courriers est semé au socle et son écran monte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "GED : la bibliothèque de l’établissement est semée, DISTINCTE des documents patients",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "D5 : les commandes converties en K.commande restent offertes aux profils habilités",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 49 — validations de la Direction levées, marquages professionnels gardés",
+    "etapes": [
+      {
+        "libelle": "Les tarifs d’attente sont ARRÊTÉS et datés ; la semence garde le marquage historique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les 34 valorisations sont CONFIRMÉES, la surcouche tracée reste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les groupes d’articles sont CONFIRMÉS, datés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les validations des PROFESSIONNELS sont arrivées (01/09) — datées, provenance conservée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le centre des validations ORIENTE (trois familles) sans jamais valider en masse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le questionnaire de satisfaction est annoncé VALIDÉ — plus une proposition",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 50 — activation par module : Accueil et Soins fermés, le reste travaille",
+    "etapes": [
+      {
+        "libelle": "Chaque module du manifeste porte sa bascule ; le NOYAU (CFG, DASH) n’en a pas",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’indépendance des modules est DITE sur l’écran",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "M1 et M2 fermés disparaissent du ruban — rangées canoniques ET alias, tous rôles",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Accueil et Soins FERMÉS : les stocks, la paie et les RH travaillent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’adresse d’un module fermé renvoie au refus — fermer n’est pas cacher",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La réouverture rend les écrans EN L’ÉTAT — les données n’ont pas bougé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Badges du personnel — émission, QR, impression, retrait et réédition",
+    "etapes": [
+      {
+        "libelle": "L’agent sans badge est signalé — l’effectif est rapproché du registre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modale d’émission s’ouvre et présente l’agent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le badge est émis avec un numéro de série annuel et unique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La validité est portée sur la fiche — jamais laissée vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le QR ne porte QUE le matricule et le numéro de série",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le QR ne porte NI le nom, NI la fonction, NI aucune adresse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Deux badges valides pour un même agent sont refusés, EN NOMMANT le premier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le badge s’imprime au format carte CR80 (85,6 × 54 mm)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La carte porte un vrai code QR engendré localement (SVG, aucune requête réseau)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le badge porte le logo et la DEVISE, mais NI IFU NI RCCM — ce n’est pas une pièce fiscale",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Recto et verso portent le nom de l’agent et le numéro de série",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un badge en cours est déclaré VALIDE, avec la fonction du porteur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La vérification est JOURNALISÉE au nom du badge présenté (RG-12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un badge inconnu se distingue d’un badge retiré — ce ne sont pas les mêmes faits",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le badge perdu RESTE au registre — il n’est ni supprimé ni archivé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Son état porte la perte et son motif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il apparaît à l’onglet « Retirés », qui le compte",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le badge retiré libère la réédition — un second badge est émis",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "LE PREMIER EST TOUJOURS LÀ, retiré et non effacé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Présenté au contrôle, l’ancien numéro reste « perdu » au registre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le Surveillant et l’Assistant de Direction VÉRIFIENT sans émettre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les modèles et la planche restent fermés au Surveillant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La DAF (qui porte les RH) et la Direction émettent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Fermé partout ailleurs — ni caisse, ni médecine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La planche ne propose JAMAIS un badge retiré — l’imprimer le remettrait en circulation",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La sélection multiple retient bien les trois badges cochés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La planche sort en A4 avec ses cartes, ses repères de découpe et le pied normalisé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le modèle s’aperçoit à l’échelle — recto et verso, mentions comprises",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les écrans de badges",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Enquête partagée — jeton daté, page publique isolée et générateur unique",
+    "etapes": [
+      {
+        "libelle": "Le partage ouvre un lien porteur d’un JETON, jamais de l’identifiant de l’enquête",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le lien est DATÉ — un lien sans terme collecte des réponses après la clôture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un code QR est proposé pour l’affichage en salle d’attente",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page publique ne porte NI ruban, NI recherche, NI le moindre lien vers le logiciel",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Elle affiche le questionnaire et annonce l’anonymat",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le formulaire naît du modèle — autant de champs que de questions",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La réponse est enregistrée et la page remercie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Elle porte le canal « Lien public » — comparable aux réponses du guichet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "ANONYME veut dire anonyme : aucun nom, aucun lien vers un dossier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "UNE question ajoutée au modèle paraît sur la page publique — un seul générateur, deux habillages",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Révoquer ferme la porte et NE SUPPRIME RIEN — les réponses recueillies restent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le lien révoqué n’ouvre plus le formulaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un jeton inconnu reçoit LA MÊME réponse qu’un jeton révoqué — sans nommer aucune enquête",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur le partage et la page publique",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Corrections du 06/09 — ruban resserré, imagerie à part, six secteurs",
+    "etapes": [
+      {
+        "libelle": "La rangée « RDV, Visites & Consultations » de l’Accueil porte EXACTEMENT les neuf écrans de réception",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Courriers & orientation » ne porte QUE les courriers et le répertoire d’urgence",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le geste clinique a sa rangée dans SOINS",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’IMAGERIE MÉDICALE a sa rangée dans SOINS, et le tableau d’échographie s’y nomme",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Échographie & imagerie » a disparu du ruban — il n’y a plus qu’Imagerie médicale",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une rangée secondaire ne crée PAS de second hub, et le hub garde tous les écrans du module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le regroupement visuel n’a RIEN changé aux droits — le module reste M2",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Point des ventes & cumuls » est devenu « Suivi des ventes », partout",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Statistiques de l’échographie » est devenu « Statistiques de l’imagerie médicale »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La demande d’imagerie offre la saisie d’un patient adressé de l’extérieur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un patient adressé de l’extérieur reçoit un DOSSIER — sans lui, aucun compte rendu ne se remet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…au format de code UNIQUE CNT/n/AA, celui de la fabrique du socle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et sa demande suit la chaîne : facture à lignes, examen bloqué avant règlement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La saisie du résultat affiche le CODE D’ANALYSE et la RÉFÉRENCE de la demande",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les groupes de prestation SONT les six secteurs — aucun ne manque",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Recettes par groupe » et « Bénéfice brut par groupe » les portent tous les six",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rapprochement nomme les centres en toutes lettres, Direction comprise — plus d’identifiant technique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les centres de coûts sont les six secteurs PLUS la Direction",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’origine d’une prescription se dit dans le vocabulaire des six — « bloc » devient un secteur nommé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La Direction n’est PAS un secteur de recette — elle reste transverse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’axe croisé porte le libellé « Secteur d’origine »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Comptabilité — liasse DGI, amortissement au semestre et bilan d’ouverture",
+    "etapes": [
+      {
+        "libelle": "L’écran porte les CINQ feuillets de la liasse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La liasse citée est bien celle déposée le 15/05/2026 (code BK505416, IFU de la clinique)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "LE BILAN DÉPOSÉ S’ÉQUILIBRE — actif = passif, sur N comme sur N-1",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les références du formulaire sont reprises telles quelles (AD → BZ)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le résultat net déposé est celui du document (4 561 200)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "LA MARGE COMMERCIALE EST NULLE à la liasse — RG-02 confirmé par un document déposé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau des flux boucle sur la trésorerie de clôture du bilan (6 300 639)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les écarts internes du document sont RECENSÉS, jamais corrigés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran SIGNALE les écarts du document au lieu de les arbitrer",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les colonnes portent « Date d’acquisition », « Valeur d’acquisition » et « Cession / sortie »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Deux biens identiques acquis à six mois d’écart n’ont PAS le même amortissement cumulé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écart vaut exactement UN semestre de dotation — le pas est bien de six mois",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un bien CÉDÉ cesse de s’amortir à sa date de sortie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La cession est portée à la colonne, avec sa date et son motif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le report au bilan range les biens par rubrique de la liasse et exclut les biens sortis",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bilan d’ouverture se calcule et s’équilibre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il dit la règle : seules les classes 1 à 5 se reportent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les à-nouveaux s’écrivent au journal AN, ÉQUILIBRÉS (RG-10)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "AUCUN compte de charge ni de produit n’est reporté — ils sont soldés par le résultat",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pièce est datée du 1ᵉʳ janvier et naît en BROUILLON — la validation reste humaine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un second report est REFUSÉ en le disant — il créerait un double à-nouveau",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Patient externe — analyses, imagerie, services et verrou de caisse",
+    "etapes": [
+      {
+        "libelle": "L’écran porte les quatre natures de demande, plus les résultats",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La modale offre la NATURE (analyses ou imagerie) et les deux catalogues",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…ainsi que le service demandeur et l’identité obligatoire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une demande d’analyses externe ouvre un dossier et part à la caisse, BLOQUÉE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une demande d’IMAGERIE externe suit la même chaîne — dossier, caisse, blocage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La vue « maternité » porte la demande adressée à la maternité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La vue « hospitalisation » porte la demande d’imagerie qui lui est adressée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les vues sont des FILTRES : ce qui va à l’hospitalisation ne paraît pas à la maternité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La vue « imagerie médicale » porte bien la demande d’imagerie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran ÉNONCE la règle : rien ne se saisit avant la caisse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La commande de saisie d’un examen NON RÉGLÉ est verrouillée, jamais masquée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le verrou NOMME où la balle se trouve",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une fois la caisse passée et l’échantillon reçu, la saisie s’ouvre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur l’écran du patient externe",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Maternité — dossier obstétrical, CPN en colonnes, GAR déduit, tableau de bord",
+    "etapes": [
+      {
+        "libelle": "Le module Maternité est PEUPLÉ de dossiers obstétricaux",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les référentiels du formulaire national sont au complet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque dossier porte ses examens complémentaires renseignés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La date probable vaut DDR + 280 jours sur TOUS les dossiers",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une grossesse à risque se lit sur le CUMUL des facteurs cochés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une visite de CPN porte la GRILLE entière, pas quatre chiffres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau de bord de la maternité existe et porte ses parcours",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Son premier regard est le travail EN COURS — la seule chose qui n’attend pas",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les grossesses à risque affichées se recomptent depuis les registres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur les écrans de maternité",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Couverture datée, agenda apuré, périodes nommées, filtres avancés",
+    "etapes": [
+      {
+        "libelle": "Le changement de compagnie écrit DEUX périodes, il n’écrase rien",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une date ANTÉRIEURE lit l’ancienne compagnie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et la date du jour lit la nouvelle, reportée sur la fiche du dossier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un changement SANS MOTIF est refusé en le disant (RG-12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’agenda ne montre plus les rendez-vous honorés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…ils sont apurés dans leur PROPRE onglet, jamais supprimés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un report CONSERVE la date initiale et reste dans l’agenda",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet « Mois » NOMME la période retenue",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le mois se CHOISIT : l’écran suit la sélection",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La balance âgée porte ses filtres avancés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et le seuil RESTREINT réellement la liste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le référentiel des compagnies porte lui aussi ses filtres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Feuillets 7/51 et 8/51, imagerie à cinq modalités",
+    "etapes": [
+      {
+        "libelle": "Le compte de résultat porte les 42 références du feuillet 7/51, dans l’ordre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Déposé : résultat net 4 561 200 (N) et 4 472 283 (N-1), comme la liasse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et ses neuf sous-totaux se recalculent par les formules du formulaire",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Calculé : le résultat net (XI) RECOUPE le journal, recompté indépendamment",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les charges financières restent hors exploitation — et l’écran le dit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le tableau des flux porte les 25 références du feuillet 8/51, dans l’ordre",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Déposé : trésorerie au 31 décembre 6 300 639 (N) et 1 183 257 (N-1)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Calculé : le contrôle du formulaire (classe 5 = ZH) CONCORDE, et la ligne de contrôle est portée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les écarts du document sont signalés — sans accuser ZG, qui se recoupe avec le ZB déposé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le catalogue range ses examens en cinq modalités",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une demande de scanner et de radiographie passe par LA fabrique commune, bloquée par le paiement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les tarifs des nouvelles modalités sont des tarifs d’ATTENTE, dits comme tels — l’assuré paie moins",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre des demandes filtre par modalité",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« m2-imagerie-radiographie » : ses comptes rendus seuls, son indicateur propre, la proposition dite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« m2-imagerie-mammographie » : ses comptes rendus seuls, son indicateur propre, la proposition dite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« m2-imagerie-scanner » : ses comptes rendus seuls, son indicateur propre, la proposition dite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« m2-imagerie-irm » : ses comptes rendus seuls, son indicateur propre, la proposition dite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste d’imagerie écrit les quatre tableaux, le chirurgien les lit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Caisse et accueil n’y entrent pas (RG-13) ; le médecin, si",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Refonte Zone 2 — dossier IPPOA, fiche récapitulative, prescription unique et imagerie au dossier",
+    "etapes": [
+      {
+        "libelle": "L’écran « Dossiers de consultation » porte ses cinq indicateurs, son tableau et « Nouveau dossier »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le formulaire porte l’examen par appareil en blocs DÉPLIABLES (neuf appareils)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Normal par défaut » pose « RAS » dans les champs vides SANS écraser l’anomalie saisie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche est REFUSÉE sans dossier de consultation — et le refus nomme l’écran où aller",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le dossier s’enregistre avec l’examen IPPOA en objet JSON par appareil, et naît EN CONSULTATION",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un second dossier ouvert pour le même patient est refusé en nommant le premier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche ouverte depuis le dossier en fait le RÉCAPITULATIF — anamnèse, IPPOA, constantes de la Zone 1",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Médicament + analyse + imagerie font UNE seule facture de TROIS lignes payables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture ventile part assureur / part patient — le total en est la somme",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Avant la caisse, le prélèvement et l’examen d’imagerie sont BLOQUÉS (tâche d’imagerie bloquée)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "PR.encaisser libère l’analyse (à prélever) et l’imagerie (payée) ligne par ligne",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La consultation porte son dossier et son ordonnance ; le dossier passe EN ATTENTE LABO",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "m1-patients ne montre plus l’onglet des dossiers de consultation (Zone 2)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fiche patient porte l’onglet « Imagerie médicale » avec l’examen, sa modalité et son état",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’accueil, l’échographiste, la caisse et le laboratoire n’ouvrent pas les dossiers ; le médecin y écrit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "…et son adresse renvoie l’accueil au 403",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Corrections de l’échographiste — champs conditionnels, sacs dupliqués, mesures en texte, sans Annexes",
+    "etapes": [
+      {
+        "libelle": "Le référentiel porte les corrections : sans Annexes, examen évolué (BIP, LF), « conclusion à cases » retirée et rythme cardiaque REPOSITIONNÉ après le LCC",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Listes corrigées — vacuité Visible/Non visible, réaction trophoblastique en quatre valeurs, ovaire anormal → taille + échostructure",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La MODALE d’en-tête demande la PROVENANCE, et sa validation ouvre la PAGE de rédaction",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Rien n’est écrit au registre tant que le compte rendu n’est pas enregistré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’en-tête propose l’examen évolué et retient la provenance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les mesures se saisissent en TEXTE, sans champ Annexes, et le bloc « Fœtus » remplace l’embryon",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Autre » fait paraître son champ de précision ; « 02 » sacs fait paraître le bloc du sac n°2 — et lui seul",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compte rendu enregistre la provenance, la précision et le sac n°2 (`CODE__2`), sans valeur de bloc masqué",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La lecture du compte rendu montre le sac n°2, la précision saisie et la provenance",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "BFR, tableau décisionnel et feuille d’inventaire",
+    "etapes": [
+      {
+        "libelle": "Le moteur AGRÈGE : chaque composante se recompte à l’identique depuis le magasin, et le BFR est leur somme algébrique",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les factures fournisseurs sont amorcées AU SOCLE : la dette existe sur une page qui ne charge pas M7, et le calcul ne se déclare pas incomplet",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran montre les trois composantes et permet de redescendre à leur registre d’origine",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le seuil d’ancienneté est un PARAMÈTRE : abaissé à 5 jours, l’alerte s’élargit et le moteur le lit sans être modifié — puis la fiche est restaurée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les quatre axes du document sont rendus, « non calculable » ne vaut jamais zéro, et le sens distingue un DSO (bas) d’un taux d’occupation (haut)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les cibles partent en PROPOSITION : aucun document de cadrage n’en fixe, et l’écran le dit",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La rangée « Contrôle de gestion » ne change AUCUN droit : M12 reste fermé au caissier, ouvert au comptable et à la DAF",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le stock théorique affiché est celui du MAGASIN COMPTÉ (détail), et non le total des deux stocks",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La feuille adopte le gabarit à deux panneaux : comptage à gauche, enchaînement du parcours à droite",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La régularisation porte sur le magasin compté et sur lui seul : le stock détail progresse de 3, le stock gros ne bouge pas",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-03 — un mouvement de régularisation est écrit, portant le magasin et la référence de l’inventaire en justificatif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Règles transversales d’imagerie — cinq modalités, pas seulement l’échographie",
+    "etapes": [
+      {
+        "libelle": "Les cinq modalités portent PROVENANCE et saisie en texte, et aucune ne porte de rubrique « Annexes »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Toute liste de classification des quatre modalités radiologiques reçoit « Autre » ET son champ de précision",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune variable d’imagerie n’est restée un champ numérique strict",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les comptes rendus radiologiques exigent leur conclusion",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le compte rendu de scanner demande la provenance, ne porte AUCUN champ numérique strict et n’a pas d’« Annexes » — mais garde sa conclusion",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page de saisie du compte rendu adopte le gabarit à deux panneaux",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La nouvelle demande d’imagerie accepte un PRESCRIPTEUR EXTÉRIEUR : l’entrée existe et son champ libre n’apparaît que pour elle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  }
+]

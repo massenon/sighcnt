@@ -1,0 +1,80 @@
+Voici les directives de mise à jour et spécifications fonctionnelles détaillées pour l'ensemble des modules d'échographie du prototype SIGH, formulées de manière purement textuelle et structurée, sans aucun code HTML ni CSS.
+
+---
+
+### 1. RÈGLES TRANSVERSALES À TOUS LES MODALES D'ÉCHOGRAPHIE
+* **Suppression systématique** : Retrait complet du bloc "Annexes" dans **tous** les modaux d'échographie (Pelvienne, Abdominale, Abdomino-pelvienne, Vésico-prostatique, Obstétricale, Obstétricale du 1er trimestre, et Obstétricale du 1er trimestre Évolué).
+* **Format des champs numériques** : Remplacement de tous les champs de saisie de type `number` par des champs de saisie de type `text` (permettant la saisie combinée de texte et de nombres, ex: "environ 12", "sup à 5").
+* **Nouveau champ global** : Ajout d'un champ libellé **Provenance** (champ de saisie texte) dans le modal d'en-tête de *Nouveau compte rendu — Échographie*.
+
+---
+
+### 2. ÉCHOGRAPHIE PELVIENNE
+* **Section Utérus** :
+  * *Vacuité utérine* (Champ select) : Options "Visible" et "Non visible".
+  * *Statique utérine* (Champ select) : Remplacer l'option "médiane" par **"Intermédiaire"**. Ajout de l'option **"Autre"** qui, lorsqu'elle est sélectionnée, affiche dynamiquement un champ de saisie texte libre.
+  * *Dimensions utérines* : Les champs Longueur, Épaisseur et Largeur passent en champs de saisie texte (`text`).
+  * *Échostructure* : Conserver "Homogène" tel quel. Si l'option **"Hétérogène"** est sélectionnée, affichage dynamique d'un champ de saisie texte pour détailler l'hétérogénéité.
+  * *Épaisseur de l'endomètre (mm)* : Passage en champ texte (`text`).
+  * *Nouveau champ* : Ajout d'un libellé **Contenu** avec un champ de saisie texte juste en dessous de la section Épaisseur de l'endomètre.
+* **Section Ovaires** :
+  * Suppression totale du bloc "Annexes" et de son `textarea`.
+  * Gestion dynamique des ovaires (Droit, Gauche ou les deux) :
+    * Si sélection de "Ovaire droit anormal", "Ovaire droit normal" ou "Les deux anormaux" : Affichage dynamique des libellés **Taille** (avec champ texte) et **Échostructure** (avec champ texte).
+  * Maintien du bloc **Conclusion** avec son `textarea`.
+
+---
+
+### 3. ÉCHOGRAPHIE OBSTÉTRICALE DU 1er TRIMESTRE
+* **Section Sac gestationnel** :
+  * *Localisation* (Champ select) : Ajout de l'option **"Autre"** avec affichage dynamique d'un champ texte libre en cas de sélection.
+  * *Réaction trophoblastique* : Suppression de "Bonne, pas de décollement ce jour". Remplacement par les options : **Mauvaise**, **Médiocre**, **Bonne**, **Décollement**.
+* **Modifications de champs** :
+  * Suppression du libellé et du champ de saisie *Rythme cardiaque (bpm)* initial.
+  * Transformation des champs suivants en champs texte (`text`) : *Dimension du sac (mm)*, *Âge gestationnel — semaines d’aménorrhée*, *LCC (longueur cranio-caudale, mm)*, *Rythme cardiaque (bpm)*, *Âge gestationnel correspondant — semaines*, *Âge gestationnel correspondant — jours*.
+* **Vésicule Vitelline** :
+  * Ajout d'un libellé **Vésicule Vitelline** (correction orthographique effectuée) juste en bas du bloc *Dimension du sac (mm)*, associé à un champ select comportant trois options : *— Sélectionner —*, **Vue**, **Non Vue**.
+* **Suppression de blocs obsolètes** :
+  * Retrait complet des blocs : *Conclusion*, *Type de grossesse*, *Siège*, *Évolutivité*, *Contrôle programmé*, et *Annexes*.
+* **Gestion dynamique de la gémellité / multi-fœtalité (Sac gestationnel — nombre)** :
+  * Lorsque l'utilisateur sélectionne le chiffre **2** dans le champ *Sac gestationnel — nombre*, le système duplique dynamiquement l'ensemble des champs dépendants (aspect du sac, localisation, dimension, âge gestationnel, réaction trophoblastique, etc.) pour former deux blocs distincts.
+  * Si l'utilisateur sélectionne **3**, le système duplique les champs trois fois.
+  * *Implémentation recommandée* : Utilisation d'un conteneur dynamique JavaScript générant itérativement les blocs de saisie à la volée selon la valeur numérique choisie pour éviter de surcharger l'interface statique du modal.
+
+---
+
+### 4. NOUVEL EXAMEN : ÉCHOGRAPHIE OBSTÉTRICALE 1er TRIMESTRE ÉVOLUÉ
+Création d'un nouvel examen dans le modal *Nouveau compte rendu — Échographie* nommé **Échographie Obstétricale 1er Trimestre Évolué**.
+* **Formulaire d'origine** : Reprend la structure exacte de l'échographie obstétricale du 1er trimestre.
+* **Adaptations spécifiques** :
+  * Remplacement du terme *Embryon* par **Fœtus**.
+  * Ajout de champs obligatoires additionnels situés immédiatement après le bloc *LCC* :
+    * **BIP (mm)** : Libellé avec champ de saisie texte.
+    * **PC (Périmètre crânien - mm)** : Libellé avec champ de saisie texte.
+    * **LF (Longueur du fémur - mm)** : Libellé avec champ de saisie texte.
+  * *Activité cardiaque* : Ajout de l'option **"Autre"** dans le champ select, entraînant l'affichage dynamique d'un champ texte libre.
+
+---
+
+### 5. ÉCHOGRAPHIE OBSTÉTRICALE (2e / 3e Trimestre)
+* **Bloc Présentation** :
+  Mise à jour de la liste exhaustive des options :
+  * Céphalique mobile dos à gauche
+  * Céphalique mobile dos à droite
+  * Transversal dos supérieur
+  * Transversal dos inférieur
+  * Siège mobile dos à droite
+  * Siège mobile dos à gauche
+  * **Option "Autre"** : Ouvre dynamiquement un champ de saisie texte libre.
+* **Bloc Placenta — Position** :
+  * Ajout de l'option **"Autre"** ouvrant dynamiquement un champ de saisie texte libre.
+* **Bloc Liquide Amniotique — Abondance** :
+  * Suppression des options *diminuée* et *augmentée*.
+  * Ajout des options normalisées : **En excès**, **Amnios**, **Oligo-amnios**, **Hydramnios**, **Oligo-amnios modéré**, **Oligo-amnios sévère**, **Hydramnios modéré**, **Hydramnios sévère**, et **Option "Autre"** (avec champ texte dynamique associé).
+* **Renommage de libellé** :
+  * Renommer le bloc *Index amniotique (mm)* par **Index amniotique (mesure des 04 citernes)**.
+* **Liquide Amniotique — Aspect** :
+  * Remplacer l'option *anormal* par **Trouble**.
+  * Ajout de l'option **"Autre"** avec champ texte dynamique associé.
+* **Suppression de blocs obsolètes** :
+  * Retrait complet des blocs : *Synthèse*, *Poids fœtal estimé (g)*, *Score de MANNING*, *Date probable d’accouchement*, *Aspects pathologiques*, et *Annexes*.

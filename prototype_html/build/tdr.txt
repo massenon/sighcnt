@@ -1,0 +1,115 @@
+
+
+ FAGUEZ Sarl
+ Tél : (00229) 61 25 22 26 – 95 45 40 25 03BP 473 
+Email stefaguezsarl@yahoo.com
+Cotonou BÉNIN 
+
+
+
+
+
+
+
+PROGRAMME D'APPUI À L'ENTREPRENEURIAT AU BÉNIN (PAEB)
+Composante 3 – Accompagnement technique des PME
+
+
+ANNEXE A
+TERMES DE RÉFÉRENCE ET ETENDUE DES SERVICES
+Mise en place d'outils de gestion de stock,de digitalisation des processus et des dossiers patientset de tableaux de bord financiers automatisés
+
+
+
+
+
+
+
+
+
+
+
+
+
+Bénéficiaire : Clinique Nassiera Too SARL
+Référence : PAEB/NASSIERA/TDR-A10/2026
+Date d'élaboration : 13 avril 2026
+Date limite de dépôt : 15 juin 2026 à 17h00
+Maître d'ouvrage : ADPME / PAEB – Composante 3
+SAE mandatée : FAGUEZ SARL
+Contact dépôt : stefaguezsarl@yahoo.com
+
+
+
+1. CONTEXTE ET JUSTIFICATION
+1.1 Le Programme d'Appui à l'Entrepreneuriat au Bénin (PAEB)
+Le Projet d'Appui à l'Entrepreneuriat au Bénin (PAEB) vise à renforcer les PME locales à travers un accompagnement technique et financier structuré, soutenu par l'Agence française de développement (AFD) et l'Union européenne. Mis en œuvre par l'Agence de Développement des Petites et Moyennes Entreprises (ADPME), il ambitionne de promouvoir une croissance économique durable et la création d'emplois décents, notamment via le déploiement de cohortes annuelles d'entreprises dont la cohorte 2026 a été officiellement lancée le 17 mars 2026.
+Dans une dynamique de transformation structurelle de son économie, le Gouvernement béninois, à travers le Programme d'Action du Gouvernement (PAG) 2021-2026, met un accent particulier sur le développement du secteur privé. Malgré l'existence de plusieurs dispositifs d'appui, ceux-ci restent encore insuffisamment coordonnés et limités en capacité. Le développement de l'entrepreneuriat constitue ainsi un levier stratégique pour stimuler une croissance inclusive, créatrice d'emplois et de valeur ajoutée locale. Le PAEB s'appuie sur la plateforme numérique e-PME Bénin pour centraliser les opportunités de formation, d'accompagnement et d'accès au financement. Cette initiative s'inscrit en cohérence avec les priorités internationales en matière de croissance durable et d'emploi, notamment l'ODD 8 relatif au travail décent et à la croissance économique.
+Le PAEB contribue à renforcer les capacités des micros, petites et moyennes entreprises (MPME), améliorer la coordination de l'écosystème entrepreneurial, densifier le tissu économique local et accroître la compétitivité des entreprises béninoises. Il combine des appuis techniques (formation, coaching, structuration), des mécanismes de financement adaptés, la digitalisation des services aux entreprises et le renforcement des capacités institutionnelles de l'ADPME.
+Dans ce cadre, la SAE FAGUEZ SARL est mandatée par le PAEB pour piloter l'accompagnement technique individualisé des PME sélectionnées dans la région de l'Atacora-Donga. À ce titre, elle orchestre le déploiement des expertises spécialisées nécessaires à la mise en œuvre des plans d'actions de chaque entreprise bénéficiaire, en coordination étroite avec les équipes du projet et les directions des PME concernées.
+1.2 Présentation de l'entreprise bénéficiaire
+La Clinique Nassiera Too SARL est un établissement de soins privé, créé en 2004, situé à Natitingou, chef-lieu du département de l'Atacora. Offrant une gamme pluridisciplinaire de services médicaux et chirurgicaux — médecine générale, chirurgie, gynécologie-obstétrique, hospitalisations, imagerie, analyses biomédicales, soins maternels et urgences 24h/24 — la clinique emploie 53 personnes dont 36 permanents déclarés. Classée en composante 3 (croissance à fort potentiel), le diagnostic note une maturité numérique suffisante de l'établissement pour intégrer rapidement des outils analytiques avancés, facilitant l'adoption de nouvelles pratiques et de solutions structurantes — ce qui constitue un atout majeur pour la réussite de cette prestation.
+1.3 Justification de la prestation
+Le diagnostic opérationnel et de gestion réalisé en Phase 1 du PAEB révèle que la Clinique Nassiera Too dispose d'outils de base pour la gestion financière — logiciels Perfecto et Sage Saari — qui permettent une production régulière d'états financiers. Toutefois, ces outils restent insuffisants pour couvrir l'ensemble des besoins de pilotage d'un établissement en phase de croissance accélérée. Le diagnostic met en évidence des déficits de capacités significatifs dans deux dimensions complémentaires : la gestion opérationnelle et la traçabilité des actes d'une part, le pilotage Medico-financier automatisé d'autre part.
+Sur le plan de la gestion opérationnelle et de la traçabilité, le diagnostic révèle une maîtrise insuffisante des outils permettant de suivre et de sécuriser les flux physiques et administratifs de la clinique. La gestion des stocks de médicaments et de consommables médicaux reste manuelle et peu structurée, exposant l'établissement à des risques de ruptures, de surstock et de gaspillages difficilement quantifiables. Par ailleurs, les dossiers patients ne sont pas encore numérisés : la traçabilité des actes médicaux est limitée, la communication entre services repose sur des supports papier et toute démarche de certification ou d'accréditation future se heurte à cette absence de système d'information clinique structuré. Enfin, la gestion des rendez-vous reste manuelle, générant des files d'attente non maitrisées, des pertes de plages horaires et une sous-exploitation des capacités de consultation disponibles. Les déficits de capacités identifiés sur cette dimension sont les suivants :
+			Capacité insuffisante de suivi et de gestion des stocks de médicaments et de consommables médicaux ;
+			Maîtrise limitée de la traçabilité des actes médicaux et de la gestion des dossiers patients ;
+			Absence d'outils digitaux pour la gestion des rendez-vous et l'optimisation des plannings de consultation ;
+			Faible capacité à standardiser et à sécuriser les processus administratifs et cliniques, constituant un frein majeur à toute certification future.
+Sur le plan du pilotage et de l'aide à la décision, le diagnostic a révélé que les outils de gestion financière existants ne permettent pas de produire des tableaux de bord automatisés suffisamment structurés pour piloter l'activité dans sa globalité. Il n'existe pas d'indicateurs non financiers automatisés (satisfaction des patients, taux d'occupation par service, performance par unité, etc.), ni de système permettant de croiser automatiquement données financières et données opérationnelles en temps réel. La direction ne dispose donc pas d'un outil de visualisation synthétique et automatisé lui permettant d'identifier rapidement les services les plus performants, les postes de coût à optimiser ou les tendances financières à anticiper. Cette lacune limite la capacité de la clinique à prendre des décisions rapides et fondées sur des données fiables, dans un contexte de croissance qui exige une réactivité managériale accrue. Les déficits de capacités identifiés sur cette dimension sont les suivants :
+Capacité insuffisante à produire et exploiter des tableaux de bord financiers automatisés par service ;
+Maîtrise limitée de l'analyse des données opérationnelles pour la prise de décision en temps réel ;
+Absence d'un système intégré permettant de croiser indicateurs financiers et indicateurs de performance médicale et opérationnelle.
+C'est dans ce contexte que la présente prestation se justifie pleinement. Elle vise à doter la Clinique Nassiera Too d'un système d'information intégré couvrant la gestion des stocks, la numérisation des dossiers patients, la gestion digitale des rendez-vous et la production de tableaux de bord financiers automatisés, quatre composantes indissociables pour que la clinique puisse accompagner sa croissance avec la rigueur opérationnelle et le pilotage médico économique qu'exige sa phase de développement.
+2. OBJECTIF DE LA PRESTATION
+La prestation a pour objectif général de renforcer les capacités numériques et de pilotage de la Clinique Nassiera Too par le développement et le déploiement d'une solution logicielle intégrée et sur-mesure, couvrant quatre domaines fonctionnels complémentaires : la gestion des stocks, la numérisation des dossiers patients, la gestion digitale des rendez-vous et la production de tableaux de bord financiers et non financiers automatisés.
+De manière spécifique, la mission devra :
+(i) réaliser un audit des systèmes d'information et des processus opérationnels existants et élaborer le cahier des charges technique (CDCF/T) de la solution à développer ;
+(ii) développer un module de gestion et de suivi des stocks de médicaments et de consommables médicaux, intégrant des alertes de réapprovisionnement automatiques ;
+(iii) concevoir et déployer un système de dossier patient numérique permettant la saisie, le stockage sécurisé et la consultation des informations médicales par les praticiens autorisés ;
+(iv) développer un outil de gestion digitale des rendez-vous accessibles en ligne et sur place, avec gestion des agendas médicaux ;
+(v) concevoir et intégrer des tableaux de bord financiers et opérationnels automatisés par service ;
+(vi) former les utilisateurs à l'ensemble des outils développés et assurer un accompagnement au démarrage.
+3. RESULTATS ATTENDUS ET LIVRABLES
+À l'issue de la prestation, la Clinique Nassiera Too dispose d'une application métier fonctionnelle, propriétaire et maîtrisée par ses équipes, couvrant l'ensemble des quatre domaines fonctionnels :
+Le module de gestion des stocks est opérationnel : les mouvements sont tracés en temps réel, les niveaux de réapprovisionnement sont automatisés et les responsables disposent d'une visibilité permanente sur les disponibilités.
+Le système de dossier patient numérique est fonctionnel : les consultations, actes et prescriptions sont saisis et consultés par voie électronique, avec une traçabilité complète des interventions.
+L'outil de gestion des rendez-vous est opérationnel : intégré aux agendas des praticiens et accessible depuis l'accueil ainsi que via un canal digital externe.
+Les tableaux de bord sont intégrés et automatisés : ils fournissent en temps réel les indicateurs financiers par service et les principaux indicateurs de performance opérationnelle.
+Les livrables attendus du prestataire sont :
+Le rapport d'audit des systèmes existants et le Cahier des Charges Fonctionnel et Technique (CDCF/T) validé ;
+La solution logicielle développée, testée et réceptionnée pour chacun des quatre modules ;
+Les supports de formation et les comptes rendus des sessions utilisateurs ;
+Le rapport de clôture incluant la documentation technique complète et l'intégralité du code source de l'application, garantissant le transfert effectif de la propriété intellectuelle à la Clinique Nassiera Too.
+4. METHODOLOGIE ET APPROCHE
+La mission consiste en la conception, le développement et le déploiement d'une application web métier dédiée, développée sur-mesure pour la Clinique Nassiera Too. L'approche doit garantir la pleine propriété de l'outil par le bénéficiaire. Le prestataire s'appuiera sur des technologies robustes, évolutives et sécurisées, en privilégiant des frameworks permettant une maintenance autonome.
+La mission se déroulera en quatre phases successives :
+Phase 1 : Audit, Cadrage et Spécifications : Cette phase de deux semaines comprend l'analyse des processus existants (logiciels Perfecto et Sage Saari, flux de stocks, parcours patient, gestion des RDV) et l'identification des besoins métiers. Elle aboutit à la rédaction d'un Cahier des Charges Fonctionnel et Technique (CDCF/T) détaillé. Ce document devra être validé conjointement par la direction de la clinique et la SAE FAGUEZ SARL avant tout lancement de la phase de développement.
+Phase 2 : Développement, Tests et Intégration : Cette phase centrale est dédiée au codage et au développement des quatre modules fonctionnels (Stocks, Dossiers Patients, RDV, Tableaux de bord). Le prestataire devra assurer l'interopérabilité entre les modules et la capacité de l'application à intégrer les données historiques de la clinique. Des cycles de tests unitaires et d'intégration seront organisés pour garantir la stabilité de la solution avant le déploiement.
+Phase 3 : Formation et Accompagnement au démarrage (Pilote) : Cette phase comprend des sessions de formation par profil d'utilisateur (accueil, médical, comptabilité, direction), la remise de guides utilisateurs et un accompagnement technique sur site lors de la mise en service réelle. Cette étape vise à assurer une adoption optimale et à corriger d'éventuels ajustements d'ergonomie.
+Phase 4 : Clôture, Transfert de propriété et de compétences : Cette phase marque la réception définitive de la solution. Elle inclut obligatoirement la remise de l'intégralité du code source, de la documentation technique complète (architecture, dictionnaire de données, guide d'administration) et le transfert formel des droits de propriété intellectuelle à la Clinique Nassiera Too. 
+Le prestataire s'engage à garantir la confidentialité et la sécurité des données patients conformément aux réglementations en vigueur.
+5. PROFIL DU PRESTATAIRE RECHERCHE
+Le prestataire doit être une société de services numériques combinant une forte capacité de développement logiciel sur-mesure et une expertise en accompagnement au changement.
+Le profil doit répondre aux exigences suivantes :
+Capacité de développement : Expertise avérée dans la création d'applications web métiers (gestion de flux, bases de données, tableaux de bord) et maîtrise des méthodes de développement modernes.
+Expérience métier : Au moins 5 ans d'expérience dans le secteur de la santé, avec une compréhension fine des processus cliniques (parcours patient, gestion des stocks médicaux, confidentialité des données).
+Dimension humaine : Compétences démontrées en formation et en pédagogie auprès de personnels de santé, afin de garantir une adoption rapide et effective des nouveaux outils numériques.
+Références : Présentation de deux (2) projets de digitalisation de structures de soins ayant abouti à une utilisation pérenne de la solution par les utilisateurs.
+6. CALENDRIER PREVISIONNEL D'EXECUTION
+La mission s'étalera sur une période de cinq (5) mois, de juillet à octobre 2026. Le déploiement de la prestation suivra un séquençage rigoureux en quatre phases clés :
+Juillet 2026, Phase d'Audit et de Spécifications : Analyse des processus métiers, identification des besoins fonctionnels et rédaction du Cahier des Charges Technique et Fonctionnel (CDCF/T). Cette phase se conclut par la validation du document de référence par la direction et la SAE FAGUEZ SARL.
+Juillet – Septembre 2026, Phase de Développement et Tests : Cette phase centrale comprend le codage des quatre modules, l'intégration des données existantes et la réalisation de tests unitaires et d'intégration pour garantir la robustesse et la sécurité de l'application. Des jalons de présentation de l'état d'avancement seront organisés régulièrement.
+Septembre – Octobre 2026, Phase de Déploiement, Formation et Accompagnement : Mise en service de la solution en environnement réel, sessions de formation par profil d'utilisateur et accompagnement technique sur site pour assurer une adoption optimale par le personnel.
+Fin Octobre 2026, Phase de Clôture et Transfert de Propriété : Réception définitive de la solution, remise de la documentation technique complète et transfert formel de l'intégralité du code source et des droits de propriété intellectuelle à la Clinique Nassiera Too.
+7. BUDGET
+L’enveloppe financière allouée à cette activité est de 5 000 000 FCFA imputable au budget du PAEB. Il couvre le cycle complet de développement : analyse, codage, tests, déploiement et transfert de propriété du code source. Le prestataire devra proposer une solution dont l'architecture permet une autonomie totale de la clinique après la fin de la mission
+8. MODALITES DE SOUMISSION DES OFFRES
+Les candidats soumettront un dossier comprenant : une lettre de motivation adressée à la SAE FAGUEZ SARL ; une présentation de la société (domaines d'expertise, équipe technique, références) ; une proposition technique détaillant la solution envisagée pour chacun des quatre modules, la méthodologie de déploiement, l'architecture technique et le plan de formation ; une proposition financière détaillée par module dans la limite du budget alloué ; et au moins deux références de déploiements similaires dans des établissements de santé avec coordonnées des référents.
+Le dossier complet est à déposer au plus tard le 15 juin 2026 à 17h00 au bureau de la SAE FAGUEZ SARL à Cotonou ou par voie électronique à stefaguezsarl@yahoo.com avec pour objet : Offre digitalisation ERP NASSIERA/PAEB/2026.
+Tout dossier incomplet ou reçu après la date limite sera automatiquement écarté. La SAE FAGUEZ SARL n'est pas tenue de motiver ses décisions de sélection.
+
+
+Natitingou, le 13 avril 2026
+Pour la SAE FAGUEZ SARL
+PAEB Composante 3

@@ -1,0 +1,235 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------------------------------------------------------------------------
+   Polices vendorées localement (fonts/) — aucune dépendance réseau.
+   CDCT §8.2 / §23.2 : fonctionnement sans connexion Internet.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../../fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('../../fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@layer base {
+  :root { color-scheme: light; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-slate-100 text-slate-800 antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'tnum' 0;
+  }
+  /* CDCT §10.3 — accessibilité : focus visible partout */
+  :focus-visible { @apply outline-none ring-2 ring-navy-500 ring-offset-2 ring-offset-white; }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply rounded-full bg-slate-300; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
+  [hidden] { display: none !important; }
+}
+
+@layer components {
+  /* --- Boutons ------------------------------------------------------------ */
+  .btn {
+    @apply inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-lg
+           px-3.5 py-2 text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary { @apply bg-navy-900 text-white hover:bg-navy-800 active:bg-navy-950; }
+  .btn-secondary { @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100; }
+  .btn-ghost { @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900; }
+  .btn-success { @apply bg-success-600 text-white hover:bg-success-700; }
+  .btn-warning { @apply bg-warning-500 text-white hover:bg-warning-600; }
+  .btn-danger { @apply bg-danger-600 text-white hover:bg-danger-700; }
+  .btn-sm { @apply px-2.5 py-1.5 text-xs; }
+  .btn-lg { @apply px-5 py-2.5 text-base; }
+  .btn-icon { @apply h-9 w-9 p-0; }
+
+  /* --- Cartes ------------------------------------------------------------- */
+  .card { @apply rounded-xl border border-slate-200 bg-white shadow-card; }
+  .card-head { @apply flex items-center justify-between gap-3 border-b border-slate-200 px-5 py-3.5; }
+  .card-title { @apply text-sm font-semibold text-slate-900; }
+  .card-body { @apply p-5; }
+
+  /* --- Champs ------------------------------------------------------------- */
+  .label { @apply mb-1.5 block text-xs font-medium text-slate-600; }
+  .input, .select, .textarea {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
+           placeholder:text-slate-400 focus:border-navy-500 focus:outline-none focus:ring-1 focus:ring-navy-500
+           disabled:bg-slate-50 disabled:text-slate-500;
+  }
+  .select { @apply cursor-pointer pr-8; }
+  .textarea { @apply min-h-[80px] resize-y; }
+  .input-error { @apply border-danger-400 focus:border-danger-500 focus:ring-danger-500; }
+
+  /* --- Liste déroulante avec recherche ------------------------------------
+     Le panneau est rendu dans <body> en position fixe : aucune modale ni
+     aucun tiroir ne peut le rogner.
+  ------------------------------------------------------------------------- */
+  .combo { @apply relative block w-full; }
+  .combo-input {
+    @apply flex w-full items-center justify-between gap-2 rounded-lg border border-slate-300 bg-white
+           px-3 py-2 text-left text-sm text-slate-900 transition-colors hover:border-slate-400
+           focus:border-navy-500 focus:outline-none focus:ring-1 focus:ring-navy-500
+           disabled:bg-slate-50 disabled:text-slate-500;
+  }
+  .combo-input-sm { @apply py-1.5 text-xs; }
+  .combo.input-error .combo-input { @apply border-danger-400; }
+  .combo-panel {
+    @apply fixed z-[70] flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-pop;
+  }
+  .combo-search {
+    @apply w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-8 pr-2 text-sm
+           placeholder:text-slate-400 focus:border-navy-500 focus:outline-none focus:ring-1 focus:ring-navy-500;
+  }
+  .combo-list { @apply min-h-0 flex-1 overflow-y-auto p-1; }
+  .combo-option {
+    @apply flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-slate-700;
+  }
+  .combo-option-active { @apply bg-navy-50 text-navy-900; }
+  .combo-option-selected { @apply font-medium text-navy-900; }
+  .field-error { @apply mt-1 text-xs text-danger-600; }
+  .checkbox { @apply h-4 w-4 cursor-pointer rounded border-slate-300 text-navy-900 focus:ring-navy-500; }
+
+  /* --- Badges / statuts --------------------------------------------------- */
+  .badge { @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium; }
+  .badge-neutral { @apply bg-slate-100 text-slate-700; }
+  .badge-navy { @apply bg-navy-50 text-navy-800; }
+  .badge-success { @apply bg-success-50 text-success-700; }
+  .badge-warning { @apply bg-warning-50 text-warning-700; }
+  .badge-danger { @apply bg-danger-50 text-danger-700; }
+  .badge-info { @apply bg-info-50 text-info-700; }
+
+  /* --- Tableaux ----------------------------------------------------------- */
+  .tbl { @apply w-full border-collapse text-sm; }
+  .tbl thead th {
+    @apply sticky top-0 z-10 border-b border-slate-200 bg-slate-50 px-3 py-2.5 text-left
+           text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+  .tbl tbody td { @apply border-b border-slate-100 px-3 py-2.5 align-middle text-slate-700; }
+  .tbl tbody tr:hover { @apply bg-navy-50/40; }
+  .tbl tbody tr[data-selected='true'] { @apply bg-navy-50; }
+  .th-sortable { @apply cursor-pointer select-none hover:text-slate-800; }
+
+  /* --- Navigation ---------------------------------------------------------- */
+  .nav-link {
+    @apply flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-navy-100
+           transition-colors hover:bg-white/10 hover:text-white;
+  }
+  .nav-link-active { @apply bg-white/15 font-medium text-white; }
+  .nav-group-label { @apply px-3 pb-1 pt-4 text-[10px] font-semibold uppercase tracking-widest text-navy-300/80; }
+
+  /* --- Méga-menu horizontal (ruban) ---------------------------------------
+     Onglets de domaine sur fond marine, panneau blanc en dessous : l'onglet
+     actif se fond dans le panneau, comme le ruban de Microsoft Word.
+  ------------------------------------------------------------------------- */
+  .ribbon-tab {
+    @apply inline-flex shrink-0 items-center gap-2 rounded-t-lg px-2.5 py-2 text-sm
+           font-medium text-navy-100 transition-colors hover:bg-white/10 hover:text-white sm:px-3.5;
+  }
+  .ribbon-tab-active { @apply bg-white font-semibold text-navy-900 hover:bg-white hover:text-navy-900; }
+  /* Domaine de la page affichée. Le `:not()` évite la collision avec l'onglet
+     ouvert, dont le fond est blanc : sans lui, le texte blanc y disparaîtrait. */
+  .ribbon-tab-current:not(.ribbon-tab-active) {
+    @apply font-semibold text-white;
+    box-shadow: inset 0 -3px 0 0 rgb(255 255 255 / 0.85);
+  }
+  .ribbon-tool {
+    @apply inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-navy-100
+           transition-colors hover:bg-white/10 hover:text-white;
+  }
+  /* Un module par rangée : intitulé à gauche, écrans en pastilles à droite. */
+  .ribbon-row {
+    @apply flex flex-col gap-0.5 border-b border-slate-100 py-1.5 last:border-0
+           md:flex-row md:items-start md:gap-2 md:py-1;
+  }
+  .ribbon-row-head {
+    @apply flex w-full shrink-0 items-center gap-2 rounded-md px-2 py-1 text-xs font-semibold
+           uppercase tracking-wide text-slate-500 transition-colors hover:bg-navy-50 hover:text-navy-800
+           md:w-[15rem];
+  }
+  .ribbon-chips { @apply flex min-w-0 flex-1 flex-wrap items-center gap-1 pl-2 md:pl-0; }
+  .ribbon-chip {
+    @apply inline-flex max-w-[15rem] items-center gap-1.5 rounded-md px-2 py-1.5 text-[13px]
+           text-slate-600 transition-colors hover:bg-navy-50 hover:text-navy-900 md:py-1;
+  }
+  .ribbon-chip-active { @apply bg-navy-900 font-medium text-white hover:bg-navy-900 hover:text-white; }
+  .ribbon-shortcut {
+    @apply inline-flex shrink-0 items-center gap-2 rounded-lg px-2.5 py-1.5 text-[13px] font-medium
+           text-navy-100 transition-colors hover:bg-white/10 hover:text-white;
+  }
+
+  /* --- Onglets ------------------------------------------------------------ */
+  .tab {
+    @apply -mb-px cursor-pointer whitespace-nowrap border-b-2 border-transparent px-3.5 py-2.5
+           text-sm font-medium text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-800;
+  }
+  .tab-active { @apply border-navy-900 text-navy-900; }
+
+  /* --- KPI ---------------------------------------------------------------- */
+  /* `min-w-0` et la coupure « anywhere » : un montant composé en espaces
+     insécables (« 12 725 000 FCFA ») ne se coupe jamais de lui-même. Dans une
+     carte étroite — tiroir sur téléphone, grille à trois colonnes — il
+     débordait de la carte et faisait défiler tout le tiroir en largeur. */
+  .kpi { @apply min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-card transition-shadow hover:shadow-raise; }
+  .kpi-label { @apply text-xs font-medium text-slate-500; }
+  .kpi-value { @apply mt-1 text-2xl font-semibold tracking-tight text-slate-900; overflow-wrap: anywhere; }
+  /* Dans un tiroir sur petit écran, une grille de KPI à deux ou trois
+     colonnes donne des cartes d'un tiers de 400 px où aucun montant ne tient :
+     les cartes s'y empilent (le sélecteur l'emporte sur `grid-cols-N`). */
+  @media (max-width: 639px) {
+    .drawer-backdrop .grid:has(> .kpi) { grid-template-columns: minmax(0, 1fr); }
+    .drawer-backdrop .kpi { @apply p-3; }
+  }
+
+  .skeleton { @apply animate-pulse rounded bg-slate-200; }
+}
+
+@layer utilities {
+  .num { font-variant-numeric: tabular-nums; }
+  .scroll-shadow { background-attachment: local, local, scroll, scroll; }
+}
+
+/* ---------------------------------------------------------------------------
+   IMPRESSION DES ÉTATS OFFICIELS — CDCT §4.2 / §21
+   Entête clinique + pied de page normalisés, chrome applicatif masqué.
+--------------------------------------------------------------------------- */
+#print-root { display: none; }
+
+@media print {
+  @page { size: A4; margin: 0; }
+  html, body { background: #fff !important; }
+  .no-print, #app-menubar, #app-topbar, #app-ribbon, #toast-host, .drawer-backdrop, .print-chrome { display: none !important; }
+  #app-main { margin: 0 !important; padding: 0 !important; }
+  .print-only { display: block !important; }
+  .card, .kpi { box-shadow: none !important; border-color: #cbd5e1 !important; break-inside: avoid; }
+  .tbl thead { display: table-header-group; }
+  .tbl tbody tr { break-inside: avoid; }
+  a[href]::after { content: none !important; }
+
+  /* Impression d'un état officiel : seule la feuille A4 est rendue. */
+  body.printing > *:not(#print-root) { display: none !important; }
+  body.printing #print-root { display: block !important; }
+  #print-root .print-sheet {
+    box-shadow: none !important;
+    margin: 0 !important;
+    break-after: page;
+  }
+  #print-root .print-sheet:last-child { break-after: auto; }
+  .print-entete, .print-pied { break-inside: avoid; }
+}
+.print-only { display: none; }
