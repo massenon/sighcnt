@@ -5224,7 +5224,6 @@ async function viderMessages(page) {
         echographiste: 'dash-echographiste',
         surveillant: 'dash-surveillant',
         assistant_comptable: 'dash-assistant-comptable',
-        biomedical: 'dash-biomedical',
       };
       const out = {};
       Object.keys(attendus).forEach((r) => {
@@ -5284,10 +5283,10 @@ async function viderMessages(page) {
       const ok = await page.evaluate(() => !!document.querySelector('#page-content > *'));
       if (ok) montes++;
     }
-    /* Deux tableaux sont FERMÉS par activité — le poste d ingénieur
-       biomédical n existe pas, et le compte Pharmacien est archivé. Exiger
-       qu ils se montent reviendrait à demander qu une activité close
-       continue de s afficher. */
+    /* Un tableau est FERMÉ par activité — le compte Pharmacien est archivé.
+       Exiger qu il se monte reviendrait à demander qu une activité close
+       continue de s afficher. Le rôle d ingénieur biomédical, lui, est
+       SUPPRIMÉ (décision de la Direction du 20/10/2026) : plus de tableau. */
     verifier('Les tableaux de bord OUVERTS se montent tous',
       montes === tousLesDash.length, montes + ' / ' + tousLesDash.length);
 
@@ -5318,9 +5317,6 @@ async function viderMessages(page) {
       ['dash-echographiste', 'echographiste', 1],
       ['dash-surveillant', 'surveillant', 3],
       ['dash-assistant-comptable', 'assistant_comptable', 3],
-      /* Le poste d ingénieur biomédical n existe pas : le rôle est archivé
-         et son tableau fermé par activité. Exiger ses parcours reviendrait à
-         demander à un poste inexistant de porter un mode d emploi. */
       ['dash-ambulancier', 'ambulancier', 1],
     ];
     let chaines = 0, etapes = 0, relais = 0, fermees = 0, manquants = [];
@@ -5990,9 +5986,10 @@ async function viderMessages(page) {
       return {
         biologiste: labels.some((l) => /Biologiste médical/.test(l)),
         laborantin: labels.some((l) => /Laborantin/.test(l)),
-        /* Le rôle reste au manifeste, marqué RETIRÉ (RG-14 : rien ne se supprime) ;
-           c'est l'annuaire des comptes qui ne doit plus le porter. */
+        /* Le rôle est SUPPRIMÉ (Direction, 20/10/2026) : ni au manifeste, ni à
+           l'annuaire des comptes, ni en page de tableau de bord. */
         biomedical: comptes.some((c) => /biom/i.test(c)),
+        biomedicalAuManifeste: !!window.SIGH.nav.ROLES.biomedical || !!window.SIGH.nav.get('dash-biomedical'),
         dispensaire: comptes.some((c) => /Dispensaire/i.test(c)),
         troisProfils: comptes.some((c) => /AHOHOU/.test(c)) && comptes.some((c) => /Surveillant/.test(c))
           && comptes.some((c) => /Assistant de Direction/.test(c)),
@@ -6008,7 +6005,8 @@ async function viderMessages(page) {
     });
     verifier('« Laborantin » est devenu « Biologiste médical » au manifeste des rôles',
       conn.biologiste && !conn.laborantin);
-    verifier('Le poste d’ingénieur biomédical a disparu de l’annuaire des comptes', conn.biomedical === false);
+    verifier('Le rôle d’ingénieur biomédical est supprimé : ni annuaire, ni manifeste, ni tableau de bord',
+      conn.biomedical === false && conn.biomedicalAuManifeste === false);
     verifier('Le caissier est « Dispensaire (Pharmacie) » à l’annuaire', conn.dispensaire, conn.comptes + ' compte(s)');
     verifier('Les trois profils créés ouvrent une session (annuaire)', conn.troisProfils, conn.comptes + ' compte(s)');
     verifier('La page de connexion ne porte plus de sélecteur de profil de démonstration',

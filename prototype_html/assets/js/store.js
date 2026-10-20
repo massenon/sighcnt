@@ -86,7 +86,7 @@
      la vague 67 a bougé les deux premiers et laissé le troisième à 61, si
      bien qu'un poste hydraté depuis la base ne se ré-amorçait jamais.
      Incrémenter ce nombre, et lui seul, à toute modification de forme. */
-  var VERSION = 64;
+  var VERSION = 65;
   var db = null;
   var listeners = {};
 
@@ -470,16 +470,6 @@
      humaines — personnel, contrats, badges, congés, sanctions — quand son
      métier en demande cinq : le planning et les présences. */
   var droitsSurveillant = fermerTout({});
-
-  /* L'ingénieur biomédical entretient les automates et le parc technique. Il
-     VOIT le laboratoire pour connaître les analyses en cours sur les appareils
-     dont il a la charge, mais ne rend AUCUN résultat : la validation biologique
-     engage la responsabilité du biologiste, pas celle du technicien qui a
-     étalonné la machine. Il tient la maintenance (M13) et voit le stock des
-     réactifs et consommables. */
-  var droitsBiomedical = fermerTout({
-    M5: VOIR, M6: VOIR, M7: VOIR, M13: EDITER, RAP: VOIR,
-  });
 
   /* L'assistant comptable, d'après ses 30 activités : livres de compte,
      rapprochements, recouvrement des créances chez les particuliers ET les
@@ -2769,29 +2759,6 @@
           motif: 'Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, '
             + 'rien du dossier au-delà de l’identité du patient transporté.',
         },
-        {
-          /* ARCHIVÉ : le poste n'existe pas. Le rôle est conservé — un rôle
-             s'archive, il ne se supprime jamais (RG-14), et des fiches de
-             maintenance portent sa signature — mais il n'ouvre plus de
-             session. Ses droits sur le parc technique passent à l'agent
-             administratif : un archivage va toujours avec son transfert. */
-          id: 'RBAC11', role: 'biomedical', statut: 'archive', nouveau: true,
-          transfereA: 'agentadmin',
-          libelle: 'Ingénieur biomédical', libelleCourt: 'Ing. biomed.', couleur: 'info',
-          accueil: 'dash-biomedical',
-          droits: droitsBiomedical,
-          droitsEcrans: {
-            /* Il voit les demandes et l'activité des automates, jamais les
-               RÉSULTATS : un résultat n'est opposable qu'après validation
-               biologique, et cette validation n'est pas la sienne. */
-            'm5-resultats': { voir: false },
-          },
-          definiLe: '2026-08-25', definiPar: 'Direction',
-          motif: 'Rôle créé le 25/08/2026 puis laissé SANS TITULAIRE le 26/08 : la Direction a '
-            + 'confirmé que KINNOU A. Ganiou reste au laboratoire comme biologiste médical chef de '
-            + 'service. Le rôle subsiste — la clinique pourra le pourvoir — mais personne ne le porte.',
-          sansTitulaire: true,
-        },
       ],
       /* Emplacements de rangement — rayons et casiers. Amorcés depuis ce que
          les produits portent déjà : le référentiel ne part pas de zéro, il
@@ -2846,13 +2813,6 @@
          *
          * Rien n'est supprimé : rouvrir l'activité rend les écrans en l'état.
          * ============================================================== */
-        { id: 'ACT-BIOMED', statut: 'actif', actif: false,
-          libelle: 'Poste d’ingénieur biomédical',
-          ecrans: ['dash-biomedical'],
-          motif: 'Poste inexistant à la clinique. Le rôle avait été créé sur une lecture erronée de '
-            + 'la liste des comptes ; la Direction a rectifié le 27/08/2026 — l’agent concerné est '
-            + 'biologiste médical. Le parc technique reste ouvert, tenu par l’administration.',
-          fermeLe: '2026-08-27', fermePar: 'Direction' },
 
         {
           id: 'MOD01', code: 'M5-BANQUE', libelle: 'Banque de sang', module: 'M5',

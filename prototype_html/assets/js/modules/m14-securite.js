@@ -55,7 +55,7 @@
       var role = mapping[e.nomComplet];
       if (!role) {
         role = { medecin: 'medecin', infirmier: 'infirmier', sage_femme: 'infirmier',
-          aide_soignant: 'infirmier', tsl: 'laborantin', biomedical: 'biomedical', dispensatrice: 'caissier',
+          aide_soignant: 'infirmier', tsl: 'laborantin', biomedical: 'laborantin', dispensatrice: 'caissier',
           caissiere: 'caissier', accueil: 'reception', comptable: 'comptable',
           stock: 'stock', securite: 'agentadmin', entretien: 'agentadmin',
           chauffeur: 'ambulancier', direction: 'direction' }[e.fonction] || 'reception';

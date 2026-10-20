@@ -59,7 +59,7 @@ const PROFILS = [
   ['comptable', 'comptable'], ['da', 'direction'], ['dm', 'medecin'],
   ['aide_soignant', 'aide_soignant'], ['echographiste', 'medecin'],
   ['surveillant', 'infirmier'], ['assistant_comptable', 'comptable'],
-  ['biomedical', 'stock'], ['agentadmin', 'entretien'], ['ambulancier', 'chauffeur'],
+  ['agentadmin', 'entretien'], ['ambulancier', 'chauffeur'],
 ];
 
 /* Ce qu'on considère comme une commande d'ÉCRITURE. */

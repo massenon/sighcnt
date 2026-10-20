@@ -76,7 +76,6 @@
        ARCHIVÉ : il n'ouvre plus de session et disparaît des écrans.
        Le parc technique, lui, reste : c'est un besoin réel, tenu par
        l'administration. */
-    biomedical: { id: 'biomedical', label: 'Ingénieur biomédical', short: 'Biomédical', color: 'navy', home: 'dash-biomedical', retire: true },
   };
 
   var ALL = '*';
@@ -574,7 +573,7 @@
                Ouvert au biomédical et au laboratoire — c'est le laboratoire
                qui constate qu'un automate ne répond plus. */
             { id: 'm13-maintenance', label: 'Parc technique & maintenance', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
+              roles: ['admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
             /* Phase 10 — le questionnaire est une donnée : le formulaire naît
                du modèle (principe KoboCollect, hors ligne). L'accueil
                recueille, la direction lit. */
@@ -760,8 +759,6 @@
                L'intitulé cesse de nommer un rôle qui n'ouvre plus de session. */
             { id: 'dash-pharmacien', label: 'Pharmacie', icon: 'pill',
               roles: ['caissier', 'stock', 'da', 'admin', 'direction'] },
-            { id: 'dash-biomedical', label: 'Ingénieur biomédical', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'dm'] },
             { id: 'dash-laborantin', label: 'Biologiste médical', icon: 'flask-conical', roles: ['laborantin', 'admin'] },
             { id: 'dash-stock', label: 'Gestionnaire de stock', icon: 'package', roles: ['stock', 'da', 'admin'] },
             { id: 'dash-caissier', label: 'Caisse', icon: 'banknote', roles: ['caissier', 'admin'] },
