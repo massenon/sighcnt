@@ -12,7 +12,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours,
       L = global.SIGH.labo;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function patients() { return S.collection('patients').active(); }
   function laborantins() {
@@ -3319,7 +3319,7 @@
     description: 'Gestion des poches de sang par groupe, dates de péremption et demandes de transfusion.',
     render: function (root) {
       var col = S.collection('poches', { module: 'M5', entite: 'PocheSang' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('poches')) {
         var rnd = C.seeded(701);
         D.GROUPES_SANGUINS.forEach(function (g) {
           var n = C.between(rnd, 2, 9);
@@ -3434,7 +3434,7 @@
     description: 'Registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément.',
     render: function (root) {
       var col = S.collection('donneurs', { module: 'M5', entite: 'DonneurSang' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('donneurs')) {
         var rnd = C.seeded(809);
         var pats = patients();
         for (var i = 0; i < 60; i++) {

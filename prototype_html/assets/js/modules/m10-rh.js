@@ -16,7 +16,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function personnel() { return S.collection('personnel').active(); }
   function planning() { return S.collection('planning').active(); }
@@ -499,7 +499,7 @@
     description: 'Contrats de travail des agents : nature, durée, période d’essai et échéances.',
     render: function (root) {
       var col = S.collection('contrats', { module: 'M10', entite: 'Contrat' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('contrats')) {
         var rnd = C.seeded(1217);
         personnel().forEach(function (e, i) {
           var cdd = rnd() > 0.7;
@@ -1604,7 +1604,7 @@
     regle: 'Le régime observé prévoit <strong>2 jours de repos hebdomadaire</strong> et <strong>10 jours de congés annuels</strong>.',
     render: function (root) {
       var col = S.collection('conges', { module: 'M10', entite: 'Conge' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('conges')) {
         var rnd = C.seeded(1423);
         personnel().slice(0, 22).forEach(function (e, i) {
           var debut = C.addDays(AUJ, C.between(rnd, -120, 60));
@@ -3005,7 +3005,7 @@
     description: 'Intervenants extérieurs rémunérés à l’acte : circoncision, hydrotubation, accouchement, analyses, hospitalisation.',
     render: function (root) {
       var col = S.collection('prestataires', { module: 'M10', entite: 'PrestataireExterne' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('prestataires')) {
         var rnd = C.seeded(1531);
         var ACTES = ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'];
         for (var i = 0; i < 14; i++) {

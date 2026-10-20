@@ -10,7 +10,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
 
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* --- Accès mémorisés aux collections ------------------------------------- */
   function col(n) { return S.collection(n); }

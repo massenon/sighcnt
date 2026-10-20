@@ -9,7 +9,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function patients() { return S.collection('patients').active(); }
   function femmes() { return patients().filter(function (p) { return p.sexe === 'F'; }); }

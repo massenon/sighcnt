@@ -9,7 +9,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* Objets d'appel relevés au standard — liste administrable. */
   var OBJETS_APPEL = ['Prise de rendez-vous', 'Report de rendez-vous', 'Demande de résultat d’analyse',
@@ -25,6 +25,8 @@
       return { value: p.code, label: p.code + ' — ' + p.nom + ' ' + p.prenom };
     });
   }
+  /** Le champ « Date et heure » part de l'instant présent, à l'heure LOCALE. */
+  function maintenantLocal() { return C.isoLocal(); }
   function optionsMedecins() {
     return medecins().map(function (m) { return { value: m.nomComplet, label: m.nomComplet }; });
   }
@@ -661,7 +663,7 @@
             name: 'type', label: 'Nature', type: 'select', required: true,
             options: ['Consultation', 'Contrôle', 'Urgence'],
           },
-          { name: 'date', label: 'Date et heure', type: 'datetime-local', required: true, value: new Date().toISOString().slice(0, 16) },
+          { name: 'date', label: 'Date et heure', type: 'datetime-local', required: true, value: maintenantLocal() },
           { name: 'motif', label: 'Motif', required: true, col: 'full' },
           { name: 'tarif', label: 'Tarif prévu (FCFA)', type: 'money', min: 0 },
           { name: 'notifier', label: 'Notifier le praticien', type: 'checkbox', value: true },
@@ -688,6 +690,18 @@
                 completerPatient(v);
                 var res = S.collection('consultations', { module: 'M2', entite: 'Consultation' }).insert(v);
                 m.close();
+                /* LA GRILLE S'OUVRE SUR LE RENDEZ-VOUS QU'ON VIENT DE PRENDRE. Un
+                   rendez-vous pris hors de la fenêtre affichée disparaissait à
+                   l'enregistrement — enregistré, mais introuvable. La fenêtre
+                   s'étend jusqu'à lui ; au-delà de trente et un jours, elle se
+                   recentre dessus, et le message dit où il se trouve. */
+                var jourRdv = C.iso(v.date);
+                if (jourRdv < debutSel.value) debutSel.value = jourRdv;
+                if (jourRdv > finSel.value) finSel.value = jourRdv;
+                if (C.daysBetween(C.toDate(debutSel.value), C.toDate(finSel.value)) > 30) {
+                  debutSel.value = C.iso(C.addDays(C.toDate(v.date), -2));
+                  finSel.value = C.iso(C.addDays(C.toDate(v.date), 4));
+                }
                 redessiner();
                 if (notifier) {
                   U.alerter('Rendez-vous transmis à ' + v.medecin + '.', {
@@ -784,7 +798,7 @@
         help: 'Laisser vide si la personne n’est pas un patient — remplir alors les champs ci-dessous.' },
     ].concat(champsNonEnregistre()).concat([
       { name: '_sectionPassage', type: 'section', label: 'Le passage' },
-      { name: 'date', label: 'Heure d’arrivée', type: 'datetime-local', required: true, value: new Date().toISOString().slice(0, 16) },
+      { name: 'date', label: 'Heure d’arrivée', type: 'datetime-local', required: true, value: maintenantLocal() },
       { name: 'motif', label: 'Motif du passage', required: true, col: 'full' },
       {
         name: 'type', label: 'Nature', type: 'select', required: true,
@@ -2192,7 +2206,7 @@
           value: dossierVise ? dossierVise.patientCode : null },
         { name: 'medecin', label: 'Praticien', type: 'select', required: true, options: optionsPraticiensDossier(),
           value: dossierVise ? dossierVise.soignant : null },
-        { name: 'date', label: 'Date et heure', type: 'datetime-local', required: true, value: new Date().toISOString().slice(0, 16) },
+        { name: 'date', label: 'Date et heure', type: 'datetime-local', required: true, value: maintenantLocal() },
       ], {});
 
       var fSynthese = U.form([
@@ -3027,7 +3041,7 @@
     var entete = U.form([
       { name: 'patientCode', label: 'Dossier patient', type: 'select', required: true, options: optionsPatients(), col: 'full' },
       { name: 'medecin', label: 'Médecin prescripteur', type: 'select', required: true, options: optionsMedecins() },
-      { name: 'date', label: 'Date et heure', type: 'datetime-local', required: true, value: new Date().toISOString().slice(0, 16) },
+      { name: 'date', label: 'Date et heure', type: 'datetime-local', required: true, value: maintenantLocal() },
       { name: 'diagnostic', label: 'Diagnostic', col: 'full' },
       { name: 'urgent', label: 'Prescription urgente' },
     ].map(function (f) { return f.name === 'urgent' ? Object.assign({ type: 'checkbox' }, f) : f; }), {});

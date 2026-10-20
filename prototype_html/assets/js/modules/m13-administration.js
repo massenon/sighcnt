@@ -11,7 +11,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit,
       N = global.SIGH.nav;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* États d'une intervention d'ambulance — lus aussi par le tableau de bord
      de l'ambulancier (« demandées ou en cours »). */
@@ -263,7 +263,7 @@
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ];
       }
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('evenementsEtablissement')) {
         var rnd = C.seeded(2713);
         var EVTS = [
           ['Journée de vaccination', 'Santé publique'], ['Campagne de dépistage du diabète', 'Santé publique'],
@@ -398,7 +398,7 @@
     description: 'Programmation annuelle des activités de la clinique, par axe et par trimestre.',
     render: function (root) {
       var col = S.collection('planAnnuel', { module: 'M13', entite: 'PlanAnnuelTravail' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('planAnnuel')) {
         var ACTIONS = [
           ['Déploiement du SIGH-CNT', 'Digitalisation', 1, 4, 'En cours'],
           ['Numérisation des dossiers patients actifs', 'Digitalisation', 2, 4, 'En cours'],

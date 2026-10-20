@@ -25,6 +25,8 @@ const { spawn, spawnSync } = require('child_process');
 
 const PORT_PHP = Number(process.env.SIGH_PORT_PHP || 8099);
 const BASE_TEST = process.env.SIGH_BASE_TEST || 'sigh_prototype_test';
+/* La date du jeu de démonstration : « aujourd'hui » pour toute page ouverte par un banc. */
+const HORLOGE_BANC = { annee: 2026, mois: 7, jour: 16 };
 
 /** Le compte dont les bancs endossent l'identité par défaut. */
 const SESSION_BANC = {
@@ -143,7 +145,7 @@ async function poserSession(page, session) {
     _jetonBanc = (r && r.jeton) || null;
   }
   if (_jetonBanc) s.jeton = _jetonBanc;
-  await page.evaluateOnNewDocument((sess, jeton) => {
+  await page.evaluateOnNewDocument((sess, jeton, horloge) => {
     try {
       if (!localStorage.getItem('sigh-cnt:session')) {
         localStorage.setItem('sigh-cnt:session', JSON.stringify(sess));
@@ -152,7 +154,37 @@ async function poserSession(page, session) {
         localStorage.setItem('sigh-cnt:jeton', jeton);
       }
     } catch (e) { /* stockage indisponible : la page le dira */ }
-  }, s, _jetonBanc);
+    /* L'HORLOGE DU BANC EST DÉCALÉE SUR LA DATE DU JEU (vague 68, 20/10/2026).
+       L'application lit l'horloge RÉELLE (`C.aujourdhui()`) ; le jeu de
+       démonstration, lui, est daté du 16/08/2026 et c'est à cette date que les
+       1 091 vérifications ont été écrites. Le banc DÉCALE donc le temps de la
+       page pour qu'« aujourd'hui » tombe ce jour-là — le temps continue de
+       s'écouler (identifiants, minuteries, journal), seul le point de départ
+       change. Un scénario peut déplacer l'horloge par `window.__SIGH_HORLOGE`. */
+    try {
+      var Reel = window.Date;
+      var etat = { decalage: new Reel(horloge.annee, horloge.mois, horloge.jour, 12, 0, 0).getTime() - Reel.now() };
+      function maintenant() { return Reel.now() + etat.decalage; }
+      function Decalee() {
+        if (!(this instanceof Decalee)) return String(new Reel(maintenant()));
+        if (arguments.length === 0) return new Reel(maintenant());
+        return new (Function.prototype.bind.apply(Reel, [null].concat(Array.prototype.slice.call(arguments))))();
+      }
+      Decalee.prototype = Reel.prototype;
+      Decalee.now = maintenant;
+      Decalee.UTC = Reel.UTC;
+      Decalee.parse = Reel.parse;
+      window.Date = Decalee;
+      window.__SIGH_HORLOGE = {
+        reel: Reel,
+        instant: maintenant,
+        decaler: function (ms) { etat.decalage += ms; },
+        poser: function (annee, mois, jour) {
+          etat.decalage = new Reel(annee, mois, jour, 12, 0, 0).getTime() - Reel.now();
+        },
+      };
+    } catch (e) { /* sans horloge décalée, la page tourne à l'heure réelle */ }
+  }, s, _jetonBanc, HORLOGE_BANC);
 }
 
-module.exports = { PORT_PHP, BASE_TEST, SESSION_BANC, demarrerPhp, banc, relayer, poserSession, connecter };
+module.exports = { PORT_PHP, BASE_TEST, SESSION_BANC, HORLOGE_BANC, demarrerPhp, banc, relayer, poserSession, connecter };

@@ -170,6 +170,20 @@
     return a + ' an' + (a > 1 ? 's' : '') + (ageEstDeclare(rec) ? ' (âge déclaré)' : '');
   }
   function iso(d) { var x = toDate(d); return x.getFullYear() + '-' + pad(x.getMonth() + 1) + '-' + pad(x.getDate()); }
+  /* LA DATE DU JOUR VIT ICI, ET NULLE PART AILLEURS (vague 68, 20/10/2026).
+     Dix-neuf modules portaient `var AUJ = new Date(2026, 7, 16)` — la date du
+     jeu de démonstration, figée pour que les tableaux de bord aient quelque
+     chose à montrer. Conséquence vécue : un rendez-vous pris aujourd'hui tombait
+     hors de la fenêtre de l'agenda (du 14 au 20 août) et ne se retrouvait nulle
+     part. L'application lit l'horloge RÉELLE ; c'est le BANC D'ESSAI qui décale
+     l'horloge sur la date du jeu (build/_banc.js), jamais le code livré. */
+  function aujourdhui() { return new Date(); }
+  /** Valeur d'un champ `datetime-local` à l'heure LOCALE — `toISOString()` rend
+   *  l'heure UTC, et le Bénin est à UTC+1 : l'heure proposée était fausse d'une heure. */
+  function isoLocal(d) {
+    var x = toDate(d || aujourdhui());
+    return iso(x) + 'T' + pad(x.getHours()) + ':' + pad(x.getMinutes());
+  }
   function moisAnnee(d) { var x = toDate(d); return MOIS[x.getMonth()] + ' ' + x.getFullYear(); }
 
   /** Ancienneté / il y a X — pour timelines et journaux d'audit. */
@@ -506,6 +520,7 @@
     ageDe: ageDe, ageTexte: ageTexte, ageEstDeclare: ageEstDeclare,
     params: params, ancre: ancre,
     dateHeure: dateHeure, iso: iso, moisAnnee: moisAnnee, ilYA: ilYA,
+    aujourdhui: aujourdhui, isoLocal: isoLocal,
     addDays: addDays, daysBetween: daysBetween, toDate: toDate,
     PERIODES: PERIODES, bornes: bornes, bornesLibres: bornesLibres,
     dansBornes: dansBornes, libellePeriode: libellePeriode,

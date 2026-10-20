@@ -11,7 +11,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       N = global.SIGH.nav, P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   var NIVEAUX = ['Consultation', 'Création', 'Modification', 'Validation', 'Suppression', 'Impression'];
 
@@ -1538,7 +1538,7 @@
         return o > 1024 * 1024 ? (o / 1024 / 1024).toFixed(1) + ' Mo' : Math.round(o / 1024) + ' Ko';
       }
 
-      if (!colFichiers.all().length) {
+      if (!colFichiers.all().length && S.amorcable('fichiersSauvegarde')) {
         var rndB = C.seeded(88);
         for (var fb = 0; fb < 6; fb++) {
           var dB = C.addDays(AUJ, -fb * 7);

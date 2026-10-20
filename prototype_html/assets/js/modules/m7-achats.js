@@ -14,7 +14,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit,
       PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   var SERVICES_DEMANDEURS = ['Pharmacie d’urgence', 'Laboratoire', 'Hospitalisation', 'Maternité',
     'Bloc opératoire', 'Accueil', 'Administration', 'Entretien'];

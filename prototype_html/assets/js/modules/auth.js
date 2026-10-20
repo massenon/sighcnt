@@ -138,59 +138,12 @@
          Sage-femme et aide-soignante figurent explicitement — la Direction les
          distingue de l'infirmier, et c'est cette distinction qui commande
          l'accès aux résultats et l'exécution des soins. */
-      /* LA LISTE DES POSTES VIENT DE LA BASE (03/10/2026). Elle était écrite
-         ici, en dur, et divergeait du jour où un compte était créé par
-         « Utilisateurs ». Elle est désormais lue par api/auth.php, qui
-         l'extrait de la table `utilisateurs` — sans aucun secret : c'est un
-         annuaire, pas une clé. */
-      var comptes = [
-        { role: 'admin', nom: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui', fonction: 'direction', secteur: 'ADM' },
-        { role: 'da', nom: 'TAKI Alimatou', identifiant: 'a.taki', fonction: 'direction', secteur: 'ADM' },
-        { role: 'medecin', nom: 'YENI M’PO Florent', identifiant: 'f.yeni', fonction: 'medecin', secteur: 'MGE' },
-        { role: 'infirmier', nom: 'BADO BANI A. B. Zoulehath', identifiant: 'z.badobani', fonction: 'sage_femme', secteur: 'MAT' },
-        { role: 'infirmier', nom: 'GARBA Yahouza', identifiant: 'y.garba', fonction: 'infirmier', secteur: 'SUR' },
-        { role: 'aide_soignant', nom: 'TEPA Séraphine', identifiant: 's.tepa', fonction: 'aide_soignant', secteur: 'HOS' },
-        /* LE BIOLOGISTE MÉDICAL — deux agents portent la fonction, celui-ci est
-           chef de service. Le rôle s'appelle « laborantin » au technique ; son
-           LIBELLÉ, celui que l'agent lit, est « Biologiste médical ». */
-        { role: 'laborantin', nom: 'KINNOU Addoul Ganiou', identifiant: 'a.kinnou', fonction: 'tsl', secteur: 'LAB' },
-        { role: 'stock', nom: 'MAMAN Zoukanéri', identifiant: 'z.maman', fonction: 'stock', secteur: 'ADM' },
-        { role: 'comptable', nom: 'KASSA Augustin', identifiant: 'a.kassa', fonction: 'comptable', secteur: 'ADM' },
-        /* LA CAISSE ET LA PHARMACIE SONT LE MÊME POSTE. DIEYABIDI Aïssatou est
-           Caissière-Dispensatrice : elle encaisse et elle délivre. Le compte
-           « Pharmacien » a été fermé par archivage, et proposer une session sur
-           un compte fermé n'aurait aucun sens — c'est ce compte-ci qui a repris
-           l'intégralité de ses droits. */
-        { role: 'caissier', nom: 'DIEYABIDI Aïssatou — Dispensaire (Pharmacie)',
-          identifiant: 'a.dieyabidi', fonction: 'caissiere', secteur: 'CPH' },
-        { role: 'reception', nom: 'OROU YO Edmond', identifiant: 'e.orouyo', fonction: 'accueil', secteur: 'ACC' },
 
-        /* LES TROIS COMPTES CRÉÉS PAR LA DIRECTION LE 24/08/2026. Leurs rôles
-           existaient, leurs tableaux de bord aussi, mais aucune session ne
-           pouvait s'ouvrir à leur nom : la matrice des droits ne se vérifiait
-           donc pas à l'usage, seulement sur le papier. */
-        { role: 'echographiste', nom: 'AHOHOU Rodrigue', identifiant: 'r.ahohou',
-          fonction: 'medecin', secteur: 'IMG' },
-        { role: 'surveillant', nom: 'GARBA Yahouza — Surveillant', identifiant: 'y.garba.sur',
-          fonction: 'infirmier', secteur: 'SUR' },
-        { role: 'assistant_comptable', nom: 'GBEDJI Hervé — Assistant de Direction',
-          identifiant: 'h.gbedji', fonction: 'comptable', secteur: 'ADM' },
-
-        /* LES TROIS RÔLES DE LA PHASE 2 (31/08/2026). Le chirurgien a un
-           titulaire RÉEL : la NS 145 désigne Dr BASSONGUI Chabi Seko Y.,
-           chirurgien généraliste, responsable du secteur CHI — seconde session
-           du même agent, comme GARBA Yahouza (infirmier et surveillant).
-           Anesthésiste et assistant comptable ne sont nommés par AUCUN
-           document : comptes à pourvoir — inventer un nom d'agent serait la
-           même faute qu'inventer un numéro d'urgence. */
-        { role: 'chirurgien', nom: 'BASSONGUI Chabi Séko — Chirurgien',
-          identifiant: 'c.bassongui.chi', fonction: 'medecin', secteur: 'CHI' },
-        { role: 'anesthesiste', nom: 'Compte à pourvoir (démonstration)',
-          identifiant: 'demo.anesthesiste', fonction: 'medecin', secteur: 'CHI' },
-        { role: 'aide_comptable', nom: 'Compte à pourvoir (démonstration)',
-          identifiant: 'demo.assist-comptable', fonction: 'comptable', secteur: 'ADM' },
-      ];
-
+      /* PAGE DE CONNEXION ÉPURÉE (20/10/2026) : plus de sélecteur de profil de
+         démonstration ni de mot de passe pré-rempli — l'agent saisit SES
+         identifiants, le serveur vérifie le haché. Le pied (« comptes ouverts
+         par l'administrateur », double facteur, plan du site) est retiré : il
+         promettait des portes qui ne sont pas celles de la connexion. */
       var form = el('form.space-y-4');
       var idField = el('input.input', { type: 'text', id: 'identifiant', autocomplete: 'username', placeholder: 'prenom.nom', required: true });
       var pwField = el('input.input.pr-10', { type: 'password', id: 'motdepasse', autocomplete: 'current-password', placeholder: '••••••••', required: true });
@@ -219,43 +172,6 @@
         el('div.mt-1\\.5', null, pwWrap),
       ]));
 
-      /* Sélection du profil — le prototype ne vérifie pas de mot de passe réel. */
-      var sel = el('select.select');
-      comptes.forEach(function (c) {
-        /* Un libellé PROPRE par option (Bug 0 des Instructions) : le nom de
-           compte porte parfois la fonction en suffixe pour distinguer deux
-           sessions d'un même agent — la répéter après le libellé du rôle
-           donnait « Rôle — Nom — Rôle ». On n'affiche que le nom nu. */
-        var nomCourt = String(c.nom).split(' — ')[0];
-        sel.appendChild(el('option', { value: c.role }, N.ROLES[c.role].label + ' — ' + nomCourt));
-      });
-      sel.addEventListener('change', function () {
-        var c = comptes.filter(function (x) { return x.role === sel.value; })[0];
-        if (c) { idField.value = c.identifiant; pwField.value = 'demonstration'; }
-      });
-
-      /* On recharge le sélecteur depuis la base dès qu'elle répond : la liste
-         ci-dessus n'est qu'un repli d'affichage. */
-      if (global.fetch) {
-        global.fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json' } })
-          .then(function (r) { return r.ok ? r.json() : null; })
-          .then(function (o) {
-            if (!o || !o.comptes || !o.comptes.length) return;
-            comptes = o.comptes.filter(function (c) { return N.ROLES[c.role]; });
-            C.clear(sel);
-            comptes.forEach(function (c) {
-              var nomCourt = c.nom.split('—')[0].trim();
-              sel.appendChild(el('option', { value: c.role },
-                N.ROLES[c.role].label + ' — ' + nomCourt));
-            });
-          })
-          .catch(function () { /* le repli d'affichage tient */ });
-      }
-      form.appendChild(el('div', null, [
-        el('label.label', { text: 'Profil de connexion (démonstration)' }),
-        sel,
-        el('p.mt-1.text-xs.text-slate-400', { text: 'Le prototype ouvre la session avec le périmètre RBAC du profil choisi.' }),
-      ]));
 
       form.appendChild(el('div.flex.items-center.justify-between', null, [
         el('label.flex.cursor-pointer.items-center.gap-2', null, [
@@ -385,24 +301,11 @@
         });
       }
 
-      /* Pré-remplissage initial */
-      idField.value = comptes[0].identifiant;
-      pwField.value = 'demonstration';
 
       root.appendChild(shell({
         titre: 'Connexion',
         sousTitre: 'Authentification individuelle obligatoire — aucun compte partagé (CDCT §12.2).',
         body: form,
-        pied: [
-          /* Pas d'auto-inscription dans ce logiciel : les comptes sont ouverts
-             par l'administrateur (M14). Le pied disait « Pas encore de
-             compte ? » et renvoyait au double facteur — il promettait une
-             porte qui n'existe pas. */
-          el('span.block.mb-1', { text: 'Les comptes sont ouverts par l’administrateur système.' }),
-          el('a.font-medium.text-navy-700.hover\\:underline', { href: url('auth-2fa'), text: 'Vérification en 2 étapes' }),
-          el('span', { text: ' — ' }),
-          el('a.font-medium.text-navy-700.hover\\:underline', { href: url('plan-du-site'), text: 'Plan du site' }),
-        ],
       }));
       return null;
     },

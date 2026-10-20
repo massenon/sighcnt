@@ -2961,6 +2961,8 @@
     var fait = { besoins: 0, commandes: 0, livraisons: 0, facturesFournisseurs: 0 };
     var prods = st.collection('produits').active();
     if (!prods.length) return fait;
+    /* Un magasin volontairement vidé de ses jeux de test le reste (vague 68). */
+    if (!st.amorcable('besoins')) return fait;
 
     if (!cmds.all().length || (complet && !besoins.all().length)) {
       var rnd = C.seeded(911);

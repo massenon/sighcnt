@@ -13,7 +13,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       N = global.SIGH.nav, P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* ==========================================================================
    * ORGANISATION & ORGANIGRAMME
@@ -2496,16 +2496,27 @@
         K.btn('Réinitialiser le jeu de données', {
           variant: 'danger', icon: 'rotate-ccw',
           onclick: function () {
+            /* RÉINITIALISER = RETIRER LES DONNÉES DE TEST, GARDER L'ESSENTIEL
+               (demande du 20/10/2026). Le bouton RÉGÉNÉRAIT le jeu de
+               démonstration complet : on cliquait, et tout revenait à
+               l'identique — « ça n'a pas marché ». Il vide désormais les
+               données d'activité et conserve paramétrage, référentiels,
+               comptes, droits et catalogues ; le vidage est journalisé et
+               tient au rechargement (drapeau `_jeuVide` du socle). */
             U.confirm({
               title: 'Réinitialiser toutes les données de démonstration ?',
-              message: 'Toutes les créations, modifications et archivages réalisés dans le prototype seront perdus '
-                + 'et le jeu de démonstration initial sera rétabli. Cette action est irréversible.',
-              confirmLabel: 'Réinitialiser', danger: true,
-            }).then(function (ok) {
-              if (!ok) return;
-              S.reset();
-              U.toast('Jeu de données réinitialisé.', { type: 'success' });
-              setTimeout(function () { global.location.reload(); }, 900);
+              message: 'Les données de test — patients, consultations, factures, mouvements, écritures — '
+                + 'seront retirées. Le paramétrage, les référentiels, les comptes, la matrice des droits '
+                + 'et les catalogues sont conservés. L’opération est journalisée et irréversible : '
+                + 'générer une sauvegarde d’abord.',
+              confirmLabel: 'Réinitialiser', danger: true, requireMotif: true,
+            }).then(function (r) {
+              if (!r) return;
+              var bilan = S.viderActivite(r.motif);
+              U.toast(bilan.tables + ' table(s) vidée(s) — ' + C.num(bilan.enregistrements) + ' enregistrements retirés.', {
+                type: 'success', detail: 'Paramétrage, référentiels, comptes et droits conservés.',
+              });
+              recharger();
             });
           },
         }),
@@ -2549,16 +2560,22 @@
    * --------------------------------------------------------------------- */
   var CLE_REINIT = 'sigh-cnt:reinit-autorisee';
 
-  /* Collections de PARAMÉTRAGE — jamais touchées par une réinitialisation. */
-  var COLLECTIONS_PARAMETRAGE = [
-    'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes',
-    'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel',
-    'utilisateurs', 'ressources', 'banques', 'souscripteurs', 'garanties',
-    /* Les objectifs du pilotage sont un PARAMÉTRAGE de la Direction, pas des
-       données d'exploitation : une réinitialisation du jeu de test ne doit
-       pas effacer des cibles qu'elle a arrêtées. */
-    'certificats', 'objectifsPilotage',
-  ];
+  /* CE QUI EST CONSERVÉ VIT AU SOCLE (vague 68) : la liste est lue par le
+     magasin lui-même, qui bloque les ré-amorçages d'écran après un vidage.
+     Deux listes auraient divergé au premier référentiel ajouté. */
+  var COLLECTIONS_PARAMETRAGE = S.COLLECTIONS_ESSENTIELLES;
+
+  /* ON ATTEND QUE LE SERVEUR AIT REÇU le vidage avant de recharger : un
+     rechargement lancé pendant l'envoi relisait la base d'AVANT, et l'on
+     croyait que rien ne s'était passé. */
+  function recharger() {
+    S.pousserMaintenant();
+    var debut = Date.now();
+    (function attendre() {
+      if (S.fileEnAttente() === 0 || Date.now() - debut > 8000) { global.location.reload(); return; }
+      setTimeout(attendre, 150);
+    })();
+  }
 
   function ongletReinitialisation(panneau) {
     dessiner();
@@ -2666,7 +2683,7 @@
                 if (!ok) return;
                 S.reset();
                 U.toast('Jeu de démonstration régénéré.', { type: 'success' });
-                setTimeout(function () { global.location.reload(); }, 900);
+                recharger();
               });
             },
           }),
@@ -2690,20 +2707,13 @@
         confirmLabel: 'Vider les jeux de test', danger: true, requireMotif: true,
       }).then(function (r) {
         if (!r) return;
-        var db = S.raw();
-        var vidées = 0, lignes = 0;
-        activite.forEach(function (k) {
-          lignes += db[k].length;
-          db[k] = [];
-          vidées++;
+        /* Le vidage est un geste du SOCLE : la même fabrique sert ici et au
+           bouton de maintenance — deux vidages auraient divergé. */
+        var bilan = S.viderActivite(r.motif);
+        U.toast(bilan.tables + ' table(s) vidée(s) — ' + C.num(bilan.enregistrements) + ' enregistrements retirés.', {
+          type: 'success', detail: 'Paramétrage, référentiels, comptes et droits conservés.',
         });
-        S.save();
-        S.log('Réinitialisation des jeux de test', 'CFG', 'Base', C.iso(AUJ), null,
-          { tables: vidées, enregistrements: lignes, motif: r.motif });
-        U.toast(vidées + ' table(s) vidée(s) — ' + C.num(lignes) + ' enregistrements retirés.', {
-          type: 'success', detail: 'Paramétrage et référentiels conservés.',
-        });
-        setTimeout(function () { global.location.reload(); }, 1400);
+        recharger();
       });
     }
   }

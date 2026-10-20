@@ -3500,9 +3500,84 @@
       if (_minuterie) ecrire();
     });
   }
+  /* ==========================================================================
+   * CE QUI SURVIT À UNE RÉINITIALISATION — la liste vit AU SOCLE (vague 68)
+   * --------------------------------------------------------------------------
+   * « Réinitialiser » retire les données ENGENDRÉES pour la démonstration —
+   * patients, consultations, factures, mouvements, écritures — et garde ce qui
+   * fait le logiciel : le paramétrage, les référentiels issus des documents,
+   * les comptes, la matrice des droits, les catalogues, les règles datées.
+   *
+   * La liste vivait dans l'écran des paramètres, et elle était INCOMPLÈTE : la
+   * matrice RBAC, les modules actifs, les catalogues du laboratoire et de
+   * l'imagerie, le barème et la grille des primes n'y figuraient pas. Vider les
+   * jeux de test rouvrait la banque de sang, rendait TOUS les droits à TOUS
+   * les rôles (un rôle sans fiche a tout — vague 36) et privait le laboratoire
+   * de ses examens. C'est ce que « ça n'a pas marché » voulait dire.
+   *
+   * Et le vidage ne TENAIT pas : une quinzaine d'écrans ré-amorcent leur
+   * collection dès qu'ils la trouvent vide (contrats, budgets, avances, poches,
+   * achats…). Ouvrir l'écran suffisait à faire renaître le jeu, écran par
+   * écran. D'où le drapeau `_jeuVide`, posé par le vidage et lu par
+   * `amorcable()` : un amorçage de DÉMONSTRATION ne repart plus sur un magasin
+   * volontairement vidé ; un référentiel DÉRIVÉ d'un document (le calendrier
+   * fiscal) reste libre de se reconstruire, il ne porte aucune invention.
+   * ======================================================================== */
+  var COLLECTIONS_ESSENTIELLES = [
+    /* Paramétrage et référentiels administrés par la clinique */
+    'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes', 'banques',
+    'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel', 'soignants',
+    'fichesPoste', 'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
+    'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel',
+    /* Comptes, droits et activation des modules */
+    'utilisateurs', 'rbac', 'modulesActifs',
+    /* Règles datées — régimes, primes, barème */
+    'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme',
+    /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
+    'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
+    'examensImagerie', 'variablesImagerie', 'pathologies',
+    /* Modèles (badges, messages, questionnaires) et emplacements de rangement */
+    'modelesBadge', 'modelesMessage', 'enquetes', 'emplacements',
+  ];
+  /* Dérivées d'un référentiel : vidées, elles se reconstruisent depuis leur
+     document — le vidage ne leur retire rien. */
+  var COLLECTIONS_DERIVEES = ['echeancesFiscales'];
+
+  function essentielle(nom) { return COLLECTIONS_ESSENTIELLES.indexOf(nom) >= 0; }
+  /** Le magasin a-t-il été volontairement vidé de ses jeux de test ? */
+  function jeuVide() { load(); return !!(db && db._jeuVide); }
+  /** Un amorçage d'écran a-t-il le droit de peupler cette collection ? */
+  function amorcable(nom) {
+    if (!jeuVide()) return true;
+    return essentielle(nom) || COLLECTIONS_DERIVEES.indexOf(nom) >= 0;
+  }
+  /** Vide les données d'activité, garde l'essentiel, et le DIT au magasin. */
+  function viderActivite(motif) {
+    load();
+    var tables = 0, lignes = 0, vidées = [];
+    Object.keys(db).forEach(function (k) {
+      if (k.charAt(0) === '_' || !Array.isArray(db[k]) || essentielle(k)) return;
+      lignes += db[k].length; tables++; vidées.push(k);
+      db[k] = [];
+    });
+    db._jeuVide = true;
+    db._jeuVideLe = new Date().toISOString();
+    /* Le peuplement du parcours transactionnel ne doit pas repartir non plus. */
+    db._parcoursAmorces = true;
+    db.audit = db.audit || [];
+    save();
+    /* La première entrée du journal neuf est le vidage lui-même (RG-12). */
+    log('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
+      { tables: tables, enregistrements: lignes, motif: motif || '' });
+    return { tables: tables, enregistrements: lignes, collections: vidées };
+  }
+
   function reset() {
     try { storage.remove(KEY); } catch (e) { /* reliquat d'avant la bascule */ }
     db = seed();
+    /* Un jeu RÉGÉNÉRÉ n'est plus un jeu vidé : le drapeau tombe, et il part
+       au serveur comme toute clé de méta — sinon la base garderait l'ancien. */
+    db._jeuVide = false;
     SRV.envoye = {}; SRV.meta = {};   /* tout est à repousser */
     ecrire();
     return db;
@@ -3847,6 +3922,8 @@
     enLot: enLot,
     journaliserAcces: journaliserAcces,
     load: load, save: save, reset: reset, collection: collection,
+    COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, viderActivite: viderActivite,
+    jeuVide: jeuVide, amorcable: amorcable,
     hydraterServeur: hydraterServeur,
     surServeur: function () { return SRV.actif; },
     /** LE MAGASIN EN MAIN FAIT-IL AUTORITÉ ? Tant que l'hydratation est en

@@ -12,7 +12,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store,
       N = global.SIGH.nav, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* --- Coordonnées de l'éditeur ------------------------------------------- */
   var EDITEUR = {

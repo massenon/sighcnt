@@ -14,7 +14,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
   var PP = D.PARAM_PAIE;
 
   function personnel() { return S.collection('personnel').active(); }
@@ -878,7 +878,7 @@
     description: 'Déclaration et valorisation des heures effectuées au-delà de l’horaire contractuel.',
     render: function (root) {
       var col = S.collection('heuresSup', { module: 'M11', entite: 'HeureSupplementaire' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('heuresSup')) {
         var rnd = C.seeded(1949);
         personnel().slice(0, 20).forEach(function (e, i) {
           var h = C.between(rnd, 2, 24);
@@ -960,7 +960,7 @@
     description: 'Octroi et suivi du remboursement des avances, avec retenue automatique sur le bulletin.',
     render: function (root) {
       var col = avances();
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('avances')) {
         var rnd = C.seeded(2069);
         personnel().slice(0, 12).forEach(function (e, i) {
           var montant = C.between(rnd, 1, 4) * 25000;

@@ -1549,6 +1549,63 @@ pas d'un pouce** ; et le **mot de passe à la création d'un compte** (`m14-util
   prescripteur extérieur en toutes lettres, qu'une adresse afficherait dans l'historique du
   navigateur. Les **cinq modalités** passent par la même fabrique.
 
+**Vague 68 (20/10/2026) — L'HORLOGE RÉELLE, LA CONNEXION ÉPURÉE, LE VIDAGE QUI TIENT — et trois
+PRD pour la suite.** Trois défauts signalés par la Direction le même jour, un fil commun : ce que
+l'écran montre doit être ce que le magasin porte.
+
+- **« AUJOURD'HUI » VALAIT LE 16 AOÛT DANS DIX-NEUF MODULES.** Chaque module portait
+  `var AUJ = new Date(2026, 7, 16)` — la date du jeu de démonstration, figée pour que les tableaux de
+  bord aient quelque chose à montrer. Le formulaire de rendez-vous, lui, partait de l'horloge réelle :
+  un rendez-vous pris le 20 octobre tombait hors de la fenêtre de l'agenda (du 14 au 20 août) et ne se
+  retrouvait nulle part — « enregistré, mais introuvable ». **La date du jour vit désormais en UN
+  endroit, `C.aujourdhui()`, et c'est l'horloge réelle** ; le jeu de démonstration reste daté
+  (`data-seed.js`, `store.js` : c'est un fait sur le jeu, pas sur l'horloge). Conséquence
+  assumée : sur le jeu, les indicateurs « aujourd'hui » des tableaux de bord sont vides tant que
+  le jeu n'est pas ré-ancré — c'est le comportement JUSTE d'un logiciel qui lit l'heure.
+  **C'est le BANC qui décale l'horloge sur la date du jeu** (`HORLOGE_BANC` dans `build/_banc.js`,
+  posée par `poserSession` dans les quatre bancs) : le temps continue de s'écouler — identifiants,
+  minuteries, journal — seul le point de départ change, et un scénario peut la déplacer
+  (`window.__SIGH_HORLOGE.decaler`). Les 1 091 vérifications écrites « au 16 août » restent
+  vraies sans en réécrire une. Au passage : `C.isoLocal()` pour les champs `datetime-local` —
+  `toISOString()` rend l'heure UTC, le Bénin est à UTC+1, l'heure proposée était fausse d'une heure.
+  Et **l'agenda étend sa fenêtre jusqu'au rendez-vous qu'on vient de prendre** : pris hors de la
+  fenêtre affichée, il disparaissait à l'enregistrement.
+- **LA PAGE DE CONNEXION NE LISTE PLUS LES COMPTES.** Le sélecteur « Profil de connexion
+  (démonstration) », le mot de passe pré-rempli et le pied (« comptes ouverts par
+  l'administrateur », double facteur, plan du site) sont retirés : l'agent saisit SES identifiants,
+  le serveur vérifie le haché. Le scénario 40 mesurait le renommage des rôles sur le TEXTE de cette
+  page ; il le mesure désormais là où il vit — le manifeste `N.ROLES` et l'annuaire
+  `api/auth.php?action=comptes`.
+- **« RÉINITIALISER » RÉGÉNÉRAIT LE JEU AU LIEU DE LE RETIRER** — on cliquait, tout revenait à
+  l'identique : « ça n'a pas marché ». Et le vidage des jeux de test, derrière sa bascule, avait
+  DEUX défauts de fond. (1) **La liste de ce qui est conservé était incomplète** : la matrice RBAC,
+  les modules actifs, les catalogues du laboratoire et de l'imagerie, le barème et la grille des
+  primes n'y figuraient pas — vider rouvrait la banque de sang, rendait TOUS les droits à TOUS les
+  rôles (un rôle sans fiche a tout, vague 36) et privait le laboratoire de ses examens. (2) **Le
+  vidage ne tenait pas** : une quinzaine d'écrans ré-amorcent leur collection dès qu'ils la trouvent
+  vide (contrats, congés, budgets, avances, poches, achats…) — ouvrir l'écran suffisait à faire
+  renaître le jeu, écran par écran. **Les deux vivent désormais AU SOCLE** :
+  `S.COLLECTIONS_ESSENTIELLES` (paramétrage, référentiels, comptes, droits, modules, catalogues,
+  règles datées, modèles), `S.viderActivite(motif)` — la MÊME fabrique sert le bouton de
+  maintenance et l'onglet « Jeux de test » — et le drapeau de méta `_jeuVide`, lu par
+  `S.amorcable(nom)` : `K.amorcer`, `semerAchats` et les treize sites `if (!col.all().length)`
+  le consultent ; un référentiel DÉRIVÉ d'un document (le calendrier fiscal) reste libre de se
+  reconstruire. `S.reset()` abaisse le drapeau — et l'ENVOIE (une clé de méta absente du nouveau
+  magasin ne partirait pas, et la base garderait l'ancien). Le rechargement **attend que le serveur
+  ait reçu** le vidage (`recharger()`) : lancé pendant l'envoi, il relisait la base d'avant.
+  Un vidage est journalisé, et c'est la première entrée du journal neuf (RG-12).
+- **Trois PRD** (`docs/prd/`) pour ce que la Direction a demandé le même jour et qui ne se
+  corrige pas en une vague : la **clôture d'exercice** (résultat, à-nouveaux au solde et ligne à
+  ligne, sélecteur d'exercice, exercices clos en lecture seule AU MOTEUR, exercices ouverts
+  simultanés avec à-nouveaux provisoires, N / N-1, archive), le **suivi des ventes par patient et
+  par secteur** (le Point global détaille ce qui a été vendu à chaque patient sélectionné, secteur
+  par secteur ; **« Imagerie médicale » remplace « Échographie » comme secteur de recette** —
+  l'IRM, le scanner et la mammographie se comptaient sous « Échographie » ; identifiants techniques
+  inchangés), et **l'application sans rechargement** (routeur en document unique, modules
+  paresseux, hydratation unique puis deltas, flux d'événements entre postes, notifications qui
+  CONSOMMENT, planificateur de tâches serveur) — la condition de la phase P2 de l'architecture cible.
+- Scénario **67** (dernier : il VIDE le magasin et le régénère en sortant). État : bancs en cours de relance au 20/10/2026 — chiffres définitifs au commit suivant.
+
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau
 transitoire, les boutons du bandeau non : la page appelée s’ouvrait menu déployé alors que l’utilisateur
 venait de choisir sa destination. Le conteneur porte désormais l’identifiant `#page-actions` et un

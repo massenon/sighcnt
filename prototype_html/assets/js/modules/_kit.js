@@ -568,7 +568,8 @@
    * ======================================================================== */
   function amorcer(nom, seed) {
     var db = S.raw();
-    if (seed && (!db[nom] || !db[nom].length)) {
+    /* Un magasin volontairement vidé ne se ré-amorce pas écran par écran. */
+    if (seed && (!db[nom] || !db[nom].length) && S.amorcable(nom)) {
       db[nom] = seed() || [];
       S.save();
     }

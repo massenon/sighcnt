@@ -15,7 +15,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit,
       PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* Centres de coûts : référentiel administrable (écran cfg-centres-couts).
      La saisie comptable en propose la liste et permet d'en ouvrir un à la
@@ -1107,7 +1107,7 @@
     description: 'Budgétisation par centre de coûts et suivi du réalisé par rapport au prévisionnel.',
     render: function (root) {
       var col = S.collection('budgets', { module: 'M12', entite: 'Budget' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('budgets')) {
         var rnd = C.seeded(2213);
         D.CENTRES_COUT.forEach(function (cc, i) {
           var prevu = C.between(rnd, 3, 40) * 500000;
@@ -1262,7 +1262,7 @@
       + 'AMORT. / NET de l’actif immobilisé du bilan.',
     render: function (root) {
       var col = S.collection('immobilisations', { module: 'M12', entite: 'Immobilisation' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('immobilisations')) {
         var rnd = C.seeded(2311);
         var BIENS = [
           ['Échographe', 'Matériel médical', 8500000, 5, '241000'],
@@ -1600,7 +1600,7 @@
     description: 'Comptes bancaires, relevés et rapprochement avec la comptabilité.',
     render: function (root) {
       var col = S.collection('rapprochements', { module: 'M12', entite: 'Rapprochement' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('rapprochements')) {
         var rnd = C.seeded(2417);
         var BANQUES = ['ECOBANK Bénin', 'Bank Of Africa Bénin', 'Orabank Bénin'];
         BANQUES.forEach(function (b, i) {
