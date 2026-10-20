@@ -137,6 +137,14 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
     }, { timeout: 180000 }).catch(() => null);
 
     /* Les écrans que ce profil peut ouvrir, et ses droits sur chacun. */
+    /* Une page que le profil n'ouvre pas rebondit (403, son propre tableau) APRÈS le
+       premier rendu : le contexte est alors détruit en plein évaluate. On
+       attend la page d'arrivée et on réessaie, au lieu de faire tomber l'audit. */
+    for (let essai = 0; essai < 5; essai++) {
+      try { await page.evaluate(() => !!window.SIGH); break; }
+      catch (e) { await new Promise((r) => setTimeout(r, 1500)); }
+    }
+    await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav), { timeout: 60000 }).catch(() => null);
     const accessibles = await page.evaluate((r) => {
       const N = window.SIGH.nav;
       const out = [];
