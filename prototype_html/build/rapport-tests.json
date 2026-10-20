@@ -3293,11 +3293,6 @@
         "detail": null
       },
       {
-        "libelle": "Le rôle « biomedical » ouvre SON tableau de bord, pas celui d’un autre profil",
-        "ok": true,
-        "detail": null
-      },
-      {
         "libelle": "Le compteur des ruptures ne retient que les articles AYANT un seuil",
         "ok": true,
         "detail": null
@@ -3712,7 +3707,7 @@
         "detail": null
       },
       {
-        "libelle": "Le poste d’ingénieur biomédical a disparu de l’annuaire des comptes",
+        "libelle": "Le rôle d’ingénieur biomédical est supprimé : ni annuaire, ni manifeste, ni tableau de bord",
         "ok": true,
         "detail": null
       },
