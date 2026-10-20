@@ -196,6 +196,11 @@ async function viderMessages(page) {
           if (!S) return false;
           /* `faitAutorite` est récent : un magasin qui ne l'expose pas est
              tenu pour hydraté, faute de pouvoir le vérifier. */
+          /* UNE REDIRECTION N'EST PAS UNE PAGE QUI NE SE PEINT PAS : la page 403 et les
+             écrans d'authentification n'ont pas de #page-content, et le scénario qui y
+             arrive mesure l'ADRESSE. Attendre 150 s dessus coûtait deux minutes et demie
+             par refus sondé, et criait depuis la vague 68 à une hydratation pendante. */
+          if (/error-403|\/auth-|\/index\.php/.test(location.pathname)) return true;
           if (S.faitAutorite && !S.faitAutorite()) return false;
           const c = document.getElementById('page-content');
           return !!(c && c.children.length > 0);
