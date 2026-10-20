@@ -5979,7 +5979,9 @@ async function viderMessages(page) {
       return {
         biologiste: labels.some((l) => /Biologiste médical/.test(l)),
         laborantin: labels.some((l) => /Laborantin/.test(l)),
-        biomedical: labels.some((l) => /Ingénieur biomédical/i.test(l)),
+        /* Le rôle reste au manifeste, marqué RETIRÉ (RG-14 : rien ne se supprime) ;
+           c'est l'annuaire des comptes qui ne doit plus le porter. */
+        biomedical: comptes.some((c) => /biom/i.test(c)),
         dispensaire: comptes.some((c) => /Dispensaire/i.test(c)),
         troisProfils: comptes.some((c) => /AHOHOU/.test(c)) && comptes.some((c) => /Surveillant/.test(c))
           && comptes.some((c) => /Assistant de Direction/.test(c)),
@@ -5995,7 +5997,7 @@ async function viderMessages(page) {
     });
     verifier('« Laborantin » est devenu « Biologiste médical » au manifeste des rôles',
       conn.biologiste && !conn.laborantin);
-    verifier('Le poste d’ingénieur biomédical a disparu des rôles', conn.biomedical === false);
+    verifier('Le poste d’ingénieur biomédical a disparu de l’annuaire des comptes', conn.biomedical === false);
     verifier('Le caissier est « Dispensaire (Pharmacie) » à l’annuaire', conn.dispensaire, conn.comptes + ' compte(s)');
     verifier('Les trois profils créés ouvrent une session (annuaire)', conn.troisProfils, conn.comptes + ' compte(s)');
     verifier('La page de connexion ne porte plus de sélecteur de profil de démonstration',
