@@ -39,8 +39,117 @@
      la préférence durable de l'utilisateur n'est jamais écrasée. */
   function go(id, opts) {
     try { S.storage.set(RUBAN_TRANSIT, '1'); } catch (e) { /* stockage indisponible */ }
+    if (naviguerSansRecharger(id, opts)) return;
     global.location.href = href(id, opts);
   }
+
+  /* ==========================================================================
+   * NAVIGATION SANS RECHARGEMENT (vague 69)
+   * --------------------------------------------------------------------------
+   * Le document reste le même d'un écran à l'autre : le magasin n'est pas
+   * re-téléchargé, les scripts ne sont pas ré-évalués. Quatre garanties :
+   *  - le module de l'écran visé se charge À LA DEMANDE, une seule fois ;
+   *  - tout ce que l'écran précédent a posé (écouteurs du document, minuteries,
+   *    tiroirs, modales, messages) est DÉMONTÉ avant de peindre le suivant ;
+   *  - l'adresse change (pushState) : le retour arrière et les liens profonds
+   *    gardent leur sens ;
+   *  - au moindre doute — pas de session, écran autonome, module introuvable,
+   *    fichier ouvert en local — on RECHARGE comme avant. Le repli est la règle.
+   * ======================================================================== */
+  var NETTOYAGES = [];
+  var _spaOccupe = false;
+  var _spaChargés = {};
+  /** Pose un écouteur que le démontage retirera. */
+  function ecoute(cible, ev, fn, opts) {
+    cible.addEventListener(ev, fn, opts);
+    NETTOYAGES.push(function () { cible.removeEventListener(ev, fn, opts); });
+  }
+  function enDernier(fn) { NETTOYAGES.push(fn); }
+  function demonter() {
+    var racine = document.getElementById('page-content');
+    if (racine) { try { racine.dispatchEvent(new Event('sigh:unmount')); } catch (e) { /* sans importance */ } }
+    var nets = NETTOYAGES; NETTOYAGES = [];
+    nets.forEach(function (n) { try { n(); } catch (e) { /* un nettoyage ne bloque pas les autres */ } });
+    Array.prototype.slice.call(document.body.children).forEach(function (n) {
+      if (n.tagName !== 'SCRIPT') document.body.removeChild(n);
+    });
+  }
+  function spaPermise() {
+    if (global.__SIGH_SANS_SPA || _spaOccupe) return false;
+    if (global.location.protocol === 'file:') return false;
+    try { if (S.storage.get('sigh-cnt:spa') === 'off') return false; } catch (e) { /* stockage indisponible */ }
+    return !!(PAGE && !PAGE.standalone && S.session() && global.fetch && global.history && global.history.pushState);
+  }
+  function chargerScript(src) {
+    if (_spaChargés[src]) return _spaChargés[src];
+    _spaChargés[src] = new Promise(function (ok, ko) {
+      var deja = Array.prototype.some.call(document.scripts, function (x) { return x.src && x.src.replace(/\?.*$/, '').slice(-src.length) === src; });
+      if (deja) return ok();
+      var sc = document.createElement('script');
+      sc.src = base() + src; sc.async = false;
+      sc.onload = function () { ok(); };
+      sc.onerror = function () { delete _spaChargés[src]; ko(new Error('module introuvable : ' + src)); };
+      document.body.appendChild(sc);
+    });
+    return _spaChargés[src];
+  }
+  /** Le fichier de module d'un écran se lit dans SA page engendrée : une seule source (gen-pages). */
+  function fichiersDeModule(id) {
+    return global.fetch(href(id), { credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error('page ' + id + ' : ' + r.status);
+      return r.text();
+    }).then(function (html) {
+      var out = [], re = /assets\/js\/(modules\/[\w-]+\.js)/g, m;
+      while ((m = re.exec(html))) out.push(m[1]);
+      return out;
+    });
+  }
+  function ecranEntier(id, opts, pousser) {
+    var entry = N.get(id);
+    return fichiersDeModule(id).then(function (fichiers) {
+      return fichiers.reduce(function (p, f) { return p.then(function () { return chargerScript('assets/js/' + f); }); }, Promise.resolve());
+    }).then(function () {
+      var def = SCREENS[id];
+      if (def && def.standalone) throw new Error('écran autonome');
+      if (!N.can(S.session().role, entry)) throw new Error('accès refusé');
+      demonter();
+      PAGE = null; _boote = false;
+      if (pousser) global.history.pushState({ sigh: id }, '', href(id, opts));
+      global.scrollTo(0, 0);
+      monterVraiment(id);
+      boot();
+      return true;
+    });
+  }
+  function naviguerSansRecharger(id, opts) {
+    var entry = N.get(id);
+    if (!entry || id === 'index' || !spaPermise()) return false;
+    if (/^(auth-|error-|enquete-publique)/.test(id)) return false;
+    _spaOccupe = true;
+    ecranEntier(id, opts, true).then(function () { _spaOccupe = false; }, function (e) {
+      _spaOccupe = false;
+      if (global.console && global.console.warn) global.console.warn('[SIGH] Navigation sans rechargement impossible, rechargement :', e);
+      global.location.href = href(id, opts);
+    });
+    return true;
+  }
+  function idDeLien(a) {
+    var m = /\/pages\/([\w-]+)\.[a-z]+(?:[?#].*)?$/i.exec(a.pathname + (a.hash || ''));
+    return m && N.get(m[1]) ? m[1] : null;
+  }
+  function optsDeLien(a) {
+    var h = (a.hash || '').replace(/^#/, ''), o = {};
+    h.split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) o[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ''); });
+    return o;
+  }
+  /* Retour / avance du navigateur : l'écran de l'adresse revient, sans rechargement. */
+  global.addEventListener('popstate', function (ev) {
+    if (!(ev.state && ev.state.sigh) || !spaPermise()) return;
+    _spaOccupe = true;
+    ecranEntier(ev.state.sigh, optsDeLien(global.location), false).then(function () { _spaOccupe = false; }, function () {
+      _spaOccupe = false; global.location.reload();
+    });
+  });
 
   /* --- Session ------------------------------------------------------------ */
   function requireSession() {
@@ -111,8 +220,9 @@
       minuteur = global.setTimeout(verrouiller, delaiVerrou());
     }
     ['mousedown', 'keydown', 'touchstart', 'scroll', 'focus'].forEach(function (ev) {
-      global.addEventListener(ev, relancer, { passive: true, capture: true });
+      ecoute(global, ev, relancer, { passive: true, capture: true });
     });
+    enDernier(function () { if (minuteur) global.clearTimeout(minuteur); });
     relancer();
   }
 
@@ -279,7 +389,7 @@
        page, le panneau se replie de lui-même et rend toute la hauteur au
        contenu. Ce repli automatique ne modifie pas la préférence enregistrée. */
     var dernierY = 0;
-    global.addEventListener('scroll', function () {
+    ecoute(global, 'scroll', function () {
       var y = global.scrollY || document.documentElement.scrollTop || 0;
       if (y > 120 && y > dernierY && !panneau.hidden) basculer(false, false);
       dernierY = y;
@@ -287,7 +397,7 @@
 
     /* Échap referme le panneau — sauf si une boîte de dialogue est ouverte,
        auquel cas la touche lui revient. */
-    document.addEventListener('keydown', function (e) {
+    ecoute(document, 'keydown', function (e) {
       if (e.key !== 'Escape' || panneau.hidden) return;
       if (document.querySelector('[role="dialog"]')) return;
       basculer(false);
@@ -374,7 +484,7 @@
       peindreBadge(NT.enAttente());
       /* La cloche suit le moteur en continu : elle ne se met pas à jour au
          seul rechargement de la page. */
-      NT.abonner(peindreBadge);
+      enDernier(NT.abonner(peindreBadge));
       NT.demarrer();
     }
     bar.appendChild(notifBtn);
@@ -426,7 +536,7 @@
       } catch (e) { U.toast('Plein écran indisponible sur ce poste.', { type: 'error' }); }
     });
 
-    document.addEventListener('fullscreenchange', peindre);
+    ecoute(document, 'fullscreenchange', peindre);
     peindre();
     return b;
   }
@@ -1190,7 +1300,7 @@
          conteneur et lui échappaient, ce qui laissait le menu déployé sur
          Patients, Consultations, Pharmacie et Facturation.
          Les boutons, eux, sont couverts par go() — voir plus haut. */
-      document.addEventListener('click', function (ev) {
+      ecoute(document, 'click', function (ev) {
         var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
         if (!a) return;
         var href_ = a.getAttribute('href') || '';
@@ -1200,6 +1310,10 @@
         if (/^(https?:|mailto:|tel:|data:|blob:)/i.test(href_)) return;
         if (a.target && a.target !== '_self') return;
         replierApresNavigation();
+        /* Un lien vers un écran du manifeste ne recharge pas le document. */
+        if (ev.defaultPrevented || ev.button || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
+        var cible = idDeLien(a);
+        if (cible && spaPermise() && naviguerSansRecharger(cible, optsDeLien(a))) ev.preventDefault();
       });
 
       main.appendChild(container);
@@ -1238,7 +1352,7 @@
       U.consommerMessageDiffere();
 
       /* Raccourcis clavier — postes à forte saisie (CDCT §10.3). */
-      document.addEventListener('keydown', function (e) {
+      ecoute(document, 'keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p' && PAGE.print) { e.preventDefault(); PAGE.print(); }
       });
@@ -1249,6 +1363,10 @@
     }
   }
 
+  try { if (global.history && global.history.replaceState && !(global.history.state && global.history.state.sigh)) {
+    var _m = /\/pages\/([\w-]+)\.[a-z]+$/i.exec(global.location.pathname);
+    if (_m) global.history.replaceState({ sigh: _m[1] }, '', global.location.href);
+  } } catch (e) { /* historique indisponible */ }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else setTimeout(boot, 0);
 
@@ -1282,5 +1400,6 @@
     VERROU_RETOUR: VERROU_RETOUR, VERROU_DELAI: VERROU_DELAI,
     delaiVerrou: delaiVerrou,
     replierRuban: replierApresNavigation,
+    ecoute: ecoute, enDernier: enDernier, sansRecharger: naviguerSansRecharger,
   };
 })(window);

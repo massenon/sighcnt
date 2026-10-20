@@ -638,6 +638,7 @@
             { id: 'm14-sessions', label: 'Sessions actives', icon: 'monitor' },
             { id: 'm14-audit', label: 'Journal d’audit', icon: 'scroll-text' },
             { id: 'm14-sauvegardes', label: 'Sauvegardes & restauration', icon: 'database-backup' },
+            { id: 'm14-taches', label: 'Tâches planifiées', icon: 'timer' },
           ],
         },
         {

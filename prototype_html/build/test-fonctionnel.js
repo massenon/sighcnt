@@ -11312,6 +11312,126 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   }
 
+  /* ========================================================================
+   * Vague 69 — l'application sans rechargement
+   * ======================================================================== */
+  {
+    scenario('Vague 69 — navigation sans rechargement du document');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' }));
+    await ouvrir('m8-caisse.html');
+    erreursJS = [];
+    await page.evaluate(() => { window.__marqueur = 'meme-document'; });
+    const attendre = (id) => page.waitForFunction((i) => window.SIGH.app.entry() && window.SIGH.app.entry().id === i && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 20000 }, id);
+
+    await page.evaluate(() => window.SIGH.app.go('m6-point-ventes'));
+    await attendre('m6-point-ventes');
+    const a = await page.evaluate(() => ({ marque: window.__marqueur, url: location.pathname.split('/').pop(), barres: document.querySelectorAll('#app-topbar').length, mains: document.querySelectorAll('#app-main').length, titre: (document.querySelector('h1') || {}).textContent }));
+    verifier('go() change d’écran SANS recharger le document (marqueur de fenêtre conservé)', a.marque === 'meme-document', JSON.stringify(a));
+    verifier('L’adresse suit l’écran (pushState)', /m6-point-ventes\.(php|html)$/.test(a.url), a.url);
+    verifier('Une seule coquille après navigation (pas de barre ni de contenu en double)', a.barres === 1 && a.mains === 1, JSON.stringify(a));
+
+    await page.evaluate(() => window.SIGH.app.go('m12-cloture'));
+    await attendre('m12-cloture');
+    const b = await page.evaluate(() => ({ marque: window.__marqueur, selecteur: !!document.querySelector('#selecteur-exercice'), mains: document.querySelectorAll('#app-main').length }));
+    verifier('Un module jamais chargé sur ce document (M12) se charge à la demande et peint', b.marque === 'meme-document' && b.selecteur && b.mains === 1, JSON.stringify(b));
+
+    await page.evaluate(() => { const l = [...document.querySelectorAll('a[href]')].find((x) => /m6-point-ventes/.test(x.getAttribute('href'))); if (l) l.click(); else window.SIGH.app.go('m6-point-ventes'); });
+    await attendre('m6-point-ventes');
+    const c = await page.evaluate(() => ({ marque: window.__marqueur }));
+    verifier('Un lien du ruban ou du bandeau navigue aussi sans recharger', c.marque === 'meme-document', JSON.stringify(c));
+
+    await page.evaluate(() => history.back());
+    await attendre('m12-cloture');
+    const d = await page.evaluate(() => ({ marque: window.__marqueur, url: location.pathname.split('/').pop() }));
+    verifier('Le retour arrière du navigateur restaure l’écran précédent sans rechargement', d.marque === 'meme-document' && /m12-cloture/.test(d.url), JSON.stringify(d));
+
+    const e = await page.evaluate(async () => {
+      const R = []; for (let i = 0; i < 4; i++) { window.SIGH.app.go(i % 2 ? 'm8-caisse' : 'm6-point-ventes'); await new Promise((r) => setTimeout(r, 1200)); }
+      return { marque: window.__marqueur, barres: document.querySelectorAll('#app-topbar').length, dialogues: document.querySelectorAll('[role="dialog"]').length };
+    });
+    verifier('Quatre navigations enchaînées : toujours un seul document, une seule barre, aucune modale résiduelle', e.marque === 'meme-document' && e.barres === 1 && e.dialogues === 0, JSON.stringify(e));
+
+    await page.evaluate(() => window.SIGH.app.go('m1-patients', { onglet: 'zone1' }));
+    await page.waitForFunction(() => window.SIGH.app.entry() && window.SIGH.app.entry().id === 'm1-patients', { timeout: 20000 });
+    verifier('L’ancre d’onglet est portée par l’adresse', await page.evaluate(() => /onglet=zone1/.test(location.hash)), await page.evaluate(() => location.hash));
+
+    await page.evaluate(() => window.SIGH.app.go('auth-lock'));
+    await new Promise((r) => setTimeout(r, 2500));
+    verifier('Un écran autonome (verrou) recharge le document, comme avant', await page.evaluate(() => window.__marqueur === undefined), '');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' }));
+    verifier('Aucune erreur JavaScript durant la navigation', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  /* ========================================================================
+   * Vague 69 — le planificateur du serveur et les notifications
+   * ======================================================================== */
+  {
+    scenario('Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m14-taches.html');
+    erreursJS = [];
+    await page.waitForFunction(() => /Registre des tâches/.test(document.body.textContent), { timeout: 30000 });
+    const reg = await page.evaluate(() => ({
+      lignes: [...document.querySelectorAll('#page-content table')][0] ? [...document.querySelectorAll('#page-content table')][0].querySelectorAll('tbody tr').length : 0,
+      texte: document.querySelector('#page-content').textContent,
+    }));
+    verifier('L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales',
+      reg.lignes === 6 && /Sauvegarde du magasin/.test(reg.texte) && /Échéances fiscales/.test(reg.texte), 'lignes=' + reg.lignes);
+
+    const admin = await page.evaluate(async () => {
+      await window.SIGH.notifications.sonderServeur();
+      return window.SIGH.notifications.etatServeur().alertes.map((a) => a.cle);
+    });
+    verifier('Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)',
+      admin.some((k) => /^echeance:/.test(k)) && admin.some((k) => /^stock:/.test(k)) && admin.some((k) => /^lot:/.test(k)), admin.length + ' alertes');
+
+    const cloche = await page.evaluate(() => {
+      const l = window.SIGH.notifications.collecter({ detaille: true, tousPostes: true });
+      const cles = l.map((n) => n.cle);
+      return { n: cles.length, uniques: new Set(cles).size, serveur: l.some((n) => n.source === 'serveur') };
+    });
+    verifier('La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)', cloche.n === cloche.uniques, JSON.stringify(cloche));
+
+    const rec = await BANC.connecter('e.orouyo');
+    const accueil = await page.evaluate(async (jeton) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php', { headers: { 'X-Sigh-Jeton': jeton } });
+      const o = await r.json();
+      return (o.notifications || []).map((a) => a.cle);
+    }, rec.jeton);
+    verifier('Le routage se fait AU SERVEUR : la réception ne reçoit ni échéance fiscale ni alerte de stock (RG-13)',
+      !accueil.some((k) => /^(echeance|stock|lot|creance-agee):/.test(k)), accueil.join(','));
+
+    const resolu = await page.evaluate(async () => {
+      const S = window.SIGH.store, col = S.collection('echeancesFiscales');
+      const avant = col.all().map((e) => ({ id: e.id, paye: e.paye }));
+      col.all().forEach((e) => { if (!e.paye) col.update(e.id, { paye: true }); });
+      S.pousserMaintenant();
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() }, body: JSON.stringify({ action: 'executer', code: 'echeances_fiscales' }) });
+      const o = await r.json();
+      await window.SIGH.notifications.sonderServeur();
+      const cles = window.SIGH.notifications.etatServeur().alertes.map((a) => a.cle);
+      avant.forEach((a) => { if (!a.paye) col.update(a.id, { paye: false }); });
+      S.pousserMaintenant();
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r2) => setTimeout(r2, 250));
+      return { ok: o.ok, statut: o.rapport && o.rapport.echeances_fiscales && o.rapport.echeances_fiscales.statut, reste: cles.filter((k) => /^echeance:/.test(k)).length };
+    });
+    verifier('Quand la cause cesse (échéances réglées), l’exécution résout l’alerte — elle disparaît de la cloche sans être supprimée',
+      resolu.ok && resolu.statut === 'ok' && resolu.reste === 0, JSON.stringify(resolu));
+
+    const interdit = await page.evaluate(async () => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/notifications.php?action=taches');
+      return r.status;
+    });
+    verifier('Sans session, le registre des tâches est refusé (401)', interdit === 401, String(interdit));
+    erreursJS = [];   /* le 401 est l'objet même de la sonde */
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

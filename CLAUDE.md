@@ -1632,6 +1632,57 @@ l'écran montre doit être ce que le magasin porte.
   vide et le régénère en sortant). État au 20/10/2026 : **67/67 scénarios (1 117 vérifications)**, 306 pages conformes (0 erreur JS, 0 lien cassé), audit RBAC à 0 promesse et 0 lecture non dite.
 - **LE RÔLE « INGÉNIEUR BIOMÉDICAL » EST SUPPRIMÉ** (décision de la Direction, 20/10/2026) : il n'était qu'archivé, le poste étant tenu par le Biologiste médical. Retirés : `N.ROLES.biomedical`, la fiche RBAC11, la fermeture d'activité `ACT-BIOMED`, le tableau `dash-biomedical` et sa page. La fonction « biomedical » du personnel retombe sur le rôle laborantin. C'est une exception explicite à RG-14 (un rôle s'archive), à ne pas généraliser. `VERSION` passe à **65**. L'audit RBAC tolère désormais le rebond d'une page fermée au profil (contexte détruit en plein relevé).
 
+**Vague 69 (20/10/2026) — LA CLÔTURE D'EXERCICE, LE SUIVI DES VENTES PAR PATIENT ET PAR SECTEUR, L'APPLICATION SANS
+RECHARGEMENT ET LE PLANIFICATEUR.** Les trois PRD de la vague 68 (`docs/prd/`) sont mis en œuvre.
+
+- **Exercices (M12)** — moteur exposé `SIGH.exercice` dans `parcours.js`, sélecteur `#selecteur-exercice` dans l'en-tête de
+  tout écran M12 (choix mémorisé dans `sigh-cnt:exercice`). La collection `exercices` est DÉRIVÉE des écritures, de l'année en
+  cours et des deux exercices de la liasse déposée (`clos`, source « liasse »). Trois états : `ouvert`, `en_attente_cloture`, `clos`.
+  **La clôture se fait en deux gestes** : le comptable DEMANDE (avec motif), la Direction/DAF/administrateur VALIDE — jamais le
+  demandeur lui-même. Pré-clôture à six contrôles (brouillons et à-nouveaux existants BLOQUENT ; équilibre, pièces, compte 47,
+  écritures informent). La validation solde les classes 6/7/8 vers 131000/139000 (pièce `OD-AAAA-RES`) et engendre les à-nouveaux
+  DÉFINITIFS `AN-(N+1)-NNNNN` au 01/01 : comptes non lettrables au solde, comptes de tiers (40/41/42/43/44/47) ligne à ligne,
+  seulement les lignes non lettrées. **Exercices ouverts simultanés** : les à-nouveaux PROVISOIRES sont CALCULÉS, jamais stockés.
+  **La lecture seule d'un exercice clos est tenue AU MOTEUR** : `S.garder('ecritures', fn)` (store.js) refuse insert/update/archive
+  avec un toast nommé et une entrée de journal — masquer les boutons ne protégerait rien. Lettrage des tiers (champ `lettrage`),
+  empreinte SHA-256 synchrone du procès-verbal, export CSV. Non fait (P1 du PRD) : colonnes N-1 tirées du journal sur les états,
+  export d'archive vers la GED, sélecteur sur M9/MECeF.
+- **Suivi des ventes (M6)** — `m6-point-ventes` gagne l'onglet « Par patient » et le bouton « Point par patient » : une carte par
+  patient retenu, les SIX secteurs dans l'ordre arrêté, un secteur sans vente le DIT. Le « Point global » avec des clients retenus
+  imprime le récapitulatif par groupe PUIS une page par patient. **« Imagerie médicale » remplace « Échographie » comme secteur**
+  (groupes, centres de coûts, files, libellés) — IRM, scanner, mammographie et radiographie s'y comptent désormais ; les
+  identifiants techniques sont inchangés. `VERSION` passe à **66**.
+- **Navigation sans rechargement** — `app.go()` et les liens vers un écran du manifeste ne rechargent plus le document
+  (`naviguerSansRecharger` dans `app.js`) : le module de l'écran se charge à la demande (le fichier se lit dans SA page
+  engendrée — une seule source, `gen-pages`), `demonter()` retire tout ce que l'écran précédent a posé (écouteurs inscrits par
+  `ecoute()`, minuteries via `enDernier()`, abonnement de la cloche, nœuds du `body`, événement `sigh:unmount`), `pushState` +
+  `popstate` gardent retour arrière et liens profonds. **Le repli est la règle** : écran autonome (`auth-*`, `error-*`, enquête
+  publique), pas de session, `file:`, module introuvable, accès refusé → rechargement comme avant. Interrupteur :
+  `sigh-cnt:spa = 'off'` ou `window.__SIGH_SANS_SPA`. **Règle pour les écrans** : tout écouteur posé sur `document`/`window` passe
+  par `SIGH.app.ecoute()`, toute minuterie se libère sur `sigh:unmount`.
+- **Planificateur serveur** — `api/cron.php` (CLI : `php api/cron.php [--force]`, à lancer toutes les 5 min par cron Linux ou le
+  Planificateur de tâches Windows) tient un registre (`taches_planifiees`, `executions_taches`, bornées à 500) et six tâches :
+  échéances fiscales, seuils de stock, péremptions FEFO, rendez-vous du lendemain, créances assureurs âgées (même définition que
+  `alertesRecouvrement`), sauvegarde compressée (`api/sauvegardes/`, 7 derniers jours, ignorée par git). **Une tâche LIT les
+  collections et n'en écrit aucune** — les postes réécrivent leurs collections entières, une écriture serveur serait écrasée au
+  geste suivant : les alertes ont leur table `notifications_serveur`. Ce que la tâche ne produit plus est marqué RÉSOLU (jamais
+  supprimé, RG-14). `api/notifications.php` sert les alertes ouvertes, **filtrées par rôle AU SERVEUR** (RG-13), lance un
+  pseudo-cron si rien n'a tourné depuis 5 min, et porte le registre (`?action=taches`) et l'exécution manuelle (admin seul). Côté
+  poste, `notifications.js` gagne la source `serveur` (sondage avant chaque tour, clé unique : l'alerte calculée par le poste ET par
+  le serveur n'apparaît qu'une fois). Écran d'administration `m14-taches` (« Tâches planifiées »). Ce qui N'EST PAS fait :
+  flux d'événements entre postes (SSE), deltas par séquence et journal `evenements` (EF-SOC-05 à 07 du PRD).
+- **Leçons de la vague** : (1) `node_modules` a été installé sous Windows — `npx tailwindcss` échoue sous Linux, la CSS se compile
+  par `node node_modules/tailwindcss/lib/cli.js -i src/input.css -o assets/css/tailwind.css --minify`. (2) PostgreSQL s'arrête à
+  chaque redémarrage du conteneur : `service postgresql start` avant tout banc (sinon 503 « base indisponible » et sondes sans
+  objet). (3) Un script de génération qui boucle sur un motif jamais trouvé fige le shell : borner les boucles de recherche.
+  (4) Le banc ouvre UNE session serveur de rôle `admin` : pour sonder un routage par rôle, se connecter réellement
+  (`BANC.connecter(identifiant)`) et appeler l'API avec ce jeton. (5) Le nombre de sondages de l'audit RBAC (841) diffère des
+  1 091 de l'ancien texte : l'écart vient des écrans retirés avec le rôle biomédical et de la mesure faite sur le jeu courant —
+  c'est le chiffre MESURÉ qui fait foi. (6) Une page `m6-inventaires` a été signalée non peinte UNE fois au banc 4 sans jamais
+  se reproduire : tant qu'elle ne revient pas, c'est une course du relais HTTP du banc (voir vague 68), pas un défaut d'écran.
+- Scénarios **68** (exercice : pré-clôture, deux gestes, résultat, à-nouveaux, lecture seule), **69** (ventes par patient et
+  par secteur), **70** (navigation sans rechargement) et **71** (planificateur : tâches, routage par poste, alerte résolue).
+
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau
 transitoire, les boutons du bandeau non : la page appelée s’ouvrait menu déployé alors que l’utilisateur
 venait de choisir sa destination. Le conteneur porte désormais l’identifiant `#page-actions` et un
