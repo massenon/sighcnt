@@ -1570,7 +1570,7 @@ async function viderMessages(page) {
     });
     verifier('Les centres de coûts sont administrables et couvrent les six secteurs plus la Direction',
       cc.total === cc.attendu && cc.support === 1
-      && ['Laboratoire', 'Pharmacie', 'Consultation', 'Échographie', 'Maternité',
+      && ['Laboratoire', 'Pharmacie', 'Consultation', 'Imagerie médicale', 'Maternité',
         'Hospitalisation et soins', 'Direction'].every((x) => cc.libelles.includes(x)),
       cc.total + ' centres : ' + cc.libelles.join(', '));
     verifier('Le code d’un centre EST l’imputation portée par les écritures — un seul référentiel',
@@ -9242,7 +9242,7 @@ async function viderMessages(page) {
     }));
 
     /* --- LES SIX SECTEURS, vocabulaire unique ---------------------------- */
-    const SIX = ['Laboratoire', 'Pharmacie', 'Consultation', 'Échographie', 'Maternité',
+    const SIX = ['Laboratoire', 'Pharmacie', 'Consultation', 'Imagerie médicale', 'Maternité',
       'Hospitalisation et soins'];
     await ouvrir('m12-rentabilite-groupes.html');
     const groupes = await page.evaluate(() => {
@@ -9304,7 +9304,7 @@ async function viderMessages(page) {
     verifier('L’origine d’une prescription se dit dans le vocabulaire des six — « bloc » devient un secteur nommé',
       croise.bloc === 'Hospitalisation et soins' && croise.maternite === 'Maternité'
       && croise.hospit === 'Hospitalisation et soins' && croise.consult === 'Consultation'
-      && croise.imagerie === 'Échographie' && croise.labo === 'Laboratoire',
+      && croise.imagerie === 'Imagerie médicale' && croise.labo === 'Laboratoire',
       JSON.stringify(croise));
     verifier('La Direction n’est PAS un secteur de recette — elle reste transverse',
       croise.direction === null, String(croise.direction));

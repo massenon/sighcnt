@@ -954,8 +954,8 @@
       },
       {
         "libelle": "Les centres de coûts sont administrables et couvrent les six secteurs plus la Direction",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "7 centres : Laboratoire, Pharmacie, Consultation, Imagerie médicale, Maternité, Hospitalisation et soins, Direction"
       },
       {
         "libelle": "Le code d’un centre EST l’imputation portée par les écritures — un seul référentiel",
@@ -968,7 +968,7 @@
         "detail": null
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Prise en charge — grille par convention, plafonds et exclusions",
@@ -5160,13 +5160,13 @@
       },
       {
         "libelle": "Les groupes de prestation SONT les six secteurs — aucun ne manque",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "[\"Laboratoire\",\"Pharmacie\",\"Consultation\",\"Imagerie médicale\",\"Maternité\",\"Hospitalisation et soins\"]"
       },
       {
         "libelle": "« Recettes par groupe » et « Bénéfice brut par groupe » les portent tous les six",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "Échographie"
       },
       {
         "libelle": "Le rapprochement nomme les centres en toutes lettres, Direction comprise — plus d’identifiant technique",
@@ -5175,13 +5175,13 @@
       },
       {
         "libelle": "Les centres de coûts sont les six secteurs PLUS la Direction",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "[\"Laboratoire\",\"Pharmacie\",\"Consultation\",\"Imagerie médicale\",\"Maternité\",\"Hospitalisation et soins\",\"Direction\"]"
       },
       {
         "libelle": "L’origine d’une prescription se dit dans le vocabulaire des six — « bloc » devient un secteur nommé",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "{\"bloc\":\"Hospitalisation et soins\",\"maternite\":\"Maternité\",\"hospit\":\"Hospitalisation et soins\",\"consult\":\"Consultation\",\"imagerie\":\"Imagerie médicale\",\"labo\":\"Laboratoire\",\"direction\":null,\"axe\":true}"
       },
       {
         "libelle": "La Direction n’est PAS un secteur de recette — elle reste transverse",
@@ -5199,7 +5199,7 @@
         "detail": null
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Comptabilité — liasse DGI, amortissement au semestre et bilan d’ouverture",
@@ -5975,6 +5975,240 @@
       },
       {
         "libelle": "Ce qui était né après le vidage ne survit pas à la régénération (clés absentes de la semence envoyées vides)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — exercice : pré-clôture, deux gestes, résultat, à-nouveaux et lecture seule",
+    "etapes": [
+      {
+        "libelle": "Le sélecteur d’exercice est dans l’en-tête de l’écran comptable, avec l’état de chaque exercice",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un lettrage qui ne s’annule pas est REFUSÉ en le disant ; un lettrage équilibré passe ; un dé-lettrage exige un motif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "N+1 porte des à-nouveaux PROVISOIRES tant que N n’est pas clos : équilibrés, marqués, jamais stockés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pré-clôture REFUSE en nommant le contrôle bloquant (brouillons restants)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La demande de clôture est refusée tant qu’un contrôle bloquant échoue",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une fois les brouillons validés et le journal équilibré, la demande de clôture est ACCEPTÉE (état « en attente »)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Signer n’est pas saisir : le demandeur ne valide pas sa propre clôture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Seule la Direction ou la DAF valide ; une validation sans motif est refusée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La clôture validée fige l’exercice : état « clos », validateur et empreinte SHA-256 portés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les comptes de gestion (classes 6, 7, 8) sont SOLDÉS vers le résultat par une pièce équilibrée (RG-10)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les à-nouveaux de N+1 sont équilibrés et reprennent au franc les soldes de clôture des comptes non lettrables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un compte de tiers est repris LIGNE À LIGNE : la facture due y est, le couple lettré n’y est pas",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un exercice clos est en LECTURE SEULE AU MOTEUR : création, modification et archivage refusés, aucune écriture ajoutée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Après la clôture, 2027 est ouvert et n’a plus d’à-nouveaux provisoires (les définitifs sont écrits)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran DIT que l’exercice affiché est clos et en lecture seule",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — Suivi des ventes : détail par patient et par secteur, Imagerie médicale",
+    "etapes": [
+      {
+        "libelle": "« Imagerie médicale » remplace « Échographie » comme secteur : groupes, normalisation (IRM, scanner, mammographie comprises) et ligne d’imagerie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le jeu porte au moins deux patients vendus sur la période (matière de la sonde)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet « Par patient » affiche une carte par patient sélectionné",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque carte porte les SIX secteurs dans l’ordre arrêté, « Imagerie médicale » compris, et dit « aucune vente » pour un secteur vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le détail recoupe le magasin : autant de lignes affichées que de lignes facturées sur la période",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Point par patient » imprime une page par patient, secteurs en clair",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Point global » avec des clients retenus : le récapitulatif par groupe d’abord, puis une page par patient, les pourcentages en toutes lettres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans client retenu, le point global reste ce qu’il était (aucune page patient)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — navigation sans rechargement du document",
+    "etapes": [
+      {
+        "libelle": "go() change d’écran SANS recharger le document (marqueur de fenêtre conservé)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’adresse suit l’écran (pushState)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une seule coquille après navigation (pas de barre ni de contenu en double)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un module jamais chargé sur ce document (M12) se charge à la demande et peint",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un lien du ruban ou du bandeau navigue aussi sans recharger",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le retour arrière du navigateur restaure l’écran précédent sans rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Quatre navigations enchaînées : toujours un seul document, une seule barre, aucune modale résiduelle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’ancre d’onglet est portée par l’adresse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un écran autonome (verrou) recharge le document, comme avant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript durant la navigation",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse",
+    "etapes": [
+      {
+        "libelle": "L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le routage se fait AU SERVEUR : la réception ne reçoit ni échéance fiscale ni alerte de stock (RG-13)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Quand la cause cesse (échéances réglées), l’exécution résout l’alerte — elle disparaît de la cloche sans être supprimée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans session, le registre des tâches est refusé (401)",
         "ok": true,
         "detail": null
       },
