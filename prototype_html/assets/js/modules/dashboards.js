@@ -3406,7 +3406,7 @@
           question: 'restent à terminer et à rendre',
           vide: 'Aucun compte rendu en attente.',
           ton: 'warning', icone: 'scan-line',
-          ecran: 'm2-imagerie', lienLabel: 'Échographie & imagerie',
+          ecran: 'm2-imagerie', lienLabel: 'Imagerie médicale',
           note: 'La conclusion est obligatoire avant de rendre : c’est elle que le prescripteur lit.',
         };
       },
@@ -3453,7 +3453,7 @@
           title: 'Accès rapides',
           render: function () {
             return K.shortcuts([
-              { id: 'm2-imagerie', icon: 'scan-line', label: 'Échographie & imagerie', detail: 'Saisie des comptes rendus' },
+              { id: 'm2-imagerie', icon: 'scan-line', label: 'Imagerie médicale', detail: 'Saisie des comptes rendus' },
               { id: 'm1-patients', icon: 'users', label: 'Répertoire des patients', detail: 'Lecture seule' },
               { id: 'm2-prescriptions', icon: 'clipboard-plus', label: 'Prescriptions', detail: 'Lecture seule' },
             ]);

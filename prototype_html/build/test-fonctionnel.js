@@ -11222,6 +11222,96 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   }
 
+  /* ========================================================================
+   * Vague 69 — suivi des ventes par patient et par secteur, « Imagerie médicale »
+   * ======================================================================== */
+  {
+    scenario('Vague 69 — Suivi des ventes : détail par patient et par secteur, Imagerie médicale');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'stock', fonction: 'stock', nom: 'MAMAN Zoukanéri', nomComplet: 'MAMAN Zoukanéri', identifiant: 'z.maman' }));
+    await ouvrir('m6-point-ventes.html');
+    erreursJS = [];
+
+    const voc = await page.evaluate(() => {
+      const D = window.SIGH.data;
+      return {
+        labels: D.GROUPES_PRESTATION.map((g) => g.label),
+        norm: [D.secteurNormalise('Échographie'), D.secteurNormalise('irm'), D.secteurNormalise('imagerie'), D.secteurNormalise('Radiographie'), D.secteurNormalise('mammographie')],
+        centre: (D.CENTRES_COUT || []).map((c) => c.label),
+        groupeImagerie: (D.groupePrestation('imagerie', {}) || {}).label,
+      };
+    });
+    verifier('« Imagerie médicale » remplace « Échographie » comme secteur : groupes, normalisation (IRM, scanner, mammographie comprises) et ligne d’imagerie',
+      voc.labels.indexOf('Imagerie médicale') >= 0 && voc.labels.indexOf('Échographie') < 0
+      && voc.norm.every((x) => x === 'Imagerie médicale') && voc.groupeImagerie === 'Imagerie médicale', JSON.stringify(voc));
+
+    const choix = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data, C = window.SIGH.core;
+      const b = C.bornes('mois', C.iso(C.aujourdhui()));
+      const parPat = {};
+      S.collection('factures').active().forEach((f) => {
+        if (!f.patientId || !C.dansBornes(f.date, b)) return;
+        (f.lignes || []).forEach((l) => {
+          const p = parPat[f.patientId] || (parPat[f.patientId] = { id: f.patientId, nom: f.patient, groupes: {}, lignes: 0 });
+          p.groupes[(D.groupePrestation(l.categorie, l) || {}).id || 'autre'] = true; p.lignes++;
+        });
+      });
+      const tri = Object.keys(parPat).map((k) => parPat[k]).sort((x, y) => Object.keys(y.groupes).length - Object.keys(x.groupes).length || y.lignes - x.lignes);
+      return tri.slice(0, 2).map((p) => ({ id: p.id, nom: p.nom, lignes: p.lignes }));
+    });
+    verifier('Le jeu porte au moins deux patients vendus sur la période (matière de la sonde)', choix.length === 2, JSON.stringify(choix));
+
+    const carte = await page.evaluate(async (ids) => {
+      const lab = [...document.querySelectorAll('label')].find((x) => /Client \(un ou plusieurs\)/.test(x.textContent));
+      const combo = lab.nextElementSibling;
+      combo.value = ids; combo.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 500));
+      const onglet = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Par patient/.test(t.textContent));
+      if (onglet) onglet.click();
+      await new Promise((r) => setTimeout(r, 500));
+      const cartes = [...document.querySelectorAll('#page-content .card')].filter((c) => /Net facturé/.test(c.textContent) && c.querySelector('h4'));
+      return cartes.map((c) => ({
+        nom: (c.querySelector('h3') || {}).textContent,
+        secteurs: [...c.querySelectorAll('h4')].map((h) => h.textContent),
+        lignes: c.querySelectorAll('tbody tr').length,
+        vides: (c.textContent.match(/aucune vente/g) || []).length,
+      }));
+    }, choix.map((c) => c.id));
+    verifier('L’onglet « Par patient » affiche une carte par patient sélectionné', carte.length === 2, JSON.stringify(carte.map((c) => c.nom)));
+    verifier('Chaque carte porte les SIX secteurs dans l’ordre arrêté, « Imagerie médicale » compris, et dit « aucune vente » pour un secteur vide',
+      carte.every((c) => c.secteurs.length === 6 && c.secteurs[3] === 'Imagerie médicale' && c.secteurs[0] === 'Laboratoire' && c.secteurs[5] === 'Hospitalisation et soins'
+        && c.vides + 0 >= 0), JSON.stringify(carte.map((c) => c.secteurs)));
+    verifier('Le détail recoupe le magasin : autant de lignes affichées que de lignes facturées sur la période',
+      carte.reduce((n, c) => n + c.lignes, 0) === choix.reduce((n, c) => n + c.lignes, 0), carte.map((c) => c.lignes).join('+') + ' vs ' + choix.map((c) => c.lignes).join('+'));
+
+    const imp = await page.evaluate(async () => {
+      const P = window.SIGH.print; const vu = {};
+      P.etat = (o) => { vu.titre = o.titre; vu.texte = o.contenu ? o.contenu.textContent : ''; vu.cartouche = JSON.stringify(o.cartouche); };
+      const clic = (txt) => [...document.querySelectorAll('button')].find((b) => b.textContent.indexOf(txt) >= 0).click();
+      clic('Point par patient'); await new Promise((r) => setTimeout(r, 300));
+      const parPatient = { titre: vu.titre, nbPages: (vu.texte.match(/Patient :/g) || []).length, secteurs: /Imagerie médicale/.test(vu.texte) };
+      clic('Point global'); await new Promise((r) => setTimeout(r, 300));
+      const global = { titre: vu.titre, nbPages: (vu.texte.match(/Patient :/g) || []).length, recap: /Groupe de prestation/.test(vu.texte), pct: /Part réglée par les assureurs/.test(vu.texte) };
+      return { parPatient, global };
+    });
+    verifier('« Point par patient » imprime une page par patient, secteurs en clair',
+      /par patient/.test(imp.parPatient.titre) && imp.parPatient.nbPages === 2 && imp.parPatient.secteurs, JSON.stringify(imp.parPatient));
+    verifier('« Point global » avec des clients retenus : le récapitulatif par groupe d’abord, puis une page par patient, les pourcentages en toutes lettres',
+      imp.global.nbPages === 2 && imp.global.recap && imp.global.pct, JSON.stringify(imp.global));
+
+    const sans = await page.evaluate(async () => {
+      const lab = [...document.querySelectorAll('label')].find((x) => /Client \(un ou plusieurs\)/.test(x.textContent));
+      lab.nextElementSibling.value = []; lab.nextElementSibling.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 400));
+      const P = window.SIGH.print; let t = '';
+      P.etat = (o) => { t = o.contenu.textContent; };
+      [...document.querySelectorAll('button')].find((b) => b.textContent.indexOf('Point global') >= 0).click();
+      await new Promise((r) => setTimeout(r, 300));
+      return { pages: (t.match(/Patient :/g) || []).length };
+    });
+    verifier('Sans client retenu, le point global reste ce qu’il était (aucune page patient)', sans.pages === 0, JSON.stringify(sans));
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

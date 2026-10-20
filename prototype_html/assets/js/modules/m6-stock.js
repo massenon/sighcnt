@@ -3352,6 +3352,7 @@
         el('div.flex.flex-wrap.gap-2', null, [
           K.btn('Point détaillé', { variant: 'primary', icon: 'printer', onclick: function () { imprimer(true); } }),
           K.btn('Point global', { icon: 'printer', onclick: function () { imprimer(false); } }),
+          K.btn('Point par patient', { icon: 'users', onclick: function () { imprimer('patient'); } }),
           K.btn('Réinitialiser les filtres', { icon: 'rotate-ccw', size: 'sm', onclick: reinit }),
         ]),
       ]));
@@ -3453,10 +3454,98 @@
         vue.appendChild(U.tabs([
           { id: 'journal', label: 'Journal des ventes', badge: t.pieces, render: function () { return ongletJournal(lignes); } },
           { id: 'clients', label: 'Par client', render: function () { return ongletClients(lignes); } },
+          { id: 'patients', label: 'Par patient', badge: valeurs(comboClient).length || undefined, render: function () { return ongletPatients(lignes); } },
           { id: 'articles', label: 'Par article', render: function () { return ongletArticles(lignes); } },
           { id: 'groupes', label: 'Par groupe et famille', render: function () { return ongletGroupes(lignes); } },
           { id: 'evolution', label: 'Évolution', render: function () { return ongletEvolution(lignes, b); } },
         ]));
+      }
+
+      /* 6. PAR PATIENT — ce qui a été VENDU à chaque patient sélectionné, secteur par
+            secteur : quelles analyses, quels articles, quelles consultations, quels examens
+            d'imagerie médicale. C'est la désignation FACTURÉE (libellé de catalogue), jamais
+            ce qui a été trouvé : un état de ventes ne porte aucune donnée médicale (RG-13).
+            Le rattachement au secteur passe par la fabrique unique du référentiel
+            (`D.groupePrestation`, déjà posée sur chaque ligne) — jamais une seconde règle. */
+      function resteLigne(l) { return Math.max(0, l.partPatient - (l.regle ? l.montantRegle : 0)); }
+      function blocsParPatient(lignes) {
+        var parPatient = C.groupBy(lignes.filter(function (l) { return l.patientId; }), 'patientId');
+        return C.sortBy(Object.keys(parPatient).map(function (id) {
+          var g = parPatient[id], parGroupe = C.groupBy(g, 'groupe');
+          return {
+            id: id, patient: g[0].patient, code: g[0].patientCode, assureur: g[0].assureur,
+            total: cumuler(g),
+            secteurs: D.GROUPES_PRESTATION.map(function (gr) {
+              var l = C.sortBy(parGroupe[gr.id] || [], 'date');
+              return { groupe: gr, lignes: l, total: cumuler(l) };
+            }),
+          };
+        }), 'patient');
+      }
+      function ongletPatients(lignes) {
+        var choisis = valeurs(comboClient);
+        var host = el('div.space-y-4');
+        if (!choisis.length) {
+          host.appendChild(K.note('<strong>Choisissez un ou plusieurs clients</strong> dans le filtre ci-dessus : cet onglet détaille, pour '
+            + 'chacun, ce qui lui a été vendu <em>secteur par secteur</em>.', { tone: 'info', icon: 'user-search' }));
+          return host;
+        }
+        var blocs = blocsParPatient(lignes);
+        if (!blocs.length) { host.appendChild(K.note('Aucune vente sur la période pour les clients retenus.', { tone: 'warning', icon: 'inbox' })); return host; }
+        blocs.forEach(function (p) {
+          var carte = el('div.card');
+          carte.appendChild(el('div.card-head', null, [
+            el('div', null, [el('h3.text-sm.font-semibold.text-slate-900', { text: p.patient }),
+              el('p.text-xs.text-slate-500', { text: (p.code || '—') + (p.assureur ? ' — assuré ' + p.assureur : ' — non assuré') })]),
+            el('div.text-right', null, [el('p.text-xs.text-slate-500', { text: 'Net facturé' }), el('p.text-sm.font-semibold', { text: C.money(p.total.net) })]),
+          ]));
+          var corps = el('div.card-body.space-y-4');
+          p.secteurs.forEach(function (sec) {
+            var entete = el('div.flex.items-center.gap-2', null, [C.icon(sec.groupe.icone || 'tag', 'h-4 w-4 text-navy-600'),
+              el('h4.text-sm.font-semibold.text-slate-800', { text: sec.groupe.label }),
+              el('span.text-xs.text-slate-500', { text: sec.lignes.length ? sec.lignes.length + ' ligne(s) — ' + C.money(sec.total.net) : 'aucune vente' })]);
+            corps.appendChild(entete);
+            if (sec.lignes.length) {
+              corps.appendChild(K.miniTable(['Date', 'Pièce', 'Désignation', 'Qté', 'Net', 'Part assureur', 'Payé', 'Reste dû'],
+                sec.lignes.map(function (l) {
+                  return [C.dateFR(l.date), l.numero, l.designation, C.num(l.quantite), C.money(l.montant, false),
+                    C.money(l.partAssureur, false), C.money(l.regle ? l.montantRegle : 0, false), C.money(resteLigne(l), false)];
+                })));
+            }
+          });
+          carte.appendChild(corps);
+          host.appendChild(carte);
+        });
+        return host;
+      }
+      /* Les pages imprimées : une par patient, six blocs, les secteurs vides DITS. */
+      function pagesPatients(lignes) {
+        var racine = el('div.space-y-4');
+        var blocs = blocsParPatient(lignes);
+        if (!blocs.length) { racine.appendChild(el('p', { text: 'Aucune vente sur la période pour les clients retenus.' })); return racine; }
+        blocs.forEach(function (p) {
+          var page = el('div.space-y-2', { style: 'page-break-before: always' });
+          page.appendChild(el('h3.text-base.font-semibold', { text: 'Patient : ' + p.patient + ' (' + (p.code || '—') + ')' }));
+          page.appendChild(el('p.text-xs', { text: (p.assureur ? 'Assuré ' + p.assureur : 'Non assuré') + ' — ' + p.total.lignes + ' ligne(s), net facturé '
+            + C.money(p.total.net, false) + ', encaissé ' + C.money(p.total.encaisse, false) + '.' }));
+          p.secteurs.forEach(function (sec) {
+            page.appendChild(el('p.font-semibold.mt-2', { text: sec.groupe.label }));
+            if (!sec.lignes.length) { page.appendChild(el('p.text-xs', { text: 'Aucune vente.' })); return; }
+            page.appendChild(P.tableau([
+              { label: 'Date', value: function (l) { return C.dateFR(l.date); } },
+              { label: 'Pièce', value: function (l) { return l.numero; } },
+              { label: 'Désignation', value: function (l) { return l.designation; } },
+              { label: 'Qté', align: 'right', value: function (l) { return C.num(l.quantite); }, somme: function (l) { return l.quantite; }, formatTotal: function (v) { return C.num(v); } },
+              { label: 'Brut', align: 'right', value: function (l) { return C.money(l.montantBrut, false); }, somme: function (l) { return l.montantBrut; } },
+              { label: 'Remise', align: 'right', value: function (l) { return C.money(l.remise, false); }, somme: function (l) { return l.remise; } },
+              { label: 'Part assureur', align: 'right', value: function (l) { return C.money(l.partAssureur, false); }, somme: function (l) { return l.partAssureur; } },
+              { label: 'Payé', align: 'right', value: function (l) { return C.money(l.regle ? l.montantRegle : 0, false); }, somme: function (l) { return l.regle ? l.montantRegle : 0; } },
+              { label: 'Reste dû', align: 'right', value: function (l) { return C.money(resteLigne(l), false); }, somme: function (l) { return resteLigne(l); } },
+            ], sec.lignes, { total: true }));
+          });
+          racine.appendChild(page);
+        });
+        return racine;
       }
 
       /* 1. Le journal — une ligne par pièce, avec le détail des montants payés
@@ -3720,7 +3809,9 @@
 
         var contenu = el('div.space-y-3');
 
-        if (detaille) {
+        if (detaille === 'patient') {
+          contenu.appendChild(pagesPatients(lignes));
+        } else if (detaille) {
           /* Le point DÉTAILLÉ : une ligne par pièce, avec le détail des
              montants payés par chaque client — demande n° 2. */
           var parPiece = C.groupBy(lignes, 'factureId');
@@ -3806,8 +3897,11 @@
             + C.money(t.patient - t.encaisse, false) + ' encore dus.' }),
         ]));
 
+        /* Le point GLOBAL avec des clients retenus : le récapitulatif reste la première page, les pages patient suivent. */
+        if (detaille === false && valeurs(comboClient).length) contenu.appendChild(pagesPatients(lignes));
+
         P.etat({
-          titre: detaille ? 'Point détaillé des ventes' : 'Point global des ventes',
+          titre: detaille === 'patient' ? 'Point des ventes par patient' : (detaille ? 'Point détaillé des ventes' : 'Point global des ventes'),
           sousTitre: C.libellePeriode(b),
           cartouche: [
             ['Période', C.libellePeriode(b)],

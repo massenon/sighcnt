@@ -5312,7 +5312,7 @@
     { code: 'prelevement', label: 'Salle de prélèvement' },
     { code: 'pharmacie', label: 'Pharmacie' },
     { code: 'salle_soins', label: 'Salle de soins' },
-    { code: 'imagerie', label: 'Échographie' },
+    { code: 'imagerie', label: 'Imagerie médicale' },
   ];
 
   function colFile() {

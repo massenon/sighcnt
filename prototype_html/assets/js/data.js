@@ -817,7 +817,7 @@
     { id: 'laboratoire', label: 'Laboratoire', type: 'exploitation' },
     { id: 'pharmacie', label: 'Pharmacie', type: 'exploitation' },
     { id: 'consultation', label: 'Consultation', type: 'exploitation' },
-    { id: 'imagerie', label: 'Échographie', type: 'exploitation' },
+    { id: 'imagerie', label: 'Imagerie médicale', type: 'exploitation' },
     { id: 'maternite', label: 'Maternité', type: 'exploitation' },
     { id: 'hospitalisation', label: 'Hospitalisation et soins', type: 'exploitation' },
     /* Un seul centre de coût. Les deux libellés désignaient le même service ;
@@ -1815,7 +1815,7 @@
     { id: 'laboratoire', label: 'Laboratoire', categories: ['analyse'], icone: 'flask-conical' },
     { id: 'pharmacie', label: 'Pharmacie', categories: ['medicament'], icone: 'pill' },
     { id: 'consultation', label: 'Consultation', categories: ['consultation'], icone: 'stethoscope' },
-    { id: 'echographie', label: 'Échographie', categories: ['imagerie'], icone: 'scan-line',
+    { id: 'echographie', label: 'Imagerie médicale', categories: ['imagerie'], icone: 'scan-line',
       secteurs: ['Imagerie médicale'] },
     { id: 'maternite', label: 'Maternité', categories: [], icone: 'baby',
       secteurs: ['Maternité', 'Gynéco-obstétrique'] },
@@ -1847,7 +1847,7 @@
     if (/labo/.test(k)) return 'Laboratoire';
     if (/pharma|dispensation|medicament/.test(k)) return 'Pharmacie';
     if (/maternit|obstetr|gyneco|accouch|cpn|pf\b/.test(k)) return 'Maternité';
-    if (/imagerie|echograph|radio|ecg/.test(k)) return 'Échographie';
+    if (/imagerie|echograph|radio|ecg|scanner|irm|mammo/.test(k)) return 'Imagerie médicale';
     if (/consultation|medecine|accueil/.test(k)) return 'Consultation';
     if (/hospit|observation|soins|chirurgie|bloc|urgence/.test(k)) return 'Hospitalisation et soins';
     return null;

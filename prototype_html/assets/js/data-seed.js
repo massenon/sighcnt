@@ -925,7 +925,7 @@
     var file = col('fileAttente', { module: 'M2', entite: 'ticket de file', prefix: 'FIL' });
     var POSTES = [['accueil', 'Accueil'], ['consultation', 'Consultation'], ['caisse', 'Caisse'],
       ['prelevement', 'Salle de prélèvement'], ['pharmacie', 'Pharmacie'], ['salle_soins', 'Salle de soins'],
-      ['imagerie', 'Échographie']];
+      ['imagerie', 'Imagerie médicale']];
     var PRIORITES = ['ordre_arrivee', 'ordre_arrivee', 'ordre_arrivee', 'rdv', 'urgence', 'urgence_vitale'];
     /* Les praticiens qui reçoivent, dérivés du personnel soignant. */
     var recoivent = soignantsQui(function (x) { return x.prescrit; });
@@ -950,7 +950,7 @@
           praticien: attendu ? attendu.nomComplet : null,
           priorite: C.pick(rnd, PRIORITES),
           motif: C.pick(rnd, ['Consultation', 'Retrait de résultat', 'Règlement',
-            'Prélèvement', 'Délivrance', 'Pansement', 'Échographie']),
+            'Prélèvement', 'Délivrance', 'Pansement', 'Imagerie médicale']),
           arriveeLe: C.iso(FIN) + 'T' + C.pad(7 + Math.floor(attente / 12), 2) + ':'
             + C.pad(attente % 60, 2) + ':00.000Z',
           etat: servi ? 'servi' : 'attente',

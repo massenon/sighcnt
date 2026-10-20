@@ -86,7 +86,7 @@
      la vague 67 a bougé les deux premiers et laissé le troisième à 61, si
      bien qu'un poste hydraté depuis la base ne se ré-amorçait jamais.
      Incrémenter ce nombre, et lui seul, à toute modification de forme. */
-  var VERSION = 65;
+  var VERSION = 66;
   var db = null;
   var listeners = {};
 
