@@ -9689,9 +9689,15 @@ async function viderMessages(page) {
       const t = [...document.querySelectorAll('#page-content .tab')].find((x) => /Résultats/.test(x.textContent));
       if (t) t.click();
       await new Promise((r) => setTimeout(r, 500));
+      /* LA LIGNE SE CHERCHE PAR SA RÉFÉRENCE, JAMAIS PAR SON RANG (vague 68) : le tableau
+         est paginé par douze et trié par date ; sous l'horloge décalée du banc, la demande
+         du scénario n'est plus en tête, et une ligne de la page deux est « absente ». */
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ) { champ.value = ref; champ.dispatchEvent(new Event('input', { bubbles: true })); }
+      await new Promise((r) => setTimeout(r, 400));
       const tr = [...document.querySelectorAll('#page-content tbody tr')]
         .find((x) => x.textContent.indexOf(ref) !== -1);
-      if (!tr) return { erreur: 'ligne absente' };
+      if (!tr) return { erreur: 'ligne absente', recherche: !!champ };
       const boutons = [...tr.querySelectorAll('button')];
       return {
         verrouille: boutons.some((b) => b.getAttribute('aria-disabled') === 'true'),
