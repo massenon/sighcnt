@@ -3707,22 +3707,37 @@
     "nom": "Rôles, RBAC par écran, circuit du prélèvement et moteur de notification",
     "etapes": [
       {
-        "libelle": "« Laborantin » est devenu « Biologiste médical » jusqu’à la connexion",
+        "libelle": "« Laborantin » est devenu « Biologiste médical » au manifeste des rôles",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le poste d’ingénieur biomédical a disparu des écrans",
+        "libelle": "Le poste d’ingénieur biomédical a disparu de l’annuaire des comptes",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le caissier est « Dispensaire (Pharmacie) »",
+        "libelle": "Le caissier est « Dispensaire (Pharmacie) » à l’annuaire",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les trois profils créés ouvrent une session",
+        "libelle": "Les trois profils créés ouvrent une session (annuaire)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page de connexion ne porte plus de sélecteur de profil de démonstration",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le pied « comptes ouverts par l’administrateur — 2 étapes — plan du site » est retiré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Identifiant et mot de passe ne sont plus pré-remplis",
         "ok": true,
         "detail": null
       },
@@ -4019,12 +4034,17 @@
         "detail": null
       },
       {
-        "libelle": "Aucune option du sélecteur ne répète le rôle après le nom (Bug 0)",
+        "libelle": "La connexion ne propose plus de sélecteur de profil",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les trois nouveaux profils ouvrent une session",
+        "libelle": "Les trois nouveaux rôles figurent au manifeste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les trois nouveaux rôles ont un compte à l’annuaire",
         "ok": true,
         "detail": null
       },
@@ -5859,6 +5879,107 @@
       },
       {
         "libelle": "La nouvelle demande d’imagerie accepte un PRESCRIPTEUR EXTÉRIEUR : l’entrée existe et son champ libre n’apparaît que pour elle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 68 — agenda sur l’horloge réelle, vidage des jeux de test qui tient",
+    "etapes": [
+      {
+        "libelle": "L’horloge du banc a été avancée : le scénario mesure autre chose que la date du jeu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fenêtre par défaut de l’agenda contient la date du jour de l’HORLOGE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le formulaire « Nouveau rendez-vous » part de la date du jour, à l’heure locale",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rendez-vous est enregistré — une consultation planifiée de plus, au bon dossier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il porte la date saisie, à l’heure locale — aucune dérive UTC",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Pris HORS de la fenêtre affichée, l’agenda étend sa fenêtre jusqu’à lui",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Et il est VISIBLE dans la grille, sans rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Réinitialiser le jeu de données » ouvre une confirmation qui EXIGE un motif et dit ce qui est conservé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le vidage retire les tables d’activité et pose le drapeau",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Après rechargement depuis la base, le vidage TIENT : plus de patient, de consultation, de facture ni d’écriture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’essentiel est conservé : droits, modules actifs, catalogues labo et imagerie, personnel, actes, grille des primes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal neuf commence par le vidage lui-même (RG-12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Neuf écrans qui amorçaient leur collection ne régénèrent plus le jeu de démonstration",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun de ces écrans ne tombe sur un répertoire vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le calendrier fiscal reconstruit ne porte AUCUN règlement inventé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un référentiel DÉRIVÉ d’un document — le calendrier fiscal — se reconstruit, lui",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Régénérer » rend le jeu COMPLET (parcours peuplé, maternité, GED, imagerie) et lève le drapeau de vidage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Ce qui était né après le vidage ne survit pas à la régénération (clés absentes de la semence envoyées vides)",
         "ok": true,
         "detail": null
       },

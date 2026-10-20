@@ -52,7 +52,7 @@ npm run build     # génère les pages, la safelist, puis compile Tailwind
 npm run compta    # régénère data-compta.js depuis les classeurs Excel de docs/
 npm run lint      # node --check sur toutes les sources JS
 npm run check     # ouvre les 306 pages dans Chrome : erreurs JS, liens, ressources
-npm run test      # 66 parcours fonctionnels de bout en bout (1091 vérifications)
+npm run test      # 67 parcours fonctionnels de bout en bout (1118 vérifications)
 npm run serveur   # sert le prototype AVEC sa base (PHP intégré, port 8080)
 npm run audit-rbac # chaque écran sous chaque profil : commandes offertes vs droits réels
 npm run inventaire-rbac # ce que chaque rôle voit RÉELLEMENT → newdocs/INVENTAIRE-RBAC.md
@@ -66,7 +66,7 @@ et l'extraction de texte ne donne rien. Les rendre en images via Chrome puis les
 lire visuellement : `node build/_pdf2png.js "../docs/fichier.pdf" build/pdf-pages 2`.
 Les classeurs Excel s'inspectent avec `node build/_xlsx.js "../docs/fichier.xlsx"`.
 
-`check` et `test` pilotent le Chrome installé sur le poste (`CHROME_PATH` pour surcharger). Attendu : **0 erreur JS, 0 lien cassé, 62/62 scénarios**, et **0 promesse** à l’audit RBAC (1091 sondages écran × profil).
+`check` et `test` pilotent le Chrome installé sur le poste (`CHROME_PATH` pour surcharger). Attendu : **0 erreur JS, 0 lien cassé, 67/67 scénarios**, et **0 promesse** à l’audit RBAC (1091 sondages écran × profil).
 
 Pour ne contrôler qu'un sous-ensemble : `node build/check.js --pages=m6-,m8-`.
 Captures d'écran : `node build/shot.js <page>.html 1600 sortie.png`.
@@ -1615,7 +1615,21 @@ l'écran montre doit être ce que le magasin porte.
   longueur, et `ouvrir()` DIT quand une page ne s'est pas peinte. Doctrine confirmée une fois de plus :
   un rendu qui échoue doit le dire — et un banc qui attend doit dire ce qu'il attendait. Diagnostic
   établi par un agent de reproduction isolé (cinq rejeux sur base neuve, ports et base distincts).
-- Scénario **67** (dernier : il VIDE le magasin et le régénère en sortant). État : bancs en cours de relance au 20/10/2026 — chiffres définitifs au commit suivant.
+- **UNE LIGNE SE CHERCHE PAR SA RÉFÉRENCE, JAMAIS PAR SON RANG.** Deux scénarios (phase 8, patient externe)
+  cliquaient le PREMIER « Saisir le CR », le premier « Rendre », ou cherchaient leur ligne sur la première page
+  d'un tableau paginé par douze et trié par date — en supposant que la pièce qu'ils venaient de créer était la
+  plus récente. Sous l'horloge décalée du banc, elle ne l'est plus : le compte rendu naissait sur la demande
+  d'un AUTRE patient, et aucune assertion ne le disait — la sonde mesurait son rang, pas son geste. Les deux
+  tapent désormais la référence dans la recherche du tableau et agissent sur la ligne qui la porte. Une sonde
+  qui dépend de l'ordre d'un tableau verrouille l'ordre du jeu, pas le comportement de l'écran.
+- **La relecture adversariale a été CONTRE-EXPERTISÉE** : chaque défaut relevé sur le vidage (amorçages non
+  gardés de M5 et M3, `reset()` qui n'envoyait pas les clés absentes, amorçages M10 ressuscités) a été rejoué
+  par deux réfutateurs indépendants sur l'arbre d'AVANT correction (harnais, ports et bases distincts) puis sur
+  l'arbre corrigé : tous confirmés, tous soldés. `attendrePeinture` reconnaît les redirections (403,
+  authentification, page publique d'enquête) : les attendre 150 s criait à une hydratation pendante là où le
+  scénario mesure une adresse.
+- Scénario **67** (dernier : agenda sur l'horloge réelle, puis il VIDE le magasin, ouvre neuf écrans sur le jeu
+  vide et le régénère en sortant). État au 20/10/2026 : **67/67 scénarios (1 118 vérifications)**, 0 erreur JS.
 
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau
 transitoire, les boutons du bandeau non : la page appelée s’ouvrait menu déployé alors que l’utilisateur
