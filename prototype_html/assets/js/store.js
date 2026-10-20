@@ -3594,6 +3594,21 @@
   /* ==========================================================================
    * API COLLECTION
    * ======================================================================== */
+  /* GARDES D'ÉCRITURE — une règle métier posée SUR la collection, pas sur un
+     écran : l'exercice clos refuse toute écriture, d'où qu'elle vienne. La garde
+     rend un MOTIF (refus nommé) ou rien. */
+  var GARDES = {};
+  function garder(nom, fn) { GARDES[nom] = fn; }
+  function refuse(nom, op, rec) {
+    var g = GARDES[nom];
+    if (!g) return null;
+    var motif = g(op, rec);
+    if (!motif) return null;
+    try { log('Écriture refusée', '—', nom, (rec && (rec.id || rec.numero)) || '', null, { op: op, motif: motif }); } catch (e) { /* journal indisponible */ }
+    try { if (global.SIGH.ui && global.SIGH.ui.toast) global.SIGH.ui.toast('Écriture refusée.', { type: 'error', detail: motif }); } catch (e) { /* sans interface */ }
+    return motif;
+  }
+
   function collection(name, meta) {
     load();
     if (!db[name]) db[name] = [];
@@ -3612,6 +3627,7 @@
       count: function () { return api.active().length; },
 
       insert: function (obj) {
+        if (refuse(name, 'inserer', obj)) return null;
         var rec = Object.assign({
           id: (M.prefix || name.slice(0, 3).toUpperCase()) + C.uid(),
           statut: 'actif',
@@ -3640,6 +3656,7 @@
 
       update: function (id, patch) {
         var rec = api.get(id); if (!rec) return null;
+        if (refuse(name, 'modifier', Object.assign({}, rec, patch))) return null;
         var avant = Object.assign({}, rec);
         Object.assign(rec, patch);
         rec._modifiePar = currentUser();
@@ -3665,6 +3682,7 @@
       /** RG-14 — archivage logique, jamais de suppression physique. */
       archive: function (id, motif) {
         var rec = api.get(id); if (!rec) return null;
+        if (refuse(name, 'archiver', rec)) return null;
         var avant = rec.statut;
         rec.statut = 'archive';
         rec._archivePar = currentUser();
@@ -3935,7 +3953,7 @@
     },
     jetonServeur: function () { return SRV.jeton; },
     log: log, on: on, emit: emit,
-    session: session, setSession: setSession, currentUser: currentUser,
+    session: session, setSession: setSession, currentUser: currentUser, garder: garder,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
     reglage: reglage, setReglage: setReglage,
     valeurUnitaire: valeurUnitaire,

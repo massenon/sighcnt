@@ -2666,6 +2666,329 @@
     dossier: dossier,
   };
 
+
+  /* ==========================================================================
+   * EXERCICES COMPTABLES — sélecteur, lecture seule au moteur, clôture en deux
+   * gestes (PRD-M12-cloture-exercice).
+   * --------------------------------------------------------------------------
+   * LE MOTEUR VIT AU SOCLE : le sélecteur d'exercice est lu par tous les écrans
+   * de M12, de M9 et des tableaux de bord, et une page ne charge que le module
+   * de son écran. Une clôture est un acte DÉFINITIF : un exercice clos ne se
+   * rouvre pas (obligation légale), il se corrige par une écriture de l'exercice
+   * suivant. La garde de lecture seule est posée sur la COLLECTION, pas sur
+   * l'écran — un champ désactivé dans le navigateur ne protège rien.
+   * ======================================================================== */
+  var CLE_EXERCICE = 'sigh-cnt:exercice';
+  var LETTRABLES = ['40', '41', '42', '43', '44', '47'];
+
+  function anneeDe(date) { var d = C.toDate(date); return d && !isNaN(d) ? d.getFullYear() : null; }
+  function anneeCourante() { return C.aujourdhui().getFullYear(); }
+
+  /* Les exercices sont DÉRIVÉS : une fiche par année portée par les écritures,
+     plus l'année courante, plus celle de la liasse déposée (close d'office —
+     c'est un fait déposé à la DGI, non un exercice du logiciel). */
+  function exercices() {
+    var col = S.collection('exercices', { module: 'M12', entite: 'Exercice' });
+    var annees = {};
+    S.collection('ecritures').all().forEach(function (e) { var a = anneeDe(e.date); if (a) annees[a] = true; });
+    annees[anneeCourante()] = true;
+    if (global.SIGH.liasse && global.SIGH.liasse.DEPOT) {
+      annees[global.SIGH.liasse.DEPOT.exerciceN] = true;
+      annees[global.SIGH.liasse.DEPOT.exerciceN1] = true;
+    }
+    var ajoute = false;
+    Object.keys(annees).forEach(function (a) {
+      a = Number(a);
+      if (col.all().some(function (x) { return x.annee === a; })) return;
+      var deposee = !!(global.SIGH.liasse && global.SIGH.liasse.DEPOT && (global.SIGH.liasse.DEPOT.exerciceN === a || global.SIGH.liasse.DEPOT.exerciceN1 === a));
+      col.all().unshift({
+        id: 'EXO-' + a, annee: a, debut: a + '-01-01', fin: a + '-12-31', statut: 'actif',
+        etat: deposee ? 'clos' : 'ouvert',
+        source: deposee ? 'liasse' : 'journal',
+        valideLe: deposee ? global.SIGH.liasse.DEPOT.dateDepot : null,
+        validePar: deposee ? 'Liasse déposée à la DGI' : null,
+        motif: deposee ? 'Exercice antérieur à la mise en service : fait par la liasse déposée.' : null,
+      });
+      ajoute = true;
+    });
+    if (ajoute) S.save();
+    return col.all().filter(function (x) { return x.statut !== 'archive'; })
+      .sort(function (a, b) { return b.annee - a.annee; });
+  }
+  function exercice(annee) { return exercices().filter(function (x) { return x.annee === Number(annee); })[0] || null; }
+  function etatExercice(annee) { var x = exercice(annee); return x ? x.etat : 'ouvert'; }
+
+  function exerciceChoisi() {
+    var v = null;
+    try { v = Number(global.localStorage.getItem(CLE_EXERCICE)); } catch (e) { /* stockage refusé */ }
+    return v && exercice(v) ? v : anneeCourante();
+  }
+  function choisirExercice(annee) {
+    try { global.localStorage.setItem(CLE_EXERCICE, String(annee)); } catch (e) { /* sans effet */ }
+    return Number(annee);
+  }
+
+  /* La garde de lecture seule : posée sur la collection, refusée AVANT l'écriture. */
+  S.garder('ecritures', function (op, rec) {
+    var a = anneeDe(rec && rec.date);
+    if (!a) return null;
+    if (etatExercice(a) === 'clos') {
+      var x = exercice(a);
+      return 'Exercice ' + a + ' clos' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '')
+        + ' — lecture seule. La correction passe par une écriture de l’exercice en cours.';
+    }
+    return null;
+  });
+
+  function sensLettrable(compte) {
+    return LETTRABLES.some(function (p) { return String(compte).indexOf(p) === 0; });
+  }
+
+  /* Écritures VALIDÉES d'un exercice (un brouillon n'est pas un fait comptable). */
+  function ecrituresDe(annee, inclureBrouillons) {
+    return S.collection('ecritures').active().filter(function (e) {
+      return anneeDe(e.date) === Number(annee) && (inclureBrouillons || e.statut === 'validee');
+    });
+  }
+
+  function soldesParCompte(lignes) {
+    var m = {};
+    lignes.forEach(function (e) {
+      var k = String(e.compte);
+      if (!m[k]) m[k] = { compte: k, libelle: e.compteLibelle || k, debit: 0, credit: 0 };
+      m[k].debit += Number(e.debit) || 0; m[k].credit += Number(e.credit) || 0;
+    });
+    return Object.keys(m).sort().map(function (k) { m[k].solde = m[k].debit - m[k].credit; return m[k]; });
+  }
+
+  /* Le résultat : classes 7 (+) moins 6 (−), HAO (8) compris. Positif = bénéfice. */
+  function resultatDe(lignes) {
+    var r = 0;
+    lignes.forEach(function (e) {
+      var cl = String(e.compte).charAt(0);
+      if (cl === '6' || cl === '7' || cl === '8') r += (Number(e.credit) || 0) - (Number(e.debit) || 0);
+    });
+    return r;
+  }
+
+  /* Lignes de report (classes 1 à 5) vers N+1. Comptes NON lettrables : un solde
+     global. Comptes de TIERS : ligne par ligne, uniquement les lignes NON lettrées —
+     c'est ce qui permet de suivre sur le nouvel exercice les factures en attente. */
+  function lignesDeReport(lignes) {
+    var out = [];
+    var bilan = lignes.filter(function (e) { return '12345'.indexOf(String(e.compte).charAt(0)) >= 0; });
+    var tiers = bilan.filter(function (e) { return sensLettrable(e.compte); });
+    var autres = bilan.filter(function (e) { return !sensLettrable(e.compte); });
+    soldesParCompte(autres).forEach(function (s) {
+      if (Math.abs(s.solde) < 1) return;
+      out.push({ compte: s.compte, compteLibelle: s.libelle, debit: s.solde > 0 ? s.solde : 0, credit: s.solde < 0 ? -s.solde : 0, lettrable: false });
+    });
+    tiers.filter(function (e) { return !e.lettrage; }).forEach(function (e) {
+      var net = (Number(e.debit) || 0) - (Number(e.credit) || 0);
+      if (Math.abs(net) < 1) return;
+      out.push({ compte: String(e.compte), compteLibelle: e.compteLibelle, debit: net > 0 ? net : 0, credit: net < 0 ? -net : 0,
+        lettrable: true, pieceOrigine: e.numero, libelle: 'Report — ' + (e.libelle || e.numero) });
+    });
+    return out;
+  }
+
+  /* À-NOUVEAUX PROVISOIRES : tant que N n'est pas clos, N+1 voit un report calculé
+     des soldes validés de N, RECALCULÉ à chaque lecture et jamais stocké. Le
+     résultat de N (non encore soldé) est porté au compte 131 / 139. */
+  function aNouveauxProvisoires(annee) {
+    var prec = Number(annee) - 1;
+    var ex = exercice(prec);
+    if (!ex || ex.etat === 'clos' || ex.source === 'liasse') return [];
+    var base = ecrituresDe(prec);
+    var lignes = lignesDeReport(base);
+    var res = resultatDe(base);
+    if (Math.abs(res) >= 1) {
+      lignes.push({ compte: res >= 0 ? '131000' : '139000', compteLibelle: res >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
+        debit: res < 0 ? -res : 0, credit: res > 0 ? res : 0, lettrable: false });
+    }
+    return lignes.map(function (l) {
+      return Object.assign({ id: 'PROV-' + annee + '-' + l.compte + '-' + (l.pieceOrigine || 'S'), numero: 'AN-PROV-' + annee,
+        date: annee + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux (provisoire)',
+        libelle: l.libelle || 'À-nouveau provisoire', statut: 'validee', provisoire: true, origine: 'Provisoire — calculé' }, l);
+    });
+  }
+
+  /* PRÉ-CLÔTURE : contrôles nommés, chacun avec les pièces en cause et l'écran où corriger. */
+  function preCloture(annee) {
+    annee = Number(annee);
+    var tous = ecrituresDe(annee, true);
+    var validees = tous.filter(function (e) { return e.statut === 'validee'; });
+    var brouillons = tous.filter(function (e) { return e.statut === 'brouillon'; });
+    var controles = [];
+    controles.push({ id: 'brouillons', bloquant: true, ok: brouillons.length === 0,
+      libelle: 'Aucune écriture en brouillon', ecran: 'm12-ecritures',
+      detail: brouillons.length ? brouillons.length + ' ligne(s) en brouillon, dont ' + brouillons.slice(0, 4).map(function (e) { return e.numero; })
+        .filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', ') + '.' : '' });
+    var d = C.sum(validees, 'debit'), c = C.sum(validees, 'credit');
+    controles.push({ id: 'equilibre', bloquant: true, ok: Math.abs(d - c) < 1,
+      libelle: 'Journal équilibré (RG-10)', ecran: 'm12-balance',
+      detail: Math.abs(d - c) < 1 ? '' : 'Écart de ' + C.money(Math.abs(d - c)) + ' entre débit et crédit.' });
+    var pieces = {};
+    validees.forEach(function (e) { var p = pieces[e.numero] || (pieces[e.numero] = { d: 0, c: 0 }); p.d += Number(e.debit) || 0; p.c += Number(e.credit) || 0; });
+    var boiteuses = Object.keys(pieces).filter(function (k) { return Math.abs(pieces[k].d - pieces[k].c) >= 1; });
+    controles.push({ id: 'pieces', bloquant: true, ok: boiteuses.length === 0,
+      libelle: 'Chaque pièce validée est équilibrée', ecran: 'm12-ecritures',
+      detail: boiteuses.length ? boiteuses.length + ' pièce(s) déséquilibrée(s) : ' + boiteuses.slice(0, 4).join(', ') + '.' : '' });
+    var an = S.collection('ecritures').active().filter(function (e) { return anneeDe(e.date) === annee + 1 && e.journal === 'AN'; });
+    controles.push({ id: 'an-existants', bloquant: true, ok: an.length === 0,
+      libelle: 'Aucun à-nouveau déjà écrit sur ' + (annee + 1), ecran: 'm12-ouverture',
+      detail: an.length ? 'Des à-nouveaux existent (' + an[0].numero + ') : les archiver avant de clôturer, la clôture écrit les définitifs.' : '' });
+    var attente = validees.filter(function (e) { return String(e.compte).indexOf('47') === 0; });
+    var solde47 = C.sum(attente, 'debit') - C.sum(attente, 'credit');
+    controles.push({ id: 'compte-47', bloquant: false, ok: Math.abs(solde47) < 1,
+      libelle: 'Comptes d’attente (47x) soldés', ecran: 'm12-grand-livre',
+      detail: Math.abs(solde47) < 1 ? '' : 'Solde de ' + C.money(Math.abs(solde47)) + ' à régulariser.' });
+    controles.push({ id: 'ecritures', bloquant: true, ok: validees.length > 0,
+      libelle: 'L’exercice porte des écritures validées', ecran: 'm12-ecritures', detail: validees.length ? '' : 'Aucune écriture validée en ' + annee + '.' });
+    return { annee: annee, controles: controles, bloquants: controles.filter(function (x) { return x.bloquant && !x.ok; }),
+      resultat: resultatDe(validees), nbEcritures: validees.length };
+  }
+
+  function acteur() { var s = S.session && S.session(); return (s && (s.nomComplet || s.nom)) || 'Utilisateur'; }
+  function roleCourant() { var s = S.session && S.session(); return (s && s.role) || ''; }
+
+  /* GESTE 1 — la demande (comptable). Les contrôles bloquants refusent EN LES NOMMANT. */
+  function demanderCloture(annee) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x) return { ok: false, motif: 'Exercice ' + annee + ' inconnu.' };
+    if (x.etat === 'clos') return { ok: false, motif: 'Exercice ' + annee + ' déjà clos.' };
+    if (x.etat === 'en_attente_cloture') return { ok: false, motif: 'La clôture de ' + annee + ' attend déjà la validation de la Direction.' };
+    var pre = preCloture(annee);
+    if (pre.bloquants.length) return { ok: false, motif: 'Pré-clôture refusée — ' + pre.bloquants.map(function (b) { return b.libelle + (b.detail ? ' (' + b.detail + ')' : ''); }).join(' ; '), pre: pre };
+    S.collection('exercices').update(x.id, { etat: 'en_attente_cloture', demandeLe: new Date().toISOString(), demandePar: acteur(), resultatPrevu: pre.resultat });
+    S.log('Demande de clôture', 'M12', 'Exercice', String(annee), { etat: 'ouvert' }, { etat: 'en_attente_cloture', resultat: pre.resultat });
+    notifier({ type: 'cloture', poste: 'direction', libelle: 'Clôture ' + annee + ' à valider', detail: 'Le comptable a demandé la clôture de l’exercice ' + annee + '.', priorite: 'haute', reference: String(annee) });
+    return { ok: true, pre: pre };
+  }
+
+  /* Empreinte SHA-256 synchrone (FIPS 180-4) de l'export d'archive. */
+  function sha256(texte) {
+    var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    var b = unescape(encodeURIComponent(texte)), l = b.length, w = [], i, j;
+    for (i = 0; i < l; i++) w[i >> 2] |= b.charCodeAt(i) << (24 - (i % 4) * 8);
+    w[l >> 2] |= 0x80 << (24 - (l % 4) * 8);
+    var n = (((l + 8) >> 6) + 1) * 16; w[n - 1] = l * 8; for (i = 0; i < n; i++) w[i] = w[i] | 0;
+    var rotr = function (x, k) { return (x >>> k) | (x << (32 - k)); };
+    for (i = 0; i < n; i += 16) {
+      var s = w.slice(i, i + 16), a = H.slice();
+      for (j = 16; j < 64; j++) {
+        var s0 = rotr(s[j - 15], 7) ^ rotr(s[j - 15], 18) ^ (s[j - 15] >>> 3), s1 = rotr(s[j - 2], 17) ^ rotr(s[j - 2], 19) ^ (s[j - 2] >>> 10);
+        s[j] = (s[j - 16] + s0 + s[j - 7] + s1) | 0;
+      }
+      for (j = 0; j < 64; j++) {
+        var S1 = rotr(a[4], 6) ^ rotr(a[4], 11) ^ rotr(a[4], 25), ch = (a[4] & a[5]) ^ (~a[4] & a[6]);
+        var t1 = (a[7] + S1 + ch + K[j] + s[j]) | 0, S0 = rotr(a[0], 2) ^ rotr(a[0], 13) ^ rotr(a[0], 22);
+        var mj = (a[0] & a[1]) ^ (a[0] & a[2]) ^ (a[1] & a[2]), t2 = (S0 + mj) | 0;
+        a = [(t1 + t2) | 0, a[0], a[1], a[2], (a[3] + t1) | 0, a[4], a[5], a[6]];
+      }
+      for (j = 0; j < 8; j++) H[j] = (H[j] + a[j]) | 0;
+    }
+    return H.map(function (v) { return ('00000000' + (v >>> 0).toString(16)).slice(-8); }).join('');
+  }
+
+  /* GESTE 2 — la validation (Direction / DAF), par une personne DIFFÉRENTE de celle qui a demandé. */
+  function validerCloture(annee, motif) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x || x.etat !== 'en_attente_cloture') return { ok: false, motif: 'Aucune demande de clôture en attente pour ' + annee + '.' };
+    if (['da', 'direction', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La clôture est validée par la Direction ou la Directrice Administrative.' };
+    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour valider une clôture.' };
+    if (x.demandePar === acteur()) return { ok: false, motif: 'Signer n’est pas saisir : la validation doit venir d’une autre personne que le demandeur (' + x.demandePar + ').' };
+    var pre = preCloture(annee);
+    if (pre.bloquants.length) return { ok: false, motif: 'Contrôles bloquants à nouveau en échec : ' + pre.bloquants.map(function (b) { return b.libelle; }).join(' ; ') };
+
+    var col = S.collection('ecritures', { module: 'M12', entite: 'Écriture' });
+    var base = ecrituresDe(annee);
+    var res = resultatDe(base);
+
+    /* (1) Détermination du résultat : chaque compte 6/7/8 est soldé vers 131 / 139 — UNE pièce équilibrée. */
+    var numOD = 'OD-' + annee + '-RES';
+    var odBase = { numero: numOD, date: annee + '-12-31', journal: 'OD', journalLibelle: 'Journal des opérations diverses',
+      libelle: 'Détermination du résultat ' + annee, origine: 'Clôture — résultat', statut: 'validee', origineCloture: 'resultat', centreCout: null };
+    var lignesOD = [];
+    soldesParCompte(base.filter(function (e) { return '678'.indexOf(String(e.compte).charAt(0)) >= 0; })).forEach(function (s) {
+      if (Math.abs(s.solde) < 1) return;
+      lignesOD.push(Object.assign({}, odBase, { compte: s.compte, compteLibelle: s.libelle, debit: s.solde < 0 ? -s.solde : 0, credit: s.solde > 0 ? s.solde : 0 }));
+    });
+    if (Math.abs(res) >= 1) {
+      lignesOD.push(Object.assign({}, odBase, { compte: res >= 0 ? '131000' : '139000', compteLibelle: res >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
+        debit: res < 0 ? -res : 0, credit: res > 0 ? res : 0 }));
+    }
+    var dOD = C.sum(lignesOD, 'debit'), cOD = C.sum(lignesOD, 'credit');
+    if (Math.abs(dOD - cOD) >= 1) return { ok: false, motif: 'Pièce de résultat déséquilibrée (' + C.money(Math.abs(dOD - cOD)) + ') — clôture refusée (RG-10).' };
+    lignesOD.forEach(function (l) { col.insert(l); });
+
+    /* (2) À-nouveaux DÉFINITIFS au 1er janvier N+1, calculés APRÈS la pièce de résultat. */
+    var apres = ecrituresDe(annee);
+    var report = lignesDeReport(apres);
+    var anBase = { numero: 'AN-' + (annee + 1) + '-00001', date: (annee + 1) + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux',
+      libelle: 'À-nouveaux au 1er janvier ' + (annee + 1), origine: 'Clôture — à-nouveaux', statut: 'validee', origineCloture: 'an', centreCout: null };
+    var dAN = 0, cAN = 0;
+    report.forEach(function (l) {
+      dAN += l.debit; cAN += l.credit;
+    });
+    if (Math.abs(dAN - cAN) >= 1) {
+      /* Les lignes lettrées exclues ne peuvent pas déséquilibrer un report si le lettrage est équilibré :
+         un écart dit un lettrage faux, on refuse plutôt que de propager. */
+      return { ok: false, motif: 'À-nouveaux déséquilibrés (' + C.money(Math.abs(dAN - cAN)) + ') : vérifier les lettrages. L’exercice reste ouvert.', resteOD: numOD };
+    }
+    report.forEach(function (l) {
+      col.insert(Object.assign({}, anBase, { compte: l.compte, compteLibelle: l.compteLibelle, debit: l.debit, credit: l.credit,
+        libelle: l.libelle || anBase.libelle, pieceOrigine: l.pieceOrigine || null }));
+    });
+
+    /* (3) Archive : empreinte du journal ARRÊTÉ, puis état « clos » — en dernier. */
+    var arret = ecrituresDe(annee);
+    var texte = arret.map(function (e) { return [e.numero, e.date, e.journal, e.compte, e.debit, e.credit].join('|'); }).sort().join('\n');
+    var empreinte = sha256(texte);
+    S.collection('exercices').update(x.id, { etat: 'clos', valideLe: new Date().toISOString(), validePar: acteur(), motif: String(motif).trim(),
+      resultat: res, empreinte: empreinte, nbEcrituresArchivees: arret.length, anNumero: anBase.numero });
+    if (!exercice(annee + 1)) {
+      S.collection('exercices').all().unshift({ id: 'EXO-' + (annee + 1), annee: annee + 1, debut: (annee + 1) + '-01-01', fin: (annee + 1) + '-12-31',
+        statut: 'actif', etat: 'ouvert', source: 'journal' });
+    }
+    S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_attente_cloture' }, { etat: 'clos', resultat: res, empreinte: empreinte });
+    notifier({ type: 'cloture', poste: 'comptable', libelle: 'Exercice ' + annee + ' clos', detail: 'Résultat ' + C.money(res) + ' ; à-nouveaux ' + (annee + 1) + ' écrits.', reference: String(annee) });
+    S.save();
+    return { ok: true, resultat: res, empreinte: empreinte, lignesAN: report.length };
+  }
+
+  /* LETTRAGE : un ensemble de lignes d'UN compte de tiers dont le total s'annule. */
+  function lettrer(compte, ids) {
+    if (!sensLettrable(compte)) return { ok: false, motif: 'Le compte ' + compte + ' n’est pas lettrable (comptes de tiers seulement).' };
+    var col = S.collection('ecritures');
+    var lignes = (ids || []).map(function (id) { return col.get(id); });
+    if (lignes.length < 2 || lignes.some(function (l) { return !l || String(l.compte) !== String(compte) || l.lettrage; }))
+      return { ok: false, motif: 'Sélection invalide : au moins deux lignes, du même compte, non encore lettrées.' };
+    var net = C.sum(lignes, 'debit') - C.sum(lignes, 'credit');
+    if (Math.abs(net) >= 1) return { ok: false, motif: 'Lettrage refusé — l’ensemble ne s’annule pas (écart ' + C.money(Math.abs(net)) + ').' };
+    var code = String.fromCharCode(65 + (col.all().filter(function (e) { return e.lettrage; }).map(function (e) { return e.lettrage; })
+      .filter(function (v, i, a) { return a.indexOf(v) === i; }).length % 26));
+    lignes.forEach(function (l) { col.update(l.id, { lettrage: code, lettreLe: new Date().toISOString(), lettrePar: acteur() }); });
+    return { ok: true, code: code, lignes: lignes.length };
+  }
+  function delettrer(compte, code, motif) {
+    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour dé-lettrer.' };
+    var col = S.collection('ecritures'), n = 0;
+    col.all().filter(function (e) { return String(e.compte) === String(compte) && e.lettrage === code; })
+      .forEach(function (l) { col.update(l.id, { lettrage: null, delettreLe: new Date().toISOString(), delettreMotif: String(motif).trim() }); n++; });
+    return n ? { ok: true, lignes: n } : { ok: false, motif: 'Aucune ligne lettrée « ' + code + ' » sur ce compte.' };
+  }
+
+  global.SIGH.exercice = {
+    liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
+    anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
+    provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, valider: validerCloture,
+    lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256,
+  };
+
   /* Le moteur du BFR est EXPOSÉ pour être SONDÉ, jamais recopié : le scénario
      l'interroge et compare ses trois composantes à un recompte du magasin. */
   global.SIGH.bfr = {

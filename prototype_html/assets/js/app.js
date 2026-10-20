@@ -899,8 +899,10 @@
       return (b && (b.textContent || b.getAttribute && b.getAttribute('title'))) || '';
     });
     var deduites = accesRapides(entry, liste.length, libellesDeclares);
-    if (liste.length || deduites.length) {
+    var selExo = selecteurExercice(entry);
+    if (liste.length || deduites.length || selExo) {
       var acts = el('div#page-actions.flex.flex-wrap.items-center.gap-2');
+      if (selExo) acts.appendChild(selExo);
       C.append(acts, liste);
       C.append(acts, deduites);
       row.appendChild(acts);
@@ -940,6 +942,31 @@
       }
     }
 
+    /* Un exercice CLOS est en lecture seule : l'écran le DIT, il n'attend pas qu'une écriture soit refusée. */
+    if (selExo && global.SIGH.exercice) {
+      var xc = global.SIGH.exercice.de(global.SIGH.exercice.choisi());
+      if (xc && xc.etat === 'clos') {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+          el('span.shrink-0.text-warning-600', null, C.icon('lock', 'h-4 w-4')),
+          el('p.text-xs.text-warning-900', { html: '<strong>Exercice ' + xc.annee + ' clos</strong>'
+            + (xc.valideLe ? ' le ' + C.dateFR(xc.valideLe) : '') + (xc.validePar ? ' — ' + U.texteEnrichi(xc.validePar) : '')
+            + ' — <strong>lecture seule</strong>. Les corrections passent par une écriture de l’exercice en cours, jamais par la réouverture.' }),
+        ]));
+      } else if (xc && xc.etat === 'en_attente_cloture') {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
+          el('span.shrink-0.text-info-600', null, C.icon('hourglass', 'h-4 w-4')),
+          el('p.text-xs.text-info-900', { html: '<strong>Exercice ' + xc.annee + ' en attente de clôture</strong> — la Direction doit valider la demande de '
+            + U.texteEnrichi(xc.demandePar || 'le comptable') + '.' }),
+        ]));
+      } else if (xc && global.SIGH.exercice.provisoires(xc.annee).length) {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-slate-200.bg-slate-50.px-3.py-2', null, [
+          el('span.shrink-0.text-slate-500', null, C.icon('info', 'h-4 w-4')),
+          el('p.text-xs.text-slate-700', { html: '<strong>À-nouveaux provisoires</strong> — l’exercice ' + (xc.annee - 1)
+            + ' n’est pas encore clos : le report est recalculé à chaque consultation et sera figé à la clôture.' }),
+        ]));
+      }
+    }
+
     /* Rappel de règle métier, le cas échéant */
     if (def.regle) {
       head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
@@ -948,6 +975,26 @@
       ]));
     }
     return head;
+  }
+
+  /**
+   * SÉLECTEUR D'EXERCICE — dans la coquille de tout écran comptable (M12).
+   * Un exercice par poste (mémorisé), l'exercice courant par défaut. Les
+   * exercices clos sont marqués : le choix dit déjà ce qu'on pourra y faire.
+   */
+  function selecteurExercice(entry) {
+    if (!global.SIGH.exercice || !entry || entry.module !== 'M12') return null;
+    var X = global.SIGH.exercice, liste = X.liste(), courant = X.choisi();
+    if (!liste.length) return null;
+    var sel = el('select.select.w-auto', { id: 'selecteur-exercice', 'aria-label': 'Exercice comptable', title: 'Exercice comptable' });
+    liste.forEach(function (x) {
+      var et = { ouvert: 'ouvert', en_attente_cloture: 'en attente de clôture', clos: 'clos' }[x.etat] || x.etat;
+      var o = el('option', { value: String(x.annee) }, 'Exercice ' + x.annee + ' — ' + et);
+      if (x.annee === courant) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function () { X.choisir(sel.value); global.location.reload(); });
+    return el('label.flex.items-center.gap-2.text-xs.text-slate-600', null, [C.icon('calendar', 'h-4 w-4'), sel]);
   }
 
   /**
