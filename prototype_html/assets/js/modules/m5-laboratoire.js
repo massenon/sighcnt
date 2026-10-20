@@ -40,9 +40,11 @@
   /* --- Amorçage ------------------------------------------------------------ */
   function amorcer() {
     var dem = S.collection('demandesAnalyses', { module: 'M5', entite: 'DemandeAnalyse' });
-    if (dem.all().length) return;
+    if (dem.all().length || !S.amorcable('demandesAnalyses')) return;
     var rnd = C.seeded(601);
     var pats = patients(), labs = laborantins(), meds = medecins();
+    /* Un répertoire vide ne s'amorce pas : C.pick sur [] rend undefined et l'écran tombait. */
+    if (!pats.length || !labs.length || !meds.length) return;
     for (var i = 0; i < 160; i++) {
       var p = C.pick(rnd, pats);
       var a = C.pick(rnd, D.ANALYSES);

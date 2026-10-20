@@ -879,7 +879,7 @@
             /* Le cahier de charge demande de pouvoir détacher l'opération de
                caisse du numéro de dossier (vente au comptoir). */
             operationDissociee: !!dissocier.checked,
-            date: C.iso(AUJ), type: selType.value,
+            date: C.iso(C.aujourdhui()), type: selType.value,
             volet: piece.volet,
             libelleVolet: piece.volet === 'couvert' ? 'Prestations couvertes par l’assurance'
               : (piece.volet === 'non_couvert' ? 'Prestations non couvertes — à la charge du patient' : null),
@@ -913,7 +913,7 @@
               stock: Math.max(0, prod.stock - l.quantite),
             });
             var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-              reference: C.nextRef('M', 6), date: C.iso(AUJ),
+              reference: C.nextRef('M', 6), date: C.iso(C.aujourdhui()),
               produitId: prod.id, produit: prod.designation,
               type: 'sortie', typeLabel: 'Sortie', quantite: l.quantite, stockType: 'detail',
               justificatif: 'Facture ' + creees[0].numero, utilisateur: S.currentUser(),

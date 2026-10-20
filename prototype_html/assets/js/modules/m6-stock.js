@@ -2499,7 +2499,7 @@
                 if (!panier.length) { U.toast('Ajouter au moins un produit.', { type: 'error' }); return; }
                 var p = pats.filter(function (x) { return x.id === selPatient.value; })[0];
                 var enr = {
-                  reference: C.nextRef('DISP-', 5), date: C.iso(AUJ),
+                  reference: C.nextRef('DISP-', 5), date: C.iso(C.aujourdhui()),
                   patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
                   lignes: panier.slice(), montant: C.sum(panier, function (l) { return l.quantite * l.prix; }),
                   dispensePar: S.currentUser(),

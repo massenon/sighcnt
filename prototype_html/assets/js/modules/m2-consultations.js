@@ -696,8 +696,8 @@
                    s'étend jusqu'à lui ; au-delà de trente et un jours, elle se
                    recentre dessus, et le message dit où il se trouve. */
                 var jourRdv = C.iso(v.date);
-                if (jourRdv < debutSel.value) debutSel.value = jourRdv;
-                if (jourRdv > finSel.value) finSel.value = jourRdv;
+                if (!debutSel.value || jourRdv < debutSel.value) debutSel.value = jourRdv;
+                if (!finSel.value || jourRdv > finSel.value) finSel.value = jourRdv;
                 if (C.daysBetween(C.toDate(debutSel.value), C.toDate(finSel.value)) > 30) {
                   debutSel.value = C.iso(C.addDays(C.toDate(v.date), -2));
                   finSel.value = C.iso(C.addDays(C.toDate(v.date), 4));

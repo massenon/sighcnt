@@ -781,7 +781,7 @@
           confirmLabel: 'Valider la commande',
         }).then(function (ok) {
           if (!ok) return;
-          var res = col.update(c.id, { statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: C.iso(AUJ) });
+          var res = col.update(c.id, { statutCommande: 'validee', valideePar: 'TAKI Alimatou', dateValidation: C.iso(C.aujourdhui()) });
           table.refresh();
           U.toast('Commande validée par la Directrice Administrative.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
         });

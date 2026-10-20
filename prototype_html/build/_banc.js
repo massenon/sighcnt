@@ -27,6 +27,10 @@ const PORT_PHP = Number(process.env.SIGH_PORT_PHP || 8099);
 const BASE_TEST = process.env.SIGH_BASE_TEST || 'sigh_prototype_test';
 /* La date du jeu de démonstration : « aujourd'hui » pour toute page ouverte par un banc. */
 const HORLOGE_BANC = { annee: 2026, mois: 7, jour: 16 };
+/* Le DÉCALAGE est calculé UNE fois, ici : recalculé à chaque document, l'horloge se
+   re-piquait à 12:00:00 à chaque navigation — une fiche créée sur la page suivante
+   devenait antérieure à celle de la page précédente. */
+const DECALAGE_BANC = new Date(HORLOGE_BANC.annee, HORLOGE_BANC.mois, HORLOGE_BANC.jour, 12, 0, 0).getTime() - Date.now();
 
 /** Le compte dont les bancs endossent l'identité par défaut. */
 const SESSION_BANC = {
@@ -170,7 +174,7 @@ async function poserSession(page, session) {
     _jetonBanc = (r && r.jeton) || null;
   }
   if (_jetonBanc) s.jeton = _jetonBanc;
-  await page.evaluateOnNewDocument((sess, jeton, horloge) => {
+  await page.evaluateOnNewDocument((sess, jeton, horloge, decalage) => {
     try {
       if (!localStorage.getItem('sigh-cnt:session')) {
         localStorage.setItem('sigh-cnt:session', JSON.stringify(sess));
@@ -188,7 +192,7 @@ async function poserSession(page, session) {
        change. Un scénario peut déplacer l'horloge par `window.__SIGH_HORLOGE`. */
     try {
       var Reel = window.Date;
-      var etat = { decalage: new Reel(horloge.annee, horloge.mois, horloge.jour, 12, 0, 0).getTime() - Reel.now() };
+      var etat = { decalage: decalage };
       function maintenant() { return Reel.now() + etat.decalage; }
       function Decalee() {
         if (!(this instanceof Decalee)) return String(new Reel(maintenant()));
@@ -209,7 +213,7 @@ async function poserSession(page, session) {
         },
       };
     } catch (e) { /* sans horloge décalée, la page tourne à l'heure réelle */ }
-  }, s, _jetonBanc, HORLOGE_BANC);
+  }, s, _jetonBanc, HORLOGE_BANC, DECALAGE_BANC);
 }
 
 module.exports = { PORT_PHP, BASE_TEST, SESSION_BANC, HORLOGE_BANC, demarrerPhp, banc, relayer, poserSession, connecter };

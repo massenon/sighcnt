@@ -3538,6 +3538,10 @@
     'examensImagerie', 'variablesImagerie', 'pathologies',
     /* Modèles (badges, messages, questionnaires) et emplacements de rangement */
     'modelesBadge', 'modelesMessage', 'enquetes', 'emplacements',
+    /* LE JOURNAL D'AUDIT SE GARDE : il trace les tarifs arrêtés, les droits fermés, la
+       grille des primes — tout ce que le vidage CONSERVE. Effacer la trace de ce qu'on
+       garde contredirait RG-12 ; le vidage s'inscrit EN TÊTE du journal conservé. */
+    'audit',
   ];
   /* Dérivées d'un référentiel : vidées, elles se reconstruisent depuis leur
      document — le vidage ne leur retire rien. */
@@ -3560,13 +3564,19 @@
       lignes += db[k].length; tables++; vidées.push(k);
       db[k] = [];
     });
+    /* LE CALENDRIER FISCAL EST DÉRIVÉ D'UN DOCUMENT : il revient aussitôt, SANS règlement
+       inventé — un tableau de bord qui lirait un faux zéro jusqu'à l'ouverture de l'écran
+       des échéances est le défaut documenté de la vague 31. */
+    db.echeancesFiscales = genEcheances().map(function (e) {
+      return Object.assign(e, { paye: false, datePaiement: null, reference: null, valideePar: null });
+    });
     db._jeuVide = true;
     db._jeuVideLe = new Date().toISOString();
     /* Le peuplement du parcours transactionnel ne doit pas repartir non plus. */
     db._parcoursAmorces = true;
     db.audit = db.audit || [];
     save();
-    /* La première entrée du journal neuf est le vidage lui-même (RG-12). */
+    /* Le vidage s'inscrit en tête du journal conservé (RG-12). */
     log('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
       { tables: tables, enregistrements: lignes, motif: motif || '' });
     return { tables: tables, enregistrements: lignes, collections: vidées };
@@ -3574,10 +3584,20 @@
 
   function reset() {
     try { storage.remove(KEY); } catch (e) { /* reliquat d'avant la bascule */ }
+    var ancien = db;
     db = seed();
-    /* Un jeu RÉGÉNÉRÉ n'est plus un jeu vidé : le drapeau tombe, et il part
-       au serveur comme toute clé de méta — sinon la base garderait l'ancien. */
+    /* UNE CLÉ ABSENTE NE PART JAMAIS : le delta n'envoie que ce que le nouveau magasin
+       PORTE. Une collection née après un vidage (badges, évaluations, missions) et absente
+       de la semence survivrait à la régénération, et `_parcoursAmorces`, posé vrai par le
+       vidage, empêcherait le peuplement du parcours de repartir — la base rendait un jeu
+       amputé. On pose donc explicitement ce qui doit être vide ou faux. */
+    Object.keys(ancien || {}).forEach(function (k) {
+      if (Array.isArray(ancien[k]) && !(k in db)) db[k] = [];
+    });
     db._jeuVide = false;
+    db._jeuVideLe = null;
+    db._parcoursAmorces = false;
+    db._parcoursAmorcesLe = null;
     SRV.envoye = {}; SRV.meta = {};   /* tout est à repousser */
     ecrire();
     return db;

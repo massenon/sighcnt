@@ -2086,10 +2086,10 @@
          été saisie. */
       (function amorcer() {
         var db = S.raw();
-        if (db.evaluations && db.evaluations.length) return;
+        if ((db.evaluations && db.evaluations.length) || !S.amorcable('evaluations')) return;
         var rnd = C.seeded(1131), n = 0;
         var mois = C.MOIS[AUJ.getMonth() - 1 < 0 ? 11 : AUJ.getMonth() - 1];
-        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' 2026';
+        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' ' + AUJ.getFullYear();
         db.evaluations = personnel().slice(0, 24).map(function (e) {
           var criteres = {};
           D.NS131.criteres.forEach(function (c) {
@@ -2098,7 +2098,7 @@
           var pct = D.NS131.prelevement(criteres);
           return {
             id: 'EVAL' + C.pad(++n, 4),
-            reference: 'EV-2026-' + C.pad(n, 4),
+            reference: 'EV-' + AUJ.getFullYear() + '-' + C.pad(n, 4),
             employeId: e.id, employe: e.nomComplet, matricule: e.matricule,
             service: e.service, fonction: e.fonction, categorie: e.categorie,
             periode: periode, criteres: criteres,
@@ -4554,7 +4554,7 @@
 
   function amorcerMissions() {
     var db = S.raw();
-    if (db.missions && db.missions.length) return;
+    if ((db.missions && db.missions.length) || !S.amorcable('missions')) return;
     var agents = S.collection('personnel').active();
     var rnd = C.seeded(1042);
     var OBJETS = [
@@ -5785,7 +5785,7 @@
     }
 
     var col = colBadges();
-    if (col.all().length) return;
+    if (col.all().length || !S.amorcable('badges')) return;
     var rnd = C.seeded(2609);
     var agents = C.sortBy(personnel(), 'matricule').slice(0, 14);
     var n = 0;
@@ -6087,7 +6087,7 @@
           confirmLabel: 'Remis',
         }).then(function (rep) {
           if (!rep) return;
-          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(AUJ) });
+          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(C.aujourdhui()) });
           afficher();
           U.toast('Badge remis.', { type: 'success',
             undo: function () { res.undo(); afficher(); } });

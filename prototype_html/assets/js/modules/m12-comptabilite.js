@@ -2990,7 +2990,7 @@
           reportee: C.iso(echue) !== C.iso(d),
           /* Les échéances passées sont réputées honorées, sauf les deux plus
              récentes — pour que l'écran ait quelque chose à montrer. */
-          paye: passee && C.daysBetween(echue, AUJ) > 25,
+          paye: !S.jeuVide() && passee && C.daysBetween(echue, AUJ) > 25,   /* jamais de quittance inventée après un vidage */
           datePaiement: null, montant: null, reference: null, valideePar: null,
         });
       });
@@ -3458,7 +3458,7 @@
       /* ------------------------------------------------------------------ */
       function amorcer() {
         var col = colDepenses();
-        if (col.all().length) return;
+        if (col.all().length || !S.amorcable('depenses')) return;
         /* Un historique de neuf mois : sans lui, les indicateurs et les
            graphiques seraient à zéro et on croirait l'écran cassé. Les
            libellés sont ceux d'une clinique, pas des chaînes de test. */

@@ -886,7 +886,7 @@
           col.all().push({
             id: 'HS' + C.pad(i + 1, 4), statut: 'actif',
             reference: 'HS-' + C.pad(i + 1, 4),
-            periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' 2026',
+            periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' ' + AUJ.getFullYear(),
             employeId: e.id, employe: e.nomComplet, matricule: e.matricule, service: e.service,
             heures: h, tauxHoraire: taux, majoration: 25, montant: h * taux,
             motif: C.pick(rnd, ['Renfort de garde', 'Urgence', 'Remplacement', 'Surcroît d’activité']),
@@ -1164,7 +1164,7 @@
           var majs = [];
           col.active().filter(function (b) { return b.periode === l.periode && b.statutBulletin === 'a_valider'; })
             .forEach(function (b) {
-              majs.push(col.update(b.id, { statutBulletin: 'valide', validePar: 'BASSONGUI Chabi Séko', dateValidation: C.iso(AUJ) }));
+              majs.push(col.update(b.id, { statutBulletin: 'valide', validePar: 'BASSONGUI Chabi Séko', dateValidation: C.iso(C.aujourdhui()) }));
             });
           table.refresh();
           U.toast('Paie de ' + l.periode + ' validée par la Direction.', {

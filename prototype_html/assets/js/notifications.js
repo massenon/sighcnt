@@ -155,7 +155,7 @@
       /* Le calendrier fiscal est un référentiel : le moteur ne recalcule
          aucune date, il lit ce qui est déjà dépassé. */
       lire: function () {
-        var auj = C.iso(new Date(2026, 7, 16));
+        var auj = C.iso(C.aujourdhui());   /* la cloche et l'écran comptent à la même date (vague 68) */
         return S.collection('echeancesFiscales').active()
           .filter(function (e) { return !e.paye && String(e.echeance) < auj; })
           .map(function (e) {

@@ -2423,7 +2423,6 @@
    * l'affichent. Un BFR amputé de ses dettes est SURESTIMÉ, et un chiffre
    * faux qui a l'air juste est ce que ce prototype refuse partout ailleurs.
    * ======================================================================== */
-  var REF_PILOTAGE = new Date(2026, 7, 16);
 
   function objectifsPilotage() {
     var col = S.collection('objectifsPilotage', { module: 'M12', entite: 'ObjectifPilotage' });
@@ -2441,7 +2440,7 @@
   /** La fenêtre d'observation : 90 jours glissants par défaut, bornes nommées. */
   function fenetrePilotage(opts) {
     var o = opts || {};
-    var fin = o.fin ? C.toDate(o.fin) : REF_PILOTAGE;
+    var fin = o.fin ? C.toDate(o.fin) : C.aujourdhui();   /* la fenêtre glissante suit l'horloge (vague 68) */
     var debut = o.debut ? C.toDate(o.debut) : C.addDays(fin, -(o.jours || 90));
     return { debut: C.iso(debut), fin: C.iso(fin), jours: Math.max(1, C.daysBetween(debut, fin)) };
   }

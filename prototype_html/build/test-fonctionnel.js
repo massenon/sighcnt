@@ -11003,16 +11003,27 @@ async function viderMessages(page) {
       /Réinitialisation des jeux de test/.test(apres.derniereEntree), apres.derniereEntree);
 
     /* Les écrans qui amorçaient leur collection NE LA RESSUSCITENT PAS. */
-    await ouvrir('m7-besoins.html');
-    await ouvrir('m10-contrats.html');
-    await ouvrir('m12-echeances.html');
+    /* Les écrans sondés sont ceux que la relecture adversariale a pris en défaut : ils
+       amorçaient par une forme non gardée (`if (x.length) return;`) ou tombaient sur un
+       répertoire vide (C.pick sur []). */
+    const erreursVidage = [];
+    for (const e of ['m7-besoins', 'm10-contrats', 'm12-echeances', 'm5-demandes', 'm3-observation', 'm10-evaluations', 'm12-depenses', 'm10-badges', 'm10-missions']) {
+      await ouvrir(e + '.html');
+      erreursVidage.push(...erreursJS.map((x) => e + ' : ' + x));
+    }
     const amorcages = await page.evaluate(() => {
       const db = window.SIGH.store.raw();
       const n = (k) => (db[k] || []).length;
-      return { besoins: n('besoins'), commandes: n('commandes'), contrats: n('contrats'), echeances: n('echeancesFiscales') };
+      return { besoins: n('besoins'), commandes: n('commandes'), contrats: n('contrats'), echeances: n('echeancesFiscales'),
+        demandesAnalyses: n('demandesAnalyses'), observations: n('observations'), evaluations: n('evaluations'),
+        depenses: n('depenses'), badges: n('badges'), missions: n('missions'),
+        echeancesPayees: (db.echeancesFiscales || []).filter((x) => x.paye).length };
     });
-    verifier('Ouvrir « Expression des besoins » puis « Contrats » ne régénère plus le jeu de démonstration',
-      amorcages.besoins === 0 && amorcages.commandes === 0 && amorcages.contrats === 0, JSON.stringify(amorcages));
+    verifier('Neuf écrans qui amorçaient leur collection ne régénèrent plus le jeu de démonstration',
+      ['besoins', 'commandes', 'contrats', 'demandesAnalyses', 'observations', 'evaluations', 'depenses', 'badges', 'missions'].every((k) => amorcages[k] === 0),
+      JSON.stringify(amorcages));
+    verifier('Aucun de ces écrans ne tombe sur un répertoire vide', erreursVidage.length === 0, erreursVidage.join(' | '));
+    verifier('Le calendrier fiscal reconstruit ne porte AUCUN règlement inventé', amorcages.echeancesPayees === 0, amorcages.echeancesPayees + ' payée(s)');
     verifier('Un référentiel DÉRIVÉ d’un document — le calendrier fiscal — se reconstruit, lui',
       amorcages.echeances > 0, String(amorcages.echeances));
 
@@ -11021,10 +11032,15 @@ async function viderMessages(page) {
     await attendreEcritures();
     await ouvrir('cfg-systeme.html');
     const rendu = await page.evaluate(() => {
-      const S = window.SIGH.store;
-      return { patients: S.collection('patients').all().length, jeuVide: S.jeuVide() };
+      const S = window.SIGH.store, db = S.raw();
+      const n = (k) => (db[k] || []).length;
+      return { patients: n('patients'), grossesses: n('grossesses'), documents: n('documents'), demandesImagerie: n('demandesImagerie'),
+        badges: n('badges'), evaluations: n('evaluations'), jeuVide: S.jeuVide(), parcours: db._parcoursAmorces === true };
     });
-    verifier('« Régénérer » rend le jeu complet et lève le drapeau de vidage', rendu.patients > 0 && !rendu.jeuVide, JSON.stringify(rendu));
+    verifier('« Régénérer » rend le jeu COMPLET (parcours peuplé, maternité, GED, imagerie) et lève le drapeau de vidage',
+      rendu.patients > 0 && rendu.grossesses > 0 && rendu.documents > 0 && rendu.demandesImagerie > 0 && rendu.parcours && !rendu.jeuVide, JSON.stringify(rendu));
+    verifier('Ce qui était né après le vidage ne survit pas à la régénération (clés absentes de la semence envoyées vides)',
+      rendu.badges === 0 && rendu.evaluations === 0, 'badges ' + rendu.badges + ', évaluations ' + rendu.evaluations);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   }

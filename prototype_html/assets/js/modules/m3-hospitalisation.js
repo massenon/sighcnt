@@ -101,10 +101,11 @@
   /* Jeu d'amorçage : quelques patients en salle, d'autres déjà orientés. */
   function amorcerObservations() {
     var db = S.raw();
-    if (db.observations && db.observations.length) return;
+    if ((db.observations && db.observations.length) || !S.amorcable('observations')) return;
     var pats = S.collection('patients').active();
     var infs = S.collection('personnel').active().filter(function (e) { return e.fonction === 'infirmier'; });
     var meds = S.collection('personnel').active().filter(function (e) { return e.fonction === 'medecin'; });
+    if (!pats.length || !infs.length || !meds.length) return;   /* répertoire vide : rien à amorcer */
     var rnd = C.seeded(311);
     var out = [];
     for (var i = 0; i < 18; i++) {

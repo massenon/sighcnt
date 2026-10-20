@@ -47,7 +47,7 @@
      l’historique des couvertures. Une copie locale divergerait le jour où
      un assuré changerait de compagnie en cours d’année. */
   function carteValide(p) {
-    return PR.carteValide(p, new Date(2026, 7, 16));
+    return PR.carteValide(p, C.aujourdhui());   /* RG-09 à la MÊME date que la caisse (vague 68) */
   }
 
   /* --- Champs du formulaire patient --------------------------------------- */
