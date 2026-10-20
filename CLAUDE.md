@@ -1604,6 +1604,17 @@ l'écran montre doit être ce que le magasin porte.
   inchangés), et **l'application sans rechargement** (routeur en document unique, modules
   paresseux, hydratation unique puis deltas, flux d'événements entre postes, notifications qui
   CONSOMMENT, planificateur de tâches serveur) — la condition de la phase P2 de l'architecture cible.
+- **LE BANC MENTAIT PAR OMISSION, ET LE RELAIS HTTP ÉTAIT EN CAUSE.** Le premier passage complet a rendu
+  seize échecs épars — « bouton absent », « 16/17 tableaux de bord », « 0/0 demandes » — avec 0 erreur
+  JS. Reproduit sur l'arbre d'AVANT la vague : le défaut était préexistant. Le relais Node des bancs
+  (`relayer` dans `build/_banc.js`) recopiait les en-têtes du serveur intégré de PHP — « Connection:
+  close », sans Content-Length — et recodait le corps de 5 Mo en morceaux ; environ une fois sur
+  quarante, le navigateur ne voyait jamais la fin du corps, l'hydratation restait PENDANTE, la page
+  restait BLANCHE, et `attendrePeinture` rendait la main en silence après 150 s : chaque assertion
+  suivante mesurait une page vide. La réponse est désormais mise en TAMPON et renvoyée avec sa
+  longueur, et `ouvrir()` DIT quand une page ne s'est pas peinte. Doctrine confirmée une fois de plus :
+  un rendu qui échoue doit le dire — et un banc qui attend doit dire ce qu'il attendait. Diagnostic
+  établi par un agent de reproduction isolé (cinq rejeux sur base neuve, ports et base distincts).
 - Scénario **67** (dernier : il VIDE le magasin et le régénère en sortant). État : bancs en cours de relance au 20/10/2026 — chiffres définitifs au commit suivant.
 
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau

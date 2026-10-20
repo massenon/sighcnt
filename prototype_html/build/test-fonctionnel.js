@@ -220,7 +220,13 @@ async function viderMessages(page) {
        analyser — et les 450 ms d'autrefois tombaient au milieu : la sonde
        cherchait un champ de recherche qui n'existait pas encore et lisait
        « null » là où l'écran était simplement en retard. */
-    await attendrePeinture();
+    const peinte = await attendrePeinture();
+    /* UNE PAGE QUI NE SE PEINT PAS LE DIT (vague 68). Le banc rendait la main en
+       silence après 150 s et chaque assertion suivante échouait comme si
+       l'interface était absente — « bouton absent », « modale absente » — avec
+       0 erreur JS : on cherchait le défaut dans l'écran pendant que la page
+       n'avait jamais été hydratée. */
+    if (!peinte) console.log('\n  PAGE NON PEINTE après 150 s : ' + rel + ' — hydratation jamais aboutie, le reste du scénario mesure une page blanche.');
     await pause(450);
   }
 
@@ -9831,7 +9837,7 @@ async function viderMessages(page) {
     verifier('Le changement de compagnie écrit DEUX périodes, il n’écrase rien',
       !couv.erreur && couv.historique === 2, JSON.stringify(couv));
     verifier('Une date ANTÉRIEURE lit l’ancienne compagnie',
-      couv.ancienne === couv.avant.assureur, couv.ancienne + ' vs ' + couv.avant.assureur);
+      couv.avant && couv.ancienne === couv.avant.assureur, couv.erreur || (couv.ancienne + ' vs ' + (couv.avant || {}).assureur));
     verifier('…et la date du jour lit la nouvelle, reportée sur la fiche du dossier',
       couv.nouvelle !== couv.avant.assureur && couv.ficheMiseAJour === couv.nouvelle,
       couv.nouvelle + ' / fiche ' + couv.ficheMiseAJour);

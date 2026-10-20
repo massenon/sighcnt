@@ -96,8 +96,33 @@ function relayer(req, res) {
     if (corps.length) entetes['content-length'] = corps.length;
     const q = http.request({ host: '127.0.0.1', port: PORT_PHP, path: req.url,
       method: req.method, headers: entetes }, (r) => {
-      res.writeHead(r.statusCode, r.headers);
-      r.pipe(res);
+      /* LA RÉPONSE EST MISE EN TAMPON, PUIS RENVOYÉE AVEC SA LONGUEUR (vague 68).
+         Le serveur intégré de PHP répond « Connection: close » SANS Content-Length
+         (il termine son corps en fermant la connexion) ; recopier ces en-têtes
+         et recoder le corps de 5 Mo en morceaux faisait qu'environ une fois sur
+         quarante le navigateur ne voyait JAMAIS la fin du corps — sans erreur,
+         sans requête échouée. L'hydratation restait pendante, la page restait
+         blanche, et le banc attendait 150 s en silence avant de compter chaque
+         assertion comme fausse (« bouton absent », « 16/17 tableaux »). Défaut
+         préexistant au commit 77393f8, reproduit sur l'arbre 1a82f80. */
+      const morceauxR = [];
+      r.on('data', (c) => morceauxR.push(c));
+      r.on('end', () => {
+        const corpsR = Buffer.concat(morceauxR);
+        const entetesR = Object.assign({}, r.headers);
+        delete entetesR.connection;
+        delete entetesR['transfer-encoding'];
+        delete entetesR['keep-alive'];
+        entetesR['content-length'] = corpsR.length;
+        res.writeHead(r.statusCode, entetesR);
+        res.end(corpsR);
+      });
+      r.on('error', (e) => {
+        try {
+          res.writeHead(502, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ erreur: 'relais', detail: e.message }));
+        } catch (e2) { /* réponse déjà partie */ }
+      });
     });
     q.on('error', (e) => {
       res.writeHead(502, { 'Content-Type': 'application/json' });
