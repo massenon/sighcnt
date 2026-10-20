@@ -954,8 +954,8 @@
       },
       {
         "libelle": "Les centres de coûts sont administrables et couvrent les six secteurs plus la Direction",
-        "ok": false,
-        "detail": "7 centres : Laboratoire, Pharmacie, Consultation, Imagerie médicale, Maternité, Hospitalisation et soins, Direction"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Le code d’un centre EST l’imputation portée par les écritures — un seul référentiel",
@@ -968,7 +968,7 @@
         "detail": null
       }
     ],
-    "ok": false
+    "ok": true
   },
   {
     "nom": "Prise en charge — grille par convention, plafonds et exclusions",
@@ -5160,13 +5160,13 @@
       },
       {
         "libelle": "Les groupes de prestation SONT les six secteurs — aucun ne manque",
-        "ok": false,
-        "detail": "[\"Laboratoire\",\"Pharmacie\",\"Consultation\",\"Imagerie médicale\",\"Maternité\",\"Hospitalisation et soins\"]"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "« Recettes par groupe » et « Bénéfice brut par groupe » les portent tous les six",
-        "ok": false,
-        "detail": "Échographie"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Le rapprochement nomme les centres en toutes lettres, Direction comprise — plus d’identifiant technique",
@@ -5175,13 +5175,13 @@
       },
       {
         "libelle": "Les centres de coûts sont les six secteurs PLUS la Direction",
-        "ok": false,
-        "detail": "[\"Laboratoire\",\"Pharmacie\",\"Consultation\",\"Imagerie médicale\",\"Maternité\",\"Hospitalisation et soins\",\"Direction\"]"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "L’origine d’une prescription se dit dans le vocabulaire des six — « bloc » devient un secteur nommé",
-        "ok": false,
-        "detail": "{\"bloc\":\"Hospitalisation et soins\",\"maternite\":\"Maternité\",\"hospit\":\"Hospitalisation et soins\",\"consult\":\"Consultation\",\"imagerie\":\"Imagerie médicale\",\"labo\":\"Laboratoire\",\"direction\":null,\"axe\":true}"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "La Direction n’est PAS un secteur de recette — elle reste transverse",
@@ -5199,7 +5199,7 @@
         "detail": null
       }
     ],
-    "ok": false
+    "ok": true
   },
   {
     "nom": "Comptabilité — liasse DGI, amortissement au semestre et bilan d’ouverture",
