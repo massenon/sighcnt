@@ -1629,7 +1629,8 @@ l'écran montre doit être ce que le magasin porte.
   authentification, page publique d'enquête) : les attendre 150 s criait à une hydratation pendante là où le
   scénario mesure une adresse.
 - Scénario **67** (dernier : agenda sur l'horloge réelle, puis il VIDE le magasin, ouvre neuf écrans sur le jeu
-  vide et le régénère en sortant). État au 20/10/2026 : **67/67 scénarios (1 118 vérifications)**, 0 erreur JS.
+  vide et le régénère en sortant). État au 20/10/2026 : **67/67 scénarios (1 117 vérifications)**, 306 pages conformes (0 erreur JS, 0 lien cassé), audit RBAC à 0 promesse et 0 lecture non dite.
+- **LE RÔLE « INGÉNIEUR BIOMÉDICAL » EST SUPPRIMÉ** (décision de la Direction, 20/10/2026) : il n'était qu'archivé, le poste étant tenu par le Biologiste médical. Retirés : `N.ROLES.biomedical`, la fiche RBAC11, la fermeture d'activité `ACT-BIOMED`, le tableau `dash-biomedical` et sa page. La fonction « biomedical » du personnel retombe sur le rôle laborantin. C'est une exception explicite à RG-14 (un rôle s'archive), à ne pas généraliser. `VERSION` passe à **65**. L'audit RBAC tolère désormais le rebond d'une page fermée au profil (contexte détruit en plein relevé).
 
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau
 transitoire, les boutons du bandeau non : la page appelée s’ouvrait menu déployé alors que l’utilisateur
