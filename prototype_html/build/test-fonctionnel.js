@@ -200,7 +200,7 @@ async function viderMessages(page) {
              écrans d'authentification n'ont pas de #page-content, et le scénario qui y
              arrive mesure l'ADRESSE. Attendre 150 s dessus coûtait deux minutes et demie
              par refus sondé, et criait depuis la vague 68 à une hydratation pendante. */
-          if (/error-403|\/auth-|\/index\.php/.test(location.pathname)) return true;
+          if (/error-403|\/auth-|\/index\.php|enquete-publique/.test(location.pathname)) return true;
           if (S.faitAutorite && !S.faitAutorite()) return false;
           const c = document.getElementById('page-content');
           return !!(c && c.children.length > 0);
@@ -7764,21 +7764,29 @@ async function viderMessages(page) {
       }));
     });
     await ouvrir('m2-imagerie-demandes.html');
-    const echo1 = await page.evaluate((ids) => {
+    const echo1 = await page.evaluate((ids) => new Promise((resolve) => {
       const plat = (n) => n.textContent.replace(/\s+/g, ' ').trim();
       const boutons = [...document.querySelectorAll('button')];
-      const saisir = boutons.filter((b) => plat(b).indexOf('Saisir le CR') === 0 && !b.getAttribute('aria-disabled'));
-      const verrous = boutons.filter((b) => plat(b).indexOf('Saisir le CR') === 0 && b.getAttribute('aria-disabled'));
-      if (saisir[0]) saisir[0].click();
-      return {
-        prescrireAbsent: !boutons.some((b) => plat(b).indexOf('Nouvelle demande') === 0),
-        saisirPresent: saisir.length > 0,
-        verrouPresent: verrous.length > 0,
-      };
-    }, moteur);
+      const prescrireAbsent = !boutons.some((b) => plat(b).indexOf('Nouvelle demande') === 0);
+      const verrouPresent = boutons.some((b) => plat(b).indexOf('Saisir le CR') === 0 && b.getAttribute('aria-disabled'));
+      /* LA LIGNE SE CHERCHE PAR SA RÉFÉRENCE, JAMAIS PAR SON RANG (vague 68). Depuis que le
+         banc décale l'horloge sur la date du jeu, la demande créée par le scénario n'est
+         plus la plus récente du registre : le PREMIER bouton « Saisir le CR » était celui
+         d'une autre demande, et la sonde mesurait son rang — un compte rendu naissait sur
+         la mauvaise demande sans qu'aucune assertion ne le dise. */
+      const dem = window.SIGH.store.collection('demandesImagerie').get(ids.pelId);
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ && dem) { champ.value = dem.reference; champ.dispatchEvent(new Event('input', { bubbles: true })); }
+      setTimeout(() => {
+        const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => dem && plat(tr).indexOf(dem.reference) >= 0);
+        const saisir = ligne ? [...ligne.querySelectorAll('button')].filter((b) => plat(b).indexOf('Saisir le CR') === 0 && !b.getAttribute('aria-disabled')) : [];
+        if (saisir[0]) saisir[0].click();
+        resolve({ prescrireAbsent, saisirPresent: saisir.length > 0, verrouPresent, reference: dem && dem.reference, ligne: !!ligne });
+      }, 400);
+    }), moteur);
     await pause(700);
     verifier('L’échographiste EXÉCUTE (Saisir le CR) mais ne PRESCRIT pas (Nouvelle demande absente)',
-      echo1.prescrireAbsent && echo1.saisirPresent);
+      echo1.prescrireAbsent && echo1.saisirPresent, JSON.stringify(echo1));
     verifier('Un examen non réglé garde son bouton VERROUILLÉ, visible', echo1.verrouPresent);
 
     /* Le CR s'enregistre : conclusion obligatoire, la demande passe EXÉCUTÉE.
@@ -7824,11 +7832,18 @@ async function viderMessages(page) {
 
     /* Le rendu au prescripteur clôt le circuit : demande VALIDÉE. */
     await ouvrir('m2-imagerie-demandes.html');
-    await page.evaluate(() => {
+    await page.evaluate((ids) => new Promise((resolve) => {
       const plat = (n) => n.textContent.replace(/\s+/g, ' ').trim();
-      const b = [...document.querySelectorAll('button')].filter((x) => plat(x) === 'Rendre')[0];
-      if (b) b.click();
-    });
+      const dem = window.SIGH.store.collection('demandesImagerie').get(ids.pelId);
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ && dem) { champ.value = dem.reference; champ.dispatchEvent(new Event('input', { bubbles: true })); }
+      setTimeout(() => {
+        const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => dem && plat(tr).indexOf(dem.reference) >= 0);
+        const b = ligne ? [...ligne.querySelectorAll('button')].filter((x) => plat(x) === 'Rendre')[0] : null;
+        if (b) b.click();
+        resolve(!!b);
+      }, 400);
+    }), moteur);
     await pause(500);
     await page.evaluate(() => {
       const plat = (n) => n.textContent.replace(/\s+/g, ' ').trim();
