@@ -1,5 +1,5 @@
 {
-  "pages": 306,
+  "pages": 305,
   "jsErrors": [],
   "missing": [],
   "brokenLinks": [],
@@ -8,7 +8,7 @@
   "slow": [
     {
       "page": "index.php",
-      "ms": 180623
+      "ms": 180556
     },
     {
       "page": "pages/auth-2fa.php",
@@ -16,43 +16,39 @@
     },
     {
       "page": "pages/auth-forgot.php",
-      "ms": 180773
+      "ms": 180581
     },
     {
       "page": "pages/auth-lock.php",
-      "ms": 180748
+      "ms": 180592
     },
     {
       "page": "pages/auth-reset.php",
-      "ms": 180738
-    },
-    {
-      "page": "pages/dash-biomedical.php",
-      "ms": 180587
+      "ms": 180568
     },
     {
       "page": "pages/enquete-publique.php",
-      "ms": 180561
+      "ms": 180572
     },
     {
       "page": "pages/error-403.php",
-      "ms": 180712
+      "ms": 180568
     },
     {
       "page": "pages/error-404.php",
-      "ms": 180745
+      "ms": 180536
     },
     {
       "page": "pages/m5-banque-sang.php",
-      "ms": 180610
+      "ms": 180530
     },
     {
       "page": "pages/m5-donneurs.php",
-      "ms": 180664
+      "ms": 180588
     },
     {
       "page": "pages/plan-du-site.php",
-      "ms": 180573
+      "ms": 180560
     }
   ]
 }
