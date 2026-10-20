@@ -52,7 +52,7 @@ npm run build     # génère les pages, la safelist, puis compile Tailwind
 npm run compta    # régénère data-compta.js depuis les classeurs Excel de docs/
 npm run lint      # node --check sur toutes les sources JS
 npm run check     # ouvre les 306 pages dans Chrome : erreurs JS, liens, ressources
-npm run test      # 67 parcours fonctionnels de bout en bout (1118 vérifications)
+npm run test      # 71 parcours fonctionnels de bout en bout (1159 vérifications)
 npm run serveur   # sert le prototype AVEC sa base (PHP intégré, port 8080)
 npm run audit-rbac # chaque écran sous chaque profil : commandes offertes vs droits réels
 npm run inventaire-rbac # ce que chaque rôle voit RÉELLEMENT → newdocs/INVENTAIRE-RBAC.md
@@ -66,7 +66,7 @@ et l'extraction de texte ne donne rien. Les rendre en images via Chrome puis les
 lire visuellement : `node build/_pdf2png.js "../docs/fichier.pdf" build/pdf-pages 2`.
 Les classeurs Excel s'inspectent avec `node build/_xlsx.js "../docs/fichier.xlsx"`.
 
-`check` et `test` pilotent le Chrome installé sur le poste (`CHROME_PATH` pour surcharger). Attendu : **0 erreur JS, 0 lien cassé, 67/67 scénarios**, et **0 promesse** à l’audit RBAC (1091 sondages écran × profil).
+`check` et `test` pilotent le Chrome installé sur le poste (`CHROME_PATH` pour surcharger). Attendu : **0 erreur JS, 0 lien cassé, 71/71 scénarios**, et **0 promesse** à l’audit RBAC (842 sondages écran × profil).
 
 Pour ne contrôler qu'un sous-ensemble : `node build/check.js --pages=m6-,m8-`.
 Captures d'écran : `node build/shot.js <page>.html 1600 sortie.png`.
