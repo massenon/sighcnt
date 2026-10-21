@@ -3177,8 +3177,25 @@
     SRV.teste = true;
     if (!serveurPlausible()) { SRV.repondu = true; return global.Promise.resolve(false); }
 
-    return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json' } })
-      .then(function (r) { return r.ok ? r.json() : null; })
+    /* LE CHARGEMENT A UN DÉLAI. Une réponse qui n'arrive jamais laissait la page BLANCHE et muette : l'agent
+       attendait sans rien lire, et le banc d'essai 150 secondes. Chaque tentative est abandonnée au bout de
+       30 s et reprise UNE fois ; au second échec on retombe, comme avant, sur le stockage du navigateur — mais
+       en le disant dans la console. Une tentative qui aboutit n'est jamais coupée : 5 Mo en 30 s, c'est déjà un réseau en panne. */
+    function chargerMagasin(tentative) {
+      var ctl = global.AbortController ? new global.AbortController() : null;
+      var minuterie = ctl ? global.setTimeout(function () { ctl.abort(); }, 30000) : null;
+      return global.fetch(urlApi('magasin.php'), { headers: { Accept: 'application/json' }, signal: ctl ? ctl.signal : undefined })
+        .then(function (r) { if (minuterie) global.clearTimeout(minuterie); return r.ok ? r.json() : null; })
+        .catch(function (e) {
+          if (minuterie) global.clearTimeout(minuterie);
+          if (tentative < 2) {
+            if (global.console && global.console.warn) global.console.warn('[SIGH] Chargement du magasin sans réponse (tentative ' + tentative + '), nouvel essai :', e && e.name);
+            return chargerMagasin(tentative + 1);
+          }
+          throw e;
+        });
+    }
+    return chargerMagasin(1)
       .then(function (o) {
         SRV.repondu = true;
         _provisoire = false;          /* la coquille d'attente a fait son temps */
@@ -4030,6 +4047,7 @@
     },
     jetonServeur: function () { return SRV.jeton; },
     etatSync: etatSync, sonderEvenements: sonderEvenements,
+    etatServeur: function () { return { actif: SRV.actif, teste: SRV.teste, repondu: SRV.repondu, jeton: !!SRV.jeton, magasinCharge: !!db }; },
     log: log, on: on, emit: emit,
     session: session, setSession: setSession, currentUser: currentUser, garder: garder,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,

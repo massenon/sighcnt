@@ -237,6 +237,12 @@ async function viderMessages(page) {
        l'interface était absente — « bouton absent », « modale absente » — avec
        0 erreur JS : on cherchait le défaut dans l'écran pendant que la page
        n'avait jamais été hydratée. */
+    if (!peinte) {
+      const diag = await page.evaluate(() => ({ url: location.pathname.split('/').pop(), etat: document.readyState,
+        serveur: window.SIGH && window.SIGH.store && window.SIGH.store.etatServeur ? window.SIGH.store.etatServeur() : null,
+        contenu: !!document.querySelector('#page-content'), corps: document.body ? document.body.innerText.slice(0, 120) : null })).catch((e) => String(e).slice(0, 120));
+      console.log('\n  DIAGNOSTIC de la page non peinte : ' + JSON.stringify(diag) + ' ; erreurs JS : ' + JSON.stringify(erreursJS.slice(0, 3)));
+    }
     if (!peinte) console.log('\n  PAGE NON PEINTE après 150 s : ' + rel + ' — hydratation jamais aboutie, le reste du scénario mesure une page blanche.');
     await pause(450);
   }
