@@ -1729,6 +1729,7 @@
     { id: 'contrat', label: 'Contrats RH', rattachement: 'Employé', icon: 'file-signature' },
     { id: 'bulletin', label: 'Bulletins de paie', rattachement: 'Employé', icon: 'banknote' },
     { id: 'courrier', label: 'Courriers administratifs', rattachement: 'Administration', icon: 'mail' },
+    { id: 'cloture_exercice', label: 'Clôtures d’exercice', rattachement: 'Administration', icon: 'lock' },
   ];
 
   /* ==========================================================================

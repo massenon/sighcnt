@@ -1801,9 +1801,16 @@
        * Sans cette règle, le passif sortirait en négatif et la lecture
        * s'inverserait d'une rubrique à l'autre.
        * ---------------------------------------------------------------- */
-      function soldeDesComptes(prefixes, sens) {
+      /* L'EXERCICE PRÉCÉDENT, TIRÉ DU JOURNAL. Quand le précédent n'a pas été déposé (et que le journal
+         le porte), sa colonne se CALCULE comme celle de l'exercice choisi, avec ses à-nouveaux
+         provisoires s'il n'est pas encore clos. Un bilan sans sa colonne N-1 ne se compare à rien. */
+      var anneeN1 = global.SIGH.exercice.choisi() - 1;
+      var eN1 = ecrituresToutes().filter(function (x) { return x.statut === 'validee' && global.SIGH.exercice.anneeDe(x.date) === anneeN1; })
+        .concat(global.SIGH.exercice.provisoires(anneeN1).filter(function (x) { return x.statut === 'validee'; }));
+      var avecN1 = eN1.length > 0;
+      function soldeDesComptes(prefixes, sens, source) {
         if (!prefixes || !prefixes.length) return null;
-        var sel = e.filter(function (x) {
+        var sel = (source || e).filter(function (x) {
           var num = String(x.compte || '');
           return prefixes.some(function (p) { return num.indexOf(p) === 0; });
         });
@@ -1828,6 +1835,18 @@
       /* Au compte de résultat, le formulaire porte les charges en NÉGATIF :
          on suit sa convention, sinon la colonne calculée ne se compare pas
          à la colonne déposée. */
+      function calculActifN1(l) {
+        var v = soldeDesComptes(l.comptes, 'debit', eN1);
+        return v == null || v < 0 ? null : v;
+      }
+      function calculPassifN1(l) {
+        var v = soldeDesComptes(l.comptes, 'credit', eN1);
+        return v == null || v < 0 ? null : v;
+      }
+      function colonneN1(calcul) {
+        return avecN1 ? [{ label: 'Exercice ' + anneeN1 + ' (journal)', align: 'right',
+          render: function (l) { return l.t ? el('span') : cellule(calcul(l), { vide: '—' }); } }] : [];
+      }
       function calculResultat(l) {
         var v = soldeDesComptes(l.comptes, l.signe === '-' ? 'debit' : 'credit');
         if (v == null) return null;
@@ -1935,7 +1954,7 @@
                 { label: 'Net ' + L.DEPOT.exerciceN1, align: 'right', render: function (l) { return cellule(l.netN1); } },
                 { label: 'Exercice en cours', align: 'right',
                   render: function (l) { return l.t ? el('span') : cellule(calculActif(l), { vide: '—' }); } },
-              ])),
+              ].concat(colonneN1(calculActifN1)))),
               U.card('BILAN — PASSIF (feuillet 6/51)', tableLiasse(L.BILAN_PASSIF, [
                 { label: 'Réf.', render: function (l) { return el('span.font-mono.text-xs.text-slate-500', { text: l.ref }); } },
                 { label: 'Passif', render: libelleDe },
@@ -1944,7 +1963,7 @@
                 { label: 'Net ' + L.DEPOT.exerciceN1, align: 'right', render: function (l) { return cellule(l.netN1); } },
                 { label: 'Exercice en cours', align: 'right',
                   render: function (l) { return l.t ? el('span') : cellule(calculPassif(l), { vide: '—' }); } },
-              ])),
+              ].concat(colonneN1(calculPassifN1)))),
               K.note('La colonne <strong>« Exercice en cours »</strong> est calculée depuis les '
                 + 'écritures VALIDÉES du journal, par les préfixes de comptes SYSCOHADA que chaque '
                 + 'ligne déclare. Elle reste vide là où le journal ne porte rien — le prototype ne '
@@ -2225,6 +2244,15 @@
     a.download = nom + '.csv'; document.body.appendChild(a); a.click(); a.remove();
   }
 
+  /* L'archive de clôture dans la GED est tenue par le MOTEUR (SIGH.exercice.archiver) : elle naît avec la
+     clôture. Ce bouton ne sert qu'à la déposer pour un exercice clos AVANT que le moteur ne le fasse. */
+  function archiverDansGED(x) {
+    var r = global.SIGH.exercice.archiver(x.annee);
+    if (r.deja) U.toast('Cet exercice est déjà archivé dans la GED.', { type: 'info', detail: r.reference });
+    else U.toast('Archive de l’exercice ' + x.annee + ' déposée dans la GED.', { type: 'success', detail: r.reference + ' — conservation 10 ans.' });
+    return r;
+  }
+
   function procesVerbalCloture(x) {
     var X = global.SIGH.exercice, lignes = X.soldes(X.ecrituresDe(x.annee));
     P.etat({
@@ -2329,6 +2357,7 @@
               }
               if (x.etat === 'clos') {
                 a.push(K.btn('Procès-verbal', { size: 'sm', variant: 'secondary', icon: 'printer', onclick: function () { procesVerbalCloture(x); } }));
+                a.push(K.commande('Archiver dans la GED', { size: 'sm', variant: 'secondary', icon: 'archive', onclick: function () { archiverDansGED(x); } }));
                 a.push(K.btn('Exporter CSV', { size: 'sm', variant: 'secondary', icon: 'download', onclick: function () {
                   telechargerCSV('journal-' + x.annee, ['Pièce', 'Date', 'Journal', 'Compte', 'Libellé', 'Débit', 'Crédit'],
                     X.ecrituresDe(x.annee).map(function (e) { return [e.numero, e.date, e.journal, e.compte, e.libelle, e.debit, e.credit]; }));

@@ -6219,5 +6219,61 @@
       }
     ],
     "ok": true
+  },
+  {
+    "nom": "Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles",
+    "etapes": [
+      {
+        "libelle": "Les tables existent pour tous les modules : au moins quinze schémas de module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Parité magasin ↔ tables : zéro écart sur toutes les collections",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plus de cent collections projetées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur de projection récente",
+        "ok": false,
+        "detail": "[{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrgmifhqwc9) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:43:19.00828\"},{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvre5s4rhr2c) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:41:24.115016\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvre32pyelii) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:41:20.580032\"},{\"collection\":\"demandesAnalyses\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_analyses\\\" violates foreign key constraint \\\"fk_demandes_analyses_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvre19115mi2) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:41:18.230616\"},{\"collection\":\"factures\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"factures\\\" violates foreign key constraint \\\"fk_factures_ordonnance_id\\\"\\nDETAIL:  Key (ordonnance_id)=(ORDxmsvrcr8sgfnmx) is not present in table \\\"ordonnances\\\".\",\"le\":\"2026-10-21 11:40:18.678645\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrcr8tx7shd) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:40:18.586912\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvra7kvsdwy6) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:38:19.76566\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvra4qusej0j) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:38:16.164239\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvr7na52hn7v) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:36:20.238426\"}]"
+      },
+      {
+        "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une modification est suivie, et un champ inconnu du schéma est CONSERVÉ dans « extra » au lieu d’être perdu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les lignes d’une facture ont leur table fille et la parité des lignes est vérifiée avec le reste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-14 : archiver ne supprime pas — la ligne reste en table avec son statut",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Après ces écritures, la parité reste à zéro écart",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans session, le contrôle est refusé (401)",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": false
   }
 ]

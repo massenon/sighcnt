@@ -2957,7 +2957,45 @@
     S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_attente_cloture' }, { etat: 'clos', resultat: res, empreinte: empreinte });
     notifier({ type: 'cloture', poste: 'comptable', libelle: 'Exercice ' + annee + ' clos', detail: 'Résultat ' + C.money(res) + ' ; à-nouveaux ' + (annee + 1) + ' écrits.', reference: String(annee) });
     S.save();
-    return { ok: true, resultat: res, empreinte: empreinte, lignesAN: report.length };
+    /* L'archive de conservation naît AVEC la clôture, par quelque porte qu'elle soit validée : un exercice
+       clos sans archive serait un exercice dont la conservation dépend d'un geste qu'on peut oublier. */
+    var archive = null;
+    try { archive = archiverExercice(annee); } catch (e) { if (global.console) global.console.error('[SIGH] archive de clôture', e); }
+    return { ok: true, resultat: res, empreinte: empreinte, lignesAN: report.length, archive: archive ? archive.reference : null };
+  }
+
+  /**
+   * L'ARCHIVE DE CLÔTURE DANS LA GED. L'obligation de conservation (dix ans, OHADA) se tient là où la
+   * clinique range ses pièces. La fiche porte la balance générale de l'exercice figé et son EMPREINTE
+   * SHA-256 : l'exercice étant en lecture seule au moteur, le grand livre se rééditera à l'identique, et
+   * l'empreinte le prouve. UNE archive par exercice : en déposer deux créerait deux « vérités » à conserver.
+   * Retourne la fiche (existante ou nouvelle) ; `.deja` dit qu'elle existait.
+   */
+  function archiverExercice(annee) {
+    var col = S.collection('documents', { module: 'GED', entite: 'Document' });
+    var code = 'EX' + annee;
+    var deja = col.active().filter(function (d) { return d.codeRattachement === code; })[0];
+    if (deja) return Object.assign({}, deja, { deja: true });
+    var f = exercice(annee) || { annee: annee };
+    var esc = function (v) { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var csv = ['Compte;Intitulé;Débit;Crédit'].concat(soldesParCompte(ecrituresDe(annee)).map(function (l) {
+      return [l.compte, l.libelle, l.debit, l.credit].map(esc).join(';');
+    })).join('\n');
+    var an = String(C.aujourdhui().getFullYear()), rang = 0;
+    col.all().forEach(function (d) {
+      var m = new RegExp('^DOC-' + an + '-(\\d+)$').exec(String(d.reference || ''));
+      if (m) rang = Math.max(rang, Number(m[1]));
+    });
+    var empBalance = sha256(csv);
+    var r = col.insert({
+      reference: 'DOC-' + an + '-' + ('00000' + (rang + 1)).slice(-5),
+      libelle: 'Clôture de l’exercice ' + annee + ' — balance générale (empreinte ' + String(f.empreinte || empBalance).slice(0, 12) + '…)',
+      categorie: 'cloture_exercice', rattachement: 'Administration', rattacheA: 'Exercice ' + annee, codeRattachement: code,
+      format: 'CSV', taille: csv.length, version: 1, signe: true, archive: true, etatValidation: 'valide', conservation: 10,
+      consultations: 0, date: C.iso(C.aujourdhui()), deposePar: (S.session() || {}).nom || '—',
+      empreinte: f.empreinte || empBalance, empreinteBalance: empBalance, resultat: f.resultat == null ? null : f.resultat, contenu: csv,
+    });
+    return Object.assign({}, r.record, { deja: false });
   }
 
   /* LETTRAGE : un ensemble de lignes d'UN compte de tiers dont le total s'annule. */
@@ -2982,11 +3020,20 @@
     return n ? { ok: true, lignes: n } : { ok: false, motif: 'Aucune ligne lettrée « ' + code + ' » sur ce compte.' };
   }
 
+  /** La date tombe-t-elle dans l'exercice choisi ? (écrans de flux : registre fiscal, avoirs…) */
+  function dansExerciceChoisi(date) { return !date || anneeDe(date) === exerciceChoisi(); }
+  /** La fenêtre de l'exercice choisi : du 1er janvier au 31 décembre, ou à aujourd'hui pour l'année en cours. */
+  function fenetreExercice() {
+    var a = exerciceChoisi(), auj = C.aujourdhui(), fin = a >= auj.getFullYear() ? auj : new Date(a, 11, 31);
+    return { annee: a, debut: C.iso(new Date(a, 0, 1)), fin: C.iso(fin) };
+  }
+
   global.SIGH.exercice = {
+    dansExercice: dansExerciceChoisi, fenetre: fenetreExercice,
     liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
     anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
     provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, valider: validerCloture,
-    lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256,
+    lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice,
   };
 
   /* Le moteur du BFR est EXPOSÉ pour être SONDÉ, jamais recopié : le scénario

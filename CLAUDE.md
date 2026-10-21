@@ -1683,6 +1683,64 @@ RECHARGEMENT ET LE PLANIFICATEUR.** Les trois PRD de la vague 68 (`docs/prd/`) s
 - Scénarios **68** (exercice : pré-clôture, deux gestes, résultat, à-nouveaux, lecture seule), **69** (ventes par patient et
   par secteur), **70** (navigation sans rechargement) et **71** (planificateur : tâches, routage par poste, alerte résolue).
 
+**Vague 70 (21/10/2026) — LES DONNÉES EN TABLES, LES POSTES QUI SE VOIENT, LA PILE RÉÉVALUÉE.**
+
+- **Ce que PostgreSQL contenait vraiment.** Vérifié : les données du prototype sont bien en base, mais en
+  **blocs JSON** — une ligne par collection dans `collections` (124 collections, ~10 600 fiches, 18 Mo), plus
+  `meta`, `sessions_poste`, `utilisateurs`. Aucune table par module : on ne pouvait ni requêter, ni
+  rapprocher, ni exporter sans passer par du JSON.
+- **Tables de tous les modules** — `build/gen-schema-pg.js` déduit des collections réelles **139 tables dans 18
+  schémas de module** (`m1.patients`, `m8.factures`, `m12.ecritures`…, `socle` pour la seule file `taches`) :
+  colonnes TYPÉES pour chaque champ scalaire, **16 tables filles** pour les tableaux d'objets (lignes de facture,
+  items de check-list…), une colonne `extra` (jsonb) qui reçoit tout champ non prévu, **55 clés étrangères
+  seulement là où le jeu n'a aucun orphelin** (une clé que les données violent déjà ne protège rien, elle bloque).
+  Le module de chaque collection est LU dans les sources (`collection('x', { module: 'Mn' })`) ; 14 collections que
+  le socle sème sans la déclarer sont rangées par `MODULE_PAR_DEFAUT`. Sorties : `api/schema/`
+  (exécution), `packages/schema/postgres/0001_modules.sql` (le projet cible), `docs/architecture/DICTIONNAIRE-DONNEES.md`.
+  **Ajouter une collection = régénérer** : `psql -At -c "select json_object_agg(nom, donnees) from collections" > magasin.json`
+  puis `node build/gen-schema-pg.js magasin.json` ; sinon la projection la NOMME dans `projection_erreurs` et le
+  magasin continue de fonctionner.
+- **La projection** (`api/projection.php`) tient une COPIE relationnelle à jour sur **les deux chemins d'écriture** :
+  `magasin.php` (delta par collection) et `crud.php` (une fiche, réécrite seule). **Le magasin JSON reste l'autorité
+  du prototype** — c'est lui que lisent les écrans, de façon synchrone. Trois garanties : elle s'exécute dans un
+  **SAVEPOINT** et ne fait JAMAIS échouer l'écriture (les clés étrangères sont vérifiées DANS le savepoint par
+  `SET CONSTRAINTS ALL IMMEDIATE`, car au COMMIT une violation ferait échouer aussi le magasin) ; rien n'est perdu
+  (champ inconnu ou type changé → `extra`) ; une collection inconnue est nommée. `php api/projection.php` reconstruit
+  tout, `--verifier` contrôle la **parité** (123 collections, 10 558 fiches, 0 écart) ; `api/parite.php` la sert à
+  l'administration. Piège payé : `crud.php` est un SECOND chemin d'écriture — la première version ne branchait que
+  `magasin.php` et une fiche créée à l'écran n'apparaissait pas en table.
+- **Les postes se voient** — journal `evenements` (collection, identifiant, jeton d'auteur ; **jamais de contenu**),
+  `api/evenements.php?depuis=N` (les événements d'AUTRES postes), `magasin.php?collections=a,b` (relecture ciblée).
+  Le store sonde **toutes les 3 s** : s'il y a du neuf il relit ces collections seules, **diffère tant qu'un geste
+  local part** (file, minuterie, envoi), aligne `SRV.envoye` pour ne pas les renvoyer, puis prévient l'écran, qui se
+  repeint SEULEMENT si rien n'est en cours de saisie (pas de dialogue, pas de champ actif) — sinon un bandeau propose
+  d'actualiser. Pastille d'état permanente (Synchronisé / il y a N s / Hors ligne depuis N min, gestes en attente).
+  **Sondage court et non SSE, volontairement** : le serveur PHP traite une requête par processus, quinze flux tenus
+  ouverts le saturent ; le flux poussé est pour le hub cible (ADR-0003). Délai mesuré poste à poste < 8 s.
+- **Planificateur** : `api/planificateur/installer-linux.sh` et `installer-windows.ps1` (rejouables), `LISEZ-MOI.md`.
+- **M12** : le bilan gagne la colonne « Exercice N-1 (journal) » quand le journal tient l'exercice précédent ; **l'archive
+  de clôture naît dans la GED avec la clôture** (`SIGH.exercice.archiver`, appelée par `validerCloture` : balance en CSV,
+  empreinte SHA-256, conservation 10 ans, UNE par exercice) ; le sélecteur d'exercice suit sur le **registre fiscal MECeF**
+  (factures, avoirs, transmission, journal) et sur `m9-factures-assureur` / `m9-historique`. Les **créances ne suivent PAS
+  l'exercice** : un encours non réglé d'un exercice précédent reste dû. `m9-factures-assureur` écrivait « 2026 » en dur
+  (mois, filtre, numéro de pièce) : corrigé.
+- **PILE TECHNIQUE RÉÉVALUÉE — ADR-0003 (proposé)** : la Direction a demandé de repartir de zéro (Windows + Linux, interface
+  partagée poste/smartphone, continuité hors ligne, équipe Flutter/Dart). Recommandation : **Flutter + hub en Dart + domaine
+  Dart partagé**, parce qu'un hub en C# ou Java imposerait deux exemplaires de RG-03/RG-09/RG-10 — la divergence que ce dépôt
+  a payée à chaque règle écrite deux fois. Coût dominant dit sans détour : **réécrire l'interface** (84 000 lignes de JS,
+  305 écrans, 333 impressions, 71 scénarios) ; le prototype devient l'exécutable de référence, portage par tranches
+  verticales. Banc de validation à sept critères avant acceptation, repli nommé (hub .NET).
+- **MECeF : LE BOÎTIER PHYSIQUE, PAS e-MECeF.** `ARCHITECTURE-CIBLE.md` §8 supposait une certification en ligne différée ; la
+  clinique utilise la machine physique. La certification devient locale, le boîtier est l'autorité du numéro fiscal, il se
+  branche à la CAISSE (pas au hub : hub arrêté ≠ certification arrêtée), aucune émission depuis un smartphone. **Le modèle,
+  l'interface et le protocole du boîtier ne sont dans AUCUN document du dépôt** : dix questions au fournisseur et à la DGI sont
+  posées dans l'ADR avant tout code d'intégration. Le prototype (`mecef-*`) simule toujours la file en ligne.
+- **Leçon** : modifier les fichiers PHP pendant qu'un banc tourne peut faire échouer une hydratation (« PAGE NON PEINTE »)
+  sans défaut d'écran — la page `m6-inventaires` signalée plus haut s'est repeinte 3 fois sur 3 en isolation. Ne pas
+  toucher `api/` pendant un banc, et relancer le banc en entier après.
+- Scénarios **72** (tables : parité, écriture suivie, `extra`, archivage RG-14), **73** (deux postes, pastille, saisie protégée,
+  aucun écho) et **74** (N-1 du journal, archive GED, MECeF et M9 qui suivent l'exercice).
+
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau
 transitoire, les boutons du bandeau non : la page appelée s’ouvrait menu déployé alors que l’utilisateur
 venait de choisir sa destination. Le conteneur porte désormais l’identifiant `#page-actions` et un

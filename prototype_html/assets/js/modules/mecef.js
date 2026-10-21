@@ -44,7 +44,11 @@
   }
 
   function factures() { return S.collection('factures').active(); }
-  function normalisees() { return factures().filter(function (f) { return !f.proforma; }); }
+  /* Le registre fiscal suit l'EXERCICE choisi (sélecteur de l'en-tête) : une déclaration à la DGI porte sur une année. */
+  function normalisees() {
+    var X = global.SIGH.exercice;
+    return factures().filter(function (f) { return !f.proforma && (!X || X.dansExercice(f.date)); });
+  }
 
   var STATUTS = {
     valide: ['Validée', 'success'],
@@ -545,17 +549,21 @@
       var col = S.collection('avoirs', { module: 'MECEF', entite: 'Avoir' });
       var host = el('div.space-y-4');
       var table;
+      function avoirsExercice() {
+        var X = global.SIGH.exercice;
+        return col.active().filter(function (a) { return !X || X.dansExercice(a.date); });
+      }
 
       host.appendChild(U.kpiGrid([
-        { label: 'Avoirs émis', value: C.num(col.active().length), icon: 'undo-2', tone: 'navy' },
-        { label: 'Montant des avoirs', value: C.money(C.sum(col.active(), 'montant')), icon: 'wallet', tone: 'warning' },
-        { label: 'TVA régularisée', value: C.money(C.sum(col.active(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
+        { label: 'Avoirs émis', value: C.num(avoirsExercice().length), icon: 'undo-2', tone: 'navy' },
+        { label: 'Montant des avoirs', value: C.money(C.sum(avoirsExercice(), 'montant')), icon: 'wallet', tone: 'warning' },
+        { label: 'TVA régularisée', value: C.money(C.sum(avoirsExercice(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
         { label: 'Factures annulées', value: C.num(factures().filter(function (f) { return f.annulee; }).length), icon: 'file-x', tone: 'danger' },
       ]));
 
       table = U.dataTable({
         title: 'Registre des avoirs',
-        rows: function () { return col.active(); },
+        rows: function () { return avoirsExercice(); },
         exportName: 'avoirs-mecef', pageSize: 12,
         defaultSort: 'date', defaultDir: 'desc',
         emptyMessage: 'Aucun avoir émis.',

@@ -1223,7 +1223,9 @@
         searchPlaceholder: 'Nom de la compagnie…', placeholder: 'Choisir une compagnie',
       });
       var selMois = el('select.select');
-      for (var m = 0; m < 12; m++) selMois.appendChild(el('option', { value: String(m) }, C.MOIS[m] + ' 2026'));
+      /* L'année suit l'EXERCICE choisi (sélecteur de l'en-tête) : la facture mensuelle de juillet 2025 n'est pas celle de juillet 2026. */
+      var ANNEE = global.SIGH.exercice ? global.SIGH.exercice.choisi() : AUJ.getFullYear();
+      for (var m = 0; m < 12; m++) selMois.appendChild(el('option', { value: String(m) }, C.MOIS[m] + ' ' + ANNEE));
       selMois.value = String(AUJ.getMonth());
 
       var barre = el('div.card');
@@ -1248,7 +1250,7 @@
         var code = selAssureur.value, mois = Number(selMois.value);
         return facturesAssurance().filter(function (f) {
           var d = C.toDate(f.date);
-          return f.assureur === code && d.getMonth() === mois && d.getFullYear() === 2026;
+          return f.assureur === code && d.getMonth() === mois && d.getFullYear() === ANNEE;
         });
       }
 
@@ -1396,7 +1398,7 @@
               + 'La pièce peut être transmise.', { tone: 'success', icon: 'check-circle-2' }));
 
           box.appendChild(U.dataTable({
-            title: 'Facture mensuelle — ' + assureurNom(selAssureur.value) + ', ' + C.MOIS[Number(selMois.value)] + ' 2026',
+            title: 'Facture mensuelle — ' + assureurNom(selAssureur.value) + ', ' + C.MOIS[Number(selMois.value)] + ' ' + ANNEE,
             rows: groupes, exportName: 'facture-mensuelle', pageSize: 20,
             columns: [
               {
@@ -1459,9 +1461,9 @@
         });
         P.etat({
           titre: 'Relevé des prestations de la clinique',
-          sousTitre: assureurNom(selAssureur.value) + ' — ' + C.MOIS[Number(selMois.value)] + ' 2026',
+          sousTitre: assureurNom(selAssureur.value) + ' — ' + C.MOIS[Number(selMois.value)] + ' ' + ANNEE,
           cartouche: [['Compagnie', assureurNom(selAssureur.value)],
-            ['Période', C.MOIS[Number(selMois.value)] + ' 2026'],
+            ['Période', C.MOIS[Number(selMois.value)] + ' ' + ANNEE],
             ['Souscripteurs', C.num(groupes.length)],
             ['Assurés', C.num(C.sum(groupes, function (g) { return g.patients.length; }))],
             ['Total facturé', C.money(C.sum(groupes, 'total'))],
@@ -1476,14 +1478,14 @@
         var groupes = parSouscripteur();
         if (!groupes.length) { U.toast('Aucune prestation à facturer sur ce mois.', { type: 'warning' }); return; }
         var mois = Number(selMois.value);
-        var numero = 'FA ' + C.pad(groupes.length + 140, 3) + '/' + C.pad(mois + 1, 2) + '/CNT/2026';
+        var numero = 'FA ' + C.pad(groupes.length + 140, 3) + '/' + C.pad(mois + 1, 2) + '/CNT/' + ANNEE;
         var totalAssureur = C.sum(groupes, 'assureur');
         P.etat({
           titre: 'Facture — prestations de santé',
           sousTitre: numero + ' — ' + assureurNom(selAssureur.value),
           cartouche: [['Facture n°', numero],
             ['Compagnie', assureurNom(selAssureur.value)],
-            ['Période', C.MOIS[mois] + ' 2026'],
+            ['Période', C.MOIS[mois] + ' ' + ANNEE],
             ['Souscripteurs', C.num(groupes.length)],
             ['Assurés concernés', C.num(C.sum(groupes, function (g) { return g.patients.length; }))],
             ['RCCM', C.BRAND.rccm]],
@@ -1538,8 +1540,11 @@
       var selAssureur = U.combo([{ value: '', label: 'Toutes les compagnies' }].concat(
         D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom, detail: a.code }; })
       ), { value: '', placeholder: 'Toutes les compagnies' });
-      var debut = el('input.input', { type: 'date', value: C.iso(C.addDays(AUJ, -180)) });
-      var fin = el('input.input', { type: 'date', value: C.iso(AUJ) });
+      /* Un exercice AUTRE que l'année en cours ouvre l'historique sur cet exercice entier. */
+      var fx = global.SIGH.exercice ? global.SIGH.exercice.fenetre() : null;
+      var horsCourant = fx && fx.annee !== AUJ.getFullYear();
+      var debut = el('input.input', { type: 'date', value: horsCourant ? fx.debut : C.iso(C.addDays(AUJ, -180)) });
+      var fin = el('input.input', { type: 'date', value: horsCourant ? fx.fin : C.iso(AUJ) });
       var vue = el('div.space-y-4');
 
       var barre = el('div.card');

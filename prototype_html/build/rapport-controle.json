@@ -1,54 +1,9 @@
 {
-  "pages": 306,
+  "pages": 0,
   "jsErrors": [],
   "missing": [],
   "brokenLinks": [],
   "notMounted": [],
   "stubs": [],
-  "slow": [
-    {
-      "page": "index.php",
-      "ms": 180576
-    },
-    {
-      "page": "pages/auth-2fa.php",
-      "ms": 180543
-    },
-    {
-      "page": "pages/auth-forgot.php",
-      "ms": 180578
-    },
-    {
-      "page": "pages/auth-lock.php",
-      "ms": 180563
-    },
-    {
-      "page": "pages/auth-reset.php",
-      "ms": 180598
-    },
-    {
-      "page": "pages/enquete-publique.php",
-      "ms": 180576
-    },
-    {
-      "page": "pages/error-403.php",
-      "ms": 180574
-    },
-    {
-      "page": "pages/error-404.php",
-      "ms": 180563
-    },
-    {
-      "page": "pages/m5-banque-sang.php",
-      "ms": 180592
-    },
-    {
-      "page": "pages/m5-donneurs.php",
-      "ms": 180577
-    },
-    {
-      "page": "pages/plan-du-site.php",
-      "ms": 180625
-    }
-  ]
+  "slow": []
 }

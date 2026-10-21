@@ -1164,8 +1164,12 @@
    * Un exercice par poste (mémorisé), l'exercice courant par défaut. Les
    * exercices clos sont marqués : le choix dit déjà ce qu'on pourra y faire.
    */
+  var SUIT_EXERCICE = ['mecef-factures', 'mecef-avoirs', 'mecef-transmission', 'mecef-journal', 'm9-factures-assureur', 'm9-historique'];
   function selecteurExercice(entry) {
-    if (!global.SIGH.exercice || !entry || entry.module !== 'M12') return null;
+    /* L'exercice se choisit sur tout écran comptable (M12) et sur les écrans qui suivent l'exercice :
+       le registre fiscal MECeF et les deux états de flux de M9. Les ENCOURS (créances) ne le suivent pas :
+       une créance non réglée d'un exercice précédent reste due. */
+    if (!global.SIGH.exercice || !entry || !(entry.module === 'M12' || SUIT_EXERCICE.indexOf(entry.id) >= 0)) return null;
     var X = global.SIGH.exercice, liste = X.liste(), courant = X.choisi();
     if (!liste.length) return null;
     var sel = el('select.select.w-auto', { id: 'selecteur-exercice', 'aria-label': 'Exercice comptable', title: 'Exercice comptable' });

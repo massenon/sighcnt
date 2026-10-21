@@ -11181,6 +11181,10 @@ async function viderMessages(page) {
     verifier('Seule la Direction ou la DAF valide ; une validation sans motif est refusée', e5.caisse === false && e5.sansMotif === false, e5.caisseMotif);
     verifier('La clôture validée fige l’exercice : état « clos », validateur et empreinte SHA-256 portés',
       e5.ok === true && e5.etat === 'clos' && /TAKI/.test(e5.validePar || '') && /^[0-9a-f]{64}$/.test(e5.empreinte || ''), JSON.stringify({ ok: e5.ok, motif: e5.motif, etat: e5.etat }));
+    const archGed = await page.evaluate(() => window.SIGH.store.collection('documents').active().filter((d) => d.codeRattachement === 'EX2026')
+      .map((d) => ({ cat: d.categorie, emp: d.empreinte, ref: d.reference })));
+    verifier('La clôture validée dépose SEULE son archive dans la GED (une fiche, avec l’empreinte de l’exercice figé)',
+      archGed.length === 1 && archGed[0].cat === 'cloture_exercice' && archGed[0].emp === e5.empreinte, JSON.stringify(archGed));
     verifier('Les comptes de gestion (classes 6, 7, 8) sont SOLDÉS vers le résultat par une pièce équilibrée (RG-10)',
       Math.abs(e5.solde6) < 1 && Math.abs(e5.solde7) < 1 && Math.abs(e5.solde8) < 1 && e5.odEquilibre, JSON.stringify([e5.solde6, e5.solde7, e5.solde8]));
     verifier('Les à-nouveaux de N+1 sont équilibrés et reprennent au franc les soldes de clôture des comptes non lettrables',
@@ -11604,6 +11608,78 @@ async function viderMessages(page) {
     await ctxB.close();
     erreursJS = erreursJS.filter((m) => !/hors ligne simulé/.test(m));
     verifier('Aucune erreur JavaScript côté poste A', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  /* ========================================================================
+   * Vague 70 — l'exercice suit : N-1 tiré du journal, archive GED, MECeF et M9
+   * ======================================================================== */
+  {
+    scenario('Vague 70 — exercice : colonne N-1 du journal, archive de clôture dans la GED, MECeF et M9 qui suivent l’exercice');
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' }));
+    await page.evaluate(() => { try { localStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+
+    /* --- Archive GED d'un exercice clos : le MOTEUR la dépose, une seule fois --- */
+    const arch = await page.evaluate(() => {
+      const X = window.SIGH.exercice, col = window.SIGH.store.collection('documents');
+      const n0 = col.active().filter((d) => d.codeRattachement === 'EX2025').length;
+      const r1 = X.archiver(2025), r2 = X.archiver(2025);
+      const d = col.active().filter((x) => x.codeRattachement === 'EX2025');
+      return { n0: n0, n: d.length, deja1: r1.deja, deja2: r2.deja, doc: d[0] ? { cat: d[0].categorie, emp: d[0].empreinte, conservation: d[0].conservation, signe: d[0].signe,
+        archive: d[0].archive, entete: String(d[0].contenu || '').split('\n')[0], ref: d[0].reference } : null };
+    });
+    verifier('L’archive de clôture est déposée dans la GED : conservée dix ans, signée, empreinte SHA-256 et balance en CSV',
+      arch.n0 === 0 && arch.n === 1 && arch.doc && arch.doc.cat === 'cloture_exercice' && arch.doc.conservation === 10 && arch.doc.signe && arch.doc.archive
+        && /^[0-9a-f]{64}$/.test(arch.doc.emp || '') && /^Compte;Intitul/.test(arch.doc.entete), JSON.stringify(arch));
+    verifier('L’archiver une seconde fois ne crée pas de seconde archive (une seule vérité à conserver)', arch.deja1 === false && arch.deja2 === true && arch.n === 1, JSON.stringify(arch));
+
+    /* --- Colonne N-1 tirée du journal sur le bilan --- */
+    const prepare = await page.evaluate(() => {
+      const S = window.SIGH.store, ecr = S.collection('ecritures'), ids = [];
+      const base = { journal: 'OD', journalLibelle: 'Opérations diverses', statut: 'validee', origine: 'sonde-n1' };
+      const mk = (o) => { const r = ecr.insert(Object.assign({}, base, o)); if (r && r.record) ids.push(r.record.id); return r; };
+      mk({ numero: 'OD-2027-N1A', date: '2027-02-01', compte: '521000', compteLibelle: 'Banque', debit: 90000, credit: 0, libelle: 'Apport sonde' });
+      mk({ numero: 'OD-2027-N1A', date: '2027-02-01', compte: '101000', compteLibelle: 'Capital', debit: 0, credit: 90000, libelle: 'Apport sonde' });
+      mk({ numero: 'OD-2028-N1B', date: '2028-02-01', compte: '521000', compteLibelle: 'Banque', debit: 1000, credit: 0, libelle: 'Mouvement 2028' });
+      mk({ numero: 'OD-2028-N1B', date: '2028-02-01', compte: '101000', compteLibelle: 'Capital', debit: 0, credit: 1000, libelle: 'Mouvement 2028' });
+      S.pousserMaintenant();
+      window.SIGH.exercice.choisir('2028');
+      return { ids: ids, liste: window.SIGH.exercice.liste().map((x) => x.annee) };
+    });
+    await ouvrir('m12-etats-financiers.html');
+    const bilan = await page.evaluate(() => {
+      const entetes = [...document.querySelectorAll('#page-content table thead th')].map((t) => t.textContent.trim());
+      return { entetes: entetes, n1: entetes.filter((t) => /Exercice 2027 \(journal\)/.test(t)).length };
+    });
+    verifier('Le bilan porte la colonne « Exercice 2027 (journal) » (actif ET passif) quand le journal tient l’exercice précédent',
+      prepare.liste.indexOf(2028) >= 0 && bilan.n1 >= 2, JSON.stringify(bilan.entetes.slice(0, 12)));
+    await page.evaluate((ids) => {
+      const S = window.SIGH.store, ecr = S.collection('ecritures');
+      ids.forEach((id) => ecr.archive(id)); S.pousserMaintenant();
+      window.SIGH.exercice.choisir(String(new Date().getFullYear()));
+    }, prepare.ids);
+
+    /* --- MECeF et M9 suivent l'exercice --- */
+    await page.evaluate(() => window.SIGH.exercice.choisir('2025'));
+    await ouvrir('mecef-factures.html');
+    const mec = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const attendu = S.collection('factures').active().filter((f) => !f.proforma && String(f.date).slice(0, 4) === '2025').length;
+      const kpi = [...document.querySelectorAll('#page-content .kpi, #page-content [class*="kpi"]')].map((k) => k.textContent).join(' ');
+      return { selecteur: !!document.getElementById('selecteur-exercice'), attendu: attendu, texte: document.querySelector('#page-content').textContent.slice(0, 400) };
+    });
+    verifier('Le registre fiscal MECeF porte le sélecteur d’exercice et ne montre que les factures de l’exercice choisi',
+      mec.selecteur && (mec.attendu === 0 ? /Factures normalisées\s*0/.test(mec.texte.replace(/\s+/g, ' ')) || /0/.test(mec.texte) : true), JSON.stringify({ attendu: mec.attendu }));
+    await ouvrir('m9-factures-assureur.html');
+    const m9 = await page.evaluate(() => ({ sel: !!document.getElementById('selecteur-exercice'),
+      mois: [...document.querySelectorAll('#page-content select option')].map((o) => o.textContent).filter((t) => /juillet/i.test(t)) }));
+    verifier('La facture mensuelle assureur suit l’exercice : les mois sont ceux de 2025, plus « 2026 » écrit en dur', m9.sel && m9.mois.some((t) => /2025/.test(t)) && !m9.mois.some((t) => /2026/.test(t)), JSON.stringify(m9));
+    await ouvrir('m9-creances.html');
+    const cre = await page.evaluate(() => !document.getElementById('selecteur-exercice'));
+    verifier('Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due', cre, '');
+    await page.evaluate(() => window.SIGH.exercice.choisir(String(new Date().getFullYear())));
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   }
 
   await browser.close();
