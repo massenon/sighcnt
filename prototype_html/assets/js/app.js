@@ -197,6 +197,8 @@
         }
       }
       point.style.background = couleur; texte.textContent = libelle; p.setAttribute('title', titre);
+      /* Sur téléphone, le point seul : la barre du haut ne doit pas déborder (le libellé reste dans l'infobulle). */
+      texte.style.display = global.innerWidth < 640 ? 'none' : '';
     }
     peindre();
     var t = global.setInterval(peindre, 2000);

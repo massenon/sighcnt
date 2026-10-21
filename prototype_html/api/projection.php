@@ -47,6 +47,12 @@ function sigh_proj_installer(PDO $pdo): bool
     $pdo->exec('CREATE TABLE IF NOT EXISTS projection_etat (
         collection VARCHAR(64) PRIMARY KEY, lignes INT NOT NULL DEFAULT 0, ecartees INT NOT NULL DEFAULT 0,
         dans_extra INT NOT NULL DEFAULT 0, maj TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)');
+    /* Première version de la copie : des clés étrangères entre collections, retirées (voir 0002_cles_etrangeres.sql). */
+    $heritees = $pdo->query("SELECT n.nspname, c.relname, k.conname FROM pg_constraint k JOIN pg_class c ON c.oid = k.conrelid
+        JOIN pg_namespace n ON n.oid = c.relnamespace WHERE k.contype = 'f' AND k.conname LIKE 'fk\\_%'")->fetchAll(PDO::FETCH_NUM);
+    foreach ($heritees as $h) {
+        $pdo->exec('ALTER TABLE "' . $h[0] . '"."' . $h[1] . '" DROP CONSTRAINT "' . $h[2] . '"');
+    }
     $existe = $pdo->query("SELECT to_regclass('m1.patients')")->fetchColumn();
     if (!$existe) {
         $pdo->exec((string) file_get_contents(__DIR__ . '/schema/schema.sql'));

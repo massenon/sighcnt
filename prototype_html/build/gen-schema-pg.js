@@ -216,24 +216,33 @@ Object.values(tables).sort((a, b) => (a.schema + a.table).localeCompare(b.schema
     enfants: t.enfants.map((f) => ({ champ: f.champ, table: f.table, colonnes: f.colonnes.map((c) => ({ champ: c.champ, col: c.col, typ: c.typ })) })),
   };
 });
-out.push('');
-out.push('-- Clés étrangères : seulement celles que les données actuelles respectent à 100 %.');
+const sansFk = out.slice();
+out.length = 0;
+out.push('-- =============================================================================');
+out.push('-- SIGH-CNT — clés étrangères entre collections (schéma CIBLE, non appliquées à la copie du prototype)');
+out.push('-- ENGENDRÉ par prototype_html/build/gen-schema-pg.js. Seulement celles que les données actuelles');
+out.push('-- respectent à 100 %. Le prototype écrit par DEUX chemins sans ordre entre eux (magasin.php, crud.php) :');
+out.push('-- une facture et sa demande d\'imagerie peuvent arriver dans l\'ordre inverse, et une clé étrangère');
+out.push('-- ferait échouer la copie. Le schéma cible, lui, aura un seul chemin d\'écriture ordonné : il les appliquera.');
+out.push('-- =============================================================================');
 fks.forEach((fk) => {
   const t = tables[fk.de], c = tables[fk.vers];
   out.push('ALTER TABLE ' + q(t.schema) + '.' + q(t.table) + ' ADD CONSTRAINT ' + q('fk_' + t.table + '_' + fk.col).slice(0, 63) + '"'.slice(0, 0)
     + ' FOREIGN KEY (' + q(fk.col) + ') REFERENCES ' + q(c.schema) + '.' + q(c.table) + ' ("id") DEFERRABLE INITIALLY DEFERRED;');
 });
 /* ADD CONSTRAINT n'a pas de IF NOT EXISTS : on les emballe pour que le script reste rejouable. */
-const sql = out.join('\n').replace(/^(ALTER TABLE .* ADD CONSTRAINT .*;)$/gm, (l) => {
+const sqlFk = out.join('\n').replace(/^(ALTER TABLE .* ADD CONSTRAINT .*;)$/gm, (l) => {
   const m = /ADD CONSTRAINT "([^"]+)"/.exec(l); const t = /^ALTER TABLE ("[^"]+")\.("[^"]+")/.exec(l);
   return 'DO $$ BEGIN ' + l + ' EXCEPTION WHEN duplicate_object THEN NULL; END $$;';
 });
+const sql = sansFk.join('\n');
 manifeste.fks = fks;
 manifeste.ignorees = IGNOREES;
 fs.writeFileSync(path.join(RACINE, 'api/schema/schema.sql'), sql + '\n');
 fs.writeFileSync(path.join(RACINE, 'api/schema/manifeste.json'), JSON.stringify(manifeste));
 fs.mkdirSync(path.resolve(RACINE, '../packages/schema/postgres'), { recursive: true });
 fs.writeFileSync(path.resolve(RACINE, '../packages/schema/postgres/0001_modules.sql'), sql + '\n');
+fs.writeFileSync(path.resolve(RACINE, '../packages/schema/postgres/0002_cles_etrangeres.sql'), sqlFk + '\n');
 
 /* --- Dictionnaire lisible -------------------------------------------------- */
 const dico = ['# Dictionnaire des données — tables PostgreSQL par module', '',
