@@ -1,6 +1,8 @@
 # Architecture cible — SIGH-CNT hors ligne d'abord
 
-Statut : **proposition** du 17/10/2026, à arrêter par la Direction (voir §14) · ADR associées : ADR-0001 (local-first et hub en étoile), ADR-0002 (monorepo).
+Statut : **proposition** du 17/10/2026, à arrêter par la Direction (voir §14) · ADR associées : ADR-0001 (local-first et hub en étoile), ADR-0002 (monorepo), ADR-0003 (pile technique — **proposée le 21/10/2026**).
+
+> **Révision du 21/10/2026.** Deux points de ce document sont **dépassés** : (1) la **pile** — Tauri 2, Node/TypeScript, réutilisation de l'interface JavaScript (§4, §5, §12, §13) — est remplacée par la proposition d'ADR-0003 (Flutter/Dart, hub en Dart, domaine partagé) ; l'**architecture** (postes autonomes, hub en étoile, journal d'opérations, invariants au hub) reste inchangée ; (2) **MECeF** (§8) : la clinique utilise le **boîtier physique**, pas le service en ligne e-MECeF — voir §8 et ADR-0003.
 
 ## 0. La recommandation en dix lignes
 
@@ -270,14 +272,23 @@ le moteur transporte, il ne décide pas.
 - **Jamais de donnée médicale** dans une adresse, un son, un message d'alerte, un QR (doctrine
   des badges et des enquêtes, conservée).
 
-## 8. MECeF
+## 8. MECeF — le boîtier physique (révisé le 21/10/2026)
 
-L'encaissement n'attend **jamais** la certification. La facture naît, s'imprime avec la mention
-« en attente de certification MECeF », et la passerelle du hub soumet à e-MECeF dès qu'Internet
-répond ; le code et le QR de certification sont rattachés à la pièce, réimprimable. La file sortante
-est visible dans `mecef-*` (combien en attente, depuis quand, dernière erreur). **À confirmer auprès
-de la DGI** : la tolérance de délai entre émission et certification, qui conditionne la taille
-acceptable de la file (§14).
+La clinique utilise **la machine MECeF physique**. Conséquences retenues (à confirmer par la fiche
+technique du boîtier et la DGI — liste des questions dans ADR-0003) :
+
+- la certification est **locale** et ne dépend plus d'Internet, mais d'un **appareil unique** ;
+  l'encaissement n'attend toujours pas indéfiniment : si le boîtier ne répond pas, la facture naît,
+  s'imprime « en attente de certification » et la file se vide **quand le boîtier répond** ;
+- le **boîtier est l'autorité du numéro fiscal** : le hub ne fabrique jamais ce numéro ;
+- le boîtier est branché à la **caisse** (ou joignable directement depuis les postes de caisse), pas
+  au hub : un hub arrêté n'arrête pas la certification. Code, QR et compteurs remontent ensuite par
+  le journal comme toute pièce émise (famille « pièce émise immuable ») ;
+- aucune émission fiscale depuis un smartphone ;
+- un port `Mecef` à deux adaptateurs (boîtier, e-MECeF) : le reste du logiciel ne sait pas lequel tourne.
+
+La file sortante reste visible dans `mecef-*` (combien en attente, depuis quand, dernière erreur,
+état du boîtier : papier, mémoire, liaison).
 
 ## 9. Impression et états
 
