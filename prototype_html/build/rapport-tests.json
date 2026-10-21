@@ -732,8 +732,8 @@
       },
       {
         "libelle": "Aucun débordement horizontal sur téléphone",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": ""
       },
       {
         "libelle": "Le menu se déploie à la demande sur téléphone",
@@ -766,7 +766,7 @@
         "detail": null
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Parcours de prescription — M2 → M5 / M6 / M8",
@@ -6035,6 +6035,11 @@
         "detail": null
       },
       {
+        "libelle": "La clôture validée dépose SEULE son archive dans la GED (une fiche, avec l’empreinte de l’exercice figé)",
+        "ok": true,
+        "detail": null
+      },
+      {
         "libelle": "Les comptes de gestion (classes 6, 7, 8) sont SOLDÉS vers le résultat par une pièce équilibrée (RG-10)",
         "ok": true,
         "detail": null
@@ -6241,7 +6246,7 @@
       {
         "libelle": "Aucune erreur de projection récente",
         "ok": false,
-        "detail": "[{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrgmifhqwc9) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:43:19.00828\"},{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvre5s4rhr2c) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:41:24.115016\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvre32pyelii) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:41:20.580032\"},{\"collection\":\"demandesAnalyses\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_analyses\\\" violates foreign key constraint \\\"fk_demandes_analyses_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvre19115mi2) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:41:18.230616\"},{\"collection\":\"factures\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"factures\\\" violates foreign key constraint \\\"fk_factures_ordonnance_id\\\"\\nDETAIL:  Key (ordonnance_id)=(ORDxmsvrcr8sgfnmx) is not present in table \\\"ordonnances\\\".\",\"le\":\"2026-10-21 11:40:18.678645\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrcr8tx7shd) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:40:18.586912\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvra7kvsdwy6) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:38:19.76566\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvra4qusej0j) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:38:16.164239\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvr7na52hn7v) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 11:36:20.238426\"}]"
+        "detail": "[{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrfvrd8vbq9) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:34:20.422539\"},{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrdd06z81q0) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:32:22.790641\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrdapvo1mb4) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:32:19.833399\"},{\"collection\":\"demandesAnalyses\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_analyses\\\" violates foreign key constraint \\\"fk_demandes_analyses_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrd993tjeo6) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:32:17.931655\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrbxtmhmmip) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:31:16.665612\"},{\"collection\":\"factures\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"factures\\\" violates foreign key constraint \\\"fk_factures_ordonnance_id\\\"\\nDETAIL:  Key (ordonnance_id)=(ORDxmsvrbxtmebpkx) is not present in table \\\"ordonnances\\\".\",\"le\":\"2026-10-21 12:31:16.568557\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrbxtmhmmip) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:31:16.482093\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrag8b31dd6) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:30:07.011327\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvr9qvjnha7e) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:29:34.153363\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvr7gco0bz2n) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:27:47.193225\"}]"
       },
       {
         "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
@@ -6275,5 +6280,92 @@
       }
     ],
     "ok": false
+  },
+  {
+    "nom": "Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état",
+    "etapes": [
+      {
+        "libelle": "La pastille d’état de la synchronisation est présente et dit « Synchronisé » sur un poste relié",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste A voit la fiche créée par le poste B sans geste ni rechargement, en moins de 8 secondes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Et sans que le document ait été rechargé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre affiché par le poste A montre la nouvelle fiche (recherche sur son nom)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une saisie en cours n’est pas repeinte : le champ garde sa valeur et un bandeau propose d’actualiser",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Serveur injoignable : la pastille passe à « Hors ligne » puis revient à « Synchronisé » au retour",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un poste ne relit pas ses propres écritures (aucun écho)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript côté poste A",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 70 — exercice : colonne N-1 du journal, archive de clôture dans la GED, MECeF et M9 qui suivent l’exercice",
+    "etapes": [
+      {
+        "libelle": "L’archive de clôture est déposée dans la GED : conservée dix ans, signée, empreinte SHA-256 et balance en CSV",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’archiver une seconde fois ne crée pas de seconde archive (une seule vérité à conserver)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bilan porte la colonne « Exercice 2027 (journal) » (actif ET passif) quand le journal tient l’exercice précédent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre fiscal MECeF porte le sélecteur d’exercice et ne montre que les factures de l’exercice choisi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture mensuelle assureur suit l’exercice : les mois sont ceux de 2025, plus « 2026 » écrit en dur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
   }
 ]
