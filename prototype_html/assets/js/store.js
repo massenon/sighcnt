@@ -3184,6 +3184,11 @@
         _provisoire = false;          /* la coquille d'attente a fait son temps */
         if (!o || o.erreur) { invaliderManifeste(); return false; }
         SRV.actif = true;
+        /* La séquence des événements au moment de la lecture : tout ce qui arrivera après viendra par
+           le sondage. Ce n'est PAS une donnée du magasin — on la retire avant qu'elle n'y entre. */
+        SYNC.seq = Number(o._seq) || 0;
+        delete o._seq;
+        demarrerSync();
         try { SRV.jeton = storage.get(CLE_JETON) || null; } catch (e) { SRV.jeton = null; }
         if (o._vide) {
           /* LA BASE EST VIDE — ET L'ON NE SÈME PAS ICI. Le peuplement écrit
@@ -3332,6 +3337,78 @@
    * PENDANT L'AMORÇAGE, elle est MUETTE : semer, c'est dix mille fiches, donc
    * dix mille requêtes. Le peuplement passe par l'envoi du magasin entier.
    * ======================================================================== */
+  /* ==========================================================================
+   * CE QUI A CHANGÉ SUR UN AUTRE POSTE (vague 70)
+   * --------------------------------------------------------------------------
+   * Toutes les ~3 secondes, le poste demande au serveur quels événements ont été
+   * écrits PAR D'AUTRES postes depuis la séquence qu'il connaît. S'il y en a, il
+   * relit seulement les collections concernées et les met en place, puis le dit
+   * aux écrans. Quatre précautions :
+   *  - jamais pendant qu'un geste local part (file, minuterie, envoi en vol) :
+   *    relire alors écraserait ce que l'agent vient de saisir — on diffère ;
+   *  - la forme relue devient la forme « déjà envoyée » : elle ne repart pas
+   *    au serveur comme si elle venait d'être modifiée ici ;
+   *  - hors ligne, le sondage échoue en silence et la pastille le dit ; rien
+   *    n'est perdu, la file locale se vide au retour du serveur ;
+   *  - onglet masqué : on ne sonde pas.
+   * ======================================================================== */
+  var SYNC = { seq: 0, timer: null, enCours: false, dernierSucces: 0, ok: null, depuisKO: 0, aRelire: {}, relectures: 0 };
+  function ecrituresLocalesEnCours() {
+    return FILE.actions.length + (FILE.enCours ? 1 : 0) + (_minuterie ? 1 : 0) + (SRV.enVol ? 1 : 0);
+  }
+  function demarrerSync() {
+    if (SYNC.timer || !SRV.actif || !global.setInterval) return;
+    SYNC.timer = global.setInterval(sonderEvenements, 3000);
+  }
+  function sonderEvenements() {
+    if (SYNC.enCours || !SRV.actif || !SRV.jeton) return global.Promise.resolve(false);
+    if (global.document && global.document.hidden) return global.Promise.resolve(false);
+    SYNC.enCours = true;
+    return global.fetch(urlApi('evenements.php?depuis=' + SYNC.seq), { headers: { 'X-Sigh-Jeton': SRV.jeton, Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        SYNC.ok = true; SYNC.dernierSucces = Date.now(); SYNC.depuisKO = 0;
+        var evs = (o && o.evenements) || [];
+        /* Plus de 200 événements d'un coup : on avance jusqu'au dernier reçu, le reste vient au tour suivant. */
+        SYNC.seq = evs.length >= 200 ? evs[evs.length - 1].seq : (o.seq || SYNC.seq);
+        evs.forEach(function (e) { SYNC.aRelire[e.collection] = true; });
+        return relireDistantes();
+      }, function () {
+        SYNC.ok = false; if (!SYNC.depuisKO) SYNC.depuisKO = Date.now();
+        return false;
+      })
+      .then(function (v) { SYNC.enCours = false; return v; }, function () { SYNC.enCours = false; return false; });
+  }
+  function relireDistantes() {
+    var noms = Object.keys(SYNC.aRelire);
+    if (!noms.length || !db) return global.Promise.resolve(false);
+    if (ecrituresLocalesEnCours() > 0) return global.Promise.resolve(false);   /* on diffère : le tour suivant reprendra */
+    return global.fetch(urlApi('magasin.php?collections=' + encodeURIComponent(noms.join(','))), { headers: { Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        /* Un geste local a pu partir pendant la relecture : on laisse alors tomber, la collection sera relue. */
+        if (ecrituresLocalesEnCours() > 0) return false;
+        var mis = [];
+        noms.forEach(function (n) {
+          if (!Array.isArray(o[n])) return;
+          db[n] = o[n];
+          SRV.envoye[n] = JSON.stringify(o[n]);
+          delete SYNC.aRelire[n];
+          mis.push(n);
+        });
+        if (mis.length) {
+          SYNC.relectures += mis.length;
+          mis.forEach(function (n) { emit(n); });
+          try { if (global.SIGH && global.SIGH.app && global.SIGH.app.surDonneesDistantes) global.SIGH.app.surDonneesDistantes(mis); } catch (e) { console.error(e); }
+        }
+        return mis.length > 0;
+      }, function () { return false; });
+  }
+  function etatSync() {
+    return { actif: SRV.actif, ok: SYNC.ok, dernierSucces: SYNC.dernierSucces, depuisKO: SYNC.depuisKO, seq: SYNC.seq,
+      enAttente: ecrituresLocalesEnCours(), relectures: SYNC.relectures };
+  }
+
   var FILE = { actions: [], enCours: false, minuterie: null };
 
   function transmettre(action, collection, charge) {
@@ -3952,6 +4029,7 @@
       viderFile();
     },
     jetonServeur: function () { return SRV.jeton; },
+    etatSync: etatSync, sonderEvenements: sonderEvenements,
     log: log, on: on, emit: emit,
     session: session, setSession: setSession, currentUser: currentUser, garder: garder,
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,

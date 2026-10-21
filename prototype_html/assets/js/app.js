@@ -94,17 +94,20 @@
     return _spaChargés[src];
   }
   /** Le fichier de module d'un écran se lit dans SA page engendrée : une seule source (gen-pages). */
+  var _fichiersParEcran = {};
   function fichiersDeModule(id) {
+    if (_fichiersParEcran[id]) return global.Promise.resolve(_fichiersParEcran[id]);
     return global.fetch(href(id), { credentials: 'same-origin' }).then(function (r) {
       if (!r.ok) throw new Error('page ' + id + ' : ' + r.status);
       return r.text();
     }).then(function (html) {
       var out = [], re = /assets\/js\/(modules\/[\w-]+\.js)/g, m;
       while ((m = re.exec(html))) out.push(m[1]);
+      _fichiersParEcran[id] = out;
       return out;
     });
   }
-  function ecranEntier(id, opts, pousser) {
+  function ecranEntier(id, opts, pousser, garderDefilement) {
     var entry = N.get(id);
     return fichiersDeModule(id).then(function (fichiers) {
       return fichiers.reduce(function (p, f) { return p.then(function () { return chargerScript('assets/js/' + f); }); }, Promise.resolve());
@@ -115,9 +118,11 @@
       demonter();
       PAGE = null; _boote = false;
       if (pousser) global.history.pushState({ sigh: id }, '', href(id, opts));
-      global.scrollTo(0, 0);
+      var y = garderDefilement ? (global.scrollY || 0) : 0;
+      if (!garderDefilement) global.scrollTo(0, 0);
       monterVraiment(id);
       boot();
+      if (garderDefilement) global.scrollTo(0, y);
       return true;
     });
   }
@@ -133,6 +138,72 @@
     });
     return true;
   }
+  /* ==========================================================================
+   * DONNÉES VENUES D'UN AUTRE POSTE (vague 70)
+   * --------------------------------------------------------------------------
+   * Le magasin vient de relire des collections qu'un autre poste a modifiées.
+   * L'écran ouvert les montre-t-il ? On le repeint SEULEMENT si cela ne coûte
+   * rien à l'agent : pas de boîte de dialogue ouverte, pas de champ en cours de
+   * saisie, pas deux repeints à moins de quatre secondes. Sinon un bandeau
+   * discret le dit et laisse l'agent actualiser quand il le décide — repeindre
+   * sous les doigts de quelqu'un qui tape est le plus sûr moyen de perdre sa saisie.
+   * ======================================================================== */
+  var _derniereRelecture = 0;
+  function rafraichirEcran() {
+    if (!PAGE || PAGE.standalone || !spaPermise()) return false;
+    _spaOccupe = true;
+    ecranEntier(PAGE.id, optsDeLien(global.location), false, true).then(function () { _spaOccupe = false; }, function () {
+      _spaOccupe = false; global.location.reload();
+    });
+    _derniereRelecture = Date.now();
+    return true;
+  }
+  function surDonneesDistantes(noms) {
+    if (!PAGE || PAGE.standalone) return;
+    var racine = document.getElementById('page-content');
+    var a = document.activeElement;
+    var saisie = !!(a && racine && racine.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+    var dialogue = !!document.querySelector('[role="dialog"]');
+    if (!dialogue && !saisie && Date.now() - _derniereRelecture > 4000 && rafraichirEcran()) return;
+    if (document.getElementById('bandeau-donnees-distantes')) return;
+    var b = el('div#bandeau-donnees-distantes.no-print', { role: 'status',
+      style: 'position:fixed;right:16px;bottom:16px;z-index:60;max-width:320px;padding:10px 14px;border-radius:10px;background:#0b2a4a;color:#fff;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center' },
+    [el('span', { text: 'Des données ont été modifiées sur un autre poste.' }),
+      el('button', { type: 'button', text: 'Actualiser', style: 'background:#fff;color:#0b2a4a;border-radius:6px;padding:4px 10px;font-weight:600;white-space:nowrap',
+        onclick: function () { if (b.parentNode) b.parentNode.removeChild(b); rafraichirEcran(); } })]);
+    document.body.appendChild(b);
+  }
+  /** La pastille d'état de la synchronisation : toujours là, jamais muette. */
+  function pastilleSync() {
+    var p = el('span#pastille-sync', { role: 'status',
+      style: 'display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,.12);color:#fff' });
+    var point = el('span', { style: 'width:8px;height:8px;border-radius:50%;background:#94a3b8' });
+    var texte = el('span', { text: 'Mode local' });
+    p.appendChild(point); p.appendChild(texte);
+    function peindre() {
+      var e = S.etatSync ? S.etatSync() : null;
+      var couleur = '#94a3b8', libelle = 'Mode local', titre = 'Les données restent dans ce navigateur : aucun serveur joint.';
+      if (e && e.actif) {
+        var age = e.dernierSucces ? Math.round((Date.now() - e.dernierSucces) / 1000) : null;
+        if (e.ok === false) {
+          var min = e.depuisKO ? Math.max(1, Math.round((Date.now() - e.depuisKO) / 60000)) : 1;
+          couleur = '#ef4444'; libelle = 'Hors ligne depuis ' + min + ' min' + (e.enAttente ? ' — ' + e.enAttente + ' geste(s) en attente' : '');
+          titre = 'Le serveur de la clinique ne répond pas. Vos saisies sont gardées et partiront au retour du serveur.';
+        } else if (age !== null && age > 20) {
+          couleur = '#f59e0b'; libelle = 'Synchronisé il y a ' + age + ' s'; titre = 'Dernier échange avec le serveur il y a ' + age + ' secondes.';
+        } else {
+          couleur = '#22c55e'; libelle = e.enAttente ? 'Envoi en cours…' : 'Synchronisé';
+          titre = 'Les données de ce poste suivent celles des autres postes (échange toutes les 3 secondes).';
+        }
+      }
+      point.style.background = couleur; texte.textContent = libelle; p.setAttribute('title', titre);
+    }
+    peindre();
+    var t = global.setInterval(peindre, 2000);
+    enDernier(function () { global.clearInterval(t); });
+    return p;
+  }
+
   function idDeLien(a) {
     var m = /\/pages\/([\w-]+)\.[a-z]+(?:[?#].*)?$/i.exec(a.pathname + (a.hash || ''));
     return m && N.get(m[1]) ? m[1] : null;
@@ -487,6 +558,7 @@
       enDernier(NT.abonner(peindreBadge));
       NT.demarrer();
     }
+    bar.appendChild(pastilleSync());
     bar.appendChild(notifBtn);
 
     /* Profil */
@@ -1401,5 +1473,6 @@
     delaiVerrou: delaiVerrou,
     replierRuban: replierApresNavigation,
     ecoute: ecoute, enDernier: enDernier, sansRecharger: naviguerSansRecharger,
+    surDonneesDistantes: surDonneesDistantes, rafraichir: rafraichirEcran,
   };
 })(window);

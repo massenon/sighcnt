@@ -121,6 +121,7 @@ if ($action === 'inserer') {
         if ($deja === null) {
             sigh_proj_depuis_base($pdo, 'audit');
         }
+        sigh_evenement($pdo, $collection, (string) $fiche['id'], $session['jeton'] ?? null, (string) ($session['identifiant'] ?? ''));
         $pdo->commit();
     } catch (Throwable $e) {
         $pdo->rollBack();
@@ -167,6 +168,7 @@ if ($action === 'modifier' || $action === 'archiver' || $action === 'restaurer')
         sigh_journaliser($pdo, $session, $libelle, $collection, $id, $avant, $apres);
         sigh_proj_depuis_base($pdo, $collection, $id);
         sigh_proj_depuis_base($pdo, 'audit');
+        sigh_evenement($pdo, $collection, $id, $session['jeton'] ?? null, (string) ($session['identifiant'] ?? ''));
         $pdo->commit();
     } catch (Throwable $e) {
         $pdo->rollBack();

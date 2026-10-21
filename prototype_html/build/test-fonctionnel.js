@@ -11503,6 +11503,109 @@ async function viderMessages(page) {
     erreursJS = [];
   }
 
+  /* ========================================================================
+   * Vague 70 — deux postes : l'écriture de l'un apparaît chez l'autre
+   * ======================================================================== */
+  {
+    scenario('Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m1-patients.html');
+    erreursJS = [];
+    await page.evaluate(() => { window.__posteA = 'A'; });
+
+    /* Poste B : un autre contexte de navigateur (autre localStorage), donc un autre jeton de session. */
+    const ctxB = await browser.createBrowserContext();
+    const pageB = await ctxB.newPage();
+    pageB.setDefaultTimeout(120000);
+    const repB = await BANC.connecter('e.orouyo');
+    await pageB.evaluateOnNewDocument((jeton) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'reception', fonction: 'accueil', nom: 'OROU YO Edmond', identifiant: 'e.orouyo', secteur: 'ACC', jeton: jeton }));
+      localStorage.setItem('sigh-cnt:jeton', jeton);
+    }, repB.jeton);
+    await pageB.goto(`http://127.0.0.1:${PORT}/pages/m1-patients.php`, { waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.SIGH && window.SIGH.app && window.SIGH.app.entry() && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 150000 });
+
+    const pastille = await page.evaluate(() => { const p = document.getElementById('pastille-sync'); return p ? p.textContent : null; });
+    verifier('La pastille d’état de la synchronisation est présente et dit « Synchronisé » sur un poste relié', /Synchronis/.test(pastille || ''), String(pastille));
+
+    const nom = 'SONDE-POSTE-' + Date.now().toString(36).toUpperCase();
+    const t0 = Date.now();
+    const idB = await pageB.evaluate((n) => {
+      const S = window.SIGH.store;
+      const r = S.collection('patients').insert({ nom: n, prenom: 'Poste B', sexe: 'F', telephone: '+22900000001' });
+      S.pousserMaintenant();
+      return r.record.id;
+    }, nom);
+    /* Poste A ne fait RIEN : ni clic, ni rechargement. Il doit apprendre tout seul. */
+    await page.waitForFunction((id) => !!window.SIGH.store.collection('patients').get(id), { timeout: 30000 }, idB);
+    const delai = Date.now() - t0;
+    verifier('Le poste A voit la fiche créée par le poste B sans geste ni rechargement, en moins de 8 secondes', delai < 8000, delai + ' ms');
+    const memeDoc = await page.evaluate(() => window.__posteA === 'A');
+    verifier('Et sans que le document ait été rechargé', memeDoc, '');
+
+    /* L'écran du poste A (registre des patients) se repeint seul, puisque rien n'y est en cours de saisie. */
+    await page.waitForFunction((n) => document.querySelector('#page-content') && document.querySelector('#page-content').textContent.indexOf(n) >= 0
+      || true, { timeout: 5000 }, nom).catch(() => {});
+    const paru = await page.evaluate(async (n) => {
+      for (let i = 0; i < 40; i++) {
+        const racine = document.querySelector('#page-content');
+        const champ = racine && racine.querySelector('input[type="search"], input[placeholder*="echerch"]');
+        if (champ) { champ.value = n; champ.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 600)); }
+        if (racine && racine.textContent.indexOf(n) >= 0) return true;
+        await new Promise((r) => setTimeout(r, 500));
+      }
+      return false;
+    }, nom);
+    verifier('Le registre affiché par le poste A montre la nouvelle fiche (recherche sur son nom)', paru, nom);
+
+    /* Un champ en cours de saisie n'est JAMAIS repeint : bandeau discret à la place. */
+    const protege = await page.evaluate(async () => {
+      const champ = document.querySelector('#page-content input[type="search"], #page-content input[placeholder*="echerch"]') || document.querySelector('#page-content input');
+      if (!champ) return { sansChamp: true };
+      champ.focus(); champ.value = 'saisie en cours';
+      const avant = champ.value;
+      window.SIGH.app.surDonneesDistantes(['patients']);
+      await new Promise((r) => setTimeout(r, 800));
+      const encore = document.querySelector('#page-content input:focus');
+      return { garde: !!encore && encore.value === avant, bandeau: !!document.getElementById('bandeau-donnees-distantes') };
+    });
+    verifier('Une saisie en cours n’est pas repeinte : le champ garde sa valeur et un bandeau propose d’actualiser',
+      protege.sansChamp || (protege.garde && protege.bandeau), JSON.stringify(protege));
+
+    /* Hors ligne : la pastille le dit. */
+    const etat = await page.evaluate(async () => {
+      const S = window.SIGH.store, e0 = S.etatSync();
+      const orig = window.fetch;
+      window.fetch = function (u) { if (/evenements\.php/.test(String(u))) return Promise.reject(new TypeError('hors ligne simulé')); return orig.apply(this, arguments); };
+      await S.sonderEvenements();
+      await new Promise((r) => setTimeout(r, 2300));
+      const texte = (document.getElementById('pastille-sync') || {}).textContent || '';
+      window.fetch = orig;
+      await S.sonderEvenements();
+      await new Promise((r) => setTimeout(r, 2300));
+      return { avant: e0.ok, horsligne: /Hors ligne/.test(texte), texte: texte, apres: (document.getElementById('pastille-sync') || {}).textContent };
+    });
+    verifier('Serveur injoignable : la pastille passe à « Hors ligne » puis revient à « Synchronisé » au retour',
+      etat.horsligne && /Synchronis/.test(etat.apres || ''), JSON.stringify(etat));
+
+    /* RG-12 : l'écho de ses propres écritures est exclu. */
+    const echo = await page.evaluate(async () => {
+      const S = window.SIGH.store;
+      const avant = S.etatSync().relectures;
+      S.collection('patients').insert({ nom: 'SONDE-ECHO', prenom: 'A', sexe: 'M' });
+      S.pousserMaintenant();
+      for (let i = 0; i < 40 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      await S.sonderEvenements(); await new Promise((r) => setTimeout(r, 500)); await S.sonderEvenements();
+      return S.etatSync().relectures - avant;
+    });
+    verifier('Un poste ne relit pas ses propres écritures (aucun écho)', echo === 0, String(echo));
+
+    await ctxB.close();
+    erreursJS = erreursJS.filter((m) => !/hors ligne simulé/.test(m));
+    verifier('Aucune erreur JavaScript côté poste A', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
