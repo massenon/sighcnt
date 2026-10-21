@@ -4128,7 +4128,8 @@
           ],
           rowActions: function (r) {
             return [K.iconBtn('folder-open', 'Ouvrir le dossier du patient', function () {
-              global.SIGH.app.go('m1-dossier', { patient: r.patientId });
+              /* Le dossier s'ouvre depuis le répertoire des patients (fusion du 31/08/2026) : « m1-dossier » n'a jamais existé. */
+              global.SIGH.app.go('m1-patients');
             })];
           },
         }));

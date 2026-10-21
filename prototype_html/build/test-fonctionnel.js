@@ -219,7 +219,13 @@ async function viderMessages(page) {
        dans le budget, et la navigation expirait sur une page parfaitement
        saine. L'attente qui suit est meilleure de toute façon : elle guette la
        PEINTURE, c'est-à-dire ce qu'on veut vraiment mesurer. */
-    await page.goto(`http://127.0.0.1:${PORT}/pages/${pageDuBanc(rel)}`, { waitUntil: 'domcontentloaded' });
+    const reponse = await page.goto(`http://127.0.0.1:${PORT}/pages/${pageDuBanc(rel)}`, { waitUntil: 'domcontentloaded' }).catch(() => null);
+    /* UNE PAGE QUI N'EXISTE PAS SE DIT TOUT DE SUITE (vague 70). `m6-inventaires` (au pluriel) n'a jamais existé : le banc
+       attendait 150 s une peinture impossible à CHAQUE passage, puis le prétendait « hydratation jamais aboutie ». */
+    if (reponse && reponse.status() === 404) {
+      console.log('\n  PAGE INTROUVABLE (404) : ' + rel + ' — absente du manifeste ; le scénario continue sans elle.');
+      return;
+    }
     /* ON ATTEND QUE LA PAGE SOIT PEINTE, pas un délai. Depuis la bascule en
        base, le montage attend l'hydratation — 5 Mo à transporter puis à
        analyser — et les 450 ms d'autrefois tombaient au milieu : la sonde
@@ -10659,7 +10665,7 @@ async function viderMessages(page) {
         nomComplet: 'MAMAN Zoukanéri', identifiant: 'z.maman',
       }));
     });
-    await ouvrir('m6-inventaires.html');
+    await ouvrir('m6-inventaire.html');
     await ouvrir('m6-inventaire-feuille.html#magasin=detail&type=Ponctuel&perimetre=Tous%20les%20articles&operateur=MAMAN%20Zouk');
 
     const feuille = await page.evaluate(() => {

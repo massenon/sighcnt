@@ -1835,7 +1835,7 @@
     render: function (root) {
       var p = C.params();
       var col = S.collection('inventaires', { module: 'M6', entite: 'Inventaire' });
-      var retour = p.retour || 'm6-inventaires';
+      var retour = p.retour || 'm6-inventaire';
 
       var entete = {
         magasin: p.magasin === 'detail' ? 'detail' : 'gros',

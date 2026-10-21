@@ -1678,8 +1678,7 @@ RECHARGEMENT ET LE PLANIFICATEUR.** Les trois PRD de la vague 68 (`docs/prd/`) s
   (4) Le banc ouvre UNE session serveur de rôle `admin` : pour sonder un routage par rôle, se connecter réellement
   (`BANC.connecter(identifiant)`) et appeler l'API avec ce jeton. (5) Le nombre de sondages de l'audit RBAC (841) diffère des
   1 091 de l'ancien texte : l'écart vient des écrans retirés avec le rôle biomédical et de la mesure faite sur le jeu courant —
-  c'est le chiffre MESURÉ qui fait foi. (6) Une page `m6-inventaires` a été signalée non peinte UNE fois au banc 4 sans jamais
-  se reproduire : tant qu'elle ne revient pas, c'est une course du relais HTTP du banc (voir vague 68), pas un défaut d'écran.
+  c'est le chiffre MESURÉ qui fait foi. (6) « Page `m6-inventaires` non peinte » n'était PAS une course : la page n'a jamais existé (voir vague 70).
 - Scénarios **68** (exercice : pré-clôture, deux gestes, résultat, à-nouveaux, lecture seule), **69** (ventes par patient et
   par secteur), **70** (navigation sans rechargement) et **71** (planificateur : tâches, routage par poste, alerte résolue).
 
@@ -1735,9 +1734,7 @@ RECHARGEMENT ET LE PLANIFICATEUR.** Les trois PRD de la vague 68 (`docs/prd/`) s
   branche à la CAISSE (pas au hub : hub arrêté ≠ certification arrêtée), aucune émission depuis un smartphone. **Le modèle,
   l'interface et le protocole du boîtier ne sont dans AUCUN document du dépôt** : dix questions au fournisseur et à la DGI sont
   posées dans l'ADR avant tout code d'intégration. Le prototype (`mecef-*`) simule toujours la file en ligne.
-- **Leçon** : modifier les fichiers PHP pendant qu'un banc tourne peut faire échouer une hydratation (« PAGE NON PEINTE »)
-  sans défaut d'écran — la page `m6-inventaires` signalée plus haut s'est repeinte 3 fois sur 3 en isolation. Ne pas
-  toucher `api/` pendant un banc, et relancer le banc en entier après.
+- **« PAGE NON PEINTE : m6-inventaires » ÉLUCIDÉ : une coquille de test, pas une course.** L'écran s'appelle `m6-inventaire` (singulier) ; le banc ouvrait `m6-inventaires`, une adresse qui répond **404**, puis attendait 150 s une peinture impossible — à CHAQUE passage complet — et concluait « hydratation jamais aboutie ». Trois ouvertures isolées de la vraie page réussissaient, et la trace réseau de la fausse donnait `404 → chrome-error://`. **Le même identifiant mort vivait dans le code produit** : `servant: 'm6-inventaires'` sur la feuille d'inventaire (elle héritait des droits du MODULE au lieu de ceux du registre qu'elle alimente) et le retour par défaut de la feuille (une navigation vers une page 404). Le scan des sources (`go('…')`, `ecran:`, `servant:`, `retour ||`, `lien:`, `creerVers:`) a levé un SECOND lien mort, `m1-dossier` (assurance du personnel). Corrigés ; `gen-pages` REFUSE désormais un `servant` inexistant, et `ouvrir()` du banc dit « PAGE INTROUVABLE (404) » aussitôt au lieu d'attendre. **Leçon** : un message qui accuse l'infrastructure (« hydratation ») avant d'avoir regardé le statut HTTP envoie chercher au mauvais endroit — j'avais d'abord attribué le cas à mes propres modifications de `api/` en cours de banc, hypothèse que la reproduction a réfutée.
 - Scénarios **72** (tables : parité, écriture suivie, `extra`, archivage RG-14), **73** (deux postes, pastille, saisie protégée,
   aucun écho) et **74** (N-1 du journal, archive GED, MECeF et M9 qui suivent l'exercice).
 

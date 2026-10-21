@@ -73,6 +73,13 @@ fs.mkdirSync(pagesDir, { recursive: true });
 let created = 0, kept = 0;
 const written = new Set();
 
+/* GARDE : un écran désigné comme `servant` doit exister. `m6-inventaires` (pluriel) n'a jamais existé ; la feuille
+   d'inventaire héritait donc des droits du MODULE au lieu de ceux du registre qu'elle alimente, sans que rien ne le dise. */
+Object.keys(NAV.INDEX).forEach((id) => {
+  const s = NAV.INDEX[id].servant;
+  if (s && !NAV.INDEX[s]) throw new Error('Manifeste : « ' + id + ' » déclare servant « ' + s + ' », qui n\'existe pas.');
+});
+
 Object.keys(NAV.INDEX).forEach((id) => {
   const entry = NAV.INDEX[id];
   if (id === 'index') return; /* la page de connexion est écrite à la main */

@@ -868,7 +868,7 @@
        EXACTEMENT des droits du registre qu'elle alimente. */
     {
       id: 'm6-inventaire-feuille', label: 'Feuille d’inventaire — comptage', icon: 'clipboard-list',
-      servant: 'm6-inventaires',
+      servant: 'm6-inventaire',
       module: 'M6', moduleLabel: 'Pharmacie & Stocks', domain: 'Logistique',
     },
     /* L'ouverture d'un dossier patient : une page, parce qu'on la remplit

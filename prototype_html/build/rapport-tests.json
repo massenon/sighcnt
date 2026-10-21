@@ -732,8 +732,8 @@
       },
       {
         "libelle": "Aucun débordement horizontal sur téléphone",
-        "ok": false,
-        "detail": ""
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Le menu se déploie à la demande sur téléphone",
@@ -766,7 +766,7 @@
         "detail": null
       }
     ],
-    "ok": false
+    "ok": true
   },
   {
     "nom": "Parcours de prescription — M2 → M5 / M6 / M8",
@@ -6245,8 +6245,8 @@
       },
       {
         "libelle": "Aucune erreur de projection récente",
-        "ok": false,
-        "detail": "[{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrfvrd8vbq9) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:34:20.422539\"},{\"collection\":\"demandesImagerie\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_imagerie\\\" violates foreign key constraint \\\"fk_demandes_imagerie_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrdd06z81q0) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:32:22.790641\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrdapvo1mb4) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:32:19.833399\"},{\"collection\":\"demandesAnalyses\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"demandes_analyses\\\" violates foreign key constraint \\\"fk_demandes_analyses_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrd993tjeo6) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:32:17.931655\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrbxtmhmmip) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:31:16.665612\"},{\"collection\":\"factures\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"factures\\\" violates foreign key constraint \\\"fk_factures_ordonnance_id\\\"\\nDETAIL:  Key (ordonnance_id)=(ORDxmsvrbxtmebpkx) is not present in table \\\"ordonnances\\\".\",\"le\":\"2026-10-21 12:31:16.568557\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrbxtmhmmip) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:31:16.482093\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvrag8b31dd6) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:30:07.011327\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvr9qvjnha7e) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:29:34.153363\"},{\"collection\":\"ordonnances\",\"message\":\"SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table \\\"ordonnances\\\" violates foreign key constraint \\\"fk_ordonnances_facture_id\\\"\\nDETAIL:  Key (facture_id)=(FACxmsvr7gco0bz2n) is not present in table \\\"factures\\\".\",\"le\":\"2026-10-21 12:27:47.193225\"}]"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
@@ -6279,7 +6279,7 @@
         "detail": null
       }
     ],
-    "ok": false
+    "ok": true
   },
   {
     "nom": "Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état",
