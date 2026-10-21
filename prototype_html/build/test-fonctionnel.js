@@ -11432,6 +11432,77 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   }
 
+  /* ========================================================================
+   * Vague 70 — la copie relationnelle PostgreSQL suit le magasin
+   * ======================================================================== */
+  {
+    scenario('Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m14-taches.html');
+    erreursJS = [];
+    const appel = (query) => page.evaluate(async (qs) => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/parite.php' + qs, { headers: { 'X-Sigh-Jeton': S.jetonServeur() } });
+      return { statut: r.status, corps: await r.json() };
+    }, query);
+
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant());
+    const base = await appel('');
+    const sch = (base.corps.schemas || []).map((s) => s.schema);
+    verifier('Les tables existent pour tous les modules : au moins quinze schémas de module',
+      base.statut === 200 && ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9', 'm10', 'm11', 'm12', 'm13', 'm14', 'cfg'].every((s) => sch.includes(s)), sch.join(','));
+    verifier('Parité magasin ↔ tables : zéro écart sur toutes les collections', base.corps.parite && base.corps.parite.ecarts.length === 0,
+      JSON.stringify(base.corps.parite && base.corps.parite.ecarts.slice(0, 5)));
+    verifier('Plus de cent collections projetées', base.corps.parite && base.corps.parite.collections > 100, String(base.corps.parite && base.corps.parite.collections));
+    verifier('Aucune erreur de projection récente', (base.corps.erreurs || []).length === 0, JSON.stringify(base.corps.erreurs));
+
+    const cree = await page.evaluate(async () => {
+      const S = window.SIGH.store, col = S.collection('patients');
+      const fiche = col.insert({ nom: 'SONDE-TABLES', prenom: 'Projection', sexe: 'F', telephone: '+22900000000', observation: 'créée par la sonde' }).record;
+      S.pousserMaintenant();
+      return { id: fiche.id, code: fiche.code };
+    });
+    const apres = await appel('?collection=patients&id=' + encodeURIComponent(cree.id));
+    verifier('Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées',
+      apres.statut === 200 && apres.corps.ligne && apres.corps.ligne.nom === 'SONDE-TABLES' && apres.corps.table === 'm1.patients', JSON.stringify(apres.corps).slice(0, 200));
+
+    const modif = await page.evaluate(async (id) => {
+      const S = window.SIGH.store;
+      S.collection('patients').update(id, { telephone: '+22911111111', champInconnuDuSchema: 'ne doit pas se perdre' });
+      S.pousserMaintenant();
+      return true;
+    }, cree.id);
+    const apres2 = await appel('?collection=patients&id=' + encodeURIComponent(cree.id));
+    const extra = apres2.corps.ligne && (typeof apres2.corps.ligne.extra === 'string' ? JSON.parse(apres2.corps.ligne.extra) : apres2.corps.ligne.extra);
+    verifier('Une modification est suivie, et un champ inconnu du schéma est CONSERVÉ dans « extra » au lieu d’être perdu',
+      apres2.corps.ligne && apres2.corps.ligne.telephone === '+22911111111' && extra && extra.champInconnuDuSchema === 'ne doit pas se perdre', JSON.stringify(apres2.corps.ligne).slice(0, 240));
+
+    const fact = await page.evaluate(() => {
+      const f = window.SIGH.store.collection('factures').active().find((x) => (x.lignes || []).length > 1);
+      return f ? { id: f.id, n: f.lignes.length } : null;
+    });
+    const lignesF = fact && await page.evaluate(async (id) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const r = await fetch(racine + 'api/parite.php?collection=factures&id=' + encodeURIComponent(id), { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() } });
+      return (await r.json());
+    }, fact.id);
+    verifier('Les lignes d’une facture ont leur table fille et la parité des lignes est vérifiée avec le reste',
+      !!fact && lignesF && lignesF.table === 'm8.factures' && base.corps.parite.ecarts.every((e) => !/factures\.lignes/.test(e)), fact ? fact.id + ' ' + fact.n + ' lignes' : 'aucune facture multi-lignes');
+
+    await page.evaluate((id) => { window.SIGH.store.collection('patients').archive(id); window.SIGH.store.pousserMaintenant(); }, cree.id);
+    const arch = await appel('?collection=patients&id=' + encodeURIComponent(cree.id));
+    verifier('RG-14 : archiver ne supprime pas — la ligne reste en table avec son statut',
+      arch.corps.ligne && arch.corps.ligne.statut === 'archive', JSON.stringify(arch.corps.ligne).slice(0, 160));
+    const fin = await appel('');
+    verifier('Après ces écritures, la parité reste à zéro écart', fin.corps.parite.ecarts.length === 0, JSON.stringify(fin.corps.parite.ecarts.slice(0, 3)));
+    const sansSession = await page.evaluate(async () => (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/parite.php')).status);
+    verifier('Sans session, le contrôle est refusé (401)', sansSession === 401, String(sansSession));
+    erreursJS = [];
+  }
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

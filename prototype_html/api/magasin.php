@@ -26,6 +26,7 @@
  * ========================================================================== */
 
 require __DIR__ . '/config.php';
+require_once __DIR__ . '/projection.php';
 
 header('Access-Control-Allow-Origin: ' . ($_SERVER['HTTP_ORIGIN'] ?? '*'));
 header('Access-Control-Allow-Credentials: true');
@@ -125,6 +126,9 @@ if ($methode === 'POST') {
                 $insM->execute([$cle, json_encode($valeur, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)]);
             }
         }
+        /* La copie RELATIONNELLE suit, dans la même transaction mais dans un savepoint :
+           si elle échoue, le magasin a quand même reçu son delta (api/projection.php). */
+        $projection = $collections ? sigh_proj_projeter($pdo, $collections) : null;
         $pdo->commit();
     } catch (Throwable $e) {
         $pdo->rollBack();
@@ -136,6 +140,7 @@ if ($methode === 'POST') {
         'collections' => count($collections),
         'meta'        => count($meta),
         'par'         => $session['identifiant'] ?? $session['nom'] ?? null,
+        'projection'  => $projection ? ['tables' => $projection['ok'], 'erreur' => $projection['erreur']] : null,
     ]);
 }
 
@@ -145,6 +150,7 @@ if ($methode === 'POST') {
 if ($methode === 'DELETE') {
     $pdo->exec('DELETE FROM collections');
     $pdo->exec('DELETE FROM meta');
+    sigh_proj_vider($pdo);
     sigh_repondre(['ok' => true, 'vide' => true]);
 }
 
