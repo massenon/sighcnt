@@ -8,47 +8,47 @@
   "slow": [
     {
       "page": "index.php",
-      "ms": 180620
+      "ms": 180590
     },
     {
       "page": "pages/auth-2fa.php",
-      "ms": 180576
+      "ms": 180616
     },
     {
       "page": "pages/auth-forgot.php",
-      "ms": 180628
+      "ms": 180663
     },
     {
       "page": "pages/auth-lock.php",
-      "ms": 180655
+      "ms": 180608
     },
     {
       "page": "pages/auth-reset.php",
-      "ms": 180574
+      "ms": 180684
     },
     {
       "page": "pages/enquete-publique.php",
-      "ms": 180665
+      "ms": 180666
     },
     {
       "page": "pages/error-403.php",
-      "ms": 180657
+      "ms": 180618
     },
     {
       "page": "pages/error-404.php",
-      "ms": 180594
+      "ms": 180589
     },
     {
       "page": "pages/m5-banque-sang.php",
-      "ms": 180636
+      "ms": 180601
     },
     {
       "page": "pages/m5-donneurs.php",
-      "ms": 180577
+      "ms": 180620
     },
     {
       "page": "pages/plan-du-site.php",
-      "ms": 180594
+      "ms": 180645
     }
   ]
 }
