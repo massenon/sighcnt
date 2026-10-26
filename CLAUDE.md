@@ -1738,6 +1738,8 @@ RECHARGEMENT ET LE PLANIFICATEUR.** Les trois PRD de la vague 68 (`docs/prd/`) s
 - Scénarios **72** (tables : parité, écriture suivie, `extra`, archivage RG-14), **73** (deux postes, pastille, saisie protégée,
   aucun écho) et **74** (N-1 du journal, archive GED, MECeF et M9 qui suivent l'exercice).
 
+**Documentation (26/10/2026)** — `docs/README.md` indexe tous les documents Markdown. `docs/guides/GUIDE-DEMARRAGE.md` : cloner, tester, mettre à jour, repartir d'une base propre. `api/restaurer.php` (CLI, simulation par défaut, `--oui` pour appliquer) est le chemin inverse de la sauvegarde nocturne : il conserve d'abord l'état précédent, ne touche ni comptes ni sessions, reconstruit la projection. Synchronisation bidirectionnelle : `docs/prd/PRD-SOCLE-synchronisation-bidirectionnelle.md` et `docs/plans/PLAN-synchronisation-bidirectionnelle.md` — le prototype reste en « dernier geste gagne » jusqu'aux étapes S0→S2 du plan ; aucune suppression ne se propage (RG-14, c'est l'archivage) et aucune donnée métier ne se synchronise par un outil de fichiers. ADR-0001 et ADR-0003 sont **proposées**, pas acceptées.
+
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau
 transitoire, les boutons du bandeau non : la page appelée s’ouvrait menu déployé alors que l’utilisateur
 venait de choisir sa destination. Le conteneur porte désormais l’identifiant `#page-actions` et un

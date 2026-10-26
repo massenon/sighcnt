@@ -4,4 +4,8 @@
 - `TESTS-<sujet>.md` — stratégie de vérification (`/test-plan`)
 - `RELEASE-<version>.md` — liste de contrôle de livraison (`/release`)
 
-Premier plan attendu : `PLAN-P1-socle-synchronisation.md` (banc à deux postes, comparatif de moteurs).
+| Plan | Objet |
+|---|---|
+| [PLAN-synchronisation-bidirectionnelle](PLAN-synchronisation-bidirectionnelle.md) | Cinq phases S0→S5 : file persistée et conflits nommés dans le prototype, tranches de numéros, banc à deux postes (qui tranche ADR-0003/0004), hub et poste, mobile et fichiers |
+
+Le banc à deux postes (étape S3.2 de ce plan) tient lieu de P1 de l'architecture cible.

@@ -1,5 +1,7 @@
 # Architecture
 
+> Index général de la documentation : [`../README.md`](../README.md).
+
 - **`DICTIONNAIRE-DONNEES.md`** — les 139 tables PostgreSQL de tous les modules (engendré depuis le prototype ; schéma : `packages/schema/postgres/0001_modules.sql`).
 - **`ARCHITECTURE-CIBLE.md`** — la cible : postes autonomes hors ligne, hub de clinique en étoile,
   synchronisation par journal d'opérations, sécurité, MECeF, sauvegarde, trajectoire, arbitrages.
