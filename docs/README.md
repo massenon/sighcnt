@@ -8,6 +8,7 @@ Les règles de gestion (RG-01→14), la doctrine et les pièges sont dans [`CLAU
 | Document | Pour quoi faire |
 |---|---|
 | [`guides/GUIDE-DEMARRAGE.md`](guides/GUIDE-DEMARRAGE.md) | **Cloner, tester, mettre à jour, repartir d'une base propre** (installation, bancs d'essai, sauvegarde, restauration) |
+| [`guides/BIBLIOTHEQUE-DOCUMENTAIRE.md`](guides/BIBLIOTHEQUE-DOCUMENTAIRE.md) | Les ~40 documents demandés le 27/10/2026 : matière existante, compétence productrice, statut |
 
 ## Architecture et décisions
 
@@ -19,6 +20,7 @@ Les règles de gestion (RG-01→14), la doctrine et les pièges sont dans [`CLAU
 | [`architecture/adr/ADR-0002`](architecture/adr/ADR-0002-monorepo.md) | Monorepo npm | accepté |
 | [`architecture/adr/ADR-0003`](architecture/adr/ADR-0003-stack-poste-hub-mobile.md) | **Pile technique** : Flutter/Dart (poste + mobile), hub Dart, domaine partagé ; boîtier MECeF physique | proposé — attend l'acceptation de la Direction après le banc de validation |
 | ADR-0004 | Moteur de synchronisation (PowerSync / ElectricSQL / maison) | à écrire, après le banc (plan S3) |
+| [`architecture/adr/ADR-0005`](architecture/adr/ADR-0005-laravel-api-flutter-poste-pwa.md) | **Réévaluation d'ADR-0003** : API Laravel + panneau Livewire, poste Flutter, PWA Vue ; où vivent les règles métier | proposé (demande Direction 27/10/2026) |
 
 Index détaillé : [`architecture/README.md`](architecture/README.md).
 
@@ -38,6 +40,7 @@ Index : [`prd/README.md`](prd/README.md).
 | Document | Objet |
 |---|---|
 | [`plans/PLAN-synchronisation-bidirectionnelle`](plans/PLAN-synchronisation-bidirectionnelle.md) | Plan en cinq phases (S0→S5), du prototype au mobile |
+| [`plans/PLAN-implementation-laravel-flutter-pwa`](plans/PLAN-implementation-laravel-flutter-pwa.md) | Plan d'implémentation Flutter + Laravel (API de synchro, panneau) + PWA : NFR calibrées, phases P0→P7, compétences |
 
 Index : [`plans/README.md`](plans/README.md). Les spécifications d'écran vont dans [`specs/`](specs/README.md).
 
