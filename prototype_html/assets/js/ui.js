@@ -252,6 +252,15 @@
     return { close: close, body: bodyEl, panel: panel };
   }
 
+  /** Ferme toutes les couches ouvertes (modales, tiroirs) et rend le défilement à la page.
+   *  Appelée au démontage d'un écran : une modale encore ouverte pendant une navigation
+   *  sans rechargement laissait `body { overflow: hidden }` et figeait la barre de défilement. */
+  function fermerCouches() {
+    openLayers.slice().reverse().forEach(function (c) { try { c(); } catch (e) { /* une couche ne bloque pas les autres */ } });
+    openLayers.length = 0;
+    document.body.style.overflow = '';
+  }
+
   /* Échap ferme la couche la plus haute */
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && openLayers.length) openLayers[openLayers.length - 1]();
@@ -1366,7 +1375,7 @@
   global.SIGH.ui = {
     texteEnrichi: texteEnrichi, paragrapheEnrichi: paragrapheEnrichi,
     toast: toast, toastDiffere: toastDiffere, consommerMessageDiffere: consommerMessageDiffere,
-    modal: modal, confirm: confirm, drawer: drawer,
+    modal: modal, confirm: confirm, drawer: drawer, fermerCouches: fermerCouches,
     sonner: sonner, alerter: alerter,
     kpi: kpi, kpiGrid: kpiGrid, card: card, badge: badge, statut: statut, STATUTS: STATUTS,
     empty: empty, loading: loading, errorState: errorState,

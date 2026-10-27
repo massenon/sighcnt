@@ -68,6 +68,7 @@
   function demonter() {
     var racine = document.getElementById('page-content');
     if (racine) { try { racine.dispatchEvent(new Event('sigh:unmount')); } catch (e) { /* sans importance */ } }
+    if (U && U.fermerCouches) { try { U.fermerCouches(); } catch (e) { /* sans importance */ } }
     var nets = NETTOYAGES; NETTOYAGES = [];
     nets.forEach(function (n) { try { n(); } catch (e) { /* un nettoyage ne bloque pas les autres */ } });
     Array.prototype.slice.call(document.body.children).forEach(function (n) {
