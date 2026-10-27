@@ -76,7 +76,27 @@ Journal d'opérations (ADR-0001), archivage au lieu de suppression (RG-14), aucu
 6. **Soins en salle** : l'infirmier utilise de préférence **l'application Flutter mobile/tablette** (même code que le poste, base locale, hors ligne). La **PWA** sert aux accès sans installation ; elle est **en ligne d'abord** : file d'envoi limitée, **aucune donnée de santé en cache lisible**. Serveur arrêté, le tableau de bord de la PWA ne s'affiche pas : c'est la limite du navigateur, assumée.
 7. **Serveur** : un seul serveur sur onduleur, sauvegarde chiffrée quotidienne + copie hors site, restauration à blanc ; **recommandé** : second serveur à chaud (réplication PostgreSQL en flux) avec bascule manuelle documentée, pour que les PWA et mobiles ne dépendent pas d'une seule machine.
 8. **Sécurité** : HTTPS sur le réseau local par une **autorité de certification interne** (une PWA exige un contexte sécurisé ; `localhost` ne s'applique pas aux autres appareils) ; appareils enregistrés et révocables ; jetons courts ; RBAC appliqué **par le serveur** depuis la matrice JSON unique, puis par le client ; SQLCipher dont la clé est dans le coffre du système ; journal d'audit côté serveur (RG-12).
-9. **Une seule technologie web** : **Vue + Inertia** pour le panneau **et** la PWA (le projet Laravel existant est déjà Inertia/Vue). Livewire est écarté : il ajouterait un troisième système d'interface à tenir à parité avec Flutter et Vue pour un gain limité.
+9. **Une seule base d'interface : Flutter, y compris pour le web** (*corrige la version du 27/10 matin, qui proposait Vue + Inertia*). Les 305 écrans de la maquette doivent être portés **une fois**. Flutter compile aussi en **web installable (PWA)** : le panneau d'administration (M14, CFG, M13… sont déjà des écrans de la maquette) et l'accès distant sont le **même code** que le poste, avec le même thème et les mêmes droits. Cela supprime Vue **et** Livewire du périmètre d'interface : Laravel devient une **API pure**. Réserves à vérifier au banc : poids du premier chargement, tableaux denses dans le navigateur, accessibilité ; le chiffrement de base locale (SQLCipher) n'existe pas dans le navigateur, donc la version web est **en ligne d'abord**. **Repli** si le banc échoue : une PWA Vue **réduite** (une vingtaine d'écrans : tableau de bord de salle, tâches, constantes, consultation), jamais les 305 écrans.
+10. **Contre les écarts et les inventions** : le contrat est **engendré**, jamais recopié — spécification OpenAPI produite par Laravel, client Dart produit depuis elle ; tables locales dérivées du dictionnaire de données ; thème dérivé des jetons de la maquette ; matrice RBAC lue depuis **un** JSON ; vecteurs de tests tirés de la maquette ; captures de référence comparées en CI. Un agent de codage travaille sur ces artefacts, pas sur sa mémoire, et toute règle sans source est marquée « à valider ».
+
+## Accès hors du réseau de la clinique (exigence de la Direction)
+
+La PWA doit marcher **hors du réseau local**. C'est le point le plus sensible de l'architecture : il expose des données de santé à Internet. Recommandation :
+
+- **Aucun port ouvert sur le serveur de la clinique.** Le serveur établit une liaison **sortante** vers un point d'entrée (passerelle) ; seul ce point est joignable d'Internet.
+- La passerelle impose **authentification forte (second facteur)**, limitation de débit, journalisation, et **appareil enregistré** ; les sessions distantes sont courtes.
+- **Périmètre réduit en distant** : par défaut lecture de tableaux de bord et de dossiers de ses propres patients, saisies ciblées ; pas de caisse, pas de comptabilité, pas d'export en masse. Le périmètre se règle **par rôle** dans la matrice.
+- **Limite physique** : l'accès distant dépend de la connexion Internet de la clinique **et** de son serveur. Si l'un tombe, la PWA distante ne fonctionne pas ; seule l'application installée (poste, tablette) reste autonome. Un **réplica en nuage** de lecture seule est possible plus tard ; il change le modèle de risque et exige une décision de la Direction.
+- Décision à prendre avant tout code : passerelle maison (VPS) ou service tiers, et hébergement des données (**cadre légal de protection des données de santé** à vérifier — je ne suis pas juriste).
+
+## Reprise de `sigh_web/` (décision de la Direction : reprendre)
+
+`sigh_web/` (Laravel 12 + Inertia/Vue, 288 pages Vue, ~70 000 lignes de PHP, base `sigh_cnt` de 173 tables) **n'est pas dans ce dépôt et je ne l'ai jamais vu**. Je ne peux ni l'auditer ni garantir qu'il se reprend. Marche à suivre :
+
+1. L'**importer sur une branche dédiée** (sans `.env`, `vendor/`, `node_modules/`, `storage/`, sauvegardes) — il n'est sous aucun contrôle de version aujourd'hui.
+2. **Audit en une passe** (livrable `docs/architecture/AUDIT-SIGH-WEB.md`) : version des dépendances, migrations rejouables sur base vide, **écart avec `DICTIONNAIRE-DONNEES.md`** (139 tables de la maquette contre 173), tests qui passent, RBAC existant contre la matrice, modules couverts parmi les 16.
+3. **Règle de reprise** : on garde ce qui passe l'audit (migrations, modèles, services, authentification) **comme base de l'API** ; les **pages Vue ne sont pas reprises comme interface cible** (leur fidélité à la maquette est inconnue) mais peuvent servir de **repli PWA réduit** ; tout ce qui contredit la maquette ou une règle de gestion est corrigé **vers la maquette**, jamais l'inverse.
+4. Le mot de passe de base commité dans le prototype et tout secret présent dans `sigh_web/` sont à **changer** avant import.
 
 **Limites assumées** : serveur arrêté, deux postes ne voient pas les saisies l'un de l'autre jusqu'au retour (pas de synchronisation de poste à poste en première version) ; un invariant partagé (dernier lot, dernier lit) peut produire un conflit visible au retour — c'est voulu, la maquette de ce comportement est le banc d'ADR-0003.
 
@@ -93,8 +113,8 @@ Journal d'opérations (ADR-0001), archivage au lieu de suppression (RG-14), aucu
 
 ## Questions ouvertes
 
-- **Q1 (Direction)** — « …des utilisateurs qui ont des… » : quelle contrainte décrit la fin de la phrase (faible connexion, pas d'ordinateur, téléphone seul) ? Elle fixe ce que la PWA doit faire hors ligne.
-- **Q2 (ingénierie)** — Que contient réellement `sigh_web/` (version, tests, dernier état) ? Reprise partielle ou base propre ?
-- **Q3 (ingénierie)** — *Recommandation : Vue + Inertia pour le panneau et la PWA, Livewire écarté* (voir « Architecture recommandée »). À confirmer.
+- **Q1 (Direction)** — *Répondu : la PWA doit fonctionner hors du réseau de la clinique* → section « Accès hors du réseau ». Reste à décider : passerelle, hébergement, périmètre distant par rôle.
+- **Q2 (ingénierie)** — *Répondu : reprendre.* Reste à **fournir `sigh_web/`** (branche dédiée) pour l'audit.
+- **Q3 (ingénierie)** — *Recommandation révisée : Flutter pour tous les écrans, web compris ; ni Livewire ni Vue (sauf PWA réduite de repli).* À confirmer après le banc web.
 - **Q4 (Direction)** — Les exigences non fonctionnelles génériques de la demande (« 100 000 utilisateurs simultanés », 99,99 %) sont des chiffres de gabarit : la clinique compte ~30 agents et ~15 postes. Quels objectifs retient-on réellement ? (proposition dans le plan)
 - **Q5 (fournisseur / DGI)** — Protocole du boîtier MECeF (inchangé depuis ADR-0003).
