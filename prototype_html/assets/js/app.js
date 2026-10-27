@@ -922,19 +922,6 @@
     ]));
     body.appendChild(head);
 
-    /* Changement de rôle — permet de parcourir tous les tableaux de bord. */
-    var sel = el('select.select');
-    Object.keys(N.ROLES).forEach(function (r) {
-      var o = el('option', { value: r }, N.ROLES[r].label);
-      if (r === s.role) o.selected = true;
-      sel.appendChild(o);
-    });
-    body.appendChild(el('div', null, [
-      el('label.label', { text: 'Profil de connexion (démonstration)' }),
-      sel,
-      el('p.mt-1.text-xs.text-slate-400', { text: 'Change le périmètre RBAC : le méga-menu et les tableaux de bord sont filtrés en conséquence.' }),
-    ]));
-
     var links = el('div.grid.grid-cols-2.gap-2');
     [['Mon compte', 'cfg-compte', 'user-cog'], ['Notifications', 'cfg-notifications', 'bell'],
      ['Aide & À propos', 'aide-apropos', 'life-buoy'], ['Contactez l’éditeur', 'contact-editeur', 'mail'],
@@ -950,16 +937,6 @@
         el('button.btn.btn-secondary', {
           type: 'button', onclick: function () { S.setSession(null); global.location.href = base() + 'index' + N.EXT; },
         }, [C.icon('log-out', 'h-4 w-4'), 'Se déconnecter']),
-        el('button.btn.btn-primary', {
-          type: 'button',
-          onclick: function () {
-            var r = sel.value;
-            var role = N.ROLES[r];
-            S.setSession({ role: r, nom: s.nom, poste: role.label });
-            m.close();
-            go(role.home);
-          },
-        }, 'Appliquer'),
       ],
     });
   }
