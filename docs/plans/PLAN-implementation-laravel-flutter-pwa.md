@@ -19,6 +19,7 @@ Les chiffres de la demande (100 000 utilisateurs, 99,99 %) sont des chiffres de 
 | Catégorie | Cible proposée | Source / mesure |
 |---|---|---|
 | **Performance** | liste 20 000 lignes < 1 s ; recherche patient < 300 ms ; API p95 < 500 ms ; ouverture d'écran < 2 s | banc ADR-0003 critère 5 |
+| **Volume** | ~18 000 dossiers aujourd'hui, croissance à confirmer ; recherche sur l'ensemble < 300 ms ; poste : toutes les identités + jeu chaud clinique ; pièces à la demande | ADR-0005 §4 |
 | **Charge** | 15 postes + 5 téléphones + 5 sessions PWA en écriture continue ; sync p95 < 5 s | idem |
 | **Sécurité** | SQLCipher au poste ; TLS ; hachage des mots de passe ; RBAC serveur **et** poste ; journal d'audit RG-12 ; révocation d'appareil ; **aucune donnée de santé en cache navigateur clair** ; secrets hors dépôt | RG-12/13, CLAUDE.md |
 | **Disponibilité** | **le poste ne s'arrête jamais** (autonome) ; serveur : 99,5 % mensuel, reprise < 1 h, sauvegarde quotidienne + réplica hors site, restauration à blanc trimestrielle | ADR-0001 |
