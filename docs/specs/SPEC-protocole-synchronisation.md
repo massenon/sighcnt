@@ -13,16 +13,16 @@
 |---|---|---|---|
 | **Poste mère** | Service Dart + console. Reçoit, ordonne, applique les règles, redistribue, écrit le PostgreSQL local, pousse vers le relais | PostgreSQL local | **Oui, la seule** |
 | **Poste fileul** | Application desktop complète (tous les modules autorisés) | SQLite chiffré | Non |
-| **Mobile** | Application minimale (consultation, constantes, consultation à domicile) | SQLite chiffré | Non |
+| **Mobile** | Application minimale : consultation, constantes, **consultation à domicile**, et **module Réception de secours** (§11). **Jamais sur le réseau local** : il passe toujours par le relais | SQLite chiffré | Non |
 | **Relais en ligne** | Laravel sur cPanel : stockage opaque, indicateurs, panneau superadmin, cron | PostgreSQL en ligne | Non, jamais |
 
 | Protocole | Entre | Transport | Contenu |
 |---|---|---|---|
 | **P1** | fileul / mobile ↔ mère | HTTPS sur le réseau local | opérations **en clair** (réseau interne) |
 | **P2** | mère ↔ relais | HTTPS sortant depuis la mère | **enveloppes chiffrées de bout en bout** ; la mère est le seul client du relais en fonctionnement normal |
-| **P3** | mobile ↔ relais (en route, hors réseau local) | HTTPS | enveloppes chiffrées uniquement ; la mère les récupère par P2 |
+| **P3** | mobile ↔ relais (**seule voie du mobile**, données mobiles ou Wi-Fi extérieur) | HTTPS | enveloppes chiffrées uniquement, **par boîte aux lettres d'appareil** ; la mère les relève et y dépose ce qui est destiné au mobile |
 
-**Règle de topologie** : un poste synchronise avec **un seul** point à la fois ; la liste d'adresses de sa configuration est ordonnée (mère locale, puis relais). Il n'envoie au relais que si la mère est injoignable *et* que sa configuration l'y autorise (mobile). Aucune autorité n'existe en dehors de la mère.
+**Règle de topologie** : un poste synchronise avec **un seul** point à la fois ; la liste d'adresses de sa configuration est ordonnée (mère locale, puis relais). Un fileul n'utilise le relais que si la mère est injoignable *et* que sa configuration l'y autorise ; **un mobile n'utilise que le relais**. Aucune autorité n'existe en dehors de la mère.
 
 ## 2. Identités
 
@@ -39,7 +39,7 @@
 5. **Table `appareils`** : UUID, étiquette, rôle, plateforme, version, état (`en_attente` · `actif` · `suspendu` · `révoqué`), dernier contact, dernier `seq` acquitté, retard, version du schéma local, empreinte de la clé publique.
 6. **Révocation** par la console : au prochain contact l'appareil reçoit **401** `appareil_revoque`, **suspend** sa synchronisation, conserve ses données locales (il ne les purge pas seul), affiche l'état et propose « se reconnecter » (nouvel appairage).
 7. **Mot de passe** : jamais conservé. Un **code PIN local** rouvre la session hors ligne ; l'authentification utilisateur est vérifiée par la mère à chaque synchronisation.
-8. **Appairage au relais** : seule la mère est appairée (code émis depuis le panneau en ligne, saisi sur la console). Un mobile peut recevoir en plus une autorisation P3 émise par la mère.
+8. **Appairage au relais** : la mère est appairée au relais (code émis depuis le panneau en ligne, saisi sur la console). **Un mobile est appairé par la mère** : le code est émis sur la console, saisi sur le téléphone **avec la clé de clinique** (QR affiché sur la console, à scanner), puis la mère déclare l'appareil au relais et lui ouvre sa boîte aux lettres.
 
 ## 4. Le journal d'opérations (EF-SYNC-01, 05)
 
@@ -85,7 +85,8 @@ Chaque collection du dictionnaire porte **une** famille ; une collection sans fa
 - **La mère ne contacte jamais un poste** : elle dépose l'information, l'appareil vient la chercher.
 - **Réseau local** : interrogation **toutes les 3 s** *(proposé ; déjà éprouvé à la maquette, délai mesuré < 8 s)* avec réponse vide très légère quand rien n'a changé ; un flux serveur (SSE) peut s'y ajouter plus tard sans changer le protocole. Le **relais** n'est interrogé que toutes les *(proposé)* 30 s.
 - **L'événement ne porte jamais de contenu** : seulement « collection X a changé, `seq` N ».
-- **Réveil des mobiles** : notification poussée (FCM) **sans donnée de santé** (« une mise à jour est disponible »).
+- **Le relais ne contacte jamais la mère** (elle est derrière le routeur de la clinique, aucun port n'est ouvert) : **c'est la mère qui vient relever le relais** toutes les *(proposé)* 10 à 15 s, par une requête très légère (« y a-t-il du nouveau depuis `seq` N ? »). Du point de vue de l'utilisateur, la remontée d'un mobile vers la mère est **automatique** ; le délai est celui de cette relève, auquel s'ajoute celui de la distribution aux fileuls (3 s).
+- **Réveil des mobiles** : notification poussée (FCM) **sans donnée de santé** (« une mise à jour est disponible ») ; sans elle, le mobile relève sa boîte à l'ouverture et à intervalle. FCM n'existe pas sur le desktop : **la mère et les fileuls n'en dépendent jamais**.
 - **« Renvoyer vers ce poste » / « vers tous »** (console) : la mère pose une **demande de resynchronisation** (marque datée) ; chaque appareil la voit au prochain tirage, effectue un **tirage complet** de son périmètre et l'**acquitte** ; la console montre qui a acquitté et qui est en retard.
 
 ## 8. Invariants (famille D — EF-SYNC-09, 10, 13)
@@ -110,20 +111,40 @@ Chaque collection du dictionnaire porte **une** famille ; une collection sans fa
 
 ## 10. Marque d'époque, réinitialisation, restauration
 
-- **Production : aucune réinitialisation destructrice par défaut.** (La maquette l'a gardée fermée par défaut, vague 13.) Si la Direction l'autorise : double confirmation, **sauvegarde préalable obligatoire**, trace d'audit, **jamais** sur un environnement marqué production sans second administrateur.
+- **Réinitialisation en production : autorisée** (décision de la Direction du 29/10/2026 : on doit pouvoir tester en production puis revenir à un état neuf). **Vider comme neuf en gardant ce qui fait fonctionner le logiciel.** Garde-fous retenus, parce que le geste est **irréversible pour l'exploitation** :
+  - **Interrupteur fermé par défaut**, comme à la maquette : l'administrateur ouvre une **fenêtre limitée** *(proposé : 24 h)* ; fermé, la commande est **absente**, pas grisée.
+  - **Double confirmation** (saisie du nom de la clinique) **et** accord d'un **second profil** (DAF ou Direction) — le geste ne repose pas sur une seule personne.
+  - **Sauvegarde préalable automatique et non désactivable**, conservée *(proposé : 30 jours)* : elle **permet de défaire** par la procédure de restauration ci-dessous.
+  - **Ce qui est conservé** : la liste `COLLECTIONS_ESSENTIELLES` de la maquette (paramétrage, référentiels, comptes, droits RBAC, modules actifs, catalogues du laboratoire et de l'imagerie, tarifs et grilles, règles datées, modèles). **Ce qui est vidé** : l'activité (patients, consultations, factures, stocks mouvementés, écritures, journaux d'activité). La liste est **une donnée du dictionnaire**, pas du code.
+  - **Trace** : l'événement est la première entrée du journal neuf (RG-12) avec auteur, second profil, date, empreinte de la sauvegarde.
+  - **Propagation** : la réinitialisation incrémente `epoch`. Chaque appareil, à son prochain contact, **exporte ses opérations non envoyées dans un fichier chiffré** (elles ne ressuscitent pas), purge ses données d'**activité**, **garde** ses essentiels, puis tire le nouvel état. Le relais retient la sauvegarde préalable et **ignore** les enveloppes d'époque antérieure. La console affiche qui a acquitté.
+  - **Mobile** : il est purgé au prochain contact ; tant qu'il est hors réseau il garde son lot chiffré (limite §11).
 - **Marque d'époque** : toute restauration ou bascule incrémente `epoch`. Un envoi portant une époque **inconnue** reçoit **409** `epoch_inconnue` ; l'appareil **ne purge pas** : il entre en état « à resynchroniser », **exporte ses opérations non envoyées dans un fichier chiffré**, puis effectue un tirage complet et propose de **rejouer** les opérations exportées sous contrôle (elles passent par les règles normales : certaines seront refusées en nommant la cause).
 - **Restauration depuis le web** (poste mère perdu) : (1) installer le logiciel sur la nouvelle machine, mode mère ; (2) saisir le code émis par le panneau en ligne ; (3) saisir la **clé de clinique** (séquestre papier) ; (4) tirer l'instantané et les enveloppes depuis le relais, déchiffrer, rejouer dans PostgreSQL ; (5) `epoch + 1` ; (6) les fileuls se resynchronisent. **Perte maximale** = ce qui n'a pas atteint le relais (le retard est visible à tout moment sur la console).
 - **Restauration d'un poste fileul** : réinstallation → appairage → tirage complet. Le **sort des données non synchronisées** est annoncé **avant** la désinstallation ; « sauvegarde automatique » = export chiffré de la file.
 - **Sauvegarde automatique avant migration** : avant toute migration de la base locale (poste, mobile, mère), copie horodatée du fichier SQLite / dump PostgreSQL ; échec de migration → retour à la copie et signalement ; conservation des *(proposé)* 3 dernières.
 
-## 11. Mobile minimal et consultations à domicile
+## 11. Mobile minimal : consultations à domicile et réception de secours
 
-- **Périmètre fonctionnel du mobile** *(à valider avec la Direction)* : agenda du jour, dossier de consultation du patient (lecture), constantes, notes de consultation, prescription (selon droits), consultation à domicile, **pas** de caisse, de comptabilité ni de stock.
-- **Lot de tournée** : avant le départ, sur le réseau local, le mobile précharge **uniquement** les patients de la tournée du jour (identité, allergies, antécédents, derniers résultats validés, ordonnance en cours). Le lot est **daté** et **expire** *(proposé : 48 h)* ; un patient hors tournée n'est jamais préchargé.
-- **Protection de l'appareil** : base chiffrée (clé dans le coffre du système), verrouillage par PIN/biométrie, délai d'inactivité, **aucune sauvegarde dans le nuage de l'appareil**, aucune capture d'écran sur les écrans de dossier *(à vérifier selon la plateforme)*.
-- **En route** : saisie hors ligne ; si une connexion mobile existe, envoi par **P3** (enveloppes) ; sinon au retour par **P1**. Même mécanisme dans les deux cas : file, accusé, « À traiter ».
-- **Conflit possible** : le dossier a été modifié au cabinet pendant la visite → règle de la famille concernée (fusion par champ ou conflit nommé arbitré à la console).
-- **Révocation / perte** : effet **au prochain contact** ; l'effacement local est déclenché à ce moment. Tant que l'appareil reste hors réseau, il garde ses données chiffrées : **c'est la limite à connaître** et la raison du lot restreint et expirant.
+**Principe (décision du 29/10/2026)** : le mobile n'est **pas** relié au réseau local. Il échange **uniquement par le relais**, toujours chiffré ; le relais conserve les enveloppes, la mère les relève automatiquement (§7) et les distribue aux fileuls ; la mère dépose dans la **boîte aux lettres** du mobile ce qui le concerne.
+
+**Deux profils sur la même application :**
+
+| Profil | Pour qui | Contenu |
+|---|---|---|
+| **Soignant** | consultation à domicile, salle de consultation | agenda du jour, dossier en lecture, constantes, notes de consultation, prescription selon droits |
+| **Réception de secours** | agent d'accueil, **quand les postes fileuls sont hors service** (coupure de courant) | module **Réception** : ouvrir un dossier patient, rendez-vous, file d'attente, constantes d'accueil, pièces d'identité. **Ni caisse, ni comptabilité, ni stock** |
+
+*(Périmètre à valider écran par écran avec la spec du module Réception — il reprend les écrans de M1/M2 déjà classés « Accueil » à la maquette.)*
+
+- **Lot préparé par la mère** : la mère prépare un **lot chiffré** (la tournée du jour pour le soignant ; les rendez-vous du jour et les patients récents pour la réception) et le dépose dans la boîte de l'appareil, **la veille ou le matin**, quand elle peut joindre le relais. Le mobile le télécharge dès qu'il a une connexion, puis **travaille hors ligne**. Le lot est **daté** et **expire** *(proposé : 48 h)*. Un patient hors périmètre n'est jamais préchargé.
+- **Réception sans fichier complet des patients** *(proposé)* : un téléphone ne porte **pas** les 18 000 identités (un téléphone perdu serait une fuite massive). Conséquence à assumer : un patient **inconnu du lot** peut être enregistré en double. La mère détecte à l'arrivée un **homonyme probable** (nom, naissance, téléphone) et crée un **conflit nommé « doublon possible »** arbitré à la console ; le code patient n'est jamais modifié (RG-01), la fusion est une opération.
+- **Numéros** : le mobile reçoit une **plage de numéros** (codes patient, pièces) comme un poste ; plage épuisée → numéro provisoire réconcilié.
+- **Protection** : base chiffrée (clé dans le coffre du système), **PIN/biométrie obligatoires**, verrouillage à l'inactivité, aucune sauvegarde dans le nuage de l'appareil, capture d'écran désactivée sur les dossiers *(selon la plateforme)*. Le profil « Réception de secours » est enrôlé **explicitement** par la console.
+- **Si la connexion mobile manque aussi** : le mobile continue hors ligne, file persistante, envoi dès qu'une connexion existe — même mécanisme que partout.
+- **Conflit possible** : dossier modifié au cabinet pendant la visite → règle de la famille concernée.
+- **Révocation / perte** : effet **au prochain contact** ; effacement local à ce moment. Hors réseau, l'appareil garde ses données chiffrées : **c'est la limite à connaître** et la raison du lot restreint et expirant.
+- **Dépendance** : si Internet de la clinique ou la mère sont hors service, ce que le mobile envoie **s'accumule au relais** et la mère le relève au retour. Le mobile n'attend pas la mère pour travailler.
 
 ## 12. Chiffrement de bout en bout vers le relais (P2/P3)
 
@@ -172,7 +193,10 @@ Les écrans du panneau en ligne ne chargent **que** des données non nominatives
 | Jeton d'accès / renouvellement | 24 h / 30 jours roulants |
 | Attente entre réessais | 2 s → 5 min |
 | Dérive d'horloge signalée | > 2 min (EF-SYNC-20) |
-| Expiration du lot de tournée mobile | 48 h |
+| Relève du relais par la mère | 10–15 s |
+| Relève de la boîte du mobile | à l'ouverture, puis 60 s en usage *(sur données mobiles, à ajuster)* |
+| Expiration du lot mobile | 48 h |
+| Fenêtre d'ouverture de la réinitialisation / conservation de la sauvegarde préalable | 24 h / 30 jours |
 | Battement de cœur : alerte | > 5 min |
 | Conservation des copies avant migration | 3 |
 
@@ -189,7 +213,10 @@ Les écrans du panneau en ligne ne chargent **que** des données non nominatives
 | SYNC-R7 | Poste révoqué pendant qu'il travaille hors ligne | 401 au retour, données conservées, état « suspendu » |
 | SYNC-R8 | Mère détruite ; restauration depuis le relais avec la clé de clinique | données reconstruites, `epoch + 1`, fileuls resynchronisés, perte = retard affiché |
 | SYNC-R9 | Marque d'époque inconnue | pas de purge, export des opérations, tirage complet, rejeu contrôlé |
-| SYNC-R10 | Mobile : tournée à domicile hors ligne, retour au cabinet | opérations envoyées, conflit éventuel arbitré, lot de tournée expiré |
+| SYNC-R10 | Mobile : tournée à domicile hors ligne, puis connexion mobile | enveloppes au relais, relevées par la mère, distribuées aux fileuls ; conflit éventuel arbitré ; lot expiré |
+| SYNC-R15 | Coupure de courant sur les fileuls : un agent d'accueil enregistre trois patients sur mobile (profil Réception) | dossiers créés hors ligne, codes sans collision, **homonyme probable** signalé en conflit nommé, tout visible sur les fileuls au retour |
+| SYNC-R16 | Réinitialisation en production avec second profil | sauvegarde préalable créée, activité vidée, essentiels conservés, `epoch + 1`, appareils purgés après export de leurs opérations non envoyées, restauration de la sauvegarde préalable possible |
+| SYNC-R17 | Réinitialisation tentée interrupteur fermé / sans second profil | commande absente / refus nommé, rien n'est modifié |
 | SYNC-R11 | Migration de base d'un poste qui échoue | retour à la copie, signalement, aucune perte |
 | SYNC-R12 | Horloge d'un poste décalée de 10 min | ordre fondé sur `seq`, dérive signalée |
 | SYNC-R13 | Collecte de toutes les enveloppes du relais | rien de lisible : ni nom de collection, ni patient |
@@ -201,11 +228,11 @@ Les écrans du panneau en ligne ne chargent **que** des données non nominatives
 
 | # | Question | Qui |
 |---|---|---|
-| Q1 | Périmètre exact du mobile (écrans, droits d'écriture) | Direction, médecins |
-| Q2 | Qui détient le **séquestre papier** de la clé de clinique, et sa rotation | Direction |
-| Q3 | La réinitialisation de production existe-t-elle ? Qui peut la déclencher | Direction |
+| Q1 | Écrans exacts du profil « Réception de secours » du mobile ; accord sur l'**absence du fichier complet des patients** et sur le traitement des doublons possibles | Direction, accueil |
+| Q2 | **Nom et fonction** du détenteur du séquestre papier de la clé de clinique, et sa rotation *(la réponse « oui » ne désigne personne)* | Direction |
+| Q3 | Second profil de confirmation de la réinitialisation (DAF ? Direction ?) et durée de conservation de la sauvegarde préalable | Direction |
 | Q4 | Algorithme de chiffrement et gestion des clés : revue de sécurité indépendante | ingénierie |
-| Q5 | Service Windows / Linux pour la mère : confirmation au banc | ingénierie |
+| Q5 | Service de la mère : **Windows par défaut, Linux pris en charge** (décision du 29/10) — à éprouver au banc sur les deux | ingénierie |
 | Q6 | Cadre légal de la conservation chiffrée de données de santé sur un hébergement tiers | Direction (avis juridique) |
 | Q7 | Poste mère de secours à froid : combien, où | Direction |
 | Q8 | Les valeurs de §15 : mesure sur le matériel réel de la clinique | ingénierie |

@@ -195,6 +195,13 @@ Le guide de synchronisation fourni (appairage, curseurs, « renvoyer vers tous l
 
 La spécification détaillée du protocole est dans [`docs/specs/SPEC-protocole-synchronisation.md`](../../specs/SPEC-protocole-synchronisation.md).
 
+### Précisions de la Direction (29/10/2026, fin)
+
+- **Poste mère : Windows par défaut, Linux pris en charge.** Le service s'exécute comme **service Windows** (démarrage automatique, redémarrage sur échec, indépendant de toute session) ; la version Linux (`systemd`) est livrée aussi. Les deux sont éprouvées au banc. *Conséquence : la recommandation « mini-PC Linux » devient une option, pas une obligation ; sous Windows, désactiver la mise en veille et les redémarrages automatiques des mises à jour aux heures d'ouverture, et brancher l'onduleur à l'arrêt propre.*
+- **Réinitialisation en production : autorisée** (tests en production), avec interrupteur fermé par défaut, second profil, sauvegarde préalable obligatoire et trace — voir la spécification §10.
+- **Le mobile n'est jamais sur le réseau local** : il passe **uniquement par le relais** (enveloppes chiffrées, boîte aux lettres par appareil) ; la **mère relève** le relais toutes les 10 à 15 s (le relais ne peut pas la joindre) et distribue aux fileuls. Le mobile porte un **profil « Réception de secours »** utilisable pendant une coupure de courant des postes fileuls.
+- **Question restée sans réponse nominative** : qui garde le séquestre papier de la clé de clinique.
+
 ## Banc de validation avant acceptation
 
 1. Synchronisation bidirectionnelle hors ligne sur deux postes Flutter : zéro doublon de code patient, conflit visible sur stock (critères 1–2 d'ADR-0003).
