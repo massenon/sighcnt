@@ -165,6 +165,36 @@ Le guide de synchronisation fourni (appairage, curseurs, « renvoyer vers tous l
 - **Réinitialisation de production : interdite par défaut.** La marque de réinitialisation avec purge locale n'a de sens que sur un environnement de test ; en production, elle exige double confirmation, sauvegarde préalable obligatoire et trace d'audit — ou n'existe pas.
 - **Sauvegarde du poste avant migration de sa base et avant désinstallation** ; les opérations non envoyées ne sont jamais perdues en silence (export chiffré).
 
+## Révision du 29/10/2026 (3) — le poste mère : le concentrateur est une application Flutter, pas Laravel
+
+**Demande de la Direction** : le logiciel **desktop Flutter installé sur le serveur local** est le **poste mère** (géré par la DAF ou l'administrateur). Il reçoit toute la synchronisation, la redistribue aux autres postes desktop (**postes fileuls**), l'enregistre dans le PostgreSQL local **et** dans le PostgreSQL en ligne, et reçoit aussi les **applications mobiles** (version minimale pour les salles de consultation et les **consultations à domicile**). Le mécanisme est **automatique** et reprend seul après coupure du serveur local ou d'Internet.
+
+**Effet sur l'architecture — cette révision remplace les sections précédentes là où elles disent le contraire :**
+
+```
+ Mobile Flutter (minimal)     Poste fileul Flutter        Poste fileul Flutter
+   SQLite chiffré               SQLite chiffré              SQLite chiffré
+        └──────────────┬───────────────┴──────────────────────────┘
+                       ▼  réseau local (protocole P1)
+            POSTE MÈRE (PC sur onduleur) : service Dart + PostgreSQL local + console DAF/admin
+                       │  protocole P2 : enveloppes chiffrées de bout en bout
+                       ▼  (Internet quand il est là, reprise automatique)
+            RELAIS EN LIGNE (cPanel) : Laravel + Livewire + PostgreSQL + cron
+            coffre chiffré, indicateurs sans nom de patient, panneau superadmin minimal
+```
+
+1. **Toutes les règles métier vivent en Dart**, dans `packages/domaine`, exécutées par le poste fileul, le mobile **et** le poste mère. **Il n'y a plus de règle en double PHP/Dart** : c'était le principal risque de la version Laravel-autorité, il disparaît. C'est la logique d'ADR-0003 (hub en Dart) ; le relais en ligne en Laravel n'y ajoute aucune règle.
+2. **Le poste mère = un service + une console.** Le **service** (serveur HTTP local, accès PostgreSQL, moteur de synchronisation) tourne en arrière-plan, **indépendamment de toute session** ouverte et redémarre seul ; la **console** (même code que les autres écrans) sert la DAF ou l'administrateur : supervision, appareils, jetons d'appairage, conflits, « À traiter », journaux, sauvegardes, restauration. Fermer la console n'arrête pas la synchronisation. À valider au banc : exécution comme service Windows et comme service Linux.
+3. **Le relais en ligne est opaque.** Il stocke des **enveloppes chiffrées de bout en bout** (clé de clinique détenue par les appareils de la clinique, jamais par le relais) : le PostgreSQL en ligne reçoit bien tout, mais **chiffré** ; il ne peut ni lire un dossier ni appliquer une règle. Cela rend l'hébergement mutualisé acceptable et permet la restauration depuis le web. Les **indicateurs** (sans nom de patient) sont envoyés **en clair** à part, pour le tableau de bord distant.
+4. **Consultations à domicile** : le mobile **précharge avant le départ** (sur le réseau local) un lot minimal pour les patients de la tournée du jour, le garde chiffré, saisit hors ligne, et synchronise au retour sur le réseau local **ou**, en route, par le relais (enveloppes chiffrées). Un appareil révoqué perd son accès au prochain contact ; l'effacement à distance n'est donc **pas immédiat** si l'appareil est hors réseau (limite à connaître).
+5. **Une seule autorité à la fois** : le poste mère. Le relais n'est jamais une autorité ; si le poste mère est perdu, un **nouveau poste mère** se reconstruit depuis le relais (tirage des enveloppes + clé de clinique) ou depuis une sauvegarde.
+6. **Rôle de Laravel (cPanel)** réduit à : panneau superadmin minimal (Blade, Livewire, Alpine), stockage opaque des enveloppes, indicateurs, battement de cœur, rétention des sauvegardes, notifications poussées (FCM), tâches `cron`. **Aucune règle de gestion, aucun écran métier.**
+7. **Clé de clinique** : sans elle, sauvegardes et relais sont irrécupérables. Génération à l'installation du poste mère, **copie papier sous scellé** détenue par la Direction, procédure de rotation. Risque de perte à traiter comme un risque de premier rang.
+
+**Contrepartie assumée** : la console du poste mère est un point de défaillance unique pour l'administration locale. Atténuations : onduleur, redémarrage automatique, second poste mère à froid (installé, appairé au relais, non autoritaire), restauration à blanc trimestrielle.
+
+La spécification détaillée du protocole est dans [`docs/specs/SPEC-protocole-synchronisation.md`](../../specs/SPEC-protocole-synchronisation.md).
+
 ## Banc de validation avant acceptation
 
 1. Synchronisation bidirectionnelle hors ligne sur deux postes Flutter : zéro doublon de code patient, conflit visible sur stock (critères 1–2 d'ADR-0003).
