@@ -14,5 +14,6 @@
 | [ADR-0002](adr/ADR-0002-monorepo.md) | Monorepo npm : apps et packages partagés | accepté |
 | [ADR-0003](adr/ADR-0003-stack-poste-hub-mobile.md) | Un seul langage, Dart : poste Windows/Linux et smartphone en Flutter, hub en Dart, règles partagées ; boîtier MECeF physique | proposé |
 | ADR-0004 | Moteur de synchronisation (PowerSync / ElectricSQL / maison) — après le banc de validation d'ADR-0003 | à écrire |
+| [ADR-0005](adr/ADR-0005-laravel-api-flutter-poste-pwa.md) | Poste mère Flutter, relais en ligne opaque (Laravel, cPanel), mobile minimal par le relais, accès distant par indicateurs ; **réévalue ADR-0003** | proposé |
 
 Nouvelle décision : `/adr`.

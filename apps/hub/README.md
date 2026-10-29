@@ -1,5 +1,7 @@
-# apps/hub — serveur de clinique
+# apps/hub — remplacé
 
-Autorité de synchronisation (Node.js 22 / TypeScript) : réception des journaux, ordre global,
-invariants RG-01→14, RBAC serveur (`packages/rbac`), tranches de numéros, audit chaîné,
-annuaire, diffusion SSE, passerelle MECeF. PostgreSQL 16. Voir ARCHITECTURE-CIBLE §5–6.
+> **Supprimé du plan** (ADR-0005, rév. 3, 29/10/2026). Le « hub » est devenu :
+> - le **poste mère** : `apps/poste` en mode `mere` (service Dart + PostgreSQL local + console) ;
+> - le **relais en ligne** opaque : `apps/web` (Laravel, cPanel).
+>
+> Ce dossier est conservé vide de code jusqu'à la clôture de l'ADR ; ne rien y développer.

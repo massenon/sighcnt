@@ -1,8 +1,9 @@
-# PLAN — Implémentation SIGH : Flutter (poste) + Laravel (API de synchronisation et panneau) + PWA
+# PLAN — Implémentation SIGH : Flutter (poste fileul, poste mère, mobile) + Laravel (relais en ligne et panneau)
 
 | | |
 |---|---|
-| **Statut** | brouillon 27/10/2026 — **conditionné à l'acceptation d'ADR-0005** |
+| **Statut** | **lancé le 29/10/2026** (squelettes créés, banc de protocole vert) — la poursuite reste **conditionnée à l'acceptation d'ADR-0005** |
+| **Mise à jour** | 29/10/2026 : la **PWA est retirée** (décision Direction) ; le « hub » devient le **poste mère** (Flutter) ; Laravel devient le **relais en ligne opaque** + panneau superadmin |
 | **Entrées** | demande de la Direction du 27/10/2026 ; `PRD-FLUTTER-poste-fidelite-maquette` ; `ADR-0001/0003/0005` ; maquette `prototype_html/` (exécutable de référence) |
 | **Compagnon** | [`guides/BIBLIOTHEQUE-DOCUMENTAIRE.md`](../guides/BIBLIOTHEQUE-DOCUMENTAIRE.md) — les 40 documents demandés, un par un |
 
@@ -34,13 +35,28 @@ Les chiffres de la demande (100 000 utilisateurs, 99,99 %) sont des chiffres de 
 | **P0 — Cadrage de la pile** | Trancher ADR-0005 ; répondre Q1–Q5 | ADR-0005 acceptée ou rejetée ; audit de `sigh_web/` | décision écrite de la Direction |
 | **P1 — Extraction** | Sortir de la maquette tout ce qui se *lit* : manifeste, RBAC, dictionnaire, jetons de conception, vecteurs de tests, captures | `PARITE-MAQUETTE`, `ROLES_ET_PERMISSIONS`, `DICTIONNAIRE_DONNEES`, jetons de design, vecteurs JSON, captures de référence | vecteurs rejoués verts sur la maquette |
 | **P2 — Spécification** | Rédiger les documents de la bibliothèque, groupe par groupe (§4) | groupes A → F | revue Direction par groupe |
-| **P3 — Socle technique** | Laravel (auth, RBAC, audit, journal d'opérations, endpoint de sync), schéma unique, thème Flutter, thème Livewire/Vue | dépôts initialisés, CI, banc ADR-0005 | banc passé |
-| **P4 — Tranche 1 : caisse + MECeF + impression** | Première tranche verticale **de bout en bout** : Flutter ↔ API ↔ panneau | PRD §P0-9 | recette caisse, revue d'ADR |
+| **P3 — Socle technique** | `packages/domaine` (Dart), service de la mère (HTTP + PostgreSQL + pont P2), client P1 des postes, relais Laravel (enveloppes, battement, indicateurs, panneau), schéma unique, thème Flutter | dépôts initialisés, CI, **les 26 scénarios du banc rejoués sur le code réel** | banc passé sur Dart et Laravel |
+| **P4 — Tranche 1 : caisse + MECeF + impression** | Première tranche verticale **de bout en bout** : fileul ↔ mère ↔ relais ↔ panneau | PRD §P0-9 | recette caisse, revue d'ADR |
 | **P5 → Pn — Tranches** | pharmacie → laboratoire → hospitalisation/maternité → comptabilité → RH/paie → administration | une recette par tranche | parité x / 306 |
-| **P6 — PWA** | Profils distants : consultation, saisie ciblée, notifications | module PWA | audit sécurité cache |
+| **P6 — Mobile** | Application minimale (soignant, consultations à domicile ; réception de secours) par le relais chiffré | `apps/mobile` | scénarios R10, R13, R15 rejoués sur Dart + audit de sécurité de l'appareil |
 | **P7 — Mise en service** | Clinique pilote, formation par rôle, bascule | guide d'exploitation, rollback | recette globale |
 
 Pas de dates : elles dépendent de l'effectif Flutter/Dart/Laravel (non documenté) et du résultat du banc.
+
+## 3 bis. État d'avancement (29/10/2026)
+
+| Étape | État | Où |
+|---|---|---|
+| ADR-0005 (révisions 1 à 3), PRD Flutter, spec de synchronisation, bibliothèque documentaire | **rédigés** (ADR *proposé*) | `docs/` |
+| Banc de protocole : mère, fileuls, relais chiffré, mobile, coupures, SIGKILL, restauration | **vert** (26 scénarios, ≈ 127 vérifications, mutations détectées) | `packages/sync/banc/` |
+| `packages/domaine` (Dart) | **squelette** : contrat d'opération, familles, codes ; **non compilé** (pas de SDK Dart ici) | `packages/domaine/` |
+| `apps/poste` (Flutter desktop : fileul + mère) | **squelette** non compilé | `apps/poste/` |
+| `apps/mobile` (Flutter, profils soignant / réception de secours) | **squelette** non compilé | `apps/mobile/` |
+| `apps/web` (Laravel 12 : relais + panneau) | **squelette** Laravel 12.70 qui démarre (`php artisan --version`) ; aucun code métier | `apps/web/` |
+| P0 : acceptation d'ADR-0005 ; audit de `sigh_web/` (code à fournir) ; réponses Q1–Q8 de la spec | **en attente de la Direction** | — |
+| P1 : extraction (vecteurs de tests, matrice RBAC JSON, jetons de design, manifeste de parité) | **à faire** — prochaine étape recommandée | `prototype_html/build/` |
+
+**Ce qui bloque aujourd'hui** : (1) aucun SDK Flutter/Dart dans l'environnement de rédaction — les squelettes Dart doivent être ouverts et compilés sur un poste équipé ; (2) `sigh_web/` non fourni ; (3) ADR-0005 non acceptée.
 
 ## 4. Groupes documentaires (l'ordre est la dépendance)
 

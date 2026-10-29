@@ -50,11 +50,28 @@ async function monde(opts = {}) {
     const p = fork(path.join(__dirname, script), args, { stdio: ['ignore', 'ignore', 'inherit', 'ipc'], execArgv: ['--no-warnings'] });
     p.once('message', () => ok(p)); p.once('error', ko);
   });
+  m.mobiles = {};
+  if (opts.relais) {
+    const portRel = await portLibre();
+    m.relais = {
+      port: portRel, proc: null,
+      async demarrer() { m.relais.proc = await lancer('relais.js', [`--port=${portRel}`, `--db=${path.join(dir, 'relais.sqlite')}`, '--banc=1', `--seuil-battement=${opts.seuilBattement || 300000}`]); },
+      tuer() { if (m.relais.proc) { m.relais.proc.kill('SIGKILL'); m.relais.proc = null; } return dormir(80); },
+      direct: (methode, chemin, corps, ent) => appel(`http://127.0.0.1:${portRel}`, methode, chemin, corps, Object.assign({ 'x-mere': 'secret-mere' }, ent || {})),
+      brut: (methode, chemin, corps, ent) => appel(`http://127.0.0.1:${portRel}`, methode, chemin, corps, ent),
+    };
+    await m.relais.demarrer();
+    m.internet = new Commutateur(portRel); m.portInternet = await m.internet.demarrer();
+    m.reseauMobile = new Commutateur(portRel); m.portMobile = await m.reseauMobile.demarrer();
+  }
   m.mere = {
-    port: portMere, proc: null,
+    port: portMere, proc: null, db: path.join(dir, 'mere.sqlite'), opts: {},
     async demarrer() {
-      m.mere.proc = await lancer('mere.js', [`--port=${portMere}`, `--db=${path.join(dir, 'mere.sqlite')}`, `--admin=${ADMIN}`,
-        `--code-ttl=${opts.codeTtl || 900000}`, `--jeton-ttl=${opts.jetonTtl || 86400000}`]);
+      const a = [`--port=${portMere}`, `--db=${m.mere.db}`, `--admin=${ADMIN}`, `--code-ttl=${opts.codeTtl || 900000}`, `--jeton-ttl=${opts.jetonTtl || 86400000}`];
+      if (opts.relais) a.push(`--relais=http://127.0.0.1:${m.portInternet}`, '--secret-relais=secret-mere');
+      if (m.mere.opts.cle) a.push(`--cle=${m.mere.opts.cle}`);
+      if (m.mere.opts.restaurer) a.push('--restaurer=1');
+      m.mere.proc = await lancer('mere.js', a);
     },
     tuer() { if (m.mere.proc) { m.mere.proc.kill('SIGKILL'); m.mere.proc = null; } return dormir(80); },
     admin: (methode, chemin, corps) => appel(`http://127.0.0.1:${portMere}`, methode, chemin, corps, { 'x-admin': ADMIN }),
@@ -93,9 +110,38 @@ async function monde(opts = {}) {
     m.fileuls[nom] = fil; m.nbFileuls++;
     return fil;
   };
+  m.mobile = async (nom, o = {}) => {
+    const port = await portLibre();
+    const mob = {
+      nom, port, proc: null, base: `http://127.0.0.1:${port}`,
+      async demarrer() { mob.proc = await lancer('mobile.js', [`--port=${port}`, `--relais=http://127.0.0.1:${m.portMobile}`, `--db=${path.join(dir, nom + '.sqlite')}`, `--nom=${nom}`]); },
+      tuer() { if (mob.proc) { mob.proc.kill('SIGKILL'); mob.proc = null; } return dormir(80); },
+      get: (chemin) => appel(mob.base, 'GET', chemin).then((r) => r.json),
+      post: (chemin, corps) => appel(mob.base, 'POST', chemin, corps),
+      etat: () => mob.get('/etat'),
+      vue: (c, id) => mob.get(`/vue?collection=${c}&id=${encodeURIComponent(id)}`),
+      liste: (c) => mob.get(`/liste?collection=${c}`),
+      ecrire: (cmd) => mob.post('/ecrire', cmd).then((r) => r.json),
+      vide: async () => (await mob.etat()).en_attente === 0,
+    };
+    await mob.demarrer();
+    if (!o.sansAppairage) {
+      const { json: c } = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: nom });
+      m.cle = c.cle;
+      const r = await mob.post('/appairer', { code: c.code, cle: c.cle, profil: o.profil || 'soignant' });
+      if (r.status !== 200) throw new Error('appairage mobile refusé : ' + JSON.stringify(r.json));
+      mob.uuid = r.json.uuid;
+      if (!(await attendre(async () => (await mob.etat()).bienvenu, 15000))) throw new Error('le mobile n\'a pas reçu la bienvenue de la mère');
+    }
+    m.mobiles[nom] = mob;
+    return mob;
+  };
   m.fermer = async () => {
     for (const f of Object.values(m.fileuls)) if (f.proc) f.proc.kill('SIGKILL');
+    for (const x of Object.values(m.mobiles)) if (x.proc) x.proc.kill('SIGKILL');
     if (m.mere.proc) m.mere.proc.kill('SIGKILL');
+    if (m.relais && m.relais.proc) m.relais.proc.kill('SIGKILL');
+    if (m.internet) { m.internet.arreter(); m.reseauMobile.arreter(); }
     m.reseau.arreter(); await dormir(100);
     try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { /* tant pis */ }
   };
@@ -290,6 +336,264 @@ const scenarios = {
     while (Date.now() - t0 < 2500) { min = Math.min(min, (await f1.liste('patients')).length); await dormir(15); }
     verifier('le dossier reste visible en continu (2,5 s d\'échantillonnage, tirage ralenti)', min === 1, min);
     verifier('et finit confirmé avec son numéro réel', await attendre(async () => { const l = await f1.liste('patients'); return l.length === 1 && /^CNT\/\d+\/26$/.test(l[0].data.code) && (await f1.vide()); }, 10000));
+    await m.fermer();
+  },
+  /* ===================== LE RELAIS CHIFFRÉ ET LE MOBILE (spec §11-§12) ===================== */
+  async R6() {
+    courant = 'SYNC-R6 · Internet coupé puis rétabli : la clinique continue, la mère rattrape le relais seule';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    await m.mere.admin('GET', '/admin/etat');
+    await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Avant' } });
+    verifier('en service normal, la mère réplique son journal au relais', await attendre(async () => { const e = (await m.mere.admin('GET', '/admin/etat')).json; return e.nb_operations >= 1 && e.rep_seq === e.seq_max; }));
+    m.internet.regler('ferme');
+    for (let i = 0; i < 3; i++) await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Pendant ' + i } });
+    verifier('Internet coupé : le poste continue de synchroniser avec la mère', await attendre(async () => f1.vide(), 10000));
+    await dormir(700);
+    const e1 = (await m.mere.admin('GET', '/admin/etat')).json;
+    verifier('le retard de réplication est VISIBLE sur la console', e1.seq_max - e1.rep_seq >= 3, [e1.seq_max, e1.rep_seq]);
+    m.internet.regler('ouvert');
+    verifier('Internet rétabli : la mère rattrape SEULE', await attendre(async () => { const e = (await m.mere.admin('GET', '/admin/etat')).json; return e.rep_seq === e.seq_max; }, 15000));
+    await m.fermer();
+  },
+  async R6b() {
+    courant = 'SYNC-R6b · battement de cœur : le relais alerte quand la mère se tait';
+    const m = await monde({ relais: true, seuilBattement: 1200 });
+    verifier('mère vivante : pas d\'alerte', await attendre(async () => (await m.relais.direct('GET', '/admin/etat')).json.alerte_battement === false));
+    await m.mere.tuer(); await dormir(1700);
+    const e = (await m.relais.direct('GET', '/admin/etat')).json;
+    verifier('mère muette > seuil : ALERTE au relais', e.alerte_battement === true && e.age_battement_ms > 1200, e);
+    await m.mere.demarrer();
+    verifier('la mère revient : l\'alerte tombe', await attendre(async () => (await m.relais.direct('GET', '/admin/etat')).json.alerte_battement === false));
+    verifier('les indicateurs du relais ne portent AUCUN nom de patient', await attendre(async () => { const i = (await m.relais.direct('GET', '/admin/etat')).json.indicateurs; return i && 'patients_actifs' in i; })
+      && !JSON.stringify((await m.relais.direct('GET', '/admin/etat')).json.indicateurs).match(/nom|prenom|telephone/i));
+    await m.fermer();
+  },
+  async R10() {
+    courant = 'SYNC-R10 · mobile à domicile : lot chiffré, saisie hors ligne, envoi par le relais, la mère distribue';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const a = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Visite A', telephone: '111' } });
+    const b = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Visite B', telephone: '222' } });
+    const c = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Hors tournée', telephone: '333' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 3);
+    const mob = await m.mobile('M1', { profil: 'soignant' });
+    await m.mere.admin('POST', '/admin/lot', { uuid: mob.uuid, fiches: [{ collection: 'patients', id: a.fiche }, { collection: 'patients', id: b.fiche }], ttl_ms: 60000 });
+    verifier('le mobile reçoit SON lot (2 patients de la tournée)', await attendre(async () => (await mob.liste('patients')).length === 2));
+    /* Après l'appairage, la clinique continue de travailler sur d'AUTRES dossiers : rien ne doit descendre sur le mobile. */
+    await f1.ecrire({ type: 'modifier', collection: 'patients', fiche: c.fiche, champs: { telephone: '444' } });
+    await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Nouveau en clinique' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 4 && (await m.mere.admin('GET', '/admin/etat')).json.seq_max >= 6);
+    await dormir(900);
+    const lm = await mob.liste('patients');
+    verifier('il ne reçoit NI le patient hors tournée, NI ses modifications, NI les nouveaux dossiers de la clinique', lm.length === 2 && lm.every((p) => /^Visite/.test(p.data.nom)), lm.map((p) => p.data.nom));
+    m.reseauMobile.regler('ferme');
+    await mob.ecrire({ type: 'modifier', collection: 'patients', fiche: a.fiche, champs: { telephone: '999' } });
+    await mob.ecrire({ type: 'creer', collection: 'constantes', champs: { patient: a.fiche, pouls: 88 } });
+    verifier('hors ligne, la saisie est visible tout de suite sur le mobile', (await mob.vue('patients', a.fiche)).data.telephone === '999');
+    verifier('hors ligne, rien ne part', (await mob.etat()).en_attente === 2);
+    m.reseauMobile.regler('ouvert');
+    verifier('retour réseau : le relais reçoit, la mère relève, le mobile reçoit l\'accusé', await attendre(async () => mob.vide(), 15000));
+    verifier('le poste fileul voit la modification faite à domicile', await attendre(async () => (await f1.vue('patients', a.fiche)).data.telephone === '999', 15000));
+    verifier('et la constante saisie à domicile', await attendre(async () => (await f1.liste('constantes')).length === 1, 15000));
+    const e = (await m.mere.admin('GET', '/admin/etat')).json; const app = e.appareils.find((x) => x.uuid === mob.uuid);
+    verifier('la mère n\'a JAMAIS été contactée directement par le mobile (aucun contact P1)', app && app.dernier_contact === null, app);
+    await m.fermer();
+  },
+  async R10b() {
+    courant = 'SYNC-R10b · expiration du lot : les dossiers de la tournée s\'effacent du mobile, sauf ce qui n\'est pas parti';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const a = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Reste' } });
+    const b = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Part' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 2);
+    const mob = await m.mobile('M1');
+    await m.mere.admin('POST', '/admin/lot', { uuid: mob.uuid, fiches: [{ collection: 'patients', id: a.fiche }, { collection: 'patients', id: b.fiche }], ttl_ms: 1200 });
+    await attendre(async () => (await mob.liste('patients')).length === 2);
+    m.reseauMobile.regler('ferme');
+    await mob.ecrire({ type: 'modifier', collection: 'patients', fiche: a.fiche, champs: { telephone: 'en attente' } });
+    verifier('le lot expire : « Part » disparaît, « Reste » (saisie non envoyée) est conservé', await attendre(async () => { const l = await mob.liste('patients'); return l.length === 1 && l[0].data.nom === 'Reste'; }, 8000));
+    await m.fermer();
+  },
+  async R10c() {
+    courant = 'SYNC-R10c · mobile perdu : révocation, effacement au contact, export de ce qui n\'est pas parti';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const a = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Confidentiel' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 1);
+    const mob = await m.mobile('M1');
+    await m.mere.admin('POST', '/admin/lot', { uuid: mob.uuid, fiches: [{ collection: 'patients', id: a.fiche }], ttl_ms: 60000 });
+    await attendre(async () => (await mob.liste('patients')).length === 1);
+    m.reseauMobile.regler('ferme');
+    await mob.ecrire({ type: 'modifier', collection: 'patients', fiche: a.fiche, champs: { telephone: 'à ne pas perdre' } });
+    await m.mere.admin('POST', '/admin/revoquer', { uuid: mob.uuid });
+    await dormir(800);
+    verifier('hors réseau, l\'appareil garde ses données chiffrées (limite connue)', (await mob.liste('patients')).length === 1);
+    m.reseauMobile.regler('ouvert');
+    verifier('au contact : suspendu et EFFACÉ', await attendre(async () => { const e = await mob.etat(); return e.suspendu && (await mob.liste('patients')).length === 0; }, 10000));
+    const e = await mob.etat();
+    verifier('l\'opération non envoyée est EXPORTÉE avant l\'effacement', e.exports.length === 1 && JSON.parse(fs.readFileSync(e.exports[0], 'utf8')).operations[0].champs.telephone === 'à ne pas perdre');
+    await m.fermer();
+  },
+  async R13() {
+    courant = 'SYNC-R13 · le relais est OPAQUE : rien de lisible, ni donnée, ni nom de collection, ni clé';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const p = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Zébulon-Secret', telephone: '0123456789' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 1);
+    const mob = await m.mobile('M1');
+    await m.mere.admin('POST', '/admin/lot', { uuid: mob.uuid, fiches: [{ collection: 'patients', id: p.fiche }], ttl_ms: 60000 });
+    await attendre(async () => (await mob.liste('patients')).length === 1);
+    await mob.ecrire({ type: 'modifier', collection: 'patients', fiche: p.fiche, champs: { quartier: 'Quartier-Secret' } });
+    await attendre(async () => (await mob.vide()) && (await m.mere.admin('GET', '/admin/etat')).json.rep_seq === (await m.mere.admin('GET', '/admin/etat')).json.seq_max, 15000);
+    const brut = (await m.relais.direct('GET', '/banc/tout')).json;
+    /* Les INDICATEURS sont en clair PAR CONCEPTION (agrégats, aucun nom de patient — vérifié en R6b) : on les
+       exclut ; tout le reste de ce que le relais détient doit être illisible. */
+    const tout = JSON.stringify({ lignes: brut.lignes, codes: brut.codes, appareils: brut.appareils, meta: brut.meta.filter((x) => x.k !== 'indicateurs') });
+    const rows = brut.lignes.length;
+    verifier('le relais détient des enveloppes (journal + boîtes)', rows >= 4, rows);
+    /* Une donnée « cachée » par un simple base64 n'est PAS chiffrée : on décode chaque enveloppe, on cherche les
+       secrets dans les OCTETS, et on mesure l'entropie (un chiffrement authentifié ressemble à du hasard). */
+    const entropie = (b) => { const c = new Array(256).fill(0); for (const x of b) c[x]++; return -c.reduce((a, n) => (n ? a + (n / b.length) * Math.log2(n / b.length) : a), 0); };
+    const octets = brut.lignes.map((l) => Buffer.from(l.ct, 'base64'));
+    verifier('aucune donnée de patient en clair, même après décodage base64', !/Zébulon|0123456789|Quartier-Secret/.test(tout) && octets.every((b) => !/Zébulon|0123456789|Quartier-Secret|patients|telephone/.test(b.toString('latin1')) && !/Z\xc3\xa9bulon/.test(b.toString('latin1'))));
+    verifier('chaque enveloppe a l\'entropie d\'un chiffrement (> 7 bits/octet) — pas un simple encodage', octets.filter((b) => b.length >= 250).length >= 2 && octets.filter((b) => b.length >= 250).every((b) => entropie(b) > 7.0),
+      octets.map((b) => [b.length, +entropie(b).toFixed(2)]));
+    verifier('aucun nom de collection ni de champ en clair', !/patients|telephone|quartier|constantes|"nom"/.test(tout));
+    verifier('la clé de clinique n\'est nulle part au relais', !tout.includes(m.cle) && !tout.includes(Buffer.from(m.cle, 'base64').toString('hex')));
+    const src = fs.readFileSync(path.join(__dirname, 'relais.js'), 'utf8');
+    verifier('le code du relais ne contient aucun chiffrement ni import de la clé', !/createCipheriv|createDecipheriv|require\('\.\/crypto'\)/.test(src));
+    await m.fermer();
+  },
+  async R13b() {
+    courant = 'SYNC-R13b · enveloppe ALTÉRÉE ou RETIRÉE au relais : détectée, jamais appliquée';
+    let m = await monde({ relais: true }); let f1 = await m.fileul('F1');
+    const mob = await m.mobile('M1', { profil: 'soignant' });
+    const mob2 = await m.mobile('M2', { profil: 'soignant' });
+    await dormir(500);
+    m.internet.regler('ferme');
+    await mob.ecrire({ type: 'creer', collection: 'constantes', champs: { pouls: 70 } });
+    await attendre(async () => (await m.relais.direct('GET', '/banc/ids?dir=vers_mere')).json.ids.filter((x) => x.appareil === mob.uuid).length >= 2);
+    const ids = (await m.relais.direct('GET', '/banc/ids?dir=vers_mere')).json.ids.filter((x) => x.appareil === mob.uuid);
+    await m.relais.direct('POST', '/banc/alterer', { id: ids.find((x) => x.n === 2).id });
+    await mob2.ecrire({ type: 'creer', collection: 'constantes', champs: { pouls: 99 } });
+    await attendre(async () => (await m.relais.direct('GET', '/banc/ids?dir=vers_mere')).json.ids.filter((x) => x.appareil === mob2.uuid).length >= 2);
+    m.internet.regler('ouvert');
+    verifier('l\'altération est DÉTECTÉE (authentification GCM échouée) et signalée', await attendre(async () => (await m.mere.admin('GET', '/admin/etat')).json.alertes.some((a) => a.type === 'authentification' && a.appareil === mob.uuid), 10000));
+    verifier('l\'appareil concerné est BLOQUÉ en attendant l\'administrateur', (await m.mere.admin('GET', '/admin/etat')).json.bloques.includes(mob.uuid));
+    verifier('l\'autre mobile n\'est pas affecté : son envoi est appliqué', await attendre(async () => (await f1.liste('constantes')).length === 1 && (await f1.liste('constantes'))[0].data.pouls === 99, 10000));
+    verifier('la donnée altérée n\'a PAS été appliquée', !(await f1.liste('constantes')).some((c) => c.data.pouls === 70));
+    await m.fermer();
+
+    m = await monde({ relais: true }); f1 = await m.fileul('F1');
+    const mob3 = await m.mobile('M3', { profil: 'soignant' });
+    await dormir(500);
+    m.internet.regler('ferme');
+    await mob3.ecrire({ type: 'creer', collection: 'constantes', champs: { pouls: 61 } });
+    await attendre(async () => (await mob3.vide()) || true, 1000); await dormir(500);
+    await mob3.ecrire({ type: 'creer', collection: 'constantes', champs: { pouls: 62 } });
+    await attendre(async () => (await m.relais.direct('GET', '/banc/ids?dir=vers_mere')).json.ids.filter((x) => x.appareil === mob3.uuid).length >= 3, 8000);
+    const i3 = (await m.relais.direct('GET', '/banc/ids?dir=vers_mere')).json.ids.filter((x) => x.appareil === mob3.uuid);
+    await m.relais.direct('POST', '/banc/retirer', { id: i3.find((x) => x.n === 2).id });
+    m.internet.regler('ouvert');
+    verifier('une enveloppe RETIRÉE crée un trou : détecté, signalé', await attendre(async () => (await m.mere.admin('GET', '/admin/etat')).json.alertes.some((a) => a.type === 'trou' && a.appareil === mob3.uuid), 10000));
+    await dormir(500);
+    verifier('l\'enveloppe suivante n\'est PAS appliquée par-dessus le trou', (await f1.liste('constantes')).length === 0);
+    await m.fermer();
+  },
+  async R15() {
+    courant = 'SYNC-R15 · coupure de courant : l\'accueil continue sur mobile (réception de secours), doublon signalé';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1'); const f2 = await m.fileul('F2');
+    await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Kouassi', naissance: '1980-01-01', telephone: '111' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 1);
+    const mob = await m.mobile('ACCUEIL', { profil: 'reception' });
+    await f1.tuer(); await f2.tuer();
+    await mob.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Ahouansou', naissance: '1990-02-02' } });
+    await mob.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'kouassi ', naissance: '1980-01-01' } });
+    await mob.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Zinsou', naissance: '1985-05-05' } });
+    const fact = await mob.ecrire({ type: 'creer', collection: 'factures', champs: { total: 1 } });
+    verifier('la réception de secours enregistre hors fileuls : les 4 saisies partent par le relais', await attendre(async () => mob.vide(), 15000));
+    const l = await mob.liste('patients');
+    verifier('trois dossiers, trois codes distincts DANS la plage du mobile', l.length === 3 && new Set(codes(l)).size === 3 && codes(l).every((c) => /^CNT\/\d+\/26$/.test(c)), codes(l));
+    const e = await mob.etat();
+    verifier('le profil « réception » ne couvre pas la caisse : refus nommé côté serveur', e.a_traiter.some((r) => r.code === 'droit_refuse' && /r[ée]ception/i.test(r.motif)), e.a_traiter);
+    verifier('l\'homonyme est accepté ET signalé « doublon possible » (code jamais modifié)', e.resultats.some((r) => r.doublon_possible), e.resultats);
+    const cs = (await m.mere.admin('GET', '/admin/conflits')).json;
+    verifier('un conflit « doublon_possible » attend l\'arbitrage de la console', cs.length === 1 && cs[0].champ === 'doublon_possible', cs);
+    verifier('le mobile ne porte PAS le fichier complet des patients : le dossier de F1 n\'y est pas', !l.some((p) => p.data.telephone === '111'));
+    await f1.demarrer();
+    verifier('l\'électricité revient : le poste voit les 4 dossiers (1 + 3)', await attendre(async () => (await f1.liste('patients')).length === 4, 15000));
+    await m.fermer();
+  },
+  async R23() {
+    courant = 'SYNC-R23 · cloisonnement des boîtes : un appareil ne lit ni ne dépose chez un autre';
+    const m = await monde({ relais: true });
+    const a = await m.mobile('A'); const b = await m.mobile('B');
+    const ja = (await a.get('/secret')).jeton;
+    const lecture = await m.relais.brut('GET', `/releve?dir=vers_mobile&appareil=${b.uuid}&depuis_n=0`, null, { Authorization: 'Bearer ' + ja });
+    verifier('A ne lit pas la boîte de B', lecture.status === 403 && lecture.json.code === 'lecture_interdite', lecture);
+    const faux = await m.relais.brut('POST', '/depot', { enveloppe: { id: 'x', appareil: b.uuid, dir: 'vers_mere', n: 99, nonce: '', ct: '' } }, { Authorization: 'Bearer ' + ja });
+    verifier('A ne dépose pas au nom de B', faux.status === 403 && faux.json.code === 'depot_interdit', faux);
+    const sens = await m.relais.brut('POST', '/depot', { enveloppe: { id: 'y', appareil: a.uuid, dir: 'vers_mobile', n: 99, nonce: '', ct: '' } }, { Authorization: 'Bearer ' + ja });
+    verifier('A ne dépose pas dans le sens mère → mobile', sens.status === 403, sens);
+    const sansMere = await m.relais.brut('GET', '/mere/appareils');
+    verifier('sans le secret de la mère, la liste des appareils est fermée', sansMere.status === 403, sansMere);
+    await m.fermer();
+  },
+  async R8r() {
+    courant = 'SYNC-R8 · la mère est DÉTRUITE : restauration depuis le relais avec la clé de clinique';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const mobAmorce = await m.mobile('M0'); const cle = m.cle;
+    const p1 = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Un', telephone: '1' } });
+    await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Deux' } });
+    const p3 = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Trois' } });
+    await m.mere.admin('POST', '/admin/stock', { article: 'GANTS', qte: 10 });
+    await m.mere.admin('POST', '/admin/referentiel', { collection: 'tarifs', fiche: 'CONSULT', champs: { prix: 5000 } });
+    await attendre(async () => (await f1.vue('stock', 'GANTS')).data.qte === 10);
+    await f1.ecrire({ type: 'sortie', collection: 'stock', fiche: 'GANTS', champs: { qte: 4 } });
+    await f1.ecrire({ type: 'modifier', collection: 'patients', fiche: p1.fiche, champs: { telephone: '2' } });
+    await f1.ecrire({ type: 'archiver', collection: 'patients', fiche: p3.fiche });
+    await attendre(async () => { const e = (await m.mere.admin('GET', '/admin/etat')).json; return (await f1.vide()) && e.rep_seq === e.seq_max && e.seq_max > 0; }, 15000);
+    const avant = (await m.mere.admin('GET', '/admin/empreinte')).json; const ea = (await m.mere.admin('GET', '/admin/etat')).json;
+    await m.mere.tuer(); await f1.tuer();
+    m.mere.db = path.join(m.dir, 'mere-neuve.sqlite'); m.mere.opts = { cle, restaurer: true };
+    await m.mere.demarrer();
+    verifier('la restauration se termine', await attendre(async () => (await m.mere.admin('GET', '/admin/etat')).json.restauration === 'terminee', 15000), (await m.mere.admin('GET', '/admin/etat')).json.restauration);
+    const apres = (await m.mere.admin('GET', '/admin/empreinte')).json;
+    verifier('la nouvelle mère est IDENTIQUE à l\'ancienne (empreinte de toutes les fiches)', apres.empreinte === avant.empreinte && apres.n === avant.n, [avant, apres]);
+    const eb = (await m.mere.admin('GET', '/admin/etat')).json;
+    verifier('l\'époque est incrémentée : les anciens appareils ne ressuscitent rien', eb.epoch === ea.epoch + 1, [ea.epoch, eb.epoch]);
+    verifier('la séquence reprend là où elle s\'était arrêtée', eb.seq_max === ea.seq_max, [ea.seq_max, eb.seq_max]);
+    const f9 = await m.fileul('F9');
+    verifier('un poste NEUF, appairé à la nouvelle mère, retrouve tout (3 dossiers dont 1 archivé)', await attendre(async () => { const l = await f9.liste('patients'); return l.length === 3 && l.filter((x) => x.archive).length === 1; }, 15000));
+    verifier('stock (10 − 4 = 6) et tarif restaurés', (await f9.vue('stock', 'GANTS')).data.qte === 6 && (await f9.vue('tarifs', 'CONSULT')).data.prix === 5000);
+    const f9p = await f9.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Nouveau' } });
+    await attendre(async () => f9.vide(), 10000);
+    const codesApres = codes(await f9.liste('patients'));
+    verifier('la numérotation reprend SANS collision avec les codes d\'avant', new Set(codesApres).size === 4, codesApres);
+    await m.fermer();
+  },
+  async R8s() {
+    courant = 'SYNC-R8b · restauration après une RÉINITIALISATION : l\'activité d\'avant ne revient pas ; mauvaise clé : rien n\'est écrit';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    await m.mobile('M0'); const cle = m.cle;
+    await m.mere.admin('POST', '/admin/referentiel', { collection: 'tarifs', fiche: 'CONSULT', champs: { prix: 5000 } });
+    await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Avant reinit' } });
+    await attendre(async () => { const e = (await m.mere.admin('GET', '/admin/etat')).json; return (await f1.vide()) && e.rep_seq === e.seq_max; }, 15000);
+    await m.mere.admin('POST', '/admin/reinit-fenetre', { ouvrir: true });
+    verifier('réinitialisation acceptée', (await m.mere.admin('POST', '/admin/reinitialiser', { confirmation: 'NASSIERA TOO', second: 'daf' })).status === 200);
+    await attendre(async () => (await f1.liste('patients')).length === 0, 10000);
+    await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Apres reinit' } });
+    await attendre(async () => { const e = (await m.mere.admin('GET', '/admin/etat')).json; return (await f1.vide()) && e.rep_seq === e.seq_max && e.seq_max > 0; }, 15000);
+    await m.mere.tuer();
+    m.mere.db = path.join(m.dir, 'mere-neuve.sqlite'); m.mere.opts = { cle, restaurer: true };
+    await m.mere.demarrer();
+    await attendre(async () => (await m.mere.admin('GET', '/admin/etat')).json.restauration === 'terminee', 15000);
+    const f8 = await m.fileul('F8');
+    await attendre(async () => (await f8.vue('tarifs', 'CONSULT')).existe, 10000);
+    const l = await f8.liste('patients');
+    verifier('seule l\'activité d\'APRÈS la réinitialisation revient (1 dossier)', l.length === 1 && l[0].data.nom === 'Apres reinit', l.map((x) => x.data.nom));
+    verifier('les essentiels (tarifs) sont là', (await f8.vue('tarifs', 'CONSULT')).data.prix === 5000);
+    await m.mere.tuer();
+    m.mere.db = path.join(m.dir, 'mere-mauvaise-cle.sqlite'); m.mere.opts = { cle: require('node:crypto').randomBytes(32).toString('base64'), restaurer: true };
+    await m.mere.demarrer();
+    verifier('avec une MAUVAISE clé, la restauration échoue', await attendre(async () => String((await m.mere.admin('GET', '/admin/etat')).json.restauration).startsWith('echec'), 15000));
+    verifier('et ne laisse AUCUNE donnée à demi restaurée', (await m.mere.admin('GET', '/admin/empreinte')).json.n === 0);
     await m.fermer();
   },
   async R12() {

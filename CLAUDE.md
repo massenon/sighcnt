@@ -13,7 +13,9 @@ en étoile (PostgreSQL), synchronisation par **journal d'opérations** — lire
 structure. Les skills SDLC du dépôt (`.claude/skills/` : `/prd`, `/adr`, `/spec`, `/plan`,
 `/test-plan`, `/review`, `/release`) écrivent dans `docs/` et portent la doctrine ci-dessous.
 
-**Jamais versionnés** : `node_modules`, `*.local.php`, `.env`, exports `*.sql` (voir `.gitignore`).
+**Cible en cours de lancement (29/10/2026, ADR-0005 *proposé*)** : `apps/poste` (Flutter desktop, modes **fileul** et **mère**), `apps/mobile` (Flutter, profils soignant / réception de secours, **uniquement par le relais**), `apps/web` (Laravel 12 sur cPanel : **relais opaque** + panneau superadmin), `packages/domaine` (règles en Dart). `apps/hub` est supprimé du plan. L'exécutable de référence du protocole est `packages/sync/banc/` (`npm run banc:sync`) ; la spec est `docs/specs/SPEC-protocole-synchronisation.md`. Les squelettes Dart ne sont pas compilés dans l'environnement de rédaction.
+
+**Jamais versionnés** : `node_modules`, `vendor/`, `*.local.php`, `.env`, exports `*.sql` (voir `.gitignore`).
 Le mot de passe PostgreSQL commis le 17/10/2026 dans `prototype_html/api/config.local.php` est à
 **changer** sur le poste : il reste dans l'historique du commit initial.
 

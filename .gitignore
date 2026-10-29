@@ -1,5 +1,10 @@
 # ---- dépendances et sorties de build ----
 node_modules/
+vendor/
+.phpunit.cache/
+.dart_tool/
+apps/poste/build/
+apps/mobile/build/
 dist/
 coverage/
 *.tsbuildinfo
@@ -22,6 +27,14 @@ prototype_html/api/config.local.php
 *.sqlite
 *.sqlite3
 *.db
+
+# ---- Flutter / Laravel ----
+.flutter-plugins*
+.packages
+pubspec.lock.bak
+apps/web/storage/*.key
+apps/web/public/hot
+apps/web/public/storage
 
 # ---- outillage ----
 .DS_Store

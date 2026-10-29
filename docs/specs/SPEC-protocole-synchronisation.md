@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Statut** | brouillon 29/10/2026 — conditionné à l'acceptation d'ADR-0005 (révision 3) · **banc de référence : `packages/sync/banc/` (SYNC-R1→R5, R7, R9, R12, R14, R16→R21 : 72 vérifications vertes)** |
+| **Statut** | brouillon 29/10/2026 — conditionné à l'acceptation d'ADR-0005 (révision 3) · **banc de référence : `packages/sync/banc/` (SYNC-R1→R26 hors R11 : voir `banc/README.md`)** |
 | **Sources** | `PRD-SOCLE-synchronisation-bidirectionnelle` (EF-SYNC-01→20, familles A–D), `PLAN-synchronisation-bidirectionnelle`, ADR-0001, ADR-0005, `DICTIONNAIRE-DONNEES.md`, `CLAUDE.md` (RG-01→14) |
 | **Ce document ne remplace pas le PRD** | il fixe **comment** (acteurs, messages, états, écrans). Les exigences restent celles du PRD ; chaque section cite la référence EF-SYNC qu'elle réalise. |
 | **Valeurs numériques** | marquées *(proposé)* : aucune n'est tirée d'un document de cadrage ; à valider au banc |
@@ -223,6 +223,11 @@ Les écrans du panneau en ligne ne chargent **que** des données non nominatives
 | SYNC-R19 | Poste tué (SIGKILL) avec des opérations en attente | file intacte au redémarrage, envoi sans doublon au retour de la mère |
 | SYNC-R20 | Suppression, modification d'une fiche archivée, d'une pièce émise, d'un journal, d'un référentiel par un poste | refus nommés ; archivage et restauration synchronisés |
 | SYNC-R21 | Création d'un dossier, tirage ralenti | le dossier reste visible en continu, numéro réel dès l'accusé |
+| SYNC-R22 | Lot de tournée expiré, avec une saisie non envoyée sur l'un des dossiers | le dossier sans saisie en attente disparaît du mobile ; l'autre est conservé |
+| SYNC-R23 | Un mobile tente de lire la boîte d'un autre, de déposer en son nom ou dans le sens mère → mobile | refusés (403) ; la liste des appareils du relais est fermée sans le secret de la mère |
+| SYNC-R24 | Enveloppe **altérée** puis enveloppe **retirée** au relais | altération : authentification GCM échouée, alerte, appareil bloqué, donnée non appliquée, autre mobile non affecté ; retrait : trou de rang détecté et signalé, enveloppe suivante non appliquée |
+| SYNC-R25 | Restauration après réinitialisation ; restauration avec une mauvaise clé | seule l'activité d'après la réinitialisation revient ; mauvaise clé : échec, **aucune** donnée à demi restaurée |
+| SYNC-R26 | Mère muette plus longtemps que le seuil | le relais lève l'alerte « battement » ; elle tombe au retour ; les indicateurs ne portent aucun nom |
 | SYNC-R11 | Migration de base d'un poste qui échoue | retour à la copie, signalement, aucune perte |
 | SYNC-R12 | Horloge d'un poste décalée de 10 min | ordre fondé sur `seq`, dérive signalée |
 | SYNC-R13 | Collecte de toutes les enveloppes du relais | rien de lisible : ni nom de collection, ni patient |

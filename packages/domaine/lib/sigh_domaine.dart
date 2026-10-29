@@ -1,0 +1,8 @@
+/// Règles métier SIGH-CNT — un seul exemplaire, exécuté par le poste, le mobile et la mère.
+/// Source de vérité du comportement : `prototype_html/` (exécutable de référence) et les
+/// vecteurs de tests de `test/vecteurs/` (JSON entrée -> sortie, engendrés depuis la maquette).
+library sigh_domaine;
+
+export 'src/sync/operation.dart';
+export 'src/sync/familles.dart';
+export 'src/sync/codes.dart';

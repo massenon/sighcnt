@@ -22,6 +22,8 @@ const CODE_TTL = +arg('code-ttl', 15 * 60 * 1000);
 const JETON_TTL = +arg('jeton-ttl', 24 * 3600 * 1000);
 const CLINIQUE = 'NASSIERA TOO';
 const DERIVE_MAX_MS = 2 * 60 * 1000;
+const RELAIS = arg('relais', ''); const SECRET_RELAIS = arg('secret-relais', 'secret-mere');
+const RESTAURER = arg('restaurer', '0') === '1'; const CLE_ARG = arg('cle', '');
 
 /* Une famille par collection (PRD §8) : A fiche descriptive · B journal · C pièce
    émise · D agrégat à invariant · R référentiel (la mère seule écrit). */
@@ -43,13 +45,15 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS resultats (id TEXT PRIMARY KEY, json TEXT);
   CREATE TABLE IF NOT EXISTS fiches (collection TEXT, id TEXT, data TEXT, fieldseq TEXT, archive INTEGER, PRIMARY KEY (collection, id));
   CREATE TABLE IF NOT EXISTS appareils (uuid TEXT PRIMARY KEY, etiquette TEXT, role TEXT, etat TEXT, jeton_hash TEXT, jeton_expire INTEGER,
-    renouv_hash TEXT, dernier_contact INTEGER, dernier_seq INTEGER DEFAULT 0, derive_ms INTEGER DEFAULT 0);
+    renouv_hash TEXT, dernier_contact INTEGER, dernier_seq INTEGER DEFAULT 0, derive_ms INTEGER DEFAULT 0, profil TEXT);
   CREATE TABLE IF NOT EXISTS codes (code TEXT PRIMARY KEY, etiquette TEXT, role TEXT, expire INTEGER, utilise INTEGER DEFAULT 0);
   CREATE TABLE IF NOT EXISTS conflits (id INTEGER PRIMARY KEY AUTOINCREMENT, collection TEXT, fiche TEXT, champ TEXT, a TEXT, b TEXT,
     appareil TEXT, etat TEXT DEFAULT 'ouvert', decision TEXT);
   CREATE TABLE IF NOT EXISTS plages (appareil TEXT, nom TEXT, debut INTEGER, fin INTEGER);
   CREATE TABLE IF NOT EXISTS baux (appareil TEXT, article TEXT, reste INTEGER, PRIMARY KEY (appareil, article));
   CREATE TABLE IF NOT EXISTS acks (marque TEXT, appareil TEXT, PRIMARY KEY (marque, appareil));
+  CREATE TABLE IF NOT EXISTS portee (appareil TEXT, collection TEXT, fiche TEXT, PRIMARY KEY (appareil, collection, fiche));
+  CREATE TABLE IF NOT EXISTS sortie (appareil TEXT, n INTEGER, enveloppe TEXT, depose INTEGER DEFAULT 0, PRIMARY KEY (appareil, n));
 `);
 const meta = (k, d) => { const r = db.prepare('SELECT v FROM meta WHERE k=?').get(k); return r ? r.v : d; };
 const setMeta = (k, v) => db.prepare('INSERT INTO meta(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v').run(k, String(v));
@@ -58,7 +62,12 @@ if (meta('next_patient') === undefined) setMeta('next_patient', 1000);
 if (meta('reinit_ouverte') === undefined) setMeta('reinit_ouverte', 0);
 
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
-const tx = (fn) => { db.exec('BEGIN IMMEDIATE'); try { const r = fn(); db.exec('COMMIT'); return r; } catch (e) { db.exec('ROLLBACK'); throw e; } };
+let profondeur = 0;
+const tx = (fn) => {
+  if (profondeur) return fn(); /* transaction imbriquée : la plus extérieure décide */
+  profondeur++; db.exec('BEGIN IMMEDIATE');
+  try { const r = fn(); db.exec('COMMIT'); return r; } catch (e) { db.exec('ROLLBACK'); throw e; } finally { profondeur--; }
+};
 class Err extends Error { constructor(status, code, motif, extra) { super(motif || code); this.status = status; this.body = Object.assign({ code, motif }, extra || {}); } }
 
 /* --- fiches ---------------------------------------------------------------- */
@@ -144,9 +153,18 @@ function traiter(op, app) {
       const dup = db.prepare("SELECT 1 FROM fiches WHERE collection='patients' AND json_extract(data,'$.code')=?").get(champs.code);
       if (dup) return refus('doublon_numero', 'Code patient déjà attribué : ' + champs.code, 'Demander une nouvelle plage');
     }
+    let doublon = null;
+    if (op.collection === 'patients' && champs.nom && champs.naissance) {
+      const nomK = String(champs.nom).trim().toLowerCase();
+      for (const r of db.prepare("SELECT id,data FROM fiches WHERE collection='patients'").all()) {
+        const d = JSON.parse(r.data);
+        if (String(d.nom || '').trim().toLowerCase() === nomK && String(d.naissance || '') === String(champs.naissance)) { doublon = r.id; break; }
+      }
+    }
     const seq = journaliser(op, champs, app.uuid);
     ecrire(op.collection, op.fiche, { data: champs, fieldseq: Object.fromEntries(Object.keys(champs).map((k) => [k, seq])), archive: false });
-    return Object.assign({ id: op.id, statut: 'acceptee', seq }, numero ? { numero } : {});
+    if (doublon) db.prepare('INSERT INTO conflits(collection,fiche,champ,a,b,appareil) VALUES(?,?,?,?,?,?)').run(op.collection, op.fiche, 'doublon_possible', JSON.stringify(doublon), JSON.stringify(op.fiche), app.uuid);
+    return Object.assign({ id: op.id, statut: 'acceptee', seq }, numero ? { numero } : {}, doublon ? { doublon_possible: doublon } : {});
   }
   if (!f) return refus('fiche_inconnue', 'Fiche inconnue : ' + op.fiche, 'Rafraîchir le poste');
   if (op.type === 'archiver' || op.type === 'restaurer') {
@@ -198,6 +216,26 @@ function emettreJetons(uuid) {
   return { jeton: uuid + '.' + secret, renouvellement: uuid + '.' + renouv };
 }
 
+/* --- l'envoi d'un lot, commun aux postes (P1) et aux mobiles (P2/P3) ------------------------- */
+const AUTORISE = { reception: new Set(['patients', 'rendezvous', 'constantes']), soignant: new Set(['patients', 'constantes', 'notes', 'rendezvous']) };
+function pousser(app, b) {
+  if (b.epoch !== +meta('epoch')) throw new Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', { epoch_mere: +meta('epoch') });
+  const derive = Math.abs(Date.now() - (b.horloge || Date.now()));
+  db.prepare('UPDATE appareils SET derive_ms=? WHERE uuid=?').run(derive, app.uuid);
+  const resultats = tx(() => (b.ops || []).map((op) => {
+    const deja = db.prepare('SELECT json FROM resultats WHERE id=?').get(op.id);
+    if (deja) return Object.assign(JSON.parse(deja.json), { rejeu: true });
+    let r;
+    if (app.role === 'mobile' && !(AUTORISE[app.profil] || new Set()).has(op.collection)) {
+      r = { id: op.id, statut: 'refusee', code: 'droit_refuse', motif: `Le profil « ${app.profil} » ne couvre pas la collection ${op.collection}.`, geste: 'Utiliser un poste' };
+    } else r = traiter(op, app);
+    if (app.role === 'mobile' && r.statut === 'acceptee' && op.type === 'creer') db.prepare('INSERT OR IGNORE INTO portee(appareil,collection,fiche) VALUES(?,?,?)').run(app.uuid, op.collection, op.fiche);
+    db.prepare('INSERT INTO resultats(id,json) VALUES(?,?)').run(op.id, JSON.stringify(r));
+    return r;
+  }));
+  return { resultats, seq_max: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s) };
+}
+
 /* --- routes ------------------------------------------------------------------- */
 const routes = {
   'POST /admin/code': (req, b) => {
@@ -226,20 +264,7 @@ const routes = {
     }
     return emettreJetons(a.uuid);
   },
-  'POST /sync/push': (req, b) => {
-    const app = auth(req);
-    if (b.epoch !== +meta('epoch')) throw new Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', { epoch_mere: +meta('epoch') });
-    const derive = Math.abs(Date.now() - (b.horloge || Date.now()));
-    db.prepare('UPDATE appareils SET derive_ms=? WHERE uuid=?').run(derive, app.uuid);
-    const resultats = tx(() => (b.ops || []).map((op) => {
-      const deja = db.prepare('SELECT json FROM resultats WHERE id=?').get(op.id);
-      if (deja) return Object.assign(JSON.parse(deja.json), { rejeu: true });
-      const r = traiter(op, app);
-      db.prepare('INSERT INTO resultats(id,json) VALUES(?,?)').run(op.id, JSON.stringify(r));
-      return r;
-    }));
-    return { resultats, seq_max: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s) };
-  },
+  'POST /sync/push': (req, b) => pousser(auth(req), b),
   'GET /sync/pull': (req, b, q) => {
     const app = auth(req);
     if (+q.epoch !== +meta('epoch')) throw new Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', { epoch_mere: +meta('epoch') });
@@ -271,7 +296,31 @@ const routes = {
   },
   'POST /sync/ack-resync': (req, b) => { const app = auth(req); db.prepare('INSERT OR IGNORE INTO acks(marque,appareil) VALUES(?,?)').run(String(b.marque), app.uuid); return { ok: true }; },
 
-  'POST /admin/revoquer': (req, b) => { adminOk(req); db.prepare("UPDATE appareils SET etat='revoque' WHERE uuid=?").run(b.uuid); return { ok: true }; },
+  'POST /admin/revoquer': (req, b) => {
+    adminOk(req); db.prepare("UPDATE appareils SET etat='revoque' WHERE uuid=?").run(b.uuid);
+    if (RELAIS) rel('POST', '/mere/revoquer', { uuid: b.uuid }).catch(() => alerter({ type: 'revocation_relais_differee', appareil: b.uuid }));
+    return { ok: true };
+  },
+  'POST /admin/code-mobile': async (req, b) => {
+    adminOk(req);
+    const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    const code = Array.from(crypto.randomBytes(8)).map((x) => alphabet[x % alphabet.length]).join('');
+    db.prepare('INSERT INTO codes(code,etiquette,role,expire) VALUES(?,?,?,?)').run(code, b.etiquette || '', 'mobile', Date.now() + CODE_TTL);
+    await rel('POST', '/mere/code', { hash: sha(code) });
+    return { code, cle: CLE.toString('base64') };
+  },
+  'POST /admin/lot': (req, b) => {
+    adminOk(req);
+    const fiches = [];
+    for (const f of b.fiches) {
+      const x = lire(f.collection, f.id); if (!x) continue;
+      db.prepare('INSERT OR IGNORE INTO portee(appareil,collection,fiche) VALUES(?,?,?)').run(b.uuid, f.collection, f.id);
+      fiches.push({ collection: f.collection, id: f.id, data: x.data, fieldseq: x.fieldseq, archive: x.archive });
+    }
+    publier(b.uuid, { type: 'lot', expire: Date.now() + (b.ttl_ms || 48 * 3600 * 1000), fiches });
+    return { fiches: fiches.length };
+  },
+  'POST /admin/debloquer': (req, b) => { adminOk(req); setMeta('bloque:' + b.uuid, ''); return { ok: true }; },
   'POST /admin/resync': (req) => { adminOk(req); const m = String(Date.now()); setMeta('resync', m); return { marque: m }; },
   'GET /admin/etat': (req) => {
     adminOk(req);
@@ -285,10 +334,13 @@ const routes = {
       resync: { marque, acks: marque ? db.prepare('SELECT appareil FROM acks WHERE marque=?').all(marque).map((x) => x.appareil) : [] },
       reinit_ouverte: meta('reinit_ouverte') === '1',
       nb_operations: Number(db.prepare('SELECT COUNT(*) AS n FROM operations').get().n),
+      rep_seq: +meta('rep_seq', 0), rep_n: +meta('rep_n', 0), alertes, restauration: meta('restauration') || null,
+      bloques: db.prepare("SELECT k FROM meta WHERE k LIKE 'bloque:%' AND v<>''").all().map((x) => x.k.slice(7)),
     };
   },
   'GET /admin/fiche': (req, b, q) => { adminOk(req); return lire(q.collection, q.id) || { absente: true }; },
   'GET /admin/compte': (req, b, q) => { adminOk(req); return { n: db.prepare('SELECT COUNT(*) AS n FROM fiches WHERE collection=? AND archive=0').get(q.collection).n }; },
+  'GET /admin/empreinte': (req) => { adminOk(req); const rows = db.prepare('SELECT collection,id,data,archive FROM fiches ORDER BY collection,id').all(); return { empreinte: sha(JSON.stringify(rows)), n: rows.length }; },
   'GET /admin/conflits': (req) => { adminOk(req); return db.prepare('SELECT * FROM conflits').all(); },
   'POST /admin/trancher': (req, b) => tx(() => {
     adminOk(req);
@@ -327,16 +379,157 @@ const routes = {
       db.exec(`DELETE FROM operations WHERE collection NOT IN (${liste});
                DELETE FROM fiches WHERE collection NOT IN (${liste});
                DELETE FROM resultats; DELETE FROM conflits; DELETE FROM plages; DELETE FROM baux; DELETE FROM acks;`);
-      setMeta('epoch', +meta('epoch') + 1); setMeta('reinit_ouverte', 0); setMeta('next_patient', 1000);
+      db.exec('DELETE FROM portee;');
+      setMeta('epoch', +meta('epoch') + 1); setMeta('reinit_ouverte', 0); setMeta('next_patient', 1000); setMeta('marqueur_epoch', 1);
     });
     return { sauvegarde, epoch: +meta('epoch') };
   },
 };
 
+
+/* =============================================================================
+ * LE PONT VERS LE RELAIS (P2) ET LES MOBILES (P3)
+ * Tout ce qui sort est chiffré de bout en bout ; la mère relève le relais, il ne la contacte jamais.
+ * ========================================================================== */
+const { chiffrer, dechiffrer, nouvelleCle } = require('./crypto');
+let CLE;
+{ const c = CLE_ARG || meta('cle'); CLE = c ? Buffer.from(c, 'base64') : nouvelleCle(); setMeta('cle', CLE.toString('base64')); }
+const alertes = [];
+const alerter = (a) => { alertes.push(Object.assign({ quand: Date.now() }, a)); };
+async function rel(methode, chemin, corps) {
+  const r = await fetch(RELAIS + chemin, { method: methode, headers: { 'Content-Type': 'application/json', 'x-mere': SECRET_RELAIS }, body: corps ? JSON.stringify(corps) : undefined, signal: AbortSignal.timeout(1500) });
+  const j = await r.json();
+  if (!r.ok) throw Object.assign(new Error(j.code || 'http_' + r.status), { code: j.code, status: r.status });
+  return j;
+}
+/** Une charge pour un mobile : mise en file PERSISTANTE (rang contigu) puis déposée dans l'ordre. */
+function publier(uuid, payload) {
+  const n = +meta('sortie_n:' + uuid, 0) + 1; setMeta('sortie_n:' + uuid, n);
+  db.prepare('INSERT INTO sortie(appareil,n,enveloppe) VALUES(?,?,?)').run(uuid, n, JSON.stringify(chiffrer(CLE, payload, { id: `m-${uuid}-${n}`, appareil: uuid, dir: 'vers_mobile', n })));
+}
+async function expedier() {
+  for (const r of db.prepare('SELECT * FROM sortie WHERE depose=0 ORDER BY appareil, n').all()) {
+    await rel('POST', '/depot', { enveloppe: JSON.parse(r.enveloppe) });
+    db.prepare('UPDATE sortie SET depose=1 WHERE appareil=? AND n=?').run(r.appareil, r.n);
+  }
+}
+async function repliquer() {
+  if (meta('restauration') === 'en_cours') return;
+  if (meta('marqueur_epoch')) {
+    const n = +meta('rep_n', 0) + 1;
+    await rel('POST', '/depot', { enveloppe: chiffrer(CLE, { type: 'epoch', epoch: +meta('epoch') }, { id: 'journal-' + n, appareil: 'mere', dir: 'journal', n }) });
+    setMeta('rep_n', n); setMeta('marqueur_epoch', '');
+  }
+  const ops = db.prepare('SELECT seq,id,appareil,epoch,hlc,collection,fiche,type,champs,famille FROM operations WHERE seq>? ORDER BY seq LIMIT 100').all(+meta('rep_seq', 0))
+    .map((o) => Object.assign({}, o, { seq: Number(o.seq), champs: JSON.parse(o.champs) }));
+  if (!ops.length) return;
+  const n = +meta('rep_n', 0) + 1;
+  await rel('POST', '/depot', { enveloppe: chiffrer(CLE, { type: 'journal', ops }, { id: 'journal-' + n, appareil: 'mere', dir: 'journal', n }) });
+  setMeta('rep_n', n); setMeta('rep_seq', ops[ops.length - 1].seq);
+}
+function diffuser() {
+  for (const a of db.prepare("SELECT uuid FROM appareils WHERE role='mobile' AND etat='actif'").all()) {
+    const cur = +meta('sortie_seq:' + a.uuid, -1); if (cur < 0) continue;
+    const ops = db.prepare('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>? ORDER BY seq LIMIT 100').all(cur);
+    if (!ops.length) continue;
+    const mine = ops.filter((o) => db.prepare('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?').get(a.uuid, o.collection, o.fiche))
+      .map((o) => Object.assign({}, o, { seq: Number(o.seq), champs: JSON.parse(o.champs) }));
+    setMeta('sortie_seq:' + a.uuid, Number(ops[ops.length - 1].seq));
+    if (mine.length) publier(a.uuid, { type: 'ops', ops: mine });
+  }
+}
+function traiterEnveloppe(uuid, p) {
+  if (p.type === 'hello') {
+    const c = db.prepare('SELECT * FROM codes WHERE code=?').get(String(p.code || ''));
+    if (db.prepare('SELECT 1 FROM appareils WHERE uuid=?').get(uuid)) return;
+    if (!c || c.role !== 'mobile' || c.utilise || Date.now() > c.expire) { alerter({ type: 'appareil_inconnu', appareil: uuid }); setMeta('bloque:' + uuid, 'inconnu'); return; }
+    db.prepare('UPDATE codes SET utilise=1 WHERE code=?').run(c.code);
+    db.prepare("INSERT INTO appareils(uuid,etiquette,role,etat,profil) VALUES(?,?,'mobile','actif',?)").run(uuid, c.etiquette, p.profil);
+    const debut = +meta('next_patient'); const fin = debut + 19; setMeta('next_patient', fin + 1);
+    db.prepare('INSERT INTO plages(appareil,nom,debut,fin) VALUES(?,?,?,?)').run(uuid, 'patients', debut, fin);
+    setMeta('sortie_seq:' + uuid, Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s));
+    publier(uuid, { type: 'bienvenue', epoch: +meta('epoch'), plage: { debut, fin } });
+    return;
+  }
+  const app = db.prepare('SELECT * FROM appareils WHERE uuid=?').get(uuid);
+  if (!app || app.etat === 'revoque') return;
+  if (p.type === 'push') {
+    try { publier(uuid, { type: 'accuse', resultats: pousser(app, p).resultats }); }
+    catch (e) { if (e instanceof Err) publier(uuid, { type: 'accuse', erreur: e.body.code, epoch_mere: e.body.epoch_mere }); else throw e; }
+  }
+}
+async function relever() {
+  const { appareils } = await rel('GET', '/mere/appareils');
+  for (const a of appareils) {
+    if (meta('bloque:' + a.uuid)) continue;
+    const dernier = +meta('recu_n:' + a.uuid, 0);
+    if (a.max_n <= dernier) continue;
+    const { env } = await rel('GET', `/releve?dir=vers_mere&appareil=${a.uuid}&depuis_n=${dernier}&limite=50`);
+    for (const e of env) {
+      const attendu = +meta('recu_n:' + a.uuid, 0) + 1;
+      if (e.n < attendu) continue;
+      if (e.n > attendu) { alerter({ type: 'trou', appareil: a.uuid, attendu, recu: e.n }); setMeta('bloque:' + a.uuid, 'trou'); break; }
+      let p; try { p = dechiffrer(CLE, e); } catch (x) { alerter({ type: 'authentification', appareil: a.uuid, n: e.n }); setMeta('bloque:' + a.uuid, 'auth'); break; }
+      tx(() => { traiterEnveloppe(a.uuid, p); setMeta('recu_n:' + a.uuid, e.n); });
+    }
+  }
+}
+/** Restauration depuis le relais : TOUT est déchiffré et vérifié AVANT la moindre écriture. */
+async function restaurer() {
+  setMeta('restauration', 'en_cours');
+  try {
+    const charges = []; let n = 0;
+    for (;;) {
+      const { env, fin } = await rel('GET', `/releve?dir=journal&appareil=mere&depuis_n=${n}&limite=100`);
+      for (const e of env) { if (e.n !== n + 1) throw new Error('trou dans le journal au rang ' + (n + 1)); charges.push(dechiffrer(CLE, e)); n = e.n; }
+      if (fin) break;
+    }
+    if (!charges.length) throw new Error('journal vide');
+    let maxSeq = 0; let maxEpoch = 1;
+    tx(() => {
+      for (const p of charges) {
+        if (p.type === 'epoch') {
+          const liste = Array.from(ESSENTIELLES).map((c) => `'${c}'`).join(',');
+          db.exec(`DELETE FROM operations WHERE collection NOT IN (${liste}); DELETE FROM fiches WHERE collection NOT IN (${liste});`);
+          maxEpoch = Math.max(maxEpoch, p.epoch); continue;
+        }
+        for (const op of p.ops) {
+          db.prepare('INSERT INTO operations(seq,id,appareil,epoch,hlc,collection,fiche,type,champs,famille) VALUES(?,?,?,?,?,?,?,?,?,?)')
+            .run(op.seq, op.id, op.appareil, op.epoch, op.hlc, op.collection, op.fiche, op.type, JSON.stringify(op.champs), op.famille);
+          const f = lire(op.collection, op.fiche) || { data: {}, fieldseq: {}, archive: false };
+          if (op.type === 'creer' || op.type === 'modifier') { Object.assign(f.data, op.champs); for (const k of Object.keys(op.champs)) f.fieldseq[k] = op.seq; }
+          else if (op.type === 'archiver') f.archive = true; else if (op.type === 'restaurer') f.archive = false;
+          else if (op.type === 'sortie') { f.data.qte -= +op.champs.qte; f.fieldseq.qte = op.seq; }
+          ecrire(op.collection, op.fiche, f);
+          maxSeq = Math.max(maxSeq, op.seq); maxEpoch = Math.max(maxEpoch, op.epoch);
+        }
+      }
+      const nums = db.prepare("SELECT json_extract(data,'$.code') AS c FROM fiches WHERE collection='patients'").all().map((r) => +((/^CNT\/(\d+)\/26$/.exec(r.c || '') || [])[1] || 0));
+      setMeta('next_patient', Math.max(1000, ...nums) + 1);
+      setMeta('rep_seq', maxSeq); setMeta('rep_n', n); setMeta('epoch', maxEpoch + 1);
+      db.exec(`INSERT OR REPLACE INTO sqlite_sequence(name,seq) VALUES('operations',${maxSeq})`);
+    });
+    setMeta('restauration', 'terminee');
+  } catch (e) { setMeta('restauration', 'echec: ' + e.message); }
+}
+function demarrerPont() {
+  if (!RELAIS) return;
+  const tour = (nom, f, ms) => { let occupe = false; setInterval(async () => { if (occupe) return; occupe = true; try { await f(); } catch (e) { /* relais injoignable : on réessaie */ } occupe = false; }, ms); };
+  if (RESTAURER && !+db.prepare('SELECT COUNT(*) AS n FROM operations').get().n) restaurer();
+  tour('relever', () => (meta('restauration') === 'en_cours' ? null : relever()), 250);
+  tour('diffuser', () => { diffuser(); return expedier(); }, 250);
+  tour('repliquer', repliquer, 250);
+  tour('battement', async () => {
+    await rel('POST', '/mere/battement', {});
+    await rel('POST', '/mere/indicateurs', { indicateurs: { patients_actifs: db.prepare("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0").get().n,
+      seq_max: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s), retard_replication: Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s) - +meta('rep_seq', 0) } });
+  }, 300);
+}
+
 const serveur = http.createServer((req, res) => {
   const chunks = [];
   req.on('data', (c) => chunks.push(c));
-  req.on('end', () => {
+  req.on('end', async () => {
     const u = new URL(req.url, 'http://x');
     const q = Object.fromEntries(u.searchParams);
     let body = {};
@@ -345,7 +538,7 @@ const serveur = http.createServer((req, res) => {
     let status = 200; let out;
     try {
       if (!h) throw new Err(404, 'route_inconnue', 'Route inconnue.');
-      out = h(req, body, q);
+      out = await h(req, body, q);
     } catch (e) {
       if (e instanceof Err) { status = e.status; out = e.body; } else { status = 500; out = { code: 'erreur_interne', motif: String(e && e.message) }; }
     }
@@ -354,5 +547,5 @@ const serveur = http.createServer((req, res) => {
     res.end(txt);
   });
 });
-serveur.listen(PORT, '127.0.0.1', () => { if (process.send) process.send({ pret: true, port: serveur.address().port }); });
+serveur.listen(PORT, '127.0.0.1', () => { demarrerPont(); if (process.send) process.send({ pret: true, port: serveur.address().port }); });
 process.on('SIGTERM', () => process.exit(0));

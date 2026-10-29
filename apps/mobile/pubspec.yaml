@@ -1,0 +1,25 @@
+name: sigh_mobile
+description: SIGH-CNT — application mobile minimale (consultations, réception de secours).
+publish_to: none
+version: 0.1.0+1
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  sigh_domaine:
+    path: ../../packages/domaine
+  drift: any
+  sqlcipher_flutter_libs: any
+  http: any
+  cryptography: any
+  flutter_secure_storage: any   # clé de base et clé de clinique dans le coffre du système
+  local_auth: any               # PIN / biométrie
+  firebase_messaging: any       # réveil seulement, aucune donnée de santé dans la notification
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+flutter:
+  uses-material-design: true
