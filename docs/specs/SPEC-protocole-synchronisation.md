@@ -2,7 +2,7 @@
 
 | | |
 |---|---|
-| **Statut** | brouillon 29/10/2026 — conditionné à l'acceptation d'ADR-0005 (révision 3) |
+| **Statut** | brouillon 29/10/2026 — conditionné à l'acceptation d'ADR-0005 (révision 3) · **banc de référence : `packages/sync/banc/` (SYNC-R1→R5, R7, R9, R12, R14, R16→R21 : 72 vérifications vertes)** |
 | **Sources** | `PRD-SOCLE-synchronisation-bidirectionnelle` (EF-SYNC-01→20, familles A–D), `PLAN-synchronisation-bidirectionnelle`, ADR-0001, ADR-0005, `DICTIONNAIRE-DONNEES.md`, `CLAUDE.md` (RG-01→14) |
 | **Ce document ne remplace pas le PRD** | il fixe **comment** (acteurs, messages, états, écrans). Les exigences restent celles du PRD ; chaque section cite la référence EF-SYNC qu'elle réalise. |
 | **Valeurs numériques** | marquées *(proposé)* : aucune n'est tirée d'un document de cadrage ; à valider au banc |
@@ -75,6 +75,8 @@ Chaque collection du dictionnaire porte **une** famille ; une collection sans fa
 
 - **Curseur par appareil**, donné par le serveur (`seq`), **jamais par l'horloge du poste**. Requête : « tout après `seq` = N », par **pages** *(proposé : 500 opérations)*.
 - **Filtre de lecture appliqué par la mère** : un appareil ne reçoit que les collections et fiches que son rôle peut lire (RG-13, EF-SYNC-12) ; le **périmètre** d'un mobile est plus étroit encore (§11).
+- **Un dossier accepté reste visible en continu** : tant qu'une opération acceptée par la mère n'est pas revenue dans le flux (`seq` > curseur), l'appareil la **superpose** à son état confirmé, avec le numéro réel attribué par la mère ; sans cela, un dossier créé disparaît de l'écran entre l'accusé et le tirage suivant (défaut relevé par le banc, SYNC-R21).
+- **La mère refuse tout envoi d'une époque inconnue**, que l'appareil ait tiré ou non avant d'envoyer (§10).
 - **Jamais d'écrasement d'une saisie en attente** : l'appareil applique les opérations reçues, puis **rejoue par-dessus** ses opérations locales non envoyées (rebase) ; si l'une devient impossible (fiche archivée, champ modifié ailleurs), elle devient un conflit nommé, pas un écrasement.
 - **Appareil neuf ou réinstallé** : appairage, puis **instantané** (filtré par rôle), puis flux (EF-SYNC-17). Un instantané se reconstruit depuis le journal.
 - **Données chaudes** (EF-SYNC-17) : toutes les **identités** des patients, plus les dossiers hospitalisés, vus depuis 24 mois *(proposé)*, rendez-vous à venir ; le reste **à la demande** quand la mère répond ; hors ligne, un dossier absent affiche **« non disponible hors ligne »**, jamais un écran vide.
@@ -217,6 +219,10 @@ Les écrans du panneau en ligne ne chargent **que** des données non nominatives
 | SYNC-R15 | Coupure de courant sur les fileuls : un agent d'accueil enregistre trois patients sur mobile (profil Réception) | dossiers créés hors ligne, codes sans collision, **homonyme probable** signalé en conflit nommé, tout visible sur les fileuls au retour |
 | SYNC-R16 | Réinitialisation en production avec second profil | sauvegarde préalable créée, activité vidée, essentiels conservés, `epoch + 1`, appareils purgés après export de leurs opérations non envoyées, restauration de la sauvegarde préalable possible |
 | SYNC-R17 | Réinitialisation tentée interrupteur fermé / sans second profil | commande absente / refus nommé, rien n'est modifié |
+| SYNC-R18 | Appairage : code expiré, code réutilisé, jeton expiré, renouvellement rejoué | refus nommés ; renouvellement silencieux ; appareil révoqué au rejeu |
+| SYNC-R19 | Poste tué (SIGKILL) avec des opérations en attente | file intacte au redémarrage, envoi sans doublon au retour de la mère |
+| SYNC-R20 | Suppression, modification d'une fiche archivée, d'une pièce émise, d'un journal, d'un référentiel par un poste | refus nommés ; archivage et restauration synchronisés |
+| SYNC-R21 | Création d'un dossier, tirage ralenti | le dossier reste visible en continu, numéro réel dès l'accusé |
 | SYNC-R11 | Migration de base d'un poste qui échoue | retour à la copie, signalement, aucune perte |
 | SYNC-R12 | Horloge d'un poste décalée de 10 min | ordre fondé sur `seq`, dérive signalée |
 | SYNC-R13 | Collecte de toutes les enveloppes du relais | rien de lisible : ni nom de collection, ni patient |

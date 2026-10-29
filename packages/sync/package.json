@@ -1,0 +1,12 @@
+{
+  "name": "@sigh/sync",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Journal d'opérations et banc de synchronisation à plusieurs processus (mère / fileuls)",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "banc": "node --no-warnings banc/run.js",
+    "test": "node --no-warnings banc/run.js"
+  }
+}
