@@ -100,6 +100,64 @@ La PWA doit marcher **hors du réseau local**. C'est le point le plus sensible d
 
 **Limites assumées** : serveur arrêté, deux postes ne voient pas les saisies l'un de l'autre jusqu'au retour (pas de synchronisation de poste à poste en première version) ; un invariant partagé (dernier lot, dernier lit) peut produire un conflit visible au retour — c'est voulu, la maquette de ce comportement est le banc d'ADR-0003.
 
+## Révision du 29/10/2026 — contraintes d'hébergement : cPanel mutualisé, ni Redis ni WebSocket
+
+**Contraintes de la Direction** : serveur en ligne sur **cPanel mutualisé** (tâches `cron` seulement, pas de démon), **ni Redis ni WebSocket**, panneau d'administration en Laravel + Blade + Livewire + Alpine, PostgreSQL, serveur local sur onduleur supervisé, restauration possible depuis le web si les postes tombent. *Cette section corrige la section « Architecture recommandée » : le temps réel par WebSocket et Reverb est retiré, Livewire revient pour le panneau (il fonctionne sur hébergement mutualisé), Flutter reste l'interface de tous les écrans métier.*
+
+### Trois niveaux, un seul protocole
+
+```
+ Poste / tablette Flutter ──(réseau local)──► CONCENTRATEUR LOCAL (PC sur onduleur)
+   SQLite chiffré + outbox                      Laravel + PostgreSQL + planificateur, supervisé
+        │                                              │  même protocole, le concentrateur
+        └──(secours : Internet)──────────┐             │  se comporte comme un poste
+                                         ▼             ▼
+                                   SERVEUR EN LIGNE (cPanel) : relais + coffre + panneau
+                                   Laravel + Blade + Livewire + Alpine · cron · sauvegardes chiffrées
+```
+
+- **Le concentrateur local est l'autorité d'exploitation courante** : la clinique ne doit pas dépendre de la connexion Internet pour que les postes se voient entre eux.
+- **Le serveur en ligne reçoit le journal** du concentrateur (même protocole d'envoi/réception que les postes, donc un seul code) : il sert de **coffre**, de **relais** et de **panneau superadmin**.
+- **Une seule autorité à la fois** (pas de cerveau partagé) : bascule explicite par le superadmin vers le serveur en ligne si le concentrateur est perdu ; au retour, le concentrateur se resynchronise depuis le serveur en ligne avant de reprendre.
+- **Secours des postes** : si le concentrateur est arrêté **et** qu'Internet répond, un poste synchronise directement avec le serveur en ligne (liste d'adresses ordonnée dans sa configuration).
+
+### Hébergement mutualisé : ce qu'il impose
+
+| Fonction | Choix | Pourquoi |
+|---|---|---|
+| Temps réel | **Interrogation courte avec curseur** (réponse vide très légère), 3 s sur le réseau local, 30 s en ligne ; **FCM** (notification poussée) pour réveiller un mobile | Pas de démon : WebSocket impossible ; flux serveur et longue interrogation **bloquent un processus PHP** par client, ce que le mutualisé ne supporte pas |
+| Files de tâches | `queue:work --stop-when-empty` lancé par `cron` chaque minute, pilote **base de données** | Pas de Redis ni de superviseur de processus |
+| Planification | `php artisan schedule:run` chaque minute | Seul mécanisme disponible |
+| Cache, sessions | fichier ou base de données | Redis inutile à cette échelle |
+| Verrous | verrous consultatifs PostgreSQL (`pg_advisory_lock`) | remplacent les verrous Redis |
+| Lots de synchronisation | petits lots, pagination, durée < 30 s | limites d'exécution et de mémoire du mutualisé |
+
+### Réserve de sécurité (à décider)
+
+Un hébergement **mutualisé** ne permet ni de maîtriser le chiffrement du disque, ni d'isoler les locataires, ni d'installer ce qu'on veut. Deux niveaux d'usage :
+1. **Relais + coffre + panneau** : les sauvegardes et snapshots y sont **chiffrés avant envoi, avec une clé que seule la clinique détient** ; le serveur ne voit pas le clair. Acceptable en mutualisé.
+2. **Accès distant en clair par la PWA** (données de santé lisibles en ligne) : **déconseillé en mutualisé** ; il faut un **VPS** (coût faible, contrôle complet). À arbitrer avec le cadre légal de protection des données de santé.
+
+À vérifier avant toute décision (cPanel) : PostgreSQL disponible ? (sinon le serveur en ligne ne garde que le **journal d'opérations et des instantanés chiffrés**, stockés en MySQL, sans schéma relationnel) ; version de PHP (Laravel 12 exige 8.2 ou plus) ; accès SSH ; intervalle minimal de `cron` ; quota disque et durée maximale d'exécution.
+
+### Supervision du concentrateur local
+
+Machine dédiée (**recommandé : mini-PC Linux sur onduleur**, pas un poste bureautique Windows) : redémarrage automatique après coupure (réglage du BIOS), mise en veille interdite, arrêt propre commandé par l'onduleur (NUT), disque de sauvegarde distinct, PostgreSQL et PHP lancés comme **services système avec redémarrage automatique**. Un module `supervision` (commandes Artisan planifiées toutes les 30 s) contrôle : base joignable, espace disque, âge de la dernière sauvegarde, retard de synchronisation **par poste**, tâches en échec, taux d'erreurs, expiration du certificat, état de l'onduleur ; il écrit dans une table d'événements, alimente l'écran « Supervision », prévient l'administrateur (courriel / SMS / FCM) et envoie un **battement de cœur** chaque minute au serveur en ligne, qui **alerte si le battement manque plus de 5 minutes**.
+
+### Les trois « limites assumées » : corrections
+
+1. **Deux postes qui ne se voient pas, concentrateur arrêté** → réduire la probabilité (onduleur, redémarrage automatique, **second PC de secours** à chaud, procédure de bascule écrite) ; puis, en version 2, **synchronisation locale de poste à poste** avec le **même journal d'opérations** (un poste désigné relaie) — plus tard, car elle double la complexité.
+2. **Dernier lot sorti deux fois** → **un seul écrivain par zone** : le stock d'un magasin n'est écrit que par le poste qui en est responsable ; quand deux postes doivent sortir du même stock, le concentrateur leur **alloue un quota par article** (bail) que le poste consomme hors ligne. Sans conflit ni stock négatif ; le bail se renouvelle à la reconnexion. Même principe pour les lits (réservation par service).
+3. **Règles en double** → les règles sont d'abord des **données** (tarifs, taux, grilles : un fichier, deux lecteurs) ; la logique restante est petite et testée par **les mêmes vecteurs JSON** dans PHPUnit et dans `dart test` ; le poste envoie son résultat calculé et le serveur **recalcule** : un écart est journalisé (indicateur « divergences » à l'écran de supervision) et le montant du serveur fait foi, affiché comme « montant ajusté ».
+
+### À ne pas recopier d'un autre projet
+
+Le guide de synchronisation fourni (appairage, curseurs, « renvoyer vers tous les postes », réinitialisation) est un **bon patron**, mais il vient d'une autre application (il nomme des « unités d'hébergement » et des « véhicules » qui ne sont pas des objets de SIGH). Adaptations obligatoires :
+- **« Suppression synchronisée » → archivage synchronisé** (RG-14) : aucune suppression physique, jamais ; référentiels (chambres, lits, ambulances) archivés, jamais supprimés.
+- **Appairage par UUID du poste** (le nom est une étiquette, pas une clé) ; jeton à usage unique, code court, expiration 15 min ; jeton d'appareil à rotation, stocké **haché**.
+- **Réinitialisation de production : interdite par défaut.** La marque de réinitialisation avec purge locale n'a de sens que sur un environnement de test ; en production, elle exige double confirmation, sauvegarde préalable obligatoire et trace d'audit — ou n'existe pas.
+- **Sauvegarde du poste avant migration de sa base et avant désinstallation** ; les opérations non envoyées ne sont jamais perdues en silence (export chiffré).
+
 ## Banc de validation avant acceptation
 
 1. Synchronisation bidirectionnelle hors ligne sur deux postes Flutter : zéro doublon de code patient, conflit visible sur stock (critères 1–2 d'ADR-0003).
