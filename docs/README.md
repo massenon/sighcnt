@@ -41,7 +41,6 @@ Index : [`prd/README.md`](prd/README.md).
 |---|---|
 | [`plans/PLAN-synchronisation-bidirectionnelle`](plans/PLAN-synchronisation-bidirectionnelle.md) | Plan en cinq phases (S0→S5), du prototype au mobile |
 | [`plans/PLAN-implementation-laravel-flutter-pwa`](plans/PLAN-implementation-laravel-flutter-pwa.md) | Plan d'implémentation Flutter + Laravel (API de synchro, panneau) + PWA : NFR calibrées, phases P0→P7, compétences |
-
 | [`specs/SPEC-protocole-synchronisation`](specs/SPEC-protocole-synchronisation.md) | **Protocole de synchronisation** : poste mère, fileuls, mobiles, relais en ligne ; appairage, journal, curseurs, conflits, restauration, recette | brouillon 29/10/2026 |
 
 Index : [`plans/README.md`](plans/README.md). Les spécifications d'écran vont dans [`specs/`](specs/README.md).
