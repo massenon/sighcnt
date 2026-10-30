@@ -11,7 +11,7 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   'dispensations', 'emplacements', 'inventaires', 'lots', 'transferts', 'valorisationsSage', 'besoins', 'commandes', 'facturesFournisseurs', 'fournisseurs', 'livraisons', 'pvReceptions',
   /* tranche 3 : laboratoire (M5) et imagerie (M2) */
   'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'donneurs', 'poches', 'personnel', 'examensImagerie', 'variablesImagerie', 'clichesImagerie', 'resultatsImagerie',
-  'catalogueTarifs', 'appels', 'reunions', 'contreReferences', 'documentsPatient', 'fichesReference', 'pieces', 'fileAttente', 'soins', 'administrations', 'admissions', 'checklistsBloc', 'cpa', 'crOperatoires', 'observations', 'rapportsMedicaux', 'releves', 'scoresGlasgow', 'surveillancesTransfusion', 'accouchements', 'cpon', 'crMaternite', 'deces', 'dossiersObstetricaux', 'grossesses', 'naissances', 'partogrammes', 'planificationFamiliale', 'ptme', 'registreSONU', 'soinsCuratifsMaternite', 'suiviMaternite', 'chambres', 'lits', 'rendezvous', 'visites', 'antecedents', 'documents', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications'];
+  'catalogueTarifs', 'visitesHospi', 'appels', 'reunions', 'contreReferences', 'documentsPatient', 'fichesReference', 'pieces', 'fileAttente', 'soins', 'administrations', 'admissions', 'checklistsBloc', 'cpa', 'crOperatoires', 'observations', 'rapportsMedicaux', 'releves', 'scoresGlasgow', 'surveillancesTransfusion', 'accouchements', 'cpon', 'crMaternite', 'deces', 'dossiersObstetricaux', 'grossesses', 'naissances', 'partogrammes', 'planificationFamiliale', 'ptme', 'registreSONU', 'soinsCuratifsMaternite', 'suiviMaternite', 'chambres', 'lits', 'rendezvous', 'visites', 'antecedents', 'documents', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications'];
 /* SIGH_JEU=sobre : jeu SANS le peuplement des parcours, sur lequel les vecteurs des tranches 1-2 ont été tirés (fixture de test). */
 const SOBRE = process.env.SIGH_JEU === 'sobre';
 const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'test', 'fixtures', 'jeu_sobre') : path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');
@@ -35,6 +35,9 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
     /* La bibliothèque documentaire du patient est amorcée PAR SON ÉCRAN (m1-documents). */
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m1-patients.js') }).catch(() => {});
     await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m1-documents'].render(r); r.remove(); } catch (e) { console.error(e); } });
+    /* Les visites aux patients hospitalisés sont amorcées PAR LEUR ÉCRAN (m3-visites-patients). */
+    await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m3-hospitalisation.js') }).catch(() => {});
+    await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m3-visites-patients'].render(r); r.remove(); } catch (e) { console.error(e); } });
     for (const nom of COLLECTIONS) {
       const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));

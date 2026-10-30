@@ -97,5 +97,11 @@
  "m1-numerisation": "porté",
  "m1-dossier-medical": "porté",
  "m1-dossier-etendu": "porté",
- "m1-certificats-externes": "porté"
+ "m1-certificats-externes": "porté",
+ "m3-glasgow": "porté",
+ "m3-transfusion": "porté",
+ "m3-rapport": "porté",
+ "m3-visites-patients": "porté",
+ "m3-administrations": "porté",
+ "m3-surveillance": "porté"
 }
