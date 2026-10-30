@@ -290,3 +290,16 @@ Vecteurs : `prototype_html/build/vecteurs-hospitalisation.js` → `packages/doma
 | E369 | Une admission ouverte par « hospitalisation complète » ne porte **ni lit ni chambre** mais compte dans « Hospitalisations en cours » et le taux d'occupation ; l'emplacement `place` des observations amorcées est tronqué (`label.slice(-10)`). | Porté fidèlement et signalé. |
 
 **État du portage de ce lot : voir le rapport de session** (écrans effectivement portés, N1 mesuré).
+
+### M3 — second lot (`m3-rapport`, `m3-visites-patients`, et les quatre écrans de surveillance) — plage E380–E399
+
+Vecteurs : `prototype_html/build/vecteurs-hospitalisation2.js` → `packages/domaine/test/vecteurs/hospitalisation2.json` (rapport médical, visites aux hospitalisés ; horloge 16/08/2026 10 h).
+
+| # | Écart | Traitement |
+|---|---|---|
+| E380 ✅ **corrigé** | La référence d'un rapport médical venait de `C.nextRef('RAP-', 4)`, compteur de page (même défaut que E8/E360) : le premier rapport créé d'une session s'appelait `RAP-0001`, **doublon** d'une fiche existante (constaté : création → `RAP-0001` à côté du `RAP-0001` d'origine). | `C.referenceSuivante('RAP-', 4, col6().all())`. Vecteur : après quatre fiches (dont une archivée), la création rend `RAP-0005`. |
+| E381 | La **modification** d'un rapport médical n'a pas de `transform` : changer le patient laisse son nom, son âge, son sexe, son adresse et son téléphone d'avant (la fiche recopie l'identité à la seule création). | **Porté fidèlement** et signalé : le correctif écrit exactement les valeurs du formulaire. À arbitrer (recopier l'identité à la modification ?). |
+| E382 | Le registre des visites aux hospitalisés (`visitesHospi`) est **amorcé par l'écran** quand il est vide (graine 401, depuis les admissions en cours) : vidé, il se régénère au prochain affichage — le « vide » de la maquette n'est pas observable. | Le jeu du poste doit embarquer la collection (`gen-poste-jeu.js`, hors périmètre de ce lot) ; l'écran porté s'ouvre vide tant qu'elle manque et ne ré-amorce pas (le jeu fait foi). |
+| E383 | Le kit du poste ne pouvait pas ouvrir un champ **date** : `showDatePicker(locale: Locale('fr'))` lève « No MaterialLocalizations found » (l'application ne déclare pas `flutter_localizations`). Latent depuis le kit, jamais exercé par un test. | `locale` retiré du sélecteur (`kit/formulaire.dart`) : il s'ouvre, avec ses libellés par défaut. **La francisation du sélecteur reste à décider** (dépendance `flutter_localizations` + délégués dans `MaterialApp`). |
+| E384 | `ToastsSigh.afficher` appelé deux fois dans le même geste (surveillance transfusionnelle enregistrée **et** alerte d'incident) levait « The specified entry is already present in the target Overlay » : `OverlayEntry.mounted` ne devient vrai qu'à l'image suivante. | `kit/toast.dart` retient l'overlay où l'hôte a été posé. |
+| E385 | `U.alerter` (incident transfusionnel) émet aussi un **son** ; le kit du poste n'a pas de service audio. | Le message rouge est porté (`TypeToast.erreur`) ; le son ne l'est pas. |
