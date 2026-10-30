@@ -710,4 +710,110 @@ void main() {
       expect(find.text('Registre des fiches de demande'), findsNothing);
     });
   });
+
+  group('m3-bons-pansements — une ligne payable par séance', () {
+    final c = m_(vecteurs['pansements']);
+    final em = m_(c['emission']);
+    Magasin vide() => magasin({'actes': jeuJson('actes'), 'ordonnances': [], 'factures': [], 'taches': []});
+    // L'état d'après le règlement de la première séance, tel que la maquette l'a produit.
+    Magasin apresPartiel() {
+      final fac = liste(em['factures']).single;
+      final lignes = liste(m_(c['partiel'])['lignes']);
+      return magasin({
+        'actes': jeuJson('actes'),
+        'ordonnances': liste(em['ordonnances']),
+        'factures': [
+          {
+            ...fac,
+            'lignes': [
+              for (final (i, l) in lignes.indexed) {...(fac['lignes'] as List)[i] as Map<String, Object?>, ...l}
+            ]
+          }
+        ],
+        'taches': []
+      });
+    }
+
+    Future<void> emettre(WidgetTester t, {String seances = '3'}) async {
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau bon de pansement'));
+      await choisir(t, 'acteCode', 'Pansement');
+      await saisir(t, 'seances', seances);
+      await saisir(t, 'indication', 'Plaie du pied');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre le bon'));
+    }
+
+    cas('registre vide : les quatre indicateurs de la maquette, le tarif 9 000 / 6 000 annoncé ; parité N1 = 100 %', (t) async {
+      await ouvrir(t, vide(), 'm3-bons-pansements');
+      comparerKpis(t, m_(c['vide'])['kpis']);
+      expect(find.textContaining('colonnes inversées'), findsOneWidget);
+      expect(_s(kpi(t, 'Tarif du pansement')), _s('9 000 FCFA'), reason: 'non assuré : 9 000 (colonnes inversées, ne pas « corriger »)');
+      await parite(t, 'm3-bons-pansements');
+    });
+
+    cas('un bon de 3 séances dont 1 réglée : « 1 / 3 », une séance attend encore la caisse', (t) async {
+      await ouvrir(t, apresPartiel(), 'm3-bons-pansements');
+      final e = m_(c['apresPartiel']);
+      comparerKpis(t, e['kpis']);
+      comparerTableau(t, e['tableaux'], colonnes: 6);
+      await toucher(t, find.text('ORD-2026-00001').first);
+      expect(find.text('1 réglée(s) sur 3'), findsOneWidget);
+      expect(find.text('La salle de soins n’exécute que les séances RÉGLÉES : 2 séance(s) attendent la caisse.'), findsOneWidget);
+    });
+
+    cas('émettre 3 séances : UNE ligne payable PAR SÉANCE à 9 000, tâche d\'acte bloquée, caisse saisie', (t) async {
+      final m = vide();
+      await ouvrir(t, m, 'm3-bons-pansements');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau bon de pansement'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre le bon'));
+      expect(find.text('Le formulaire comporte des erreurs.'), findsOneWidget);
+      expect(m.collection('ordonnances').toutes, isEmpty);
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Annuler').last);
+      await emettre(t);
+      final ord = m.collection('ordonnances').toutes.single;
+      final oa = liste(em['ordonnances']).single;
+      for (final k in ['numero', 'montant', 'montantActes', 'statutPaiement', 'statutActes', 'statutDispensation', 'diagnostic', 'medecin', 'patientCode']) {
+        expect(ord[k], oa[k], reason: 'ordonnance : $k');
+      }
+      expect((ord['actes'] as List).length, 3);
+      final fac = m.collection('factures').toutes.single;
+      final fa = liste(em['factures']).single;
+      expect(fac['numero'], fa['numero']);
+      expect(fac['montantTTC'], 27000);
+      final lignes = liste(fac['lignes']);
+      expect(lignes.length, 3, reason: 'une ligne payable par séance');
+      for (var i = 0; i < 3; i++) {
+        expect([lignes[i]['acteCode'], lignes[i]['montant'], lignes[i]['partPatient'], lignes[i]['statutPaiement']], ['SO09', 9000, 9000, 'du']);
+      }
+      expect([for (final x in m.collection('taches').toutes) '${x['type']}:${x['statut']}'], [for (final x in liste(em['taches'])) '${x['type']}:${x['statut']}']);
+      expect(find.text('Bon ORD-2026-00001 émis — 3 séance(s).'), findsOneWidget);
+      expect(find.text('BON DE PANSEMENT'), findsWidgets);
+      expect(find.text('Séance 3'), findsOneWidget);
+      expect(kpi(t, 'Bons émis'), '1');
+      expect(kpi(t, 'Séances en attente de règlement'), '1');
+    });
+
+    cas('le nombre de séances est borné à 1–12', (t) async {
+      final m = vide();
+      await ouvrir(t, m, 'm3-bons-pansements');
+      await emettre(t, seances: '40');
+      expect((m.collection('factures').toutes.single['lignes'] as List).length, 12);
+    });
+
+    cas('imprimer le bon : séances, tarif, total calculé et deux signatures', (t) async {
+      await ouvrir(t, apresPartiel(), 'm3-bons-pansements');
+      await toucher(t, find.byTooltip('Imprimer le bon').first);
+      expect(find.text('BON DE PANSEMENT'), findsWidgets);
+      expect(find.text('Séance 1'), findsOneWidget);
+      expect(find.text('Salle de soins'), findsWidgets);
+    });
+
+    cas('rôles : l\'infirmier émet, la direction lit, le caissier n\'entre pas', (t) async {
+      await ouvrir(t, vide(), 'm3-bons-pansements', role: 'infirmier');
+      expect(find.widgetWithText(BoutonSigh, 'Nouveau bon de pansement'), findsOneWidget);
+      await ouvrir(t, vide(), 'm3-bons-pansements', role: 'direction');
+      expect(find.widgetWithText(BoutonSigh, 'Nouveau bon de pansement'), findsNothing);
+      await ouvrir(t, vide(), 'm3-bons-pansements', role: 'caissier');
+      expect(find.text('Registre des bons'), findsNothing);
+    });
+  });
 }
