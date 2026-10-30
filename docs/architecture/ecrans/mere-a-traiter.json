@@ -1,0 +1,48 @@
+{
+ "id": "mere-a-traiter",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "« À traiter » consolidé",
+ "acces": "ouvert",
+ "titre": "« À traiter » consolidé",
+ "description": "Toutes les opérations refusées par la mère, tous appareils confondus, avec la cause nommée et le geste de correction.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation",
+  "« À traiter » consolidé"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Refus ouverts",
+  "Appareils concernés",
+  "Plus ancien"
+ ],
+ "cartes": [
+  "Opérations refusées"
+ ],
+ "tableaux": [
+  [
+   "Appareil",
+   "Opération",
+   "Code",
+   "Motif",
+   "Geste de correction",
+   "Âge"
+  ]
+ ],
+ "commandes": [
+  "Relancer"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

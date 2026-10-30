@@ -1,0 +1,120 @@
+{
+ "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
+ "ecrans_du_manifeste": 321,
+ "ecrans_portes": 6,
+ "ecrans": [
+  {
+   "id": "cfg-poste",
+   "mesure": true,
+   "attendus": 5,
+   "presents": 2,
+   "taux": 0.4,
+   "manquants": [
+    "mode du poste : fileul ou mère. la mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).",
+    "mode de ce poste",
+    "service de synchronisation"
+   ]
+  },
+  {
+   "id": "mere-appareils",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 3,
+   "taux": 0.167,
+   "manquants": [
+    "postes fileuls et mobiles de la clinique : contact, retard, horloge, version ; appairer, révoquer, débloquer.",
+    "appareils actifs",
+    "postes fileuls",
+    "horloge à vérifier",
+    "type",
+    "agent",
+    "dernier contact",
+    "retard",
+    "horloge",
+    "version",
+    "état",
+    "appairer un poste",
+    "appairer un mobile",
+    "renvoyer vers tous",
+    "révoquer"
+   ]
+  },
+  {
+   "id": "mere-conflits",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 1,
+   "taux": 0.059,
+   "manquants": [
+    "ce que la mère ne peut pas trancher seule : même champ modifié sur deux postes, homonymes créés hors ligne.",
+    "ouverts",
+    "doublons possibles",
+    "tranchés (30 j)",
+    "à arbitrer",
+    "n°",
+    "fiche",
+    "champ",
+    "version a",
+    "version b",
+    "origine",
+    "décision",
+    "garder a",
+    "garder b",
+    "fusionner à la main",
+    "ce n’est pas un doublon"
+   ]
+  },
+  {
+   "id": "mere-journal-technique",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 1,
+   "taux": 0.083,
+   "manquants": [
+    "évènements du service de la mère : démarrages, erreurs, alertes, sauvegardes, liaison avec le relais.",
+    "évènements (24 h)",
+    "alertes",
+    "erreurs",
+    "évènements",
+    "quand",
+    "niveau",
+    "source",
+    "message",
+    "colonnes",
+    "exporter"
+   ]
+  },
+  {
+   "id": "mere-reinit",
+   "mesure": true,
+   "attendus": 5,
+   "presents": 1,
+   "taux": 0.2,
+   "manquants": [
+    "vider l’activité (tests de mise en service) en gardant les essentiels : tarifs, secteurs, comptes, droits, catalogues.",
+    "fenêtre de réinitialisation",
+    "ce qui est conservé",
+    "ouvrir la fenêtre (30 min)"
+   ]
+  },
+  {
+   "id": "mere-supervision",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 2,
+   "taux": 0.167,
+   "manquants": [
+    "santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité.",
+    "santé de la mère",
+    "époque",
+    "retard vers le relais",
+    "contrôles",
+    "contrôle",
+    "état",
+    "détail",
+    "sauvegarder maintenant",
+    "actualiser"
+   ]
+  }
+ ]
+}

@@ -73,7 +73,8 @@ class SighPoste extends StatelessWidget {
       this.config,
       this.controleur,
       this.client,
-      this.etatSync});
+      this.etatSync,
+      this.ecranInitial});
 
   /// Données de navigation engendrées (manifeste, droits, parité).
   final DonneesNavigation donnees;
@@ -83,6 +84,7 @@ class SighPoste extends StatelessWidget {
   final ControleurPoste? controleur;
   final ClientMere? client;
   final SourceEtatSync? etatSync;
+  final String? ecranInitial;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +116,7 @@ class SighPoste extends StatelessWidget {
       key: ValueKey(cfg.mode),
       config: cfg,
       donnees: donnees,
+      ecranInitial: ecranInitial,
       ecrans: ecransPortes(controleur: ctl, client: cl),
       etatSync: etatSync ??
           ValueNotifier(const EtatSync(niveau: NiveauSync.horsLigne)),

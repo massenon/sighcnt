@@ -1,0 +1,52 @@
+{
+ "id": "mere-conflits",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Conflits et doublons",
+ "acces": "ouvert",
+ "titre": "Conflits et doublons",
+ "description": "Ce que la mère ne peut pas trancher seule : même champ modifié sur deux postes, homonymes créés hors ligne.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation",
+  "Conflits et doublons"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Ouverts",
+  "Doublons possibles",
+  "Tranchés (30 j)"
+ ],
+ "cartes": [
+  "À arbitrer"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Fiche",
+   "Champ",
+   "Version A",
+   "Version B",
+   "Origine",
+   "Décision"
+  ]
+ ],
+ "commandes": [
+  "Garder A",
+  "Garder B",
+  "Fusionner à la main",
+  "Ce n’est pas un doublon"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

@@ -18,11 +18,15 @@ class CoquePoste extends StatefulWidget {
       required this.config,
       required this.donnees,
       required this.ecrans,
-      required this.etatSync});
+      required this.etatSync,
+      this.ecranInitial});
   final ConfigPoste config;
   final DonneesNavigation donnees;
   final Map<String, ConstruireEcran> ecrans;
   final SourceEtatSync etatSync;
+
+  /// Ouvre directement cet écran (lien profond, mesure de parité). Sans droit sur lui, la page d'accueil du rôle s'ouvre.
+  final String? ecranInitial;
 
   @override
   State<CoquePoste> createState() => _CoquePosteState();
@@ -77,7 +81,12 @@ class _CoquePosteState extends State<CoquePoste> {
                 child: Text('Aucun module n’est ouvert à votre profil.')))
       ]));
     }
-    final courant = _ecran ?? _accueil(ruban)!;
+    final demande = widget.ecranInitial;
+    final visible = demande != null &&
+        widget.donnees.manifeste.ecran(demande) != null &&
+        (widget.donnees.matrice.peutVoir(widget.config.role, demande) ||
+            demande.startsWith('hub-'));
+    final courant = _ecran ?? (visible ? demande : _accueil(ruban)!);
     final domaine = _domaine ??
         ruban
             .where((d) =>
