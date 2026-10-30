@@ -80,15 +80,19 @@ int comparerNaturel(Object? a, Object? b) {
 List<T> trierPar<T>(List<T> lignes, Object? Function(T) cle,
     {bool descendant = false}) {
   final d = descendant ? -1 : 1;
-  final copie = [...lignes];
+  // `Array.prototype.sort` est STABLE (les ex æquo gardent l'ordre de la collection) ; `List.sort` de Dart ne l'est pas : l'indice d'origine
+  // départage les égalités, sinon deux lignes de même clé changeraient de place d'un affichage à l'autre.
+  final copie = [for (final (i, l) in lignes.indexed) (i, l)];
   copie.sort((a, b) {
-    final x = cle(a), y = cle(b);
+    final x = cle(a.$2), y = cle(b.$2);
     if (x == null) return 1;
     if (y == null) return -1;
-    if (x is num && y is num) return (x - y).sign.toInt() * d;
-    return comparerNaturel(x, y) * d;
+    final c = (x is num && y is num)
+        ? (x - y).sign.toInt() * d
+        : comparerNaturel(x, y) * d;
+    return c != 0 ? c : a.$1.compareTo(b.$1);
   });
-  return copie;
+  return [for (final e in copie) e.$2];
 }
 
 /// Export CSV d'Excel FR : séparateur « ; », BOM, champs entre guillemets, fin de ligne CRLF.

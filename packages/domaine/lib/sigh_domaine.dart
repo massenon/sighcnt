@@ -20,6 +20,8 @@ export 'src/caisse/emission.dart';
 export 'src/caisse/avoir.dart';
 export 'src/caisse/remboursement.dart';
 export 'src/caisse/mecef.dart';
+export 'src/stock/referentiels_stock.dart';
+export 'src/stock/stock.dart';
 export 'src/graphiques/echelle.dart';
 export 'src/impression/identite.dart';
 export 'src/impression/ticket.dart';
