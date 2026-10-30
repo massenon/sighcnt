@@ -22,6 +22,7 @@ class CoquePoste extends StatefulWidget {
       required this.ecrans,
       required this.etatSync,
       this.magasin,
+      this.horloge,
       this.ecranInitial});
   final ConfigPoste config;
   final DonneesNavigation donnees;
@@ -30,6 +31,9 @@ class CoquePoste extends StatefulWidget {
 
   /// Données des écrans portés (vide si absent).
   final Magasin? magasin;
+
+  /// Horloge du poste (tests) ; absente = l'horloge réelle.
+  final DateTime Function()? horloge;
 
   /// Ouvre directement cet écran (lien profond, mesure de parité). Sans droit sur lui, la page d'accueil du rôle s'ouvre.
   final String? ecranInitial;
@@ -153,6 +157,9 @@ class _CoquePosteState extends State<CoquePoste> {
         role: widget.config.role,
         droit: droit,
         magasin: widget.magasin ?? _magasinVide,
+        utilisateur: widget.donnees.matrice.libelle(widget.config.role) ??
+            widget.config.role,
+        horloge: widget.horloge,
         aller: (cible) {
           if (widget.donnees.matrice.peutVoir(widget.config.role, cible))
             _ouvrir(cible);

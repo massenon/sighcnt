@@ -5,6 +5,9 @@ import '../core/controleur_poste.dart';
 import '../mere/client_mere.dart';
 import '../mere/console.dart';
 import 'm8/factures.dart';
+import 'm8/paiements.dart';
+import 'm8/proforma.dart';
+import 'm8/reliquats.dart';
 import 'reglages_poste.dart';
 
 typedef ConstruireEcran = Widget Function(
@@ -24,6 +27,9 @@ Map<String, ConstruireEcran> ecransPortes(
   return {
     // Tranche 1 — Caisse, MECeF, impression.
     'm8-factures': (c, cfg) => const EcranFactures(),
+    'm8-paiements': (c, cfg) => const EcranPaiements(),
+    'm8-proforma': (c, cfg) => const EcranProforma(),
+    'm8-reliquats': (c, cfg) => const EcranReliquats(),
     if (controleur != null)
       'cfg-poste': (c, cfg) => ReglagesPoste(controleur: controleur),
     // Modules complémentaires de la MÈRE (le domaine « Poste mère » n'existe que sur la mère, voir Manifeste.ruban).

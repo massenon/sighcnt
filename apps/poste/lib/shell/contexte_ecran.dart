@@ -13,6 +13,8 @@ class ContexteEcran extends InheritedWidget {
     required this.droit,
     required this.magasin,
     required this.aller,
+    this.utilisateur = '',
+    this.horloge,
     required super.child,
   });
 
@@ -23,6 +25,13 @@ class ContexteEcran extends InheritedWidget {
 
   /// `app.go(id)` : ouvre un autre écran (refusé par la coque s'il est fermé au rôle).
   final void Function(String id) aller;
+
+  /// Nom affiché de l'agent connecté (RG-12 : aucune action anonyme).
+  final String utilisateur;
+
+  /// Horloge du poste, fixable par un test ; `null` = l'horloge réelle (`C.aujourdhui()`).
+  final DateTime Function()? horloge;
+  DateTime get aujourdhui => (horloge ?? DateTime.now)();
 
   static ContexteEcran of(BuildContext context) {
     final c = context.dependOnInheritedWidgetOfExactType<ContexteEcran>();

@@ -257,3 +257,83 @@ Future<T?> afficherTiroir<T>(
         );
       },
     );
+
+/// `U.confirm({requireMotif: true})` : confirmation qui EXIGE un motif (journalisé, RG-12). Renvoie le motif, ou `null` si annulée.
+Future<String?> confirmerAvecMotif(BuildContext context,
+    {required String titre,
+    required String message,
+    String libelleOk = 'Confirmer',
+    bool dangereux = false}) {
+  final t = TextEditingController();
+  final erreur = ValueNotifier<String?>(null);
+  return afficherModale<String>(context,
+      titre: titre,
+      taille: TailleModale.sm,
+      corps: ValueListenableBuilder<String?>(
+          valueListenable: erreur,
+          builder: (_, e, __) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(message,
+                        style: const TextStyle(
+                            color: JetonsShell.slate600,
+                            fontSize: 14,
+                            height: 20 / 14)),
+                    const SizedBox(height: 12),
+                    const Padding(
+                        padding: EdgeInsets.only(bottom: 6),
+                        child: Text('Motif *',
+                            style: TextStyle(
+                                color: JetonsShell.slate600,
+                                fontSize: 12,
+                                height: 16 / 12,
+                                fontWeight: FontWeight.w500))),
+                    TextField(
+                      controller: t,
+                      minLines: 2,
+                      maxLines: 4,
+                      style: const TextStyle(
+                          color: JetonsShell.slate900,
+                          fontSize: 14,
+                          height: 20 / 14),
+                      decoration: InputDecoration(
+                          isDense: true,
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                  color: e != null
+                                      ? JetonsShell.danger400
+                                      : JetonsShell.slate300))),
+                      onChanged: (_) => erreur.value = null,
+                    ),
+                    if (e != null)
+                      Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(e,
+                              style: const TextStyle(
+                                  color: JetonsShell.danger600,
+                                  fontSize: 12,
+                                  height: 16 / 12))),
+                  ])),
+      pied: (fermer) => [
+            BoutonSigh(
+                libelle: 'Annuler',
+                variante: VarianteBouton.secondaire,
+                onPressed: fermer),
+            BoutonSigh(
+                libelle: libelleOk,
+                variante:
+                    dangereux ? VarianteBouton.danger : VarianteBouton.primaire,
+                onPressed: () {
+                  // Le motif est obligatoire : un geste sans motif ne se retrouve pas à l'audit.
+                  if (t.text.trim().isEmpty) {
+                    erreur.value = 'Le motif est obligatoire.';
+                    return;
+                  }
+                  Navigator.of(context, rootNavigator: true).pop(t.text.trim());
+                }),
+          ]);
+}

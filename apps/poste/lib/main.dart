@@ -77,6 +77,7 @@ class SighPoste extends StatelessWidget {
       this.client,
       this.etatSync,
       this.magasin,
+      this.horloge,
       this.ecranInitial});
 
   /// Données de navigation engendrées (manifeste, droits, parité).
@@ -91,6 +92,7 @@ class SighPoste extends StatelessWidget {
 
   /// Données des écrans portés (jeu de démonstration ; la base locale viendra derrière la même interface).
   final Magasin? magasin;
+  final DateTime Function()? horloge;
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +127,7 @@ class SighPoste extends StatelessWidget {
       ecranInitial: ecranInitial,
       ecrans: ecransPortes(controleur: ctl, client: cl),
       magasin: magasin,
+      horloge: horloge,
       etatSync: etatSync ??
           ValueNotifier(const EtatSync(niveau: NiveauSync.horsLigne)),
     );

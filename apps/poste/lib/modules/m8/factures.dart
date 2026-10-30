@@ -6,6 +6,8 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import 'commun.dart';
+import 'impression.dart';
 
 num _n(Object? v) => v is num ? v : (num.tryParse('${v ?? ''}') ?? 0);
 String _m(Object? v) => money(v, avecDevise: false);
@@ -129,15 +131,6 @@ Widget _badgeMecef(Object? s) {
   return BadgeSigh(x.$1, ton: x.$2);
 }
 
-const _modes = {
-  'especes': 'Espèces',
-  'mobile_money': 'Mobile money',
-  'carte': 'Carte bancaire',
-  'virement': 'Virement',
-  'cheque': 'Chèque',
-  'assurance': 'Assurance'
-};
-
 /// Détail d'une facture (`detailFacture`) : deux KPI, puis la fiche. Les lignes de la pièce s'affichent sous la fiche.
 Widget detailFacture(Fiche f) {
   final reste = _n(f['reliquat']);
@@ -198,10 +191,7 @@ Widget detailFacture(Fiche f) {
       ),
       ('Part patient', money(f['partPatient'])),
       ('Montant réglé', money(f['montantPaye'])),
-      (
-        'Mode de règlement',
-        _modes['${f['modePaiement']}'] ?? f['modePaiement']
-      ),
+      ('Mode de règlement', modeLabel(f['modePaiement'])),
       ('Statut', statutBadge(f['statutPaiement'])),
     ]),
   ]);
@@ -343,6 +333,7 @@ class EcranFactures extends StatelessWidget with EcranMaquette {
             ton: TonSigh.attention),
       ],
       detail: detailFacture,
+      etat: (ctx, f) => imprimerFacture(ctx, f),
       titreDetail: (f) => '${f['numero']}',
       sousTitreDetail: (f) => '${f['patient'] ?? ''}',
     );

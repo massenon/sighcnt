@@ -125,10 +125,10 @@ class FeuilleA4 extends StatelessWidget {
               ]),
             ),
             if (piece.filtres.isNotEmpty) _filtres(),
-            for (final t in piece.tableaux)
+            if (piece.cartouche.isNotEmpty) _cartouche(),
+            for (final b in piece.blocs)
               Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _tableau(t)),
+                  padding: const EdgeInsets.only(bottom: 12), child: _bloc(b)),
             if (piece.lieuDate)
               Padding(
                   padding: const EdgeInsets.only(top: 24),
@@ -228,6 +228,50 @@ class FeuilleA4 extends StatelessWidget {
                   fontStyle: FontStyle.italic, color: JetonsShell.slate500)),
         ]),
       );
+
+  Widget _cartouche() => Container(
+        key: const Key('impression:cartouche'),
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+            border: Border.all(color: JetonsShell.slate300),
+            borderRadius: BorderRadius.circular(4)),
+        child: Wrap(spacing: 24, runSpacing: 4, children: [
+          for (final p in piece.cartouche)
+            SizedBox(
+                width: 300,
+                child: Text.rich(TextSpan(children: [
+                  TextSpan(
+                      text: '${p.$1} : ',
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  TextSpan(text: p.$2),
+                ]))),
+        ]),
+      );
+
+  Widget _bloc(BlocPiece b) => switch (b) {
+        BlocTableau() => Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (b.titre != null)
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 4, top: 4),
+                    child: Text(b.titre!.toUpperCase(),
+                        style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: b.alerte
+                                ? JetonsShell.danger700
+                                : JetonsShell.navy900))),
+              _tableau(b.tableau),
+            ],
+          ),
+        BlocTexte() => Text(b.texte,
+            style: TextStyle(
+                fontWeight: b.gras ? FontWeight.w600 : FontWeight.w400,
+                fontStyle: b.italique ? FontStyle.italic : FontStyle.normal,
+                color: JetonsShell.slate800)),
+      };
 
   Widget _tableau(TableauEtat t) {
     final pied = t.pied;

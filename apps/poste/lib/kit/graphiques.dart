@@ -155,18 +155,25 @@ class GraphiqueBarres extends StatelessWidget {
       {super.key,
       required this.etiquettes,
       required this.series,
-      this.hauteur = 260});
+      this.hauteur = 260,
+      this.horizontal = false});
+
+  /// `horizontal: true` (`indexAxis: 'y'`) : une barre par catégorie, épaisseur max 22. Échelle calculée comme l'axe vertical — non rejouée
+  /// contre Chart.js pour ce sens (les vecteurs ne couvrent que les barres verticales).
+  final bool horizontal;
   final List<String> etiquettes;
   final List<SerieGraphique> series;
   final double hauteur;
 
   @override
-  Widget build(BuildContext context) => _Cartesien(
-      type: 'en barres',
-      etiquettes: etiquettes,
-      series: series,
-      hauteur: hauteur,
-      peintre: (e, g) => _PeintreBarres(etiquettes, series, e, g));
+  Widget build(BuildContext context) => horizontal
+      ? _BarresH(etiquettes: etiquettes, series: series, hauteur: hauteur)
+      : _Cartesien(
+          type: 'en barres',
+          etiquettes: etiquettes,
+          series: series,
+          hauteur: hauteur,
+          peintre: (e, g) => _PeintreBarres(etiquettes, series, e, g));
 }
 
 /// `SIGH.charts.ligne` : trait de 2 px, tension 0,35, aire remplie à 13 % (`couleur + '22'`), sans point.
@@ -481,4 +488,112 @@ class _PeintreSparkline extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _PeintreSparkline o) => o.d != d;
+}
+
+/// Barres horizontales (`indexAxis: 'y'`) : étiquettes de catégorie à gauche, graduations en bas, barres de 22 px au plus.
+class _BarresH extends StatelessWidget {
+  const _BarresH(
+      {required this.etiquettes, required this.series, required this.hauteur});
+  final List<String> etiquettes;
+  final List<SerieGraphique> series;
+  final double hauteur;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        container: true,
+        label:
+            descriptionGraphique('en barres horizontales', etiquettes, series),
+        excludeSemantics: true,
+        child: SizedBox(
+          height: hauteur,
+          child: Column(children: [
+            Expanded(child: LayoutBuilder(builder: (context, c) {
+              final larg = [
+                for (final e in etiquettes)
+                  (TextPainter(
+                          text: TextSpan(text: e, style: _styleTick),
+                          textDirection: TextDirection.ltr)
+                        ..layout())
+                      .width
+              ].fold<double>(0, math.max);
+              final gauche = larg + 10.5;
+              final nb = math.max(2, ((c.maxWidth - gauche) / 60).floor());
+              final ech = echelleVerticale(
+                  [for (final s in series) ...s.donnees],
+                  hauteurAxe: nb * 13.2 * 1.0);
+              return CustomPaint(
+                  key: const Key('graphique:barres-h'),
+                  size: Size.infinite,
+                  painter: _PeintreBarresH(etiquettes, series, ech, gauche));
+            })),
+            SizedBox(
+                height: _hautLegende,
+                child: Center(
+                    child: LegendeGraphique(entrees: [
+                  for (var i = 0; i < series.length; i++)
+                    (series[i].libelle, couleurDe(series[i], i))
+                ]))),
+          ]),
+        ),
+      );
+}
+
+class _PeintreBarresH extends CustomPainter {
+  _PeintreBarresH(this.etiquettes, this.series, this.echelle, this.gauche);
+  final List<String> etiquettes;
+  final List<SerieGraphique> series;
+  final EchelleVerticale echelle;
+  final double gauche;
+
+  @override
+  void paint(Canvas c, Size s) {
+    final z = Rect.fromLTRB(gauche, 0, s.width - 4, s.height - 22);
+    double x(double v) =>
+        z.left + (v - echelle.min) / (echelle.max - echelle.min) * z.width;
+    final trait = Paint()
+      ..color = JetonsShell.slate100
+      ..strokeWidth = 1;
+    for (final g in echelle.graduations) {
+      c.drawLine(Offset(x(g), z.top), Offset(x(g), z.bottom), trait);
+      final tp = TextPainter(
+          text: TextSpan(text: _num(g), style: _styleTick),
+          textDirection: TextDirection.ltr)
+        ..layout();
+      tp.paint(c, Offset(x(g) - tp.width / 2, z.bottom + 6));
+    }
+    c.drawLine(
+        Offset(z.left, z.top),
+        Offset(z.left, z.bottom),
+        Paint()
+          ..color = JetonsShell.slate200
+          ..strokeWidth = 1);
+    final n = etiquettes.length;
+    final pas = z.height / n;
+    final part = pas * 0.8 / series.length;
+    final ep = math.min(part * 0.9, 22.0);
+    for (var i = 0; i < n; i++) {
+      final tp = TextPainter(
+          text: TextSpan(text: etiquettes[i], style: _styleTick),
+          textDirection: TextDirection.ltr)
+        ..layout();
+      tp.paint(
+          c,
+          Offset(z.left - 7.5 - tp.width,
+              z.top + pas * (i + 0.5) - tp.height / 2));
+      for (var k = 0; k < series.length; k++) {
+        final v = i < series[k].donnees.length
+            ? series[k].donnees[i].toDouble()
+            : 0.0;
+        final cy = z.top + pas * i + pas * 0.1 + part * (k + 0.5);
+        c.drawRRect(
+            RRect.fromRectAndRadius(
+                Rect.fromLTRB(z.left, cy - ep / 2, x(v), cy + ep / 2),
+                const Radius.circular(4)),
+            Paint()..color = couleurDe(series[k], k));
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PeintreBarresH o) => o.series != series;
 }

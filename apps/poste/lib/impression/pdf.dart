@@ -203,7 +203,33 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
                       'L’état ne porte que les enregistrements retenus par ces filtres.',
                       style: s(7, f: p.italique)),
                 ])),
-      for (final t in x.tableaux) ...[tableau(t), pw.SizedBox(height: 10)],
+      if (x.cartouche.isNotEmpty)
+        pw.Container(
+            padding: const pw.EdgeInsets.all(6),
+            margin: const pw.EdgeInsets.only(bottom: 10),
+            decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey500, width: 0.5)),
+            child: pw.Wrap(spacing: 16, runSpacing: 2, children: [
+              for (final c in x.cartouche)
+                pw.SizedBox(
+                    width: 230,
+                    child: pw.Text('${c.$1} : ${c.$2}', style: s(7.5))),
+            ])),
+      for (final b in x.blocs) ...[
+        switch (b) {
+          BlocTableau() => pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                children: [
+                  if (b.titre != null)
+                    pw.Text(b.titre!.toUpperCase(), style: s(8, f: p.gras)),
+                  tableau(b.tableau),
+                ]),
+          BlocTexte() => pw.Text(b.texte,
+              style:
+                  s(8, f: b.gras ? p.gras : (b.italique ? p.italique : null))),
+        },
+        pw.SizedBox(height: 10),
+      ],
       if (x.lieuDate)
         pw.Align(
             alignment: pw.Alignment.centerRight,

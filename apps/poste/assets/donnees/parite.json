@@ -2534,7 +2534,7 @@
     "aide_comptable"
    ],
    "scenarios": [],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "m8-paiements",
@@ -2554,7 +2554,7 @@
     "aide_comptable"
    ],
    "scenarios": [],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "m8-reliquats",
@@ -2577,7 +2577,7 @@
    "scenarios": [
     19
    ],
-   "statut": "non commencé"
+   "statut": "porté"
   },
   {
    "id": "m8-remboursements",

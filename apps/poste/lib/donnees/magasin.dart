@@ -32,6 +32,23 @@ class CollectionMagasin extends ChangeNotifier {
   List<Fiche> get toutes => List.unmodifiable(_fiches);
   Fiche? parId(Object? id) => _fiches.where((f) => f['id'] == id).firstOrNull;
 
+  /// Met à jour des champs de la fiche (`col.update`) et rend la fonction qui RESTITUE l'état d'avant. Rien n'est supprimé : un champ ajouté
+  /// par la mise à jour est retiré à l'annulation.
+  VoidCallback mettreAJour(Object? id, Fiche patch) {
+    final f = parId(id);
+    if (f == null) return () {};
+    final avant = <String, Object?>{for (final k in patch.keys) k: f[k]};
+    final existait = {for (final k in patch.keys) k: f.containsKey(k)};
+    f.addAll(patch);
+    notifyListeners();
+    return () {
+      for (final k in patch.keys) {
+        existait[k]! ? f[k] = avant[k] : f.remove(k);
+      }
+      notifyListeners();
+    };
+  }
+
   /// Archive la fiche (`statut: 'archive'`, ancien statut conservé) et rend la fonction qui ANNULE — une annulation doit être possible
   /// et visible (CLAUDE.md, « quatre pièges »).
   VoidCallback archiver(Object? id) {
