@@ -1,0 +1,2774 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-avoir.js — SIGH.emettreAvoir. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "nom": "deux lignes nommées, créance réduite (411)",
+    "facture": {
+     "id": "FACxmvuzcflkodxvx",
+     "statut": "actif",
+     "numero": "FN-2026-00801",
+     "patientId": "P1",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/1/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.456Z"
+    },
+    "facturesMere": [],
+    "avoirs": [],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Consultation",
+       "montant": 5000
+      },
+      {
+       "designation": "Glycémie",
+       "montant": 3000
+      }
+     ],
+     "motif": "Erreur de facturation",
+     "remboursement": "creance"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0001",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflkodxvx",
+     "factureNumero": "FN-2026-00801",
+     "patientId": "P1",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/1/26",
+     "montant": 8000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Consultation",
+       "montant": 5000
+      },
+      {
+       "designation": "Glycémie",
+       "montant": 3000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.458Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0001",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcfll5iord",
+      "pieceNumero": "AV-2026-0001",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0001",
+      "debit": 0,
+      "credit": 8000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0001",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcfll5iord",
+      "pieceNumero": "AV-2026-0001",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00801 (Erreur de facturation)",
+      "debit": 8000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 8000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "remboursement en espèces (571)",
+    "facture": {
+     "id": "FACxmvuzcflnb2ozj",
+     "statut": "actif",
+     "numero": "FN-2026-00802",
+     "patientId": "P2",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/2/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.459Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Interruption de soins",
+     "remboursement": "especes",
+     "observations": "Patient évacué"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0002",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflnb2ozj",
+     "factureNumero": "FN-2026-00802",
+     "patientId": "P2",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/2/26",
+     "montant": 2000,
+     "motif": "Interruption de soins",
+     "observations": "Patient évacué",
+     "lignesAnnulees": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "remboursement": "especes",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.459Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0002",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflnnozyc",
+      "pieceNumero": "AV-2026-0002",
+      "origine": "Facture d’avoir",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "libelle": "Remboursement en espèces — avoir AV-2026-0002",
+      "debit": 0,
+      "credit": 2000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0002",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflnnozyc",
+      "pieceNumero": "AV-2026-0002",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00802 (Interruption de soins)",
+      "debit": 2000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 2000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "suite donnée omise : créance réduite par défaut",
+    "facture": {
+     "id": "FACxmvuzcflod00y6",
+     "statut": "actif",
+     "numero": "FN-2026-00803",
+     "patientId": "P3",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/3/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.460Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Autre (préciser en observations)"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0003",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflod00y6",
+     "factureNumero": "FN-2026-00803",
+     "patientId": "P3",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/3/26",
+     "montant": 2000,
+     "motif": "Autre (préciser en observations)",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.460Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0003",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcfloqect4",
+      "pieceNumero": "AV-2026-0003",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0003",
+      "debit": 0,
+      "credit": 2000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0003",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcfloqect4",
+      "pieceNumero": "AV-2026-0003",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00803 (Autre (préciser en observations))",
+      "debit": 2000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 2000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "date fournie",
+    "facture": {
+     "id": "FACxmvuzcflofrm39",
+     "statut": "actif",
+     "numero": "FN-2026-00804",
+     "patientId": "P4",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/4/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.460Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Erreur de facturation",
+     "date": "2026-03-15"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0004",
+     "date": "2026-03-15",
+     "factureId": "FACxmvuzcflofrm39",
+     "factureNumero": "FN-2026-00804",
+     "patientId": "P4",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/4/26",
+     "montant": 2000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.461Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0004",
+      "date": "2026-03-15",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflp5p92p",
+      "pieceNumero": "AV-2026-0004",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0004",
+      "debit": 0,
+      "credit": 2000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0004",
+      "date": "2026-03-15",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflp5p92p",
+      "pieceNumero": "AV-2026-0004",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00804 (Erreur de facturation)",
+      "debit": 2000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 2000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "pièce non transmise à la MECeF : registre « sans objet »",
+    "facture": {
+     "id": "FACxmvuzcflpr8rd4",
+     "statut": "actif",
+     "numero": "FN-2026-00805",
+     "patientId": "P5",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/5/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "en_attente",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.461Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0005",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflpr8rd4",
+     "factureNumero": "FN-2026-00805",
+     "patientId": "P5",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/5/26",
+     "montant": 2000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "sans_objet",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.462Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0005",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflqo0flj",
+      "pieceNumero": "AV-2026-0005",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0005",
+      "debit": 0,
+      "credit": 2000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0005",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflqo0flj",
+      "pieceNumero": "AV-2026-0005",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00805 (Erreur de facturation)",
+      "debit": 2000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 2000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "avoir total d'une pièce sans détail par ligne",
+    "facture": {
+     "id": "FACxmvuzcflqjd1vm",
+     "statut": "actif",
+     "numero": "FN-2026-00806",
+     "patientId": "P6",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/6/26",
+     "lignes": [],
+     "montantTTC": 8000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.462Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Avoir total — FN-2026-00806",
+       "montant": 8000
+      }
+     ],
+     "motif": "Prestation non réalisée"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0006",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflqjd1vm",
+     "factureNumero": "FN-2026-00806",
+     "patientId": "P6",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/6/26",
+     "montant": 8000,
+     "motif": "Prestation non réalisée",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Avoir total — FN-2026-00806",
+       "montant": 8000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.463Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0006",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflqvombg",
+      "pieceNumero": "AV-2026-0006",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0006",
+      "debit": 0,
+      "credit": 8000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0006",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflqvombg",
+      "pieceNumero": "AV-2026-0006",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00806 (Prestation non réalisée)",
+      "debit": 8000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 8000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "cumul : un second avoir qui tient encore dans la facture",
+    "facture": {
+     "id": "FACxmvuzcflrgivgu",
+     "statut": "actif",
+     "numero": "FN-2026-00807",
+     "patientId": "P7",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/7/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.463Z",
+     "avoirIds": [
+      "AVRxmvuzcflr57zoj"
+     ],
+     "montantAvoirs": 5000,
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.464Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Glycémie",
+       "montant": 3000
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0008",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflrgivgu",
+     "factureNumero": "FN-2026-00807",
+     "patientId": "P7",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/7/26",
+     "montant": 3000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Glycémie",
+       "montant": 3000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.464Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0008",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflsxulbr",
+      "pieceNumero": "AV-2026-0008",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0008",
+      "debit": 0,
+      "credit": 3000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0008",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflsxulbr",
+      "pieceNumero": "AV-2026-0008",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00807 (Erreur de facturation)",
+      "debit": 3000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 8000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "cumul exact : l'avoir qui solde la facture est accepté",
+    "facture": {
+     "id": "FACxmvuzcflsns7do",
+     "statut": "actif",
+     "numero": "FN-2026-00808",
+     "patientId": "P8",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/8/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.464Z",
+     "avoirIds": [
+      "AVRxmvuzcfls8wci1"
+     ],
+     "montantAvoirs": 7000,
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.464Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Glycémie",
+       "montant": 3000
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0010",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflsns7do",
+     "factureNumero": "FN-2026-00808",
+     "patientId": "P8",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/8/26",
+     "montant": 3000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Glycémie",
+       "montant": 3000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.465Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0010",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcfltzzhsj",
+      "pieceNumero": "AV-2026-0010",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0010",
+      "debit": 0,
+      "credit": 3000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0010",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcfltzzhsj",
+      "pieceNumero": "AV-2026-0010",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00808 (Erreur de facturation)",
+      "debit": 3000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 10000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "cumul dépassé : refusé, rien n'est écrit",
+    "facture": {
+     "id": "FACxmvuzcflt8lqdj",
+     "statut": "actif",
+     "numero": "FN-2026-00809",
+     "patientId": "P9",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/9/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.465Z",
+     "avoirIds": [
+      "AVRxmvuzcfltzc8t7"
+     ],
+     "montantAvoirs": 7000,
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.465Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Glycémie",
+       "montant": 3001
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "Le cumul des avoirs (10 001 FCFA) excéderait la facture (10 000 FCFA).",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "avoir supérieur à la facture dès le premier",
+    "facture": {
+     "id": "FACxmvuzcflukmucg",
+     "statut": "actif",
+     "numero": "FN-2026-00810",
+     "patientId": "P10",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/10/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.466Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Tout",
+       "montant": 10001
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "Le cumul des avoirs (10 001 FCFA) excéderait la facture (10 000 FCFA).",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "aucune ligne nommée : refusé",
+    "facture": {
+     "id": "FACxmvuzcfluhsia8",
+     "statut": "actif",
+     "numero": "FN-2026-00811",
+     "patientId": "P11",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/11/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.466Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "Un avoir se rapporte à des LIGNES nommées — en cocher au moins une.",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "lignes omises : refusé",
+    "facture": {
+     "id": "FACxmvuzcfluxu5s1",
+     "statut": "actif",
+     "numero": "FN-2026-00812",
+     "patientId": "P12",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/12/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.466Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "Un avoir se rapporte à des LIGNES nommées — en cocher au moins une.",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "montant nul : refusé",
+    "facture": {
+     "id": "FACxmvuzcflu4y6u7",
+     "statut": "actif",
+     "numero": "FN-2026-00813",
+     "patientId": "P13",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/13/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.466Z"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Rien",
+       "montant": 0
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "Le montant de l’avoir doit être positif.",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "facture introuvable",
+    "facture": {
+     "id": "INCONNUE",
+     "numero": "X"
+    },
+    "facturesMere": [],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Rien",
+       "montant": 100
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "Facture introuvable.",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "fille consolidée dans une mère ÉMISE : refusé en nommant la mère",
+    "facture": {
+     "id": "FACxmvuzcflv5ovkg",
+     "statut": "actif",
+     "numero": "FN-2026-00814",
+     "patientId": "P14",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/14/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.467Z"
+    },
+    "facturesMere": [
+     {
+      "id": "FACxmvuzcflvnrhr8",
+      "statut": "emise",
+      "numero": "FM-2026-0007",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "FN-2026-00814"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "La facture FN-2026-00814 est consolidée dans la facture mère FM-2026-0007 (NSIA), déjà émise : la corriger passerait derrière le dos de la compagnie. Émettre l’avoir au niveau de la mère, par avenant.",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "fille d'une mère en BROUILLON : refusé aussi (le moteur ne regarde pas le statut de la mère)",
+    "facture": {
+     "id": "FACxmvuzcflvi4mk5",
+     "statut": "actif",
+     "numero": "FN-2026-00815",
+     "patientId": "P15",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/15/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.467Z"
+    },
+    "facturesMere": [
+     {
+      "id": "FACxmvuzcflv3dyjb",
+      "statut": "brouillon",
+      "numero": "FM-2026-0009",
+      "compagnie": "SUNU",
+      "piecesFilles": [
+       "FN-2026-00815"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     },
+     {
+      "id": "FACxmvuzcflvnrhr8",
+      "statut": "emise",
+      "numero": "FM-2026-0007",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "FN-2026-00814"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "erreur": "La facture FN-2026-00815 est consolidée dans la facture mère FM-2026-0009 (SUNU), déjà émise : la corriger passerait derrière le dos de la compagnie. Émettre l’avoir au niveau de la mère, par avenant.",
+    "avoirsApres": 0
+   }
+  },
+  {
+   "entree": {
+    "nom": "une mère dont la fille est une AUTRE pièce ne bloque pas",
+    "facture": {
+     "id": "FACxmvuzcflvx6dnc",
+     "statut": "actif",
+     "numero": "FN-2026-00816",
+     "patientId": "P16",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/16/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.467Z"
+    },
+    "facturesMere": [
+     {
+      "id": "FACxmvuzcflvh074r",
+      "statut": "actif",
+      "numero": "FM-2026-0008",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "AUTRE-PIECE"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     },
+     {
+      "id": "FACxmvuzcflv3dyjb",
+      "statut": "brouillon",
+      "numero": "FM-2026-0009",
+      "compagnie": "SUNU",
+      "piecesFilles": [
+       "FN-2026-00815"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     },
+     {
+      "id": "FACxmvuzcflvnrhr8",
+      "statut": "emise",
+      "numero": "FM-2026-0007",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "FN-2026-00814"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0012",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflvx6dnc",
+     "factureNumero": "FN-2026-00816",
+     "patientId": "P16",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/16/26",
+     "montant": 2000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.468Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0012",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflv1ayir",
+      "pieceNumero": "AV-2026-0012",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0012",
+      "debit": 0,
+      "credit": 2000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0012",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflv1ayir",
+      "pieceNumero": "AV-2026-0012",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00816 (Erreur de facturation)",
+      "debit": 2000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 2000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "série annuelle : la référence suit les avoirs déjà émis",
+    "facture": {
+     "id": "FACxmvuzcflwsoznu",
+     "statut": "actif",
+     "numero": "FN-2026-00817",
+     "patientId": "P17",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/17/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.468Z"
+    },
+    "facturesMere": [
+     {
+      "id": "FACxmvuzcflvh074r",
+      "statut": "actif",
+      "numero": "FM-2026-0008",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "AUTRE-PIECE"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     },
+     {
+      "id": "FACxmvuzcflv3dyjb",
+      "statut": "brouillon",
+      "numero": "FM-2026-0009",
+      "compagnie": "SUNU",
+      "piecesFilles": [
+       "FN-2026-00815"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     },
+     {
+      "id": "FACxmvuzcflvnrhr8",
+      "statut": "emise",
+      "numero": "FM-2026-0007",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "FN-2026-00814"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0014",
+      "factureId": "FACxmvuzcflx3w8z3",
+      "montant": 100
+     },
+     {
+      "reference": "AV-2026-0013",
+      "factureId": "FACxmvuzcflweurha",
+      "montant": 100
+     },
+     {
+      "reference": "AV-2026-0012",
+      "factureId": "FACxmvuzcflvx6dnc",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Erreur de facturation"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2026-0015",
+     "date": "2026-10-30",
+     "factureId": "FACxmvuzcflwsoznu",
+     "factureNumero": "FN-2026-00817",
+     "patientId": "P17",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/17/26",
+     "montant": 2000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.470Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0015",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflxavwtv",
+      "pieceNumero": "AV-2026-0015",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2026-0015",
+      "debit": 0,
+      "credit": 2000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2026-0015",
+      "date": "2026-10-30",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflxavwtv",
+      "pieceNumero": "AV-2026-0015",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00817 (Erreur de facturation)",
+      "debit": 2000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 2000
+    },
+    "avoirsApres": 1
+   }
+  },
+  {
+   "entree": {
+    "nom": "millésime : un avoir daté d'une autre année ouvre SA série",
+    "facture": {
+     "id": "FACxmvuzcflypykov",
+     "statut": "actif",
+     "numero": "FN-2026-00820",
+     "patientId": "P20",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/20/26",
+     "lignes": [
+      {
+       "id": "L1",
+       "designation": "Consultation",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "montant": 5000,
+       "partPatient": 5000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L2",
+       "designation": "Glycémie",
+       "quantite": 1,
+       "prixUnitaire": 3000,
+       "montant": 3000,
+       "partPatient": 3000,
+       "partAssureur": 0
+      },
+      {
+       "id": "L3",
+       "designation": "Pansement",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "montant": 2000,
+       "partPatient": 2000,
+       "partAssureur": 0
+      }
+     ],
+     "montantTTC": 10000,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T13:00:14.470Z"
+    },
+    "facturesMere": [
+     {
+      "id": "FACxmvuzcflvh074r",
+      "statut": "actif",
+      "numero": "FM-2026-0008",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "AUTRE-PIECE"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     },
+     {
+      "id": "FACxmvuzcflv3dyjb",
+      "statut": "brouillon",
+      "numero": "FM-2026-0009",
+      "compagnie": "SUNU",
+      "piecesFilles": [
+       "FN-2026-00815"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     },
+     {
+      "id": "FACxmvuzcflvnrhr8",
+      "statut": "emise",
+      "numero": "FM-2026-0007",
+      "compagnie": "NSIA",
+      "piecesFilles": [
+       "FN-2026-00814"
+      ],
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T13:00:14.467Z"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0015",
+      "factureId": "FACxmvuzcflwsoznu",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0014",
+      "factureId": "FACxmvuzcflx3w8z3",
+      "montant": 100
+     },
+     {
+      "reference": "AV-2026-0013",
+      "factureId": "FACxmvuzcflweurha",
+      "montant": 100
+     },
+     {
+      "reference": "AV-2026-0012",
+      "factureId": "FACxmvuzcflvx6dnc",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0011",
+      "factureId": "FACxmvuzcflt8lqdj",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0010",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0009",
+      "factureId": "FACxmvuzcflsns7do",
+      "montant": 7000
+     },
+     {
+      "reference": "AV-2026-0008",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 3000
+     },
+     {
+      "reference": "AV-2026-0007",
+      "factureId": "FACxmvuzcflrgivgu",
+      "montant": 5000
+     },
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvuzcflqjd1vm",
+      "montant": 8000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvuzcflpr8rd4",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvuzcflofrm39",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvuzcflod00y6",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvuzcflnb2ozj",
+      "montant": 2000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvuzcflkodxvx",
+      "montant": 8000
+     }
+    ],
+    "params": {
+     "lignes": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "motif": "Erreur de facturation",
+     "date": "2027-01-04"
+    },
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "jour": "2026-10-30"
+   },
+   "sortie": {
+    "avoir": {
+     "reference": "AV-2027-0001",
+     "date": "2027-01-04",
+     "factureId": "FACxmvuzcflypykov",
+     "factureNumero": "FN-2026-00820",
+     "patientId": "P20",
+     "patient": "TEST Avoir",
+     "patientCode": "CNT/20/26",
+     "montant": 2000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Pansement",
+       "montant": 2000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T13:00:14.471Z"
+    },
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "numero": "AV-2027-0001",
+      "date": "2027-01-04",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflyvl20t",
+      "pieceNumero": "AV-2027-0001",
+      "origine": "Facture d’avoir",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "libelle": "Créance réduite — avoir AV-2027-0001",
+      "debit": 0,
+      "credit": 2000
+     },
+     {
+      "statut": "brouillon",
+      "numero": "AV-2027-0001",
+      "date": "2027-01-04",
+      "journal": "CAI",
+      "journalLibelle": "Journal de caisse-dépenses",
+      "pieceId": "AVRxmvuzcflyvl20t",
+      "pieceNumero": "AV-2027-0001",
+      "origine": "Facture d’avoir",
+      "compte": "706000",
+      "compteLibelle": "Prestations de services",
+      "libelle": "Contre-passation — FN-2026-00820 (Erreur de facturation)",
+      "debit": 2000,
+      "credit": 0
+     }
+    ],
+    "facture": {
+     "avoirsAjoutes": 1,
+     "montantAvoirs": 2000
+    },
+    "avoirsApres": 1
+   }
+  }
+ ]
+}

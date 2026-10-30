@@ -17,6 +17,7 @@ export 'src/navigation/manifeste.dart';
 export 'src/caisse/prise_en_charge.dart';
 export 'src/caisse/encaissement.dart';
 export 'src/caisse/emission.dart';
+export 'src/caisse/avoir.dart';
 export 'src/graphiques/echelle.dart';
 export 'src/impression/identite.dart';
 export 'src/impression/ticket.dart';

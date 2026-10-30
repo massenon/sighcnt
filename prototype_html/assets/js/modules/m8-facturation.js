@@ -2491,6 +2491,18 @@
   var MOTIFS_AVOIR = ['Erreur de facturation', 'Interruption de soins',
     'Évacuation vers un autre centre', 'Prestation non réalisée', 'Autre (préciser en observations)'];
 
+  /** La référence d'un avoir est une SÉRIE ANNUELLE lue sur les avoirs déjà émis (écart E8, corrigé le 30/10/2026) : l'ancien
+      compteur vivait en mémoire de page et repartait à 1 à chaque chargement — deux avoirs de deux journées pouvaient porter
+      le même numéro. Le millésime est celui de la date de l'avoir, plus un « 2026 » écrit en dur. */
+  function referenceAvoir(date) {
+    var prefixe = 'AV-' + String(date).slice(0, 4) + '-';
+    var max = 0;
+    colAvoirs().all().forEach(function (a) {
+      if (String(a.reference || '').indexOf(prefixe) === 0) max = Math.max(max, parseInt(String(a.reference).slice(prefixe.length), 10) || 0);
+    });
+    return prefixe + String(max + 1).padStart(4, '0');
+  }
+
   /** Le moteur d'émission — séparé de la modale pour être SONDABLE.
       Retourne { record, ecritureIds } ou { erreur } : un refus se lit, il ne
       se devine pas. */
@@ -2522,7 +2534,7 @@
     }
 
     var rec = colAvoirs().insert({
-      reference: C.nextRef('AV-2026-', 4),
+      reference: referenceAvoir(params.date || C.iso(AUJ)),
       date: params.date || C.iso(AUJ),
       factureId: fac.id, factureNumero: fac.numero,
       patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
