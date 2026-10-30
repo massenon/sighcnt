@@ -1,0 +1,2210 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-encaissement.js — séquences de PR.encaisser (maquette). Ne pas éditer.",
+ "cas": [
+  {
+   "nom": "une ligne nommée (la 2e) : partiel",
+   "facture": {
+    "numero": "FC-2026-00901",
+    "id": "FACxmvukksm976ny2",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L2"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L2"
+     ],
+     "montantRegle": 3000,
+     "restantDu": 7000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 3000,
+      "reliquat": 7000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 3000,
+      "dernierReglement": {
+       "montant": 3000,
+       "mode": "especes",
+       "lignes": [
+        "L2"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00901",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00901 — TEST Patient",
+       "debit": 0,
+       "credit": 3000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00901"
+      },
+      {
+       "numero": "CAI-2026-00901",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00901 — TEST Patient",
+       "debit": 3000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00901"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "toutes les lignes nommées : soldée, base MECeF = tout le versé",
+   "facture": {
+    "numero": "FC-2026-00902",
+    "id": "FACxmvukksmbc01rv",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L1",
+       "L2",
+       "L3"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1",
+      "L2",
+      "L3"
+     ],
+     "montantRegle": 10000,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 10000,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 10000,
+      "dernierReglement": {
+       "montant": 10000,
+       "mode": "especes",
+       "lignes": [
+        "L1",
+        "L2",
+        "L3"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00902",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00902 — TEST Patient",
+       "debit": 0,
+       "credit": 10000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00902"
+      },
+      {
+       "numero": "CAI-2026-00902",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00902 — TEST Patient",
+       "debit": 10000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00902"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "nommées en deux fois : partielle puis soldée, le cumul se lit sur la facture",
+   "facture": {
+    "numero": "FC-2026-00903",
+    "id": "FACxmvukksmcfxir6",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L3"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L3"
+     ],
+     "montantRegle": 2000,
+     "restantDu": 8000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 2000,
+      "reliquat": 8000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 2000,
+      "dernierReglement": {
+       "montant": 2000,
+       "mode": "especes",
+       "lignes": [
+        "L3"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00903",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00903 — TEST Patient",
+       "debit": 0,
+       "credit": 2000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00903"
+      },
+      {
+       "numero": "CAI-2026-00903",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00903 — TEST Patient",
+       "debit": 2000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00903"
+      }
+     ]
+    },
+    {
+     "opts": {
+      "lignes": [
+       "L1"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1"
+     ],
+     "montantRegle": 5000,
+     "restantDu": 3000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 7000,
+      "reliquat": 3000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 7000,
+      "dernierReglement": {
+       "montant": 5000,
+       "mode": "especes",
+       "lignes": [
+        "L1"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00903",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00903 — TEST Patient",
+       "debit": 0,
+       "credit": 5000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00903"
+      },
+      {
+       "numero": "CAI-2026-00903",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00903 — TEST Patient",
+       "debit": 5000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00903"
+      }
+     ]
+    },
+    {
+     "opts": {
+      "lignes": [
+       "L2"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L2"
+     ],
+     "montantRegle": 3000,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 10000,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 10000,
+      "dernierReglement": {
+       "montant": 3000,
+       "mode": "especes",
+       "lignes": [
+        "L2"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00903",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00903 — TEST Patient",
+       "debit": 0,
+       "credit": 3000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00903"
+      },
+      {
+       "numero": "CAI-2026-00903",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00903 — TEST Patient",
+       "debit": 3000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00903"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "montant 6000 : la 1re ligne (5000) passe, les autres (3000, 2000) ne tiennent pas dans 1000",
+   "facture": {
+    "numero": "FC-2026-00904",
+    "id": "FACxmvukksmeezjoe",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "montant": 6000
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1"
+     ],
+     "montantRegle": 5000,
+     "restantDu": 5000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 5000,
+      "reliquat": 5000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 5000,
+      "dernierReglement": {
+       "montant": 5000,
+       "mode": "especes",
+       "lignes": [
+        "L1"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00904",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00904 — TEST Patient",
+       "debit": 0,
+       "credit": 5000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00904"
+      },
+      {
+       "numero": "CAI-2026-00904",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00904 — TEST Patient",
+       "debit": 5000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00904"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "montant 8000 : 5000 + 3000, la 3e ne tient pas",
+   "facture": {
+    "numero": "FC-2026-00905",
+    "id": "FACxmvukksmfxq4jz",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "montant": 8000
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1",
+      "L2"
+     ],
+     "montantRegle": 8000,
+     "restantDu": 2000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 8000,
+      "reliquat": 2000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 8000,
+      "dernierReglement": {
+       "montant": 8000,
+       "mode": "especes",
+       "lignes": [
+        "L1",
+        "L2"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00905",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00905 — TEST Patient",
+       "debit": 0,
+       "credit": 8000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00905"
+      },
+      {
+       "numero": "CAI-2026-00905",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00905 — TEST Patient",
+       "debit": 8000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00905"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "montant 7000 : 5000, la 2e (3000) saute, la 3e (2000) tient dans le reste",
+   "facture": {
+    "numero": "FC-2026-00906",
+    "id": "FACxmvukksmfqdra6",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "montant": 7000
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1",
+      "L3"
+     ],
+     "montantRegle": 7000,
+     "restantDu": 3000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 7000,
+      "reliquat": 3000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 7000,
+      "dernierReglement": {
+       "montant": 7000,
+       "mode": "especes",
+       "lignes": [
+        "L1",
+        "L3"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00906",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00906 — TEST Patient",
+       "debit": 0,
+       "credit": 7000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00906"
+      },
+      {
+       "numero": "CAI-2026-00906",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00906 — TEST Patient",
+       "debit": 7000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00906"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "montant 4000 : aucune ligne n'est couverte ENTIÈREMENT : rien n'est réglé",
+   "facture": {
+    "numero": "FC-2026-00907",
+    "id": "FACxmvukksmfjz4kd",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "montant": 4000
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L2"
+     ],
+     "montantRegle": 3000,
+     "restantDu": 7000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 3000,
+      "reliquat": 7000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 3000,
+      "dernierReglement": {
+       "montant": 3000,
+       "mode": "especes",
+       "lignes": [
+        "L2"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00907",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00907 — TEST Patient",
+       "debit": 0,
+       "credit": 3000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00907"
+      },
+      {
+       "numero": "CAI-2026-00907",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00907 — TEST Patient",
+       "debit": 3000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00907"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "montant omis : le dû total",
+   "facture": {
+    "numero": "FC-2026-00908",
+    "id": "FACxmvukksmg6b3q1",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {},
+     "deja": false,
+     "lignesReglees": [
+      "L1",
+      "L2",
+      "L3"
+     ],
+     "montantRegle": 10000,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 10000,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 10000,
+      "dernierReglement": {
+       "montant": 10000,
+       "mode": "especes",
+       "lignes": [
+        "L1",
+        "L2",
+        "L3"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00908",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00908 — TEST Patient",
+       "debit": 0,
+       "credit": 10000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00908"
+      },
+      {
+       "numero": "CAI-2026-00908",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00908 — TEST Patient",
+       "debit": 10000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00908"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "mode de règlement transmis",
+   "facture": {
+    "numero": "FC-2026-00909",
+    "id": "FACxmvukksmg37u2q",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L1"
+      ],
+      "mode": "mobile_money"
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1"
+     ],
+     "montantRegle": 5000,
+     "restantDu": 5000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 5000,
+      "reliquat": 5000,
+      "modePaiement": "mobile_money",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 5000,
+      "dernierReglement": {
+       "montant": 5000,
+       "mode": "mobile_money",
+       "lignes": [
+        "L1"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00909",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00909 — TEST Patient",
+       "debit": 0,
+       "credit": 5000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00909"
+      },
+      {
+       "numero": "CAI-2026-00909",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00909 — TEST Patient",
+       "debit": 5000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00909"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "ligne inconnue : rien réglé, aucune écriture",
+   "facture": {
+    "numero": "FC-2026-00910",
+    "id": "FACxmvukksmh1az39",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "ZZ"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [],
+     "montantRegle": 0,
+     "restantDu": 10000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 0,
+      "reliquat": 10000,
+      "modePaiement": "especes",
+      "statutPaiement": "impayee",
+      "statutMecef": "en_attente",
+      "baseMecef": 0,
+      "dernierReglement": {
+       "montant": 0,
+       "mode": "especes",
+       "lignes": []
+      }
+     },
+     "ecritures": []
+    }
+   ]
+  },
+  {
+   "nom": "une ligne déjà réglée n'est pas réglée deux fois",
+   "facture": {
+    "numero": "FC-2026-00911",
+    "id": "FACxmvukksmhhetgb",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L1"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1"
+     ],
+     "montantRegle": 5000,
+     "restantDu": 5000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 5000,
+      "reliquat": 5000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 5000,
+      "dernierReglement": {
+       "montant": 5000,
+       "mode": "especes",
+       "lignes": [
+        "L1"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00911",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00911 — TEST Patient",
+       "debit": 0,
+       "credit": 5000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00911"
+      },
+      {
+       "numero": "CAI-2026-00911",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00911 — TEST Patient",
+       "debit": 5000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00911"
+      }
+     ]
+    },
+    {
+     "opts": {
+      "lignes": [
+       "L1",
+       "L2"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L2"
+     ],
+     "montantRegle": 3000,
+     "restantDu": 2000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 8000,
+      "reliquat": 2000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 8000,
+      "dernierReglement": {
+       "montant": 3000,
+       "mode": "especes",
+       "lignes": [
+        "L2"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00911",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00911 — TEST Patient",
+       "debit": 0,
+       "credit": 3000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00911"
+      },
+      {
+       "numero": "CAI-2026-00911",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00911 — TEST Patient",
+       "debit": 3000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00911"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "facture déjà soldée : « deja », rien ne bouge",
+   "facture": {
+    "numero": "FC-2026-00912",
+    "id": "FACxmvukksmi66jp5",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "L1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 5000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L2",
+      "libelle": "Glycémie",
+      "categorie": "analyse",
+      "montant": 3000,
+      "partPatient": 3000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "L3",
+      "libelle": "Pansement",
+      "categorie": "soin",
+      "montant": 2000,
+      "partPatient": 2000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 10000,
+    "partPatient": 10000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "L1",
+       "L2",
+       "L3"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "L1",
+      "L2",
+      "L3"
+     ],
+     "montantRegle": 10000,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 10000,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 10000,
+      "dernierReglement": {
+       "montant": 10000,
+       "mode": "especes",
+       "lignes": [
+        "L1",
+        "L2",
+        "L3"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00912",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00912 — TEST Patient",
+       "debit": 0,
+       "credit": 10000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00912"
+      },
+      {
+       "numero": "CAI-2026-00912",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00912 — TEST Patient",
+       "debit": 10000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00912"
+      }
+     ]
+    },
+    {
+     "opts": {
+      "lignes": [
+       "L1"
+      ]
+     },
+     "deja": true,
+     "lignesReglees": [],
+     "montantRegle": null,
+     "restantDu": null,
+     "facture": {
+      "lignes": [
+       {
+        "id": "L1",
+        "statutPaiement": "paye",
+        "montantRegle": 5000
+       },
+       {
+        "id": "L2",
+        "statutPaiement": "paye",
+        "montantRegle": 3000
+       },
+       {
+        "id": "L3",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       }
+      ],
+      "montantPaye": 10000,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 10000,
+      "dernierReglement": {
+       "montant": 10000,
+       "mode": "especes",
+       "lignes": [
+        "L1",
+        "L2",
+        "L3"
+       ]
+      }
+     },
+     "ecritures": []
+    }
+   ]
+  },
+  {
+   "nom": "assuré : part assureur 7000 → écriture 571 + 411 / 706 équilibrée",
+   "facture": {
+    "numero": "FC-2026-00913",
+    "id": "FACxmvukksmi1eoyu",
+    "patient": "TEST Patient",
+    "assureur": "ASS-A",
+    "lignes": [
+     {
+      "id": "A1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 10000,
+      "partPatient": 2000,
+      "partAssureur": 8000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "A2",
+      "libelle": "Analyse",
+      "categorie": "analyse",
+      "montant": 7000,
+      "partPatient": 1000,
+      "partAssureur": 6000,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 17000,
+    "partPatient": 3000,
+    "partAssureur": 14000,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "A1"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "A1"
+     ],
+     "montantRegle": 2000,
+     "restantDu": 1000,
+     "facture": {
+      "lignes": [
+       {
+        "id": "A1",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       },
+       {
+        "id": "A2",
+        "statutPaiement": "du",
+        "montantRegle": null
+       }
+      ],
+      "montantPaye": 2000,
+      "reliquat": 1000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 2000,
+      "dernierReglement": {
+       "montant": 2000,
+       "mode": "especes",
+       "lignes": [
+        "A1"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00913",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00913 — TEST Patient",
+       "debit": 0,
+       "credit": 16000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00913"
+      },
+      {
+       "numero": "CAI-2026-00913",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "411110",
+       "libelle": "Encaissement facture FC-2026-00913 — TEST Patient — part ASS-A",
+       "debit": 14000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00913"
+      },
+      {
+       "numero": "CAI-2026-00913",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00913 — TEST Patient",
+       "debit": 2000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00913"
+      }
+     ]
+    },
+    {
+     "opts": {
+      "lignes": [
+       "A2"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "A2"
+     ],
+     "montantRegle": 1000,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [
+       {
+        "id": "A1",
+        "statutPaiement": "paye",
+        "montantRegle": 2000
+       },
+       {
+        "id": "A2",
+        "statutPaiement": "paye",
+        "montantRegle": 1000
+       }
+      ],
+      "montantPaye": 3000,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 3000,
+      "dernierReglement": {
+       "montant": 1000,
+       "mode": "especes",
+       "lignes": [
+        "A2"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00913",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00913 — TEST Patient",
+       "debit": 0,
+       "credit": 15000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00913"
+      },
+      {
+       "numero": "CAI-2026-00913",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "411110",
+       "libelle": "Encaissement facture FC-2026-00913 — TEST Patient — part ASS-A",
+       "debit": 14000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00913"
+      },
+      {
+       "numero": "CAI-2026-00913",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00913 — TEST Patient",
+       "debit": 1000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00913"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "ligne 100 % assureur (part patient 0) : réglée par un versement nul",
+   "facture": {
+    "numero": "FC-2026-00914",
+    "id": "FACxmvukksmknel31",
+    "patient": "TEST Patient",
+    "assureur": "ASS-A",
+    "lignes": [
+     {
+      "id": "B1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 5000,
+      "partPatient": 0,
+      "partAssureur": 5000,
+      "statutPaiement": "du"
+     },
+     {
+      "id": "B2",
+      "libelle": "Pansement",
+      "categorie": "consultation",
+      "montant": 1500,
+      "partPatient": 1500,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 6500,
+    "partPatient": 1500,
+    "partAssureur": 5000,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "montant": 1500
+     },
+     "deja": false,
+     "lignesReglees": [
+      "B1",
+      "B2"
+     ],
+     "montantRegle": 1500,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [
+       {
+        "id": "B1",
+        "statutPaiement": "paye",
+        "montantRegle": 0
+       },
+       {
+        "id": "B2",
+        "statutPaiement": "paye",
+        "montantRegle": 1500
+       }
+      ],
+      "montantPaye": 1500,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 1500,
+      "dernierReglement": {
+       "montant": 1500,
+       "mode": "especes",
+       "lignes": [
+        "B1",
+        "B2"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00914",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00914 — TEST Patient",
+       "debit": 0,
+       "credit": 6500,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00914"
+      },
+      {
+       "numero": "CAI-2026-00914",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "411110",
+       "libelle": "Encaissement facture FC-2026-00914 — TEST Patient — part ASS-A",
+       "debit": 5000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00914"
+      },
+      {
+       "numero": "CAI-2026-00914",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00914 — TEST Patient",
+       "debit": 1500,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00914"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "facture sans lignes (pièce antérieure au modèle) : partiel puis solde par montant",
+   "facture": {
+    "numero": "FC-2026-00915",
+    "id": "FACxmvukksmk97sa7",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [],
+    "montantTTC": 8000,
+    "partPatient": 8000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "montant": 3000
+     },
+     "deja": false,
+     "lignesReglees": [],
+     "montantRegle": 3000,
+     "restantDu": 5000,
+     "facture": {
+      "lignes": [],
+      "montantPaye": 3000,
+      "reliquat": 5000,
+      "modePaiement": "especes",
+      "statutPaiement": "partielle",
+      "statutMecef": "en_attente",
+      "baseMecef": 3000,
+      "dernierReglement": {
+       "montant": 3000,
+       "mode": "especes",
+       "lignes": []
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00915",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00915 — TEST Patient",
+       "debit": 0,
+       "credit": 3000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00915"
+      },
+      {
+       "numero": "CAI-2026-00915",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00915 — TEST Patient",
+       "debit": 3000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00915"
+      }
+     ]
+    },
+    {
+     "opts": {
+      "montant": 99999
+     },
+     "deja": false,
+     "lignesReglees": [],
+     "montantRegle": 99999,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [],
+      "montantPaye": 102999,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 102999,
+      "dernierReglement": {
+       "montant": 99999,
+       "mode": "especes",
+       "lignes": []
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00915",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00915 — TEST Patient",
+       "debit": 0,
+       "credit": 99999,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00915"
+      },
+      {
+       "numero": "CAI-2026-00915",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00915 — TEST Patient",
+       "debit": 99999,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00915"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "facture sans lignes, sans partPatient : le TTC fait le dû",
+   "facture": {
+    "numero": "FC-2026-00916",
+    "id": "FACxmvukksmlnozan",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [],
+    "montantTTC": 4500,
+    "partPatient": null,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {},
+     "deja": false,
+     "lignesReglees": [],
+     "montantRegle": 4500,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [],
+      "montantPaye": 4500,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 4500,
+      "dernierReglement": {
+       "montant": 4500,
+       "mode": "especes",
+       "lignes": []
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-00916",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FC-2026-00916 — TEST Patient",
+       "debit": 0,
+       "credit": 4500,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00916"
+      },
+      {
+       "numero": "CAI-2026-00916",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FC-2026-00916 — TEST Patient",
+       "debit": 4500,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": "FC-2026-00916"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "nom": "numéro de pièce sans chiffres : l'écriture prend l'id",
+   "facture": {
+    "numero": null,
+    "id": "FACxmvukksmldvu8v",
+    "patient": "TEST Patient",
+    "assureur": null,
+    "lignes": [
+     {
+      "id": "C1",
+      "libelle": "Consultation",
+      "categorie": "consultation",
+      "montant": 1000,
+      "partPatient": 1000,
+      "partAssureur": 0,
+      "statutPaiement": "du"
+     }
+    ],
+    "montantTTC": 1000,
+    "partPatient": 1000,
+    "partAssureur": 0,
+    "montantPaye": 0,
+    "statutPaiement": "impayee"
+   },
+   "etapes": [
+    {
+     "opts": {
+      "lignes": [
+       "C1"
+      ]
+     },
+     "deja": false,
+     "lignesReglees": [
+      "C1"
+     ],
+     "montantRegle": 1000,
+     "restantDu": 0,
+     "facture": {
+      "lignes": [
+       {
+        "id": "C1",
+        "statutPaiement": "paye",
+        "montantRegle": 1000
+       }
+      ],
+      "montantPaye": 1000,
+      "reliquat": 0,
+      "modePaiement": "especes",
+      "statutPaiement": "soldee",
+      "statutMecef": "valide",
+      "baseMecef": 1000,
+      "dernierReglement": {
+       "montant": 1000,
+       "mode": "especes",
+       "lignes": [
+        "C1"
+       ]
+      }
+     },
+     "ecritures": [
+      {
+       "numero": "CAI-2026-8",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "706000",
+       "libelle": "Encaissement facture FACxmvukksmldvu8v — TEST Patient",
+       "debit": 0,
+       "credit": 1000,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": null
+      },
+      {
+       "numero": "CAI-2026-8",
+       "date": "2026-10-30",
+       "journal": "CAI",
+       "compte": "571000",
+       "libelle": "Encaissement facture FACxmvukksmldvu8v — TEST Patient",
+       "debit": 1000,
+       "credit": 0,
+       "statut": "brouillon",
+       "origine": "Automatique — Caisse",
+       "pieceNumero": null
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
