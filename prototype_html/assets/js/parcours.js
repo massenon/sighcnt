@@ -202,7 +202,9 @@
     });
 
     /* --- La caisse : facture en attente de règlement ------------------------ */
-    var taux = p.assureur ? (p.tauxPriseEnCharge || 0) : 0;
+    /* RG-09 — la prise en charge ne s'applique que si la carte est valide À LA DATE de la prescription (écart E340 : le taux du
+       dossier s'appliquait même carte expirée, alors que l'imagerie de la même pièce était déjà tarifée « non assuré »). */
+    var taux = (p.assureur && carteValide(p, date)) ? (p.tauxPriseEnCharge || 0) : 0;
     var montant = mMed + mAna + mAct + mImg;
     var partAssurance = Math.round(montant * taux / 100);
 

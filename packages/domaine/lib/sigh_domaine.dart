@@ -49,3 +49,4 @@ export 'src/imagerie/cr_moteur.dart';
 export 'src/labo/res_labo.dart' hide resultatRendu;
 export 'src/labo/sang_regles.dart';
 export 'src/labo/cat_regles.dart';
+export 'src/consultation/consultation.dart';

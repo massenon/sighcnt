@@ -6,6 +6,12 @@ import 'img_galerie.dart';
 import 'img_poste.dart';
 import 'cr_saisie.dart';
 import 'modalites_tableau.dart';
+import 'cs_consultations.dart';
+import 'cs_dossiers.dart';
+import 'cs_fiche.dart';
+import 'cs_ordonnances.dart';
+import 'cs_pathologies.dart';
+import 'cs_prescriptions.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -21,4 +27,13 @@ final Map<String, ConstruireEcran> ecransM2 = {
   'm2-imagerie-scanner': (c, cfg) => scannerTableau,
   'm2-imagerie-irm': (c, cfg) => irmTableau,
   'm2-imagerie-cr': (c, cfg) => const EcranCompteRenduImagerie(),
+  'm2-consultations': (c, cfg) => const EcranConsultations(),
+  'm2-dossiers-consultation': (c, cfg) => const EcranDossiersConsultation(),
+  'm2-dossier-consultation-nouveau': (c, cfg) => const EcranDossierConsultationNouveau(),
+  'm2-consultation-fiche': (c, cfg) => const EcranFicheConsultation(),
+  'm2-pathologies': (c, cfg) => const EcranPathologies(),
+  'm2-ordonnances': (c, cfg) => const EcranOrdonnances(),
+  'm2-ordonnance-nouvelle': (c, cfg) => const EcranOrdonnanceNouvelle(),
+  'm2-prescriptions': (c, cfg) => const EcranPrescriptions(),
+  'm2-salle-soins': (c, cfg) => const EcranSalleSoins(),
 };
