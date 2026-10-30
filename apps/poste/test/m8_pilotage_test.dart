@@ -15,7 +15,7 @@ final donnees = DonneesNavigation.depuisDossier();
 final auj = DateTime(2026, 8, 16);
 
 Future<void> ouvrir(WidgetTester t, Magasin m, String ecran,
-    {String role = 'admin'}) async {
+    {String role = 'admin', DateTime? le}) async {
   t.view.physicalSize = const Size(1600, 1000);
   t.view.devicePixelRatio = 1;
   addTearDown(t.view.resetPhysicalSize);
@@ -25,7 +25,7 @@ Future<void> ouvrir(WidgetTester t, Magasin m, String ecran,
       config: ConfigPoste(mode: ModePoste.fileul, role: role),
       ecranInitial: ecran,
       magasin: m,
-      horloge: () => auj));
+      horloge: () => le ?? auj));
   for (var i = 0; i < 4; i++) {
     await t.pump(const Duration(milliseconds: 100));
   }
@@ -128,5 +128,57 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('État des recettes'), findsWidgets);
     expect(find.text('TOTAL'), findsOneWidget);
+  });
+
+  testWidgets(
+      'opérations : KPI recomptés sur la journée ; l’inventaire annonce l’écart (manquant / excédent / juste) et l’édite',
+      (t) async {
+    final m = Magasin.depuisDossier(Magasin.collectionsDuJeu);
+    // Le jeu est daté : on pose l'horloge sur son jour le plus chargé (sinon la sonde mesurerait des zéros).
+    final dates = <String, int>{};
+    for (final x in m.collection('factures').actives) {
+      dates['${x['date']}'] = (dates['${x['date']}'] ?? 0) + 1;
+    }
+    final plein = (dates.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value)))
+        .first
+        .key;
+    await ouvrir(t, m, 'm8-operations', le: DateTime.parse(plein));
+    final jour = m
+        .collection('factures')
+        .actives
+        .where((x) => x['date'] == plein)
+        .toList();
+    expect(jour, isNotEmpty);
+    final enc =
+        jour.fold<num>(0, (a, x) => a + ((x['montantPaye'] as num?) ?? 0));
+    expect(kpis(t)[0], nombre(jour.length));
+    expect(kpis(t)[1], money(enc));
+    await t.tap(find.text('Inventaire de caisse'));
+    await t.pumpAndSettle();
+    expect(find.textContaining('Caisse juste.'), findsOneWidget,
+        reason: 'le compté proposé est le théorique');
+    final theorique = jour
+        .where((x) => (x['modePaiement'] ?? 'especes') == 'especes')
+        .fold<num>(0, (a, x) => a + ((x['montantPaye'] as num?) ?? 0));
+    await t.enterText(
+        find.descendant(
+            of: find.byKey(const Key('kit:champ:compte')),
+            matching: find.byType(TextField)),
+        '${theorique.round() - 500}');
+    await t.pump();
+    expect(find.textContaining('Écart de ${money(500)} — manquant'),
+        findsOneWidget);
+    await t.enterText(
+        find.descendant(
+            of: find.byKey(const Key('kit:champ:compte')),
+            matching: find.byType(TextField)),
+        '${theorique.round() + 500}');
+    await t.pump();
+    expect(find.textContaining('excédent'), findsOneWidget);
+    await t.tap(find.text('Éditer l’inventaire'));
+    await t.pumpAndSettle();
+    expect(find.text('Excédent constaté'), findsOneWidget);
+    expect(find.textContaining('La Directrice Administrative'), findsOneWidget);
   });
 }

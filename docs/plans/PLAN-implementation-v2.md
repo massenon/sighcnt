@@ -93,3 +93,11 @@ Le kit de composants est un **clone mesuré**, pas une ressemblance : `prototype
 **Ce qui N'EST PAS porté sur cet écran, dit** : la modification d'une facture (la maquette ouvre un formulaire générique ; elle renvoie à l'écran d'émission pour créer) ; « Imprimer l'état » et « Imprimer la sélection » (câblage vers `FeuilleA4` à faire avec la tranche) ; les lignes de la pièce dans la fiche ; le journal d'audit (attend le journal d'opérations, plan S4) ; les scénarios N4 ne sont pas encore rejoués sur l'application. **Écart de mesure corrigé** : la fiche de la maquette mêle des comptes issus du jeu (« Tous les factures409 ») à des libellés — le comparateur compare le libellé, pas le compte.
 
 **Reste de la tranche 1 (16 écrans)** : `m8-dashboard`, `m8-facturation` (émission, avec scission -A/-B), `m8-proforma`, `m8-paiements`, `m8-reliquats`, `m8-remboursements`, `m8-facture-avoir`, `m8-caisse`, `m8-operations`, `m8-recettes`, et les 6 écrans `mecef-*` (protocole du boîtier attendu de la Direction). **Les 304 autres écrans de la maquette ne sont pas commencés.**
+
+## Mise à jour du 30/10/2026 (tranche 1 — 6 écrans sur 17)
+
+**Portés, N1 = 100 % mesuré et statut verrouillé** : `m8-factures`, `m8-paiements`, `m8-proforma`, `m8-reliquats`, `m8-dashboard`, `m8-recettes`, `m8-operations` (7 écrans). Tests de comportement (104) : KPI recomptés indépendamment sur le magasin, encaissement refusé au-delà du reste dû, annulation visible, insolvabilité avec motif sans effacer la créance, inventaire de caisse (juste / manquant / excédent), commandes d'écriture absentes sans droit.
+
+**Reste 10 écrans** : `m8-facturation` (émission), `m8-remboursements`, `m8-facture-avoir` (moteur `emettreAvoir` à porter avec vecteurs — T18), `m8-caisse` (file des prescriptions à encaisser : moteur `encaisser` déjà porté, collections `taches`/`ordonnances` à exporter), et les 6 `mecef-*` (simulation d'abord ; le boîtier physique attend le protocole de la Direction).
+
+**Limites dites** : pas de journal d'audit (S4) ; l'impression écrit un PDF dans le dossier temporaire (pas d'imprimante) ; barres horizontales non rejouées contre Chart.js ; l'en-tête de page n'affiche pas encore les accès rapides déduits du manifeste (`accesRapides()`).

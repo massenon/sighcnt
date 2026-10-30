@@ -6,6 +6,7 @@ import '../mere/client_mere.dart';
 import '../mere/console.dart';
 import 'm8/dashboard.dart';
 import 'm8/factures.dart';
+import 'm8/operations.dart';
 import 'm8/paiements.dart';
 import 'm8/proforma.dart';
 import 'm8/recettes.dart';
@@ -34,6 +35,7 @@ Map<String, ConstruireEcran> ecransPortes(
     'm8-proforma': (c, cfg) => const EcranProforma(),
     'm8-reliquats': (c, cfg) => const EcranReliquats(),
     'm8-recettes': (c, cfg) => const EcranRecettes(),
+    'm8-operations': (c, cfg) => const EcranOperations(),
     if (controleur != null)
       'cfg-poste': (c, cfg) => ReglagesPoste(controleur: controleur),
     // Modules complémentaires de la MÈRE (le domaine « Poste mère » n'existe que sur la mère, voir Manifeste.ruban).
