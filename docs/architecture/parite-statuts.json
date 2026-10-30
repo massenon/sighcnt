@@ -123,5 +123,13 @@
  "m3-observation": "porté",
  "m3-plan-lits": "porté",
  "m3-feuille-temperature": "porté",
- "m3-soins": "porté"
+ "m3-soins": "porté",
+ "m3-cpa": "porté",
+ "m3-bloc-cro": "porté",
+ "m3-cr-anesthesie": "porté",
+ "m3-bloc-checklist": "porté",
+ "m3-demande-examen": "porté",
+ "m3-bons-pansements": "porté",
+ "m3-sorties": "porté",
+ "m3-sortie-avis-medical": "porté"
 }
