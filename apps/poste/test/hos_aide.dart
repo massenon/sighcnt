@@ -82,13 +82,18 @@ Future<void> fermerDessus(WidgetTester t) async {
   await t.pump(const Duration(milliseconds: 500));
 }
 
-/// Les textes affichés dans la bande horizontale de [ancre] (une ligne de tableau : la référence en tête de ligne).
-List<String> ligneDe(WidgetTester t, String ancre, {double haut = 30, double bas = 30, int rang = 0}) {
+/// Les textes affichés dans la bande horizontale de [ancre] (une ligne de tableau : la référence en tête de ligne) ; [rang] distingue deux ancres
+/// identiques (deux relevés du même jour).
+List<String> ligneDe(WidgetTester t, String ancre, {double haut = 28, double bas = 28, int rang = 0}) {
   final y = t.getTopLeft(find.text(ancre).at(rang)).dy;
-  return [
-    for (final e in find.byType(Text).evaluate())
-      if ((e.widget as Text).data != null &&
-          (t.getTopLeft(find.byWidget(e.widget)).dy - y).abs() < 1 + (t.getTopLeft(find.byWidget(e.widget)).dy >= y ? bas : haut))
-        (e.widget as Text).data!
-  ];
+  final out = <String>[];
+  for (final e in find.byType(Text).evaluate()) {
+    final w = e.widget as Text;
+    final d = w.data;
+    final ro = e.renderObject;
+    if (d == null || ro is! RenderBox || !ro.attached) continue;
+    final dy = ro.localToGlobal(Offset.zero).dy;
+    if (dy >= y - 1 - haut && dy < y + bas) out.add(d);
+  }
+  return out;
 }
