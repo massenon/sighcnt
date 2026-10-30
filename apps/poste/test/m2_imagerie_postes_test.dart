@@ -235,8 +235,12 @@ void main() {
     }
 
     cas('« Nouvelle demande » sans tarif au catalogue : refusé en nommant l\'examen, rien n\'est facturé', (t) async {
-      // Le scanner n'a aucun tarif dans le jeu du poste (ni acte rapproché, ni catalogue tarifaire) : un tiret n'est pas un zéro.
+      // Sans catalogue tarifaire (archivé ci-dessous) et sans acte rapproché, le scanner n'a aucun tarif : un tiret n'est pas un zéro.
       final m = magasin();
+      // Le jeu livré porte désormais le catalogue tarifaire : on l'archive pour poser le cas « aucun tarif ».
+      for (final x in m.collection('catalogueTarifs').actives.toList()) {
+        m.collection('catalogueTarifs').archiver(x['id']);
+      }
       final avantFactures = m.collection('factures').toutes.length;
       final avantArchivees = m.collection('demandesImagerie').archivees.length;
       await remplir(t, m, 'Scanner cérébral');

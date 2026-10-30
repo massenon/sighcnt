@@ -42,5 +42,18 @@
  "m7-pv-reception-consommables": "porté",
  "m7-pv-reception-reactifs": "porté",
  "m7-receptions": "porté",
- "m6-transferts": "porté"
+ "m6-transferts": "porté",
+ "m2-imagerie-demandes": "porté",
+ "m2-dashboard-imagerie": "porté",
+ "m2-echographie-galerie": "porté",
+ "m2-imagerie": "porté",
+ "m2-imagerie-radiographie": "porté",
+ "m2-imagerie-mammographie": "porté",
+ "m2-imagerie-scanner": "porté",
+ "m2-imagerie-irm": "porté",
+ "m2-imagerie-cr": "porté",
+ "m5-demandes": "porté",
+ "m5-prelevement": "porté",
+ "m5-demandes-maternite": "porté",
+ "m5-demandes-hospitalisation": "porté"
 }
