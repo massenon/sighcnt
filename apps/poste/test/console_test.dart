@@ -37,6 +37,17 @@ class FauxService {
             return http.Response(jsonEncode(etat), 200);
           case 'GET /admin/conflits':
             return http.Response(jsonEncode(conflits), 200);
+          case 'GET /admin/supervision':
+            return http.Response(jsonEncode({'etat': 'alerte', 'depot': 'sqlite', 'controles': [
+              {'nom': 'Sauvegarde', 'etat': 'alerte', 'detail': 'Aucune sauvegarde'},
+              {'nom': 'Relais en ligne', 'etat': 'inconnu', 'detail': 'Jamais joint'},
+              {'nom': 'Base de données', 'etat': 'ok', 'detail': 'sqlite'},
+            ]}), 200);
+          case 'GET /admin/journal':
+            return http.Response(jsonEncode([
+              {'id': 2, 'quand': 1000, 'niveau': 'erreur', 'source': 'relais', 'message': 'Relais injoignable'},
+              {'id': 1, 'quand': 500, 'niveau': 'info', 'source': 'mere', 'message': 'Démarrage'},
+            ]), 200);
           case 'POST /admin/code':
             return http.Response(jsonEncode({'code': 'ABCD2345'}), 200);
           case 'POST /admin/code-mobile':
@@ -169,5 +180,31 @@ void main() {
     await t.pump();
     await t.pump();
     expect(find.textContaining('Le service de la mère ne répond pas'), findsOneWidget);
+  });
+
+  testWidgets('supervision : santé globale, contrôles nommés, « inconnu » jamais présenté comme OK', (t) async {
+    await monter(t);
+    expect(find.text('Santé de la mère : ALERTE'), findsOneWidget);
+    expect(find.text('Aucune sauvegarde'), findsOneWidget);
+    expect(find.text('Jamais joint'), findsOneWidget);
+    expect(find.text('Inconnu'), findsOneWidget);
+  });
+
+  testWidgets('« Sauvegarder maintenant » appelle la mère', (t) async {
+    final f = await monter(t);
+    await t.tap(find.byKey(const Key('sauvegarder')));
+    await t.pumpAndSettle();
+    expect(f.appels.where((a) => a.startsWith('POST /admin/sauvegarder')), hasLength(1));
+    expect(find.text('Sauvegarde chiffrée effectuée.'), findsOneWidget);
+  });
+
+  testWidgets('onglet Journal : évènements les plus récents d\'abord, niveau visible', (t) async {
+    await monter(t);
+    await t.tap(find.text('Journal'));
+    await t.pumpAndSettle();
+    expect(find.text('Relais injoignable'), findsOneWidget);
+    expect(find.text('Démarrage'), findsOneWidget);
+    expect(t.getTopLeft(find.text('Relais injoignable')).dy, lessThan(t.getTopLeft(find.text('Démarrage')).dy));
+    expect(find.byIcon(Icons.error_outline), findsOneWidget);
   });
 }

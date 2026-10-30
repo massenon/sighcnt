@@ -22,6 +22,8 @@ class ConsoleMere extends StatefulWidget {
 class _ConsoleMereState extends State<ConsoleMere> {
   EtatMere? _etat;
   List<Conflit> _conflits = const [];
+  Supervision? _sante;
+  List<EvenementJournal> _journal = const [];
   String? _panne;
   Timer? _minuterie;
   // Les champs de la maintenance vivent dans l'état : la console se rafraîchit toutes les 3 s et ne doit pas vider la saisie.
@@ -49,10 +51,14 @@ class _ConsoleMereState extends State<ConsoleMere> {
     try {
       final e = await widget.client.etat();
       final c = await widget.client.conflits();
+      final sante = await widget.client.supervision();
+      final j = await widget.client.journal();
       if (!mounted) return;
       setState(() {
         _etat = e;
         _conflits = c;
+        _sante = sante;
+        _journal = j;
         _panne = null;
       });
     } catch (e) {
@@ -74,7 +80,7 @@ class _ConsoleMereState extends State<ConsoleMere> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('SIGH-CNT — Poste mère'),
@@ -82,6 +88,7 @@ class _ConsoleMereState extends State<ConsoleMere> {
             Tab(text: 'Supervision'),
             Tab(text: 'Appareils'),
             Tab(text: 'Conflits'),
+            Tab(text: 'Journal'),
             Tab(text: 'Maintenance'),
           ]),
         ),
@@ -90,7 +97,7 @@ class _ConsoleMereState extends State<ConsoleMere> {
           Expanded(
             child: _etat == null
                 ? const Center(child: CircularProgressIndicator())
-                : TabBarView(children: [_supervision(_etat!), _appareils(_etat!), _conflitsVue(), _maintenance(_etat!)]),
+                : TabBarView(children: [_supervision(_etat!), _appareils(_etat!), _conflitsVue(), _journalVue(), _maintenance(_etat!)]),
           ),
         ]),
       ),
@@ -117,6 +124,8 @@ class _ConsoleMereState extends State<ConsoleMere> {
         SizedBox(width: 200, child: _kpi('Retard vers le relais', '${e.retardRelais}', couleur: e.retardRelais > 0 ? ThemeSigh.attention : ThemeSigh.succes)),
         SizedBox(width: 200, child: _kpi('Conflits ouverts', '${e.conflitsOuverts}', couleur: e.conflitsOuverts > 0 ? ThemeSigh.attention : ThemeSigh.succes)),
       ]),
+      const SizedBox(height: 12),
+      if (_sante != null) ..._santeVue(_sante!),
       if (e.restauration != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text('Restauration : ${e.restauration}')),
       const SizedBox(height: 20),
       Text('Alertes', style: Theme.of(context).textTheme.titleMedium),
@@ -129,6 +138,58 @@ class _ConsoleMereState extends State<ConsoleMere> {
         ...e.bloques.map((u) => ListTile(dense: true, title: Text(u), trailing: TextButton(onPressed: () => _geste(() => widget.client.debloquer(u), ok: 'Appareil débloqué.'), child: const Text('Débloquer')))),
       ],
     ]);
+  }
+
+  Color _couleurEtat(String etat) => switch (etat) {
+        'ok' => ThemeSigh.succes,
+        'attention' => ThemeSigh.attention,
+        'alerte' => ThemeSigh.danger,
+        _ => Colors.grey,
+      };
+
+  String _libelleEtat(String etat) => switch (etat) {
+        'ok' => 'OK',
+        'attention' => 'À surveiller',
+        'alerte' => 'ALERTE',
+        _ => 'Inconnu',
+      };
+
+  List<Widget> _santeVue(Supervision s) => [
+        Row(children: [
+          Icon(Icons.circle, size: 14, color: _couleurEtat(s.etat), key: const Key('sante-globale')),
+          const SizedBox(width: 8),
+          Text('Santé de la mère : ${_libelleEtat(s.etat)}', style: Theme.of(context).textTheme.titleMedium),
+          const Spacer(),
+          TextButton.icon(
+            key: const Key('sauvegarder'),
+            onPressed: () => _geste(widget.client.sauvegarderMaintenant, ok: 'Sauvegarde chiffrée effectuée.'),
+            icon: const Icon(Icons.save_alt),
+            label: const Text('Sauvegarder maintenant'),
+          ),
+        ]),
+        ...s.controles.map((c) => ListTile(
+              dense: true,
+              leading: Icon(Icons.circle, size: 12, color: _couleurEtat(c.etat)),
+              title: Text(c.nom),
+              subtitle: Text(c.detail),
+              trailing: Text(_libelleEtat(c.etat)),
+            )),
+      ];
+
+  Widget _journalVue() {
+    if (_journal.isEmpty) return const Center(child: Text('Aucun évènement enregistré.'));
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: _journal
+          .map((x) => ListTile(
+                dense: true,
+                leading: Icon(x.niveau == 'erreur' ? Icons.error_outline : x.niveau == 'alerte' ? Icons.warning_amber : Icons.info_outline,
+                    color: x.niveau == 'erreur' ? ThemeSigh.danger : x.niveau == 'alerte' ? ThemeSigh.attention : null),
+                title: Text(x.message),
+                subtitle: Text('${x.source} · ${x.quand.toLocal().toString().substring(0, 19)}'),
+              ))
+          .toList(),
+    );
   }
 
   String _libelleAlerte(Map<String, Object?> a) => switch (a['type']) {

@@ -89,6 +89,36 @@ class EtatMere {
       );
 }
 
+/// Un contrôle de santé de la mère : `etat` ∈ ok · attention · alerte · inconnu. « inconnu » ne rassure jamais.
+class Controle {
+  Controle({required this.nom, required this.etat, required this.detail});
+  final String nom;
+  final String etat;
+  final String detail;
+  factory Controle.depuis(Map<String, Object?> j) => Controle(nom: '${j['nom']}', etat: '${j['etat']}', detail: '${j['detail'] ?? ''}');
+}
+
+class Supervision {
+  Supervision({required this.etat, required this.controles, required this.depot});
+  final String etat;
+  final List<Controle> controles;
+  final String depot;
+}
+
+class EvenementJournal {
+  EvenementJournal({required this.quand, required this.niveau, required this.source, required this.message});
+  final DateTime quand;
+  final String niveau;
+  final String source;
+  final String message;
+  factory EvenementJournal.depuis(Map<String, Object?> j) => EvenementJournal(
+        quand: DateTime.fromMillisecondsSinceEpoch((j['quand']! as num).toInt()),
+        niveau: '${j['niveau']}',
+        source: '${j['source']}',
+        message: '${j['message']}',
+      );
+}
+
 /// Client du service local de la mère (API d'administration). La console ne contient AUCUNE règle : elle appelle ce que
 /// la mère décide — un refus s'affiche avec la cause que la mère a nommée.
 class ClientMere {
@@ -137,4 +167,20 @@ class ClientMere {
 
   Future<String> reinitialiser({required String confirmation, required String second}) async =>
       '${(await _appel('POST', '/admin/reinitialiser', {'confirmation': confirmation, 'second': second}))['sauvegarde']}';
+
+  Future<Supervision> supervision() async {
+    final r = await _appel('GET', '/admin/supervision');
+    return Supervision(
+      etat: '${r['etat']}',
+      depot: '${r['depot'] ?? ''}',
+      controles: ((r['controles'] ?? const []) as List).map((x) => Controle.depuis((x as Map).cast<String, Object?>())).toList(),
+    );
+  }
+
+  Future<List<EvenementJournal>> journal({int limite = 100}) async {
+    final r = await _appel('GET', '/admin/journal?limite=$limite');
+    return ((r['liste'] ?? const []) as List).map((x) => EvenementJournal.depuis((x as Map).cast<String, Object?>())).toList();
+  }
+
+  Future<void> sauvegarderMaintenant() => _appel('POST', '/admin/sauvegarder');
 }
