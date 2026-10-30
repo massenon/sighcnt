@@ -129,7 +129,17 @@ class RegistreM1 extends StatefulWidget {
     this.libelleModifier = 'Modifier',
     this.creerVers,
     this.valeursEdition,
+    this.actionsBarre = const [],
+    this.libelleArchiver = 'Archiver',
+    this.messageArchive = 'Enregistrement archivé.',
+    this.titreArchivage,
   });
+
+  /// Commandes posées dans la barre d'outils du tableau (à côté de « Nouveau »).
+  final List<Widget> actionsBarre;
+  final String libelleArchiver;
+  final String messageArchive;
+  final String Function(Fiche)? titreArchivage;
 
   /// Valeurs du formulaire d'une fiche EXISTANTE quand elles diffèrent de ses champs (une date et une heure saisies à part).
   final Map<String, Object?> Function(Fiche)? valeursEdition;
@@ -195,15 +205,15 @@ class _RegistreM1State extends State<RegistreM1> {
 
   Future<void> _archiver(BuildContext ctx, Fiche f) async {
     final motif = await confirmerAvecMotif(ctx,
-        titre: 'Archiver cet enregistrement ?',
+        titre: widget.titreArchivage?.call(f) ?? 'Archiver cet enregistrement ?',
         message:
             'Archivage logique (RG-14) : la donnée reste consultable et l’opération est annulable.',
-        libelleOk: 'Archiver',
+        libelleOk: widget.libelleArchiver,
         dangereux: true);
     if (motif == null || !ctx.mounted) return;
     final annuler = widget.collection.archiver(f['id']);
     widget.collection.mettreAJour(f['id'], {'_motifArchivage': motif});
-    ToastsSigh.afficher(ctx, 'Enregistrement archivé.',
+    ToastsSigh.afficher(ctx, widget.messageArchive,
         type: TypeToast.succes, annuler: annuler, messageAnnulation: 'Archivage annulé.');
   }
 
@@ -302,6 +312,7 @@ class _RegistreM1State extends State<RegistreM1> {
       messageVide: widget.messageVide,
       alClicLigne: widget.detail != null ? (f) => _ouvrirDetail(context, f) : null,
       actions: [
+        ...widget.actionsBarre,
         if (peutCreer)
           BoutonSigh(
               libelle: widget.libelleNouveau!,
@@ -340,7 +351,7 @@ class _RegistreM1State extends State<RegistreM1> {
               if (widget.archivable && c.droit.annuler)
                 BoutonIcone(
                     icone: LucideIcons.archive,
-                    libelle: 'Archiver',
+                    libelle: widget.libelleArchiver,
                     onPressed: () => _archiver(ctx, f)),
             ],
     );
