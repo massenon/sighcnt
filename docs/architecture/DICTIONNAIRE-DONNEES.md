@@ -5,17 +5,17 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | Schéma (module) | Tables | Tables filles | Colonnes typées | Fiches observées |
 |---|---:|---:|---:|---:|
 | `cfg` — Configuration | 12 | 2 | 90 | 568 |
-| `ged` — GED | 1 | 0 | 24 | 221 |
-| `m1` — M1 Patients & DMI | 6 | 0 | 147 | 430 |
+| `ged` — GED | 1 | 0 | 18 | 220 |
+| `m1` — M1 Patients & DMI | 6 | 0 | 142 | 427 |
 | `m10` — M10 Ressources humaines | 16 | 0 | 97 | 2957 |
 | `m11` — M11 Paie & primes | 1 | 0 | 16 | 12 |
-| `m12` — M12 Comptabilité SYSCOHADA | 8 | 0 | 85 | 593 |
+| `m12` — M12 Comptabilité SYSCOHADA | 8 | 0 | 82 | 585 |
 | `m13` — M13 Administration & ambulance | 9 | 0 | 42 | 90 |
 | `m14` — M14 Sécurité & audit | 8 | 0 | 67 | 649 |
 | `m2` — M2 RDV, visites, consultations, imagerie | 10 | 3 | 238 | 1219 |
 | `m3` — M3 Hospitalisation & bloc | 10 | 2 | 147 | 618 |
 | `m4` — M4 Maternité, naissances, décès | 13 | 4 | 283 | 331 |
-| `m5` — M5 Laboratoire | 8 | 0 | 129 | 686 |
+| `m5` — M5 Laboratoire | 6 | 0 | 109 | 662 |
 | `m6` — M6 Pharmacie & stocks | 8 | 1 | 82 | 1286 |
 | `m7` — M7 Achats & fournisseurs | 6 | 2 | 55 | 39 |
 | `m8` — M8 Facturation & caisse | 2 | 1 | 39 | 409 |
@@ -179,7 +179,7 @@ Table fille `cfg.actes_variantes_grille` — 16 lignes : code text, source text,
 
 Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, quand jsonb, libelle text
 
-### `ged.documents` (collection « documents », 221 fiches)
+### `ged.documents` (collection « documents », 220 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -189,16 +189,11 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `format` | format | text |  |
 | `statut` | statut | text |  |
 | `taille` | taille | integer |  |
-| `cree_le` | _creeLe | timestamptz |  |
 | `archive` | archive | boolean |  |
-| `contenu` | contenu | text |  |
 | `libelle` | libelle | text |  |
 | `version` | version | integer |  |
-| `cree_par` | _creePar | text |  |
-| `resultat` | resultat | text |  |
 | `categorie` | categorie | text |  |
 | `depose_par` | deposePar | text |  |
-| `empreinte` | empreinte | text |  |
 | `rattache_a` | rattacheA | text |  |
 | `reference` | reference | text |  |
 | `conservation` | conservation | integer |  |
@@ -206,7 +201,6 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `consultations` | consultations | integer |  |
 | `etat_validation` | etatValidation | text |  |
 | `code_rattachement` | codeRattachement | text |  |
-| `empreinte_balance` | empreinteBalance | text |  |
 
 ### `m10.assurances_personnel` (collection « assurancesPersonnel », 0 fiches)
 
@@ -466,7 +460,7 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `modifie_le` | _modifieLe | timestamptz |  |
 | `modifie_par` | _modifiePar | text |  |
 
-### `m12.ecritures` (collection « ecritures », 506 fiches)
+### `m12.ecritures` (collection « ecritures », 500 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -481,21 +475,18 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `journal` | journal | text |  |
 | `libelle` | libelle | text |  |
 | `origine` | origine | text |  |
+| `piece_id` | pieceId | text | → pieces (240 orphelin(s) sur 240, pas de FK) |
 | `cree_par` | _creePar | text |  |
-| `archive_le` | _archiveLe | timestamptz |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
-| `archive_par` | _archivePar | text |  |
-| `modifie_par` | _modifiePar | text |  |
+| `piece_numero` | pieceNumero | text |  |
 | `compte_libelle` | compteLibelle | text |  |
 | `journal_libelle` | journalLibelle | text |  |
-| `motif_archivage` | _motifArchivage | text |  |
-| `piece_id` | pieceId | text | → pieces (242 orphelin(s) sur 242, pas de FK) |
-| `piece_numero` | pieceNumero | text |  |
 | `valide_le` | valideLe | date |  |
 | `valide_par` | validePar | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 | `centre_cout` | centreCout | text |  |
 
-### `m12.exercices` (collection « exercices », 5 fiches)
+### `m12.exercices` (collection « exercices », 3 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -828,32 +819,27 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `centre_destination` | centreDestination | text |  |
 | `formation_sanitaire` | formationSanitaire | text |  |
 
-### `m1.patients` (collection « patients », 213 fiches)
+### `m1.patients` (collection « patients », 210 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
+| `age` | age | integer |  |
 | `nom` | nom | text |  |
+| `code` | code | text |  |
 | `sexe` | sexe | text |  |
+| `assure` | assure | boolean |  |
 | `prenom` | prenom | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
-| `cree_par` | _creePar | text |  |
-| `telephone` | telephone | text |  |
-| `archive_le` | _archiveLe | timestamptz |  |
-| `modifie_le` | _modifieLe | timestamptz |  |
-| `archive_par` | _archivePar | text |  |
-| `modifie_par` | _modifiePar | text |  |
-| `observation` | observation | text |  |
-| `motif_archivage` | _motifArchivage | text |  |
-| `champ_inconnu_du_schema` | champInconnuDuSchema | text |  |
-| `age` | age | integer |  |
-| `code` | code | text |  |
-| `assure` | assure | boolean |  |
 | `adresse` | adresse | text |  |
 | `externe` | externe | boolean |  |
+| `cree_par` | _creePar | text |  |
 | `assureur` | assureur | text |  |
 | `quartier` | quartier | text |  |
+| `telephone` | telephone | text |  |
+| `modifie_le` | _modifieLe | timestamptz |  |
+| `modifie_par` | _modifiePar | text |  |
 | `date_creation` | dateCreation | date |  |
 | `date_naissance` | dateNaissance | date |  |
 | `age_reference_le` | ageReferenceLe | text |  |
@@ -1829,21 +1815,6 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `valide_bio_le` | valideBioLe | date |  |
 | `valide_bio_par` | valideBioPar | text |  |
 
-### `m5.donneurs` (collection « donneurs », 9 fiches)
-
-| Colonne | Champ | Type | Référence |
-|---|---|---|---|
-| `id` | id | text |  |
-| `statut` | statut | text |  |
-| `reference` | reference | text |  |
-| `nom` | nom | text |  |
-| `telephone` | telephone | text |  |
-| `groupe` | groupe | text |  |
-| `dernier_don` | dernierDon | date |  |
-| `nb_dons` | nbDons | integer |  |
-| `eligible` | eligible | boolean |  |
-| `type` | type | text |  |
-
 ### `m5.examens_labo` (collection « examensLabo », 70 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -1865,21 +1836,6 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
-
-### `m5.poches` (collection « poches », 15 fiches)
-
-| Colonne | Champ | Type | Référence |
-|---|---|---|---|
-| `id` | id | text |  |
-| `statut` | statut | text |  |
-| `reference` | reference | text |  |
-| `groupe` | groupe | text |  |
-| `volume` | volume | integer |  |
-| `date_prelevement` | datePrelevement | date |  |
-| `date_peremption` | datePeremption | date |  |
-| `donneur` | donneur | text |  |
-| `etat` | etat | text |  |
-| `reserve` | reserve | boolean |  |
 
 ### `m5.unites_labo` (collection « unitesLabo », 23 fiches)
 

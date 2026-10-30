@@ -242,16 +242,11 @@ CREATE TABLE IF NOT EXISTS "ged"."documents" (
   "format" text,
   "statut" text,
   "taille" integer,
-  "cree_le" timestamptz,
   "archive" boolean,
-  "contenu" text,
   "libelle" text,
   "version" integer,
-  "cree_par" text,
-  "resultat" text,
   "categorie" text,
   "depose_par" text,
-  "empreinte" text,
   "rattache_a" text,
   "reference" text,
   "conservation" integer,
@@ -259,7 +254,6 @@ CREATE TABLE IF NOT EXISTS "ged"."documents" (
   "consultations" integer,
   "etat_validation" text,
   "code_rattachement" text,
-  "empreinte_balance" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "ged"."documents" IS 'Collection « documents » — GED';
@@ -560,18 +554,15 @@ CREATE TABLE IF NOT EXISTS "m12"."ecritures" (
   "journal" text,
   "libelle" text,
   "origine" text,
+  "piece_id" text,
   "cree_par" text,
-  "archive_le" timestamptz,
-  "modifie_le" timestamptz,
-  "archive_par" text,
-  "modifie_par" text,
+  "piece_numero" text,
   "compte_libelle" text,
   "journal_libelle" text,
-  "motif_archivage" text,
-  "piece_id" text,
-  "piece_numero" text,
   "valide_le" date,
   "valide_par" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "centre_cout" text,
   "extra" jsonb
 );
@@ -945,27 +936,22 @@ CREATE INDEX IF NOT EXISTS "ix_fiches_reference_statut" ON "m1"."fiches_referenc
 CREATE INDEX IF NOT EXISTS "ix_fiches_reference_patient_id" ON "m1"."fiches_reference" ("patient_id");
 CREATE TABLE IF NOT EXISTS "m1"."patients" (
   "id" text PRIMARY KEY,
+  "age" integer,
   "nom" text,
+  "code" text,
   "sexe" text,
+  "assure" boolean,
   "prenom" text,
   "statut" text,
   "cree_le" timestamptz,
-  "cree_par" text,
-  "telephone" text,
-  "archive_le" timestamptz,
-  "modifie_le" timestamptz,
-  "archive_par" text,
-  "modifie_par" text,
-  "observation" text,
-  "motif_archivage" text,
-  "champ_inconnu_du_schema" text,
-  "age" integer,
-  "code" text,
-  "assure" boolean,
   "adresse" text,
   "externe" boolean,
+  "cree_par" text,
   "assureur" text,
   "quartier" text,
+  "telephone" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "date_creation" date,
   "date_naissance" date,
   "age_reference_le" text,
@@ -991,8 +977,8 @@ CREATE TABLE IF NOT EXISTS "m1"."patients" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m1"."patients" IS 'Collection « patients » — M1 Patients & DMI';
-CREATE INDEX IF NOT EXISTS "ix_patients_statut" ON "m1"."patients" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_patients_code" ON "m1"."patients" ("code");
+CREATE INDEX IF NOT EXISTS "ix_patients_statut" ON "m1"."patients" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_patients_souscripteur_id" ON "m1"."patients" ("souscripteur_id");
 CREATE INDEX IF NOT EXISTS "ix_patients_personnel_id" ON "m1"."patients" ("personnel_id");
 CREATE TABLE IF NOT EXISTS "m1"."pieces" (
@@ -2226,23 +2212,6 @@ CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_ordonnance_id" ON "m5"."demande
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_preleve_par_id" ON "m5"."demandes_analyses" ("preleve_par_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_dossier_consultation_id" ON "m5"."demandes_analyses" ("dossier_consultation_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_facture_id" ON "m5"."demandes_analyses" ("facture_id");
-CREATE TABLE IF NOT EXISTS "m5"."donneurs" (
-  "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
-  "nom" text,
-  "telephone" text,
-  "groupe" text,
-  "dernier_don" date,
-  "nb_dons" integer,
-  "eligible" boolean,
-  "type" text,
-  "extra" jsonb
-);
-COMMENT ON TABLE "m5"."donneurs" IS 'Collection « donneurs » — M5 Laboratoire';
-CREATE INDEX IF NOT EXISTS "ix_donneurs_statut" ON "m5"."donneurs" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_donneurs_reference" ON "m5"."donneurs" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_donneurs_type" ON "m5"."donneurs" ("type");
 CREATE TABLE IF NOT EXISTS "m5"."examens_labo" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -2266,23 +2235,6 @@ CREATE TABLE IF NOT EXISTS "m5"."plages_reactif" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m5"."plages_reactif" IS 'Collection « plagesReactif » — M5 Laboratoire';
-CREATE TABLE IF NOT EXISTS "m5"."poches" (
-  "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
-  "groupe" text,
-  "volume" integer,
-  "date_prelevement" date,
-  "date_peremption" date,
-  "donneur" text,
-  "etat" text,
-  "reserve" boolean,
-  "extra" jsonb
-);
-COMMENT ON TABLE "m5"."poches" IS 'Collection « poches » — M5 Laboratoire';
-CREATE INDEX IF NOT EXISTS "ix_poches_statut" ON "m5"."poches" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_poches_reference" ON "m5"."poches" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_poches_etat" ON "m5"."poches" ("etat");
 CREATE TABLE IF NOT EXISTS "m5"."unites_labo" (
   "id" text PRIMARY KEY,
   "source" text,
@@ -2820,3 +2772,99 @@ CREATE TABLE IF NOT EXISTS "sup"."support" (
   "extra" jsonb
 );
 COMMENT ON TABLE "sup"."support" IS 'Collection « support » — Support';
+
+-- Clés étrangères : seulement celles que les données actuelles respectent à 100 %.
+DO $$ BEGIN ALTER TABLE "m4"."accouchements" ADD CONSTRAINT "fk_accouchements_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."administrations" ADD CONSTRAINT "fk_administrations_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."administrations" ADD CONSTRAINT "fk_administrations_prescription_id" FOREIGN KEY ("prescription_id") REFERENCES "m2"."prescriptions" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."admissions" ADD CONSTRAINT "fk_admissions_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m13"."ambulance" ADD CONSTRAINT "fk_ambulance_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."checklists_bloc" ADD CONSTRAINT "fk_checklists_bloc_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m1"."constantes" ADD CONSTRAINT "fk_constantes_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."consultations" ADD CONSTRAINT "fk_consultations_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m1"."contre_references" ADD CONSTRAINT "fk_contre_references_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."cpon" ADD CONSTRAINT "fk_cpon_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."cr_maternite" ADD CONSTRAINT "fk_cr_maternite_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."cr_operatoires" ADD CONSTRAINT "fk_cr_operatoires_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."deces" ADD CONSTRAINT "fk_deces_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m5"."demandes_analyses" ADD CONSTRAINT "fk_demandes_analyses_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m5"."demandes_analyses" ADD CONSTRAINT "fk_demandes_analyses_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m5"."demandes_analyses" ADD CONSTRAINT "fk_demandes_analyses_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."demandes_imagerie" ADD CONSTRAINT "fk_demandes_imagerie_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."demandes_imagerie" ADD CONSTRAINT "fk_demandes_imagerie_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."dossiers_consultation" ADD CONSTRAINT "fk_dossiers_consultation_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."dossiers_obstetricaux" ADD CONSTRAINT "fk_dossiers_obstetricaux_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m8"."factures" ADD CONSTRAINT "fk_factures_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m8"."factures" ADD CONSTRAINT "fk_factures_personnel_id" FOREIGN KEY ("personnel_id") REFERENCES "m10"."personnel" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m8"."factures" ADD CONSTRAINT "fk_factures_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m1"."fiches_reference" ADD CONSTRAINT "fk_fiches_reference_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."file_attente" ADD CONSTRAINT "fk_file_attente_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."grossesses" ADD CONSTRAINT "fk_grossesses_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m6"."lots" ADD CONSTRAINT "fk_lots_produit_id" FOREIGN KEY ("produit_id") REFERENCES "m6"."produits" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m6"."mouvements" ADD CONSTRAINT "fk_mouvements_produit_id" FOREIGN KEY ("produit_id") REFERENCES "m6"."produits" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."naissances" ADD CONSTRAINT "fk_naissances_accouchement_id" FOREIGN KEY ("accouchement_id") REFERENCES "m4"."accouchements" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m14"."notifications" ADD CONSTRAINT "fk_notifications_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."ordonnances" ADD CONSTRAINT "fk_ordonnances_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."ordonnances" ADD CONSTRAINT "fk_ordonnances_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m10"."participations" ADD CONSTRAINT "fk_participations_evenement_id" FOREIGN KEY ("evenement_id") REFERENCES "m10"."evenements" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."partogrammes" ADD CONSTRAINT "fk_partogrammes_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m1"."patients" ADD CONSTRAINT "fk_patients_souscripteur_id" FOREIGN KEY ("souscripteur_id") REFERENCES "m9"."souscripteurs" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m1"."patients" ADD CONSTRAINT "fk_patients_personnel_id" FOREIGN KEY ("personnel_id") REFERENCES "m10"."personnel" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m1"."pieces" ADD CONSTRAINT "fk_pieces_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."planification_familiale" ADD CONSTRAINT "fk_planification_familiale_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."prescriptions" ADD CONSTRAINT "fk_prescriptions_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."prescriptions" ADD CONSTRAINT "fk_prescriptions_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."ptme" ADD CONSTRAINT "fk_ptme_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."rapports_medicaux" ADD CONSTRAINT "fk_rapports_medicaux_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."registre_sonu" ADD CONSTRAINT "fk_registre_sonu_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."releves" ADD CONSTRAINT "fk_releves_admission_id" FOREIGN KEY ("admission_id") REFERENCES "m3"."admissions" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."resultats_imagerie" ADD CONSTRAINT "fk_resultats_imagerie_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."scores_glasgow" ADD CONSTRAINT "fk_scores_glasgow_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m14"."soignants" ADD CONSTRAINT "fk_soignants_personnel_id" FOREIGN KEY ("personnel_id") REFERENCES "m10"."personnel" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."soins" ADD CONSTRAINT "fk_soins_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m2"."soins" ADD CONSTRAINT "fk_soins_admission_id" FOREIGN KEY ("admission_id") REFERENCES "m3"."admissions" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."soins_curatifs_maternite" ADD CONSTRAINT "fk_soins_curatifs_maternite_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m4"."suivi_maternite" ADD CONSTRAINT "fk_suivi_maternite_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "m3"."surveillances_transfusion" ADD CONSTRAINT "fk_surveillances_transfusion_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "socle"."taches" ADD CONSTRAINT "fk_taches_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "socle"."taches" ADD CONSTRAINT "fk_taches_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE "socle"."taches" ADD CONSTRAINT "fk_taches_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Banque de sang (E203 : poches et donneurs)
+CREATE SCHEMA IF NOT EXISTS "m5";
+CREATE TABLE IF NOT EXISTS "m5"."donneurs" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "nom" text,
+  "telephone" text,
+  "groupe" text,
+  "dernier_don" date,
+  "nb_dons" integer,
+  "eligible" boolean,
+  "type" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m5"."donneurs" IS 'Collection « donneurs » — M5 Laboratoire';
+CREATE INDEX IF NOT EXISTS "ix_donneurs_statut" ON "m5"."donneurs" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_donneurs_reference" ON "m5"."donneurs" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_donneurs_type" ON "m5"."donneurs" ("type");
+
+CREATE TABLE IF NOT EXISTS "m5"."poches" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "groupe" text,
+  "volume" integer,
+  "date_prelevement" date,
+  "date_peremption" date,
+  "donneur" text,
+  "etat" text,
+  "reserve" boolean,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m5"."poches" IS 'Collection « poches » — M5 Laboratoire';
+CREATE INDEX IF NOT EXISTS "ix_poches_statut" ON "m5"."poches" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_poches_reference" ON "m5"."poches" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_poches_etat" ON "m5"."poches" ("etat");
+
