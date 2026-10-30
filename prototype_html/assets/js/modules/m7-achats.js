@@ -616,9 +616,14 @@
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 if (!lignes.length) { U.toast('Ajouter au moins un article.', { type: 'error' }); return; }
                 v.lignes = lignes;
+                /* E71 : le champ « étape » n'est pas offert à qui n'anime pas le circuit, donc absent de la saisie collectée — le bon était
+                   enregistré SANS étape et n'apparaissait dans aucune vue. Il part SOUMIS, comme le dit le défaut du formulaire. */
+                if (!record && !v.etape) v.etape = 'soumis';
                 v.montantEstime = C.sum(lignes, function (l) { return l.quantiteDemandee * l.prixAchat; });
-                if (!v.reference) v.reference = C.nextRef('BEB-2026-', 4);
-                if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar) {
+                /* E75 : le formulaire ne porte pas la référence ; à la modification, `!v.reference` était toujours vrai et le bon était RENUMÉROTÉ. */
+                if (!record) v.reference = C.referenceSuivante('BEB-2026-', 4, col.all());   /* E70 : série lue sur les bons existants, plus un compteur de page */
+                /* E74 : le formulaire ne porte pas le validateur ; sans cette garde, modifier un bon DÉJÀ validé écrasait le vrai validateur. */
+                if (['validation_da', 'accorde', 'prepare', 'livre', 'cloture'].indexOf(v.etape) !== -1 && !v.valideePar && !(record && record.valideePar)) {
                   v.valideePar = 'TAKI Alimatou';
                 }
                 var res = record ? col.update(record.id, v) : col.insert(v);
@@ -875,8 +880,10 @@
                 v.fournisseurNom = four ? four.nom : v.fournisseur;
                 v.delaiLivraison = four ? four.delai : null;
                 v.lignes = lignes; v.montant = C.sum(lignes, 'montant');
-                if (!v.reference) v.reference = C.nextRef('BC-2026-', 4);
-                if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar) {
+                /* E75 : idem — modifier une commande ne change pas son numéro. */
+                if (!record) v.reference = C.referenceSuivante('BC-2026-', 4, col.all());   /* E70 */
+                /* E74 : idem — ne jamais remplacer le validateur ni la date de validation d'une commande déjà validée. */
+                if (['validee', 'transmise', 'livree', 'soldee'].indexOf(v.statutCommande) !== -1 && !v.valideePar && !(record && record.valideePar)) {
                   v.valideePar = 'TAKI Alimatou'; v.dateValidation = C.iso(AUJ);
                 }
                 var res = record ? col.update(record.id, v) : col.insert(v);
@@ -1016,13 +1023,16 @@
            ou un écart constaté après coup ne doivent pas obliger à ressaisir. */
         rowActions: function (l) {
           return [K.iconBtn('printer', 'Imprimer', function () { etat(l); })]
-            .concat(K.actionsLigne(col, champsLivraison, { entite: 'bon de livraison' })(l));
+            .concat(K.actionsLigne(col, champsLivraison, { entite: 'bon de livraison',
+            /* E78 : le formulaire saisit les contrôleurs en TEXTE ; sans cette conversion, modifier un bon écrivait une chaîne là où l'écran lit une liste
+               (`.join` sur une chaîne : le détail du bon cassait au clic). */
+            transform: function (v) { v.controlePar = String(v.controlePar || '').split(',').map(function (x) { return x.trim(); }).filter(Boolean); return v; } })(l));
         },
         actions: [K.creer(col, champsLivraison, {
           titre: 'Nouveau bon de livraison', entite: 'Bon de livraison',
           defauts: function () { return { date: C.iso(AUJ), statutReception: 'conforme' }; },
           transform: function (v) {
-            v.reference = C.nextRef('BL-', 5);
+            v.reference = C.referenceSuivante('BL-', 5, col.all());   /* E70 */
             var f = D.FOURNISSEURS.filter(function (x) { return x.code === v.fournisseur; })[0];
             v.fournisseurNom = f ? f.nom : v.fournisseur;
             v.lignes = v.lignes || [];
@@ -1141,7 +1151,9 @@
           { key: 'valideePar', label: 'Validée par' },
         ],
         rowActions: function (c) {
-          return [K.btn('Réceptionner', { size: 'sm', variant: 'primary', icon: 'package-check', onclick: function () { receptionner(c); } })];
+          /* E79 : réceptionner ÉCRIT (bordereau, entrée en stock, CUMP) — la commande est déclarée comme telle, donc absente pour un profil qui lit
+             l'écran (direction, comptable, biologiste). Elle était offerte à tous. */
+          return [K.commande('Réceptionner', { size: 'sm', variant: 'primary', icon: 'package-check', onclick: function () { receptionner(c); } })].filter(Boolean);
         },
       });
       host.appendChild(table);
@@ -1236,7 +1248,7 @@
                     stockGros: p.stockGros + x.recu, stock: nouvelleQte, cump: nouveauCump,
                   });
                   var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-                    reference: C.nextRef('M', 6), date: v.date,
+                    reference: C.referenceSuivante('M', 6, S.collection('mouvements').all()), date: v.date,   /* E70 */
                     produitId: p.id, produit: p.designation,
                     type: 'entree', typeLabel: 'Entrée', quantite: x.recu, stockType: 'gros',
                     justificatif: 'Bon de livraison ' + v.referenceBL,
