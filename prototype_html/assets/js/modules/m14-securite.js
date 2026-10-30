@@ -1071,6 +1071,14 @@
                 tousModules().forEach(function (x) {
                   ferme[x.code] = { voir: false, editer: false, annuler: false };
                 });
+                /* Un écran UNIVERSEL ne cède que devant une surcharge d'ÉCRAN (nav.js, 29/10/2026) : fermer les
+                   modules ne suffit plus à garder un rôle neuf à zéro écran. On les ferme donc nommément — l'administrateur
+                   rouvre ensuite, un par un, ce qu'il veut. */
+                var fermesEcrans = {};
+                N.ids().forEach(function (idEcran) {
+                  var e = N.get(idEcran);
+                  if (e && e.universel) fermesEcrans[idEcran] = { voir: false, editer: false, annuler: false };
+                });
                 /* Upsert : si une fiche existe déjà pour cet identifiant —
                    un rôle archivé qu'on recrée, par exemple — on la reprend
                    plutôt que d'en poser une seconde. */
@@ -1080,7 +1088,7 @@
                     nouveau: true, statut: 'actif', libelle: v.libelle,
                     libelleCourt: v.libelleCourt || v.libelle, libelleOrigine: v.libelle,
                     couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                    droits: ferme, droitsEcrans: {},
+                    droits: ferme, droitsEcrans: fermesEcrans,
                   });
                   N.invaliderRbac();
                   m.close(); afficher();
@@ -1092,7 +1100,7 @@
                   libelle: v.libelle, libelleCourt: v.libelleCourt || v.libelle,
                   libelleOrigine: v.libelle,
                   couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                  droits: ferme, droitsEcrans: {},
+                  droits: ferme, droitsEcrans: fermesEcrans,
                   definiLe: C.iso(AUJ), definiPar: S.currentUser(),
                 });
                 N.invaliderRbac();

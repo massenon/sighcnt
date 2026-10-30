@@ -20,6 +20,8 @@
     "prototype:check": "npm run check --prefix prototype_html",
     "prototype:test": "npm run test --prefix prototype_html",
     "prototype:serveur": "npm run serveur --prefix prototype_html",
-    "banc:sync": "npm run banc --prefix packages/sync"
+    "banc:sync": "npm run banc --prefix packages/sync",
+    "prototype:referentiels": "npm run referentiels --prefix prototype_html",
+    "test:rbac": "npm test --prefix packages/rbac"
   }
 }

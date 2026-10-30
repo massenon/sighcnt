@@ -47,6 +47,17 @@ async function monde(opts = {}) {
   ouverts.push(m);
   const portMere = await portLibre();
   const lancer = (script, args) => new Promise((ok, ko) => {
+    /* SIGH_MERE / SIGH_FILEUL / SIGH_MOBILE = dart : le MÊME banc pilote l'exécutable Dart (packages/sync_dart/build/) ;
+       l'exécutable annonce « PRET <port> » sur sa sortie standard. On peut MÉLANGER (mère Dart, postes Node…). */
+    const exe = { 'mere.js': 'mere', 'fileul.js': 'fileul', 'mobile.js': 'mobile' }[script];
+    if (exe && process.env['SIGH_' + exe.toUpperCase()] === 'dart') {
+      const bin = path.join(__dirname, '..', '..', 'sync_dart', 'build', exe + '_bundle', 'bundle', 'bin', exe);
+      const proc = require('node:child_process').spawn(bin, args, { stdio: ['ignore', 'pipe', 'inherit'] });
+      let tampon = '';
+      proc.stdout.on('data', (d) => { tampon += d; if (/PRET \d+/.test(tampon)) { proc.stdout.removeAllListeners('data'); proc.stdout.resume(); ok(proc); } });
+      proc.once('error', ko); proc.once('exit', (c) => ko(new Error(exe + ' (dart) sorti : ' + c)));
+      return;
+    }
     const p = fork(path.join(__dirname, script), args, { stdio: ['ignore', 'ignore', 'inherit', 'ipc'], execArgv: ['--no-warnings'] });
     p.once('message', () => ok(p)); p.once('error', ko);
   });
@@ -55,7 +66,7 @@ async function monde(opts = {}) {
     const portRel = await portLibre();
     m.relais = {
       port: portRel, proc: null,
-      async demarrer() { m.relais.proc = await lancer('relais.js', [`--port=${portRel}`, `--db=${path.join(dir, 'relais.sqlite')}`, '--banc=1', `--seuil-battement=${opts.seuilBattement || 300000}`]); },
+      async demarrer() { m.relais.proc = await lancer(process.env.SIGH_RELAIS === 'laravel' ? 'relais-laravel.js' : 'relais.js', [`--port=${portRel}`, `--db=${path.join(dir, 'relais.sqlite')}`, '--banc=1', `--seuil-battement=${opts.seuilBattement || 300000}`]); },
       tuer() { if (m.relais.proc) { m.relais.proc.kill('SIGKILL'); m.relais.proc = null; } return dormir(80); },
       direct: (methode, chemin, corps, ent) => appel(`http://127.0.0.1:${portRel}`, methode, chemin, corps, Object.assign({ 'x-mere': 'secret-mere' }, ent || {})),
       brut: (methode, chemin, corps, ent) => appel(`http://127.0.0.1:${portRel}`, methode, chemin, corps, ent),
@@ -141,6 +152,7 @@ async function monde(opts = {}) {
     for (const x of Object.values(m.mobiles)) if (x.proc) x.proc.kill('SIGKILL');
     if (m.mere.proc) m.mere.proc.kill('SIGKILL');
     if (m.relais && m.relais.proc) m.relais.proc.kill('SIGKILL');
+    if (m.relais && process.env.SIGH_RELAIS === 'laravel') require('node:child_process').spawnSync('pkill', ['-f', `php -S 127.0.0.1:${m.relais.port}`]);
     if (m.internet) { m.internet.arreter(); m.reseauMobile.arreter(); }
     m.reseau.arreter(); await dormir(100);
     try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { /* tant pis */ }

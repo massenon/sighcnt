@@ -1286,6 +1286,12 @@
    * La propriété entry.module (code) déclenche la consultation des surcharges ;
    * seul le manifeste s'applique — c'est le cas des écrans hors ruban.
    */
+  /** Une surcharge D'ÉCRAN pose-t-elle explicitement un droit ? (le module n'est pas consulté) */
+  function surchargeEcranExplicite(roleId, ecranId) {
+    var f = surcharges()[roleId];
+    var parEcran = f && f.droitsEcrans && ecranId && f.droitsEcrans[ecranId];
+    return parEcran && parEcran.voir != null ? !!parEcran.voir : null;
+  }
   /** Une surcharge pose-t-elle EXPLICITEMENT un droit pour cet écran ? */
   function surchargeExplicite(roleId, ecranId, code) {
     var f = surcharges()[roleId];
@@ -1359,7 +1365,14 @@
        matrice administrable qui ne saurait qu'enlever ne permettrait jamais
        de doter un rôle nouvellement créé : il n'apparaît dans aucune liste du
        manifeste, et resterait inutilisable quoi qu'on lui ouvre. */
-    var explicite = surchargeExplicite(roleId, entry.id, code);
+    /* UN ÉCRAN UNIVERSEL NE CÈDE QUE DEVANT UNE SURCHARGE D'ÉCRAN (29/10/2026). Il ne doit pas céder devant la
+       fermeture de son MODULE : un rôle créé « à zéro » reçoit une fiche qui ferme chaque module nommément, M7
+       compris, et perdait alors « exprimer un besoin » alors que cet écran appartient à TOUT agent. Défaut
+       relevé en extrayant la matrice de la maquette : six rôles (aide-soignante, échographiste, surveillant,
+       assistant de direction, chirurgien, anesthésiste) n'ouvraient pas l'écran des besoins. */
+    var explicite = entry.universel
+      ? surchargeEcranExplicite(roleId, entry.id)
+      : surchargeExplicite(roleId, entry.id, code);
     if (explicite === false) return false;
     if (explicite === true) return true;
 

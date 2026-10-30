@@ -16,7 +16,11 @@
     "verify": "npm run lint && npm run build && npm run check && npm run test",
     "audit-rbac": "node build/audit-rbac.js",
     "inventaire-rbac": "node build/inventaire-rbac.js",
-    "serveur": "node build/serveur.js"
+    "serveur": "node build/serveur.js",
+    "extraire": "node build/extraire.js",
+    "vecteurs": "node build/vecteurs.js",
+    "parite": "node build/parite.js",
+    "referentiels": "node build/extraire.js && node build/vecteurs.js && node build/parite.js"
   },
   "devDependencies": {
     "puppeteer": "^25.7.0",

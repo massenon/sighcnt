@@ -44,3 +44,4 @@ Thumbs.db
 .idea/
 
 prototype_html/api/sauvegardes/
+packages/sync_dart/build/

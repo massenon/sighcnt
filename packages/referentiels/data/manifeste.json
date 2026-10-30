@@ -1,0 +1,5962 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/extraire.js — manifeste de navigation de la maquette (domaines, rangées, écrans).",
+ "modules": [
+  {
+   "domaine": "Accueil",
+   "code": "M2",
+   "label": "RDV, Visites & Consultations",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m2-agenda",
+    "m2-rendezvous",
+    "m2-file-attente",
+    "m2-file-cabinet",
+    "m2-agenda-medecin",
+    "m2-affichage",
+    "m2-domicile",
+    "m2-registre-appels",
+    "m2-consultations"
+   ]
+  },
+  {
+   "domaine": "Accueil",
+   "code": "M1",
+   "label": "Patients & constantes",
+   "alias": true,
+   "secondaire": false,
+   "roles": "ALL",
+   "ecrans": [
+    "m1-patients",
+    "m1-constantes",
+    "m1-externe"
+   ]
+  },
+  {
+   "domaine": "Accueil",
+   "code": "M13",
+   "label": "Courriers & orientation",
+   "alias": true,
+   "secondaire": false,
+   "roles": "ALL",
+   "ecrans": [
+    "m13-courriers",
+    "m13-repertoire-ambulances"
+   ]
+  },
+  {
+   "domaine": "Accueil",
+   "code": "CFG",
+   "label": "Tarification & information patient",
+   "alias": true,
+   "secondaire": false,
+   "roles": "ALL",
+   "ecrans": [
+    "cfg-tarifs",
+    "cfg-catalogue",
+    "cfg-certificats"
+   ]
+  },
+  {
+   "domaine": "Soins",
+   "code": "M1",
+   "label": "Patients & Dossier médical",
+   "alias": false,
+   "secondaire": false,
+   "roles": "*",
+   "ecrans": [
+    "m1-patients",
+    "m1-patient-profil",
+    "m1-externe",
+    "m1-antecedents",
+    "m1-pieces",
+    "m1-constantes",
+    "m1-reference",
+    "m1-contre-reference",
+    "m1-documents",
+    "m1-numerisation"
+   ]
+  },
+  {
+   "domaine": "Soins",
+   "code": "M2",
+   "label": "Consultations & prescriptions",
+   "alias": false,
+   "secondaire": true,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m2-dossiers-consultation",
+    "m2-consultation-fiche",
+    "m2-pathologies",
+    "m2-ordonnances",
+    "m2-prescriptions",
+    "m2-salle-soins"
+   ]
+  },
+  {
+   "domaine": "Soins",
+   "code": "M2",
+   "label": "Imagerie médicale",
+   "alias": false,
+   "secondaire": true,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m2-dashboard-imagerie",
+    "m2-imagerie-demandes",
+    "m2-imagerie",
+    "m2-imagerie-radiographie",
+    "m2-imagerie-mammographie",
+    "m2-imagerie-scanner",
+    "m2-imagerie-irm",
+    "m2-echographie-galerie"
+   ]
+  },
+  {
+   "domaine": "Soins",
+   "code": "M3",
+   "label": "Hospitalisation",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ],
+   "ecrans": [
+    "m3-admissions",
+    "m3-observation",
+    "m3-plan-lits",
+    "m3-chambres",
+    "m3-feuille-temperature",
+    "m3-soins",
+    "m3-administrations",
+    "m3-cpa",
+    "m3-bloc-cro",
+    "m3-cr-anesthesie",
+    "m3-bloc-checklist",
+    "m3-demande-examen",
+    "m3-bons-pansements",
+    "m3-surveillance",
+    "m3-transfusion",
+    "m3-glasgow",
+    "m3-rapport",
+    "m3-visites-patients",
+    "m3-sorties",
+    "m3-sortie-avis-medical"
+   ]
+  },
+  {
+   "domaine": "Soins",
+   "code": "M4",
+   "label": "Maternité, Naissances & Décès",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m4-dossier-obstetrical",
+    "m4-maternite",
+    "m4-cpn",
+    "m4-partogramme",
+    "m4-accouchements",
+    "m4-dossier-bebe",
+    "m4-cpon",
+    "m4-planification",
+    "m4-sonu",
+    "m4-ptme",
+    "m4-soins-curatifs",
+    "m4-comptes-rendus",
+    "m4-naissances",
+    "m4-deces"
+   ]
+  },
+  {
+   "domaine": "Soins",
+   "code": "M5",
+   "label": "Laboratoire",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m5-demandes",
+    "m5-demandes-maternite",
+    "m5-demandes-hospitalisation",
+    "m5-resultats",
+    "m5-resultats-comparatif",
+    "m5-impression-resultats",
+    "m5-catalogue",
+    "m5-unites",
+    "m5-valeurs-reference",
+    "m5-prelevement",
+    "m5-stats",
+    "m5-reactifs",
+    "m5-reactifs-stats",
+    "m5-banque-sang",
+    "m5-donneurs"
+   ]
+  },
+  {
+   "domaine": "Logistique",
+   "code": "M6",
+   "label": "Pharmacie & Stocks",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m6-pharmacie-interne",
+    "m6-pharmacie-externe",
+    "m6-dashboard",
+    "m6-produits",
+    "m6-stock-gros",
+    "m6-stock-detail",
+    "m6-transferts",
+    "m6-mouvements",
+    "m6-lots",
+    "m6-alertes",
+    "m6-inventaire",
+    "m6-pertes",
+    "m6-dispensation",
+    "m6-etiquetage",
+    "m6-reprise",
+    "m6-point-ventes",
+    "m6-point-stock"
+   ]
+  },
+  {
+   "domaine": "Logistique",
+   "code": "M7",
+   "label": "Achats & Fournisseurs",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m7-besoins",
+    "m7-commandes",
+    "m7-livraisons",
+    "m7-receptions",
+    "m7-ecarts",
+    "m7-pv-reception-consommables",
+    "m7-pv-reception-reactifs",
+    "m7-fournisseurs",
+    "m7-factures-fournisseurs"
+   ]
+  },
+  {
+   "domaine": "Financier",
+   "code": "M8",
+   "label": "Facturation & Caisse",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m8-dashboard",
+    "m8-facturation",
+    "m8-factures",
+    "m8-proforma",
+    "m8-paiements",
+    "m8-reliquats",
+    "m8-remboursements",
+    "m8-facture-avoir",
+    "m8-caisse",
+    "m8-operations",
+    "m8-recettes"
+   ]
+  },
+  {
+   "domaine": "Financier",
+   "code": "M9",
+   "label": "Assurances & Créances",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m9-dashboard",
+    "m9-compagnies",
+    "m9-assures",
+    "m9-conventions",
+    "m9-prises-en-charge",
+    "m9-factures-assureur",
+    "m9-facture-mere",
+    "m9-historique",
+    "m9-creances",
+    "m9-relances"
+   ]
+  },
+  {
+   "domaine": "Financier",
+   "code": "MECEF",
+   "label": "MECeF — Facture normalisée",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "mecef-dashboard",
+    "mecef-factures",
+    "mecef-transmission",
+    "mecef-avoirs",
+    "mecef-journal",
+    "mecef-config"
+   ]
+  },
+  {
+   "domaine": "Financier",
+   "code": "M12",
+   "label": "Comptabilité SYSCOHADA",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m12-dashboard",
+    "m12-plan-comptable",
+    "m12-journaux",
+    "m12-ecritures",
+    "m12-depenses",
+    "m12-grand-livre",
+    "m12-balance",
+    "m12-analytique",
+    "m12-budgets",
+    "m12-immobilisations",
+    "m12-banques",
+    "m12-compte-resultat",
+    "m12-flux-tresorerie",
+    "m12-seuil-rentabilite",
+    "m12-etats-financiers",
+    "m12-baseline-2025",
+    "m12-echeances",
+    "m12-cloture",
+    "m12-ouverture"
+   ]
+  },
+  {
+   "domaine": "RH",
+   "code": "M10",
+   "label": "Ressources humaines",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m10-fiches-poste",
+    "m10-dashboard",
+    "m10-personnel",
+    "m10-employe-profil",
+    "m10-contrats",
+    "m10-badges",
+    "m10-badges-verification",
+    "m10-badges-modeles",
+    "m10-badges-impression",
+    "m10-planning",
+    "m10-stats-gardes",
+    "m10-stats-permanences",
+    "m10-stats-presence",
+    "m10-presences",
+    "m10-conges",
+    "m10-missions",
+    "m10-evaluations",
+    "m10-sanctions",
+    "m10-primes",
+    "m10-evenements",
+    "m10-participations",
+    "m10-assurance-personnel",
+    "m10-prestataires",
+    "m10-securite-entretien"
+   ]
+  },
+  {
+   "domaine": "RH",
+   "code": "M11",
+   "label": "Paie & Primes",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m11-prets-etudes",
+    "m11-dashboard",
+    "m11-calcul",
+    "m11-bulletins",
+    "m11-cotisations",
+    "m11-heures-sup",
+    "m11-avances",
+    "m11-ortb",
+    "m11-validation"
+   ]
+  },
+  {
+   "domaine": "Administration",
+   "code": "M13",
+   "label": "Administration & Ambulance",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ],
+   "ecrans": [
+    "m13-courriers",
+    "m13-reunions",
+    "m13-evenements",
+    "m13-plan-annuel",
+    "m13-notes-service",
+    "m13-ambulance",
+    "m13-repertoire-ambulances",
+    "m13-maintenance",
+    "adm-validations",
+    "adm-enquetes",
+    "adm-satisfaction"
+   ]
+  },
+  {
+   "domaine": "Administration",
+   "code": "GED",
+   "label": "Gestion documentaire",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "assistant_comptable"
+   ],
+   "ecrans": [
+    "ged-bibliotheque",
+    "ged-workflow",
+    "ged-archives"
+   ]
+  },
+  {
+   "domaine": "Administration",
+   "code": "RAP",
+   "label": "Rapports & Impression",
+   "alias": false,
+   "secondaire": false,
+   "roles": "*",
+   "ecrans": [
+    "rapports-bibliotheque",
+    "rapports-direction",
+    "rapports-generateur",
+    "rapports-historique"
+   ]
+  },
+  {
+   "domaine": "Système",
+   "code": "M14",
+   "label": "Sécurité & Utilisateurs",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "ecrans": [
+    "m14-utilisateurs",
+    "m14-roles",
+    "m14-soignants",
+    "m14-sessions",
+    "m14-audit",
+    "m14-sauvegardes",
+    "m14-taches"
+   ]
+  },
+  {
+   "domaine": "Système",
+   "code": "CFG",
+   "label": "Configuration Clinique",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ],
+   "ecrans": [
+    "cfg-organisation",
+    "cfg-branding",
+    "cfg-tarifs",
+    "cfg-catalogue",
+    "cfg-imagerie-catalogue",
+    "cfg-entetes",
+    "cfg-types-piece",
+    "cfg-rappels",
+    "cfg-certificats",
+    "cfg-natures-facture",
+    "cfg-centres-couts",
+    "cfg-regles",
+    "cfg-fiscalite",
+    "cfg-comptabilite",
+    "cfg-notifications",
+    "cfg-compte",
+    "cfg-modules",
+    "cfg-systeme"
+   ]
+  },
+  {
+   "domaine": "Pilotage",
+   "code": "PIL",
+   "label": "Pilotage & analyse",
+   "alias": false,
+   "secondaire": false,
+   "roles": "*",
+   "ecrans": [
+    "dash-direction",
+    "dash-da",
+    "dash-croise",
+    "dash-admin",
+    "m4-stats-maternite",
+    "m2-stats-echographie",
+    "m5-stats-examens",
+    "m2-stats-consultations",
+    "m3-stats-bloc",
+    "m3-stats-hospitalisations",
+    "m10-cout-agent",
+    "m12-rentabilite-groupes",
+    "m12-tableau-decisionnel"
+   ]
+  },
+  {
+   "domaine": "Pilotage",
+   "code": "M12",
+   "label": "Gestion & trésorerie",
+   "alias": false,
+   "secondaire": true,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ],
+   "ecrans": [
+    "m12-bfr",
+    "m12-cout-activite"
+   ]
+  },
+  {
+   "domaine": "Pilotage",
+   "code": "DASH",
+   "label": "Tableaux de bord par poste",
+   "alias": false,
+   "secondaire": false,
+   "roles": "*",
+   "ecrans": [
+    "dash-medecin",
+    "dash-infirmier",
+    "dash-pharmacien",
+    "dash-laborantin",
+    "dash-stock",
+    "dash-caissier",
+    "dash-comptable",
+    "dash-rh",
+    "dash-receptionniste",
+    "dash-admin-agent",
+    "dash-ambulancier",
+    "dash-aide-soignant",
+    "dash-echographiste",
+    "dash-surveillant",
+    "dash-assistant-comptable",
+    "dash-chirurgien",
+    "dash-anesthesiste",
+    "dash-aide-comptable",
+    "dash-maternite",
+    "dash-patient"
+   ]
+  }
+ ],
+ "ecrans": [
+  {
+   "id": "hub-m2",
+   "label": "RDV, Visites & Consultations",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-agenda",
+   "label": "Agenda",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-rendezvous",
+   "label": "Rendez-vous & visites",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-file-attente",
+   "label": "File d’attente",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-file-cabinet",
+   "label": "File par cabinet",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-agenda-medecin",
+   "label": "Agenda du médecin",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "chirurgien",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m2-affichage",
+   "label": "Écran d’appel des patients",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-domicile",
+   "label": "Consultations & soins à domicile",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-registre-appels",
+   "label": "Registre des appels",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-consultations",
+   "label": "Consultations",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m1",
+   "label": "Patients & Dossier médical",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-patients",
+   "label": "Répertoire des patients",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-patient-profil",
+   "label": "Fiche patient",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-externe",
+   "label": "Patient externe",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "admin",
+    "direction",
+    "da",
+    "laborantin",
+    "medecin",
+    "infirmier"
+   ]
+  },
+  {
+   "id": "m1-antecedents",
+   "label": "Antécédents & allergies",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-pieces",
+   "label": "Certificats & attestations",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-constantes",
+   "label": "Constantes à l’accueil",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-reference",
+   "label": "Fiches de référence",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-contre-reference",
+   "label": "Fiches de contre-référence",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-documents",
+   "label": "Documents numérisés",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-numerisation",
+   "label": "Plan de numérisation",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m2-dossiers-consultation",
+   "label": "Dossiers de consultation",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-consultation-fiche",
+   "label": "Fiche de consultation",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-pathologies",
+   "label": "Pathologies & morbidité",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-ordonnances",
+   "label": "Ordonnances",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-prescriptions",
+   "label": "Prescriptions",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-salle-soins",
+   "label": "Salle de soins",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-dashboard-imagerie",
+   "label": "Poste d’imagerie médicale",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-imagerie-demandes",
+   "label": "Demandes d’imagerie médicale",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-imagerie",
+   "label": "Tableau Échographie",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-imagerie-radiographie",
+   "label": "Tableau Radiographie",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-imagerie-mammographie",
+   "label": "Tableau Mammographie",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-imagerie-scanner",
+   "label": "Tableau Scanner",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-imagerie-irm",
+   "label": "Tableau IRM",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m2-echographie-galerie",
+   "label": "Galerie des clichés",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m3",
+   "label": "Hospitalisation",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-admissions",
+   "label": "Admissions",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-observation",
+   "label": "Mise en observation",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-plan-lits",
+   "label": "Plan des lits",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-chambres",
+   "label": "Chambres & lits",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-feuille-temperature",
+   "label": "Feuille de température",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-soins",
+   "label": "Feuille de soins",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-administrations",
+   "label": "Administration des traitements",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-cpa",
+   "label": "Consultation pré-anesthésique",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-bloc-cro",
+   "label": "Comptes rendus opératoires",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-cr-anesthesie",
+   "label": "Comptes rendus d’anesthésie",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-bloc-checklist",
+   "label": "Check-listes du bloc",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-demande-examen",
+   "label": "Demande d’examen",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-bons-pansements",
+   "label": "Bons de pansement",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-surveillance",
+   "label": "Fiche de surveillance",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-transfusion",
+   "label": "Surveillance transfusionnelle",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-glasgow",
+   "label": "Score de Glasgow",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-rapport",
+   "label": "Rapport médical",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-visites-patients",
+   "label": "Visites aux hospitalisés",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-sorties",
+   "label": "Sorties d’hospitalisation",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "m3-sortie-avis-medical",
+   "label": "Sortie contre avis médical",
+   "module": "M3",
+   "moduleLabel": "Hospitalisation",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "hub-m4",
+   "label": "Maternité, Naissances & Décès",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-dossier-obstetrical",
+   "label": "Dossier obstétrical",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-maternite",
+   "label": "Suivi maternité",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-cpn",
+   "label": "CPN & carte maternelle",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-partogramme",
+   "label": "Partogramme",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-accouchements",
+   "label": "Accouchements",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-dossier-bebe",
+   "label": "Dossier bébé & soins du nouveau-né",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-cpon",
+   "label": "Consultations post-natales (CPoN)",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-planification",
+   "label": "Planification familiale",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-sonu",
+   "label": "Registre SONUB / SONUC",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-ptme",
+   "label": "Registre PTME",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-soins-curatifs",
+   "label": "Soins curatifs & urgences maternité",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-comptes-rendus",
+   "label": "Comptes rendus de maternité",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-naissances",
+   "label": "Registre des naissances",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m4-deces",
+   "label": "Registre des décès",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m5",
+   "label": "Laboratoire",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-demandes",
+   "label": "Demandes d’analyses",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction",
+    "infirmier"
+   ]
+  },
+  {
+   "id": "m5-demandes-maternite",
+   "label": "Demandes — maternité",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction",
+    "infirmier"
+   ]
+  },
+  {
+   "id": "m5-demandes-hospitalisation",
+   "label": "Demandes — hospitalisation",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction",
+    "infirmier"
+   ]
+  },
+  {
+   "id": "m5-resultats",
+   "label": "Saisie des résultats",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction",
+    "infirmier"
+   ]
+  },
+  {
+   "id": "m5-resultats-comparatif",
+   "label": "Comparatif des résultats",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction",
+    "infirmier"
+   ]
+  },
+  {
+   "id": "m5-impression-resultats",
+   "label": "Impression des résultats",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-catalogue",
+   "label": "Catalogue des analyses",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-unites",
+   "label": "Unités de mesure",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-valeurs-reference",
+   "label": "Valeurs de référence",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-prelevement",
+   "label": "Salle de prélèvement",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "infirmier",
+    "admin",
+    "direction",
+    "dm"
+   ]
+  },
+  {
+   "id": "m5-stats",
+   "label": "Statistiques du laboratoire",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-reactifs",
+   "label": "Réactifs & consommables",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-reactifs-stats",
+   "label": "Statistiques des réactifs",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-banque-sang",
+   "label": "Banque de sang",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m5-donneurs",
+   "label": "Donneurs & transfusions",
+   "module": "M5",
+   "moduleLabel": "Laboratoire",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m6",
+   "label": "Pharmacie & Stocks",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-pharmacie-interne",
+   "label": "Pharmacie interne — urgences",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-pharmacie-externe",
+   "label": "Pharmacie externe — voie orale",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-dashboard",
+   "label": "Tableau de bord stock",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-produits",
+   "label": "Référentiel produits",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-stock-gros",
+   "label": "Stock gros (magasin)",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-stock-detail",
+   "label": "Stock détail (pharmacie)",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-transferts",
+   "label": "Transferts gros → détail",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-mouvements",
+   "label": "Mouvements de stock",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-lots",
+   "label": "Lots & péremptions (FEFO)",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-alertes",
+   "label": "Alertes & seuils",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-inventaire",
+   "label": "Inventaires",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-pertes",
+   "label": "Pertes, casses & rebuts",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-dispensation",
+   "label": "Dispensation",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-etiquetage",
+   "label": "Étiquetage & emplacements",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-reprise",
+   "label": "Reprise SAGE 100",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m6-point-ventes",
+   "label": "Suivi des ventes",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "dm",
+    "caissier",
+    "admin",
+    "direction",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m6-point-stock",
+   "label": "Point du stock valorisé",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "dm",
+    "pharmacien",
+    "admin",
+    "direction",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "hub-m7",
+   "label": "Achats & Fournisseurs",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m7-besoins",
+   "label": "Bons d’expression de besoins",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": true,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m7-commandes",
+   "label": "Bons de commande",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "m7-livraisons",
+   "label": "Bons de livraison",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "m7-receptions",
+   "label": "Réceptions & contrôles",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "m7-ecarts",
+   "label": "Écarts de livraison",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "m7-pv-reception-consommables",
+   "label": "PV de réception — consommables",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "admin",
+    "direction",
+    "comptable"
+   ]
+  },
+  {
+   "id": "m7-pv-reception-reactifs",
+   "label": "PV de réception — réactifs",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "m7-fournisseurs",
+   "label": "Fournisseurs",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m7-factures-fournisseurs",
+   "label": "Factures fournisseurs",
+   "module": "M7",
+   "moduleLabel": "Achats & Fournisseurs",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m8",
+   "label": "Facturation & Caisse",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-dashboard",
+   "label": "Tableau de bord facturation",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-facturation",
+   "label": "Nouvelle facture",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-factures",
+   "label": "Factures",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-proforma",
+   "label": "Factures pro-forma",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-paiements",
+   "label": "Paiements",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-reliquats",
+   "label": "Reliquats",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-remboursements",
+   "label": "Remboursements & annulations",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-facture-avoir",
+   "label": "Factures d’avoir",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-caisse",
+   "label": "État de caisse journalier",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-operations",
+   "label": "Opérations de caisse",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m8-recettes",
+   "label": "Recettes par période",
+   "module": "M8",
+   "moduleLabel": "Facturation & Caisse",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "stock",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m9",
+   "label": "Assurances & Créances",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-dashboard",
+   "label": "Tableau de bord assurances",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-compagnies",
+   "label": "Compagnies partenaires",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-assures",
+   "label": "Assurés & cartes",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-conventions",
+   "label": "Conventions & garanties",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-prises-en-charge",
+   "label": "Prises en charge",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-factures-assureur",
+   "label": "Factures mensuelles assureur",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-facture-mere",
+   "label": "Facture mère assurance",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-historique",
+   "label": "Historique par assureur",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-creances",
+   "label": "Créances",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m9-relances",
+   "label": "Relances",
+   "module": "M9",
+   "moduleLabel": "Assurances & Créances",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-mecef",
+   "label": "MECeF — Facture normalisée",
+   "module": "MECEF",
+   "moduleLabel": "MECeF — Facture normalisée",
+   "domaine": "Financier",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "mecef-dashboard",
+   "label": "Tableau de bord fiscal",
+   "module": "MECEF",
+   "moduleLabel": "MECeF — Facture normalisée",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "mecef-factures",
+   "label": "Factures normalisées",
+   "module": "MECEF",
+   "moduleLabel": "MECeF — Facture normalisée",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "mecef-transmission",
+   "label": "Transmission & réponses",
+   "module": "MECEF",
+   "moduleLabel": "MECeF — Facture normalisée",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "mecef-avoirs",
+   "label": "Avoirs & annulations",
+   "module": "MECEF",
+   "moduleLabel": "MECeF — Facture normalisée",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "mecef-journal",
+   "label": "Journal des transactions",
+   "module": "MECEF",
+   "moduleLabel": "MECeF — Facture normalisée",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "mecef-config",
+   "label": "Configuration fiscale",
+   "module": "MECEF",
+   "moduleLabel": "MECeF — Facture normalisée",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m12",
+   "label": "Comptabilité SYSCOHADA",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-dashboard",
+   "label": "Tableau de bord comptable",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-plan-comptable",
+   "label": "Plan comptable OHADA",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-journaux",
+   "label": "Journaux comptables",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-ecritures",
+   "label": "Écritures comptables",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-depenses",
+   "label": "Dépenses journalières",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "caissier",
+    "assistant_comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-grand-livre",
+   "label": "Grand livre",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-balance",
+   "label": "Balance générale & âgée",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-analytique",
+   "label": "Comptabilité analytique",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-budgets",
+   "label": "Budgets",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-immobilisations",
+   "label": "Immobilisations & amortissements",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-banques",
+   "label": "Banques & rapprochements",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-compte-resultat",
+   "label": "Compte de résultat",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-flux-tresorerie",
+   "label": "Tableau des flux de trésorerie",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-seuil-rentabilite",
+   "label": "Seuil de rentabilité",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-etats-financiers",
+   "label": "États financiers",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-baseline-2025",
+   "label": "Baseline 2025",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-echeances",
+   "label": "Échéances fiscales & paiements",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-cloture",
+   "label": "Exercices & clôtures",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-ouverture",
+   "label": "Bilan d’ouverture & à-nouveaux",
+   "module": "M12",
+   "moduleLabel": "Comptabilité SYSCOHADA",
+   "domaine": "Financier",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m10",
+   "label": "Ressources humaines",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-fiches-poste",
+   "label": "Fiches de poste",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-dashboard",
+   "label": "Tableau de bord RH",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-personnel",
+   "label": "Personnel",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-employe-profil",
+   "label": "Fiche employé",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-contrats",
+   "label": "Contrats",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-badges",
+   "label": "Badges du personnel",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction",
+    "surveillant"
+   ]
+  },
+  {
+   "id": "m10-badges-verification",
+   "label": "Vérifier un badge",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction",
+    "surveillant"
+   ]
+  },
+  {
+   "id": "m10-badges-modeles",
+   "label": "Modèles de badge",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-badges-impression",
+   "label": "Planche d’impression des badges",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-planning",
+   "label": "Planning & gardes",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-stats-gardes",
+   "label": "Statistiques de garde",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-stats-permanences",
+   "label": "Statistiques des permanences",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-stats-presence",
+   "label": "Taux de présence par service",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-presences",
+   "label": "Présences & absences",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-conges",
+   "label": "Congés",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-missions",
+   "label": "Ordres de mission",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-evaluations",
+   "label": "Évaluations (NS 131)",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-sanctions",
+   "label": "Sanctions",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-primes",
+   "label": "Primes (NS 132)",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-evenements",
+   "label": "Événements du personnel",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-participations",
+   "label": "Frais de participation",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-assurance-personnel",
+   "label": "Assurance du personnel",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-prestataires",
+   "label": "Prestataires externes",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m10-securite-entretien",
+   "label": "Sécurité & entretien",
+   "module": "M10",
+   "moduleLabel": "Ressources humaines",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m11",
+   "label": "Paie & Primes",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-prets-etudes",
+   "label": "Prêts-études et avances",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-dashboard",
+   "label": "Tableau de bord paie",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-calcul",
+   "label": "Calcul de la paie",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-bulletins",
+   "label": "Bulletins de paie",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-cotisations",
+   "label": "Cotisations CNSS / ITS / VPS",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-heures-sup",
+   "label": "Heures supplémentaires",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-avances",
+   "label": "Avances sur salaire",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-ortb",
+   "label": "Redevance ORTB",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m11-validation",
+   "label": "Validation Direction",
+   "module": "M11",
+   "moduleLabel": "Paie & Primes",
+   "domaine": "RH",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "comptable",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-m13",
+   "label": "Administration & Ambulance",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m13-courriers",
+   "label": "Courriers (départ / arrivée)",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m13-reunions",
+   "label": "Réunions",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m13-evenements",
+   "label": "Événements & notifications",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m13-plan-annuel",
+   "label": "Plan annuel de travail",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m13-notes-service",
+   "label": "Notes de service",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m13-ambulance",
+   "label": "Interventions ambulance",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "ambulancier",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m13-repertoire-ambulances",
+   "label": "Répertoire des ambulances",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "ambulancier",
+    "admin",
+    "direction",
+    "da",
+    "dm",
+    "infirmier",
+    "surveillant"
+   ]
+  },
+  {
+   "id": "m13-maintenance",
+   "label": "Parc technique & maintenance",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin",
+    "agentadmin"
+   ]
+  },
+  {
+   "id": "adm-validations",
+   "label": "Validations en attente",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "admin",
+    "direction",
+    "dm",
+    "comptable",
+    "surveillant",
+    "agentadmin"
+   ]
+  },
+  {
+   "id": "adm-enquetes",
+   "label": "Enquêtes & questionnaires",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "reception"
+   ]
+  },
+  {
+   "id": "adm-satisfaction",
+   "label": "Satisfaction des patients",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "dm"
+   ]
+  },
+  {
+   "id": "hub-ged",
+   "label": "Gestion documentaire",
+   "module": "GED",
+   "moduleLabel": "Gestion documentaire",
+   "domaine": "Administration",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "ged-bibliotheque",
+   "label": "Bibliothèque documentaire",
+   "module": "GED",
+   "moduleLabel": "Gestion documentaire",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "ged-workflow",
+   "label": "Workflow de validation",
+   "module": "GED",
+   "moduleLabel": "Gestion documentaire",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "ged-archives",
+   "label": "Archivage & conservation",
+   "module": "GED",
+   "moduleLabel": "Gestion documentaire",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "da",
+    "admin",
+    "direction",
+    "comptable",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "hub-rap",
+   "label": "Rapports & Impression",
+   "module": "RAP",
+   "moduleLabel": "Rapports & Impression",
+   "domaine": "Administration",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "rapports-bibliotheque",
+   "label": "Bibliothèque des états",
+   "module": "RAP",
+   "moduleLabel": "Rapports & Impression",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "rapports-direction",
+   "label": "États de la Direction",
+   "module": "RAP",
+   "moduleLabel": "Rapports & Impression",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "direction",
+    "da",
+    "dm",
+    "admin"
+   ]
+  },
+  {
+   "id": "rapports-generateur",
+   "label": "Générateur de rapports",
+   "module": "RAP",
+   "moduleLabel": "Rapports & Impression",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "direction",
+    "da",
+    "dm",
+    "admin",
+    "comptable",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "rapports-historique",
+   "label": "Historique des éditions",
+   "module": "RAP",
+   "moduleLabel": "Rapports & Impression",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "direction",
+    "da",
+    "dm",
+    "admin",
+    "comptable",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "hub-m14",
+   "label": "Sécurité & Utilisateurs",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-utilisateurs",
+   "label": "Utilisateurs",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-roles",
+   "label": "Rôles & permissions (RBAC)",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-soignants",
+   "label": "Prescripteurs & exécutants de soins",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-sessions",
+   "label": "Sessions actives",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-audit",
+   "label": "Journal d’audit",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-sauvegardes",
+   "label": "Sauvegardes & restauration",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "m14-taches",
+   "label": "Tâches planifiées",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ]
+  },
+  {
+   "id": "hub-cfg",
+   "label": "Configuration Clinique",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-organisation",
+   "label": "Organisation & organigramme",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-branding",
+   "label": "Identité & papier à en-tête",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-tarifs",
+   "label": "Référentiel tarifaire",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-catalogue",
+   "label": "Catalogue tarifaire (deux prix)",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-imagerie-catalogue",
+   "label": "Catalogue de l’imagerie",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-entetes",
+   "label": "Papier à en-tête officiel",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-types-piece",
+   "label": "Types de pièces certifiantes",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-rappels",
+   "label": "Rappels & messages",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-certificats",
+   "label": "Certificats médicaux",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-natures-facture",
+   "label": "Natures de facture",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-centres-couts",
+   "label": "Centres de coûts",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-regles",
+   "label": "Règles métier versionnées",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-fiscalite",
+   "label": "Paramètres fiscaux (IFU / RCCM)",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-comptabilite",
+   "label": "Paramètres comptables & obligations",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-notifications",
+   "label": "Notifications",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-compte",
+   "label": "Mon compte",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-modules",
+   "label": "Activité des modules",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "cfg-systeme",
+   "label": "Paramètres système",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-pil",
+   "label": "Pilotage & analyse",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "dash-direction",
+   "label": "Direction",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "direction",
+    "dm",
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-da",
+   "label": "Statistiques de la Direction",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "direction",
+    "dm",
+    "da",
+    "admin",
+    "comptable",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "dash-croise",
+   "label": "Tableau de bord dynamique croisé",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "direction",
+    "dm",
+    "da",
+    "admin",
+    "comptable",
+    "surveillant",
+    "assistant_comptable"
+   ]
+  },
+  {
+   "id": "dash-admin",
+   "label": "Administrateur",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "m4-stats-maternite",
+   "label": "Statistiques maternité & naissances",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "infirmier",
+    "medecin",
+    "dm",
+    "da",
+    "direction",
+    "admin",
+    "surveillant"
+   ]
+  },
+  {
+   "id": "m2-stats-echographie",
+   "label": "Statistiques de l’imagerie médicale",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "dm",
+    "da",
+    "direction",
+    "admin",
+    "echographiste"
+   ]
+  },
+  {
+   "id": "m5-stats-examens",
+   "label": "Statistiques des examens",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "medecin",
+    "dm",
+    "da",
+    "direction",
+    "admin"
+   ]
+  },
+  {
+   "id": "m2-stats-consultations",
+   "label": "Statistiques des consultations",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "dm",
+    "da",
+    "direction",
+    "admin"
+   ]
+  },
+  {
+   "id": "m3-stats-bloc",
+   "label": "Statistiques du bloc & anesthésie",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "chirurgien",
+    "anesthesiste",
+    "dm",
+    "da",
+    "direction",
+    "admin"
+   ]
+  },
+  {
+   "id": "m3-stats-hospitalisations",
+   "label": "Statistiques des hospitalisations",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "infirmier",
+    "chirurgien",
+    "dm",
+    "da",
+    "direction",
+    "admin",
+    "surveillant"
+   ]
+  },
+  {
+   "id": "m10-cout-agent",
+   "label": "Coût global de l’agent",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "direction",
+    "admin",
+    "comptable"
+   ]
+  },
+  {
+   "id": "m12-rentabilite-groupes",
+   "label": "Recettes & charges par groupe",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "direction",
+    "admin",
+    "comptable",
+    "dm"
+   ]
+  },
+  {
+   "id": "m12-tableau-decisionnel",
+   "label": "Tableau de bord décisionnel",
+   "module": "PIL",
+   "moduleLabel": "Pilotage & analyse",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "direction",
+    "admin",
+    "comptable"
+   ]
+  },
+  {
+   "id": "m12-bfr",
+   "label": "Besoin en fonds de roulement",
+   "module": "M12",
+   "moduleLabel": "Gestion & trésorerie",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "m12-cout-activite",
+   "label": "Coût à l’activité",
+   "module": "M12",
+   "moduleLabel": "Gestion & trésorerie",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "hub-dash",
+   "label": "Tableaux de bord par poste",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "dash-medecin",
+   "label": "Médecin",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "medecin",
+    "dm",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-infirmier",
+   "label": "Infirmier / Sage-femme",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "infirmier",
+    "dm",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-pharmacien",
+   "label": "Pharmacie",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "stock",
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "dash-laborantin",
+   "label": "Biologiste médical",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-stock",
+   "label": "Gestionnaire de stock",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-caissier",
+   "label": "Caisse",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "caissier",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-comptable",
+   "label": "Comptabilité",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-rh",
+   "label": "Ressources humaines",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "rh",
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-receptionniste",
+   "label": "Accueil",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-admin-agent",
+   "label": "Agent administratif",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "agentadmin",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-ambulancier",
+   "label": "Ambulance",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "ambulancier",
+    "admin"
+   ]
+  },
+  {
+   "id": "dash-aide-soignant",
+   "label": "Aide-soignante",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "aide_soignant",
+    "admin",
+    "dm"
+   ]
+  },
+  {
+   "id": "dash-echographiste",
+   "label": "Échographie",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "echographiste",
+    "admin",
+    "dm"
+   ]
+  },
+  {
+   "id": "dash-surveillant",
+   "label": "Surveillant",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "surveillant",
+    "admin",
+    "da",
+    "dm"
+   ]
+  },
+  {
+   "id": "dash-assistant-comptable",
+   "label": "Assistant de Direction",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "assistant_comptable",
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "dash-chirurgien",
+   "label": "Chirurgien",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "chirurgien",
+    "admin",
+    "dm",
+    "direction"
+   ]
+  },
+  {
+   "id": "dash-anesthesiste",
+   "label": "Anesthésiste",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "anesthesiste",
+    "admin",
+    "dm",
+    "direction"
+   ]
+  },
+  {
+   "id": "dash-aide-comptable",
+   "label": "Assistant Comptable",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "aide_comptable",
+    "admin",
+    "da",
+    "direction"
+   ]
+  },
+  {
+   "id": "dash-maternite",
+   "label": "Maternité",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "infirmier",
+    "medecin",
+    "dm",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "dash-patient",
+   "label": "Espace patient",
+   "module": "DASH",
+   "moduleLabel": "Tableaux de bord par poste",
+   "domaine": "Pilotage",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "medecin",
+    "admin"
+   ]
+  },
+  {
+   "id": "index",
+   "label": "Connexion",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "auth-forgot",
+   "label": "Mot de passe oublié",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "auth-reset",
+   "label": "Réinitialisation du mot de passe",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "auth-2fa",
+   "label": "Vérification en 2 étapes",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "auth-lock",
+   "label": "Écran verrouillé",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "error-404",
+   "label": "Page introuvable",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "error-403",
+   "label": "Accès refusé",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "plan-du-site",
+   "label": "Plan du site",
+   "module": "AUTH",
+   "moduleLabel": "Accès",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "aide-apropos",
+   "label": "Aide & À propos",
+   "module": "SUP",
+   "moduleLabel": "Aide & assistance",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "contact-editeur",
+   "label": "Contactez l’éditeur",
+   "module": "SUP",
+   "moduleLabel": "Aide & assistance",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-dossier-medical",
+   "label": "Dossier médical informatisé",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-dossier-etendu",
+   "label": "Dossier de consultation étendu",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m2-dossier-consultation-nouveau",
+   "label": "Dossier de consultation — saisie",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": "m2-dossiers-consultation",
+   "roles": "*"
+  },
+  {
+   "id": "m2-ordonnance-nouvelle",
+   "label": "Nouvelle ordonnance — saisie",
+   "module": "M2",
+   "moduleLabel": "Consultations & prescriptions",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": "m2-ordonnances",
+   "roles": "*"
+  },
+  {
+   "id": "m2-imagerie-cr",
+   "label": "Compte rendu d’imagerie — saisie",
+   "module": "M2",
+   "moduleLabel": "Imagerie médicale",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": "m2-imagerie",
+   "roles": "*"
+  },
+  {
+   "id": "m6-inventaire-feuille",
+   "label": "Feuille d’inventaire — comptage",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": "m6-inventaire",
+   "roles": "*"
+  },
+  {
+   "id": "m1-patient-nouveau",
+   "label": "Ouvrir un dossier patient",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": "m1-patients",
+   "roles": "*"
+  },
+  {
+   "id": "m4-dossier-obstetrical-nouveau",
+   "label": "Ouvrir un dossier obstétrical",
+   "module": "M4",
+   "moduleLabel": "Maternité, Naissances & Décès",
+   "domaine": "Soins",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": "m4-dossier-obstetrical",
+   "roles": "*"
+  },
+  {
+   "id": "m2-visites",
+   "label": "Registre des visites de suivi clinique",
+   "module": "M2",
+   "moduleLabel": "RDV, Visites & Consultations",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "m1-certificats-externes",
+   "label": "Certificats — patients externes",
+   "module": "M1",
+   "moduleLabel": "Patients & Dossier médical",
+   "domaine": "Accueil",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
+   "id": "enquete-publique",
+   "label": "Fiche d’enquête (lien partagé)",
+   "module": "M13",
+   "moduleLabel": "Administration & Ambulance",
+   "domaine": "Administration",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  }
+ ]
+}

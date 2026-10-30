@@ -1,0 +1,9 @@
+{
+  "name": "@sigh/rbac",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Matrice des droits SIGH-CNT (source unique, engendrée depuis la maquette) et ses garde-fous",
+  "license": "UNLICENSED",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test test/rbac.test.js" }
+}
