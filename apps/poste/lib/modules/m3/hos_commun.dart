@@ -1,5 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
 
@@ -77,3 +79,20 @@ String? validerHeure(Object? v, Map<String, Object?> _) =>
 String pad2(int n) => n.toString().padLeft(2, '0');
 
 String hhmm(DateTime d) => '${pad2(d.hour)}:${pad2(d.minute)}';
+
+/// Deux cartes côte à côte dès 1024 px (`K.charts`), l'une sous l'autre en dessous.
+Widget deuxColonnes(Widget a, Widget b) => LayoutBuilder(builder: (_, k) {
+      final l = k.maxWidth >= 1024 ? (k.maxWidth - 16) / 2 : k.maxWidth;
+      return Wrap(spacing: 16, runSpacing: 16, children: [
+        SizedBox(width: l, child: a),
+        SizedBox(width: l, child: b),
+      ]);
+    });
+
+/// Texte à chasse fixe (références, codes dossier).
+Widget texteMono(String t, {Color? couleur, FontWeight? poids}) => Text(t,
+    style: TextStyle(
+        fontFamily: 'LiberationMono',
+        fontSize: 12,
+        fontWeight: poids,
+        color: couleur ?? JetonsShell.slate700));
