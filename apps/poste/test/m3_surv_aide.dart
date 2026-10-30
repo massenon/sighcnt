@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
-import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
 
 /// Aides communes des tests des écrans de surveillance de M3 : mêmes gestes que l'agent (ouvrir un écran, remplir un champ, choisir dans une liste).
