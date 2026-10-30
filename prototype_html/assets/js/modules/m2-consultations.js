@@ -172,6 +172,14 @@
     champs[iType] = Object.assign({}, champs[iType], {
       options: ['Consultation', 'Contrôle', 'Urgence', 'Domicile', 'Visite', 'Affaire privée'],
     });
+    /* E331 : la liste d’états ne proposait que planifiée / en cours / terminée — modifier un rendez-vous REPORTÉ ou NON HONORÉ le remettait
+       silencieusement à « Planifiée » (la liste native retombe sur sa première entrée). */
+    var iStatut = indexDe(champs, 'statut');
+    champs[iStatut] = Object.assign({}, champs[iStatut], {
+      options: [{ value: 'planifiee', label: 'Planifiée' }, { value: 'en_cours', label: 'En cours' },
+        { value: 'reporte', label: 'Reporté' }, { value: 'non_honore', label: 'Non honoré' },
+        { value: 'terminee', label: 'Terminée' }],
+    });
     return champs;
   }
 

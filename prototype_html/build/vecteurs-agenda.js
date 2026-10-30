@@ -328,7 +328,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       function sleepDebounce() { return dormir(260); }
       sortie.rendezvous.editions = [];
       {
-        const cas = [['modifier le motif d’un rendez-vous : la référence ne change pas', 'C00002', { motif: 'Motif corrigé', tarif: '4500' }], ['modifier une personne non enregistrée', 'C00030', { visiteurQuartier: 'Tiélé', motif: 'Autre motif' }]];
+        const cas = [['modifier le motif d’un rendez-vous : la référence ne change pas', 'C00002', { motif: 'Motif corrigé', tarif: '4500' }], ['modifier une personne non enregistrée', 'C00030', { visiteurQuartier: 'Tiélé', motif: 'Autre motif' }], ['modifier un rendez-vous reporté : son état est conservé', 'C00009', { motif: 'Motif corrigé' }], ['modifier un rendez-vous non honoré : son état est conservé', 'C00010', { motif: 'Motif corrigé' }]];
         for (const [nom, ref, saisie] of cas) {
           poserConsultations(F1); prendreMessages();
           const root = await monter('m2-rendezvous');

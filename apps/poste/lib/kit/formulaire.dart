@@ -8,6 +8,9 @@ enum TypeChamp {
   texte,
   nombre,
   date,
+
+  /// `datetime-local` : « 2026-08-16T09:00 » (heure locale, sans fuseau).
+  dateHeure,
   email,
   tel,
   textarea,
@@ -255,6 +258,7 @@ class _Champ extends StatelessWidget {
       TypeChamp.multiselect =>
         _Liste(ctl, def, erreur != null),
       TypeChamp.date => _Date(ctl, def, erreur != null),
+      TypeChamp.dateHeure => _DateHeure(ctl, def, erreur != null),
       TypeChamp.textarea =>
         _Texte(ctl, def, erreur != null, lignes: def.lignes),
       _ => _Texte(ctl, def, erreur != null),
@@ -431,6 +435,62 @@ class _Date extends StatelessWidget {
   static String _fr(String iso) {
     final p = iso.split('-');
     return p.length == 3 ? '${p[2]}/${p[1]}/${p[0]}' : iso;
+  }
+}
+
+/// `<input type="datetime-local">` : le jour puis l'heure se choisissent l'un après l'autre ; la valeur est « AAAA-MM-JJTHH:mm » (heure locale).
+class _DateHeure extends StatelessWidget {
+  const _DateHeure(this.ctl, this.def, this.erreur);
+  final ControleurFormulaire ctl;
+  final ChampDef def;
+  final bool erreur;
+
+  @override
+  Widget build(BuildContext context) {
+    final v = '${ctl[def.nom] ?? ''}';
+    return Semantics(
+      button: true,
+      label: '${def.libelle}, ${v.isEmpty ? 'non renseignée' : v}',
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: () async {
+          final base = DateTime.tryParse(v) ?? DateTime.now();
+          final d = await showDatePicker(
+              context: context,
+              initialDate: base,
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+              locale: const Locale('fr'));
+          if (d == null || !context.mounted) return;
+          final h = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay(hour: base.hour, minute: base.minute));
+          if (h == null) return;
+          String p(int n) => n.toString().padLeft(2, '0');
+          ctl.poser(def.nom,
+              '${d.year.toString().padLeft(4, '0')}-${p(d.month)}-${p(d.day)}T${p(h.hour)}:${p(h.minute)}');
+        },
+        child: InputDecorator(
+          decoration: decorationChamp(
+              erreur: erreur,
+              suffixe: const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Icon(LucideIcons.calendarClock,
+                      size: 16, color: JetonsShell.slate400))),
+          child: Text(v.isEmpty ? 'jj/mm/aaaa --:--' : _fr(v),
+              style: v.isEmpty
+                  ? styleSaisie.copyWith(color: JetonsShell.slate400)
+                  : styleSaisie),
+        ),
+      ),
+    );
+  }
+
+  static String _fr(String iso) {
+    final t = iso.split('T');
+    final p = t.first.split('-');
+    if (p.length != 3) return iso;
+    return '${p[2]}/${p[1]}/${p[0]}${t.length > 1 ? ' ${t[1]}' : ''}';
   }
 }
 
