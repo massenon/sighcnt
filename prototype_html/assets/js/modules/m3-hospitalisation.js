@@ -58,7 +58,10 @@
       .filter(function (e) { return e.fonction === 'medecin'; })
       .map(function (e) { return { value: e.nomComplet, label: e.nomComplet }; });
   }
-  function optionsSoignants() {
+  /* E361 : cette liste portait le nom « optionsSoignants », que la déclaration de l'outillage commun (plus bas : soignants + identifiants)
+     écrasait — l'infirmier référent d'une admission s'enregistrait sous un IDENTIFIANT de soignant (« SOI07 »), médecins compris, là où toutes
+     les pièces lisent un NOM. */
+  function optionsInfirmiersNom() {
     return S.collection('personnel').active()
       .filter(function (e) { return ['infirmier', 'sage_femme', 'aide_soignant'].indexOf(e.fonction) !== -1; })
       .map(function (e) { return { value: e.nomComplet, label: e.nomComplet + ' — ' + e.poste }; });
@@ -93,6 +96,10 @@
     return Math.max(0, Math.round((fin - C.toDate(o.dateEntree)) / 3600000));
   }
   function depasse(o) { return heuresEcoulees(o) > D.DUREE_OBSERVATION_REFERENCE; }
+
+  /* E362 : le bouton « Mettre en observation » de l'en-tête appelait `admettre()`, déclarée dans la fermeture de l'écran — ReferenceError au
+     clic (même défaut que « nouvelleVisite », Bug 0a). Le rendu pose ici l'ouverture de la fenêtre, l'en-tête l'appelle. */
+  var ouvrirAdmissionObservation = null;
 
   function orientationDe(id) {
     return D.ORIENTATIONS_OBSERVATION.filter(function (x) { return x.id === id; })[0] || null;
@@ -162,10 +169,11 @@
       return [
         K.btn('Plan des lits', { icon: 'layout-grid', onclick: function () { global.SIGH.app.go('m3-plan-lits'); } }),
         K.btn('Feuille de soins', { icon: 'heart-pulse', onclick: function () { global.SIGH.app.go('m3-soins'); } }),
-        K.btn('Mettre en observation', { variant: 'primary', icon: 'user-plus', onclick: function () { admettre(); } }),
+        K.btn('Mettre en observation', { variant: 'primary', icon: 'user-plus', onclick: function () { if (ouvrirAdmissionObservation) ouvrirAdmissionObservation(); } }),
       ];
     },
     render: function (root) {
+      ouvrirAdmissionObservation = function () { admettre(); };   /* E362 */
       amorcerObservations();
       dessiner();
       return null;
@@ -312,9 +320,9 @@
             }),
           },
           { name: 'place', label: 'Place occupée', help: 'Identifiant de la place dans l’unité.' },
-          { name: 'dateEntree', label: 'Heure d’entrée', type: 'datetime-local', required: true, value: new Date().toISOString().slice(0, 16) },
+          { name: 'dateEntree', label: 'Heure d’entrée', type: 'datetime-local', required: true, value: C.isoLocal() },
           { name: 'medecin', label: 'Médecin responsable', type: 'select', required: true, options: optionsMedecinsObs() },
-          { name: 'infirmier', label: 'Infirmier de surveillance', type: 'select', options: optionsSoignants() },
+          { name: 'infirmier', label: 'Infirmier de surveillance', type: 'select', options: optionsInfirmiersNom() },
         ], {});
 
         var m = U.modal({
@@ -358,7 +366,7 @@
       /* --- Feuille de surveillance ---------------------------------------- */
       function relever(o) {
         var f = U.form([
-          { name: 'heure', label: 'Heure du relevé', type: 'datetime-local', required: true, value: new Date().toISOString().slice(0, 16) },
+          { name: 'heure', label: 'Heure du relevé', type: 'datetime-local', required: true, value: C.isoLocal() },
           { name: 'temperature', label: 'Température (°C)', type: 'number', step: '0.1', required: true },
           { name: 'tension', label: 'Tension artérielle', required: true, placeholder: '12/8' },
           { name: 'pouls', label: 'Pouls (bpm)', type: 'number', required: true },
@@ -403,7 +411,7 @@
             options: D.ORIENTATIONS_OBSERVATION.map(function (x) { return { value: x.id, label: x.label }; }),
           },
           { name: 'conclusion', label: 'Conclusion de la surveillance', required: true, col: 'full' },
-          { name: 'dateSortie', label: 'Heure de sortie d’observation', type: 'datetime-local', required: true, value: new Date().toISOString().slice(0, 16) },
+          { name: 'dateSortie', label: 'Heure de sortie d’observation', type: 'datetime-local', required: true, value: C.isoLocal() },
           { name: 'medecin', label: 'Décision prise par', required: true, value: o.medecin },
           { name: 'destination', label: 'Établissement de destination', col: 'full', help: 'À renseigner en cas de transfert.' },
         ], {});
@@ -444,7 +452,7 @@
                 var suite = null;
                 if (v.orientation === 'hospitalisation') {
                   suite = S.collection('admissions', { module: 'M3', entite: 'Admission' }).insert({
-                    reference: C.nextRef('H', 5),
+                    reference: C.referenceSuivante('H', 5, S.collection('admissions').all()),
                     patientId: o.patientId, patient: o.patient, patientCode: o.patientCode,
                     dateEntree: C.iso(new Date(v.dateSortie)), dateSortie: null,
                     diagnosticEntree: v.conclusion, symptomes: o.motif,
@@ -836,7 +844,7 @@
           { name: 'patientCode', label: 'Dossier patient', type: 'select', required: true, options: optionsPatients(), col: 'full' },
           { type: 'section', label: 'Affectation' },
           { name: 'lit', label: 'Lit', type: 'select', required: true, options: optionsLitsLibres(record ? record.lit : null) },
-          { name: 'infirmier', label: 'Infirmier référent', type: 'select', required: true, options: optionsSoignants() },
+          { name: 'infirmier', label: 'Infirmier référent', type: 'select', required: true, options: optionsInfirmiersNom() },
           { name: 'dateEntree', label: 'Date d’entrée', type: 'date', required: true },
           {
             name: 'priseEnCharge', label: 'Type de prise en charge', type: 'select', required: true,
@@ -848,14 +856,14 @@
         ];
       },
       onCreate: function () {
-        return { dateEntree: C.iso(AUJ), statut: 'en_cours', priseEnCharge: 'plus_8h', reference: C.nextRef('H', 5) };
+        return { dateEntree: C.iso(AUJ), statut: 'en_cours', priseEnCharge: 'plus_8h', reference: C.referenceSuivante('H', 5, S.collection('admissions').all()) };
       },
-      transform: function (v) {
+      transform: function (v, record) {
         var p = patients().filter(function (x) { return x.code === v.patientCode; })[0];
         if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; }
         var slot = tousLits().filter(function (s) { return s.lit.label === v.lit; })[0];
         if (slot) { v.chambre = slot.chambre.code; v.typeChambre = slot.chambre.type; }
-        if (!v.reference) v.reference = C.nextRef('H', 5);
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('H', 5, S.collection('admissions').all());   /* E360 : série lue sur le registre, jamais un compteur de page */
         if (!v.statut) v.statut = 'en_cours';
         return v;
       },
@@ -2415,7 +2423,11 @@
           var pts = [];
           colonnes.forEach(function (c, k) {
             if (!c.releve) return;
-            var v = Number(c.releve[e.code]);
+            /* E365 : une mesure ABSENTE n'est pas zéro. `Number(null)` valait 0 : la fréquence respiratoire, la tension ou la diurèse non relevées
+               étaient tracées au pied de l'échelle, comme une mesure effondrée. */
+            var brute = c.releve[e.code];
+            if (brute == null || brute === '') return;
+            var v = Number(brute);
             var pos = positionSurEchelle(e, v);
             if (pos == null) return;
             var x = L + k * (largeur / Math.max(colonnes.length, 1)) + (largeur / Math.max(colonnes.length, 1)) / 2;
@@ -2660,7 +2672,7 @@
                   if (rempli) releves++;
                 });
                 var rec = col4().insert({
-                  reference: C.nextRef('TRF-', 4),
+                  reference: C.referenceSuivante('TRF-', 4, col4().all()),
                   patientId: pt ? pt.id : null,
                   patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
                   patientCode: v.patientCode,
@@ -2722,15 +2734,45 @@
         return S.collection('scoresGlasgow', { module: 'M3', entite: 'score de Glasgow', prefix: 'GCS' });
       }
 
-      function champs() {
+      /* E364 : à la MODIFICATION, le formulaire ne lisait ni le patient (la fiche ne porte que son identifiant) ni les trois axes (elle porte
+         `axes`, pas `axe0…2`) : il s'ouvrait sur le premier patient et sur les meilleures réponses, et l'enregistrement laissait le score
+         inchangé. Le patient et les axes sont relus de la fiche, et le score est RECALCULÉ à l'enregistrement. */
+      function codePatientDe(r) {
+        if (!r) return undefined;
+        if (r.patientCode) return r.patientCode;
+        var p2 = S.collection('patients').active().filter(function (x) { return x.id === r.patientId; })[0];
+        return p2 ? p2.code : undefined;
+      }
+      /* Le score est la SOMME des trois axes : il ne peut pas être saisi, donc il ne peut pas être faux — ni à la création, ni à la
+         modification (E364 : la modification l'écrivait tel quel et laissait le score d'avant). */
+      function transformerGlasgow(v, record) {
+        var pt = patientParCode3(v.patientCode);
+        var detailAxes = GLASGOW.map(function (g, i) {
+          var pts = Number(v['axe' + i]);
+          var it = g.items.filter(function (x) { return x[1] === pts; })[0];
+          return { axe: g.axe, libelle: it ? it[0] : '—', points: pts };
+        });
+        var score = detailAxes.reduce(function (n, a) { return n + a.points; }, 0);
+        return Object.assign({}, v, {
+          reference: (record && record.reference) || C.referenceSuivante('GCS-', 4, col5().all()),
+          patientId: pt ? pt.id : null,
+          patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
+          nip: v.nip || v.patientCode,
+          axes: detailAxes, score: score,
+          evaluateur: nomSoignant(v.evaluePar),
+        });
+      }
+
+      function champs(record) {
         var out = [
-          { name: 'patientCode', label: 'Patient', type: 'select', required: true, options: optionsPatients3() },
+          { name: 'patientCode', label: 'Patient', type: 'select', required: true, options: optionsPatients3(), value: codePatientDe(record) },
           { name: 'nip', label: 'NIP', type: 'text',
             hint: 'Recopié du dossier, comme sur la feuille papier.' },
           { name: 'dateHeure', label: 'Date et heure de l’évaluation', type: 'datetime-local', required: true },
         ];
         GLASGOW.forEach(function (g, i) {
-          out.push({ name: 'axe' + i, label: g.axe, type: 'select', required: true,
+          var deja = record && record.axes && record.axes[i] ? String(record.axes[i].points) : undefined;
+          out.push({ name: 'axe' + i, label: g.axe, type: 'select', required: true, value: deja,
             options: g.items.map(function (it) {
               return { value: String(it[1]), label: it[0] + ' — ' + it[1] + ' point(s)' };
             }) });
@@ -2769,25 +2811,7 @@
           actions: [K.creer(col5(), champs(), {
             module: 'M3', label: 'Nouvelle évaluation', titre: 'Score de Glasgow',
             entite: 'Évaluation', apres: afficher,
-            transform: function (v) {
-              var pt = patientParCode3(v.patientCode);
-              /* Le score est la SOMME des trois axes : il ne peut pas être
-                 saisi, donc il ne peut pas être faux. */
-              var detailAxes = GLASGOW.map(function (g, i) {
-                var pts = Number(v['axe' + i]);
-                var it = g.items.filter(function (x) { return x[1] === pts; })[0];
-                return { axe: g.axe, libelle: it ? it[0] : '—', points: pts };
-              });
-              var score = detailAxes.reduce(function (n, a) { return n + a.points; }, 0);
-              return Object.assign({}, v, {
-                reference: C.nextRef('GCS-', 4),
-                patientId: pt ? pt.id : null,
-                patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
-                nip: v.nip || v.patientCode,
-                axes: detailAxes, score: score,
-                evaluateur: nomSoignant(v.evaluePar),
-              });
-            },
+            transform: function (v) { return transformerGlasgow(v, null); },
           })].filter(Boolean),
           columns: [
             { key: 'reference', label: 'Référence' },
@@ -2800,8 +2824,8 @@
               } },
             { key: 'evaluateur', label: 'Évalué par' },
           ],
-          rowActions: K.actionsLigne(col5(), champs(), {
-            module: 'M3', refresh: afficher,
+          rowActions: K.actionsLigne(col5(), champs, {
+            module: 'M3', refresh: afficher, transform: transformerGlasgow,
             titre: function (r) { return r.reference + ' — ' + r.score + '/15'; },
             detail: function (r) {
               return el('div.space-y-4', null,
