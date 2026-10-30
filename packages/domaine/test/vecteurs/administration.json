@@ -1,0 +1,6506 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-administration.js — ne pas éditer. Horloge : 30/10/2026 10 h.",
+ "notes": {
+  "ns131": {
+   "reference": "NS 131/07/DM/DA/CNT/2026",
+   "objet": "Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale",
+   "version": 1,
+   "dateSignature": "2026-07-13",
+   "dateEffet": "2026-07-13",
+   "statut": "ACTIVE",
+   "signataire": "BASSONGUI C. Séko Y., Directeur Médical",
+   "ampliation": "Intéressés 41 — Archive 01",
+   "source": "DOC — Note de service NS 131/07/DM/DA/CNT/2026",
+   "mention": "Abroge toute disposition antérieure contraire.",
+   "niveaux": [
+    {
+     "id": "bonne",
+     "label": "Bonne",
+     "aide": "Aucune sanction"
+    },
+    {
+     "id": "moyenne",
+     "label": "Moyenne",
+     "aide": "1er niveau de faute — 1 à 2 manquements"
+    },
+    {
+     "id": "faible",
+     "label": "Faible à mauvaise",
+     "aide": "2e niveau de faute — 3 manquements et plus"
+    }
+   ],
+   "criteres": [
+    {
+     "num": "01",
+     "id": "ponctualite",
+     "label": "Ponctualité et assiduité",
+     "criteres": [
+      "Retard",
+      "Sortie non autorisée",
+      "Absence au poste",
+      "Assemblée de bavardage",
+      "Dormir aux heures de travail",
+      "Usage de portable"
+     ],
+     "sanctions": {
+      "bonne": 0,
+      "moyenne": 6,
+      "faible": 10
+     }
+    },
+    {
+     "num": "02",
+     "id": "execution",
+     "label": "Exécution des tâches",
+     "criteres": [
+      "Tâches non exécutées",
+      "Tâches mal exécutées"
+     ],
+     "sanctions": {
+      "bonne": 0,
+      "moyenne": 10,
+      "faible": 15
+     }
+    },
+    {
+     "num": "03",
+     "id": "attitude",
+     "label": "Attitude envers les patients",
+     "criteres": [
+      "Parler mal au malade",
+      "Dispute avec malade",
+      "Insulter ou critiquer le malade",
+      "Renvoi de malade"
+     ],
+     "sanctions": {
+      "bonne": 0,
+      "moyenne": 6,
+      "faible": 10
+     }
+    },
+    {
+     "num": "04",
+     "id": "hierarchie",
+     "label": "Respect de la hiérarchie",
+     "criteres": [
+      "Manque de courtoisie",
+      "Indiscrétion",
+      "Manque d’intégrité"
+     ],
+     "sanctions": {
+      "bonne": 0,
+      "moyenne": 6,
+      "faible": 10
+     }
+    }
+   ]
+  },
+  "ns132": {
+   "reference": "NS n° 132/07/DM/DA/CNT/2026",
+   "objet": "Primes diverses",
+   "version": 1,
+   "dateSignature": "2026-07-13",
+   "dateEffet": "2026-07-13",
+   "statut": "ACTIVE",
+   "signataire": "BASSONGUI Chabi Séko, Directeur Médical",
+   "recuPar": "KASSA A. B. Augustin — reçu le 13/07/2026",
+   "source": "DOC — Note de service NS 132/07/DM/DA/CNT/2026",
+   "mention": "Abroge toute disposition antérieure contraire.",
+   "primes": [
+    {
+     "id": "permanence",
+     "label": "Permanence",
+     "mode": "occurrence",
+     "montants": {
+      "aide_soignant": 600,
+      "caissiere": 600,
+      "accueil": 700,
+      "infirmier": 800,
+      "sage_femme": 800,
+      "tsl": 800
+     }
+    },
+    {
+     "id": "garde",
+     "label": "Garde",
+     "mode": "occurrence",
+     "montants": {
+      "aide_soignant": 900,
+      "caissiere": 900,
+      "accueil": 900,
+      "infirmier": 1500,
+      "sage_femme": 1500,
+      "tsl": 1500
+     }
+    },
+    {
+     "id": "aide_bloc",
+     "label": "Aide bloc",
+     "mode": "occurrence",
+     "montants": {
+      "aide_soignant": 500,
+      "caissiere": 500,
+      "accueil": 500,
+      "infirmier": 500,
+      "sage_femme": 500
+     }
+    },
+    {
+     "id": "bloc_fixe",
+     "label": "Prime de bloc fixe",
+     "mode": "fixe",
+     "montants": {
+      "aide_soignant": 10000,
+      "infirmier": 10000
+     }
+    },
+    {
+     "id": "hydrotubation",
+     "label": "Hydrotubation",
+     "mode": "occurrence",
+     "montants": {
+      "infirmier": 1300
+     }
+    },
+    {
+     "id": "accouchement",
+     "label": "Accouchement",
+     "mode": "occurrence",
+     "montants": {
+      "sage_femme": 1000
+     }
+    },
+    {
+     "id": "caisse",
+     "label": "Caisse",
+     "mode": "fixe",
+     "montants": {
+      "caissiere": 10000
+     }
+    },
+    {
+     "id": "urgence",
+     "label": "Urgence",
+     "mode": "occurrence",
+     "montants": {
+      "tsl": 2500
+     }
+    },
+    {
+     "id": "incineration",
+     "label": "Incinération",
+     "mode": "fixe",
+     "montants": {
+      "aide_soignant": 5000
+     }
+    },
+    {
+     "id": "accueil",
+     "label": "Accueil",
+     "mode": "fixe",
+     "montants": {
+      "accueil": 7000
+     }
+    },
+    {
+     "id": "circoncision",
+     "label": "Circoncision",
+     "mode": "occurrence",
+     "montants": {
+      "sage_femme": 1000
+     }
+    }
+   ]
+  },
+  "fonctions": [
+   {
+    "id": "aide_soignant",
+    "label": "Aide-soignant(e)"
+   },
+   {
+    "id": "caissiere",
+    "label": "Caissière"
+   },
+   {
+    "id": "accueil",
+    "label": "Accueil / Secrétaire médical"
+   },
+   {
+    "id": "infirmier",
+    "label": "Infirmier(ère)"
+   },
+   {
+    "id": "sage_femme",
+    "label": "Sage-femme"
+   },
+   {
+    "id": "tsl",
+    "label": "TSL (Technicien Supérieur de Laboratoire)"
+   },
+   {
+    "id": "biomedical",
+    "label": "Ingénieur biomédical"
+   },
+   {
+    "id": "medecin",
+    "label": "Médecin"
+   },
+   {
+    "id": "direction",
+    "label": "Direction"
+   },
+   {
+    "id": "comptable",
+    "label": "Comptable"
+   },
+   {
+    "id": "stock",
+    "label": "Gestionnaire de stock"
+   },
+   {
+    "id": "dispensatrice",
+    "label": "Dispensatrice"
+   },
+   {
+    "id": "securite",
+    "label": "Agent de sécurité"
+   },
+   {
+    "id": "entretien",
+    "label": "Agent d’entretien"
+   },
+   {
+    "id": "chauffeur",
+    "label": "Chauffeur coursier"
+   }
+  ],
+  "agents": 44,
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Notes en vigueur",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Règles métier pilotées",
+     "valeur": "2",
+     "indice": "Évaluation et primes"
+    },
+    {
+     "libelle": "Dernière mise à jour",
+     "valeur": "13/07/2026",
+     "indice": null
+    },
+    {
+     "libelle": "Agents concernés",
+     "valeur": "44",
+     "indice": null
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "NS 131/07/DM/DA/CNT/2026 Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale Version 1 ACTIVE Ouvrir le moteur",
+    "NS n° 132/07/DM/DA/CNT/2026 Primes diverses Version 1 ACTIVE Ouvrir le moteur"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "ÉLÉMENT D’ÉVALUATION",
+      "MOYENNE",
+      "FAIBLE À MAUVAISE"
+     ],
+     "lignes": [
+      [
+       "01",
+       "Ponctualité et assiduité",
+       "− 6 %",
+       "− 10 %"
+      ],
+      [
+       "02",
+       "Exécution des tâches",
+       "− 10 %",
+       "− 15 %"
+      ],
+      [
+       "03",
+       "Attitude envers les patients",
+       "− 6 %",
+       "− 10 %"
+      ],
+      [
+       "04",
+       "Respect de la hiérarchie",
+       "− 6 %",
+       "− 10 %"
+      ]
+     ]
+    },
+    {
+     "entetes": [
+      "PRIME",
+      "MODE",
+      "FONCTIONS CONCERNÉES"
+     ],
+     "lignes": [
+      [
+       "Permanence",
+       "Par occurrence",
+       "Aide-soignant(e) Caissière Accueil Infirmier(ère) Sage-femme TSL"
+      ],
+      [
+       "Garde",
+       "Par occurrence",
+       "Aide-soignant(e) Caissière Accueil Infirmier(ère) Sage-femme TSL"
+      ],
+      [
+       "Aide bloc",
+       "Par occurrence",
+       "Aide-soignant(e) Caissière Accueil Infirmier(ère) Sage-femme"
+      ],
+      [
+       "Prime de bloc fixe",
+       "Forfait mensuel",
+       "Aide-soignant(e) Infirmier(ère)"
+      ],
+      [
+       "Hydrotubation",
+       "Par occurrence",
+       "Infirmier(ère)"
+      ],
+      [
+       "Accouchement",
+       "Par occurrence",
+       "Sage-femme"
+      ],
+      [
+       "Caisse",
+       "Forfait mensuel",
+       "Caissière"
+      ],
+      [
+       "Urgence",
+       "Par occurrence",
+       "TSL"
+      ],
+      [
+       "Incinération",
+       "Forfait mensuel",
+       "Aide-soignant(e)"
+      ],
+      [
+       "Accueil",
+       "Forfait mensuel",
+       "Accueil"
+      ],
+      [
+       "Circoncision",
+       "Par occurrence",
+       "Sage-femme"
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "Une nouvelle note de service crée une nouvelle version de la règle, avec sa propre date d’effet. L’historique demeure intact : les paies et évaluations antérieures conservent le barème qui leur était applicable."
+   ],
+   "boutons": []
+  },
+  "titresCartes": [
+   "NS 131/07/DM/DA/CNT/2026",
+   "NS n° 132/07/DM/DA/CNT/2026"
+  ],
+  "badges": [
+   [
+    "Version 1",
+    "ACTIVE",
+    "Ouvrir le moteur"
+   ],
+   [
+    "Version 1",
+    "ACTIVE",
+    "Ouvrir le moteur"
+   ]
+  ],
+  "descListes": [
+   "Référence NS 131/07/DM/DA/CNT/2026 Objet Modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale Date de signature 13/07/2026 Date d’effet 13/07/2026 Signataire BASSONGUI C. Séko Y., Directeur Médical Statut ACTIVE Mention Abroge toute disposition antérieure contraire. Provenance DOC — Note de service NS 131/07/DM/DA/CNT/2026",
+   "Référence NS n° 132/07/DM/DA/CNT/2026 Objet Primes diverses Date de signature 13/07/2026 Date d’effet 13/07/2026 Signataire BASSONGUI Chabi Séko, Directeur Médical Statut ACTIVE Mention Abroge toute disposition antérieure contraire. Provenance DOC — Note de service NS 132/07/DM/DA/CNT/2026"
+  ],
+  "badgesFonctions": [
+   [
+    [
+     "01",
+     "Ponctualité et assiduité",
+     "− 6 %",
+     "− 10 %"
+    ],
+    [
+     "02",
+     "Exécution des tâches",
+     "− 10 %",
+     "− 15 %"
+    ],
+    [
+     "03",
+     "Attitude envers les patients",
+     "− 6 %",
+     "− 10 %"
+    ],
+    [
+     "04",
+     "Respect de la hiérarchie",
+     "− 6 %",
+     "− 10 %"
+    ]
+   ],
+   [
+    [
+     "Permanence",
+     "Par occurrence",
+     "Aide-soignant(e) Caissière Accueil Infirmier(ère) Sage-femme TSL"
+    ],
+    [
+     "Garde",
+     "Par occurrence",
+     "Aide-soignant(e) Caissière Accueil Infirmier(ère) Sage-femme TSL"
+    ],
+    [
+     "Aide bloc",
+     "Par occurrence",
+     "Aide-soignant(e) Caissière Accueil Infirmier(ère) Sage-femme"
+    ],
+    [
+     "Prime de bloc fixe",
+     "Forfait mensuel",
+     "Aide-soignant(e) Infirmier(ère)"
+    ],
+    [
+     "Hydrotubation",
+     "Par occurrence",
+     "Infirmier(ère)"
+    ],
+    [
+     "Accouchement",
+     "Par occurrence",
+     "Sage-femme"
+    ],
+    [
+     "Caisse",
+     "Forfait mensuel",
+     "Caissière"
+    ],
+    [
+     "Urgence",
+     "Par occurrence",
+     "TSL"
+    ],
+    [
+     "Incinération",
+     "Forfait mensuel",
+     "Aide-soignant(e)"
+    ],
+    [
+     "Accueil",
+     "Forfait mensuel",
+     "Accueil"
+    ],
+    [
+     "Circoncision",
+     "Par occurrence",
+     "Sage-femme"
+    ]
+   ]
+  ],
+  "liens": [
+   [
+    "Ouvrir le moteur",
+    "pages/m10-evaluations.php"
+   ],
+   [
+    "Ouvrir le moteur",
+    "pages/m10-primes.php"
+   ]
+  ]
+ },
+ "courriers": {
+  "jeu": [
+   {
+    "id": "COU1",
+    "statut": "actif",
+    "reference": "ARR-2026-0001",
+    "sens": "arrivee",
+    "date": "2026-09-20",
+    "correspondant": "DGI — Centre des impôts",
+    "objet": "Notification de contrôle fiscal",
+    "nature": "Convocation",
+    "affecteA": "Direction Administrative",
+    "traitement": "traite",
+    "accuseReception": true,
+    "numerise": true
+   },
+   {
+    "id": "COU2",
+    "statut": "actif",
+    "reference": "DEP-2026-0002",
+    "sens": "depart",
+    "date": "2026-09-25",
+    "correspondant": "SoBAPS SA",
+    "objet": "Bon de commande de médicaments",
+    "nature": "Courriel",
+    "affecteA": "Comptabilité",
+    "traitement": "traite",
+    "accuseReception": true,
+    "numerise": false
+   },
+   {
+    "id": "COU3",
+    "statut": "actif",
+    "reference": "ARR-2026-0003",
+    "sens": "arrivee",
+    "date": "2026-09-30",
+    "correspondant": "CNSS",
+    "objet": "Appel de cotisations",
+    "nature": "Lettre",
+    "affecteA": "Ressources humaines",
+    "traitement": "en_cours",
+    "accuseReception": false,
+    "numerise": true
+   },
+   {
+    "id": "COU4",
+    "statut": "actif",
+    "reference": "ARR-2026-0004",
+    "sens": "arrivee",
+    "date": "2026-10-18",
+    "correspondant": "Ministère de la Santé",
+    "objet": "Circulaire sur la vaccination",
+    "nature": "Note",
+    "affecteA": "Direction Médicale",
+    "traitement": "en_attente",
+    "accuseReception": false,
+    "numerise": false
+   },
+   {
+    "id": "COU5",
+    "statut": "actif",
+    "reference": "DEP-2026-0005",
+    "sens": "depart",
+    "date": "2026-10-21",
+    "correspondant": "NSIA Assurances",
+    "objet": "Facture mensuelle",
+    "nature": "Facture",
+    "affecteA": "Comptabilité",
+    "traitement": "en_attente",
+    "accuseReception": true,
+    "numerise": true
+   },
+   {
+    "id": "COU6",
+    "statut": "actif",
+    "reference": "ARR-2026-0006",
+    "sens": "arrivee",
+    "date": "2026-10-27",
+    "correspondant": "CHD Atacora",
+    "objet": "Demande de transfert de dossier",
+    "nature": "Lettre",
+    "affecteA": "Direction Médicale",
+    "traitement": "en_attente",
+    "accuseReception": false,
+    "numerise": false
+   },
+   {
+    "id": "COU7",
+    "statut": "actif",
+    "reference": "DEP-2026-0007",
+    "sens": "depart",
+    "date": "2026-10-30",
+    "correspondant": "Zone sanitaire",
+    "objet": "Rapport mensuel d’activité",
+    "nature": "Rapport",
+    "affecteA": "Direction Administrative",
+    "traitement": "en_cours",
+    "accuseReception": true,
+    "numerise": true,
+    "observations": "À signer avant envoi"
+   },
+   {
+    "id": "COU8",
+    "statut": "actif",
+    "reference": "ARR-2026-0008",
+    "sens": "arrivee",
+    "date": "2026-10-30",
+    "correspondant": "Fournisseur DIPHARM",
+    "objet": "Livraison annoncée",
+    "nature": "Courriel",
+    "affecteA": "Gestion des stocks",
+    "traitement": "traite",
+    "accuseReception": false,
+    "numerise": true
+   },
+   {
+    "id": "COU9",
+    "statut": "archive",
+    "reference": "DEP-2026-0009",
+    "sens": "depart",
+    "date": "2026-07-22",
+    "correspondant": "Mairie de Natitingou",
+    "objet": "Autorisation d’affichage",
+    "nature": "Lettre",
+    "affecteA": "Direction Administrative",
+    "traitement": "traite",
+    "accuseReception": true,
+    "numerise": true,
+    "_archivePar": "BASSONGUI Chabi Séko",
+    "_archiveLe": "2026-10-30T10:00:00.000Z",
+    "_motifArchivage": "test"
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Courriers enregistrés",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "libelle": "Arrivées",
+     "valeur": "5",
+     "indice": null
+    },
+    {
+     "libelle": "Départs",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "En attente de traitement",
+     "valeur": "3",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les courriers8",
+    "Archivés1"
+   ],
+   "cartes": [],
+   "tableaux": [
+    {
+     "entetes": [
+      "N° D’ORDRE",
+      "SENS",
+      "DATE",
+      "CORRESPONDANT",
+      "OBJET",
+      "NATURE",
+      "AFFECTÉ À",
+      "TRAITEMENT",
+      "NUMÉRISÉ",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "DEP-2026-0007",
+       "Départ",
+       "30/10/2026",
+       "Zone sanitaire",
+       "Rapport mensuel d’activité",
+       "Rapport",
+       "Direction Administrative",
+       "En cours",
+       "Oui",
+       ""
+      ],
+      [
+       "ARR-2026-0008",
+       "Arrivée",
+       "30/10/2026",
+       "Fournisseur DIPHARM",
+       "Livraison annoncée",
+       "Courriel",
+       "Gestion des stocks",
+       "Traité",
+       "Oui",
+       ""
+      ],
+      [
+       "ARR-2026-0006",
+       "Arrivée",
+       "27/10/2026",
+       "CHD Atacora",
+       "Demande de transfert de dossier",
+       "Lettre",
+       "Direction Médicale",
+       "En attente",
+       "À scanner",
+       ""
+      ],
+      [
+       "DEP-2026-0005",
+       "Départ",
+       "21/10/2026",
+       "NSIA Assurances",
+       "Facture mensuelle",
+       "Facture",
+       "Comptabilité",
+       "En attente",
+       "Oui",
+       ""
+      ],
+      [
+       "ARR-2026-0004",
+       "Arrivée",
+       "18/10/2026",
+       "Ministère de la Santé",
+       "Circulaire sur la vaccination",
+       "Note",
+       "Direction Médicale",
+       "En attente",
+       "À scanner",
+       ""
+      ],
+      [
+       "ARR-2026-0003",
+       "Arrivée",
+       "30/09/2026",
+       "CNSS",
+       "Appel de cotisations",
+       "Lettre",
+       "Ressources humaines",
+       "En cours",
+       "Oui",
+       ""
+      ],
+      [
+       "DEP-2026-0002",
+       "Départ",
+       "25/09/2026",
+       "SoBAPS SA",
+       "Bon de commande de médicaments",
+       "Courriel",
+       "Comptabilité",
+       "Traité",
+       "À scanner",
+       ""
+      ],
+      [
+       "ARR-2026-0001",
+       "Arrivée",
+       "20/09/2026",
+       "DGI — Centre des impôts",
+       "Notification de contrôle fiscal",
+       "Convocation",
+       "Direction Administrative",
+       "Traité",
+       "Oui",
+       ""
+      ]
+     ]
+    }
+   ],
+   "notes": [],
+   "boutons": [
+    "Tous les courriers8",
+    "Archivés1",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état"
+   ]
+  },
+  "boutonsLigne": [
+   "Consulter",
+   "Imprimer l’état",
+   "Modifier",
+   "Archiver"
+  ],
+  "filtres": [
+   [
+    "Sens",
+    [
+     [
+      "",
+      "Sens"
+     ],
+     [
+      "arrivee",
+      "Arrivée"
+     ],
+     [
+      "depart",
+      "Départ"
+     ]
+    ]
+   ],
+   [
+    "Traitement",
+    [
+     [
+      "",
+      "Traitement"
+     ],
+     [
+      "traite",
+      "Traité"
+     ],
+     [
+      "en_cours",
+      "En cours"
+     ],
+     [
+      "en_attente",
+      "En attente"
+     ]
+    ]
+   ],
+   [
+    "Service",
+    [
+     [
+      "",
+      "Service"
+     ],
+     [
+      "Direction Médicale",
+      "Direction Médicale"
+     ],
+     [
+      "Direction Administrative",
+      "Direction Administrative"
+     ],
+     [
+      "Comptabilité",
+      "Comptabilité"
+     ],
+     [
+      "Ressources humaines",
+      "Ressources humaines"
+     ],
+     [
+      "Gestion des stocks",
+      "Gestion des stocks"
+     ]
+    ]
+   ]
+  ],
+  "filtreCas": [
+   {
+    "filtre": "Sens",
+    "valeur": "arrivee",
+    "lignes": [
+     "ARR-2026-0008",
+     "ARR-2026-0006",
+     "ARR-2026-0004",
+     "ARR-2026-0003",
+     "ARR-2026-0001"
+    ]
+   },
+   {
+    "filtre": "Sens",
+    "valeur": "depart",
+    "lignes": [
+     "DEP-2026-0007",
+     "DEP-2026-0005",
+     "DEP-2026-0002"
+    ]
+   },
+   {
+    "filtre": "Traitement",
+    "valeur": "traite",
+    "lignes": [
+     "ARR-2026-0008",
+     "DEP-2026-0002",
+     "ARR-2026-0001"
+    ]
+   },
+   {
+    "filtre": "Traitement",
+    "valeur": "en_cours",
+    "lignes": [
+     "DEP-2026-0007",
+     "ARR-2026-0003"
+    ]
+   },
+   {
+    "filtre": "Traitement",
+    "valeur": "en_attente",
+    "lignes": [
+     "ARR-2026-0006",
+     "DEP-2026-0005",
+     "ARR-2026-0004"
+    ]
+   },
+   {
+    "filtre": "Service",
+    "valeur": "Direction Médicale",
+    "lignes": [
+     "ARR-2026-0006",
+     "ARR-2026-0004"
+    ]
+   },
+   {
+    "filtre": "Service",
+    "valeur": "Direction Administrative",
+    "lignes": [
+     "DEP-2026-0007",
+     "ARR-2026-0001"
+    ]
+   },
+   {
+    "filtre": "Service",
+    "valeur": "Comptabilité",
+    "lignes": [
+     "DEP-2026-0005",
+     "DEP-2026-0002"
+    ]
+   },
+   {
+    "filtre": "Service",
+    "valeur": "Ressources humaines",
+    "lignes": [
+     "ARR-2026-0003"
+    ]
+   },
+   {
+    "filtre": "Service",
+    "valeur": "Gestion des stocks",
+    "lignes": [
+     "ARR-2026-0008"
+    ]
+   }
+  ],
+  "detail": {
+   "texte": "DEP-2026-0007 DEP-2026-0007 N° d’ordre DEP-2026-0007 Sens Départ Date 30/10/2026 Correspondant Zone sanitaire Objet Rapport mensuel d’activité Nature Rapport Affecté à Direction Administrative Traitement En cours Numérisé Oui Accusé de réception Oui Observations À signer avant envoi Imprimer Modifier Archiver",
+   "boutons": [
+    "Fermer",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "etatFiche": {
+   "titre": "Fiche de courrier",
+   "sousTitre": "DEP-2026-0007",
+   "cartouche": [
+    [
+     "Référence",
+     "DEP-2026-0007"
+    ],
+    [
+     "Sens",
+     "Départ"
+    ],
+    [
+     "Date",
+     "30/10/2026"
+    ],
+    [
+     "Correspondant",
+     "Zone sanitaire"
+    ],
+    [
+     "Nature",
+     "Rapport"
+    ],
+    [
+     "Service destinataire",
+     "Direction Administrative"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’Agent administratif"
+    },
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    }
+   ],
+   "texte": "RubriqueInformationObjetRapport mensuel d’activitéÉtat du traitementEn coursAccusé de réceptionOuiDocument numériséOuiObservationsÀ signer avant envoi",
+   "tableaux": []
+  },
+  "etatRegistre": {
+   "titre": "Registre du courrier",
+   "sousTitre": "Arrivées et départs — exercice 2026",
+   "cartouche": [
+    [
+     "Courriers enregistrés",
+     "8"
+    ],
+    [
+     "Arrivées",
+     "5"
+    ],
+    [
+     "Départs",
+     "3"
+    ],
+    [
+     "Date d’édition",
+     "30/10/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’Agent administratif"
+    },
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    }
+   ],
+   "texte": "N° d’ordreSensDateCorrespondantObjetAffecté àTraitementDEP-2026-0007Départ30/10/2026Zone sanitaireRapport mensuel d’activitéDirection AdministrativeEn coursARR-2026-0008Arrivée30/10/2026Fournisseur DIPHARMLivraison annoncéeGestion des stocksTraitéARR-2026-0006Arrivée27/10/2026CHD AtacoraDemande de transfert de dossierDirection MédicaleEn attenteDEP-2026-0005Départ21/10/2026NSIA AssurancesFacture mensuelleComptabilitéEn attenteARR-2026-0004Arrivée18/10/2026Ministère de la SantéCirculaire sur la vaccinationDirection MédicaleEn attenteARR-2026-0003Arrivée30/09/2026CNSSAppel de cotisationsRessources humainesEn coursDEP-2026-0002Départ25/09/2026SoBAPS SABon de commande de médicamentsComptabilitéTraitéARR-2026-0001Arrivée20/09/2026DGI — Centre des impôtsNotification de contrôle fiscalDirection AdministrativeTraité",
+   "tableaux": []
+  },
+  "creation": {
+   "modale": "Nouveau courrier Les champs marqués d’un astérisque sont obligatoires. Sens * Courrier arrivée Courrier départ Date * Correspondant * Objet * Nature * Lettre Co",
+   "champs": [
+    "Sens *",
+    "Date *",
+    "Correspondant *",
+    "Objet *",
+    "Nature *",
+    "Service destinataire *",
+    "État du traitement *",
+    "Accusé de réception",
+    "Document numérisé",
+    "Observations"
+   ],
+   "defauts": {
+    "sens": "arrivee",
+    "date": "2026-10-30",
+    "correspondant": "",
+    "objet": "",
+    "nature": "Lettre",
+    "affecteA": "Direction Médicale",
+    "traitement": "en_attente",
+    "accuseReception": false,
+    "numerise": false,
+    "observations": ""
+   },
+   "options": {
+    "sens": [
+     [
+      "arrivee",
+      "Courrier arrivée"
+     ],
+     [
+      "depart",
+      "Courrier départ"
+     ]
+    ],
+    "nature": [
+     [
+      "Lettre",
+      "Lettre"
+     ],
+     [
+      "Courriel",
+      "Courriel"
+     ],
+     [
+      "Note",
+      "Note"
+     ],
+     [
+      "Facture",
+      "Facture"
+     ],
+     [
+      "Convocation",
+      "Convocation"
+     ],
+     [
+      "Rapport",
+      "Rapport"
+     ]
+    ],
+    "affecteA": [
+     [
+      "Direction Médicale",
+      "Direction Médicale"
+     ],
+     [
+      "Direction Administrative",
+      "Direction Administrative"
+     ],
+     [
+      "Comptabilité",
+      "Comptabilité"
+     ],
+     [
+      "Ressources humaines",
+      "Ressources humaines"
+     ],
+     [
+      "Gestion des stocks",
+      "Gestion des stocks"
+     ],
+     [
+      "Laboratoire",
+      "Laboratoire"
+     ],
+     [
+      "Pharmacie",
+      "Pharmacie"
+     ]
+    ],
+    "traitement": [
+     [
+      "en_attente",
+      "En attente"
+     ],
+     [
+      "en_cours",
+      "En cours"
+     ],
+     [
+      "traite",
+      "Traité"
+     ]
+    ]
+   },
+   "refus": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 9
+   },
+   "arrivee": {
+    "toasts": [
+     [
+      "Nouveau courrier créé.",
+      "ARR-2026-0010"
+     ]
+    ],
+    "fiche": {
+     "id": "COUxmvuswn40bru9l",
+     "statut": "actif",
+     "sens": "arrivee",
+     "date": "2026-10-30",
+     "correspondant": "DGI Natitingou",
+     "objet": "Déclaration TVM",
+     "nature": "Lettre",
+     "affecteA": "Comptabilité",
+     "traitement": "en_attente",
+     "accuseReception": false,
+     "numerise": false,
+     "observations": "",
+     "reference": "ARR-2026-0010"
+    },
+    "total": 10
+   },
+   "depart": {
+    "toasts": [
+     [
+      "Nouveau courrier créé.",
+      "DEP-2026-0011"
+     ]
+    ],
+    "fiche": {
+     "id": "COUxmvuswn40bcjss",
+     "statut": "actif",
+     "sens": "depart",
+     "date": "2026-10-30",
+     "correspondant": "SOS Assurances",
+     "objet": "Relance de paiement",
+     "nature": "Lettre",
+     "affecteA": "Comptabilité",
+     "traitement": "traite",
+     "accuseReception": true,
+     "numerise": true,
+     "observations": "Urgent",
+     "reference": "DEP-2026-0011"
+    },
+    "total": 11
+   },
+   "apres": {
+    "kpis": [
+     {
+      "libelle": "Courriers enregistrés",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "libelle": "Arrivées",
+      "valeur": "6",
+      "indice": null
+     },
+     {
+      "libelle": "Départs",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "En attente de traitement",
+      "valeur": "4",
+      "indice": null
+     }
+    ],
+    "onglets": [
+     "Tous les courriers8",
+     "Archivés1"
+    ],
+    "cartes": [],
+    "tableaux": [
+     {
+      "entetes": [
+       "N° D’ORDRE",
+       "SENS",
+       "DATE",
+       "CORRESPONDANT",
+       "OBJET",
+       "NATURE",
+       "AFFECTÉ À",
+       "TRAITEMENT",
+       "NUMÉRISÉ",
+       "ACTIONS"
+      ],
+      "lignes": [
+       [
+        "DEP-2026-0011",
+        "Départ",
+        "30/10/2026",
+        "SOS Assurances",
+        "Relance de paiement",
+        "Lettre",
+        "Comptabilité",
+        "Traité",
+        "Oui",
+        ""
+       ],
+       [
+        "ARR-2026-0010",
+        "Arrivée",
+        "30/10/2026",
+        "DGI Natitingou",
+        "Déclaration TVM",
+        "Lettre",
+        "Comptabilité",
+        "En attente",
+        "À scanner",
+        ""
+       ],
+       [
+        "DEP-2026-0007",
+        "Départ",
+        "30/10/2026",
+        "Zone sanitaire",
+        "Rapport mensuel d’activité",
+        "Rapport",
+        "Direction Administrative",
+        "En cours",
+        "Oui",
+        ""
+       ],
+       [
+        "ARR-2026-0008",
+        "Arrivée",
+        "30/10/2026",
+        "Fournisseur DIPHARM",
+        "Livraison annoncée",
+        "Courriel",
+        "Gestion des stocks",
+        "Traité",
+        "Oui",
+        ""
+       ],
+       [
+        "ARR-2026-0006",
+        "Arrivée",
+        "27/10/2026",
+        "CHD Atacora",
+        "Demande de transfert de dossier",
+        "Lettre",
+        "Direction Médicale",
+        "En attente",
+        "À scanner",
+        ""
+       ],
+       [
+        "DEP-2026-0005",
+        "Départ",
+        "21/10/2026",
+        "NSIA Assurances",
+        "Facture mensuelle",
+        "Facture",
+        "Comptabilité",
+        "En attente",
+        "Oui",
+        ""
+       ],
+       [
+        "ARR-2026-0004",
+        "Arrivée",
+        "18/10/2026",
+        "Ministère de la Santé",
+        "Circulaire sur la vaccination",
+        "Note",
+        "Direction Médicale",
+        "En attente",
+        "À scanner",
+        ""
+       ],
+       [
+        "ARR-2026-0003",
+        "Arrivée",
+        "30/09/2026",
+        "CNSS",
+        "Appel de cotisations",
+        "Lettre",
+        "Ressources humaines",
+        "En cours",
+        "Oui",
+        ""
+       ],
+       [
+        "DEP-2026-0002",
+        "Départ",
+        "25/09/2026",
+        "SoBAPS SA",
+        "Bon de commande de médicaments",
+        "Courriel",
+        "Comptabilité",
+        "Traité",
+        "À scanner",
+        ""
+       ],
+       [
+        "ARR-2026-0001",
+        "Arrivée",
+        "20/09/2026",
+        "DGI — Centre des impôts",
+        "Notification de contrôle fiscal",
+        "Convocation",
+        "Direction Administrative",
+        "Traité",
+        "Oui",
+        ""
+       ]
+      ]
+     }
+    ],
+    "notes": [],
+    "boutons": [
+     "Tous les courriers8",
+     "Archivés1",
+     "Colonnes",
+     "Exporter",
+     "Nouveau",
+     "Imprimer la sélection",
+     "Archiver",
+     "Tout désélectionner",
+     "Consulter",
+     "Imprimer l’état",
+     "Modifier",
+     "Archiver",
+     "Consulter",
+     "Imprimer l’état"
+    ]
+   }
+  },
+  "modification": {
+   "modale": "Modifier l’enregistrement ARR-2026-0004 Sens * Courrier arrivée Courrier départ Date * Correspondant * Objet * Nature * ",
+   "valeurs": {
+    "sens": "arrivee",
+    "date": "2026-10-18",
+    "correspondant": "Ministère de la Santé",
+    "objet": "Circulaire sur la vaccination",
+    "nature": "Note",
+    "affecteA": "Direction Médicale",
+    "traitement": "en_attente",
+    "accuseReception": false,
+    "numerise": false,
+    "observations": ""
+   },
+   "enregistre": {
+    "toasts": [
+     [
+      "Modifications enregistrées.",
+      "ARR-2026-0004"
+     ]
+    ],
+    "fiche": {
+     "id": "COU4",
+     "statut": "actif",
+     "reference": "ARR-2026-0004",
+     "sens": "arrivee",
+     "date": "2026-10-18",
+     "correspondant": "Ministère de la Santé",
+     "objet": "Circulaire sur la vaccination",
+     "nature": "Note",
+     "affecteA": "Direction Médicale",
+     "traitement": "traite",
+     "accuseReception": false,
+     "numerise": true,
+     "observations": ""
+    }
+   }
+  },
+  "archivage": {
+   "fiche": {
+    "id": "COU5",
+    "statut": "archive",
+    "reference": "DEP-2026-0005",
+    "sens": "depart",
+    "date": "2026-10-21",
+    "correspondant": "NSIA Assurances",
+    "objet": "Facture mensuelle",
+    "nature": "Facture",
+    "affecteA": "Comptabilité",
+    "traitement": "en_attente",
+    "accuseReception": true,
+    "numerise": true,
+    "_motifArchivage": "Doublon"
+   },
+   "onglets": [
+    "Tous les courriers8",
+    "Archivés1"
+   ],
+   "toasts": [
+    [
+     "Enregistrement archivé."
+    ],
+    [
+     "Modifications enregistrées.",
+     "ARR-2026-0004"
+    ]
+   ]
+  }
+ },
+ "reunions": {
+  "jeu": [
+   {
+    "id": "REU1",
+    "statut": "actif",
+    "reference": "RU-2026-001",
+    "date": "2026-08-31",
+    "heure": "09:00",
+    "type": "Réunion de direction",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 8,
+    "ordreDuJour": "Ordre du jour 1",
+    "compteRendu": true
+   },
+   {
+    "id": "REU2",
+    "statut": "actif",
+    "reference": "RU-2026-002",
+    "date": "2026-10-10",
+    "heure": "10:30",
+    "type": "Comité d’hygiène",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 12,
+    "ordreDuJour": "Ordre du jour 2",
+    "compteRendu": false,
+    "resolutions": "Renforcer le lavage des mains"
+   },
+   {
+    "id": "REU3",
+    "statut": "actif",
+    "reference": "RU-2026-003",
+    "date": "2026-10-28",
+    "heure": "14:00",
+    "type": "Réunion de service",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 6,
+    "ordreDuJour": "Ordre du jour 3",
+    "compteRendu": false
+   },
+   {
+    "id": "REU4",
+    "statut": "actif",
+    "reference": "RU-2026-004",
+    "date": "2026-10-30",
+    "heure": "08:00",
+    "type": "Revue mensuelle d’activité",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 10,
+    "ordreDuJour": "Ordre du jour 4",
+    "compteRendu": false
+   },
+   {
+    "id": "REU5",
+    "statut": "actif",
+    "reference": "RU-2026-005",
+    "date": "2026-10-31",
+    "heure": "15:00",
+    "type": "Réunion du personnel",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 30,
+    "ordreDuJour": "Ordre du jour 5",
+    "compteRendu": false
+   },
+   {
+    "id": "REU6",
+    "statut": "actif",
+    "reference": "RU-2026-006",
+    "date": "2026-11-14",
+    "heure": "11:00",
+    "type": "Comité de gestion des stocks",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 5,
+    "ordreDuJour": "Ordre du jour 6",
+    "compteRendu": false
+   },
+   {
+    "id": "REU7",
+    "statut": "archive",
+    "reference": "RU-2026-007",
+    "date": "2026-08-01",
+    "heure": "09:00",
+    "type": "Réunion de direction",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 7,
+    "ordreDuJour": "Ordre du jour 7",
+    "compteRendu": true,
+    "_archivePar": "BASSONGUI Chabi Séko",
+    "_archiveLe": "2026-10-30T10:00:00.000Z",
+    "_motifArchivage": "test"
+   }
+  ],
+  "president": "BASSONGUI Chabi Séko",
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Réunions enregistrées",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "libelle": "À venir",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Comptes rendus à rédiger",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Participants cumulés",
+     "valeur": "71",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les réunions6",
+    "Archivés1"
+   ],
+   "cartes": [],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "DATE",
+      "HEURE",
+      "TYPE",
+      "LIEU",
+      "PRÉSIDÉE PAR",
+      "PARTICIPANTS",
+      "STATUT",
+      "COMPTE RENDU",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "RU-2026-006",
+       "14/11/2026",
+       "11:00",
+       "Comité de gestion des stocks",
+       "Salle de réunion",
+       "BASSONGUI Chabi Séko",
+       "5",
+       "À venir",
+       "À rédiger",
+       ""
+      ],
+      [
+       "RU-2026-005",
+       "31/10/2026",
+       "15:00",
+       "Réunion du personnel",
+       "Salle de réunion",
+       "BASSONGUI Chabi Séko",
+       "30",
+       "À venir",
+       "À rédiger",
+       ""
+      ],
+      [
+       "RU-2026-004",
+       "30/10/2026",
+       "08:00",
+       "Revue mensuelle d’activité",
+       "Salle de réunion",
+       "BASSONGUI Chabi Séko",
+       "10",
+       "Tenue",
+       "À rédiger",
+       ""
+      ],
+      [
+       "RU-2026-003",
+       "28/10/2026",
+       "14:00",
+       "Réunion de service",
+       "Salle de réunion",
+       "BASSONGUI Chabi Séko",
+       "6",
+       "Tenue",
+       "À rédiger",
+       ""
+      ],
+      [
+       "RU-2026-002",
+       "10/10/2026",
+       "10:30",
+       "Comité d’hygiène",
+       "Salle de réunion",
+       "BASSONGUI Chabi Séko",
+       "12",
+       "Tenue",
+       "À rédiger",
+       ""
+      ],
+      [
+       "RU-2026-001",
+       "31/08/2026",
+       "09:00",
+       "Réunion de direction",
+       "Salle de réunion",
+       "BASSONGUI Chabi Séko",
+       "8",
+       "Tenue",
+       "Rédigé",
+       ""
+      ]
+     ]
+    }
+   ],
+   "notes": [],
+   "boutons": [
+    "Tous les réunions6",
+    "Archivés1",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état"
+   ]
+  },
+  "filtres": [
+   [
+    "Type",
+    [
+     [
+      "",
+      "Type"
+     ],
+     [
+      "Réunion de direction",
+      "Réunion de direction"
+     ],
+     [
+      "Réunion de service",
+      "Réunion de service"
+     ],
+     [
+      "Comité d’hygiène",
+      "Comité d’hygiène"
+     ],
+     [
+      "Revue mensuelle d’activité",
+      "Revue mensuelle d’activité"
+     ],
+     [
+      "Réunion du personnel",
+      "Réunion du personnel"
+     ],
+     [
+      "Comité de gestion des stocks",
+      "Comité de gestion des stocks"
+     ]
+    ]
+   ]
+  ],
+  "etats": {
+   "RU-2026-004": {
+    "titre": "Compte rendu de réunion",
+    "sousTitre": "Revue mensuelle d’activité — 30/10/2026",
+    "cartouche": [
+     [
+      "Référence",
+      "RU-2026-004"
+     ],
+     [
+      "Type",
+      "Revue mensuelle d’activité"
+     ],
+     [
+      "Date",
+      "30/10/2026"
+     ],
+     [
+      "Heure",
+      "08:00"
+     ],
+     [
+      "Lieu",
+      "Salle de réunion"
+     ],
+     [
+      "Présidée par",
+      "BASSONGUI Chabi Séko"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "Le Secrétaire de séance"
+     },
+     {
+      "role": "Le Président de séance",
+      "nom": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "texte": "Ordre du jourOrdre du jour 4Résolutions adoptéesAucune résolution consignée.Nombre de participants : 10",
+    "tableaux": []
+   },
+   "RU-2026-005": {
+    "titre": "Convocation à une réunion",
+    "sousTitre": "Réunion du personnel — 31/10/2026",
+    "cartouche": [
+     [
+      "Référence",
+      "RU-2026-005"
+     ],
+     [
+      "Type",
+      "Réunion du personnel"
+     ],
+     [
+      "Date",
+      "31/10/2026"
+     ],
+     [
+      "Heure",
+      "15:00"
+     ],
+     [
+      "Lieu",
+      "Salle de réunion"
+     ],
+     [
+      "Présidée par",
+      "BASSONGUI Chabi Séko"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "La Directrice Administrative",
+      "nom": "TAKI Alimatou"
+     }
+    ],
+    "texte": "Ordre du jourOrdre du jour 5Les personnes concernées sont priées de bien vouloir prendre toutes dispositions utiles pour prendre part à cette réunion.",
+    "tableaux": []
+   },
+   "RU-2026-002": {
+    "titre": "Compte rendu de réunion",
+    "sousTitre": "Comité d’hygiène — 10/10/2026",
+    "cartouche": [
+     [
+      "Référence",
+      "RU-2026-002"
+     ],
+     [
+      "Type",
+      "Comité d’hygiène"
+     ],
+     [
+      "Date",
+      "10/10/2026"
+     ],
+     [
+      "Heure",
+      "10:30"
+     ],
+     [
+      "Lieu",
+      "Salle de réunion"
+     ],
+     [
+      "Présidée par",
+      "BASSONGUI Chabi Séko"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "Le Secrétaire de séance"
+     },
+     {
+      "role": "Le Président de séance",
+      "nom": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "texte": "Ordre du jourOrdre du jour 2Résolutions adoptéesRenforcer le lavage des mainsNombre de participants : 12",
+    "tableaux": []
+   }
+  },
+  "detail": {
+   "texte": "RU-2026-005 RU-2026-005 N° RU-2026-005 Date 31/10/2026 Heure 15:00 Type Réunion du personnel Lieu Salle de réunion Présidée par BASSONGUI Chabi Séko Participants 30 Statut À venir Compte rendu À rédiger Ordre du jour Ordre du jour 5 Résolutions adoptées — Imprimer Modifier Archiver",
+   "boutons": [
+    "Fermer",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "creation": {
+   "modale": "Nouveau réunion Les champs marqués d’un astérisque sont obligatoires. Type de réunion * Réunion de direction Réunion de service Comité d’hygiène Revue mensuelle",
+   "champs": [
+    "Type de réunion *",
+    "Date *",
+    "Heure *",
+    "Lieu",
+    "Présidée par *",
+    "Nombre de participants",
+    "Ordre du jour *",
+    "Compte rendu rédigé",
+    "Résolutions adoptées"
+   ],
+   "defauts": {
+    "type": "Réunion de direction",
+    "date": "2026-10-30",
+    "heure": "09:00",
+    "lieu": "Salle de réunion",
+    "president": "ADAM Alimatou",
+    "participants": "8",
+    "ordreDuJour": "",
+    "compteRendu": false,
+    "resolutions": ""
+   },
+   "options": {
+    "type": [
+     [
+      "Réunion de direction",
+      "Réunion de direction"
+     ],
+     [
+      "Réunion de service",
+      "Réunion de service"
+     ],
+     [
+      "Comité d’hygiène",
+      "Comité d’hygiène"
+     ],
+     [
+      "Revue mensuelle d’activité",
+      "Revue mensuelle d’activité"
+     ],
+     [
+      "Réunion du personnel",
+      "Réunion du personnel"
+     ],
+     [
+      "Comité de gestion des stocks",
+      "Comité de gestion des stocks"
+     ]
+    ],
+    "lieu": [
+     [
+      "",
+      "— Sélectionner —"
+     ],
+     [
+      "Salle de réunion",
+      "Salle de réunion"
+     ],
+     [
+      "Bureau de la Direction",
+      "Bureau de la Direction"
+     ],
+     [
+      "Salle de garde",
+      "Salle de garde"
+     ]
+    ]
+   },
+   "refus": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 7
+   },
+   "creee": {
+    "toasts": [
+     [
+      "Nouveau réunion créé.",
+      "RU-2026-008"
+     ]
+    ],
+    "fiche": {
+     "id": "REUxmvuswn40em7vg",
+     "statut": "actif",
+     "type": "Réunion de direction",
+     "date": "2026-10-30",
+     "heure": "09:00",
+     "lieu": "Salle de réunion",
+     "president": "ADAM Alimatou",
+     "participants": 8,
+     "ordreDuJour": "Budget 2027",
+     "compteRendu": false,
+     "resolutions": "",
+     "reference": "RU-2026-008"
+    },
+    "total": 8
+   },
+   "apres": {
+    "kpis": [
+     {
+      "libelle": "Réunions enregistrées",
+      "valeur": "7",
+      "indice": null
+     },
+     {
+      "libelle": "À venir",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Comptes rendus à rédiger",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Participants cumulés",
+      "valeur": "79",
+      "indice": null
+     }
+    ],
+    "onglets": [
+     "Tous les réunions6",
+     "Archivés1"
+    ],
+    "cartes": [],
+    "tableaux": [
+     {
+      "entetes": [
+       "N°",
+       "DATE",
+       "HEURE",
+       "TYPE",
+       "LIEU",
+       "PRÉSIDÉE PAR",
+       "PARTICIPANTS",
+       "STATUT",
+       "COMPTE RENDU",
+       "ACTIONS"
+      ],
+      "lignes": [
+       [
+        "RU-2026-006",
+        "14/11/2026",
+        "11:00",
+        "Comité de gestion des stocks",
+        "Salle de réunion",
+        "BASSONGUI Chabi Séko",
+        "5",
+        "À venir",
+        "À rédiger",
+        ""
+       ],
+       [
+        "RU-2026-005",
+        "31/10/2026",
+        "15:00",
+        "Réunion du personnel",
+        "Salle de réunion",
+        "BASSONGUI Chabi Séko",
+        "30",
+        "À venir",
+        "À rédiger",
+        ""
+       ],
+       [
+        "RU-2026-008",
+        "30/10/2026",
+        "09:00",
+        "Réunion de direction",
+        "Salle de réunion",
+        "ADAM Alimatou",
+        "8",
+        "Tenue",
+        "À rédiger",
+        ""
+       ],
+       [
+        "RU-2026-004",
+        "30/10/2026",
+        "08:00",
+        "Revue mensuelle d’activité",
+        "Salle de réunion",
+        "BASSONGUI Chabi Séko",
+        "10",
+        "Tenue",
+        "À rédiger",
+        ""
+       ],
+       [
+        "RU-2026-003",
+        "28/10/2026",
+        "14:00",
+        "Réunion de service",
+        "Salle de réunion",
+        "BASSONGUI Chabi Séko",
+        "6",
+        "Tenue",
+        "À rédiger",
+        ""
+       ],
+       [
+        "RU-2026-002",
+        "10/10/2026",
+        "10:30",
+        "Comité d’hygiène",
+        "Salle de réunion",
+        "BASSONGUI Chabi Séko",
+        "12",
+        "Tenue",
+        "À rédiger",
+        ""
+       ],
+       [
+        "RU-2026-001",
+        "31/08/2026",
+        "09:00",
+        "Réunion de direction",
+        "Salle de réunion",
+        "BASSONGUI Chabi Séko",
+        "8",
+        "Tenue",
+        "Rédigé",
+        ""
+       ]
+      ]
+     }
+    ],
+    "notes": [],
+    "boutons": [
+     "Tous les réunions6",
+     "Archivés1",
+     "Colonnes",
+     "Exporter",
+     "Nouveau",
+     "Imprimer la sélection",
+     "Archiver",
+     "Tout désélectionner",
+     "Consulter",
+     "Imprimer l’état",
+     "Modifier",
+     "Archiver",
+     "Consulter",
+     "Imprimer l’état"
+    ]
+   }
+  },
+  "modification": {
+   "fiche": {
+    "id": "REU3",
+    "statut": "actif",
+    "reference": "RU-2026-003",
+    "date": "2026-10-28",
+    "heure": "14:00",
+    "type": "Réunion de service",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 6,
+    "ordreDuJour": "Ordre du jour 3",
+    "compteRendu": true,
+    "resolutions": "RAS"
+   },
+   "kpis": [
+    {
+     "libelle": "Réunions enregistrées",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "À venir",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Comptes rendus à rédiger",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Participants cumulés",
+     "valeur": "79",
+     "indice": null
+    }
+   ]
+  }
+ },
+ "evenements": {
+  "jeu": [
+   {
+    "id": "EVT001",
+    "statut": "actif",
+    "reference": "EV-2026-001",
+    "libelle": "Journée de vaccination",
+    "categorie": "Santé publique",
+    "date": "2026-09-30",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "TAKI Alimatou",
+    "notifier": true,
+    "canaux": [
+     "In-app",
+     "SMS"
+    ]
+   },
+   {
+    "id": "EVT002",
+    "statut": "actif",
+    "reference": "EV-2026-002",
+    "libelle": "Audit qualité interne",
+    "categorie": "Qualité",
+    "date": "2026-10-30",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "KASSA Augustin",
+    "notifier": true,
+    "canaux": [
+     "In-app"
+    ]
+   },
+   {
+    "id": "EVT003",
+    "statut": "actif",
+    "reference": "EV-2026-003",
+    "libelle": "Formation aux gestes d’urgence",
+    "categorie": "Formation",
+    "date": "2026-10-31",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "GBEDJI Hervé",
+    "notifier": true,
+    "canaux": [
+     "In-app",
+     "SMS",
+     "Courriel"
+    ]
+   },
+   {
+    "id": "EVT004",
+    "statut": "actif",
+    "reference": "EV-2026-004",
+    "libelle": "Inventaire annuel",
+    "categorie": "Logistique",
+    "date": "2026-11-04",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "YENI M’PO Florent",
+    "notifier": false,
+    "canaux": []
+   },
+   {
+    "id": "EVT005",
+    "statut": "actif",
+    "reference": "EV-2026-005",
+    "libelle": "Contrôle des extincteurs",
+    "categorie": "Sécurité",
+    "date": "2026-11-07",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "TAKI Orou",
+    "notifier": true,
+    "canaux": [
+     "In-app"
+    ]
+   },
+   {
+    "id": "EVT006",
+    "statut": "actif",
+    "reference": "EV-2026-006",
+    "libelle": "Journée portes ouvertes",
+    "categorie": "Communication",
+    "date": "2026-11-19",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "AHOHOU Rodrigue",
+    "notifier": true,
+    "canaux": [
+     "In-app",
+     "Courriel"
+    ]
+   },
+   {
+    "id": "EVT007",
+    "statut": "actif",
+    "reference": "EV-2026-007",
+    "libelle": "Maintenance de l’échographe",
+    "categorie": "Technique",
+    "date": "2026-11-29",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "KINNOU A. Ganiou",
+    "notifier": false,
+    "canaux": []
+   },
+   {
+    "id": "EVT008",
+    "statut": "actif",
+    "reference": "EV-2026-008",
+    "libelle": "Campagne de dépistage du diabète",
+    "categorie": "Santé publique",
+    "date": "2026-12-14",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "AGOSSOU Yahouza",
+    "notifier": true,
+    "canaux": [
+     "In-app"
+    ]
+   },
+   {
+    "id": "EVT009",
+    "statut": "actif",
+    "reference": "EV-2026-009",
+    "libelle": "Réception des nouveaux équipements",
+    "categorie": "Logistique",
+    "date": "2026-12-29",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "GARBA Yahouza",
+    "notifier": true,
+    "canaux": [
+     "In-app",
+     "SMS"
+    ]
+   },
+   {
+    "id": "EVT010",
+    "statut": "actif",
+    "reference": "EV-2026-010",
+    "libelle": "Formation au nouveau logiciel SIGH",
+    "categorie": "Formation",
+    "date": "2027-01-28",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "IDRISSOU ANIKI Baba-Toundé",
+    "notifier": false,
+    "canaux": []
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Événements planifiés",
+     "valeur": "10",
+     "indice": null
+    },
+    {
+     "libelle": "À venir",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "libelle": "Avec notification",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "Catégories",
+     "valeur": "7",
+     "indice": null
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Prochains événements",
+    "Tous les événements",
+    "Paramétrage des notifications système Modifier le paramétrage"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "ÉVÉNEMENT",
+      "CATÉGORIE",
+      "DATE",
+      "HEURE",
+      "LIEU",
+      "RESPONSABLE",
+      "NOTIFICATION",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "EV-2026-010",
+       "Formation au nouveau logiciel SIGH",
+       "Formation",
+       "28/01/2027",
+       "09:00",
+       "Clinique",
+       "IDRISSOU ANIKI Baba-Toundé",
+       "Aucune",
+       ""
+      ],
+      [
+       "EV-2026-009",
+       "Réception des nouveaux équipements",
+       "Logistique",
+       "29/12/2026",
+       "09:00",
+       "Clinique",
+       "GARBA Yahouza",
+       "In-app SMS",
+       ""
+      ],
+      [
+       "EV-2026-008",
+       "Campagne de dépistage du diabète",
+       "Santé publique",
+       "14/12/2026",
+       "09:00",
+       "Clinique",
+       "AGOSSOU Yahouza",
+       "In-app",
+       ""
+      ],
+      [
+       "EV-2026-007",
+       "Maintenance de l’échographe",
+       "Technique",
+       "29/11/2026",
+       "09:00",
+       "Clinique",
+       "KINNOU A. Ganiou",
+       "Aucune",
+       ""
+      ],
+      [
+       "EV-2026-006",
+       "Journée portes ouvertes",
+       "Communication",
+       "19/11/2026",
+       "09:00",
+       "Clinique",
+       "AHOHOU Rodrigue",
+       "In-app Courriel",
+       ""
+      ],
+      [
+       "EV-2026-005",
+       "Contrôle des extincteurs",
+       "Sécurité",
+       "07/11/2026",
+       "09:00",
+       "Clinique",
+       "TAKI Orou",
+       "In-app",
+       ""
+      ],
+      [
+       "EV-2026-004",
+       "Inventaire annuel",
+       "Logistique",
+       "04/11/2026",
+       "09:00",
+       "Clinique",
+       "YENI M’PO Florent",
+       "Aucune",
+       ""
+      ],
+      [
+       "EV-2026-003",
+       "Formation aux gestes d’urgence",
+       "Formation",
+       "31/10/2026",
+       "09:00",
+       "Clinique",
+       "GBEDJI Hervé",
+       "In-app SMS Courriel",
+       ""
+      ],
+      [
+       "EV-2026-002",
+       "Audit qualité interne",
+       "Qualité",
+       "30/10/2026",
+       "09:00",
+       "Clinique",
+       "KASSA Augustin",
+       "In-app",
+       ""
+      ],
+      [
+       "EV-2026-001",
+       "Journée de vaccination",
+       "Santé publique",
+       "30/09/2026",
+       "09:00",
+       "Clinique",
+       "TAKI Alimatou",
+       "In-app SMS",
+       ""
+      ]
+     ]
+    },
+    {
+     "entetes": [
+      "ÉVÉNEMENT DÉCLENCHEUR",
+      "DESCRIPTION",
+      "CANAUX ACTIFS"
+     ],
+     "lignes": [
+      [
+       "Nouvelle admission",
+       "Alerte à l’admission d’un patient",
+       "In-app"
+      ],
+      [
+       "Rupture de stock",
+       "Produit passant sous le seuil d’alerte",
+       "In-app SMS"
+      ],
+      [
+       "Péremption proche",
+       "Lot arrivant à échéance sous 90 jours",
+       "In-app"
+      ],
+      [
+       "Résultat de laboratoire disponible",
+       "Notification au prescripteur",
+       "In-app SMS"
+      ],
+      [
+       "Facture générée",
+       "Notification à la caisse et à la comptabilité",
+       "In-app"
+      ],
+      [
+       "Commande à valider",
+       "Demande de validation à la Directrice Administrative",
+       "In-app Courriel"
+      ],
+      [
+       "Paie à valider",
+       "Soumission des bulletins à la Direction",
+       "In-app Courriel"
+      ],
+      [
+       "Carte d’assurance expirée",
+       "Alerte à la caisse lors de la facturation",
+       "In-app"
+      ],
+      [
+       "Facture MECeF rejetée",
+       "Alerte fiscale à corriger",
+       "In-app Courriel"
+      ],
+      [
+       "Tentative de connexion infructueuse",
+       "Alerte de sécurité à l’administrateur",
+       "In-app Courriel"
+      ]
+     ]
+    }
+   ],
+   "notes": [],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Tout désélectionner",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "prochains": [
+   [
+    "Formation",
+    "Dans 1 j",
+    "Formation aux gestes d’urgence",
+    "samedi 31 octobre 2026 à 09:00",
+    "Clinique — GBEDJI Hervé",
+    "In-app",
+    "SMS",
+    "Courriel"
+   ],
+   [
+    "Logistique",
+    "Dans 5 j",
+    "Inventaire annuel",
+    "mercredi 4 novembre 2026 à 09:00",
+    "Clinique — YENI M’PO Florent"
+   ],
+   [
+    "Sécurité",
+    "Dans 8 j",
+    "Contrôle des extincteurs",
+    "samedi 7 novembre 2026 à 09:00",
+    "Clinique — TAKI Orou",
+    "In-app"
+   ],
+   [
+    "Communication",
+    "Dans 20 j",
+    "Journée portes ouvertes",
+    "jeudi 19 novembre 2026 à 09:00",
+    "Clinique — AHOHOU Rodrigue",
+    "In-app",
+    "Courriel"
+   ],
+   [
+    "Technique",
+    "Dans 30 j",
+    "Maintenance de l’échographe",
+    "dimanche 29 novembre 2026 à 09:00",
+    "Clinique — KINNOU A. Ganiou"
+   ],
+   [
+    "Santé publique",
+    "Dans 45 j",
+    "Campagne de dépistage du diabète",
+    "lundi 14 décembre 2026 à 09:00",
+    "Clinique — AGOSSOU Yahouza",
+    "In-app"
+   ]
+  ],
+  "prochainsBrut": [
+   "Formation Dans 1 j Formation aux gestes d’urgence samedi 31 octobre 2026 à 09:00 Clinique — GBEDJI Hervé In-app SMS Courriel",
+   "Logistique Dans 5 j Inventaire annuel mercredi 4 novembre 2026 à 09:00 Clinique — YENI M’PO Florent",
+   "Sécurité Dans 8 j Contrôle des extincteurs samedi 7 novembre 2026 à 09:00 Clinique — TAKI Orou In-app",
+   "Communication Dans 20 j Journée portes ouvertes jeudi 19 novembre 2026 à 09:00 Clinique — AHOHOU Rodrigue In-app Courriel",
+   "Technique Dans 30 j Maintenance de l’échographe dimanche 29 novembre 2026 à 09:00 Clinique — KINNOU A. Ganiou",
+   "Santé publique Dans 45 j Campagne de dépistage du diabète lundi 14 décembre 2026 à 09:00 Clinique — AGOSSOU Yahouza In-app"
+  ],
+  "prochainsRouges": [
+   true,
+   true,
+   false,
+   false,
+   false,
+   false
+  ],
+  "notifications": {
+   "entetes": [
+    "ÉVÉNEMENT DÉCLENCHEUR",
+    "DESCRIPTION",
+    "CANAUX ACTIFS"
+   ],
+   "lignes": [
+    [
+     "Nouvelle admission",
+     "Alerte à l’admission d’un patient",
+     "In-app"
+    ],
+    [
+     "Rupture de stock",
+     "Produit passant sous le seuil d’alerte",
+     "In-app SMS"
+    ],
+    [
+     "Péremption proche",
+     "Lot arrivant à échéance sous 90 jours",
+     "In-app"
+    ],
+    [
+     "Résultat de laboratoire disponible",
+     "Notification au prescripteur",
+     "In-app SMS"
+    ],
+    [
+     "Facture générée",
+     "Notification à la caisse et à la comptabilité",
+     "In-app"
+    ],
+    [
+     "Commande à valider",
+     "Demande de validation à la Directrice Administrative",
+     "In-app Courriel"
+    ],
+    [
+     "Paie à valider",
+     "Soumission des bulletins à la Direction",
+     "In-app Courriel"
+    ],
+    [
+     "Carte d’assurance expirée",
+     "Alerte à la caisse lors de la facturation",
+     "In-app"
+    ],
+    [
+     "Facture MECeF rejetée",
+     "Alerte fiscale à corriger",
+     "In-app Courriel"
+    ],
+    [
+     "Tentative de connexion infructueuse",
+     "Alerte de sécurité à l’administrateur",
+     "In-app Courriel"
+    ]
+   ]
+  },
+  "liens": [
+   [
+    "Modifier le paramétrage",
+    "pages/cfg-notifications.php"
+   ]
+  ],
+  "filtres": [
+   [
+    "Catégorie",
+    [
+     [
+      "",
+      "Catégorie"
+     ],
+     [
+      "Communication",
+      "Communication"
+     ],
+     [
+      "Formation",
+      "Formation"
+     ],
+     [
+      "Logistique",
+      "Logistique"
+     ],
+     [
+      "Qualité",
+      "Qualité"
+     ],
+     [
+      "Santé publique",
+      "Santé publique"
+     ],
+     [
+      "Sécurité",
+      "Sécurité"
+     ],
+     [
+      "Technique",
+      "Technique"
+     ]
+    ]
+   ]
+  ],
+  "boutonsLigne": [
+   "Modifier",
+   "Archiver"
+  ],
+  "creation": {
+   "modale": "Nouvel événement de la clinique Les champs marqués d’un astérisque sont obligatoires. Intitulé de l’événement * Catégorie * Santé publique Formation Qualité Tec",
+   "champs": [
+    "Intitulé de l’événement *",
+    "Catégorie *",
+    "Date *",
+    "Heure *",
+    "Lieu",
+    "Responsable",
+    "Notifier le personnel",
+    "Observations"
+   ],
+   "defauts": {
+    "libelle": "",
+    "categorie": "Santé publique",
+    "date": "2026-10-30",
+    "heure": "09:00",
+    "lieu": "",
+    "responsable": "",
+    "notifier": true,
+    "observations": ""
+   },
+   "options": {
+    "categorie": [
+     [
+      "Santé publique",
+      "Santé publique"
+     ],
+     [
+      "Formation",
+      "Formation"
+     ],
+     [
+      "Qualité",
+      "Qualité"
+     ],
+     [
+      "Technique",
+      "Technique"
+     ],
+     [
+      "Logistique",
+      "Logistique"
+     ],
+     [
+      "Communication",
+      "Communication"
+     ],
+     [
+      "Sécurité",
+      "Sécurité"
+     ],
+     [
+      "Réunion",
+      "Réunion"
+     ]
+    ]
+   },
+   "refus": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 10
+   },
+   "avecNotif": {
+    "toasts": [
+     [
+      "Événement créé.",
+      "Dépistage du cancer du sein"
+     ]
+    ],
+    "alertes": [
+     {
+      "message": "Événement inscrit au calendrier de la clinique.",
+      "type": "success",
+      "son": "information"
+     }
+    ],
+    "fiche": {
+     "id": "EVExmvuswn40uc0t7",
+     "statut": "actif",
+     "libelle": "Dépistage du cancer du sein",
+     "categorie": "Santé publique",
+     "date": "2026-10-30",
+     "heure": "09:00",
+     "lieu": "Salle de réunion",
+     "responsable": "",
+     "notifier": true,
+     "observations": "",
+     "reference": "EVT-0011",
+     "canaux": [
+      "In-app"
+     ]
+    },
+    "total": 11
+   },
+   "sansNotif": {
+    "fiche": {
+     "id": "EVExmvuswn40ypdwi",
+     "statut": "actif",
+     "libelle": "Réunion sans annonce",
+     "categorie": "Santé publique",
+     "date": "2026-11-02",
+     "heure": "09:00",
+     "lieu": "",
+     "responsable": "",
+     "notifier": false,
+     "observations": "",
+     "reference": "EVT-0012",
+     "canaux": []
+    },
+    "total": 12
+   }
+  },
+  "modification": {
+   "valeurs": {
+    "libelle": "Inventaire annuel",
+    "categorie": "Logistique",
+    "date": "2026-11-04",
+    "heure": "09:00",
+    "lieu": "Clinique",
+    "responsable": "YENI M’PO Florent",
+    "notifier": false,
+    "observations": ""
+   },
+   "enregistre": {
+    "fiche": {
+     "id": "EVT004",
+     "statut": "actif",
+     "reference": "EV-2026-004",
+     "libelle": "Inventaire annuel",
+     "categorie": "Logistique",
+     "date": "2026-11-04",
+     "heure": "09:00",
+     "lieu": "Extérieur",
+     "responsable": "YENI M’PO Florent",
+     "notifier": true,
+     "canaux": [
+      "In-app"
+     ],
+     "observations": ""
+    }
+   }
+  }
+ },
+ "planAnnuel": {
+  "jeu": [
+   {
+    "id": "PAT001",
+    "statut": "actif",
+    "reference": "PA-2026-001",
+    "action": "Déploiement du SIGH-CNT",
+    "axe": "Digitalisation",
+    "trimestreDebut": 1,
+    "trimestreFin": 4,
+    "avancement": "En cours",
+    "responsable": "TAKI Alimatou"
+   },
+   {
+    "id": "PAT002",
+    "statut": "actif",
+    "reference": "PA-2026-002",
+    "action": "Inventaire général des stocks",
+    "axe": "Logistique",
+    "trimestreDebut": 1,
+    "trimestreFin": 1,
+    "avancement": "Réalisée",
+    "responsable": "MAMAN Zoukanéri"
+   },
+   {
+    "id": "PAT003",
+    "statut": "actif",
+    "reference": "PA-2026-003",
+    "action": "Formation du personnel",
+    "axe": "Formation",
+    "trimestreDebut": 3,
+    "trimestreFin": 4,
+    "avancement": "Planifiée",
+    "responsable": "TAKI Alimatou"
+   },
+   {
+    "id": "PAT004",
+    "statut": "actif",
+    "reference": "PA-2026-004",
+    "action": "Clôture comptable de l’exercice",
+    "axe": "Finance",
+    "trimestreDebut": 4,
+    "trimestreFin": 4,
+    "avancement": "Planifiée",
+    "responsable": "KASSA Augustin"
+   },
+   {
+    "id": "PAT005",
+    "statut": "actif",
+    "reference": "PA-2026-005",
+    "action": "Renouvellement des conventions",
+    "axe": "Partenariats",
+    "trimestreDebut": 1,
+    "trimestreFin": 2,
+    "avancement": "Réalisée",
+    "responsable": "TAKI Alimatou"
+   },
+   {
+    "id": "PAT006",
+    "statut": "actif",
+    "reference": "PA-2026-006",
+    "action": "Campagne de dépistage",
+    "axe": "Santé publique",
+    "trimestreDebut": 2,
+    "trimestreFin": 3,
+    "avancement": "En cours",
+    "responsable": "TAKI Alimatou"
+   },
+   {
+    "id": "PAT007",
+    "statut": "actif",
+    "reference": "PA-2026-007",
+    "action": "Audit qualité",
+    "axe": "Qualité",
+    "trimestreDebut": 4,
+    "trimestreFin": 4,
+    "avancement": "Planifiée",
+    "responsable": "TAKI Alimatou"
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Actions programmées",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "Réalisées",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "En cours",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Planifiées",
+     "valeur": "3",
+     "indice": null
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Plan annuel de travail 2026 Imprimer le plan",
+    "Détail des actions"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "ACTION",
+      "AXE",
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "AVANCEMENT"
+     ],
+     "lignes": [
+      [
+       "Déploiement du SIGH-CNT",
+       "Digitalisation",
+       "",
+       "",
+       "",
+       "",
+       "En cours"
+      ],
+      [
+       "Inventaire général des stocks",
+       "Logistique",
+       "",
+       "",
+       "",
+       "",
+       "Réalisée"
+      ],
+      [
+       "Renouvellement des conventions",
+       "Partenariats",
+       "",
+       "",
+       "",
+       "",
+       "Réalisée"
+      ],
+      [
+       "Campagne de dépistage",
+       "Santé publique",
+       "",
+       "",
+       "",
+       "",
+       "En cours"
+      ],
+      [
+       "Formation du personnel",
+       "Formation",
+       "",
+       "",
+       "",
+       "",
+       "Planifiée"
+      ],
+      [
+       "Clôture comptable de l’exercice",
+       "Finance",
+       "",
+       "",
+       "",
+       "",
+       "Planifiée"
+      ],
+      [
+       "Audit qualité",
+       "Qualité",
+       "",
+       "",
+       "",
+       "",
+       "Planifiée"
+      ]
+     ]
+    },
+    {
+     "entetes": [
+      "N°",
+      "ACTION",
+      "AXE",
+      "PÉRIODE",
+      "RESPONSABLE",
+      "AVANCEMENT",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "PA-2026-001",
+       "Déploiement du SIGH-CNT",
+       "Digitalisation",
+       "T1 – T4",
+       "TAKI Alimatou",
+       "En cours",
+       ""
+      ],
+      [
+       "PA-2026-002",
+       "Inventaire général des stocks",
+       "Logistique",
+       "T1 – T1",
+       "MAMAN Zoukanéri",
+       "Réalisée",
+       ""
+      ],
+      [
+       "PA-2026-003",
+       "Formation du personnel",
+       "Formation",
+       "T3 – T4",
+       "TAKI Alimatou",
+       "Planifiée",
+       ""
+      ],
+      [
+       "PA-2026-004",
+       "Clôture comptable de l’exercice",
+       "Finance",
+       "T4 – T4",
+       "KASSA Augustin",
+       "Planifiée",
+       ""
+      ],
+      [
+       "PA-2026-005",
+       "Renouvellement des conventions",
+       "Partenariats",
+       "T1 – T2",
+       "TAKI Alimatou",
+       "Réalisée",
+       ""
+      ],
+      [
+       "PA-2026-006",
+       "Campagne de dépistage",
+       "Santé publique",
+       "T2 – T3",
+       "TAKI Alimatou",
+       "En cours",
+       ""
+      ],
+      [
+       "PA-2026-007",
+       "Audit qualité",
+       "Qualité",
+       "T4 – T4",
+       "TAKI Alimatou",
+       "Planifiée",
+       ""
+      ]
+     ]
+    }
+   ],
+   "notes": [],
+   "boutons": [
+    "Imprimer le plan",
+    "Colonnes",
+    "Exporter",
+    "Tout désélectionner",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "gantt": [
+   [
+    "Déploiement du SIGH-CNT",
+    "Digitalisation",
+    "bg-info-400",
+    "bg-info-400",
+    "bg-info-400",
+    "bg-info-400",
+    "En cours"
+   ],
+   [
+    "Inventaire général des stocks",
+    "Logistique",
+    "bg-success-400",
+    "bg-slate-100",
+    "bg-slate-100",
+    "bg-slate-100",
+    "Réalisée"
+   ],
+   [
+    "Renouvellement des conventions",
+    "Partenariats",
+    "bg-success-400",
+    "bg-success-400",
+    "bg-slate-100",
+    "bg-slate-100",
+    "Réalisée"
+   ],
+   [
+    "Campagne de dépistage",
+    "Santé publique",
+    "bg-slate-100",
+    "bg-info-400",
+    "bg-info-400",
+    "bg-slate-100",
+    "En cours"
+   ],
+   [
+    "Formation du personnel",
+    "Formation",
+    "bg-slate-100",
+    "bg-slate-100",
+    "bg-warning-400",
+    "bg-warning-400",
+    "Planifiée"
+   ],
+   [
+    "Clôture comptable de l’exercice",
+    "Finance",
+    "bg-slate-100",
+    "bg-slate-100",
+    "bg-slate-100",
+    "bg-warning-400",
+    "Planifiée"
+   ],
+   [
+    "Audit qualité",
+    "Qualité",
+    "bg-slate-100",
+    "bg-slate-100",
+    "bg-slate-100",
+    "bg-warning-400",
+    "Planifiée"
+   ]
+  ],
+  "filtres": [
+   [
+    "Axe",
+    [
+     [
+      "",
+      "Axe"
+     ],
+     [
+      "Digitalisation",
+      "Digitalisation"
+     ],
+     [
+      "Finance",
+      "Finance"
+     ],
+     [
+      "Formation",
+      "Formation"
+     ],
+     [
+      "Logistique",
+      "Logistique"
+     ],
+     [
+      "Partenariats",
+      "Partenariats"
+     ],
+     [
+      "Qualité",
+      "Qualité"
+     ],
+     [
+      "Santé publique",
+      "Santé publique"
+     ]
+    ]
+   ],
+   [
+    "Avancement",
+    [
+     [
+      "",
+      "Avancement"
+     ],
+     [
+      "Réalisée",
+      "Réalisée"
+     ],
+     [
+      "En cours",
+      "En cours"
+     ],
+     [
+      "Planifiée",
+      "Planifiée"
+     ]
+    ]
+   ]
+  ],
+  "boutonsLigne": [
+   "Modifier",
+   "Archiver"
+  ],
+  "etat": {
+   "titre": "Plan annuel de travail",
+   "sousTitre": "Exercice 2026",
+   "cartouche": [
+    [
+     "Exercice",
+     "2026"
+    ],
+    [
+     "Actions programmées",
+     "7"
+    ],
+    [
+     "Réalisées",
+     "2"
+    ],
+    [
+     "Date d’édition",
+     "30/10/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "Le Directeur Médical",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "texte": "N°ActionAxePériodeResponsableAvancementPA-2026-001Déploiement du SIGH-CNTDigitalisationT1 à T4TAKI AlimatouEn coursPA-2026-002Inventaire général des stocksLogistiqueT1 à T1MAMAN ZoukanériRéaliséePA-2026-005Renouvellement des conventionsPartenariatsT1 à T2TAKI AlimatouRéaliséePA-2026-006Campagne de dépistageSanté publiqueT2 à T3TAKI AlimatouEn coursPA-2026-003Formation du personnelFormationT3 à T4TAKI AlimatouPlanifiéePA-2026-004Clôture comptable de l’exerciceFinanceT4 à T4KASSA AugustinPlanifiéePA-2026-007Audit qualitéQualitéT4 à T4TAKI AlimatouPlanifiée",
+   "tableaux": []
+  },
+  "detail": {
+   "texte": "Connexion perdue avec le serveur de base de données L’enregistrement a été refusé et la saisie n’a pas été conservée. Rien n’est écrit dans ce navigateur : les données de la clinique vivent sur le serveur, et lui seul en répond. Vérifier que le serveur est démarré, puis recharger la page. Le travail déjà enregistré est intact. Écriture refusée (archiver / courriers) — Aucune fiche « COU9 » dans « courriers ». Recharger la page Modifications enregistrées. Annuler Actions programmées 7 Réalisées 2 En cours 2 Planifiées 3 Plan annuel de travail 2026 Imprimer le plan ACTION AXE T1 T2 T3 T4 AVANCEMENT Déploiement du SIGH-CNT Digitalisation En cours Inventaire général des stocks Logistique Réalisée Renouvellement des conventions Partenariats Réalisée Campagne de dépistage Santé publique En cours Formation du personnel Formation Planifiée Clôture comptable de l’exercice Finance Planifiée Audit qualité Qualité Planifiée Détail des actions Axe Digitalisation Finance Formation Logistique Partenariats Qualité Santé publique Avancement Réalisée En cours Planifiée Colonnes Exporter N° ACTION AXE PÉRIODE RESPONSABLE AVANCEMENT ACTIONS PA-2026-001 Déploiement du SIGH-CNT Digitalisation T1 – T4 TAKI Alimatou En cours PA-2026-002 Inventaire général des stocks Logistique T1 – T1 MAMAN Zoukanéri Réalisée PA-2026-003 Formation du personnel Formation T3 – T4 TAKI Alimatou Planifiée PA-2026-004 Clôture comptable de l’exercice Finance T4 – T4 KASSA Augustin Planifiée PA-2026-005 Renouvellement des conventions Partenariats T1 – T2 TAKI Alimatou Réalisée PA-2026-006 Campagne de dépistage Santé publique T2 – T3 TAKI Alimatou En cours PA-2026-007 Audit qualité Qualité T4 – T4 TAKI Alimatou Planifiée Affichage de 1 à 7 sur 7 enregistrements",
+   "boutons": [
+    "Recharger la page",
+    "Annuler",
+    "Fermer",
+    "Imprimer le plan",
+    "Colonnes",
+    "Exporter",
+    "Tout désélectionner",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "modification": {
+   "modale": "Modifier l’enregistrement PA-2026-006 Action * Responsable Échéance État d’avancement * Réalisée En cours Planifiée Avancement (%) Observati",
+   "champs": [
+    "Action *",
+    "Responsable",
+    "Échéance",
+    "État d’avancement *",
+    "Avancement (%)",
+    "Observations"
+   ],
+   "valeurs": {
+    "action": "Campagne de dépistage",
+    "responsable": "TAKI Alimatou",
+    "echeance": "",
+    "avancement": "En cours",
+    "tauxAvancement": "",
+    "observations": ""
+   },
+   "enregistre": {
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "fiche": {
+     "id": "PAT006",
+     "statut": "actif",
+     "reference": "PA-2026-006",
+     "action": "Campagne de dépistage communautaire",
+     "axe": "Santé publique",
+     "trimestreDebut": 2,
+     "trimestreFin": 3,
+     "avancement": "En cours",
+     "responsable": "TAKI Alimatou",
+     "echeance": "2026-12-15",
+     "tauxAvancement": null,
+     "observations": ""
+    }
+   },
+   "apres": {
+    "kpis": [
+     {
+      "libelle": "Actions programmées",
+      "valeur": "7",
+      "indice": null
+     },
+     {
+      "libelle": "Réalisées",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "En cours",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Planifiées",
+      "valeur": "3",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "avancementNumerique": {
+   "fiche": {
+    "id": "PAT006",
+    "statut": "actif",
+    "reference": "PA-2026-006",
+    "action": "Campagne de dépistage communautaire",
+    "axe": "Santé publique",
+    "trimestreDebut": 2,
+    "trimestreFin": 3,
+    "avancement": "Réalisée",
+    "responsable": "TAKI Alimatou",
+    "echeance": "2026-12-15",
+    "tauxAvancement": 60,
+    "observations": ""
+   },
+   "kpis": [
+    {
+     "libelle": "Actions programmées",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "Réalisées",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "En cours",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Planifiées",
+     "valeur": "3",
+     "indice": null
+    }
+   ],
+   "tableau": [
+    [
+     "PA-2026-006",
+     "Campagne de dépistage communautaire",
+     "Santé publique",
+     "T2 – T3",
+     "TAKI Alimatou",
+     "Réalisée",
+     ""
+    ]
+   ]
+  }
+ },
+ "ambulance": {
+  "jeu": [
+   {
+    "id": "AMB1",
+    "statut": "actif",
+    "reference": "AM-2026-0001",
+    "dateHeure": "2026-09-10T08:15:00.000Z",
+    "motif": "Urgence médicale",
+    "destination": "CHD Atacora",
+    "kilometrage": 12,
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "etat": "terminee",
+    "tarif": 11000,
+    "facture": true,
+    "patientId": "PAT0001",
+    "patient": "TCHANE Bertine",
+    "patientCode": "CNT/1/25"
+   },
+   {
+    "id": "AMB2",
+    "statut": "actif",
+    "reference": "AM-2026-0002",
+    "dateHeure": "2026-10-10T22:15:00.000Z",
+    "motif": "Transfert inter-hospitalier",
+    "destination": "CNHU-HKM Cotonou",
+    "kilometrage": 480,
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "etat": "terminee",
+    "tarif": 245000,
+    "facture": true,
+    "patientId": "PAT0002",
+    "patient": "BAKO Boukari",
+    "patientCode": "CNT/2/26"
+   },
+   {
+    "id": "AMB3",
+    "statut": "actif",
+    "reference": "AM-2026-0003",
+    "dateHeure": "2026-10-01T14:15:00.000Z",
+    "motif": "Retour à domicile",
+    "destination": "Domicile — Tchirimina",
+    "kilometrage": 7,
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "etat": "terminee",
+    "tarif": 8500,
+    "facture": false,
+    "patientId": "PAT0003",
+    "patient": "N’TCHA Yacoubou",
+    "patientCode": "CNT/3/26"
+   },
+   {
+    "id": "AMB4",
+    "statut": "actif",
+    "reference": "AM-2026-0004",
+    "dateHeure": "2026-10-27T03:15:00.000Z",
+    "motif": "Urgence obstétricale",
+    "destination": "Hôpital de zone de Tanguiéta",
+    "kilometrage": 52,
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "etat": "terminee",
+    "tarif": 31000,
+    "facture": true,
+    "patientId": "PAT0004",
+    "patient": "PARAISO Sabi",
+    "patientCode": "CNT/4/26"
+   },
+   {
+    "id": "AMB5",
+    "statut": "actif",
+    "reference": "AM-2026-0005",
+    "dateHeure": "2026-10-30T07:15:00.000Z",
+    "motif": "Évacuation sanitaire",
+    "destination": "CHD Atacora",
+    "kilometrage": 15,
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "etat": "en_cours",
+    "tarif": 12500,
+    "facture": false,
+    "patientId": "PAT0005",
+    "patient": "TAKI Ganiou",
+    "patientCode": "CNT/5/26"
+   },
+   {
+    "id": "AMB6",
+    "statut": "actif",
+    "reference": "AM-2026-0006",
+    "dateHeure": "2026-10-30T09:15:00.000Z",
+    "motif": "Accident de la voie publique",
+    "destination": "Clinique",
+    "kilometrage": 4,
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "etat": "demandee",
+    "tarif": 7000,
+    "facture": false,
+    "patientId": "PAT0006",
+    "patient": "DIEYABIDI Bibata",
+    "patientCode": "CNT/6/25"
+   },
+   {
+    "id": "AMB7",
+    "statut": "actif",
+    "reference": "AM-2026-0007",
+    "dateHeure": "2026-10-25T18:15:00.000Z",
+    "motif": "Urgence médicale",
+    "destination": "CHD Atacora",
+    "kilometrage": 10,
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "etat": "terminee",
+    "tarif": 10000,
+    "facture": true,
+    "patientId": "PAT0007",
+    "patient": "OROU YO Adissa",
+    "patientCode": "CNT/7/25"
+   }
+  ],
+  "chauffeur": "TCHANE Nourou",
+  "accompagnant": "TAKI Alimatou",
+  "patients": [
+   {
+    "code": "CNT/1/25",
+    "nom": "TCHANE",
+    "prenom": "Bertine",
+    "id": "PAT0001"
+   },
+   {
+    "code": "CNT/2/26",
+    "nom": "BAKO",
+    "prenom": "Boukari",
+    "id": "PAT0002"
+   },
+   {
+    "code": "CNT/3/26",
+    "nom": "N’TCHA",
+    "prenom": "Yacoubou",
+    "id": "PAT0003"
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Interventions enregistrées",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "libelle": "Ce mois-ci",
+     "valeur": "6",
+     "indice": null
+    },
+    {
+     "libelle": "Kilométrage cumulé",
+     "valeur": "580 km",
+     "indice": null
+    },
+    {
+     "libelle": "Recettes ambulance",
+     "valeur": "297 000 FCFA",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Tous les interventions7",
+    "Archivés0"
+   ],
+   "cartes": [],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "DATE ET HEURE",
+      "PATIENT",
+      "MOTIF",
+      "DESTINATION",
+      "KM",
+      "CHAUFFEUR",
+      "ACCOMPAGNANT",
+      "MONTANT",
+      "ÉTAT",
+      "FACTURATION",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "AM-2026-0006",
+       "30/10/2026 à 09h15",
+       "DIEYABIDI Bibata CNT/6/25",
+       "Accident de la voie publique",
+       "Clinique",
+       "4",
+       "TCHANE Nourou",
+       "TAKI Alimatou",
+       "7 000",
+       "Demandée",
+       "À facturer",
+       ""
+      ],
+      [
+       "AM-2026-0005",
+       "30/10/2026 à 07h15",
+       "TAKI Ganiou CNT/5/26",
+       "Évacuation sanitaire",
+       "CHD Atacora",
+       "15",
+       "TCHANE Nourou",
+       "TAKI Alimatou",
+       "12 500",
+       "En cours",
+       "À facturer",
+       ""
+      ],
+      [
+       "AM-2026-0004",
+       "27/10/2026 à 03h15",
+       "PARAISO Sabi CNT/4/26",
+       "Urgence obstétricale",
+       "Hôpital de zone de Tanguiéta",
+       "52",
+       "TCHANE Nourou",
+       "TAKI Alimatou",
+       "31 000",
+       "Terminée",
+       "Facturée",
+       ""
+      ],
+      [
+       "AM-2026-0007",
+       "25/10/2026 à 18h15",
+       "OROU YO Adissa CNT/7/25",
+       "Urgence médicale",
+       "CHD Atacora",
+       "10",
+       "TCHANE Nourou",
+       "TAKI Alimatou",
+       "10 000",
+       "Terminée",
+       "Facturée",
+       ""
+      ],
+      [
+       "AM-2026-0002",
+       "10/10/2026 à 22h15",
+       "BAKO Boukari CNT/2/26",
+       "Transfert inter-hospitalier",
+       "CNHU-HKM Cotonou",
+       "480",
+       "TCHANE Nourou",
+       "TAKI Alimatou",
+       "245 000",
+       "Terminée",
+       "Facturée",
+       ""
+      ],
+      [
+       "AM-2026-0003",
+       "01/10/2026 à 14h15",
+       "N’TCHA Yacoubou CNT/3/26",
+       "Retour à domicile",
+       "Domicile — Tchirimina",
+       "7",
+       "TCHANE Nourou",
+       "TAKI Alimatou",
+       "8 500",
+       "Terminée",
+       "À facturer",
+       ""
+      ],
+      [
+       "AM-2026-0001",
+       "10/09/2026 à 08h15",
+       "TCHANE Bertine CNT/1/25",
+       "Urgence médicale",
+       "CHD Atacora",
+       "12",
+       "TCHANE Nourou",
+       "TAKI Alimatou",
+       "11 000",
+       "Terminée",
+       "Facturée",
+       ""
+      ]
+     ]
+    }
+   ],
+   "notes": [],
+   "boutons": [
+    "Tous les interventions7",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état"
+   ]
+  },
+  "boutonsLigne": [
+   "Consulter",
+   "Imprimer l’état",
+   "Modifier",
+   "Archiver"
+  ],
+  "filtres": [
+   [
+    "État",
+    [
+     [
+      "",
+      "État"
+     ],
+     [
+      "demandee",
+      "Demandée"
+     ],
+     [
+      "en_cours",
+      "En cours"
+     ],
+     [
+      "terminee",
+      "Terminée"
+     ]
+    ]
+   ],
+   [
+    "Motif",
+    [
+     [
+      "",
+      "Motif"
+     ],
+     [
+      "Urgence médicale",
+      "Urgence médicale"
+     ],
+     [
+      "Transfert inter-hospitalier",
+      "Transfert inter-hospitalier"
+     ],
+     [
+      "Évacuation sanitaire",
+      "Évacuation sanitaire"
+     ],
+     [
+      "Retour à domicile",
+      "Retour à domicile"
+     ],
+     [
+      "Accident de la voie publique",
+      "Accident de la voie publique"
+     ],
+     [
+      "Urgence obstétricale",
+      "Urgence obstétricale"
+     ]
+    ]
+   ],
+   [
+    "Facturation",
+    [
+     [
+      "",
+      "Facturation"
+     ],
+     [
+      "oui",
+      "Facturées"
+     ],
+     [
+      "non",
+      "À facturer"
+     ]
+    ]
+   ]
+  ],
+  "filtreCas": [
+   {
+    "filtre": "État",
+    "valeur": "demandee",
+    "lignes": [
+     "AM-2026-0006"
+    ]
+   },
+   {
+    "filtre": "État",
+    "valeur": "en_cours",
+    "lignes": [
+     "AM-2026-0005"
+    ]
+   },
+   {
+    "filtre": "État",
+    "valeur": "terminee",
+    "lignes": [
+     "AM-2026-0004",
+     "AM-2026-0007",
+     "AM-2026-0002",
+     "AM-2026-0003",
+     "AM-2026-0001"
+    ]
+   },
+   {
+    "filtre": "Motif",
+    "valeur": "Urgence médicale",
+    "lignes": [
+     "AM-2026-0007",
+     "AM-2026-0001"
+    ]
+   },
+   {
+    "filtre": "Motif",
+    "valeur": "Transfert inter-hospitalier",
+    "lignes": [
+     "AM-2026-0002"
+    ]
+   },
+   {
+    "filtre": "Motif",
+    "valeur": "Évacuation sanitaire",
+    "lignes": [
+     "AM-2026-0005"
+    ]
+   },
+   {
+    "filtre": "Motif",
+    "valeur": "Retour à domicile",
+    "lignes": [
+     "AM-2026-0003"
+    ]
+   },
+   {
+    "filtre": "Motif",
+    "valeur": "Accident de la voie publique",
+    "lignes": [
+     "AM-2026-0006"
+    ]
+   },
+   {
+    "filtre": "Motif",
+    "valeur": "Urgence obstétricale",
+    "lignes": [
+     "AM-2026-0004"
+    ]
+   },
+   {
+    "filtre": "Facturation",
+    "valeur": "oui",
+    "lignes": [
+     "AM-2026-0004",
+     "AM-2026-0007",
+     "AM-2026-0002",
+     "AM-2026-0001"
+    ]
+   },
+   {
+    "filtre": "Facturation",
+    "valeur": "non",
+    "lignes": [
+     "AM-2026-0006",
+     "AM-2026-0005",
+     "AM-2026-0003"
+    ]
+   }
+  ],
+  "etat": {
+   "titre": "Fiche d’intervention — ambulance",
+   "sousTitre": "AM-2026-0002",
+   "cartouche": [
+    [
+     "Référence",
+     "AM-2026-0002"
+    ],
+    [
+     "Date et heure",
+     "10/10/2026 à 22h15"
+    ],
+    [
+     "Patient",
+     "BAKO Boukari"
+    ],
+    [
+     "Dossier",
+     "CNT/2/26"
+    ],
+    [
+     "Motif",
+     "Transfert inter-hospitalier"
+    ],
+    [
+     "Destination",
+     "CNHU-HKM Cotonou"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "Le Chauffeur",
+     "nom": "TCHANE Nourou"
+    },
+    {
+     "role": "L’Accompagnant médical",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    }
+   ],
+   "texte": "RubriqueInformationKilométrage parcouru480 kmChauffeurTCHANE NourouAccompagnant médicalTAKI AlimatouMontant facturé245 000 FCFAFacturationFacturée",
+   "tableaux": []
+  },
+  "detail": {
+   "texte": "BAKO Boukari AM-2026-0002 N° AM-2026-0002 Date et heure 10/10/2026 à 22h15 Patient BAKO Boukari CNT/2/26 Motif Transfert inter-hospitalier Destination CNHU-HKM Cotonou Km 480 Chauffeur TCHANE Nourou Accompagnant TAKI Alimatou Montant 245 000 État Terminée Facturation Facturée Patient CNT/2/26 — BAKO Boukari Imprimer Modifier Archiver",
+   "boutons": [
+    "Fermer",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "creation": {
+   "modale": "Nouveau intervention Les champs marqués d’un astérisque sont obligatoires. Patient * CNT/1/25 — TCHANE Bertine Date et heure * Motif * Urgence médicale Transfer",
+   "champs": [
+    "Patient *",
+    "Date et heure *",
+    "Motif *",
+    "Destination *",
+    "Kilométrage parcouru *",
+    "État de l’intervention *",
+    "Chauffeur",
+    "Accompagnant médical",
+    "Montant facturé (FCFA)",
+    "Intervention facturée"
+   ],
+   "defauts": {
+    "patientCode": "CNT/1/25",
+    "dateHeure": "",
+    "motif": "Urgence médicale",
+    "destination": "",
+    "kilometrage": "10",
+    "etat": "demandee",
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "",
+    "tarif": "",
+    "facture": false
+   },
+   "options": {
+    "motif": [
+     [
+      "Urgence médicale",
+      "Urgence médicale"
+     ],
+     [
+      "Transfert inter-hospitalier",
+      "Transfert inter-hospitalier"
+     ],
+     [
+      "Évacuation sanitaire",
+      "Évacuation sanitaire"
+     ],
+     [
+      "Retour à domicile",
+      "Retour à domicile"
+     ],
+     [
+      "Accident de la voie publique",
+      "Accident de la voie publique"
+     ],
+     [
+      "Urgence obstétricale",
+      "Urgence obstétricale"
+     ]
+    ],
+    "etat": [
+     [
+      "demandee",
+      "Demandée"
+     ],
+     [
+      "en_cours",
+      "En cours"
+     ],
+     [
+      "terminee",
+      "Terminée"
+     ]
+    ],
+    "chauffeur": [
+     [
+      "ADAM Alimatou",
+      "ADAM Alimatou — Dispensatrice"
+     ],
+     [
+      "ADAM Colette",
+      "ADAM Colette — Sage-femme"
+     ],
+     [
+      "AGOSSOU Yahouza",
+      "AGOSSOU Yahouza — Biologiste médical"
+     ]
+    ],
+    "patientCode": [
+     [
+      "CNT/1/25",
+      "CNT/1/25 — TCHANE Bertine"
+     ],
+     [
+      "CNT/2/26",
+      "CNT/2/26 — BAKO Boukari"
+     ],
+     [
+      "CNT/3/26",
+      "CNT/3/26 — N’TCHA Yacoubou"
+     ]
+    ],
+    "nbPatients": 198,
+    "nbAgents": 44
+   },
+   "refus": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 7
+   },
+   "tarifCalcule": {
+    "toasts": [
+     [
+      "Nouveau intervention créé.",
+      "AM-2026-0008"
+     ]
+    ],
+    "fiche": {
+     "id": "AMBxmvuswn404brvq",
+     "statut": "actif",
+     "patientCode": "CNT/8/25",
+     "dateHeure": "2026-10-30T09:30",
+     "motif": "Urgence médicale",
+     "destination": "Centre de santé de Perma",
+     "kilometrage": 20,
+     "etat": "demandee",
+     "chauffeur": "TCHANE Nourou",
+     "accompagnant": "",
+     "tarif": 15000,
+     "facture": false,
+     "patientId": "PAT0008",
+     "patient": "DOSSOU Salifou",
+     "reference": "AM-2026-0008"
+    },
+    "total": 8,
+    "kpis": [
+     {
+      "libelle": "Interventions enregistrées",
+      "valeur": "8",
+      "indice": null
+     },
+     {
+      "libelle": "Ce mois-ci",
+      "valeur": "7",
+      "indice": null
+     },
+     {
+      "libelle": "Kilométrage cumulé",
+      "valeur": "600 km",
+      "indice": null
+     },
+     {
+      "libelle": "Recettes ambulance",
+      "valeur": "297 000 FCFA",
+      "indice": null
+     }
+    ]
+   },
+   "tarifSaisi": {
+    "fiche": {
+     "id": "AMBxmvuswn40rr8a1",
+     "statut": "actif",
+     "patientCode": "CNT/9/26",
+     "dateHeure": "2026-11-02T16:00",
+     "motif": "Urgence médicale",
+     "destination": "CHD Atacora",
+     "kilometrage": 5,
+     "etat": "terminee",
+     "chauffeur": "TCHANE Nourou",
+     "accompagnant": "",
+     "tarif": 9000,
+     "facture": true,
+     "patientId": "PAT0009",
+     "patient": "BAKO Justine",
+     "reference": "AM-2026-0009"
+    },
+    "kpis": [
+     {
+      "libelle": "Interventions enregistrées",
+      "valeur": "9",
+      "indice": null
+     },
+     {
+      "libelle": "Ce mois-ci",
+      "valeur": "7",
+      "indice": null
+     },
+     {
+      "libelle": "Kilométrage cumulé",
+      "valeur": "605 km",
+      "indice": null
+     },
+     {
+      "libelle": "Recettes ambulance",
+      "valeur": "306 000 FCFA",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "modification": {
+   "valeurs": {
+    "patientCode": "CNT/3/26",
+    "dateHeure": "2026-10-01T14:15",
+    "motif": "Retour à domicile",
+    "destination": "Domicile — Tchirimina",
+    "kilometrage": "7",
+    "etat": "terminee",
+    "chauffeur": "TCHANE Nourou",
+    "accompagnant": "TAKI Alimatou",
+    "tarif": "8500",
+    "facture": false
+   },
+   "enregistre": {
+    "fiche": {
+     "id": "AMB3",
+     "statut": "actif",
+     "reference": "AM-2026-0003",
+     "dateHeure": "2026-10-01T14:15",
+     "motif": "Retour à domicile",
+     "destination": "Domicile — Tchirimina",
+     "kilometrage": 7,
+     "chauffeur": "TCHANE Nourou",
+     "accompagnant": "TAKI Alimatou",
+     "etat": "terminee",
+     "tarif": 8500,
+     "facture": true,
+     "patientId": "PAT0010",
+     "patient": "SEIDOU Rachida",
+     "patientCode": "CNT/10/25"
+    },
+    "patient": {
+     "code": "CNT/10/25",
+     "id": "PAT0010",
+     "nom": "SEIDOU Rachida"
+    }
+   }
+  }
+ },
+ "repertoire": {
+  "brand": [
+   "01 95 44 51 51",
+   "01 66 43 28 20"
+  ],
+  "amorcage": {
+   "fiches": [
+    {
+     "id": "AMBxmvuswn407slad",
+     "statut": "actif",
+     "libelle": "Sapeurs-pompiers",
+     "type": "publique",
+     "telephone": null,
+     "contact": "Poste de commandement",
+     "base": "Natitingou",
+     "disponibilite": "indisponible",
+     "verifieLe": null,
+     "aCompleter": true,
+     "source": "Structure à contacter — numéro à renseigner"
+    },
+    {
+     "id": "AMBxmvuswn409f46k",
+     "statut": "actif",
+     "libelle": "Zone sanitaire de Natitingou",
+     "type": "publique",
+     "telephone": null,
+     "contact": "Bureau de la zone",
+     "base": "Natitingou",
+     "disponibilite": "indisponible",
+     "verifieLe": null,
+     "aCompleter": true,
+     "source": "Structure à contacter — numéro à renseigner"
+    },
+    {
+     "id": "AMBxmvuswn40czqur",
+     "statut": "actif",
+     "libelle": "CHD Atacora — ambulance",
+     "type": "publique",
+     "telephone": null,
+     "contact": "Régulation du CHD",
+     "base": "Natitingou",
+     "disponibilite": "indisponible",
+     "verifieLe": null,
+     "aCompleter": true,
+     "source": "Structure à contacter — numéro à renseigner"
+    },
+    {
+     "id": "AMBxmvuswn40fyt6j",
+     "statut": "actif",
+     "libelle": "Ambulance CNT 02",
+     "type": "clinique",
+     "telephone": "01 66 43 28 20",
+     "contact": "Chauffeur de garde",
+     "base": "Natitingou — clinique",
+     "disponibilite": "disponible",
+     "verifieLe": "2026-10-30",
+     "aCompleter": false,
+     "source": "En-tête officiel de la clinique"
+    },
+    {
+     "id": "AMBxmvuswn402zqy9",
+     "statut": "actif",
+     "libelle": "Ambulance CNT 01",
+     "type": "clinique",
+     "telephone": "01 95 44 51 51",
+     "contact": "TCHANE Nourou",
+     "base": "Natitingou — clinique",
+     "disponibilite": "disponible",
+     "verifieLe": "2026-10-30",
+     "aCompleter": false,
+     "source": "En-tête officiel de la clinique"
+    }
+   ],
+   "ecran": {
+    "kpis": [
+     {
+      "libelle": "Moyens répertoriés",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Disponibles maintenant",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Numéros à renseigner",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Non vérifiés depuis 90 j",
+      "valeur": "0",
+      "indice": null
+     }
+    ],
+    "onglets": [],
+    "cartes": [
+     "Appel rapide"
+    ],
+    "tableaux": [
+     {
+      "entetes": [
+       "DÉSIGNATION",
+       "TYPE",
+       "TÉLÉPHONE",
+       "DEMANDER",
+       "BASE",
+       "DISPONIBILITÉ",
+       "VÉRIFIÉ LE",
+       "ACTIONS"
+      ],
+      "lignes": [
+       [
+        "Ambulance CNT 01",
+        "Ambulance de la clinique",
+        "01 95 44 51 51",
+        "TCHANE Nourou",
+        "Natitingou — clinique",
+        "Disponible",
+        "30/10/2026 (0 j)",
+        ""
+       ],
+       [
+        "Ambulance CNT 02",
+        "Ambulance de la clinique",
+        "01 66 43 28 20",
+        "Chauffeur de garde",
+        "Natitingou — clinique",
+        "Disponible",
+        "30/10/2026 (0 j)",
+        ""
+       ],
+       [
+        "CHD Atacora — ambulance",
+        "Service public",
+        "à renseigner",
+        "Régulation du CHD",
+        "Natitingou",
+        "Indisponible",
+        "jamais",
+        ""
+       ],
+       [
+        "Sapeurs-pompiers",
+        "Service public",
+        "à renseigner",
+        "Poste de commandement",
+        "Natitingou",
+        "Indisponible",
+        "jamais",
+        ""
+       ],
+       [
+        "Zone sanitaire de Natitingou",
+        "Service public",
+        "à renseigner",
+        "Bureau de la zone",
+        "Natitingou",
+        "Indisponible",
+        "jamais",
+        ""
+       ]
+      ]
+     }
+    ],
+    "notes": [
+     "3 fiche(s) sans numéro : Sapeurs-pompiers · Zone sanitaire de Natitingou · CHD Atacora — ambulance. Ces structures sont connues de la clinique mais leur numéro n’a pas été relevé. Inventer un numéro d’urgence serait la faute la plus grave de tout ce prototype — la fiche reste donc vide et le dit.",
+     "Les moyens disponibles remontent en tête, ceux de la clinique avant l’extérieur. Un numéro qu’on appelle pour s’entendre dire « nous sommes en course » a coûté deux minutes qu’une urgence n’a pas."
+    ],
+    "boutons": [
+     "Colonnes",
+     "Exporter",
+     "Ajouter une ambulance",
+     "Tout désélectionner",
+     "Confirmer que ce numéro est à jour",
+     "Changer la disponibilité",
+     "Consulter",
+     "Modifier",
+     "Archiver",
+     "Confirmer que ce numéro est à jour",
+     "Changer la disponibilité",
+     "Consulter",
+     "Modifier",
+     "Archiver"
+    ]
+   }
+  },
+  "jeu": [
+   {
+    "id": "AMBR1",
+    "statut": "actif",
+    "libelle": "Ambulance CNT 01",
+    "type": "clinique",
+    "telephone": "+229 01 23 45 67",
+    "contact": "Chauffeur de garde",
+    "base": "Natitingou — clinique",
+    "disponibilite": "en_course",
+    "verifieLe": "2026-10-28",
+    "aCompleter": false
+   },
+   {
+    "id": "AMBR2",
+    "statut": "actif",
+    "libelle": "Ambulance CNT 02",
+    "type": "clinique",
+    "telephone": "+229 01 23 45 68",
+    "telephone2": "+229 97 00 00 02",
+    "contact": "Chauffeur de garde",
+    "base": "Natitingou — clinique",
+    "disponibilite": "disponible",
+    "verifieLe": "2026-10-30",
+    "aCompleter": false
+   },
+   {
+    "id": "AMBR3",
+    "statut": "actif",
+    "libelle": "CHD Atacora — ambulance",
+    "type": "publique",
+    "contact": "Régulation du CHD",
+    "base": "Natitingou",
+    "disponibilite": "indisponible",
+    "aCompleter": true
+   },
+   {
+    "id": "AMBR4",
+    "statut": "actif",
+    "libelle": "Ambulance Alpha",
+    "type": "prive",
+    "telephone": "+229 96 00 00 01",
+    "contact": "M. Alpha",
+    "base": "Tanguiéta",
+    "disponibilite": "disponible",
+    "verifieLe": "2026-07-02",
+    "aCompleter": false,
+    "capacite": "Brancard, oxygène"
+   },
+   {
+    "id": "AMBR5",
+    "statut": "actif",
+    "libelle": "Hôpital partenaire",
+    "type": "partenaire",
+    "telephone": "+229 95 00 00 05",
+    "contact": "Standard",
+    "base": "Boukoumbé",
+    "disponibilite": "disponible",
+    "verifieLe": "2026-08-02",
+    "aCompleter": false,
+    "observations": "Appeler avant 20 h"
+   },
+   {
+    "id": "AMBR6",
+    "statut": "actif",
+    "libelle": "Ambulance Bravo",
+    "type": "prive",
+    "telephone": "+229 96 00 00 06",
+    "contact": "M. Bravo",
+    "base": "Natitingou",
+    "disponibilite": "disponible",
+    "verifieLe": "2026-08-01",
+    "aCompleter": false
+   },
+   {
+    "id": "AMBR7",
+    "statut": "actif",
+    "libelle": "Ambulance Charlie",
+    "type": "prive",
+    "telephone": "+229 96 00 00 07",
+    "contact": "",
+    "base": "Natitingou",
+    "disponibilite": "disponible",
+    "verifieLe": "2026-07-31",
+    "aCompleter": false
+   },
+   {
+    "id": "AMBR8",
+    "statut": "actif",
+    "libelle": "Ambulance Delta",
+    "type": "inconnu",
+    "telephone": "+229 96 00 00 08",
+    "contact": "",
+    "base": "",
+    "disponibilite": "inconnue",
+    "aCompleter": false
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Moyens répertoriés",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "libelle": "Disponibles maintenant",
+     "valeur": "5",
+     "indice": null
+    },
+    {
+     "libelle": "Numéros à renseigner",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Non vérifiés depuis 90 j",
+     "valeur": "3",
+     "indice": null
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Appel rapide"
+   ],
+   "tableaux": [
+    {
+     "entetes": [
+      "DÉSIGNATION",
+      "TYPE",
+      "TÉLÉPHONE",
+      "DEMANDER",
+      "BASE",
+      "DISPONIBILITÉ",
+      "VÉRIFIÉ LE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "Ambulance Alpha",
+       "Transporteur privé",
+       "+229 96 00 00 01",
+       "M. Alpha",
+       "Tanguiéta",
+       "Disponible",
+       "02/07/2026 (120 j)",
+       ""
+      ],
+      [
+       "Ambulance Bravo",
+       "Transporteur privé",
+       "+229 96 00 00 06",
+       "M. Bravo",
+       "Natitingou",
+       "Disponible",
+       "01/08/2026 (90 j)",
+       ""
+      ],
+      [
+       "Ambulance Charlie",
+       "Transporteur privé",
+       "+229 96 00 00 07",
+       "—",
+       "Natitingou",
+       "Disponible",
+       "31/07/2026 (91 j)",
+       ""
+      ],
+      [
+       "Ambulance CNT 01",
+       "Ambulance de la clinique",
+       "+229 01 23 45 67",
+       "Chauffeur de garde",
+       "Natitingou — clinique",
+       "En course",
+       "28/10/2026 (2 j)",
+       ""
+      ],
+      [
+       "Ambulance CNT 02",
+       "Ambulance de la clinique",
+       "+229 01 23 45 68",
+       "Chauffeur de garde",
+       "Natitingou — clinique",
+       "Disponible",
+       "30/10/2026 (0 j)",
+       ""
+      ],
+      [
+       "Ambulance Delta",
+       "Transporteur privé",
+       "+229 96 00 00 08",
+       "—",
+       "—",
+       "Indisponible",
+       "jamais",
+       ""
+      ],
+      [
+       "CHD Atacora — ambulance",
+       "Service public",
+       "à renseigner",
+       "Régulation du CHD",
+       "Natitingou",
+       "Indisponible",
+       "jamais",
+       ""
+      ],
+      [
+       "Hôpital partenaire",
+       "Structure partenaire",
+       "+229 95 00 00 05",
+       "Standard",
+       "Boukoumbé",
+       "Disponible",
+       "02/08/2026 (89 j)",
+       ""
+      ]
+     ]
+    }
+   ],
+   "notes": [
+    "1 fiche(s) sans numéro : CHD Atacora — ambulance. Ces structures sont connues de la clinique mais leur numéro n’a pas été relevé. Inventer un numéro d’urgence serait la faute la plus grave de tout ce prototype — la fiche reste donc vide et le dit.",
+    "Les moyens disponibles remontent en tête, ceux de la clinique avant l’extérieur. Un numéro qu’on appelle pour s’entendre dire « nous sommes en course » a coûté deux minutes qu’une urgence n’a pas."
+   ],
+   "boutons": [
+    "Colonnes",
+    "Exporter",
+    "Ajouter une ambulance",
+    "Tout désélectionner",
+    "Confirmer que ce numéro est à jour",
+    "Changer la disponibilité",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Confirmer que ce numéro est à jour",
+    "Changer la disponibilité",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "cartes": [
+   {
+    "texte": "Ambulance CNT 02 Disponible Ambulance de la clinique — Natitingou — clinique +229 01 23 45 68 +229 97 00 00 02 Demander : Chauffeur de garde",
+    "classe": "vert",
+    "liens": [
+     [
+      "+229 01 23 45 68",
+      "tel:+22901234568",
+      true
+     ],
+     [
+      "+229 97 00 00 02",
+      "tel:+22997000002",
+      false
+     ]
+    ]
+   },
+   {
+    "texte": "Ambulance Alpha Disponible Transporteur privé — Tanguiéta +229 96 00 00 01 Demander : M. Alpha Non vérifié depuis 120 jours",
+    "classe": "vert",
+    "liens": [
+     [
+      "+229 96 00 00 01",
+      "tel:+22996000001",
+      true
+     ]
+    ]
+   },
+   {
+    "texte": "Ambulance Bravo Disponible Transporteur privé — Natitingou +229 96 00 00 06 Demander : M. Bravo",
+    "classe": "vert",
+    "liens": [
+     [
+      "+229 96 00 00 06",
+      "tel:+22996000006",
+      true
+     ]
+    ]
+   },
+   {
+    "texte": "Ambulance Charlie Disponible Transporteur privé — Natitingou +229 96 00 00 07 Non vérifié depuis 91 jours",
+    "classe": "vert",
+    "liens": [
+     [
+      "+229 96 00 00 07",
+      "tel:+22996000007",
+      true
+     ]
+    ]
+   },
+   {
+    "texte": "Hôpital partenaire Disponible Structure partenaire — Boukoumbé +229 95 00 00 05 Demander : Standard",
+    "classe": "vert",
+    "liens": [
+     [
+      "+229 95 00 00 05",
+      "tel:+22995000005",
+      true
+     ]
+    ]
+   },
+   {
+    "texte": "Ambulance CNT 01 En course Ambulance de la clinique — Natitingou — clinique +229 01 23 45 67 Demander : Chauffeur de garde",
+    "classe": "blanc",
+    "liens": [
+     [
+      "+229 01 23 45 67",
+      "tel:+22901234567",
+      true
+     ]
+    ]
+   },
+   {
+    "texte": "Ambulance Delta Indisponible Transporteur privé +229 96 00 00 08 Jamais vérifié",
+    "classe": "blanc",
+    "liens": [
+     [
+      "+229 96 00 00 08",
+      "tel:+22996000008",
+      true
+     ]
+    ]
+   },
+   {
+    "texte": "CHD Atacora — ambulance Indisponible Service public — Natitingou Numéro à renseigner Demander : Régulation du CHD",
+    "classe": "blanc",
+    "liens": []
+   }
+  ],
+  "notesDit": [
+   "1 fiche(s) sans numéro : CHD Atacora — ambulance. Ces structures sont connues de la clinique mais leur numéro n’a pas été relevé. Inventer un numéro d’urgence serait la faute la plus grave de tout ce prototype — la fiche reste donc vide et le dit.",
+   "Les moyens disponibles remontent en tête, ceux de la clinique avant l’extérieur. Un numéro qu’on appelle pour s’entendre dire « nous sommes en course » a coûté deux minutes qu’une urgence n’a pas."
+  ],
+  "tableau": {
+   "entetes": [
+    "DÉSIGNATION",
+    "TYPE",
+    "TÉLÉPHONE",
+    "DEMANDER",
+    "BASE",
+    "DISPONIBILITÉ",
+    "VÉRIFIÉ LE",
+    "ACTIONS"
+   ],
+   "lignes": [
+    [
+     "Ambulance Alpha",
+     "Transporteur privé",
+     "+229 96 00 00 01",
+     "M. Alpha",
+     "Tanguiéta",
+     "Disponible",
+     "02/07/2026 (120 j)",
+     ""
+    ],
+    [
+     "Ambulance Bravo",
+     "Transporteur privé",
+     "+229 96 00 00 06",
+     "M. Bravo",
+     "Natitingou",
+     "Disponible",
+     "01/08/2026 (90 j)",
+     ""
+    ],
+    [
+     "Ambulance Charlie",
+     "Transporteur privé",
+     "+229 96 00 00 07",
+     "—",
+     "Natitingou",
+     "Disponible",
+     "31/07/2026 (91 j)",
+     ""
+    ],
+    [
+     "Ambulance CNT 01",
+     "Ambulance de la clinique",
+     "+229 01 23 45 67",
+     "Chauffeur de garde",
+     "Natitingou — clinique",
+     "En course",
+     "28/10/2026 (2 j)",
+     ""
+    ],
+    [
+     "Ambulance CNT 02",
+     "Ambulance de la clinique",
+     "+229 01 23 45 68",
+     "Chauffeur de garde",
+     "Natitingou — clinique",
+     "Disponible",
+     "30/10/2026 (0 j)",
+     ""
+    ],
+    [
+     "Ambulance Delta",
+     "Transporteur privé",
+     "+229 96 00 00 08",
+     "—",
+     "—",
+     "Indisponible",
+     "jamais",
+     ""
+    ],
+    [
+     "CHD Atacora — ambulance",
+     "Service public",
+     "à renseigner",
+     "Régulation du CHD",
+     "Natitingou",
+     "Indisponible",
+     "jamais",
+     ""
+    ],
+    [
+     "Hôpital partenaire",
+     "Structure partenaire",
+     "+229 95 00 00 05",
+     "Standard",
+     "Boukoumbé",
+     "Disponible",
+     "02/08/2026 (89 j)",
+     ""
+    ]
+   ]
+  },
+  "boutonsLigne": [
+   "Confirmer que ce numéro est à jour",
+   "Changer la disponibilité",
+   "Consulter",
+   "Modifier",
+   "Archiver"
+  ],
+  "boutonsLigneSansNumero": [
+   "Confirmer que ce numéro est à jour",
+   "Changer la disponibilité",
+   "Consulter",
+   "Modifier",
+   "Archiver"
+  ],
+  "detail": {
+   "texte": "Ambulance Alpha DÉSIGNATION Ambulance Alpha TYPE Transporteur privé TÉLÉPHONE +229 96 00 00 01 SECOND NUMÉRO — PERSONNE À DEMANDER M. Alpha BASE Tanguiéta DISPONIBILITÉ Disponible CAPACITÉ Brancard, oxygène VÉRIFIÉ LE 02/07/2026 ORIGINE DE LA FICHE —",
+   "boutons": [
+    "Fermer"
+   ]
+  },
+  "detailSansNumero": {
+   "texte": "CHD Atacora — ambulance DÉSIGNATION CHD Atacora — ambulance TYPE Service public TÉLÉPHONE à renseigner SECOND NUMÉRO — PERSONNE À DEMANDER Régulation du CHD BASE Natitingou DISPONIBILITÉ Indisponible CAPACITÉ — VÉRIFIÉ LE jamais ORIGINE DE LA FICHE — Le numéro de cette structure n’a pas été relevé. La fiche reste vide plutôt que de porter une valeur inventée.",
+   "boutons": [
+    "Fermer"
+   ]
+  },
+  "verification": {
+   "fiche": {
+    "id": "AMBR4",
+    "statut": "actif",
+    "libelle": "Ambulance Alpha",
+    "type": "prive",
+    "telephone": "+229 96 00 00 01",
+    "contact": "M. Alpha",
+    "base": "Tanguiéta",
+    "disponibilite": "disponible",
+    "verifieLe": "2026-10-30",
+    "aCompleter": false,
+    "capacite": "Brancard, oxygène",
+    "verifiePar": "BASSONGUI Chabi Séko"
+   },
+   "toasts": [
+    [
+     "Numéro confirmé à jour.",
+     "Ambulance Alpha"
+    ]
+   ],
+   "kpis": [
+    {
+     "libelle": "Moyens répertoriés",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "libelle": "Disponibles maintenant",
+     "valeur": "5",
+     "indice": null
+    },
+    {
+     "libelle": "Numéros à renseigner",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Non vérifiés depuis 90 j",
+     "valeur": "2",
+     "indice": null
+    }
+   ]
+  },
+  "bascule": {
+   "modale": "Disponibilité — Ambulance CNT 02 Disponibilité * Disponible En course Indisponible Précision Annuler Appliquer",
+   "options": [
+    [
+     "disponible",
+     "Disponible"
+    ],
+    [
+     "en_course",
+     "En course"
+    ],
+    [
+     "indisponible",
+     "Indisponible"
+    ]
+   ],
+   "valeur": "disponible",
+   "apres": {
+    "fiche": {
+     "id": "AMBR2",
+     "statut": "actif",
+     "libelle": "Ambulance CNT 02",
+     "type": "clinique",
+     "telephone": "+229 01 23 45 68",
+     "telephone2": "+229 97 00 00 02",
+     "contact": "Chauffeur de garde",
+     "base": "Natitingou — clinique",
+     "disponibilite": "en_course",
+     "verifieLe": "2026-10-30",
+     "aCompleter": false,
+     "observations": "Sortie à Tanguiéta"
+    },
+    "toasts": [
+     [
+      "Disponibilité mise à jour.",
+      "Ambulance CNT 02 — En course"
+     ]
+    ],
+    "kpis": [
+     {
+      "libelle": "Moyens répertoriés",
+      "valeur": "8",
+      "indice": null
+     },
+     {
+      "libelle": "Disponibles maintenant",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Numéros à renseigner",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Non vérifiés depuis 90 j",
+      "valeur": "2",
+      "indice": null
+     }
+    ],
+    "cartes": [
+     "Ambulance Alpha",
+     "Ambulance Bravo",
+     "Ambulance Charlie",
+     "Hôpital partenaire",
+     "Ambulance CNT 01",
+     "Ambulance CNT 02",
+     "Ambulance Delta",
+     "CHD Atacora — ambulance"
+    ]
+   }
+  },
+  "creation": {
+   "modale": "Fiche ambulance Les champs marqués d’un astérisque sont obligatoires. Désignation * Type * Ambulance de la clinique Structure partenaire Service public Transpor",
+   "champs": [
+    "Désignation *",
+    "Type *",
+    "Téléphone",
+    "Second numéro",
+    "Personne à demander",
+    "Base ou localisation",
+    "Disponibilité *",
+    "Capacité et équipement",
+    "Observations"
+   ],
+   "defauts": {
+    "libelle": "",
+    "type": "clinique",
+    "telephone": "",
+    "telephone2": "",
+    "contact": "",
+    "base": "",
+    "disponibilite": "disponible",
+    "capacite": "",
+    "observations": ""
+   },
+   "options": {
+    "type": [
+     [
+      "clinique",
+      "Ambulance de la clinique"
+     ],
+     [
+      "partenaire",
+      "Structure partenaire"
+     ],
+     [
+      "publique",
+      "Service public"
+     ],
+     [
+      "prive",
+      "Transporteur privé"
+     ]
+    ],
+    "disponibilite": [
+     [
+      "disponible",
+      "Disponible"
+     ],
+     [
+      "en_course",
+      "En course"
+     ],
+     [
+      "indisponible",
+      "Indisponible"
+     ]
+    ]
+   },
+   "refus": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 8
+   },
+   "sansNumero": {
+    "toasts": [
+     [
+      "Ambulance créé.",
+      "Sapeurs-pompiers"
+     ]
+    ],
+    "total": 9,
+    "derniere": {
+     "id": "AMBxmvuswn40skcw8",
+     "statut": "actif",
+     "verifieLe": "2026-10-30",
+     "aCompleter": true,
+     "source": "Saisie à l’accueil",
+     "libelle": "Sapeurs-pompiers",
+     "type": "clinique",
+     "telephone": "",
+     "telephone2": "",
+     "contact": "",
+     "base": "",
+     "disponibilite": "disponible",
+     "capacite": "",
+     "observations": ""
+    }
+   },
+   "avecNumero": {
+    "toasts": [
+     [
+      "Ambulance créé.",
+      "Sapeurs-pompiers 2"
+     ]
+    ],
+    "total": 10,
+    "derniere": {
+     "id": "AMBxmvuswn40qzlwv",
+     "statut": "actif",
+     "verifieLe": "2026-10-30",
+     "aCompleter": false,
+     "source": "Saisie à l’accueil",
+     "libelle": "Sapeurs-pompiers 2",
+     "type": "publique",
+     "telephone": "+229 90 00 00 09",
+     "telephone2": "",
+     "contact": "",
+     "base": "Natitingou",
+     "disponibilite": "disponible",
+     "capacite": "",
+     "observations": ""
+    },
+    "kpis": [
+     {
+      "libelle": "Moyens répertoriés",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "libelle": "Disponibles maintenant",
+      "valeur": "5",
+      "indice": null
+     },
+     {
+      "libelle": "Numéros à renseigner",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Non vérifiés depuis 90 j",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   }
+  },
+  "modification": {
+   "valeurs": {
+    "libelle": "Ambulance Bravo",
+    "type": "prive",
+    "telephone": "+229 96 00 00 06",
+    "telephone2": "",
+    "contact": "M. Bravo",
+    "base": "Natitingou",
+    "disponibilite": "disponible",
+    "capacite": "",
+    "observations": ""
+   },
+   "enregistre": {
+    "fiche": {
+     "id": "AMBR6",
+     "statut": "actif",
+     "libelle": "Ambulance Bravo",
+     "type": "prive",
+     "telephone": "+229 96 11 11 11",
+     "telephone2": "",
+     "contact": "M. Bravo",
+     "base": "Natitingou",
+     "disponibilite": "disponible",
+     "verifieLe": "2026-08-01",
+     "aCompleter": false,
+     "capacite": "",
+     "observations": ""
+    },
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ]
+   }
+  },
+  "archivage": {
+   "fiche": {
+    "id": "AMBR7",
+    "statut": "archive",
+    "libelle": "Ambulance Charlie",
+    "type": "prive",
+    "telephone": "+229 96 00 00 07",
+    "contact": "",
+    "base": "Natitingou",
+    "disponibilite": "disponible",
+    "verifieLe": "2026-07-31",
+    "aCompleter": false,
+    "_motifArchivage": "Doublon"
+   },
+   "kpis": [
+    {
+     "libelle": "Moyens répertoriés",
+     "valeur": "9",
+     "indice": null
+    },
+    {
+     "libelle": "Disponibles maintenant",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Numéros à renseigner",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Non vérifiés depuis 90 j",
+     "valeur": "1",
+     "indice": null
+    }
+   ]
+  }
+ },
+ "maintenance": {
+  "amorcage": {
+   "fiches": [
+    {
+     "id": "MAT001",
+     "statut": "actif",
+     "reference": "EQ-001",
+     "libelle": "Automate d’hématologie",
+     "categorie": "Automate de laboratoire",
+     "localisation": "Laboratoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-02-22",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT002",
+     "statut": "actif",
+     "reference": "EQ-002",
+     "libelle": "Automate de biochimie",
+     "categorie": "Automate de laboratoire",
+     "localisation": "Laboratoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-06-08",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT003",
+     "statut": "actif",
+     "reference": "EQ-003",
+     "libelle": "Centrifugeuse",
+     "categorie": "Automate de laboratoire",
+     "localisation": "Laboratoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-03-03",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT004",
+     "statut": "actif",
+     "reference": "EQ-004",
+     "libelle": "Microscope optique",
+     "categorie": "Automate de laboratoire",
+     "localisation": "Laboratoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-05-21",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT005",
+     "statut": "actif",
+     "reference": "EQ-005",
+     "libelle": "Échographe",
+     "categorie": "Imagerie",
+     "localisation": "Salle d’échographie",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-07-15",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT006",
+     "statut": "actif",
+     "reference": "EQ-006",
+     "libelle": "Bistouri électrique",
+     "categorie": "Bloc opératoire",
+     "localisation": "Bloc opératoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-07-16",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT007",
+     "statut": "actif",
+     "reference": "EQ-007",
+     "libelle": "Table d’opération",
+     "categorie": "Bloc opératoire",
+     "localisation": "Bloc opératoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-05-29",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT008",
+     "statut": "actif",
+     "reference": "EQ-008",
+     "libelle": "Aspirateur chirurgical",
+     "categorie": "Bloc opératoire",
+     "localisation": "Bloc opératoire",
+     "etat": "panne",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-10-07",
+     "observation": "Panne signalée par le bloc — dépannage à commander.",
+     "aCompleter": true
+    },
+    {
+     "id": "MAT009",
+     "statut": "actif",
+     "reference": "EQ-009",
+     "libelle": "Autoclave de stérilisation",
+     "categorie": "Bloc opératoire",
+     "localisation": "Bloc opératoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-04-15",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT010",
+     "statut": "actif",
+     "reference": "EQ-010",
+     "libelle": "Concentrateur d’oxygène",
+     "categorie": "Matériel de soins",
+     "localisation": "Hospitalisation",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-08-06",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT011",
+     "statut": "actif",
+     "reference": "EQ-011",
+     "libelle": "Moniteur multiparamétrique",
+     "categorie": "Matériel de soins",
+     "localisation": "Hospitalisation",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-03-11",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT012",
+     "statut": "actif",
+     "reference": "EQ-012",
+     "libelle": "Table d’accouchement",
+     "categorie": "Matériel de soins",
+     "localisation": "Maternité",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-06-16",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT013",
+     "statut": "actif",
+     "reference": "EQ-013",
+     "libelle": "Couveuse néonatale",
+     "categorie": "Matériel de soins",
+     "localisation": "Maternité",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-09-04",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT014",
+     "statut": "actif",
+     "reference": "EQ-014",
+     "libelle": "Groupe électrogène",
+     "categorie": "Énergie & froid",
+     "localisation": "Local technique",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-07-08",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT015",
+     "statut": "actif",
+     "reference": "EQ-015",
+     "libelle": "Réfrigérateur à réactifs",
+     "categorie": "Énergie & froid",
+     "localisation": "Laboratoire",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-02-12",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT016",
+     "statut": "actif",
+     "reference": "EQ-016",
+     "libelle": "Réfrigérateur de pharmacie",
+     "categorie": "Énergie & froid",
+     "localisation": "Pharmacie",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-05-16",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT017",
+     "statut": "actif",
+     "reference": "EQ-017",
+     "libelle": "Serveur et onduleur",
+     "categorie": "Bureautique & réseau",
+     "localisation": "Administration",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-02-23",
+     "observation": null,
+     "aCompleter": true
+    },
+    {
+     "id": "MAT018",
+     "statut": "actif",
+     "reference": "EQ-018",
+     "libelle": "Ambulance de la clinique",
+     "categorie": "Véhicule",
+     "localisation": "Local technique",
+     "etat": "service",
+     "marque": null,
+     "numeroSerie": null,
+     "miseEnService": null,
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-04-24",
+     "observation": null,
+     "aCompleter": true
+    }
+   ],
+   "ecran": {
+    "kpis": [
+     {
+      "libelle": "Équipements au parc",
+      "valeur": "18",
+      "indice": null
+     },
+     {
+      "libelle": "En panne",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Entretien échu",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Fiches à compléter",
+      "valeur": "18",
+      "indice": "marque, n° de série et mise en service non relevés"
+     }
+    ],
+    "onglets": [
+     "Tous les équipements18",
+     "Archivés0"
+    ],
+    "cartes": [],
+    "tableaux": [
+     {
+      "entetes": [
+       "N°",
+       "ÉTAT",
+       "ÉQUIPEMENT",
+       "CATÉGORIE",
+       "LOCALISATION",
+       "MARQUE",
+       "DERNIER ENTRETIEN",
+       "PÉRIODICITÉ",
+       "ACTIONS"
+      ],
+      "lignes": [
+       [
+        "EQ-018",
+        "En service",
+        "Ambulance de la clinique",
+        "Véhicule",
+        "Local technique",
+        "à compléter",
+        "24/04/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-008",
+        "En panne",
+        "Aspirateur chirurgical",
+        "Bloc opératoire",
+        "Bloc opératoire",
+        "à compléter",
+        "07/10/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-009",
+        "En service",
+        "Autoclave de stérilisation",
+        "Bloc opératoire",
+        "Bloc opératoire",
+        "à compléter",
+        "15/04/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-001",
+        "En service",
+        "Automate d’hématologie",
+        "Automate de laboratoire",
+        "Laboratoire",
+        "à compléter",
+        "22/02/2026 échu",
+        "6 mois",
+        ""
+       ],
+       [
+        "EQ-002",
+        "En service",
+        "Automate de biochimie",
+        "Automate de laboratoire",
+        "Laboratoire",
+        "à compléter",
+        "08/06/2026",
+        "6 mois",
+        ""
+       ],
+       [
+        "EQ-006",
+        "En service",
+        "Bistouri électrique",
+        "Bloc opératoire",
+        "Bloc opératoire",
+        "à compléter",
+        "16/07/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-003",
+        "En service",
+        "Centrifugeuse",
+        "Automate de laboratoire",
+        "Laboratoire",
+        "à compléter",
+        "03/03/2026 échu",
+        "6 mois",
+        ""
+       ],
+       [
+        "EQ-010",
+        "En service",
+        "Concentrateur d’oxygène",
+        "Matériel de soins",
+        "Hospitalisation",
+        "à compléter",
+        "06/08/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-013",
+        "En service",
+        "Couveuse néonatale",
+        "Matériel de soins",
+        "Maternité",
+        "à compléter",
+        "04/09/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-005",
+        "En service",
+        "Échographe",
+        "Imagerie",
+        "Salle d’échographie",
+        "à compléter",
+        "15/07/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-014",
+        "En service",
+        "Groupe électrogène",
+        "Énergie & froid",
+        "Local technique",
+        "à compléter",
+        "08/07/2026",
+        "6 mois",
+        ""
+       ],
+       [
+        "EQ-004",
+        "En service",
+        "Microscope optique",
+        "Automate de laboratoire",
+        "Laboratoire",
+        "à compléter",
+        "21/05/2026",
+        "6 mois",
+        ""
+       ],
+       [
+        "EQ-011",
+        "En service",
+        "Moniteur multiparamétrique",
+        "Matériel de soins",
+        "Hospitalisation",
+        "à compléter",
+        "11/03/2026",
+        "12 mois",
+        ""
+       ],
+       [
+        "EQ-015",
+        "En service",
+        "Réfrigérateur à réactifs",
+        "Énergie & froid",
+        "Laboratoire",
+        "à compléter",
+        "12/02/2026 échu",
+        "6 mois",
+        ""
+       ]
+      ]
+     }
+    ],
+    "notes": [],
+    "boutons": [
+     "Tous les équipements18",
+     "Archivés0",
+     "Colonnes",
+     "Exporter",
+     "Nouveau",
+     "Imprimer la sélection",
+     "Archiver",
+     "Tout désélectionner",
+     "Consulter",
+     "Imprimer l’état",
+     "Modifier",
+     "Archiver",
+     "Consulter",
+     "Imprimer l’état"
+    ]
+   }
+  },
+  "jeu": [
+   {
+    "id": "MAT001",
+    "statut": "actif",
+    "reference": "EQ-001",
+    "libelle": "Automate d’hématologie",
+    "categorie": "Automate de laboratoire",
+    "localisation": "Laboratoire",
+    "etat": "service",
+    "periodiciteMois": 6,
+    "dernierEntretien": "2026-04-13",
+    "aCompleter": false,
+    "marque": "Sysmex XN",
+    "numeroSerie": "SN-001",
+    "miseEnService": "2022-03-01"
+   },
+   {
+    "id": "MAT002",
+    "statut": "actif",
+    "reference": "EQ-002",
+    "libelle": "Échographe",
+    "categorie": "Imagerie",
+    "localisation": "Salle d’échographie",
+    "etat": "service",
+    "periodiciteMois": 12,
+    "dernierEntretien": "2026-07-22",
+    "aCompleter": true
+   },
+   {
+    "id": "MAT003",
+    "statut": "actif",
+    "reference": "EQ-003",
+    "libelle": "Aspirateur chirurgical",
+    "categorie": "Bloc opératoire",
+    "localisation": "Bloc opératoire",
+    "etat": "panne",
+    "periodiciteMois": 12,
+    "dernierEntretien": "2026-09-30",
+    "aCompleter": true,
+    "observation": "Panne signalée par le bloc."
+   },
+   {
+    "id": "MAT004",
+    "statut": "actif",
+    "reference": "EQ-004",
+    "libelle": "Groupe électrogène",
+    "categorie": "Énergie & froid",
+    "localisation": "Local technique",
+    "etat": "service",
+    "periodiciteMois": 6,
+    "dernierEntretien": "2026-04-30",
+    "aCompleter": true
+   },
+   {
+    "id": "MAT005",
+    "statut": "actif",
+    "reference": "EQ-005",
+    "libelle": "Table d’accouchement",
+    "categorie": "Matériel de soins",
+    "localisation": "Maternité",
+    "etat": "reforme",
+    "periodiciteMois": 12,
+    "dernierEntretien": "2025-09-25",
+    "aCompleter": true
+   },
+   {
+    "id": "MAT006",
+    "statut": "actif",
+    "reference": "EQ-006",
+    "libelle": "Ambulance de la clinique",
+    "categorie": "Véhicule",
+    "localisation": "Local technique",
+    "etat": "service",
+    "periodiciteMois": 12,
+    "aCompleter": true
+   },
+   {
+    "id": "MAT007",
+    "statut": "actif",
+    "reference": "EQ-007",
+    "libelle": "Microscope optique",
+    "categorie": "Automate de laboratoire",
+    "localisation": "Laboratoire",
+    "etat": "service",
+    "periodiciteMois": null,
+    "dernierEntretien": "2026-05-01",
+    "aCompleter": true
+   },
+   {
+    "id": "MAT008",
+    "statut": "actif",
+    "reference": "EQ-008",
+    "libelle": "Serveur et onduleur",
+    "categorie": "Bureautique & réseau",
+    "localisation": "Administration",
+    "etat": "service",
+    "periodiciteMois": 12,
+    "dernierEntretien": "2025-10-29",
+    "aCompleter": false,
+    "marque": "APC",
+    "numeroSerie": "X",
+    "miseEnService": "2023-01-01"
+   }
+  ],
+  "ecran": {
+   "kpis": [
+    {
+     "libelle": "Équipements au parc",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "libelle": "En panne",
+     "valeur": "1",
+     "indice": null
+    },
+    {
+     "libelle": "Entretien échu",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Fiches à compléter",
+     "valeur": "6",
+     "indice": "marque, n° de série et mise en service non relevés"
+    }
+   ],
+   "onglets": [
+    "Tous les équipements8",
+    "Archivés0"
+   ],
+   "cartes": [],
+   "tableaux": [
+    {
+     "entetes": [
+      "N°",
+      "ÉTAT",
+      "ÉQUIPEMENT",
+      "CATÉGORIE",
+      "LOCALISATION",
+      "MARQUE",
+      "DERNIER ENTRETIEN",
+      "PÉRIODICITÉ",
+      "ACTIONS"
+     ],
+     "lignes": [
+      [
+       "EQ-006",
+       "En service",
+       "Ambulance de la clinique",
+       "Véhicule",
+       "Local technique",
+       "à compléter",
+       "jamais",
+       "12 mois",
+       ""
+      ],
+      [
+       "EQ-003",
+       "En panne",
+       "Aspirateur chirurgical",
+       "Bloc opératoire",
+       "Bloc opératoire",
+       "à compléter",
+       "30/09/2026",
+       "12 mois",
+       ""
+      ],
+      [
+       "EQ-001",
+       "En service",
+       "Automate d’hématologie",
+       "Automate de laboratoire",
+       "Laboratoire",
+       "Sysmex XN",
+       "13/04/2026 échu",
+       "6 mois",
+       ""
+      ],
+      [
+       "EQ-002",
+       "En service",
+       "Échographe",
+       "Imagerie",
+       "Salle d’échographie",
+       "à compléter",
+       "22/07/2026",
+       "12 mois",
+       ""
+      ],
+      [
+       "EQ-004",
+       "En service",
+       "Groupe électrogène",
+       "Énergie & froid",
+       "Local technique",
+       "à compléter",
+       "30/04/2026 échu",
+       "6 mois",
+       ""
+      ],
+      [
+       "EQ-007",
+       "En service",
+       "Microscope optique",
+       "Automate de laboratoire",
+       "Laboratoire",
+       "à compléter",
+       "01/05/2026",
+       "—",
+       ""
+      ],
+      [
+       "EQ-008",
+       "En service",
+       "Serveur et onduleur",
+       "Bureautique & réseau",
+       "Administration",
+       "APC",
+       "29/10/2025 échu",
+       "12 mois",
+       ""
+      ],
+      [
+       "EQ-005",
+       "Réformé",
+       "Table d’accouchement",
+       "Matériel de soins",
+       "Maternité",
+       "à compléter",
+       "25/09/2025",
+       "12 mois",
+       ""
+      ]
+     ]
+    }
+   ],
+   "notes": [],
+   "boutons": [
+    "Tous les équipements8",
+    "Archivés0",
+    "Colonnes",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état"
+   ]
+  },
+  "filtres": [
+   [
+    "Suivi",
+    [
+     [
+      "",
+      "Suivi"
+     ],
+     [
+      "panne",
+      "En panne"
+     ],
+     [
+      "echu",
+      "Entretien échu"
+     ],
+     [
+      "acompleter",
+      "Fiche à compléter"
+     ]
+    ]
+   ],
+   [
+    "Catégorie",
+    [
+     [
+      "",
+      "Catégorie"
+     ],
+     [
+      "Automate de laboratoire",
+      "Automate de laboratoire"
+     ],
+     [
+      "Imagerie",
+      "Imagerie"
+     ],
+     [
+      "Bloc opératoire",
+      "Bloc opératoire"
+     ],
+     [
+      "Matériel de soins",
+      "Matériel de soins"
+     ],
+     [
+      "Énergie & froid",
+      "Énergie & froid"
+     ],
+     [
+      "Bureautique & réseau",
+      "Bureautique & réseau"
+     ],
+     [
+      "Véhicule",
+      "Véhicule"
+     ]
+    ]
+   ],
+   [
+    "Localisation",
+    [
+     [
+      "",
+      "Localisation"
+     ],
+     [
+      "Laboratoire",
+      "Laboratoire"
+     ],
+     [
+      "Salle d’échographie",
+      "Salle d’échographie"
+     ],
+     [
+      "Bloc opératoire",
+      "Bloc opératoire"
+     ],
+     [
+      "Salle de soins",
+      "Salle de soins"
+     ],
+     [
+      "Maternité",
+      "Maternité"
+     ],
+     [
+      "Hospitalisation",
+      "Hospitalisation"
+     ],
+     [
+      "Pharmacie",
+      "Pharmacie"
+     ],
+     [
+      "Administration",
+      "Administration"
+     ],
+     [
+      "Local technique",
+      "Local technique"
+     ]
+    ]
+   ]
+  ],
+  "filtreCas": [
+   {
+    "valeur": "panne",
+    "lignes": [
+     "EQ-003"
+    ]
+   },
+   {
+    "valeur": "echu",
+    "lignes": [
+     "EQ-001",
+     "EQ-004",
+     "EQ-008"
+    ]
+   },
+   {
+    "valeur": "acompleter",
+    "lignes": [
+     "EQ-006",
+     "EQ-003",
+     "EQ-002",
+     "EQ-004",
+     "EQ-007",
+     "EQ-005"
+    ]
+   }
+  ],
+  "badgesEchu": [
+   [
+    "EQ-006 En service Ambulance de la clinique Véhicule Local technique à compléter jamais 12 mois",
+    false
+   ],
+   [
+    "EQ-003 En panne Aspirateur chirurgical Bloc opératoire Bloc opératoire à compléter 30/09/2026 12 mois",
+    false
+   ],
+   [
+    "EQ-001 En service Automate d’hématologie Automate de laboratoire Laboratoire Sysmex XN",
+    true
+   ],
+   [
+    "EQ-002 En service Échographe Imagerie Salle d’échographie à compléter 22/07/2026 12 mois",
+    false
+   ],
+   [
+    "EQ-004 En service Groupe électrogène Énergie & froid Local technique à compléter",
+    true
+   ],
+   [
+    "EQ-007 En service Microscope optique Automate de laboratoire Laboratoire à compléter 01/05/2026 —",
+    false
+   ],
+   [
+    "EQ-008 En service Serveur et onduleur Bureautique & réseau Administration APC",
+    true
+   ],
+   [
+    "EQ-005 Réformé Table d’accouchement Matériel de soins Maternité à compléter 25/09/2025 12 mois",
+    false
+   ]
+  ],
+  "etat": {
+   "titre": "Fiche d’équipement",
+   "sousTitre": "Aspirateur chirurgical — EQ-003",
+   "cartouche": [
+    [
+     "Référence",
+     "EQ-003"
+    ],
+    [
+     "Catégorie",
+     "Bloc opératoire"
+    ],
+    [
+     "Localisation",
+     "Bloc opératoire"
+    ],
+    [
+     "État",
+     "En panne"
+    ],
+    [
+     "Marque et modèle",
+     "non relevé"
+    ],
+    [
+     "N° de série",
+     "non relevé"
+    ],
+    [
+     "Mise en service",
+     "non relevée"
+    ],
+    [
+     "Périodicité d’entretien",
+     "12 mois"
+    ],
+    [
+     "Dernier entretien",
+     "30/09/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’Ingénieur biomédical"
+    },
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    }
+   ],
+   "texte": "ObservationPanne signalée par le bloc.Fiche à compléter : marque, numéro de série ou date de mise en service non relevés sur la machine.",
+   "tableaux": []
+  },
+  "etatRenseigne": {
+   "titre": "Fiche d’équipement",
+   "sousTitre": "Automate d’hématologie — EQ-001",
+   "cartouche": [
+    [
+     "Référence",
+     "EQ-001"
+    ],
+    [
+     "Catégorie",
+     "Automate de laboratoire"
+    ],
+    [
+     "Localisation",
+     "Laboratoire"
+    ],
+    [
+     "État",
+     "En service"
+    ],
+    [
+     "Marque et modèle",
+     "Sysmex XN"
+    ],
+    [
+     "N° de série",
+     "SN-001"
+    ],
+    [
+     "Mise en service",
+     "01/03/2022"
+    ],
+    [
+     "Périodicité d’entretien",
+     "6 mois"
+    ],
+    [
+     "Dernier entretien",
+     "13/04/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’Ingénieur biomédical"
+    },
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    }
+   ],
+   "texte": "ObservationAucune observation consignée.",
+   "tableaux": []
+  },
+  "detail": {
+   "texte": "Aspirateur chirurgical EQ-003 N° EQ-003 État En panne Équipement Aspirateur chirurgical Catégorie Bloc opératoire Localisation Bloc opératoire Marque à compléter Dernier entretien 30/09/2026 Périodicité 12 mois Numéro de série — Mise en service — Observation Panne signalée par le bloc. Imprimer Modifier Archiver",
+   "boutons": [
+    "Fermer",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ]
+  },
+  "creation": {
+   "modale": "Nouveau équipement Les champs marqués d’un astérisque sont obligatoires. Équipement * Catégorie * Automate de laboratoire Imagerie Bloc opératoire Matériel de s",
+   "champs": [
+    "Équipement *",
+    "Catégorie *",
+    "Localisation *",
+    "État de marche *",
+    "Marque et modèle",
+    "Numéro de série",
+    "Mise en service",
+    "Périodicité d’entretien (mois)",
+    "Dernier entretien",
+    "Observation"
+   ],
+   "defauts": {
+    "libelle": "",
+    "categorie": "Automate de laboratoire",
+    "localisation": "Laboratoire",
+    "etat": "service",
+    "marque": "",
+    "numeroSerie": "",
+    "miseEnService": "",
+    "periodiciteMois": "12",
+    "dernierEntretien": "2026-10-30",
+    "observation": ""
+   },
+   "options": {
+    "categorie": [
+     [
+      "Automate de laboratoire",
+      "Automate de laboratoire"
+     ],
+     [
+      "Imagerie",
+      "Imagerie"
+     ],
+     [
+      "Bloc opératoire",
+      "Bloc opératoire"
+     ],
+     [
+      "Matériel de soins",
+      "Matériel de soins"
+     ],
+     [
+      "Énergie & froid",
+      "Énergie & froid"
+     ],
+     [
+      "Bureautique & réseau",
+      "Bureautique & réseau"
+     ],
+     [
+      "Véhicule",
+      "Véhicule"
+     ]
+    ],
+    "localisation": [
+     [
+      "Laboratoire",
+      "Laboratoire"
+     ],
+     [
+      "Salle d’échographie",
+      "Salle d’échographie"
+     ],
+     [
+      "Bloc opératoire",
+      "Bloc opératoire"
+     ],
+     [
+      "Salle de soins",
+      "Salle de soins"
+     ],
+     [
+      "Maternité",
+      "Maternité"
+     ],
+     [
+      "Hospitalisation",
+      "Hospitalisation"
+     ],
+     [
+      "Pharmacie",
+      "Pharmacie"
+     ],
+     [
+      "Administration",
+      "Administration"
+     ],
+     [
+      "Local technique",
+      "Local technique"
+     ]
+    ],
+    "etat": [
+     [
+      "service",
+      "En service"
+     ],
+     [
+      "panne",
+      "En panne"
+     ],
+     [
+      "reforme",
+      "Réformé"
+     ]
+    ]
+   },
+   "refus": {
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "total": 8
+   },
+   "aCompleter": {
+    "toasts": [
+     [
+      "Nouveau équipement créé.",
+      "EQ-009"
+     ]
+    ],
+    "fiche": {
+     "id": "MATxmvuswn40t5r5l",
+     "statut": "actif",
+     "libelle": "Autoclave 2",
+     "categorie": "Bloc opératoire",
+     "localisation": "Bloc opératoire",
+     "etat": "service",
+     "marque": "",
+     "numeroSerie": "",
+     "miseEnService": "",
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-10-30",
+     "observation": "",
+     "reference": "EQ-009",
+     "aCompleter": true
+    },
+    "kpis": [
+     {
+      "libelle": "Équipements au parc",
+      "valeur": "9",
+      "indice": null
+     },
+     {
+      "libelle": "En panne",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Entretien échu",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Fiches à compléter",
+      "valeur": "7",
+      "indice": "marque, n° de série et mise en service non relevés"
+     }
+    ]
+   },
+   "complet": {
+    "fiche": {
+     "id": "MATxmvuswn40big58",
+     "statut": "actif",
+     "libelle": "Réfrigérateur 3",
+     "categorie": "Énergie & froid",
+     "localisation": "Pharmacie",
+     "etat": "service",
+     "marque": "Liebherr",
+     "numeroSerie": "LB-3",
+     "miseEnService": "2024-05-01",
+     "periodiciteMois": 6,
+     "dernierEntretien": "2026-10-30",
+     "observation": "",
+     "reference": "EQ-010",
+     "aCompleter": false
+    },
+    "kpis": [
+     {
+      "libelle": "Équipements au parc",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "libelle": "En panne",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Entretien échu",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Fiches à compléter",
+      "valeur": "7",
+      "indice": "marque, n° de série et mise en service non relevés"
+     }
+    ]
+   }
+  },
+  "modification": {
+   "valeurs": {
+    "libelle": "Échographe",
+    "categorie": "Imagerie",
+    "localisation": "Salle d’échographie",
+    "etat": "service",
+    "marque": "",
+    "numeroSerie": "",
+    "miseEnService": "",
+    "periodiciteMois": "12",
+    "dernierEntretien": "2026-07-22",
+    "observation": ""
+   },
+   "enregistre": {
+    "fiche": {
+     "id": "MAT002",
+     "statut": "actif",
+     "reference": "EQ-002",
+     "libelle": "Échographe",
+     "categorie": "Imagerie",
+     "localisation": "Salle d’échographie",
+     "etat": "panne",
+     "periodiciteMois": 12,
+     "dernierEntretien": "2026-07-22",
+     "aCompleter": false,
+     "marque": "Samsung",
+     "numeroSerie": "SS-77",
+     "miseEnService": "2023-02-02",
+     "observation": ""
+    },
+    "kpis": [
+     {
+      "libelle": "Équipements au parc",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "libelle": "En panne",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Entretien échu",
+      "valeur": "3",
+      "indice": null
+     },
+     {
+      "libelle": "Fiches à compléter",
+      "valeur": "6",
+      "indice": "marque, n° de série et mise en service non relevés"
+     }
+    ]
+   }
+  }
+ },
+ "erreurs": []
+}

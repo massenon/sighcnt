@@ -83,7 +83,9 @@
           { name: 'numerise', label: 'Document numérisé', type: 'checkbox' },
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ],
-        transform: function (v) {
+        transform: function (v, record) {
+          /* E530 : à la modification, le formulaire ne porte pas la référence — elle était recalculée (ARR-2026-0004 devenait ARR-2026-0012). */
+          if (record && record.reference) v.reference = record.reference;
           if (!v.reference) v.reference = (v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + '2026-' + C.pad(S.collection('courriers').all().length + 1, 4);
           return v;
         },
@@ -193,7 +195,12 @@
           { name: 'compteRendu', label: 'Compte rendu rédigé', type: 'checkbox' },
           { name: 'resolutions', label: 'Résolutions adoptées', type: 'textarea', rows: 3, col: 'full' },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('RU-2026-', 3); return v; },
+        /* E531 : C.nextRef est un compteur de PAGE (le premier « Nouveau » donnait RU-2026-001, déjà pris) et la modification recalculait la référence. */
+        transform: function (v, record) {
+          if (record && record.reference) v.reference = record.reference;
+          if (!v.reference) v.reference = C.referenceSuivante('RU-2026-', 3, S.collection('reunions').all());
+          return v;
+        },
         onCreate: function () { return { date: C.iso(AUJ), heure: '09:00', lieu: 'Salle de réunion', participants: 8 }; },
         filters: [{ name: 'type', label: 'Type', options: ['Réunion de direction', 'Réunion de service', 'Comité d’hygiène', 'Revue mensuelle d’activité', 'Réunion du personnel', 'Comité de gestion des stocks'] }],
         kpis: function (rows) {
@@ -324,7 +331,14 @@
 
       host.appendChild(U.dataTable({
         title: 'Tous les événements', rows: rows, exportName: 'evenements', pageSize: 15,
-        rowActions: K.actionsLigne(col, champsEvenement, { entite: 'événement' }),
+        rowActions: K.actionsLigne(col, champsEvenement, {
+          entite: 'événement',
+          /* E532 : cocher « Notifier le personnel » à la modification ne posait aucun canal (colonne « Notification » vide), la décocher gardait les anciens. */
+          transform: function (v, record) {
+            v.canaux = v.notifier ? ((record.canaux && record.canaux.length) ? record.canaux : ['In-app']) : [];
+            return v;
+          },
+        }),
         actions: [K.creer(col, champsEvenement, {
           titre: 'Nouvel événement de la clinique', entite: 'Événement',
           defauts: function () { return { categorie: 'Santé publique', date: C.iso(AUJ), heure: '09:00', notifier: true }; },
@@ -493,7 +507,9 @@
           { name: 'action', label: 'Action', required: true, col: 'full' },
           { name: 'responsable', label: 'Responsable' },
           { name: 'echeance', label: 'Échéance', type: 'date' },
-          { name: 'avancement', label: 'Avancement (%)', type: 'number', min: 0, max: 100 },
+          /* E533 : le champ « Avancement (%) » portait le nom de l'ÉTAT (Réalisée / En cours / Planifiée) : modifier une action écrasait l'état par un nombre ou par rien. */
+          { name: 'avancement', label: 'État d’avancement', type: 'select', required: true, options: ['Réalisée', 'En cours', 'Planifiée'] },
+          { name: 'tauxAvancement', label: 'Avancement (%)', type: 'number', min: 0, max: 100 },
           { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
         ]),
         filters: [
@@ -667,11 +683,13 @@
             { name: 'facture', label: 'Intervention facturée', type: 'checkbox' },
           ];
         },
-        transform: function (v) {
+        transform: function (v, record) {
           var p = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
           if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; }
           if (!v.tarif) v.tarif = 5000 + (Number(v.kilometrage) || 0) * 500;
-          if (!v.reference) v.reference = C.nextRef('AM-2026-', 4);
+          /* E534 : C.nextRef = compteur de page (le premier « Nouveau » donnait AM-2026-0001, déjà pris) ; la modification recalculait la référence. */
+          if (record && record.reference) v.reference = record.reference;
+          if (!v.reference) v.reference = C.referenceSuivante('AM-2026-', 4, S.collection('ambulance').all());
           return v;
         },
         onCreate: function () { return { chauffeur: 'TCHANE Nourou', facture: false, kilometrage: 10, etat: 'demandee' }; },
@@ -827,7 +845,7 @@
           { name: 'libelle', label: 'Désignation', type: 'text', required: true },
           { name: 'type', label: 'Type', type: 'select', required: true,
             options: TYPES_AMBULANCE.map(function (t) { return { value: t.code, label: t.label }; }) },
-          { name: 'telephone', label: 'Téléphone', type: 'text', required: true,
+          { name: 'telephone', label: 'Téléphone', type: 'text',   /* E535 : jamais obligatoire — la consigne est « laisser la fiche à compléter », exiger un numéro forçait à en inventer un */
             hint: 'Le numéro que l’accueil compose. Ne rien inventer : laisser la fiche à compléter.' },
           { name: 'telephone2', label: 'Second numéro', type: 'text' },
           { name: 'contact', label: 'Personne à demander', type: 'text' },
@@ -984,7 +1002,7 @@
           }
           if (r.telephone && perime(r)) {
             carte.appendChild(el('p.mt-2.text-xs.font-medium.text-amber-700', {
-              text: 'Non vérifié depuis ' + joursDepuis(r.verifieLe) + ' jours',
+              text: r.verifieLe ? 'Non vérifié depuis ' + joursDepuis(r.verifieLe) + ' jours' : 'Jamais vérifié',   /* E535 : « depuis null jours » */
             }));
           }
           grille.appendChild(carte);
@@ -1112,6 +1130,7 @@
 
       function echu(r) {
         if (!r.dernierEntretien || !r.periodiciteMois) return false;
+        if (r.etat === 'reforme') return false;   /* E536 : un équipement réformé n'a plus d'entretien à faire — il gonflait l'indicateur « Entretien échu » */
         return C.addDays(C.toDate(r.dernierEntretien), Math.round(r.periodiciteMois * 30.4)) < AUJ;
       }
 
@@ -1171,8 +1190,10 @@
           { name: 'dernierEntretien', label: 'Dernier entretien', type: 'date' },
           { name: 'observation', label: 'Observation', type: 'textarea', rows: 2, col: 'full' },
         ],
-        transform: function (v) {
-          if (!v.reference) v.reference = C.nextRef('EQ-', 3);
+        transform: function (v, record) {
+          /* E536 : compteur de page (EQ-001 déjà pris) et référence recalculée à chaque modification. */
+          if (record && record.reference) v.reference = record.reference;
+          if (!v.reference) v.reference = C.referenceSuivante('EQ-', 3, S.collection('materiel').all());
           /* Une fiche renseignée cesse d'être « à compléter » : le marquage
              disparaît par la saisie, non par une case à cocher qu'on oublie. */
           v.aCompleter = !(v.marque && v.numeroSerie && v.miseEnService);
