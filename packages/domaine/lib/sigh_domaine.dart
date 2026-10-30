@@ -39,3 +39,5 @@ export 'src/achats/achats.dart';
 export 'src/stock/delivrance.dart' hide referenceSuivante, LigneStock;
 export 'src/stock/emplacements.dart' hide etatStock;
 export 'src/stock/reprise_sage.dart';
+export 'src/imagerie/cr_modalites.dart';
+export 'src/imagerie/cr_moteur.dart';

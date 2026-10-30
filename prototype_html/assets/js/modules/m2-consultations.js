@@ -4289,7 +4289,8 @@
     var pt = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
     var ex = imExamen(v.examenCode);
     return {
-      reference: C.nextRef('IMG-', 4),
+      /* E120 : la référence se lit sur les comptes rendus EXISTANTS, jamais sur un compteur de page (repartait à IMG-0001 à chaque chargement). */
+      reference: C.referenceSuivante('IMG-', 4, colImagerie().all()),
       date: new Date().toISOString(),
       examenCode: v.examenCode, examen: ex ? ex.label : v.examenCode,
       patientId: pt ? pt.id : null,
@@ -4766,7 +4767,7 @@
       var pt = S.collection('patients').active().filter(function (x) { return x.id === dem.patientId; })[0];
       var realisateur = colSoignants().active().filter(function (x) { return x.realiseImagerie; })[0];
       cr = colImagerie().insert({
-        reference: C.nextRef('IMG-', 4),
+        reference: C.referenceSuivante('IMG-', 4, colImagerie().all()), // E120
         date: new Date().toISOString(),
         examenCode: dem.examenCode, examen: dem.examen,
         patientId: dem.patientId, patient: dem.patient, patientCode: dem.patientCode,
