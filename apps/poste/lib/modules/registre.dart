@@ -4,6 +4,7 @@ import '../core/config_poste.dart';
 import '../core/controleur_poste.dart';
 import '../mere/client_mere.dart';
 import '../mere/console.dart';
+import 'mecef/ecrans.dart';
 import 'm8/avoirs.dart';
 import 'm8/caisse.dart';
 import 'm8/dashboard.dart';
@@ -36,6 +37,12 @@ Map<String, ConstruireEcran> ecransPortes(
     'm8-dashboard': (c, cfg) => const EcranDashboardFacturation(),
     'm8-facturation': (c, cfg) => const EcranFacturation(),
     'm8-caisse': (c, cfg) => const EcranCaisse(),
+    'mecef-dashboard': (c, cfg) => const EcranMecefTableauDeBord(),
+    'mecef-factures': (c, cfg) => const EcranMecefFactures(),
+    'mecef-transmission': (c, cfg) => const EcranMecefTransmission(),
+    'mecef-avoirs': (c, cfg) => const EcranMecefAvoirs(),
+    'mecef-journal': (c, cfg) => const EcranMecefJournal(),
+    'mecef-config': (c, cfg) => const EcranMecefConfig(),
     'm8-facture-avoir': (c, cfg) => const EcranFactureAvoir(),
     'm8-remboursements': (c, cfg) => const EcranRemboursements(),
     'm8-factures': (c, cfg) => const EcranFactures(),

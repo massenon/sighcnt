@@ -116,7 +116,7 @@ void main() {
     await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer et encaisser'));
     final apres = m.collection('factures').actives;
     expect(apres.length, avant + 1);
-    final f = apres.last;
+    final f = apres.first; // la maquette insère en tête
     expect(f['numero'], 'FN-2026-${(avant + 1).toString().padLeft(5, '0')}');
     expect(f['statutPaiement'], 'soldee');
     expect(f['montantPaye'], 1000);
@@ -164,7 +164,9 @@ void main() {
     await toucher(t, find.widgetWithText(BoutonSigh, 'Ajouter'));
     await ajouterLibre(t, 'Certificat hors convention', '2000');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer et encaisser'));
-    final nouvelles = m.collection('factures').actives.sublist(avant);
+    // Insérées EN TÊTE : -B est la plus récente, -A la suit.
+    final tete = m.collection('factures').actives.take(2).toList();
+    final nouvelles = [tete[1], tete[0]];
     expect(nouvelles.length, 2);
     expect(nouvelles[0]['numero'], endsWith('-A'));
     expect(nouvelles[1]['numero'], endsWith('-B'));
@@ -187,7 +189,7 @@ void main() {
     await ouvrir(t, m);
     await ajouterLibre(t, 'Soin', '1000');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Facture pro-forma'));
-    final f = m.collection('factures').actives.last;
+    final f = m.collection('factures').actives.first;
     expect(m.collection('factures').actives.length, avant + 1);
     expect(f['numero'], startsWith('PRO-2026-'));
     expect(f['montantPaye'], 0);
@@ -202,10 +204,9 @@ void main() {
     await ouvrir(t, m);
     await choisir(t, 'Acte / consultation', 'Médicament');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Ajouter'));
-    final ligne = m.collection('factures').actives.length;
     await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer et encaisser'));
-    final f = m.collection('factures').actives[ligne];
-    final mv = m.collection('mouvements').toutes.last;
+    final f = m.collection('factures').actives.first;
+    final mv = m.collection('mouvements').toutes.first;
     expect(mv['type'], 'sortie');
     expect(mv['justificatif'], 'Facture ${f['numero']}');
     final prod = m.collection('produits').parId(mv['produitId'])!;

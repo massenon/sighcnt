@@ -128,3 +128,15 @@ Le kit de composants est un **clone mesuré**, pas une ressemblance : `prototype
 **Écarts** (`ECARTS-MAQUETTE.md`) : **E8 corrigé** dans la maquette (les références `AV-` et `RB-` venaient d'un compteur de page qui repart à 1 à chaque chargement) ; **E9, E10, E11, E12 portés fidèlement et signalés** — dont le point qui demande la Direction : *deux canaux d'avoir coexistent* (cet écran fabrique une pièce négative dans `factures`, `m8-facture-avoir` contre-passe en écritures), il faudra n'en garder qu'un.
 
 **Reste 6 écrans** : les `mecef-*` (simulation d'abord ; le boîtier physique attend le protocole de la Direction).
+
+## Mise à jour du 30/10/2026 (tranche 1 — les six écrans MECeF en simulation : 17 écrans sur 17)
+
+**`mecef-dashboard`, `mecef-factures`, `mecef-transmission`, `mecef-avoirs`, `mecef-journal`, `mecef-config`** : N1 = 100 % mesuré sur chacun, statuts « porté » verrouillés. Moteur `packages/domaine/lib/src/caisse/mecef.dart` : décomposition fiscale selon le régime de TVA (exonéré / 18 %), facture normalisée imprimée (lignes HT/TTC, taxes, totaux, net à payer en lettres, code de certification, compteurs), synchronisation par lot (tirage graîné par la taille du lot), « Transmettre » et « Corriger et réémettre » à l'unité, avoir MECeF. **Rejoué sur `mecef.json`** (10 impressions sur les deux régimes, 7 lots de synchronisation, 4 avoirs), engendré en pilotant le module réel de la maquette. 9 tests d'écran (compteurs recomptés sur la caisse, lot transmis selon le tirage de la maquette puis annulé, rejet réémis, commandes absentes sans droit, avoir refusé au-delà de la facture, configuration journalisée).
+
+**Ce qui est de la SIMULATION** : les réponses du dispositif. Le boîtier physique n'est pas branché — son modèle, son interface et son protocole ne sont dans aucun document du dépôt. Le QR et le code imprimés sont des emplacements.
+
+**Écarts** : E13 à E16 dans `ECARTS-MAQUETTE.md`. Les deux qui comptent : **E16 corrigé côté poste** (le magasin insérait en fin de liste alors que la maquette insère en tête, ce qui change l'ordre d'un lot transmis) et **E14** (l'« IFU client » imprimé est celui de la clinique) à corriger dès que l'IFU du client est une donnée du dossier.
+
+**Limite dite** : le sélecteur d'exercice (en-tête M12) n'est pas porté ; les registres MECeF montrent tous les exercices.
+
+**La tranche 1 est complète : 17 écrans portés.** Restent la tranche 2 (27 écrans) et les suivantes, ainsi que les moteurs à état (T18) et les modules complémentaires de la mère (T19).

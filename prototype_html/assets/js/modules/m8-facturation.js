@@ -2491,16 +2491,7 @@
   var MOTIFS_AVOIR = ['Erreur de facturation', 'Interruption de soins',
     'Évacuation vers un autre centre', 'Prestation non réalisée', 'Autre (préciser en observations)'];
 
-  /** Référence suivante d'une série : le plus grand rang déjà écrit pour ce préfixe, plus un. Lue sur les fiches EXISTANTES — jamais sur un compteur
-      de page (écart E8). */
-  function referenceSuivante(prefixe, largeur, fiches) {
-    var max = 0;
-    fiches.forEach(function (a) {
-      var r = String(a.reference || '');
-      if (r.indexOf(prefixe) === 0) max = Math.max(max, parseInt(r.slice(prefixe.length), 10) || 0);
-    });
-    return prefixe + String(max + 1).padStart(largeur, '0');
-  }
+  var referenceSuivante = C.referenceSuivante;   /* le moteur de série vit au socle (core.js) : mecef.js s'en sert aussi */
 
   /** La référence d'un avoir est une SÉRIE ANNUELLE lue sur les avoirs déjà émis (écart E8, corrigé le 30/10/2026) : l'ancien
       compteur vivait en mémoire de page et repartait à 1 à chaque chargement — deux avoirs de deux journées pouvaient porter

@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 17,
+ "ecrans_portes": 23,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -100,6 +100,54 @@
    "mesure": true,
    "attendus": 10,
    "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-avoirs",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-config",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-dashboard",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-factures",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-journal",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-transmission",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },

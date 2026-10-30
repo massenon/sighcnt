@@ -9,5 +9,11 @@
  "m8-caisse": "porté",
  "m8-facturation": "porté",
  "m8-facture-avoir": "porté",
- "m8-remboursements": "porté"
+ "m8-remboursements": "porté",
+ "mecef-dashboard": "porté",
+ "mecef-factures": "porté",
+ "mecef-transmission": "porté",
+ "mecef-avoirs": "porté",
+ "mecef-journal": "porté",
+ "mecef-config": "porté"
 }

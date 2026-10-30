@@ -204,7 +204,7 @@ void main() {
       () {
     final m = jeu()..utilisateur = 'Comptable';
     m.collection('factures').archiver('F1');
-    final e = m.collection('audit').toutes.last;
+    final e = m.collection('audit').toutes.first;
     expect(e['action'], 'Archivage');
     expect(e['utilisateur'], 'Comptable');
     expect(e['reference'], 'FN-2026-00001');

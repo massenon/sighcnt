@@ -615,7 +615,7 @@
                   v.factureNumero = fac.numero; v.patient = fac.patient; v.patientCode = fac.patientCode;
                   if (v.montant > fac.montantTTC) { U.toast('Le montant de l’avoir ne peut excéder celui de la facture.', { type: 'error' }); return; }
                 }
-                v.reference = C.nextRef('AV-2026-', 4);
+                v.reference = C.referenceSuivante('AV-' + String(v.date).slice(0, 4) + '-', 4, col.all()); /* série lue sur les avoirs existants (E8) */
                 v.numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
                 v.statutMecef = 'valide';
                 var res = col.insert(v);

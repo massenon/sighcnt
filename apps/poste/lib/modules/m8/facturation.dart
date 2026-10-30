@@ -412,8 +412,9 @@ class _EtatFacturation extends State<EcranFacturation> {
     for (final p in r.pieces) {
       final fiche = {...p}..remove('mecef');
       if (p['mecef'] == true) {
-        fiche['numeroMecef'] =
-            'MECEF${1000000 + (c.aujourdhui.microsecondsSinceEpoch + creees.length * 7919) % 9000000}';
+        // Identifiant simulé, tiré de l'horloge comme la maquette (`Date.now() % 100000 + rang`) : le boîtier physique n'est pas branché.
+        fiche['numeroMecef'] = numeroMecefSimule(
+            c.aujourdhui.millisecondsSinceEpoch % 100000 + creees.length);
       }
       fiche['statut'] = 'actif';
       final ins = factures.inserer(fiche, prefixe: 'FAC');

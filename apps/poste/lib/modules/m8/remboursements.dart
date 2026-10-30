@@ -303,8 +303,8 @@ class EcranRemboursements extends StatelessWidget with EcranMaquette {
                         .annuler);
                     if (op.factureAvoir != null) {
                       final piece = {...op.factureAvoir!}..remove('mecef');
-                      piece['numeroMecef'] =
-                          'MECEF${1000000 + c.aujourdhui.microsecondsSinceEpoch % 9000000}';
+                      piece['numeroMecef'] = numeroMecefSimule(
+                          c.aujourdhui.millisecondsSinceEpoch % 90000);
                       piece['statut'] = 'actif';
                       annulations.add(m
                           .collection('factures')

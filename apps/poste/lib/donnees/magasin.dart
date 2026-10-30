@@ -36,7 +36,8 @@ class CollectionMagasin extends ChangeNotifier {
     final nouvelle = {...f};
     nouvelle['id'] ??=
         '$prefixe${(_fiches.length + 1).toString().padLeft(5, '0')}';
-    _fiches.add(nouvelle);
+    // La maquette insère EN TÊTE (`db[name].unshift`) : l'ordre d'une collection se voit (tris à égalité, ordre d'un lot transmis à la MECeF).
+    _fiches.insert(0, nouvelle);
     journal?.call(
         'Création', module, entite ?? nom, _ref(nouvelle), null, null);
     notifyListeners();
@@ -56,9 +57,9 @@ class CollectionMagasin extends ChangeNotifier {
   List<Fiche> get toutes => List.unmodifiable(_fiches);
   Fiche? parId(Object? id) => _fiches.where((f) => f['id'] == id).firstOrNull;
 
-  /// Plafonne le tampon : seules les `max` dernières fiches sont gardées (réservé au journal d'audit, dont le plafond est celui de la maquette).
+  /// Plafonne le tampon : seules les `max` fiches les plus RÉCENTES (en tête) sont gardées (réservé au journal d'audit, dont le plafond est celui de la maquette).
   void plafonner(int max) {
-    if (_fiches.length > max) _fiches.removeRange(0, _fiches.length - max);
+    if (_fiches.length > max) _fiches.removeRange(max, _fiches.length);
   }
 
   /// Met à jour des champs de la fiche (`col.update`) et rend la fonction qui RESTITUE l'état d'avant. Rien n'est supprimé : un champ ajouté

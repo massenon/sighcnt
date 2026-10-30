@@ -509,6 +509,16 @@
     var s = seed || 42;
     return function () { s = (s * 9301 + 49297) % 233280; return s / 233280; };
   }
+  /** Référence suivante d'une série : le plus grand rang déjà écrit pour ce préfixe, plus un, lu sur les fiches EXISTANTES (jamais sur un compteur
+      de page, qui repart à 1 à chaque chargement — écart E8). */
+  function referenceSuivante(prefixe, largeur, fiches) {
+    var max = 0;
+    fiches.forEach(function (f) {
+      var r = String(f.reference || '');
+      if (r.indexOf(prefixe) === 0) max = Math.max(max, parseInt(r.slice(prefixe.length), 10) || 0);
+    });
+    return prefixe + String(max + 1).padStart(largeur, '0');
+  }
   function pick(rnd, arr) { return arr[Math.floor(rnd() * arr.length) % arr.length]; }
   function between(rnd, a, b) { return Math.floor(rnd() * (b - a + 1)) + a; }
 
@@ -524,7 +534,7 @@
     addDays: addDays, daysBetween: daysBetween, toDate: toDate,
     PERIODES: PERIODES, bornes: bornes, bornesLibres: bornesLibres,
     dansBornes: dansBornes, libellePeriode: libellePeriode,
-    codePatient: codePatient, nextRef: nextRef, uid: uid,
+    codePatient: codePatient, nextRef: nextRef, referenceSuivante: referenceSuivante, uid: uid,
     nombreEnLettres: nombreEnLettres, montantEnLettres: montantEnLettres,
     slug: slug, initials: initials, escapeHtml: escapeHtml, norm: norm, matches: matches,
     $: $, $$: $$, el: el, append: append, clear: clear, icon: icon, qr: qr,
