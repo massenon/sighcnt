@@ -51,3 +51,4 @@ export 'src/labo/sang_regles.dart';
 export 'src/labo/cat_regles.dart';
 export 'src/consultation/consultation.dart';
 export 'src/hospitalisation/hos_regles.dart';
+export 'src/consultation/ag_accueil.dart';

@@ -107,10 +107,11 @@
     ];
   }
 
-  function completerPatient(v) {
+  function completerPatient(v, record) {
     var p = patients().filter(function (x) { return x.code === v.patientCode; })[0];
     if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; }
-    if (!v.reference) v.reference = C.nextRef('C', 5);
+    /* E320 : la série se lit sur les fiches EXISTANTES (archivées comprises), jamais sur un compteur de page qui repart à 1 au chargement. */
+    if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('C', 5, S.collection('consultations').all());
     return v;
   }
 
@@ -171,6 +172,14 @@
     champs[iType] = Object.assign({}, champs[iType], {
       options: ['Consultation', 'Contrôle', 'Urgence', 'Domicile', 'Visite', 'Affaire privée'],
     });
+    /* E331 : la liste d’états ne proposait que planifiée / en cours / terminée — modifier un rendez-vous REPORTÉ ou NON HONORÉ le remettait
+       silencieusement à « Planifiée » (la liste native retombe sur sa première entrée). */
+    var iStatut = indexDe(champs, 'statut');
+    champs[iStatut] = Object.assign({}, champs[iStatut], {
+      options: [{ value: 'planifiee', label: 'Planifiée' }, { value: 'en_cours', label: 'En cours' },
+        { value: 'reporte', label: 'Reporté' }, { value: 'non_honore', label: 'Non honoré' },
+        { value: 'terminee', label: 'Terminée' }],
+    });
     return champs;
   }
 
@@ -181,15 +190,16 @@
     return null;
   }
 
-  function completerVenue(v) {
-    if (v.patientCode) return completerPatient(v);
+  function completerVenue(v, record) {
+    /* E329 : « NON-PATIENT » est le code posé sur une venue sans dossier — le relire à l’édition n’est pas choisir un dossier. */
+    if (v.patientCode && v.patientCode !== 'NON-PATIENT') return completerPatient(v, record);
     /* Personne non enregistrée : la venue porte son identité, PAS un dossier —
        aucun code CNT n'est consommé (RG-01 protège la série). */
     v.patient = nomNonEnregistre(v);
     v.patientCode = 'NON-PATIENT';
     v.patientId = null;
     v.nonPatient = true;
-    if (!v.reference) v.reference = C.nextRef('C', 5);
+    if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('C', 5, S.collection('consultations').all());   /* E320 */
     return v;
   }
 
@@ -962,7 +972,8 @@
            faire. Le nombre d’honorés se lit à son onglet ; le mêler ici
            gonflerait un agenda qu’on vient précisément d’apurer. */
         return [
-          { label: 'Dans l’agenda', value: C.num(rows.length), icon: 'calendar-days', tone: 'navy',
+          /* E321 : `rows` est la collection ENTIÈRE ; seul ce que l’agenda montre se compte (les honorés ont leur onglet). */
+          { label: 'Dans l’agenda', value: C.num(rows.filter(function (r) { return !estApure(r); }).length), icon: 'calendar-days', tone: 'navy',
             hint: 'à venir, reportés ou non honorés' },
           { label: 'À venir', value: C.num(rows.filter(function (r) { return r.statut === 'planifiee' && !enSouffrance(r); }).length), icon: 'clock', tone: 'info' },
           { label: 'Reportés', value: C.num(rows.filter(function (r) { return r.statut === 'reporte'; }).length), icon: 'calendar-clock', tone: 'warning' },
@@ -3191,6 +3202,8 @@
     render: K.crud({
       collection: 'consultations', entite: 'intervention à domicile', entiteP: 'interventions à domicile', module: 'M2',
       defaultSort: 'date', defaultDir: 'desc', formSize: 'lg',
+      /* E322 : l’écran dit ne présenter que les prestations à domicile — la liste montrait les 260 consultations. */
+      filtreBase: function (r) { return r.type === 'Domicile'; },
       columns: [
         colDate(), colPatient,
         { key: 'motif', label: 'Prestation' },
@@ -3204,7 +3217,7 @@
           { name: 'adresseIntervention', label: 'Adresse d’intervention', col: 'full' },
         ]);
       },
-      transform: function (v) { v.type = 'Domicile'; return completerPatient(v); },
+      transform: function (v, record) { v.type = 'Domicile'; return completerPatient(v, record); },
       onCreate: function () { return { type: 'Domicile', statut: 'planifiee', tarif: 10000, fraisDeplacement: 5000 }; },
       /* On restreint l'affichage aux interventions à domicile. */
       intro: function () {
@@ -3295,7 +3308,13 @@
         { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
       ],
       onCreate: function () {
-        return { dateHeure: new Date(2026, 7, 16, 9, 0).toISOString().slice(0, 16), sens: 'entrant', agent: S.currentUser() };
+        /* E323 : l’appel se note à l’instant présent (heure LOCALE) — la valeur par défaut était le 16/08/2026 09h00. */
+        return { dateHeure: C.isoLocal(), sens: 'entrant', agent: S.currentUser() };
+      },
+      /* E327 : un appel saisi à la main n’avait pas de numéro (la colonne « N° » restait vide) — la série A00001… se prolonge. */
+      transform: function (v, record) {
+        if (!v.reference && !(record && record.reference)) v.reference = C.referenceSuivante('A', 5, S.collection('appels').all());
+        return v;
       },
       kpis: function (rows) {
         return [
@@ -5352,6 +5371,9 @@
       + 'sans que rien ne le trace. À priorité égale, c’est l’heure d’arrivée qui départage.',
     render: function (root) {
       var vue = el('div.space-y-4');
+      /* E326 : le poste affiché se retient — chaque geste repeint la vue, qui retombait sur « Accueil ».
+         Déclaré AVANT l’appel de afficher() (piège de la déclaration hissée). */
+      var posteCourant = null;
       root.appendChild(vue);
       afficher();
       return null;
@@ -5379,11 +5401,14 @@
           + '<strong>priorité</strong>, ce qui est tracé — et non en réécrivant un numéro.',
         { tone: 'info', icon: 'list-ordered' }));
 
-        vue.appendChild(U.tabs(POSTES_FILE.map(function (po) {
+        var onglets = U.tabs(POSTES_FILE.map(function (po) {
           var f = fileTriee(po.code);
           return { id: po.code, label: po.label, badge: f.length,
             render: function () { return panneau(po, f); } };
-        })));
+        }), { onChange: function (id) { posteCourant = id; } });
+        vue.appendChild(onglets);
+        var retenu = posteCourant;
+        if (retenu && retenu !== POSTES_FILE[0].code) setTimeout(function () { onglets.selectTab(retenu); }, 0);
         U.icons(vue);
       }
 
@@ -5689,7 +5714,13 @@
       var host = el('div.space-y-4');
       root.appendChild(host);
       var tickets = S.collection('fileAttente').active()
-        .filter(function (x) { return x.poste === 'consultation' && x.etat !== 'servi' && x.etat !== 'clos'; });
+        .filter(function (x) { return x.poste === 'consultation' && x.etat !== 'servi' && x.etat !== 'clos'; })
+        /* E325 : « urgences en tête » — le classement de la file (priorité puis arrivée), comme l’écran de gestion et l’écran d’appel. */
+        .sort(function (a, b) {
+          var pa = prioriteDe(a.priorite).rang, pb = prioriteDe(b.priorite).rang;
+          if (pa !== pb) return pa - pb;
+          return String(a.arriveeLe).localeCompare(String(b.arriveeLe));
+        });
       var nommes = tickets.filter(function (x) { return x.praticien; });
       var vivier = tickets.filter(function (x) { return !x.praticien; });
       var parPraticien = {};
@@ -5707,7 +5738,7 @@
         host.appendChild(U.card('Cabinet \u2014 ' + nom + ' (' + parPraticien[nom].length + ')',
           K.miniTable(['Patient', 'Priorit\u00e9', 'Arriv\u00e9 \u00e0'],
             parPraticien[nom].map(function (x2) {
-              return [x2.patient || x2.nom || '\u2014', x2.priorite || 'ordre d\u2019arriv\u00e9e',
+              return [x2.patient || x2.nom || '\u2014', prioriteDe(x2.priorite).label,
                 x2.arriveeLe ? C.dateHeure(x2.arriveeLe) : '\u2014'];
             }))));
       });
@@ -5716,7 +5747,7 @@
         vivier.length
           ? K.miniTable(['Patient', 'Priorit\u00e9', 'Arriv\u00e9 \u00e0'],
             vivier.map(function (x2) {
-              return [x2.patient || x2.nom || '\u2014', x2.priorite || 'ordre d\u2019arriv\u00e9e',
+              return [x2.patient || x2.nom || '\u2014', prioriteDe(x2.priorite).label,
                 x2.arriveeLe ? C.dateHeure(x2.arriveeLe) : '\u2014'];
             }))
           : U.empty('Vivier vide \u2014 personne n\u2019attend sans praticien d\u00e9sign\u00e9.', { icon: 'users' })));

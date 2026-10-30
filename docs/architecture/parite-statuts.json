@@ -74,5 +74,14 @@
  "m2-ordonnance-nouvelle": "porté",
  "m2-prescriptions": "porté",
  "m2-salle-soins": "porté",
- "m3-chambres": "porté"
+ "m3-chambres": "porté",
+ "m2-agenda": "porté",
+ "m2-rendezvous": "porté",
+ "m2-visites": "porté",
+ "m2-domicile": "porté",
+ "m2-file-attente": "porté",
+ "m2-affichage": "porté",
+ "m2-file-cabinet": "porté",
+ "m2-agenda-medecin": "porté",
+ "m2-registre-appels": "porté"
 }

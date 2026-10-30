@@ -841,6 +841,9 @@
         wrap.appendChild(row);
       } else {
         var t = f.type === 'money' ? 'number' : (f.type || 'text');
+        /* E328 : un instant ISO avec fuseau (« …T09:00:00.000Z », la forme des dates écrites par l’agenda) est REFUSÉ par un champ
+           datetime-local — il restait vide et l’édition échouait sur « Date et heure » obligatoire. On le relit à l’heure locale. */
+        if (f.type === 'datetime-local' && val && /(Z|[+-]\d{2}:?\d{2})$/.test(String(val))) val = C.isoLocal(val);
         ctrl = el('input.input', {
           type: t, id: id, name: f.name, placeholder: f.placeholder || '',
           min: f.min, max: f.max, step: f.step || (f.type === 'money' ? 1 : null),
