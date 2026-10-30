@@ -40,16 +40,16 @@ num soldePatient(Magasin m, Object? patientId) {
 }
 
 /// `C.toDate` puis heure LOCALE : la maquette affiche l'heure du poste (Bénin, UTC+1), pas l'heure UTC stockée.
-DateTime? dateLocale(Object? v) => hosVersDate(v)?.toLocal();
+DateTime? dateHosLocale(Object? v) => hosVersDate(v)?.toLocal();
 
 /// `C.dateFR(d) + ' ' + C.heure(d)` : « 15/08/2026 09h00 ».
 String dateHeureCourte(Object? v) {
-  final d = dateLocale(v);
+  final d = dateHosLocale(v);
   return d == null ? '' : '${dateFR(d)} ${heure(d)}';
 }
 
 String heureDe(Object? v) {
-  final d = dateLocale(v);
+  final d = dateHosLocale(v);
   return d == null ? '' : heure(d);
 }
 

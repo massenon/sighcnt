@@ -169,8 +169,9 @@
       return [
         K.btn('Plan des lits', { icon: 'layout-grid', onclick: function () { global.SIGH.app.go('m3-plan-lits'); } }),
         K.btn('Feuille de soins', { icon: 'heart-pulse', onclick: function () { global.SIGH.app.go('m3-soins'); } }),
-        K.btn('Mettre en observation', { variant: 'primary', icon: 'user-plus', onclick: function () { if (ouvrirAdmissionObservation) ouvrirAdmissionObservation(); } }),
-      ];
+        /* E372 : une mise en observation est un geste clinique — commande gardée (absente de qui lit seulement), comme « Nouveau relevé ». */
+        K.commande('Mettre en observation', { variant: 'primary', icon: 'user-plus', onclick: function () { if (ouvrirAdmissionObservation) ouvrirAdmissionObservation(); } }),
+      ].filter(Boolean);
     },
     render: function (root) {
       ouvrirAdmissionObservation = function () { admettre(); };   /* E362 */
@@ -298,10 +299,10 @@
               return [K.iconBtn('printer', 'Imprimer la feuille', function () { imprimer(o); })];
             }
             return [
-              K.iconBtn('thermometer', 'Relever les constantes', function () { relever(o); }),
-              K.iconBtn('log-out', 'Décider de l’orientation', function () { orienter(o); }),
+              K.commandeIcone('thermometer', 'Relever les constantes', function () { relever(o); }),
+              K.commandeIcone('log-out', 'Décider de l’orientation', function () { orienter(o); }),
               K.iconBtn('printer', 'Imprimer la feuille', function () { imprimer(o); }),
-            ];
+            ].filter(Boolean);
           },
         }));
         U.icons(panneau);
@@ -502,7 +503,7 @@
             { label: 'Relevé par', key: 'par' },
           ], cs)
           : U.empty('Aucun relevé enregistré.', { icon: 'thermometer' }),
-        o.statutObservation === 'en_cours'
+        o.statutObservation === 'en_cours' && K.droits('M3').editer
           ? [K.btn('Relever les constantes', { size: 'sm', variant: 'primary', icon: 'thermometer', onclick: function () { relever(o); } })]
           : null));
 
@@ -515,7 +516,7 @@
         }
 
         var pied = [K.btn('Imprimer la feuille', { icon: 'printer', onclick: function () { imprimer(o); } })];
-        if (o.statutObservation === 'en_cours') {
+        if (o.statutObservation === 'en_cours' && K.droits('M3').editer) {
           pied.unshift(K.btn('Prescrire', { icon: 'file-plus', onclick: function () { prescrire(o); } }));
           pied.push(K.btn('Décider de l’orientation', { variant: 'primary', icon: 'log-out', onclick: function () { orienter(o); } }));
         }
