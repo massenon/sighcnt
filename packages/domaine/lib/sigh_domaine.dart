@@ -23,6 +23,8 @@ export 'src/caisse/mecef.dart';
 export 'src/achats/pv_reception.dart';
 export 'src/achats/fournisseurs_m7.dart';
 export 'src/achats/factures_fournisseurs.dart';
+export 'src/stock/referentiels_stock.dart';
+export 'src/stock/stock.dart';
 export 'src/graphiques/echelle.dart';
 export 'src/impression/identite.dart';
 export 'src/impression/ticket.dart';
