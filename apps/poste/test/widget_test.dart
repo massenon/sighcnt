@@ -2,9 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/main.dart';
 
 void main() {
-  testWidgets('le poste démarre et annonce son mode', (tester) async {
+  testWidgets('le poste fileul démarre, annonce son mode et montre la pastille (hors ligne tant que rien n\'est branché)', (tester) async {
     await tester.pumpWidget(const SighPoste());
-    expect(find.textContaining('SIGH-CNT'), findsOneWidget);
-    expect(find.textContaining('fileul'), findsOneWidget); // mode par défaut
+    expect(find.textContaining('fileul'), findsOneWidget);
+    expect(find.textContaining('Hors ligne'), findsOneWidget);
   });
 }
