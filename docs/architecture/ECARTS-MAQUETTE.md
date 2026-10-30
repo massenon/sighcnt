@@ -262,3 +262,17 @@ Les vecteurs (`cat_moteur.json`, `cat_catalogue.json`, `cat_unites.json`, `cat_v
 | E187 | `P.etat` relève les filtres **sur la page** : le catalogue (et le bon de demande de réactifs) impriment **toutes** leurs lignes mais l'état déclare « Filtres appliqués : Catégorie : Biochimie — l'état ne porte que les enregistrements retenus » (constaté : filtre Biochimie posé, 48 lignes imprimées). | **Porté sans la mention de filtre de tableau** (l'état ne dit que ce qu'il contient). Le bon de réactifs garde « Période de consommation : … », seul filtre de page qui le concerne. `m5-valeurs-reference`, dont l'état est bien filtré, porte ses filtres (Section · Examen · État). À arbitrer : `filtres: false` côté maquette. |
 
 Limites du portage (dites) : (1) le catalogue des 48 analyses est un **référentiel** du jeu poste (`referentiels.json › analyses`), pas une collection : `collectionAnalyses` l'amorce une fois en collection `analyses` sans écrire au journal ; **le jour où `gen-poste-jeu.js` portera la collection `analyses`, c'est elle qui sera lue** (aucun changement d'écran). (2) « Examens desservis » (formulaire des réactifs) lit la collection `examensLabo` active, la maquette lisant la liste statique `L.EXAMENS` : identiques tant que le catalogue des examens n'est pas édité (vérifié sur le jeu). (3) Le graphique « Consommation au fil des mois » suit l'horloge du poste (E20 : `K.parMois` est ancré au 1ᵉʳ août 2026 dans la maquette). (4) Le kit `CrudStock` écrit « Modification enregistrée. » là où `K.crud` écrit « Modifications enregistrées. » (toast générique partagé avec les écrans de stock). (5) Une plage par lot ne s'applique pas encore à la SAISIE d'un résultat dans Flutter (`m5-resultats` n'est pas porté) : le moteur (`catPlagePour`, `catReferenceALaDate`) est porté et rejoué sur vecteurs, prêt à être appelé.
+
+## M4 — maternité (`m4-*`) — écarts relevés en PILOTANT les écrans (30/10/2026)
+
+Vecteurs : `prototype_html/build/vecteurs-maternite.js` → `packages/domaine/test/vecteurs/mat_*.json` et `mat_donnees.dart` (référentiels engendrés). Numéros E400–E429 réservés ; E400–E406 utilisés.
+
+| # | Écart | Traitement |
+|---|---|---|
+| E400 ✅ **corrigé** | Onze références (`ACC-`, `NAI-`, `DEC-`, `CRM-`, `CPN-`, `PARTO-`, `CPO-`, `PF-`, `SONU-`, `PTME-`, `SCM-`) venaient de `C.nextRef`, compteur de page (même défaut que E8) : doublons possibles. | `C.referenceSuivante` sur le registre. Porté (`matReferenceSuivante`). |
+| E401 ✅ **corrigé** | Modifier une fiche lui attribuait une NOUVELLE référence (la `transform` ignorait la fiche corrigée) : CPN-0002 devenait CPN-0020. | `transform(v, record)` garde la référence. Porté. |
+| E402 ✅ **corrigé** | Un champ `datetime-local` prérempli depuis une date ISO complète restait vide : accouchements, naissances, bébé, décès, SONU ne pouvaient plus être modifiés sans ressaisir la date. | Normalisation dans `U.form` (`ui.js`). |
+| E403 | Le numéro de dossier obstétrical saisi n'est pas contrôlé unique (`00001/26` accepté deux fois). | Porté fidèlement, signalé (non encore porté : écran dossier). |
+| E404 ✅ **corrigé** | Le numéro proposé n'était pas rempli à cinq chiffres (`25/26`). | `00025/26`. Porté (`matNumeroDossier`). |
+| E405 | Le kit du poste n'a pas de champ date-heure. | Date + heure en deux champs, enregistrés `AAAA-MM-JJThh:mm`. |
+| E406 | « Sur l'année 2026 » du registre des décès est écrit en dur. | Porté fidèlement. |
