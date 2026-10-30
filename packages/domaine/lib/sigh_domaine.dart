@@ -11,5 +11,6 @@ export 'src/referentiels/regles.dart';
 export 'src/referentiels/periodes.dart';
 export 'src/design/jetons.dart';
 export 'src/droits/matrice.dart';
+export 'src/navigation/manifeste.dart';
 export 'src/caisse/prise_en_charge.dart';
 export 'src/caisse/encaissement.dart';

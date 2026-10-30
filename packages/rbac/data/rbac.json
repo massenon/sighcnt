@@ -314,6 +314,16 @@
     "editer": true,
     "annuler": true
    },
+   "MERE": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
+   "RLS": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -422,6 +432,16 @@
     "editer": true,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -526,6 +546,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -638,6 +668,16 @@
     "editer": true,
     "annuler": true
    },
+   "MERE": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -742,6 +782,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -854,6 +904,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -958,6 +1018,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1070,6 +1140,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -1174,6 +1254,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1286,6 +1376,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": false,
     "editer": false,
@@ -1390,6 +1490,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1502,6 +1612,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": false,
     "editer": false,
@@ -1606,6 +1726,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1718,6 +1848,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": false,
     "editer": false,
@@ -1822,6 +1962,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1934,6 +2084,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": false,
     "editer": false,
@@ -2038,6 +2198,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -2150,6 +2320,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -2254,6 +2434,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -2366,6 +2556,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -2474,6 +2674,16 @@
     "editer": false,
     "annuler": false
    },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "PIL": {
     "voir": true,
     "editer": true,
@@ -2578,6 +2788,16 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "MERE": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "RLS": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -3738,6 +3958,181 @@
     1
    ],
    "cfg-systeme": [
+    1,
+    1,
+    1
+   ],
+   "cfg-poste": [
+    1,
+    1,
+    1
+   ],
+   "mere-supervision": [
+    1,
+    1,
+    1
+   ],
+   "mere-appareils": [
+    1,
+    1,
+    1
+   ],
+   "mere-conflits": [
+    1,
+    1,
+    1
+   ],
+   "mere-a-traiter": [
+    1,
+    1,
+    1
+   ],
+   "mere-journal-operations": [
+    1,
+    1,
+    1
+   ],
+   "mere-plages-baux": [
+    1,
+    1,
+    1
+   ],
+   "mere-lots-tournee": [
+    1,
+    1,
+    1
+   ],
+   "mere-journal-technique": [
+    1,
+    1,
+    1
+   ],
+   "mere-sauvegardes": [
+    1,
+    1,
+    1
+   ],
+   "mere-cle-clinique": [
+    1,
+    1,
+    1
+   ],
+   "mere-integrite": [
+    1,
+    1,
+    1
+   ],
+   "mere-reinit": [
+    1,
+    1,
+    1
+   ],
+   "mere-relais": [
+    1,
+    1,
+    1
+   ],
+   "mere-indicateurs": [
+    1,
+    1,
+    1
+   ],
+   "mere-service": [
+    1,
+    1,
+    1
+   ],
+   "mere-base": [
+    1,
+    1,
+    1
+   ],
+   "mere-reseau": [
+    1,
+    1,
+    1
+   ],
+   "mere-planificateur": [
+    1,
+    1,
+    1
+   ],
+   "mere-notifications": [
+    1,
+    1,
+    1
+   ],
+   "mere-mise-en-service": [
+    1,
+    1,
+    1
+   ],
+   "mere-mises-a-jour": [
+    1,
+    1,
+    1
+   ],
+   "mere-import": [
+    1,
+    1,
+    1
+   ],
+   "rls-tableau": [
+    1,
+    1,
+    1
+   ],
+   "rls-appareils": [
+    1,
+    1,
+    1
+   ],
+   "rls-boites": [
+    1,
+    1,
+    1
+   ],
+   "rls-codes": [
+    1,
+    1,
+    1
+   ],
+   "rls-indicateurs": [
+    1,
+    1,
+    1
+   ],
+   "rls-alertes": [
+    1,
+    1,
+    1
+   ],
+   "rls-journal": [
+    1,
+    1,
+    1
+   ],
+   "rls-superadmin": [
+    1,
+    1,
+    1
+   ],
+   "rls-parametres": [
+    1,
+    1,
+    1
+   ],
+   "rls-hebergement": [
+    1,
+    1,
+    1
+   ],
+   "rls-sauvegarde": [
+    1,
+    1,
+    1
+   ],
+   "rls-opacite": [
     1,
     1,
     1
@@ -6844,6 +7239,121 @@
     1
    ],
    "cfg-systeme": [
+    1,
+    1,
+    1
+   ],
+   "cfg-poste": [
+    1,
+    1,
+    1
+   ],
+   "mere-supervision": [
+    1,
+    1,
+    1
+   ],
+   "mere-appareils": [
+    1,
+    1,
+    1
+   ],
+   "mere-conflits": [
+    1,
+    1,
+    1
+   ],
+   "mere-a-traiter": [
+    1,
+    1,
+    1
+   ],
+   "mere-journal-operations": [
+    1,
+    1,
+    1
+   ],
+   "mere-plages-baux": [
+    1,
+    1,
+    1
+   ],
+   "mere-lots-tournee": [
+    1,
+    1,
+    1
+   ],
+   "mere-journal-technique": [
+    1,
+    1,
+    1
+   ],
+   "mere-sauvegardes": [
+    1,
+    1,
+    1
+   ],
+   "mere-cle-clinique": [
+    1,
+    1,
+    1
+   ],
+   "mere-integrite": [
+    1,
+    1,
+    1
+   ],
+   "mere-reinit": [
+    1,
+    1,
+    1
+   ],
+   "mere-relais": [
+    1,
+    1,
+    1
+   ],
+   "mere-indicateurs": [
+    1,
+    1,
+    1
+   ],
+   "mere-service": [
+    1,
+    1,
+    1
+   ],
+   "mere-base": [
+    1,
+    1,
+    1
+   ],
+   "mere-reseau": [
+    1,
+    1,
+    1
+   ],
+   "mere-planificateur": [
+    1,
+    1,
+    1
+   ],
+   "mere-notifications": [
+    1,
+    1,
+    1
+   ],
+   "mere-mise-en-service": [
+    1,
+    1,
+    1
+   ],
+   "mere-mises-a-jour": [
+    1,
+    1,
+    1
+   ],
+   "mere-import": [
     1,
     1,
     1

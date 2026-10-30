@@ -4831,6 +4831,519 @@
    "statut": "non commencé"
   },
   {
+   "id": "cfg-poste",
+   "label": "Ce poste (mode fileul / mère)",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-supervision",
+   "label": "Supervision",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-appareils",
+   "label": "Appareils et appairage",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-conflits",
+   "label": "Conflits et doublons",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-a-traiter",
+   "label": "« À traiter » consolidé",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-journal-operations",
+   "label": "Journal des opérations",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-plages-baux",
+   "label": "Plages de numéros et baux de stock",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-lots-tournee",
+   "label": "Lots de tournée (mobiles)",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-journal-technique",
+   "label": "Journal technique",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-sauvegardes",
+   "label": "Sauvegardes et restauration",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-cle-clinique",
+   "label": "Clé de clinique",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-integrite",
+   "label": "Intégrité et altérations",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-reinit",
+   "label": "Réinitialisation de production",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-relais",
+   "label": "Relais en ligne",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-indicateurs",
+   "label": "Indicateurs publiés",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-service",
+   "label": "Service et démarrage",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-base",
+   "label": "Base de données locale",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-reseau",
+   "label": "Réseau local",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-planificateur",
+   "label": "Planificateur",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-notifications",
+   "label": "Notifications serveur",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-mise-en-service",
+   "label": "Assistant de première mise en service",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-mises-a-jour",
+   "label": "Mises à jour et compatibilité",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-import",
+   "label": "Import de migration",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-tableau",
+   "label": "Tableau de bord du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-appareils",
+   "label": "Appareils",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-boites",
+   "label": "Boîtes aux lettres",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-codes",
+   "label": "Codes d’appairage",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-indicateurs",
+   "label": "Indicateurs reçus",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-alertes",
+   "label": "Alertes et notifications",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-journal",
+   "label": "Journal d’audit du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-superadmin",
+   "label": "Comptes superadmin",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-parametres",
+   "label": "Paramètres du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-hebergement",
+   "label": "Hébergement (cPanel)",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-sauvegarde",
+   "label": "Sauvegarde du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-opacite",
+   "label": "Preuve d’opacité",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
    "id": "dash-direction",
    "label": "Direction",
    "module": "PIL",

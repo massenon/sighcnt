@@ -4079,4 +4079,39 @@
     },
   });
 
+
+  /* ============================================================================
+   * CE POSTE — où se décide qu un poste est la MÈRE (30/10/2026)
+   * Un seul exécutable ; le mode est un réglage du poste, activé sur le serveur local.
+   * Prototype : aucune activation réelle (données de démonstration).
+   * ========================================================================== */
+  global.SIGH.screen('cfg-poste', {
+    title: 'Ce poste',
+    description: 'Mode du poste : fileul ou mère. La mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).',
+    regle: 'Il ne peut y avoir <strong>qu’un seul poste mère par clinique</strong> : le relais refuse une seconde déclaration <strong>en nommant la première</strong>. L’activation est <strong>atomique</strong> : si le service ne démarre pas, le poste reste fileul.',
+    render: function (root) {
+      var el = C.el, hote = el('div.space-y-4');
+      var mere = false;
+      function peindre() {
+        C.clear(hote);
+        hote.appendChild(U.kpiGrid([
+          { label: 'Mode de ce poste', value: mere ? 'Mère' : 'Fileul', icon: mere ? 'server' : 'monitor', tone: mere ? 'success' : 'navy' },
+          { label: 'Service de synchronisation', value: mere ? 'En marche' : 'Arrêté', icon: 'power', tone: mere ? 'success' : 'neutral' },
+        ]));
+        if (!mere) {
+          hote.appendChild(K.note('À faire sur le <strong>serveur local</strong> uniquement. Exige l’adresse du relais, le <strong>secret de la mère</strong> et la <strong>clé de clinique</strong>.', { tone: 'info', icon: 'info' }));
+          var b = el('button.btn.btn-primary.btn-sm', { type: 'button', text: 'Activer le mode mère' });
+          b.addEventListener('click', function () { U.toast('Simulation — déclaration au relais, démarrage du service, mode mère enregistré.', { type: 'info' }); mere = true; peindre(); });
+          hote.appendChild(b);
+        } else {
+          hote.appendChild(K.note('Les modules du groupe <strong>Poste mère</strong> sont maintenant disponibles pour l’administrateur et la DAF.', { tone: 'success', icon: 'check' }));
+          var d = el('button.btn.btn-secondary.btn-sm', { type: 'button', text: 'Désactiver le mode mère' });
+          d.addEventListener('click', function () { mere = false; peindre(); });
+          hote.appendChild(d);
+        }
+      }
+      root.appendChild(hote); peindre(); return null;
+    },
+  });
+
 })(window);

@@ -1,10 +1,53 @@
 {
  "_doc": "ENGENDRÉ par prototype_html/build/extraire.js — manifeste de navigation de la maquette (domaines, rangées, écrans).",
+ "domaines": [
+  {
+   "nom": "Accueil",
+   "icone": "door-open"
+  },
+  {
+   "nom": "Soins",
+   "icone": "stethoscope"
+  },
+  {
+   "nom": "Logistique",
+   "icone": "package"
+  },
+  {
+   "nom": "Financier",
+   "icone": "wallet"
+  },
+  {
+   "nom": "RH",
+   "icone": "users-round"
+  },
+  {
+   "nom": "Administration",
+   "icone": "building-2"
+  },
+  {
+   "nom": "Système",
+   "icone": "settings"
+  },
+  {
+   "nom": "Poste mère",
+   "icone": "server"
+  },
+  {
+   "nom": "Relais en ligne",
+   "icone": "cloud"
+  },
+  {
+   "nom": "Pilotage",
+   "icone": "layout-dashboard"
+  }
+ ],
  "modules": [
   {
    "domaine": "Accueil",
    "code": "M2",
    "label": "RDV, Visites & Consultations",
+   "icone": "calendar-days",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -31,6 +74,7 @@
    "domaine": "Accueil",
    "code": "M1",
    "label": "Patients & constantes",
+   "icone": "users",
    "alias": true,
    "secondaire": false,
    "roles": "ALL",
@@ -44,6 +88,7 @@
    "domaine": "Accueil",
    "code": "M13",
    "label": "Courriers & orientation",
+   "icone": "mail",
    "alias": true,
    "secondaire": false,
    "roles": "ALL",
@@ -56,6 +101,7 @@
    "domaine": "Accueil",
    "code": "CFG",
    "label": "Tarification & information patient",
+   "icone": "tags",
    "alias": true,
    "secondaire": false,
    "roles": "ALL",
@@ -69,6 +115,7 @@
    "domaine": "Soins",
    "code": "M1",
    "label": "Patients & Dossier médical",
+   "icone": "users",
    "alias": false,
    "secondaire": false,
    "roles": "*",
@@ -89,6 +136,7 @@
    "domaine": "Soins",
    "code": "M2",
    "label": "Consultations & prescriptions",
+   "icone": "stethoscope",
    "alias": false,
    "secondaire": true,
    "roles": [
@@ -112,6 +160,7 @@
    "domaine": "Soins",
    "code": "M2",
    "label": "Imagerie médicale",
+   "icone": "scan-line",
    "alias": false,
    "secondaire": true,
    "roles": [
@@ -137,6 +186,7 @@
    "domaine": "Soins",
    "code": "M3",
    "label": "Hospitalisation",
+   "icone": "bed-double",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -174,6 +224,7 @@
    "domaine": "Soins",
    "code": "M4",
    "label": "Maternité, Naissances & Décès",
+   "icone": "baby",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -204,6 +255,7 @@
    "domaine": "Soins",
    "code": "M5",
    "label": "Laboratoire",
+   "icone": "flask-conical",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -235,6 +287,7 @@
    "domaine": "Logistique",
    "code": "M6",
    "label": "Pharmacie & Stocks",
+   "icone": "pill",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -270,6 +323,7 @@
    "domaine": "Logistique",
    "code": "M7",
    "label": "Achats & Fournisseurs",
+   "icone": "truck",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -295,6 +349,7 @@
    "domaine": "Financier",
    "code": "M8",
    "label": "Facturation & Caisse",
+   "icone": "receipt",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -324,6 +379,7 @@
    "domaine": "Financier",
    "code": "M9",
    "label": "Assurances & Créances",
+   "icone": "shield-check",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -350,6 +406,7 @@
    "domaine": "Financier",
    "code": "MECEF",
    "label": "MECeF — Facture normalisée",
+   "icone": "file-badge",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -372,6 +429,7 @@
    "domaine": "Financier",
    "code": "M12",
    "label": "Comptabilité SYSCOHADA",
+   "icone": "book-open-check",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -406,6 +464,7 @@
    "domaine": "RH",
    "code": "M10",
    "label": "Ressources humaines",
+   "icone": "id-card",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -445,6 +504,7 @@
    "domaine": "RH",
    "code": "M11",
    "label": "Paie & Primes",
+   "icone": "banknote",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -470,6 +530,7 @@
    "domaine": "Administration",
    "code": "M13",
    "label": "Administration & Ambulance",
+   "icone": "mail",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -498,6 +559,7 @@
    "domaine": "Administration",
    "code": "GED",
    "label": "Gestion documentaire",
+   "icone": "folder-open",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -518,6 +580,7 @@
    "domaine": "Administration",
    "code": "RAP",
    "label": "Rapports & Impression",
+   "icone": "printer",
    "alias": false,
    "secondaire": false,
    "roles": "*",
@@ -532,6 +595,7 @@
    "domaine": "Système",
    "code": "M14",
    "label": "Sécurité & Utilisateurs",
+   "icone": "shield",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -553,6 +617,7 @@
    "domaine": "Système",
    "code": "CFG",
    "label": "Configuration Clinique",
+   "icone": "sliders-horizontal",
    "alias": false,
    "secondaire": false,
    "roles": [
@@ -578,13 +643,132 @@
     "cfg-notifications",
     "cfg-compte",
     "cfg-modules",
-    "cfg-systeme"
+    "cfg-systeme",
+    "cfg-poste"
+   ]
+  },
+  {
+   "domaine": "Poste mère",
+   "code": "MERE",
+   "label": "Exploitation de la synchronisation",
+   "icone": "refresh-cw",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "ecrans": [
+    "mere-supervision",
+    "mere-appareils",
+    "mere-conflits",
+    "mere-a-traiter",
+    "mere-journal-operations",
+    "mere-plages-baux",
+    "mere-lots-tournee"
+   ]
+  },
+  {
+   "domaine": "Poste mère",
+   "code": "MERE",
+   "label": "Sécurité et continuité",
+   "icone": "shield-check",
+   "alias": false,
+   "secondaire": true,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "ecrans": [
+    "mere-journal-technique",
+    "mere-sauvegardes",
+    "mere-cle-clinique",
+    "mere-integrite",
+    "mere-reinit"
+   ]
+  },
+  {
+   "domaine": "Poste mère",
+   "code": "MERE",
+   "label": "Liaison avec le relais",
+   "icone": "cloud",
+   "alias": false,
+   "secondaire": true,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "ecrans": [
+    "mere-relais",
+    "mere-indicateurs"
+   ]
+  },
+  {
+   "domaine": "Poste mère",
+   "code": "MERE",
+   "label": "Plateforme locale",
+   "icone": "server-cog",
+   "alias": false,
+   "secondaire": true,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "ecrans": [
+    "mere-service",
+    "mere-base",
+    "mere-reseau",
+    "mere-planificateur",
+    "mere-notifications"
+   ]
+  },
+  {
+   "domaine": "Poste mère",
+   "code": "MERE",
+   "label": "Cycle de vie",
+   "icone": "rocket",
+   "alias": false,
+   "secondaire": true,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "ecrans": [
+    "mere-mise-en-service",
+    "mere-mises-a-jour",
+    "mere-import"
+   ]
+  },
+  {
+   "domaine": "Relais en ligne",
+   "code": "RLS",
+   "label": "Relais en ligne (apps/web)",
+   "icone": "cloud",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "admin"
+   ],
+   "ecrans": [
+    "rls-tableau",
+    "rls-appareils",
+    "rls-boites",
+    "rls-codes",
+    "rls-indicateurs",
+    "rls-alertes",
+    "rls-journal",
+    "rls-superadmin",
+    "rls-parametres",
+    "rls-hebergement",
+    "rls-sauvegarde",
+    "rls-opacite"
    ]
   },
   {
    "domaine": "Pilotage",
    "code": "PIL",
    "label": "Pilotage & analyse",
+   "icone": "chart-no-axes-combined",
    "alias": false,
    "secondaire": false,
    "roles": "*",
@@ -608,6 +792,7 @@
    "domaine": "Pilotage",
    "code": "M12",
    "label": "Gestion & trésorerie",
+   "icone": "gauge-circle",
    "alias": false,
    "secondaire": true,
    "roles": [
@@ -625,6 +810,7 @@
    "domaine": "Pilotage",
    "code": "DASH",
    "label": "Tableaux de bord par poste",
+   "icone": "gauge",
    "alias": false,
    "secondaire": false,
    "roles": "*",
@@ -656,6 +842,7 @@
   {
    "id": "hub-m2",
    "label": "RDV, Visites & Consultations",
+   "icone": "calendar-days",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -675,6 +862,7 @@
   {
    "id": "m2-agenda",
    "label": "Agenda",
+   "icone": "calendar-days",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -694,6 +882,7 @@
   {
    "id": "m2-rendezvous",
    "label": "Rendez-vous & visites",
+   "icone": "calendar-check",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -713,6 +902,7 @@
   {
    "id": "m2-file-attente",
    "label": "File d’attente",
+   "icone": "list-ordered",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -732,6 +922,7 @@
   {
    "id": "m2-file-cabinet",
    "label": "File par cabinet",
+   "icone": "door-open",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -751,6 +942,7 @@
   {
    "id": "m2-agenda-medecin",
    "label": "Agenda du médecin",
+   "icone": "calendar-check-2",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -770,6 +962,7 @@
   {
    "id": "m2-affichage",
    "label": "Écran d’appel des patients",
+   "icone": "monitor",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -789,6 +982,7 @@
   {
    "id": "m2-domicile",
    "label": "Consultations & soins à domicile",
+   "icone": "house",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -808,6 +1002,7 @@
   {
    "id": "m2-registre-appels",
    "label": "Registre des appels",
+   "icone": "phone-call",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -827,6 +1022,7 @@
   {
    "id": "m2-consultations",
    "label": "Consultations",
+   "icone": "stethoscope",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -846,6 +1042,7 @@
   {
    "id": "hub-m1",
    "label": "Patients & Dossier médical",
+   "icone": "users",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -858,6 +1055,7 @@
   {
    "id": "m1-patients",
    "label": "Répertoire des patients",
+   "icone": "users",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -870,6 +1068,7 @@
   {
    "id": "m1-patient-profil",
    "label": "Fiche patient",
+   "icone": "user-round",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -882,6 +1081,7 @@
   {
    "id": "m1-externe",
    "label": "Patient externe",
+   "icone": "user-plus",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -902,6 +1102,7 @@
   {
    "id": "m1-antecedents",
    "label": "Antécédents & allergies",
+   "icone": "shield-alert",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -914,6 +1115,7 @@
   {
    "id": "m1-pieces",
    "label": "Certificats & attestations",
+   "icone": "stamp",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -926,6 +1128,7 @@
   {
    "id": "m1-constantes",
    "label": "Constantes à l’accueil",
+   "icone": "thermometer",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -938,6 +1141,7 @@
   {
    "id": "m1-reference",
    "label": "Fiches de référence",
+   "icone": "share-2",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -950,6 +1154,7 @@
   {
    "id": "m1-contre-reference",
    "label": "Fiches de contre-référence",
+   "icone": "reply",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -962,6 +1167,7 @@
   {
    "id": "m1-documents",
    "label": "Documents numérisés",
+   "icone": "paperclip",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -974,6 +1180,7 @@
   {
    "id": "m1-numerisation",
    "label": "Plan de numérisation",
+   "icone": "scan-line",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -986,6 +1193,7 @@
   {
    "id": "m2-dossiers-consultation",
    "label": "Dossiers de consultation",
+   "icone": "folder-heart",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -1005,6 +1213,7 @@
   {
    "id": "m2-consultation-fiche",
    "label": "Fiche de consultation",
+   "icone": "clipboard-list",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -1024,6 +1233,7 @@
   {
    "id": "m2-pathologies",
    "label": "Pathologies & morbidité",
+   "icone": "activity",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -1043,6 +1253,7 @@
   {
    "id": "m2-ordonnances",
    "label": "Ordonnances",
+   "icone": "scroll-text",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -1062,6 +1273,7 @@
   {
    "id": "m2-prescriptions",
    "label": "Prescriptions",
+   "icone": "clipboard-plus",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -1081,6 +1293,7 @@
   {
    "id": "m2-salle-soins",
    "label": "Salle de soins",
+   "icone": "syringe",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -1100,6 +1313,7 @@
   {
    "id": "m2-dashboard-imagerie",
    "label": "Poste d’imagerie médicale",
+   "icone": "gauge",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1119,6 +1333,7 @@
   {
    "id": "m2-imagerie-demandes",
    "label": "Demandes d’imagerie médicale",
+   "icone": "scan-search",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1138,6 +1353,7 @@
   {
    "id": "m2-imagerie",
    "label": "Tableau Échographie",
+   "icone": "scan-line",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1157,6 +1373,7 @@
   {
    "id": "m2-imagerie-radiographie",
    "label": "Tableau Radiographie",
+   "icone": "bone",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1176,6 +1393,7 @@
   {
    "id": "m2-imagerie-mammographie",
    "label": "Tableau Mammographie",
+   "icone": "ribbon",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1195,6 +1413,7 @@
   {
    "id": "m2-imagerie-scanner",
    "label": "Tableau Scanner",
+   "icone": "radiation",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1214,6 +1433,7 @@
   {
    "id": "m2-imagerie-irm",
    "label": "Tableau IRM",
+   "icone": "magnet",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1233,6 +1453,7 @@
   {
    "id": "m2-echographie-galerie",
    "label": "Galerie des clichés",
+   "icone": "images",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -1252,6 +1473,7 @@
   {
    "id": "hub-m3",
    "label": "Hospitalisation",
+   "icone": "bed-double",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1271,6 +1493,7 @@
   {
    "id": "m3-admissions",
    "label": "Admissions",
+   "icone": "log-in",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1290,6 +1513,7 @@
   {
    "id": "m3-observation",
    "label": "Mise en observation",
+   "icone": "activity",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1309,6 +1533,7 @@
   {
    "id": "m3-plan-lits",
    "label": "Plan des lits",
+   "icone": "layout-grid",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1328,6 +1553,7 @@
   {
    "id": "m3-chambres",
    "label": "Chambres & lits",
+   "icone": "bed-double",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1347,6 +1573,7 @@
   {
    "id": "m3-feuille-temperature",
    "label": "Feuille de température",
+   "icone": "thermometer",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1366,6 +1593,7 @@
   {
    "id": "m3-soins",
    "label": "Feuille de soins",
+   "icone": "heart-pulse",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1385,6 +1613,7 @@
   {
    "id": "m3-administrations",
    "label": "Administration des traitements",
+   "icone": "pill",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1404,6 +1633,7 @@
   {
    "id": "m3-cpa",
    "label": "Consultation pré-anesthésique",
+   "icone": "stethoscope",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1423,6 +1653,7 @@
   {
    "id": "m3-bloc-cro",
    "label": "Comptes rendus opératoires",
+   "icone": "scissors",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1442,6 +1673,7 @@
   {
    "id": "m3-cr-anesthesie",
    "label": "Comptes rendus d’anesthésie",
+   "icone": "syringe",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1461,6 +1693,7 @@
   {
    "id": "m3-bloc-checklist",
    "label": "Check-listes du bloc",
+   "icone": "list-checks",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1480,6 +1713,7 @@
   {
    "id": "m3-demande-examen",
    "label": "Demande d’examen",
+   "icone": "clipboard-list",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1499,6 +1733,7 @@
   {
    "id": "m3-bons-pansements",
    "label": "Bons de pansement",
+   "icone": "bandage",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1518,6 +1753,7 @@
   {
    "id": "m3-surveillance",
    "label": "Fiche de surveillance",
+   "icone": "activity",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1537,6 +1773,7 @@
   {
    "id": "m3-transfusion",
    "label": "Surveillance transfusionnelle",
+   "icone": "droplets",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1556,6 +1793,7 @@
   {
    "id": "m3-glasgow",
    "label": "Score de Glasgow",
+   "icone": "brain",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1575,6 +1813,7 @@
   {
    "id": "m3-rapport",
    "label": "Rapport médical",
+   "icone": "file-text",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1594,6 +1833,7 @@
   {
    "id": "m3-visites-patients",
    "label": "Visites aux hospitalisés",
+   "icone": "users-round",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1613,6 +1853,7 @@
   {
    "id": "m3-sorties",
    "label": "Sorties d’hospitalisation",
+   "icone": "log-out",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1632,6 +1873,7 @@
   {
    "id": "m3-sortie-avis-medical",
    "label": "Sortie contre avis médical",
+   "icone": "triangle-alert",
    "module": "M3",
    "moduleLabel": "Hospitalisation",
    "domaine": "Soins",
@@ -1651,6 +1893,7 @@
   {
    "id": "hub-m4",
    "label": "Maternité, Naissances & Décès",
+   "icone": "baby",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1669,6 +1912,7 @@
   {
    "id": "m4-dossier-obstetrical",
    "label": "Dossier obstétrical",
+   "icone": "folder-open",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1687,6 +1931,7 @@
   {
    "id": "m4-maternite",
    "label": "Suivi maternité",
+   "icone": "baby",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1705,6 +1950,7 @@
   {
    "id": "m4-cpn",
    "label": "CPN & carte maternelle",
+   "icone": "clipboard-list",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1723,6 +1969,7 @@
   {
    "id": "m4-partogramme",
    "label": "Partogramme",
+   "icone": "activity",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1741,6 +1988,7 @@
   {
    "id": "m4-accouchements",
    "label": "Accouchements",
+   "icone": "heart-handshake",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1759,6 +2007,7 @@
   {
    "id": "m4-dossier-bebe",
    "label": "Dossier bébé & soins du nouveau-né",
+   "icone": "baby",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1777,6 +2026,7 @@
   {
    "id": "m4-cpon",
    "label": "Consultations post-natales (CPoN)",
+   "icone": "stethoscope",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1795,6 +2045,7 @@
   {
    "id": "m4-planification",
    "label": "Planification familiale",
+   "icone": "heart-handshake",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1813,6 +2064,7 @@
   {
    "id": "m4-sonu",
    "label": "Registre SONUB / SONUC",
+   "icone": "siren",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1831,6 +2083,7 @@
   {
    "id": "m4-ptme",
    "label": "Registre PTME",
+   "icone": "shield-check",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1849,6 +2102,7 @@
   {
    "id": "m4-soins-curatifs",
    "label": "Soins curatifs & urgences maternité",
+   "icone": "cross",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1867,6 +2121,7 @@
   {
    "id": "m4-comptes-rendus",
    "label": "Comptes rendus de maternité",
+   "icone": "file-text",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1885,6 +2140,7 @@
   {
    "id": "m4-naissances",
    "label": "Registre des naissances",
+   "icone": "book-marked",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1903,6 +2159,7 @@
   {
    "id": "m4-deces",
    "label": "Registre des décès",
+   "icone": "cross",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -1921,6 +2178,7 @@
   {
    "id": "hub-m5",
    "label": "Laboratoire",
+   "icone": "flask-conical",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -1939,6 +2197,7 @@
   {
    "id": "m5-demandes",
    "label": "Demandes d’analyses",
+   "icone": "clipboard-list",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -1958,6 +2217,7 @@
   {
    "id": "m5-demandes-maternite",
    "label": "Demandes — maternité",
+   "icone": "baby",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -1977,6 +2237,7 @@
   {
    "id": "m5-demandes-hospitalisation",
    "label": "Demandes — hospitalisation",
+   "icone": "bed",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -1996,6 +2257,7 @@
   {
    "id": "m5-resultats",
    "label": "Saisie des résultats",
+   "icone": "file-check-2",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2015,6 +2277,7 @@
   {
    "id": "m5-resultats-comparatif",
    "label": "Comparatif des résultats",
+   "icone": "git-compare-arrows",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2034,6 +2297,7 @@
   {
    "id": "m5-impression-resultats",
    "label": "Impression des résultats",
+   "icone": "printer",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2052,6 +2316,7 @@
   {
    "id": "m5-catalogue",
    "label": "Catalogue des analyses",
+   "icone": "list-checks",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2070,6 +2335,7 @@
   {
    "id": "m5-unites",
    "label": "Unités de mesure",
+   "icone": "ruler",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2088,6 +2354,7 @@
   {
    "id": "m5-valeurs-reference",
    "label": "Valeurs de référence",
+   "icone": "target",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2106,6 +2373,7 @@
   {
    "id": "m5-prelevement",
    "label": "Salle de prélèvement",
+   "icone": "syringe",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2124,6 +2392,7 @@
   {
    "id": "m5-stats",
    "label": "Statistiques du laboratoire",
+   "icone": "chart-column",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2142,6 +2411,7 @@
   {
    "id": "m5-reactifs",
    "label": "Réactifs & consommables",
+   "icone": "test-tubes",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2160,6 +2430,7 @@
   {
    "id": "m5-reactifs-stats",
    "label": "Statistiques des réactifs",
+   "icone": "chart-column",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2178,6 +2449,7 @@
   {
    "id": "m5-banque-sang",
    "label": "Banque de sang",
+   "icone": "droplet",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2196,6 +2468,7 @@
   {
    "id": "m5-donneurs",
    "label": "Donneurs & transfusions",
+   "icone": "droplets",
    "module": "M5",
    "moduleLabel": "Laboratoire",
    "domaine": "Soins",
@@ -2214,6 +2487,7 @@
   {
    "id": "hub-m6",
    "label": "Pharmacie & Stocks",
+   "icone": "pill",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2234,6 +2508,7 @@
   {
    "id": "m6-pharmacie-interne",
    "label": "Pharmacie interne — urgences",
+   "icone": "syringe",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2254,6 +2529,7 @@
   {
    "id": "m6-pharmacie-externe",
    "label": "Pharmacie externe — voie orale",
+   "icone": "store",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2274,6 +2550,7 @@
   {
    "id": "m6-dashboard",
    "label": "Tableau de bord stock",
+   "icone": "gauge",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2294,6 +2571,7 @@
   {
    "id": "m6-produits",
    "label": "Référentiel produits",
+   "icone": "pill",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2314,6 +2592,7 @@
   {
    "id": "m6-stock-gros",
    "label": "Stock gros (magasin)",
+   "icone": "warehouse",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2334,6 +2613,7 @@
   {
    "id": "m6-stock-detail",
    "label": "Stock détail (pharmacie)",
+   "icone": "store",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2354,6 +2634,7 @@
   {
    "id": "m6-transferts",
    "label": "Transferts gros → détail",
+   "icone": "arrow-left-right",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2374,6 +2655,7 @@
   {
    "id": "m6-mouvements",
    "label": "Mouvements de stock",
+   "icone": "arrow-down-up",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2394,6 +2676,7 @@
   {
    "id": "m6-lots",
    "label": "Lots & péremptions (FEFO)",
+   "icone": "calendar-clock",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2414,6 +2697,7 @@
   {
    "id": "m6-alertes",
    "label": "Alertes & seuils",
+   "icone": "bell-ring",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2434,6 +2718,7 @@
   {
    "id": "m6-inventaire",
    "label": "Inventaires",
+   "icone": "clipboard-check",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2454,6 +2739,7 @@
   {
    "id": "m6-pertes",
    "label": "Pertes, casses & rebuts",
+   "icone": "trash-2",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2474,6 +2760,7 @@
   {
    "id": "m6-dispensation",
    "label": "Dispensation",
+   "icone": "package-open",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2494,6 +2781,7 @@
   {
    "id": "m6-etiquetage",
    "label": "Étiquetage & emplacements",
+   "icone": "tags",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2514,6 +2802,7 @@
   {
    "id": "m6-reprise",
    "label": "Reprise SAGE 100",
+   "icone": "database",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2534,6 +2823,7 @@
   {
    "id": "m6-point-ventes",
    "label": "Suivi des ventes",
+   "icone": "coins",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2555,6 +2845,7 @@
   {
    "id": "m6-point-stock",
    "label": "Point du stock valorisé",
+   "icone": "warehouse",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -2576,6 +2867,7 @@
   {
    "id": "hub-m7",
    "label": "Achats & Fournisseurs",
+   "icone": "truck",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2594,6 +2886,7 @@
   {
    "id": "m7-besoins",
    "label": "Bons d’expression de besoins",
+   "icone": "clipboard-list",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2612,6 +2905,7 @@
   {
    "id": "m7-commandes",
    "label": "Bons de commande",
+   "icone": "shopping-cart",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2631,6 +2925,7 @@
   {
    "id": "m7-livraisons",
    "label": "Bons de livraison",
+   "icone": "truck",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2650,6 +2945,7 @@
   {
    "id": "m7-receptions",
    "label": "Réceptions & contrôles",
+   "icone": "package-check",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2669,6 +2965,7 @@
   {
    "id": "m7-ecarts",
    "label": "Écarts de livraison",
+   "icone": "triangle-alert",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2688,6 +2985,7 @@
   {
    "id": "m7-pv-reception-consommables",
    "label": "PV de réception — consommables",
+   "icone": "clipboard-check",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2706,6 +3004,7 @@
   {
    "id": "m7-pv-reception-reactifs",
    "label": "PV de réception — réactifs",
+   "icone": "flask-conical",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2725,6 +3024,7 @@
   {
    "id": "m7-fournisseurs",
    "label": "Fournisseurs",
+   "icone": "building-2",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2743,6 +3043,7 @@
   {
    "id": "m7-factures-fournisseurs",
    "label": "Factures fournisseurs",
+   "icone": "file-text",
    "module": "M7",
    "moduleLabel": "Achats & Fournisseurs",
    "domaine": "Logistique",
@@ -2761,6 +3062,7 @@
   {
    "id": "hub-m8",
    "label": "Facturation & Caisse",
+   "icone": "receipt",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2781,6 +3083,7 @@
   {
    "id": "m8-dashboard",
    "label": "Tableau de bord facturation",
+   "icone": "gauge",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2801,6 +3104,7 @@
   {
    "id": "m8-facturation",
    "label": "Nouvelle facture",
+   "icone": "file-plus-2",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2821,6 +3125,7 @@
   {
    "id": "m8-factures",
    "label": "Factures",
+   "icone": "receipt",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2841,6 +3146,7 @@
   {
    "id": "m8-proforma",
    "label": "Factures pro-forma",
+   "icone": "file-text",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2861,6 +3167,7 @@
   {
    "id": "m8-paiements",
    "label": "Paiements",
+   "icone": "banknote",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2881,6 +3188,7 @@
   {
    "id": "m8-reliquats",
    "label": "Reliquats",
+   "icone": "coins",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2901,6 +3209,7 @@
   {
    "id": "m8-remboursements",
    "label": "Remboursements & annulations",
+   "icone": "undo-2",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2921,6 +3230,7 @@
   {
    "id": "m8-facture-avoir",
    "label": "Factures d’avoir",
+   "icone": "file-minus-2",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2941,6 +3251,7 @@
   {
    "id": "m8-caisse",
    "label": "État de caisse journalier",
+   "icone": "calculator",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2961,6 +3272,7 @@
   {
    "id": "m8-operations",
    "label": "Opérations de caisse",
+   "icone": "scroll-text",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -2981,6 +3293,7 @@
   {
    "id": "m8-recettes",
    "label": "Recettes par période",
+   "icone": "trending-up",
    "module": "M8",
    "moduleLabel": "Facturation & Caisse",
    "domaine": "Financier",
@@ -3001,6 +3314,7 @@
   {
    "id": "hub-m9",
    "label": "Assurances & Créances",
+   "icone": "shield-check",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3019,6 +3333,7 @@
   {
    "id": "m9-dashboard",
    "label": "Tableau de bord assurances",
+   "icone": "gauge",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3037,6 +3352,7 @@
   {
    "id": "m9-compagnies",
    "label": "Compagnies partenaires",
+   "icone": "building-2",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3055,6 +3371,7 @@
   {
    "id": "m9-assures",
    "label": "Assurés & cartes",
+   "icone": "id-card",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3073,6 +3390,7 @@
   {
    "id": "m9-conventions",
    "label": "Conventions & garanties",
+   "icone": "file-signature",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3091,6 +3409,7 @@
   {
    "id": "m9-prises-en-charge",
    "label": "Prises en charge",
+   "icone": "shield-check",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3109,6 +3428,7 @@
   {
    "id": "m9-factures-assureur",
    "label": "Factures mensuelles assureur",
+   "icone": "files",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3127,6 +3447,7 @@
   {
    "id": "m9-facture-mere",
    "label": "Facture mère assurance",
+   "icone": "layers",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3145,6 +3466,7 @@
   {
    "id": "m9-historique",
    "label": "Historique par assureur",
+   "icone": "history",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3163,6 +3485,7 @@
   {
    "id": "m9-creances",
    "label": "Créances",
+   "icone": "hourglass",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3181,6 +3504,7 @@
   {
    "id": "m9-relances",
    "label": "Relances",
+   "icone": "send",
    "module": "M9",
    "moduleLabel": "Assurances & Créances",
    "domaine": "Financier",
@@ -3199,6 +3523,7 @@
   {
    "id": "hub-mecef",
    "label": "MECeF — Facture normalisée",
+   "icone": "file-badge",
    "module": "MECEF",
    "moduleLabel": "MECeF — Facture normalisée",
    "domaine": "Financier",
@@ -3217,6 +3542,7 @@
   {
    "id": "mecef-dashboard",
    "label": "Tableau de bord fiscal",
+   "icone": "gauge",
    "module": "MECEF",
    "moduleLabel": "MECeF — Facture normalisée",
    "domaine": "Financier",
@@ -3235,6 +3561,7 @@
   {
    "id": "mecef-factures",
    "label": "Factures normalisées",
+   "icone": "file-badge",
    "module": "MECEF",
    "moduleLabel": "MECeF — Facture normalisée",
    "domaine": "Financier",
@@ -3253,6 +3580,7 @@
   {
    "id": "mecef-transmission",
    "label": "Transmission & réponses",
+   "icone": "signal",
    "module": "MECEF",
    "moduleLabel": "MECeF — Facture normalisée",
    "domaine": "Financier",
@@ -3271,6 +3599,7 @@
   {
    "id": "mecef-avoirs",
    "label": "Avoirs & annulations",
+   "icone": "file-minus-2",
    "module": "MECEF",
    "moduleLabel": "MECeF — Facture normalisée",
    "domaine": "Financier",
@@ -3289,6 +3618,7 @@
   {
    "id": "mecef-journal",
    "label": "Journal des transactions",
+   "icone": "scroll-text",
    "module": "MECEF",
    "moduleLabel": "MECeF — Facture normalisée",
    "domaine": "Financier",
@@ -3307,6 +3637,7 @@
   {
    "id": "mecef-config",
    "label": "Configuration fiscale",
+   "icone": "settings-2",
    "module": "MECEF",
    "moduleLabel": "MECeF — Facture normalisée",
    "domaine": "Financier",
@@ -3325,6 +3656,7 @@
   {
    "id": "hub-m12",
    "label": "Comptabilité SYSCOHADA",
+   "icone": "book-open-check",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3342,6 +3674,7 @@
   {
    "id": "m12-dashboard",
    "label": "Tableau de bord comptable",
+   "icone": "gauge",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3359,6 +3692,7 @@
   {
    "id": "m12-plan-comptable",
    "label": "Plan comptable OHADA",
+   "icone": "list-tree",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3376,6 +3710,7 @@
   {
    "id": "m12-journaux",
    "label": "Journaux comptables",
+   "icone": "book-open-text",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3393,6 +3728,7 @@
   {
    "id": "m12-ecritures",
    "label": "Écritures comptables",
+   "icone": "pencil-line",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3410,6 +3746,7 @@
   {
    "id": "m12-depenses",
    "label": "Dépenses journalières",
+   "icone": "receipt-text",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3429,6 +3766,7 @@
   {
    "id": "m12-grand-livre",
    "label": "Grand livre",
+   "icone": "book-open-check",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3446,6 +3784,7 @@
   {
    "id": "m12-balance",
    "label": "Balance générale & âgée",
+   "icone": "scale",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3463,6 +3802,7 @@
   {
    "id": "m12-analytique",
    "label": "Comptabilité analytique",
+   "icone": "pie-chart",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3480,6 +3820,7 @@
   {
    "id": "m12-budgets",
    "label": "Budgets",
+   "icone": "target",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3497,6 +3838,7 @@
   {
    "id": "m12-immobilisations",
    "label": "Immobilisations & amortissements",
+   "icone": "building",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3514,6 +3856,7 @@
   {
    "id": "m12-banques",
    "label": "Banques & rapprochements",
+   "icone": "landmark",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3531,6 +3874,7 @@
   {
    "id": "m12-compte-resultat",
    "label": "Compte de résultat",
+   "icone": "chart-no-axes-combined",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3548,6 +3892,7 @@
   {
    "id": "m12-flux-tresorerie",
    "label": "Tableau des flux de trésorerie",
+   "icone": "arrow-left-right",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3565,6 +3910,7 @@
   {
    "id": "m12-seuil-rentabilite",
    "label": "Seuil de rentabilité",
+   "icone": "target",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3582,6 +3928,7 @@
   {
    "id": "m12-etats-financiers",
    "label": "États financiers",
+   "icone": "file-spreadsheet",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3599,6 +3946,7 @@
   {
    "id": "m12-baseline-2025",
    "label": "Baseline 2025",
+   "icone": "history",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3616,6 +3964,7 @@
   {
    "id": "m12-echeances",
    "label": "Échéances fiscales & paiements",
+   "icone": "calendar-clock",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3633,6 +3982,7 @@
   {
    "id": "m12-cloture",
    "label": "Exercices & clôtures",
+   "icone": "lock",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3650,6 +4000,7 @@
   {
    "id": "m12-ouverture",
    "label": "Bilan d’ouverture & à-nouveaux",
+   "icone": "calendar-plus",
    "module": "M12",
    "moduleLabel": "Comptabilité SYSCOHADA",
    "domaine": "Financier",
@@ -3667,6 +4018,7 @@
   {
    "id": "hub-m10",
    "label": "Ressources humaines",
+   "icone": "id-card",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3684,6 +4036,7 @@
   {
    "id": "m10-fiches-poste",
    "label": "Fiches de poste",
+   "icone": "file-badge",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3701,6 +4054,7 @@
   {
    "id": "m10-dashboard",
    "label": "Tableau de bord RH",
+   "icone": "gauge",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3718,6 +4072,7 @@
   {
    "id": "m10-personnel",
    "label": "Personnel",
+   "icone": "users",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3735,6 +4090,7 @@
   {
    "id": "m10-employe-profil",
    "label": "Fiche employé",
+   "icone": "id-card",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3752,6 +4108,7 @@
   {
    "id": "m10-contrats",
    "label": "Contrats",
+   "icone": "file-signature",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3769,6 +4126,7 @@
   {
    "id": "m10-badges",
    "label": "Badges du personnel",
+   "icone": "id-card",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3787,6 +4145,7 @@
   {
    "id": "m10-badges-verification",
    "label": "Vérifier un badge",
+   "icone": "scan-face",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3805,6 +4164,7 @@
   {
    "id": "m10-badges-modeles",
    "label": "Modèles de badge",
+   "icone": "layout-template",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3822,6 +4182,7 @@
   {
    "id": "m10-badges-impression",
    "label": "Planche d’impression des badges",
+   "icone": "printer",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3839,6 +4200,7 @@
   {
    "id": "m10-planning",
    "label": "Planning & gardes",
+   "icone": "calendar-days",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3856,6 +4218,7 @@
   {
    "id": "m10-stats-gardes",
    "label": "Statistiques de garde",
+   "icone": "chart-column",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3873,6 +4236,7 @@
   {
    "id": "m10-stats-permanences",
    "label": "Statistiques des permanences",
+   "icone": "clock-9",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3890,6 +4254,7 @@
   {
    "id": "m10-stats-presence",
    "label": "Taux de présence par service",
+   "icone": "user-check",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3907,6 +4272,7 @@
   {
    "id": "m10-presences",
    "label": "Présences & absences",
+   "icone": "user-check",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3924,6 +4290,7 @@
   {
    "id": "m10-conges",
    "label": "Congés",
+   "icone": "plane",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3941,6 +4308,7 @@
   {
    "id": "m10-missions",
    "label": "Ordres de mission",
+   "icone": "briefcase",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3958,6 +4326,7 @@
   {
    "id": "m10-evaluations",
    "label": "Évaluations (NS 131)",
+   "icone": "clipboard-check",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3975,6 +4344,7 @@
   {
    "id": "m10-sanctions",
    "label": "Sanctions",
+   "icone": "gavel",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -3992,6 +4362,7 @@
   {
    "id": "m10-primes",
    "label": "Primes (NS 132)",
+   "icone": "gift",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -4009,6 +4380,7 @@
   {
    "id": "m10-evenements",
    "label": "Événements du personnel",
+   "icone": "calendar-heart",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -4026,6 +4398,7 @@
   {
    "id": "m10-participations",
    "label": "Frais de participation",
+   "icone": "hand-coins",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -4043,6 +4416,7 @@
   {
    "id": "m10-assurance-personnel",
    "label": "Assurance du personnel",
+   "icone": "shield-check",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -4060,6 +4434,7 @@
   {
    "id": "m10-prestataires",
    "label": "Prestataires externes",
+   "icone": "handshake",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -4077,6 +4452,7 @@
   {
    "id": "m10-securite-entretien",
    "label": "Sécurité & entretien",
+   "icone": "shield",
    "module": "M10",
    "moduleLabel": "Ressources humaines",
    "domaine": "RH",
@@ -4094,6 +4470,7 @@
   {
    "id": "hub-m11",
    "label": "Paie & Primes",
+   "icone": "banknote",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4112,6 +4489,7 @@
   {
    "id": "m11-prets-etudes",
    "label": "Prêts-études et avances",
+   "icone": "graduation-cap",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4130,6 +4508,7 @@
   {
    "id": "m11-dashboard",
    "label": "Tableau de bord paie",
+   "icone": "gauge",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4148,6 +4527,7 @@
   {
    "id": "m11-calcul",
    "label": "Calcul de la paie",
+   "icone": "calculator",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4166,6 +4546,7 @@
   {
    "id": "m11-bulletins",
    "label": "Bulletins de paie",
+   "icone": "file-text",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4184,6 +4565,7 @@
   {
    "id": "m11-cotisations",
    "label": "Cotisations CNSS / ITS / VPS",
+   "icone": "percent",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4202,6 +4584,7 @@
   {
    "id": "m11-heures-sup",
    "label": "Heures supplémentaires",
+   "icone": "clock",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4220,6 +4603,7 @@
   {
    "id": "m11-avances",
    "label": "Avances sur salaire",
+   "icone": "hand-coins",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4238,6 +4622,7 @@
   {
    "id": "m11-ortb",
    "label": "Redevance ORTB",
+   "icone": "radio",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4256,6 +4641,7 @@
   {
    "id": "m11-validation",
    "label": "Validation Direction",
+   "icone": "badge-check",
    "module": "M11",
    "moduleLabel": "Paie & Primes",
    "domaine": "RH",
@@ -4274,6 +4660,7 @@
   {
    "id": "hub-m13",
    "label": "Administration & Ambulance",
+   "icone": "mail",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4293,6 +4680,7 @@
   {
    "id": "m13-courriers",
    "label": "Courriers (départ / arrivée)",
+   "icone": "mail",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4312,6 +4700,7 @@
   {
    "id": "m13-reunions",
    "label": "Réunions",
+   "icone": "users-round",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4331,6 +4720,7 @@
   {
    "id": "m13-evenements",
    "label": "Événements & notifications",
+   "icone": "calendar-clock",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4350,6 +4740,7 @@
   {
    "id": "m13-plan-annuel",
    "label": "Plan annuel de travail",
+   "icone": "calendar-range",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4369,6 +4760,7 @@
   {
    "id": "m13-notes-service",
    "label": "Notes de service",
+   "icone": "megaphone",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4388,6 +4780,7 @@
   {
    "id": "m13-ambulance",
    "label": "Interventions ambulance",
+   "icone": "ambulance",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4407,6 +4800,7 @@
   {
    "id": "m13-repertoire-ambulances",
    "label": "Répertoire des ambulances",
+   "icone": "phone-call",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4428,6 +4822,7 @@
   {
    "id": "m13-maintenance",
    "label": "Parc technique & maintenance",
+   "icone": "wrench",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4446,6 +4841,7 @@
   {
    "id": "adm-validations",
    "label": "Validations en attente",
+   "icone": "list-checks",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4466,6 +4862,7 @@
   {
    "id": "adm-enquetes",
    "label": "Enquêtes & questionnaires",
+   "icone": "clipboard-list",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4484,6 +4881,7 @@
   {
    "id": "adm-satisfaction",
    "label": "Satisfaction des patients",
+   "icone": "thumbs-up",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",
@@ -4502,6 +4900,7 @@
   {
    "id": "hub-ged",
    "label": "Gestion documentaire",
+   "icone": "folder-open",
    "module": "GED",
    "moduleLabel": "Gestion documentaire",
    "domaine": "Administration",
@@ -4521,6 +4920,7 @@
   {
    "id": "ged-bibliotheque",
    "label": "Bibliothèque documentaire",
+   "icone": "folder-open",
    "module": "GED",
    "moduleLabel": "Gestion documentaire",
    "domaine": "Administration",
@@ -4540,6 +4940,7 @@
   {
    "id": "ged-workflow",
    "label": "Workflow de validation",
+   "icone": "git-branch",
    "module": "GED",
    "moduleLabel": "Gestion documentaire",
    "domaine": "Administration",
@@ -4559,6 +4960,7 @@
   {
    "id": "ged-archives",
    "label": "Archivage & conservation",
+   "icone": "archive",
    "module": "GED",
    "moduleLabel": "Gestion documentaire",
    "domaine": "Administration",
@@ -4578,6 +4980,7 @@
   {
    "id": "hub-rap",
    "label": "Rapports & Impression",
+   "icone": "printer",
    "module": "RAP",
    "moduleLabel": "Rapports & Impression",
    "domaine": "Administration",
@@ -4590,6 +4993,7 @@
   {
    "id": "rapports-bibliotheque",
    "label": "Bibliothèque des états",
+   "icone": "printer",
    "module": "RAP",
    "moduleLabel": "Rapports & Impression",
    "domaine": "Administration",
@@ -4602,6 +5006,7 @@
   {
    "id": "rapports-direction",
    "label": "États de la Direction",
+   "icone": "chart-no-axes-combined",
    "module": "RAP",
    "moduleLabel": "Rapports & Impression",
    "domaine": "Administration",
@@ -4619,6 +5024,7 @@
   {
    "id": "rapports-generateur",
    "label": "Générateur de rapports",
+   "icone": "file-cog",
    "module": "RAP",
    "moduleLabel": "Rapports & Impression",
    "domaine": "Administration",
@@ -4638,6 +5044,7 @@
   {
    "id": "rapports-historique",
    "label": "Historique des éditions",
+   "icone": "history",
    "module": "RAP",
    "moduleLabel": "Rapports & Impression",
    "domaine": "Administration",
@@ -4657,6 +5064,7 @@
   {
    "id": "hub-m14",
    "label": "Sécurité & Utilisateurs",
+   "icone": "shield",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4673,6 +5081,7 @@
   {
    "id": "m14-utilisateurs",
    "label": "Utilisateurs",
+   "icone": "user-cog",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4689,6 +5098,7 @@
   {
    "id": "m14-roles",
    "label": "Rôles & permissions (RBAC)",
+   "icone": "key-round",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4705,6 +5115,7 @@
   {
    "id": "m14-soignants",
    "label": "Prescripteurs & exécutants de soins",
+   "icone": "user-round-cog",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4721,6 +5132,7 @@
   {
    "id": "m14-sessions",
    "label": "Sessions actives",
+   "icone": "monitor",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4737,6 +5149,7 @@
   {
    "id": "m14-audit",
    "label": "Journal d’audit",
+   "icone": "scroll-text",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4753,6 +5166,7 @@
   {
    "id": "m14-sauvegardes",
    "label": "Sauvegardes & restauration",
+   "icone": "database-backup",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4769,6 +5183,7 @@
   {
    "id": "m14-taches",
    "label": "Tâches planifiées",
+   "icone": "timer",
    "module": "M14",
    "moduleLabel": "Sécurité & Utilisateurs",
    "domaine": "Système",
@@ -4785,6 +5200,7 @@
   {
    "id": "hub-cfg",
    "label": "Configuration Clinique",
+   "icone": "sliders-horizontal",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4801,6 +5217,7 @@
   {
    "id": "cfg-organisation",
    "label": "Organisation & organigramme",
+   "icone": "network",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4817,6 +5234,7 @@
   {
    "id": "cfg-branding",
    "label": "Identité & papier à en-tête",
+   "icone": "image",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4833,6 +5251,7 @@
   {
    "id": "cfg-tarifs",
    "label": "Référentiel tarifaire",
+   "icone": "tag",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4849,6 +5268,7 @@
   {
    "id": "cfg-catalogue",
    "label": "Catalogue tarifaire (deux prix)",
+   "icone": "list-ordered",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4865,6 +5285,7 @@
   {
    "id": "cfg-imagerie-catalogue",
    "label": "Catalogue de l’imagerie",
+   "icone": "scan-line",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4881,6 +5302,7 @@
   {
    "id": "cfg-entetes",
    "label": "Papier à en-tête officiel",
+   "icone": "file-badge",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4897,6 +5319,7 @@
   {
    "id": "cfg-types-piece",
    "label": "Types de pièces certifiantes",
+   "icone": "stamp",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4913,6 +5336,7 @@
   {
    "id": "cfg-rappels",
    "label": "Rappels & messages",
+   "icone": "bell-ring",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4929,6 +5353,7 @@
   {
    "id": "cfg-certificats",
    "label": "Certificats médicaux",
+   "icone": "file-badge",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4945,6 +5370,7 @@
   {
    "id": "cfg-natures-facture",
    "label": "Natures de facture",
+   "icone": "receipt-text",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4961,6 +5387,7 @@
   {
    "id": "cfg-centres-couts",
    "label": "Centres de coûts",
+   "icone": "target",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4977,6 +5404,7 @@
   {
    "id": "cfg-regles",
    "label": "Règles métier versionnées",
+   "icone": "shield-check",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -4993,6 +5421,7 @@
   {
    "id": "cfg-fiscalite",
    "label": "Paramètres fiscaux (IFU / RCCM)",
+   "icone": "landmark",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -5009,6 +5438,7 @@
   {
    "id": "cfg-comptabilite",
    "label": "Paramètres comptables & obligations",
+   "icone": "book-open-check",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -5025,6 +5455,7 @@
   {
    "id": "cfg-notifications",
    "label": "Notifications",
+   "icone": "bell",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -5041,6 +5472,7 @@
   {
    "id": "cfg-compte",
    "label": "Mon compte",
+   "icone": "circle-user",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -5057,6 +5489,7 @@
   {
    "id": "cfg-modules",
    "label": "Activité des modules",
+   "icone": "toggle-right",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -5073,6 +5506,7 @@
   {
    "id": "cfg-systeme",
    "label": "Paramètres système",
+   "icone": "settings",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",
@@ -5087,8 +5521,588 @@
    ]
   },
   {
+   "id": "cfg-poste",
+   "label": "Ce poste (mode fileul / mère)",
+   "icone": "server-cog",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "hub-mere",
+   "label": "Exploitation de la synchronisation",
+   "icone": "refresh-cw",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-supervision",
+   "label": "Supervision",
+   "icone": "heart-pulse",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-appareils",
+   "label": "Appareils et appairage",
+   "icone": "monitor-smartphone",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-conflits",
+   "label": "Conflits et doublons",
+   "icone": "git-compare",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-a-traiter",
+   "label": "« À traiter » consolidé",
+   "icone": "octagon-alert",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-journal-operations",
+   "label": "Journal des opérations",
+   "icone": "list-ordered",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-plages-baux",
+   "label": "Plages de numéros et baux de stock",
+   "icone": "hash",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-lots-tournee",
+   "label": "Lots de tournée (mobiles)",
+   "icone": "package",
+   "module": "MERE",
+   "moduleLabel": "Exploitation de la synchronisation",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-journal-technique",
+   "label": "Journal technique",
+   "icone": "scroll-text",
+   "module": "MERE",
+   "moduleLabel": "Sécurité et continuité",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-sauvegardes",
+   "label": "Sauvegardes et restauration",
+   "icone": "database-backup",
+   "module": "MERE",
+   "moduleLabel": "Sécurité et continuité",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-cle-clinique",
+   "label": "Clé de clinique",
+   "icone": "key-round",
+   "module": "MERE",
+   "moduleLabel": "Sécurité et continuité",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-integrite",
+   "label": "Intégrité et altérations",
+   "icone": "shield-alert",
+   "module": "MERE",
+   "moduleLabel": "Sécurité et continuité",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-reinit",
+   "label": "Réinitialisation de production",
+   "icone": "trash-2",
+   "module": "MERE",
+   "moduleLabel": "Sécurité et continuité",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-relais",
+   "label": "Relais en ligne",
+   "icone": "cloud",
+   "module": "MERE",
+   "moduleLabel": "Liaison avec le relais",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-indicateurs",
+   "label": "Indicateurs publiés",
+   "icone": "eye-off",
+   "module": "MERE",
+   "moduleLabel": "Liaison avec le relais",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-service",
+   "label": "Service et démarrage",
+   "icone": "power",
+   "module": "MERE",
+   "moduleLabel": "Plateforme locale",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-base",
+   "label": "Base de données locale",
+   "icone": "database",
+   "module": "MERE",
+   "moduleLabel": "Plateforme locale",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-reseau",
+   "label": "Réseau local",
+   "icone": "network",
+   "module": "MERE",
+   "moduleLabel": "Plateforme locale",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-planificateur",
+   "label": "Planificateur",
+   "icone": "timer",
+   "module": "MERE",
+   "moduleLabel": "Plateforme locale",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-notifications",
+   "label": "Notifications serveur",
+   "icone": "bell-ring",
+   "module": "MERE",
+   "moduleLabel": "Plateforme locale",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-mise-en-service",
+   "label": "Assistant de première mise en service",
+   "icone": "wand-sparkles",
+   "module": "MERE",
+   "moduleLabel": "Cycle de vie",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-mises-a-jour",
+   "label": "Mises à jour et compatibilité",
+   "icone": "package-check",
+   "module": "MERE",
+   "moduleLabel": "Cycle de vie",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "mere-import",
+   "label": "Import de migration",
+   "icone": "file-up",
+   "module": "MERE",
+   "moduleLabel": "Cycle de vie",
+   "domaine": "Poste mère",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "hub-rls",
+   "label": "Relais en ligne (apps/web)",
+   "icone": "cloud",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-tableau",
+   "label": "Tableau de bord du relais",
+   "icone": "layout-dashboard",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-appareils",
+   "label": "Appareils",
+   "icone": "monitor-smartphone",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-boites",
+   "label": "Boîtes aux lettres",
+   "icone": "inbox",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-codes",
+   "label": "Codes d’appairage",
+   "icone": "ticket",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-indicateurs",
+   "label": "Indicateurs reçus",
+   "icone": "activity",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-alertes",
+   "label": "Alertes et notifications",
+   "icone": "bell-ring",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-journal",
+   "label": "Journal d’audit du relais",
+   "icone": "scroll-text",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-superadmin",
+   "label": "Comptes superadmin",
+   "icone": "user-cog",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-parametres",
+   "label": "Paramètres du relais",
+   "icone": "sliders-horizontal",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-hebergement",
+   "label": "Hébergement (cPanel)",
+   "icone": "server",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-sauvegarde",
+   "label": "Sauvegarde du relais",
+   "icone": "database-backup",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
+   "id": "rls-opacite",
+   "label": "Preuve d’opacité",
+   "icone": "eye-off",
+   "module": "RLS",
+   "moduleLabel": "Relais en ligne (apps/web)",
+   "domaine": "Relais en ligne",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
+   ]
+  },
+  {
    "id": "hub-pil",
    "label": "Pilotage & analyse",
+   "icone": "chart-no-axes-combined",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5101,6 +6115,7 @@
   {
    "id": "dash-direction",
    "label": "Direction",
+   "icone": "building-2",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5118,6 +6133,7 @@
   {
    "id": "dash-da",
    "label": "Statistiques de la Direction",
+   "icone": "trending-up",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5137,6 +6153,7 @@
   {
    "id": "dash-croise",
    "label": "Tableau de bord dynamique croisé",
+   "icone": "chart-scatter",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5157,6 +6174,7 @@
   {
    "id": "dash-admin",
    "label": "Administrateur",
+   "icone": "settings",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5171,6 +6189,7 @@
   {
    "id": "m4-stats-maternite",
    "label": "Statistiques maternité & naissances",
+   "icone": "baby",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5191,6 +6210,7 @@
   {
    "id": "m2-stats-echographie",
    "label": "Statistiques de l’imagerie médicale",
+   "icone": "scan-line",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5210,6 +6230,7 @@
   {
    "id": "m5-stats-examens",
    "label": "Statistiques des examens",
+   "icone": "flask-conical",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5229,6 +6250,7 @@
   {
    "id": "m2-stats-consultations",
    "label": "Statistiques des consultations",
+   "icone": "stethoscope",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5247,6 +6269,7 @@
   {
    "id": "m3-stats-bloc",
    "label": "Statistiques du bloc & anesthésie",
+   "icone": "scissors",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5267,6 +6290,7 @@
   {
    "id": "m3-stats-hospitalisations",
    "label": "Statistiques des hospitalisations",
+   "icone": "bed-double",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5288,6 +6312,7 @@
   {
    "id": "m10-cout-agent",
    "label": "Coût global de l’agent",
+   "icone": "user-cog",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5305,6 +6330,7 @@
   {
    "id": "m12-rentabilite-groupes",
    "label": "Recettes & charges par groupe",
+   "icone": "scale",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5323,6 +6349,7 @@
   {
    "id": "m12-tableau-decisionnel",
    "label": "Tableau de bord décisionnel",
+   "icone": "gauge",
    "module": "PIL",
    "moduleLabel": "Pilotage & analyse",
    "domaine": "Pilotage",
@@ -5340,6 +6367,7 @@
   {
    "id": "m12-bfr",
    "label": "Besoin en fonds de roulement",
+   "icone": "scale",
    "module": "M12",
    "moduleLabel": "Gestion & trésorerie",
    "domaine": "Pilotage",
@@ -5357,6 +6385,7 @@
   {
    "id": "m12-cout-activite",
    "label": "Coût à l’activité",
+   "icone": "calculator",
    "module": "M12",
    "moduleLabel": "Gestion & trésorerie",
    "domaine": "Pilotage",
@@ -5374,6 +6403,7 @@
   {
    "id": "hub-dash",
    "label": "Tableaux de bord par poste",
+   "icone": "gauge",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5386,6 +6416,7 @@
   {
    "id": "dash-medecin",
    "label": "Médecin",
+   "icone": "stethoscope",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5402,6 +6433,7 @@
   {
    "id": "dash-infirmier",
    "label": "Infirmier / Sage-femme",
+   "icone": "heart-pulse",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5418,6 +6450,7 @@
   {
    "id": "dash-pharmacien",
    "label": "Pharmacie",
+   "icone": "pill",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5436,6 +6469,7 @@
   {
    "id": "dash-laborantin",
    "label": "Biologiste médical",
+   "icone": "flask-conical",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5451,6 +6485,7 @@
   {
    "id": "dash-stock",
    "label": "Gestionnaire de stock",
+   "icone": "package",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5467,6 +6502,7 @@
   {
    "id": "dash-caissier",
    "label": "Caisse",
+   "icone": "banknote",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5482,6 +6518,7 @@
   {
    "id": "dash-comptable",
    "label": "Comptabilité",
+   "icone": "calculator",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5498,6 +6535,7 @@
   {
    "id": "dash-rh",
    "label": "Ressources humaines",
+   "icone": "users-round",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5514,6 +6552,7 @@
   {
    "id": "dash-receptionniste",
    "label": "Accueil",
+   "icone": "door-open",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5529,6 +6568,7 @@
   {
    "id": "dash-admin-agent",
    "label": "Agent administratif",
+   "icone": "briefcase",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5544,6 +6584,7 @@
   {
    "id": "dash-ambulancier",
    "label": "Ambulance",
+   "icone": "ambulance",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5559,6 +6600,7 @@
   {
    "id": "dash-aide-soignant",
    "label": "Aide-soignante",
+   "icone": "hand-heart",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5575,6 +6617,7 @@
   {
    "id": "dash-echographiste",
    "label": "Échographie",
+   "icone": "scan-line",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5591,6 +6634,7 @@
   {
    "id": "dash-surveillant",
    "label": "Surveillant",
+   "icone": "clipboard-check",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5608,6 +6652,7 @@
   {
    "id": "dash-assistant-comptable",
    "label": "Assistant de Direction",
+   "icone": "contact-round",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5624,6 +6669,7 @@
   {
    "id": "dash-chirurgien",
    "label": "Chirurgien",
+   "icone": "slice",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5641,6 +6687,7 @@
   {
    "id": "dash-anesthesiste",
    "label": "Anesthésiste",
+   "icone": "syringe",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5658,6 +6705,7 @@
   {
    "id": "dash-aide-comptable",
    "label": "Assistant Comptable",
+   "icone": "calculator",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5675,6 +6723,7 @@
   {
    "id": "dash-maternite",
    "label": "Maternité",
+   "icone": "baby",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5693,6 +6742,7 @@
   {
    "id": "dash-patient",
    "label": "Espace patient",
+   "icone": "user-round",
    "module": "DASH",
    "moduleLabel": "Tableaux de bord par poste",
    "domaine": "Pilotage",
@@ -5709,6 +6759,7 @@
   {
    "id": "index",
    "label": "Connexion",
+   "icone": "log-in",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5721,6 +6772,7 @@
   {
    "id": "auth-forgot",
    "label": "Mot de passe oublié",
+   "icone": "key-round",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5733,6 +6785,7 @@
   {
    "id": "auth-reset",
    "label": "Réinitialisation du mot de passe",
+   "icone": "lock",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5745,6 +6798,7 @@
   {
    "id": "auth-2fa",
    "label": "Vérification en 2 étapes",
+   "icone": "smartphone",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5757,6 +6811,7 @@
   {
    "id": "auth-lock",
    "label": "Écran verrouillé",
+   "icone": "lock",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5769,6 +6824,7 @@
   {
    "id": "error-404",
    "label": "Page introuvable",
+   "icone": "file-search",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5781,6 +6837,7 @@
   {
    "id": "error-403",
    "label": "Accès refusé",
+   "icone": "shield-alert",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5793,6 +6850,7 @@
   {
    "id": "plan-du-site",
    "label": "Plan du site",
+   "icone": "map",
    "module": "AUTH",
    "moduleLabel": "Accès",
    "domaine": "Système",
@@ -5805,6 +6863,7 @@
   {
    "id": "aide-apropos",
    "label": "Aide & À propos",
+   "icone": "life-buoy",
    "module": "SUP",
    "moduleLabel": "Aide & assistance",
    "domaine": "Système",
@@ -5817,6 +6876,7 @@
   {
    "id": "contact-editeur",
    "label": "Contactez l’éditeur",
+   "icone": "mail",
    "module": "SUP",
    "moduleLabel": "Aide & assistance",
    "domaine": "Système",
@@ -5829,6 +6889,7 @@
   {
    "id": "m1-dossier-medical",
    "label": "Dossier médical informatisé",
+   "icone": "file-text",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -5841,6 +6902,7 @@
   {
    "id": "m1-dossier-etendu",
    "label": "Dossier de consultation étendu",
+   "icone": "clipboard-plus",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Soins",
@@ -5853,6 +6915,7 @@
   {
    "id": "m2-dossier-consultation-nouveau",
    "label": "Dossier de consultation — saisie",
+   "icone": "clipboard-plus",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -5865,6 +6928,7 @@
   {
    "id": "m2-ordonnance-nouvelle",
    "label": "Nouvelle ordonnance — saisie",
+   "icone": "pill",
    "module": "M2",
    "moduleLabel": "Consultations & prescriptions",
    "domaine": "Soins",
@@ -5877,6 +6941,7 @@
   {
    "id": "m2-imagerie-cr",
    "label": "Compte rendu d’imagerie — saisie",
+   "icone": "file-scan",
    "module": "M2",
    "moduleLabel": "Imagerie médicale",
    "domaine": "Soins",
@@ -5889,6 +6954,7 @@
   {
    "id": "m6-inventaire-feuille",
    "label": "Feuille d’inventaire — comptage",
+   "icone": "clipboard-list",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
    "domaine": "Logistique",
@@ -5901,6 +6967,7 @@
   {
    "id": "m1-patient-nouveau",
    "label": "Ouvrir un dossier patient",
+   "icone": "user-plus",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Accueil",
@@ -5913,6 +6980,7 @@
   {
    "id": "m4-dossier-obstetrical-nouveau",
    "label": "Ouvrir un dossier obstétrical",
+   "icone": "folder-plus",
    "module": "M4",
    "moduleLabel": "Maternité, Naissances & Décès",
    "domaine": "Soins",
@@ -5925,6 +6993,7 @@
   {
    "id": "m2-visites",
    "label": "Registre des visites de suivi clinique",
+   "icone": "user-check",
    "module": "M2",
    "moduleLabel": "RDV, Visites & Consultations",
    "domaine": "Accueil",
@@ -5937,6 +7006,7 @@
   {
    "id": "m1-certificats-externes",
    "label": "Certificats — patients externes",
+   "icone": "file-badge",
    "module": "M1",
    "moduleLabel": "Patients & Dossier médical",
    "domaine": "Accueil",
@@ -5949,6 +7019,7 @@
   {
    "id": "enquete-publique",
    "label": "Fiche d’enquête (lien partagé)",
+   "icone": "clipboard-list",
    "module": "M13",
    "moduleLabel": "Administration & Ambulance",
    "domaine": "Administration",

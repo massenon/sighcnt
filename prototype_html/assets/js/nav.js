@@ -663,6 +663,7 @@
             { id: 'cfg-compte', label: 'Mon compte', icon: 'circle-user' },
             { id: 'cfg-modules', label: 'Activité des modules', icon: 'toggle-right' },
             { id: 'cfg-systeme', label: 'Paramètres système', icon: 'settings' },
+            { id: 'cfg-poste', label: 'Ce poste (mode fileul / mère)', icon: 'server-cog', roles: ['admin', 'da'] },
           ],
         },
       ],

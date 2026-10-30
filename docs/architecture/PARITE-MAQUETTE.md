@@ -5,10 +5,10 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **286** |
-| Hubs de module (un par module, engendrés) | 20 |
-| Écrans nommés par au moins un scénario de la maquette | 201 (70 %) |
-| Écrans **sans** scénario (recette à écrire) | 85 |
+| Écrans du manifeste (hors hubs de module) | **321** |
+| Hubs de module (un par module, engendrés) | 22 |
+| Écrans nommés par au moins un scénario de la maquette | 201 (63 %) |
+| Écrans **sans** scénario (recette à écrire) | 120 |
 | Écrans portés | 0 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 74 |
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 21 | 0 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 0 | 0 |
 | 5 · assurances et comptabilité | 31 | 19 | 0 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 120 | 82 | 0 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 155 | 82 | 0 | 0 |
 
 ## Par écran
 
@@ -246,6 +246,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `cfg-natures-facture` | Natures de facture | CFG | 3 | 16 | non commencé |
 | `cfg-notifications` | Notifications | CFG | 3 | — | non commencé |
 | `cfg-organisation` | Organisation & organigramme | CFG | 3 | 16 | non commencé |
+| `cfg-poste` | Ce poste (mode fileul / mère) | CFG | 2 | — | non commencé |
 | `cfg-rappels` | Rappels & messages | CFG | 3 | — | non commencé |
 | `cfg-regles` | Règles métier versionnées | CFG | 3 | 24 | non commencé |
 | `cfg-systeme` | Paramètres système | CFG | 3 | 16, 23, 67 | non commencé |
@@ -326,6 +327,28 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m14-soignants` | Prescripteurs & exécutants de soins | M14 | 3 | 33 | non commencé |
 | `m14-taches` | Tâches planifiées | M14 | 3 | 71, 72 | non commencé |
 | `m14-utilisateurs` | Utilisateurs | M14 | 3 | — | non commencé |
+| `mere-a-traiter` | « À traiter » consolidé | MERE | 2 | — | non commencé |
+| `mere-appareils` | Appareils et appairage | MERE | 2 | — | non commencé |
+| `mere-base` | Base de données locale | MERE | 2 | — | non commencé |
+| `mere-cle-clinique` | Clé de clinique | MERE | 2 | — | non commencé |
+| `mere-conflits` | Conflits et doublons | MERE | 2 | — | non commencé |
+| `mere-import` | Import de migration | MERE | 2 | — | non commencé |
+| `mere-indicateurs` | Indicateurs publiés | MERE | 2 | — | non commencé |
+| `mere-integrite` | Intégrité et altérations | MERE | 2 | — | non commencé |
+| `mere-journal-operations` | Journal des opérations | MERE | 2 | — | non commencé |
+| `mere-journal-technique` | Journal technique | MERE | 2 | — | non commencé |
+| `mere-lots-tournee` | Lots de tournée (mobiles) | MERE | 2 | — | non commencé |
+| `mere-mise-en-service` | Assistant de première mise en service | MERE | 2 | — | non commencé |
+| `mere-mises-a-jour` | Mises à jour et compatibilité | MERE | 2 | — | non commencé |
+| `mere-notifications` | Notifications serveur | MERE | 2 | — | non commencé |
+| `mere-plages-baux` | Plages de numéros et baux de stock | MERE | 2 | — | non commencé |
+| `mere-planificateur` | Planificateur | MERE | 2 | — | non commencé |
+| `mere-reinit` | Réinitialisation de production | MERE | 2 | — | non commencé |
+| `mere-relais` | Relais en ligne | MERE | 2 | — | non commencé |
+| `mere-reseau` | Réseau local | MERE | 2 | — | non commencé |
+| `mere-sauvegardes` | Sauvegardes et restauration | MERE | 2 | — | non commencé |
+| `mere-service` | Service et démarrage | MERE | 2 | — | non commencé |
+| `mere-supervision` | Supervision | MERE | 2 | — | non commencé |
 | `dash-admin` | Administrateur | PIL | 1 | 31, 36, 42 | non commencé |
 | `dash-croise` | Tableau de bord dynamique croisé | PIL | 5 | 36, 39, 57 | non commencé |
 | `dash-da` | Statistiques de la Direction | PIL | 5 | 36, 61 | non commencé |
@@ -343,6 +366,18 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `rapports-direction` | États de la Direction | RAP | 8 | 24 | non commencé |
 | `rapports-generateur` | Générateur de rapports | RAP | 9 | — | non commencé |
 | `rapports-historique` | Historique des éditions | RAP | 9 | — | non commencé |
+| `rls-alertes` | Alertes et notifications | RLS | 1 | — | non commencé |
+| `rls-appareils` | Appareils | RLS | 1 | — | non commencé |
+| `rls-boites` | Boîtes aux lettres | RLS | 1 | — | non commencé |
+| `rls-codes` | Codes d’appairage | RLS | 1 | — | non commencé |
+| `rls-hebergement` | Hébergement (cPanel) | RLS | 1 | — | non commencé |
+| `rls-indicateurs` | Indicateurs reçus | RLS | 1 | — | non commencé |
+| `rls-journal` | Journal d’audit du relais | RLS | 1 | — | non commencé |
+| `rls-opacite` | Preuve d’opacité | RLS | 1 | — | non commencé |
+| `rls-parametres` | Paramètres du relais | RLS | 1 | — | non commencé |
+| `rls-sauvegarde` | Sauvegarde du relais | RLS | 1 | — | non commencé |
+| `rls-superadmin` | Comptes superadmin | RLS | 1 | — | non commencé |
+| `rls-tableau` | Tableau de bord du relais | RLS | 1 | — | non commencé |
 | `aide-apropos` | Aide & À propos | SUP | 20 | 14 | non commencé |
 | `contact-editeur` | Contactez l’éditeur | SUP | 20 | 14 | non commencé |
 

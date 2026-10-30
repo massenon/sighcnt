@@ -80,15 +80,16 @@ async function extraireRbac() {
       N.invaliderRbac(); N.invaliderModules(); N.appliquerRenommages();
       const roles = Object.keys(N.ROLES).map((id) => Object.assign({}, propre(N.ROLES[id]), { archive: !!N.roleArchive(id) }));
       const modules = []; const vus = new Set();
+      const domaines = N.NAV.map((d) => ({ nom: d.domain, icone: d.icon || null }));
       N.NAV.forEach((d) => d.modules.forEach((mod) => {
-        modules.push({ domaine: d.domain, code: mod.code, label: mod.label, alias: !!mod.alias, secondaire: !!mod.secondaire,
+        modules.push({ domaine: d.domain, code: mod.code, label: mod.label, icone: mod.icon || null, alias: !!mod.alias, secondaire: !!mod.secondaire,
           roles: mod.roles === undefined ? 'ALL' : propre(mod.roles), ecrans: mod.items.map((i) => i.id) });
         vus.add(mod.code);
       }));
       const codes = Array.from(new Set(Object.values(N.INDEX).map((e) => e.module)));
       const ecrans = N.ids().map((id) => {
         const e = N.get(id);
-        return { id, label: e.label, module: e.module, moduleLabel: e.moduleLabel, domaine: e.domain, hub: !!e.hub, standalone: !!e.standalone,
+        return { id, label: e.label, icone: e.icon || null, module: e.module, moduleLabel: e.moduleLabel, domaine: e.domain, hub: !!e.hub, standalone: !!e.standalone,
           universel: !!e.universel, servant: e.servant || null, roles: propre(e.roles) };
       });
       /* Droits EFFECTIFS : ce que chaque rôle voit réellement, écran par écran (même appel que le ruban). */
@@ -106,7 +107,7 @@ async function extraireRbac() {
           parRole[ro.id][e.id] = [d.voir ? 1 : 0, d.editer ? 1 : 0, d.annuler ? 1 : 0];
         });
       });
-      return { roles, modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null };
+      return { roles, domaines, modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null };
     });
     const total = Object.values(r.parRole).reduce((a, o) => a + Object.keys(o).length, 0);
     console.log(`  ${r.roles.length} rôles · ${r.modules.length} rangées · ${r.ecrans.length} entrées d'index · ${total} droits écran×rôle`);
@@ -116,7 +117,7 @@ async function extraireRbac() {
       roles: r.roles, matriceModules: r.matrice, parRole: r.parRole });
     ecrire('packages/referentiels/data/manifeste.json', {
       _doc: 'ENGENDRÉ par prototype_html/build/extraire.js — manifeste de navigation de la maquette (domaines, rangées, écrans).',
-      modules: r.modules, ecrans: r.ecrans });
+      domaines: r.domaines, modules: r.modules, ecrans: r.ecrans });
     return r;
   } finally { await m.fermer(); }
 }
