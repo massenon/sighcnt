@@ -37,9 +37,26 @@ console.log(`  icônes : ${ok.length} reconnues` + (manquants.length ? `, ${manq
 const jet = JSON.parse(fs.readFileSync(path.join(REPO, 'docs/design/design-tokens.json'), 'utf8')).couleurs;
 const argb = (h) => '0xFF' + h.replace('#', '').toUpperCase();
 let j = '// ENGENDRÉ par prototype_html/build/gen-poste-assets.js depuis docs/design/design-tokens.json — NE PAS ÉDITER.\n// Constantes de couleur de la coque. Les « slate » sont la palette neutre par défaut de Tailwind, utilisée par la maquette.\nimport \'package:flutter/painting.dart\';\n\nclass JetonsShell {\n  JetonsShell._();\n';
-for (const fam of ['navy', 'success', 'warning', 'danger']) for (const [n, h] of Object.entries(jet[fam])) j += `  static const Color ${fam}${n} = Color(${argb(h)});\n`;
+const info = { 50: '#eff8ff', 100: '#dbeefe', 200: '#bfe2fe', 300: '#92d0fd', 400: '#61b6fa', 500: '#3b98f6', 600: '#257aeb', 700: '#1d63d8', 800: '#1e51af', 900: '#1e468a' };
+jet.info = info; /* palette « info » de tailwind.config.js, absente des jetons engendrés */
+for (const fam of ['navy', 'success', 'warning', 'danger', 'info']) for (const [n, h] of Object.entries(jet[fam])) j += `  static const Color ${fam}${n} = Color(${argb(h)});\n`;
 const slate = { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' };
 for (const [n, h] of Object.entries(slate)) j += `  static const Color slate${n} = Color(${argb(h)});\n`;
+j += `  /// Ombres de tailwind.config.js (boxShadow card / raise / pop), couleur rgb(11 30 61).
+  static const Color _ombre = Color(0xFF0B1E3D);
+  static const List<BoxShadow> ombreCarte = [
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.05), offset: Offset(0, 1), blurRadius: 2),
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.06), offset: Offset(0, 1), blurRadius: 3),
+  ];
+  static const List<BoxShadow> ombreRelief = [
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.10), offset: Offset(0, 4), blurRadius: 12, spreadRadius: -2),
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.06), offset: Offset(0, 2), blurRadius: 6, spreadRadius: -2),
+  ];
+  static const List<BoxShadow> ombrePop = [
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.22), offset: Offset(0, 12), blurRadius: 32, spreadRadius: -8),
+  ];
+  static Color get ombre => _ombre;
+`;
 j += '}\n';
 fs.writeFileSync(path.join(POSTE, 'lib', 'core', 'jetons_shell.dart'), j);
 console.log('  jetons de la coque : lib/core/jetons_shell.dart');

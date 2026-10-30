@@ -45,6 +45,16 @@ class JetonsShell {
   static const Color danger700 = Color(0xFFB91C1C);
   static const Color danger800 = Color(0xFF991B1B);
   static const Color danger900 = Color(0xFF7F1D1D);
+  static const Color info50 = Color(0xFFEFF8FF);
+  static const Color info100 = Color(0xFFDBEEFE);
+  static const Color info200 = Color(0xFFBFE2FE);
+  static const Color info300 = Color(0xFF92D0FD);
+  static const Color info400 = Color(0xFF61B6FA);
+  static const Color info500 = Color(0xFF3B98F6);
+  static const Color info600 = Color(0xFF257AEB);
+  static const Color info700 = Color(0xFF1D63D8);
+  static const Color info800 = Color(0xFF1E51AF);
+  static const Color info900 = Color(0xFF1E468A);
   static const Color slate50 = Color(0xFFF8FAFC);
   static const Color slate100 = Color(0xFFF1F5F9);
   static const Color slate200 = Color(0xFFE2E8F0);
@@ -55,4 +65,37 @@ class JetonsShell {
   static const Color slate700 = Color(0xFF334155);
   static const Color slate800 = Color(0xFF1E293B);
   static const Color slate900 = Color(0xFF0F172A);
+
+  /// Ombres de tailwind.config.js (boxShadow card / raise / pop), couleur rgb(11 30 61).
+  static const Color _ombre = Color(0xFF0B1E3D);
+  static const List<BoxShadow> ombreCarte = [
+    BoxShadow(
+        color: Color.fromRGBO(11, 30, 61, 0.05),
+        offset: Offset(0, 1),
+        blurRadius: 2),
+    BoxShadow(
+        color: Color.fromRGBO(11, 30, 61, 0.06),
+        offset: Offset(0, 1),
+        blurRadius: 3),
+  ];
+  static const List<BoxShadow> ombreRelief = [
+    BoxShadow(
+        color: Color.fromRGBO(11, 30, 61, 0.10),
+        offset: Offset(0, 4),
+        blurRadius: 12,
+        spreadRadius: -2),
+    BoxShadow(
+        color: Color.fromRGBO(11, 30, 61, 0.06),
+        offset: Offset(0, 2),
+        blurRadius: 6,
+        spreadRadius: -2),
+  ];
+  static const List<BoxShadow> ombrePop = [
+    BoxShadow(
+        color: Color.fromRGBO(11, 30, 61, 0.22),
+        offset: Offset(0, 12),
+        blurRadius: 32,
+        spreadRadius: -8),
+  ];
+  static Color get ombre => _ombre;
 }

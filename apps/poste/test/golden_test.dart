@@ -12,15 +12,22 @@ void main() {
   setUpAll(chargerPolices);
 
   // Les captures dépendent des polices et du moteur de rendu de la machine : comparées seulement sur demande (SIGH_GOLDEN=1).
-  testWidgets('coque — administrateur, domaine Financier, 1440 × 900', skip: !const bool.fromEnvironment('SIGH_GOLDEN') && !_demande, (t) async {
+  testWidgets('coque — administrateur, domaine Financier, 1440 × 900',
+      skip: !const bool.fromEnvironment('SIGH_GOLDEN') && !_demande, (t) async {
     t.view.physicalSize = const Size(1440, 900);
     t.view.devicePixelRatio = 1;
     addTearDown(t.view.resetPhysicalSize);
-    await t.pumpWidget(SighPoste(donnees: DonneesNavigation.depuisDossier(), config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin', nomPoste: 'BASSONGUI Chabi Séko')));
+    await t.pumpWidget(SighPoste(
+        donnees: DonneesNavigation.depuisDossier(),
+        config: const ConfigPoste(
+            mode: ModePoste.fileul,
+            role: 'admin',
+            nomPoste: 'BASSONGUI Chabi Séko')));
     await t.pump();
     await t.tap(find.byKey(const Key('domaine-Financier')));
     await t.pump();
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('golden/coque_financier.png'));
+    await expectLater(find.byType(MaterialApp),
+        matchesGoldenFile('golden/coque_financier.png'));
   });
 }
 

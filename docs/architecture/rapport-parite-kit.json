@@ -1,0 +1,361 @@
+{
+ "tolerance": {
+  "hauteur_px": 1,
+  "largeur_px": 1.5
+ },
+ "composants": {
+  "boutons": {
+   "primaire": {
+    "ref_h": 36,
+    "dart_h": 36.0,
+    "ref_l": 101.53,
+    "dart_l": 104.28,
+    "ecart_h": 0.0,
+    "ecart_l": 2.75
+   },
+   "secondaire": {
+    "ref_h": 38,
+    "dart_h": 38.0,
+    "ref_l": 82.36,
+    "dart_l": 84.11,
+    "ecart_h": 0.0,
+    "ecart_l": 1.75
+   },
+   "petit": {
+    "ref_h": 28,
+    "dart_h": 28.0,
+    "ref_l": 53.48,
+    "dart_l": 55.23,
+    "ecart_h": 0.0,
+    "ecart_l": 1.75
+   },
+   "grand": {
+    "ref_h": 44,
+    "dart_h": 44.0,
+    "ref_l": 93.13,
+    "dart_l": 94.86,
+    "ecart_h": 0.0,
+    "ecart_l": 1.73
+   },
+   "icone": {
+    "ref_h": 36,
+    "dart_h": 36.0,
+    "ref_l": 36,
+    "dart_l": 36.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   }
+  },
+  "badges": {
+   "neutre": {
+    "ref_h": 20,
+    "dart_h": 20.0,
+    "ref_l": 60.16,
+    "dart_l": 51.6,
+    "ecart_h": 0.0,
+    "ecart_l": -8.56
+   },
+   "navy": {
+    "ref_h": 20,
+    "dart_h": 20.0,
+    "ref_l": 61.17,
+    "dart_l": 51.6,
+    "ecart_h": 0.0,
+    "ecart_l": -9.57
+   },
+   "succes": {
+    "ref_h": 20,
+    "dart_h": 20.0,
+    "ref_l": 60.16,
+    "dart_l": 51.6,
+    "ecart_h": 0.0,
+    "ecart_l": -8.56
+   },
+   "attention": {
+    "ref_h": 20,
+    "dart_h": 20.0,
+    "ref_l": 60.16,
+    "dart_l": 51.6,
+    "ecart_h": 0.0,
+    "ecart_l": -8.56
+   },
+   "danger": {
+    "ref_h": 20,
+    "dart_h": 20.0,
+    "ref_l": 60.86,
+    "dart_l": 51.6,
+    "ecart_h": 0.0,
+    "ecart_l": -9.26
+   },
+   "info": {
+    "ref_h": 20,
+    "dart_h": 20.0,
+    "ref_l": 61.17,
+    "dart_l": 51.6,
+    "ecart_h": 0.0,
+    "ecart_l": -9.57
+   }
+  },
+  "carte": {
+   "carte": {
+    "ref_h": 111,
+    "dart_h": 111.0,
+    "ref_l": 928,
+    "dart_l": 928.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "entete": {
+    "ref_h": 49,
+    "dart_h": 49.0,
+    "ref_l": 926,
+    "dart_l": 926.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "corps": {
+    "ref_h": 60,
+    "dart_h": 60.0,
+    "ref_l": 926,
+    "dart_l": 926.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   }
+  },
+  "kpi": {
+   "kpi": {
+    "ref_h": 86,
+    "dart_h": 86.0,
+    "ref_l": 458,
+    "dart_l": 458.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "libelle": {
+    "ref_h": 16,
+    "dart_h": 16.0,
+    "ref_l": 89.45,
+    "dart_l": 93.44,
+    "ecart_h": 0.0,
+    "ecart_l": 3.99
+   },
+   "valeur": {
+    "ref_h": 32,
+    "dart_h": 32.0,
+    "ref_l": 89.45,
+    "dart_l": 44.78,
+    "ecart_h": 0.0,
+    "ecart_l": -44.67
+   },
+   "pastille": {
+    "ref_h": 36,
+    "dart_h": 36.0,
+    "ref_l": 36,
+    "dart_l": 36.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   }
+  },
+  "onglets": {
+   "barre": {
+    "ref_h": 42,
+    "dart_h": 43.0,
+    "ref_l": 928,
+    "dart_l": 928.0,
+    "ecart_h": 1.0,
+    "ecart_l": 0.0
+   },
+   "actif": {
+    "ref_h": 42,
+    "dart_h": 42.0,
+    "ref_l": 80.17,
+    "dart_l": 106.53,
+    "ecart_h": 0.0,
+    "ecart_l": 26.36
+   },
+   "inactif": {
+    "ref_h": 42,
+    "dart_h": 42.0,
+    "ref_l": 112.98,
+    "dart_l": 115.73,
+    "ecart_h": 0.0,
+    "ecart_l": 2.75
+   }
+  },
+  "formulaire": {
+   "grille": {
+    "ref_h": 244,
+    "dart_h": 244.0,
+    "ref_l": 928,
+    "dart_l": 928.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "nom": {
+    "ref_h": 60,
+    "dart_h": 60.0,
+    "ref_l": 298.66,
+    "dart_l": 298.67,
+    "ecart_h": 0.0,
+    "ecart_l": 0.01
+   },
+   "prenom": {
+    "ref_h": 60,
+    "dart_h": 60.0,
+    "ref_l": 298.67,
+    "dart_l": 298.67,
+    "ecart_h": 0.0,
+    "ecart_l": -0.0
+   },
+   "sexe": {
+    "ref_h": 60,
+    "dart_h": 60.0,
+    "ref_l": 298.66,
+    "dart_l": 298.67,
+    "ecart_h": 0.0,
+    "ecart_l": 0.01
+   },
+   "pleine": {
+    "ref_h": 60,
+    "dart_h": 60.0,
+    "ref_l": 927.98,
+    "dart_l": 928.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.02
+   },
+   "demi": {
+    "ref_h": 60,
+    "dart_h": 60.0,
+    "ref_l": 455.98,
+    "dart_l": 456.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.02
+   },
+   "section": {
+    "ref_h": 16,
+    "dart_h": 16.0,
+    "ref_l": 927.98,
+    "dart_l": 928.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.02
+   }
+  },
+  "note": {
+   "note": {
+    "ref_h": 34,
+    "dart_h": 34.0,
+    "ref_l": 928,
+    "dart_l": 928.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   }
+  },
+  "vide": {
+   "icone": {
+    "ref_h": 48,
+    "dart_h": 48.0,
+    "ref_l": 48,
+    "dart_l": 48.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "vide": {
+    "ref_h": 220,
+    "dart_h": 220.0,
+    "ref_l": 928,
+    "dart_l": 206.24,
+    "ecart_h": 0.0,
+    "ecart_l": -721.76
+   }
+  },
+  "modale": {
+   "panneau": {
+    "ref_h": 190,
+    "dart_h": 190.0,
+    "ref_l": 672,
+    "dart_l": 672.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "entete": {
+    "ref_h": 75,
+    "dart_h": 75.0,
+    "ref_l": 672,
+    "dart_l": 672.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "pied": {
+    "ref_h": 63,
+    "dart_h": 63.0,
+    "ref_l": 672,
+    "dart_l": 672.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   }
+  },
+  "tiroir": {
+   "entete": {
+    "ref_h": 75,
+    "dart_h": 75.0,
+    "ref_l": 576,
+    "dart_l": 576.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "pied": {
+    "ref_h": 63,
+    "dart_h": 63.0,
+    "ref_l": 576,
+    "dart_l": 576.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   }
+  },
+  "tableau": {
+   "barre": {
+    "ref_h": 63,
+    "dart_h": 63.0,
+    "ref_l": 926,
+    "dart_l": 926.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   },
+   "ligneEntete": {
+    "ref_h": 36.5,
+    "dart_h": 37.0,
+    "ref_l": 926,
+    "dart_l": 210.83,
+    "ecart_h": 0.5,
+    "ecart_l": -715.17
+   },
+   "ligne": {
+    "ref_h": 57,
+    "dart_h": 57.0,
+    "ref_l": 926,
+    "dart_l": 82.68,
+    "ecart_h": 0.0,
+    "ecart_l": -843.32
+   },
+   "pied": {
+    "ref_h": 55,
+    "dart_h": 55.0,
+    "ref_l": 926,
+    "dart_l": 926.0,
+    "ecart_h": 0.0,
+    "ecart_l": 0.0
+   }
+  }
+ },
+ "visuel": {
+  "seuil": 0.12,
+  "ecart_pixels": {
+   "boutons": 0.0325,
+   "carte": 0.0091,
+   "kpi": 0.0182,
+   "note": 0.0194,
+   "onglets": 0.0375,
+   "vide": 0.0043
+  }
+ }
+}

@@ -9,13 +9,22 @@ import 'package:sigh_sync/sigh_sync.dart';
 void main() {
   const port = 19431;
 
-  Future<T> avant<T>(Future<T> Function() f) => f().timeout(const Duration(seconds: 20));
+  Future<T> avant<T>(Future<T> Function() f) =>
+      f().timeout(const Duration(seconds: 20));
 
-  test('console → code d\'appairage → fileul appairé → pastille « synchronisé » ; mère coupée → « hors ligne »', () async {
-    final mere = await Mere.creer(ConfigMere(port: port, dbChemin: ':memory:', admin: 'secret-test', dossierSauvegardes: '/tmp/sigh-test-sauvegardes'));
+  test(
+      'console → code d\'appairage → fileul appairé → pastille « synchronisé » ; mère coupée → « hors ligne »',
+      () async {
+    final mere = await Mere.creer(ConfigMere(
+        port: port,
+        dbChemin: ':memory:',
+        admin: 'secret-test',
+        dossierSauvegardes: '/tmp/sigh-test-sauvegardes'));
     await mere.demarrer();
-    final console = ClientMere(base: Uri.parse('http://127.0.0.1:$port'), secretAdmin: 'secret-test');
-    final moteur = MoteurFileul.creer(dbChemin: ':memory:', mere: 'http://127.0.0.1:$port', nom: 'Caisse');
+    final console = ClientMere(
+        base: Uri.parse('http://127.0.0.1:$port'), secretAdmin: 'secret-test');
+    final moteur = MoteurFileul.creer(
+        dbChemin: ':memory:', mere: 'http://127.0.0.1:$port', nom: 'Caisse');
     final source = moteur.source(intervalle: const Duration(milliseconds: 200));
     try {
       expect((await console.etat()).appareils, isEmpty);
@@ -24,14 +33,16 @@ void main() {
       await avant(() => moteur.appairer(code));
       moteur.demarrer();
 
-      await _attendre(() => source.value.niveau == NiveauSync.synchronise, 'pastille synchronisée');
+      await _attendre(() => source.value.niveau == NiveauSync.synchronise,
+          'pastille synchronisée');
       final etat = await console.etat();
       expect(etat.appareils.map((a) => a.etiquette), contains('Caisse'));
       expect(etat.appareils.first.uuid, moteur.uuid);
 
       // La mère s'arrête : le poste continue, et le DIT.
       await mere.arreter();
-      await _attendre(() => source.value.niveau == NiveauSync.horsLigne, 'pastille hors ligne');
+      await _attendre(() => source.value.niveau == NiveauSync.horsLigne,
+          'pastille hors ligne');
       expect(source.value.depuis, isNotNull);
     } finally {
       source.dispose();

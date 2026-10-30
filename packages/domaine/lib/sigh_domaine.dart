@@ -7,6 +7,7 @@ export 'src/sync/operation.dart';
 export 'src/sync/familles.dart';
 export 'src/sync/codes.dart';
 export 'src/format/format_fr.dart';
+export 'src/format/recherche.dart';
 export 'src/referentiels/regles.dart';
 export 'src/referentiels/periodes.dart';
 export 'src/design/jetons.dart';
