@@ -42,6 +42,7 @@ Index : [`prd/README.md`](prd/README.md).
 | [`plans/PLAN-synchronisation-bidirectionnelle`](plans/PLAN-synchronisation-bidirectionnelle.md) | Plan en cinq phases (S0→S5), du prototype au mobile |
 | [`plans/PLAN-implementation-laravel-flutter-pwa`](plans/PLAN-implementation-laravel-flutter-pwa.md) | Plan d'implémentation Flutter + Laravel (API de synchro, panneau) + PWA : NFR calibrées, phases P0→P7, compétences |
 | [`plans/PLAN-implementation-v2`](plans/PLAN-implementation-v2.md) | **Plan en vigueur (30/10/2026)** : `sigh_web` abandonné, `apps/web` seul Laravel, poste fileul/mère = une application, tâches T1→T8 et leur état |
+| [`plans/PLAN-SPRINTS`](plans/PLAN-SPRINTS.md) | **Plan en sprints complet** (S0→S23) : règles, quatre pistes, dépendances externes, risques |
 | [`plans/PLAN-conversion-305-ecrans`](plans/PLAN-conversion-305-ecrans.md) | Conversion fidèle des 305 écrans PHP/JS en Dart : mesures, niveaux de parité N1–N4, tranches, tâches T9→T20 |
 | [`architecture/MODULES-COMPLEMENTAIRES-MERE`](architecture/MODULES-COMPLEMENTAIRES-MERE.md) | Les 22 modules complémentaires du poste mère (5 faits, 17 à écrire) et l'activation du mode mère |
 | [`architecture/MODULES-WEB-RELAIS`](architecture/MODULES-WEB-RELAIS.md) | Les 12 modules du relais en ligne (`apps/web`) : 4 existants, 8 attendus |
