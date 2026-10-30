@@ -307,8 +307,8 @@ async function viderMessages(page) {
       const inp = document.querySelector('#f_code');
       return inp ? inp.value : null;
     });
-    verifier('Le code patient est pré-attribué au format CNT[n°]/[année]',
-      /^CNT\d+\/\d{2}$/.test(codeAttribue || ''), 'code : ' + codeAttribue);
+    verifier('Le code patient est pré-attribué au format CNT/[n°]/[année] (E300 : le format en vigueur depuis la vague 26)',
+      /^CNT\/\d+\/\d{2}$/.test(codeAttribue || ''), 'code : ' + codeAttribue);
     verifier('Le champ code est en lecture seule (RG-01)',
       await page.evaluate(() => document.querySelector('#f_code') && document.querySelector('#f_code').hasAttribute('readonly')));
 
