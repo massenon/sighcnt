@@ -25,7 +25,14 @@ const _unitesPlafond = {
 
 /// Résultat de la répartition d'une facture.
 class Repartition {
-  const Repartition({required this.lignes, required this.souscripteurId, required this.carteValide, required this.grilleSaisie, required this.total, required this.partAssureur, required this.partPatient});
+  const Repartition(
+      {required this.lignes,
+      required this.souscripteurId,
+      required this.carteValide,
+      required this.grilleSaisie,
+      required this.total,
+      required this.partAssureur,
+      required this.partPatient});
   final List<Map<String, Object?>> lignes;
   final String? souscripteurId;
   final bool carteValide;
@@ -42,7 +49,8 @@ final _avecFuseau = RegExp(r'(Z|[+-]\d{2}:?\d{2})$');
 /// `YYYY-MM-DD` seul = minuit UTC ; avec heure sans fuseau = heure locale ; avec fuseau = cet instant (comme `Date`).
 DateTime _dateJs(String texte) {
   if (_dateSeule.hasMatch(texte)) return DateTime.parse('${texte}T00:00:00Z');
-  if (texte.contains('T') && !_avecFuseau.hasMatch(texte)) return DateTime.parse(texte);
+  if (texte.contains('T') && !_avecFuseau.hasMatch(texte))
+    return DateTime.parse(texte);
   return DateTime.parse(texte);
 }
 
@@ -55,11 +63,15 @@ bool _actif(Map f) => f['statut'] != 'archive';
 // --- couverture datée --------------------------------------------------------------------------------------------------
 /// La couverture EN FORCE à une date. Sans historique, la fiche du dossier fait foi (dossiers antérieurs au mécanisme) ;
 /// avec un historique dont aucune période ne contient la date : aucune couverture.
-Map<String, Object?>? couvertureALaDate(Map<String, Object?>? patient, List<Map<String, Object?>> couvertures, String date) {
+Map<String, Object?>? couvertureALaDate(Map<String, Object?>? patient,
+    List<Map<String, Object?>> couvertures, String date) {
   if (patient == null) return null;
   final d = _jourLocal(date);
-  final hist = couvertures.where((c) => _actif(c) && c['patientId'] == patient['id']).toList()
-    ..sort((a, b) => '${b['debut'] ?? '0000-00-00'}'.compareTo('${a['debut'] ?? '0000-00-00'}'));
+  final hist = couvertures
+      .where((c) => _actif(c) && c['patientId'] == patient['id'])
+      .toList()
+    ..sort((a, b) => '${b['debut'] ?? '0000-00-00'}'
+        .compareTo('${a['debut'] ?? '0000-00-00'}'));
   for (final c in hist) {
     final debut = c['debut'] as String?;
     final fin = c['fin'] as String?;
@@ -70,22 +82,35 @@ Map<String, Object?>? couvertureALaDate(Map<String, Object?>? patient, List<Map<
   if (hist.isNotEmpty) return null;
   if (!_vrai(patient['assureur'])) return null;
   return {
-    'origine': 'fiche', 'patientId': patient['id'], 'assureur': patient['assureur'], 'assureurNom': patient['assureurNom'],
-    'numeroPolice': patient['numeroPolice'], 'categorieAssurance': patient['categorieAssurance'],
-    'tauxPriseEnCharge': patient['tauxPriseEnCharge'], 'carteExpiration': patient['carteExpiration'],
-    'souscripteurId': patient['souscripteurId'], 'debut': null, 'fin': null,
+    'origine': 'fiche',
+    'patientId': patient['id'],
+    'assureur': patient['assureur'],
+    'assureurNom': patient['assureurNom'],
+    'numeroPolice': patient['numeroPolice'],
+    'categorieAssurance': patient['categorieAssurance'],
+    'tauxPriseEnCharge': patient['tauxPriseEnCharge'],
+    'carteExpiration': patient['carteExpiration'],
+    'souscripteurId': patient['souscripteurId'],
+    'debut': null,
+    'fin': null,
   };
 }
 
 /// RG-09 se lit À LA DATE : la carte est valide si elle existe, porte une expiration, et expire au plus tôt à la date.
-bool carteValide(Map<String, Object?>? patient, List<Map<String, Object?>> couvertures, String date) {
+bool carteValide(Map<String, Object?>? patient,
+    List<Map<String, Object?>> couvertures, String date) {
   if (patient == null) return false;
   final c = couvertureALaDate(patient, couvertures, date);
-  if (c == null || !_vrai(c['assureur']) || !_vrai(c['carteExpiration'])) return false;
+  if (c == null || !_vrai(c['assureur']) || !_vrai(c['carteExpiration']))
+    return false;
   return !_dateJs('${c['carteExpiration']}').isBefore(_dateJs(date));
 }
 
-Map<String, Object?>? souscripteurDe(Map<String, Object?>? patient, List<Map<String, Object?>> couvertures, List<Map<String, Object?>> souscripteurs, String date) {
+Map<String, Object?>? souscripteurDe(
+    Map<String, Object?>? patient,
+    List<Map<String, Object?>> couvertures,
+    List<Map<String, Object?>> souscripteurs,
+    String date) {
   if (patient == null) return null;
   final c = couvertureALaDate(patient, couvertures, date);
   if (c == null) return null;
@@ -98,23 +123,56 @@ Map<String, Object?>? souscripteurDe(Map<String, Object?>? patient, List<Map<Str
 }
 
 /// Garanties applicables : celles du souscripteur de la date, sinon celles de la compagnie (sans souscripteur).
-List<Map<String, Object?>> garantiesDe(Map<String, Object?>? sous, List<Map<String, Object?>> garanties) {
+List<Map<String, Object?>> garantiesDe(
+    Map<String, Object?>? sous, List<Map<String, Object?>> garanties) {
   if (sous == null) return const [];
   final toutes = garanties.where(_actif).toList();
-  final propres = toutes.where((g) => g['souscripteurId'] == sous['id']).toList();
+  final propres =
+      toutes.where((g) => g['souscripteurId'] == sous['id']).toList();
   if (propres.isNotEmpty) return propres;
-  return toutes.where((g) => !_vrai(g['souscripteurId']) && g['assureur'] == sous['assureur']).toList();
+  return toutes
+      .where((g) =>
+          !_vrai(g['souscripteurId']) && g['assureur'] == sous['assureur'])
+      .toList();
 }
 
 // --- proximité de libellés ---------------------------------------------------------------------------------------------
 const _accents = {
-  'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'å': 'a', 'ç': 'c', 'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e',
-  'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i', 'ñ': 'n', 'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o',
-  'ù': 'u', 'ú': 'u', 'û': 'u', 'ü': 'u', 'ý': 'y', 'ÿ': 'y',
+  'à': 'a',
+  'á': 'a',
+  'â': 'a',
+  'ã': 'a',
+  'ä': 'a',
+  'å': 'a',
+  'ç': 'c',
+  'è': 'e',
+  'é': 'e',
+  'ê': 'e',
+  'ë': 'e',
+  'ì': 'i',
+  'í': 'i',
+  'î': 'i',
+  'ï': 'i',
+  'ñ': 'n',
+  'ò': 'o',
+  'ó': 'o',
+  'ô': 'o',
+  'õ': 'o',
+  'ö': 'o',
+  'ù': 'u',
+  'ú': 'u',
+  'û': 'u',
+  'ü': 'u',
+  'ý': 'y',
+  'ÿ': 'y',
 };
 
 List<String> _mots(Object? t) {
-  final s = ('${t ?? ''}').toLowerCase().split('').map((c) => _accents[c] ?? c).join();
+  final s = ('${t ?? ''}')
+      .toLowerCase()
+      .split('')
+      .map((c) => _accents[c] ?? c)
+      .join();
   return s.split(RegExp(r'[^a-z0-9]+'));
 }
 
@@ -141,7 +199,8 @@ String? _contient(Object? liste, Object? texte) {
 /// « Vrai » au sens de JavaScript pour les valeurs de fiche : null, '', 0 et false ne comptent pas.
 bool _vrai(Object? v) => v != null && v != '' && v != 0 && v != false;
 
-String _texteJs(Object? v) => v is double && v == v.truncateToDouble() ? v.toInt().toString() : '$v';
+String _texteJs(Object? v) =>
+    v is double && v == v.truncateToDouble() ? v.toInt().toString() : '$v';
 
 double _montant(Object? v) => nombreOuZero(v);
 
@@ -162,28 +221,48 @@ Repartition repartir({
     final montant = _montant(l['montant']);
     final categorie = _vrai(l['categorie']) ? '${l['categorie']}' : 'autre';
     final base = <String, Object?>{
-      'libelle': l['libelle'], 'categorie': categorie, 'montant': montant,
-      'partAssureur': 0, 'partPatient': montant, 'taux': 0, 'plafond': null, 'garantie': null,
+      'libelle': l['libelle'],
+      'categorie': categorie,
+      'montant': montant,
+      'partAssureur': 0,
+      'partPatient': montant,
+      'taux': 0,
+      'plafond': null,
+      'garantie': null,
     };
-    Map<String, Object?> avec(Map<String, Object?> extra) => {...base, ...extra};
+    Map<String, Object?> avec(Map<String, Object?> extra) =>
+        {...base, ...extra};
 
-    if (patient == null || !_vrai(patient['assureur'])) return avec({'motif': 'Patient non assuré'});
-    if (!valide) return avec({'motif': 'Carte non valide à la date de facturation (RG-09)'});
-    if (sous == null) return avec({'motif': 'Assuré non rattaché à un souscripteur'});
-    if (grille.isEmpty) return avec({'motif': 'Convention non saisie pour ${sous['nom']}'});
+    if (patient == null || !_vrai(patient['assureur']))
+      return avec({'motif': 'Patient non assuré'});
+    if (!valide)
+      return avec(
+          {'motif': 'Carte non valide à la date de facturation (RG-09)'});
+    if (sous == null)
+      return avec({'motif': 'Assuré non rattaché à un souscripteur'});
+    if (grille.isEmpty)
+      return avec({'motif': 'Convention non saisie pour ${sous['nom']}'});
 
-    final exclu = _contient(sous['actesExclus'], l['libelle']) ?? _contient(sous['produitsExclus'], l['libelle']);
-    if (exclu != null) return avec({'motif': 'Exclu de la convention : $exclu', 'exclu': true});
+    final exclu = _contient(sous['actesExclus'], l['libelle']) ??
+        _contient(sous['produitsExclus'], l['libelle']);
+    if (exclu != null)
+      return avec({'motif': 'Exclu de la convention : $exclu', 'exclu': true});
 
     final accord = _contient(sous['accordPrealable'], l['libelle']);
     if (accord != null && !_vrai(l['accordObtenu'])) {
-      return avec({'motif': 'Accord préalable requis et non obtenu : $accord', 'accordRequis': accord});
+      return avec({
+        'motif': 'Accord préalable requis et non obtenu : $accord',
+        'accordRequis': accord
+      });
     }
 
     // Une catégorie porte souvent plusieurs garanties (généraliste plafonnée à 5 000, spécialiste à 10 000) :
     // la première venue appliquerait le mauvais plafond, on retient celle dont le libellé colle le mieux à la ligne.
-    final candidates = grille.where((x) => x['categorie'] == categorie).toList();
-    if (candidates.isEmpty) return avec({'motif': 'Aucune garantie pour la catégorie « $categorie »'});
+    final candidates =
+        grille.where((x) => x['categorie'] == categorie).toList();
+    if (candidates.isEmpty)
+      return avec(
+          {'motif': 'Aucune garantie pour la catégorie « $categorie »'});
     var g = candidates.first;
     var meilleur = -1;
     for (final x in candidates) {
@@ -196,17 +275,27 @@ Repartition repartir({
 
     final taux = _vrai(g['taux']) ? (g['taux'] as num).toDouble() : 0.0;
     var couvert = arrondiJs(montant * taux / 100);
-    var motif = 'Garantie ${g['libelle']} — ${_texteJs(g['taux'] is num ? (g['taux'] as num).toDouble() : g['taux'])} %';
+    var motif =
+        'Garantie ${g['libelle']} — ${_texteJs(g['taux'] is num ? (g['taux'] as num).toDouble() : g['taux'])} %';
     final plafond = g['plafond'] as num?;
     if (plafond != null && couvert > plafond) {
       couvert = plafond.toDouble();
       final unite = g['unitePlafond'];
-      motif += ', plafonnée à ${money(plafond, avecDevise: false)}${_vrai(unite) ? ' ${_unitesPlafond[unite] ?? unite}' : ''}';
+      motif +=
+          ', plafonnée à ${money(plafond, avecDevise: false)}${_vrai(unite) ? ' ${_unitesPlafond[unite] ?? unite}' : ''}';
     }
-    return avec({'partAssureur': couvert, 'partPatient': montant - couvert, 'taux': g['taux'], 'plafond': g['plafond'], 'garantie': g['libelle'], 'motif': motif});
+    return avec({
+      'partAssureur': couvert,
+      'partPatient': montant - couvert,
+      'taux': g['taux'],
+      'plafond': g['plafond'],
+      'garantie': g['libelle'],
+      'motif': motif
+    });
   }).toList();
 
-  double somme(String cle) => detail.fold(0.0, (a, x) => a + nombreOuZero(x[cle]));
+  double somme(String cle) =>
+      detail.fold(0.0, (a, x) => a + nombreOuZero(x[cle]));
   return Repartition(
     lignes: detail,
     souscripteurId: sous == null ? null : '${sous['id']}',

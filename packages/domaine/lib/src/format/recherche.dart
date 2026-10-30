@@ -16,7 +16,8 @@ String normaliser(Object? s) {
   return b.toString().toLowerCase();
 }
 
-bool correspond(Object? botte, String aiguille) => normaliser(botte).contains(normaliser(aiguille));
+bool correspond(Object? botte, String aiguille) =>
+    normaliser(botte).contains(normaliser(aiguille));
 
 /// Comparaison « naturelle » française : les nombres se comparent comme nombres, le reste sans accents ni casse.
 int comparerNaturel(Object? a, Object? b) {
@@ -34,7 +35,8 @@ int comparerNaturel(Object? a, Object? b) {
 }
 
 /// `C.sortBy` : les valeurs absentes passent en dernier, les nombres se comparent entre eux.
-List<T> trierPar<T>(List<T> lignes, Object? Function(T) cle, {bool descendant = false}) {
+List<T> trierPar<T>(List<T> lignes, Object? Function(T) cle,
+    {bool descendant = false}) {
   final d = descendant ? -1 : 1;
   final copie = [...lignes];
   copie.sort((a, b) {

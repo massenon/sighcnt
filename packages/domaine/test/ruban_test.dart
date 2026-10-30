@@ -5,11 +5,14 @@ import 'dart:io';
 import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:test/test.dart';
 
-Map<String, Object?> json(String chemin) => (jsonDecode(File(chemin).readAsStringSync()) as Map).cast<String, Object?>();
+Map<String, Object?> json(String chemin) =>
+    (jsonDecode(File(chemin).readAsStringSync()) as Map)
+        .cast<String, Object?>();
 
 void main() {
   testsAccueilEtRaccourcis();
-  final manifeste = Manifeste.depuisJson(json('../referentiels/data/manifeste.json'));
+  final manifeste =
+      Manifeste.depuisJson(json('../referentiels/data/manifeste.json'));
   final matrice = MatriceDroits.depuisJson(json('../rbac/data/rbac.json'));
   final cas = ((json('test/vecteurs/ruban.json'))['cas'] as List).cast<Map>();
 
@@ -18,27 +21,43 @@ void main() {
     test('ruban du rôle « $role » = N.tree($role) de la maquette', () {
       final attendu = [
         for (final d in (c['domaines'] as List))
-          for (final r in (d as Map)['rangees'] as List) ['${d['domaine']}', '${(r as Map)['code']}', '${r['label']}', ...(r['ecrans'] as List).cast<String>()],
+          for (final r in (d as Map)['rangees'] as List)
+            [
+              '${d['domaine']}',
+              '${(r as Map)['code']}',
+              '${r['label']}',
+              ...(r['ecrans'] as List).cast<String>()
+            ],
       ];
       final obtenu = [
         for (final d in manifeste.ruban(matrice, role, estMere: true))
-          for (final r in d.rangees) [d.nom, r.code, r.label, ...r.ecrans.map((e) => e.id)],
+          for (final r in d.rangees)
+            [d.nom, r.code, r.label, ...r.ecrans.map((e) => e.id)],
       ];
       expect(obtenu, attendu);
     });
   }
 
-  test('un poste FILEUL n\'a jamais le domaine « Poste mère », même pour l\'administrateur', () {
-    expect(manifeste.ruban(matrice, 'admin', estMere: true).map((d) => d.nom), contains('Poste mère'));
-    expect(manifeste.ruban(matrice, 'admin', estMere: false).map((d) => d.nom), isNot(contains('Poste mère')));
+  test(
+      'un poste FILEUL n\'a jamais le domaine « Poste mère », même pour l\'administrateur',
+      () {
+    expect(manifeste.ruban(matrice, 'admin', estMere: true).map((d) => d.nom),
+        contains('Poste mère'));
+    expect(manifeste.ruban(matrice, 'admin', estMere: false).map((d) => d.nom),
+        isNot(contains('Poste mère')));
   });
 
-  test('« Poste mère » ne s\'ouvre pas au caissier parce que le poste est la mère : les droits restent ceux de la matrice', () {
-    expect(manifeste.ruban(matrice, 'caissier', estMere: true).map((d) => d.nom), isNot(contains('Poste mère')));
+  test(
+      '« Poste mère » ne s\'ouvre pas au caissier parce que le poste est la mère : les droits restent ceux de la matrice',
+      () {
+    expect(
+        manifeste.ruban(matrice, 'caissier', estMere: true).map((d) => d.nom),
+        isNot(contains('Poste mère')));
   });
 
   test('les 22 modules complémentaires de la mère sont au manifeste', () {
-    final mere = manifeste.tousLesEcrans.where((e) => e.id.startsWith('mere-')).toList();
+    final mere =
+        manifeste.tousLesEcrans.where((e) => e.id.startsWith('mere-')).toList();
     expect(mere.length, 22);
   });
 
@@ -48,19 +67,36 @@ void main() {
 }
 
 void testsAccueilEtRaccourcis() {
-  final manifeste = Manifeste.depuisJson(json('../referentiels/data/manifeste.json'));
+  final manifeste =
+      Manifeste.depuisJson(json('../referentiels/data/manifeste.json'));
   final matrice = MatriceDroits.depuisJson(json('../rbac/data/rbac.json'));
-  test('l\'accueil d\'un rôle est un écran qu\'il VOIT (sinon la page d\'ouverture serait fermée)', () {
-    for (final r in ['admin', 'direction', 'medecin', 'caissier', 'reception', 'comptable', 'stock', 'laborantin']) {
+  test(
+      'l\'accueil d\'un rôle est un écran qu\'il VOIT (sinon la page d\'ouverture serait fermée)',
+      () {
+    for (final r in [
+      'admin',
+      'direction',
+      'medecin',
+      'caissier',
+      'reception',
+      'comptable',
+      'stock',
+      'laborantin'
+    ]) {
       final h = matrice.accueil(r);
       expect(h, isNotNull, reason: r);
       expect(matrice.peutVoir(r, h!), isTrue, reason: '$r → $h');
     }
   });
-  test('raccourcis permanents : Patients, Consultations, Pharmacie, Facturation — seulement ceux dont le module est visible', () {
-    final admin = manifeste.raccourcis(manifeste.ruban(matrice, 'admin', estMere: false));
-    expect(admin.map((r) => r.court), ['Patients', 'Consultations', 'Pharmacie', 'Facturation']);
-    final caissier = manifeste.raccourcis(manifeste.ruban(matrice, 'caissier', estMere: false));
+  test(
+      'raccourcis permanents : Patients, Consultations, Pharmacie, Facturation — seulement ceux dont le module est visible',
+      () {
+    final admin =
+        manifeste.raccourcis(manifeste.ruban(matrice, 'admin', estMere: false));
+    expect(admin.map((r) => r.court),
+        ['Patients', 'Consultations', 'Pharmacie', 'Facturation']);
+    final caissier = manifeste
+        .raccourcis(manifeste.ruban(matrice, 'caissier', estMere: false));
     expect(caissier.map((r) => r.court), isNot(contains('Consultations')));
   });
 }

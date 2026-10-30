@@ -11,6 +11,14 @@ Future<void> chargerPolices() async {
         File('assets/polices/Inter-$f.otf').readAsBytesSync().buffer)));
   }
   await inter.load();
+  final mono = FontLoader('LiberationMono');
+  for (final f in ['Regular', 'Bold']) {
+    mono.addFont(Future.value(ByteData.view(
+        File('assets/polices/pdf/LiberationMono-$f.ttf')
+            .readAsBytesSync()
+            .buffer)));
+  }
+  await mono.load();
   final lucide = FontLoader('packages/lucide_icons_flutter/Lucide');
   final cfg = File('.dart_tool/package_config.json').readAsStringSync();
   final m =

@@ -1,7 +1,8 @@
 /// Droits d'un rôle sur un écran : voir, éditer, annuler. « Lecture seule » n'est pas un quatrième droit : un écran
 /// visible sans droit d'éditer EST en lecture seule.
 class Droit {
-  const Droit({required this.voir, required this.editer, required this.annuler});
+  const Droit(
+      {required this.voir, required this.editer, required this.annuler});
   final bool voir;
   final bool editer;
   final bool annuler;
@@ -11,7 +12,11 @@ class Droit {
   bool get lectureSeule => voir && !editer;
 
   @override
-  bool operator ==(Object other) => other is Droit && other.voir == voir && other.editer == editer && other.annuler == annuler;
+  bool operator ==(Object other) =>
+      other is Droit &&
+      other.voir == voir &&
+      other.editer == editer &&
+      other.annuler == annuler;
 
   @override
   int get hashCode => Object.hash(voir, editer, annuler);
@@ -25,7 +30,8 @@ class Droit {
 /// Règle d'or, inverse de celle de la maquette pour un rôle sans fiche : ici **tout ce qui n'est pas listé est refusé**.
 /// La matrice extraite est déjà résolue (surcharges d'écran, modules, écrans universels) ; ce moteur ne recalcule rien.
 class MatriceDroits {
-  MatriceDroits._(this._parRole, this._archives, this._libelles, this._accueils);
+  MatriceDroits._(
+      this._parRole, this._archives, this._libelles, this._accueils);
 
   final Map<String, Map<String, Droit>> _parRole;
   final Set<String> _archives;
@@ -42,15 +48,22 @@ class MatriceDroits {
         for (final e in (ecrans as Map).entries)
           '${e.key}': () {
             final t = (e.value as List).cast<num>();
-            return Droit(voir: t[0] != 0, editer: t[1] != 0, annuler: t[2] != 0);
+            return Droit(
+                voir: t[0] != 0, editer: t[1] != 0, annuler: t[2] != 0);
           }(),
       };
     });
     return MatriceDroits._(
       parRole,
-      {for (final r in roles) if (r['archive'] == true) '${r['id']}'},
+      {
+        for (final r in roles)
+          if (r['archive'] == true) '${r['id']}'
+      },
       {for (final r in roles) '${r['id']}': '${r['label']}'},
-      {for (final r in roles) if (r['home'] != null) '${r['id']}': '${r['home']}'},
+      {
+        for (final r in roles)
+          if (r['home'] != null) '${r['id']}': '${r['home']}'
+      },
     );
   }
 
@@ -70,12 +83,17 @@ class MatriceDroits {
   }
 
   bool peutVoir(String role, String ecran) => droit(role, ecran).voir;
-  bool peutEditer(String role, String ecran) => droit(role, ecran).voir && droit(role, ecran).editer;
-  bool peutAnnuler(String role, String ecran) => droit(role, ecran).voir && droit(role, ecran).annuler;
+  bool peutEditer(String role, String ecran) =>
+      droit(role, ecran).voir && droit(role, ecran).editer;
+  bool peutAnnuler(String role, String ecran) =>
+      droit(role, ecran).voir && droit(role, ecran).annuler;
 
   /// Écrans que le rôle voit — c'est exactement ce que la navigation a le droit d'afficher.
   Set<String> ecransVisibles(String role) {
     if (estArchive(role)) return const {};
-    return {for (final e in (_parRole[role] ?? const <String, Droit>{}).entries) if (e.value.voir) e.key};
+    return {
+      for (final e in (_parRole[role] ?? const <String, Droit>{}).entries)
+        if (e.value.voir) e.key
+    };
   }
 }

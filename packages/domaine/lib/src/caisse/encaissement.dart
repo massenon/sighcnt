@@ -19,7 +19,13 @@ const compteClientsAssurance = '411110';
 const comptePrestations = '706000';
 
 class ResultatEncaissement {
-  const ResultatEncaissement({required this.facture, required this.deja, required this.lignesReglees, required this.montantRegle, required this.restantDu, required this.ecritures});
+  const ResultatEncaissement(
+      {required this.facture,
+      required this.deja,
+      required this.lignesReglees,
+      required this.montantRegle,
+      required this.restantDu,
+      required this.ecritures});
 
   /// La facture APRÈS versement (copie ; l'entrée n'est jamais modifiée).
   final Map<String, Object?> facture;
@@ -48,10 +54,20 @@ ResultatEncaissement encaisser(
   List<Map<String, Object?>> ecritures = const [],
 }) {
   if (facture['statutPaiement'] == 'soldee') {
-    return ResultatEncaissement(facture: facture, deja: true, lignesReglees: const [], montantRegle: null, restantDu: null, ecritures: const []);
+    return ResultatEncaissement(
+        facture: facture,
+        deja: true,
+        lignesReglees: const [],
+        montantRegle: null,
+        restantDu: null,
+        ecritures: const []);
   }
-  final toutes = ((facture['lignes'] ?? const []) as List).map((l) => (l as Map).cast<String, Object?>()).toList();
-  final duTotal = facture['partPatient'] != null ? _n(facture['partPatient']) : _n(facture['montantTTC']);
+  final toutes = ((facture['lignes'] ?? const []) as List)
+      .map((l) => (l as Map).cast<String, Object?>())
+      .toList();
+  final duTotal = facture['partPatient'] != null
+      ? _n(facture['partPatient'])
+      : _n(facture['montantTTC']);
 
   final reglees = <Map<String, Object?>>[];
   var paye = 0.0;
@@ -81,12 +97,22 @@ ResultatEncaissement encaisser(
 
   final lignesMaj = toutes.map((l) {
     if (!reglees.any((r) => identical(r, l))) return l;
-    return {...l, 'statutPaiement': 'paye', 'montantRegle': l['partPatient'], 'payeLe': maintenant, 'payePar': utilisateur};
+    return {
+      ...l,
+      'statutPaiement': 'paye',
+      'montantRegle': l['partPatient'],
+      'payeLe': maintenant,
+      'payePar': utilisateur
+    };
   }).toList();
   final totalPaye = _n(facture['montantPaye']) + paye;
   final restantDu = lignesMaj.isNotEmpty
-      ? lignesMaj.where((l) => l['statutPaiement'] != 'paye').fold(0.0, (n, l) => n + _n(l['partPatient']))
-      : (duTotal - totalPaye) > 0 ? duTotal - totalPaye : 0.0;
+      ? lignesMaj
+          .where((l) => l['statutPaiement'] != 'paye')
+          .fold(0.0, (n, l) => n + _n(l['partPatient']))
+      : (duTotal - totalPaye) > 0
+          ? duTotal - totalPaye
+          : 0.0;
   final solde = restantDu <= 0;
   final modeRetenu = _vrai(mode) ? mode! : 'especes';
 
@@ -96,14 +122,23 @@ ResultatEncaissement encaisser(
     'montantPaye': totalPaye,
     'reliquat': restantDu,
     'modePaiement': modeRetenu,
-    'statutPaiement': solde ? 'soldee' : (totalPaye > 0 ? 'partielle' : 'impayee'),
+    'statutPaiement':
+        solde ? 'soldee' : (totalPaye > 0 ? 'partielle' : 'impayee'),
     'statutMecef': solde ? 'valide' : 'en_attente',
     // Le point fiscal : seule la part réglée par le patient est normalisée (ni la part assureur, ni les remises).
     'baseMecef': totalPaye,
-    'dernierReglement': {'date': maintenant, 'montant': paye, 'mode': modeRetenu, 'lignes': reglees.map((l) => l['id']).toList(), 'encaissePar': utilisateur},
+    'dernierReglement': {
+      'date': maintenant,
+      'montant': paye,
+      'mode': modeRetenu,
+      'lignes': reglees.map((l) => l['id']).toList(),
+      'encaissePar': utilisateur
+    },
   };
 
-  final posees = paye > 0 ? ecritureEncaissement(apres, paye, aujourdhui, ecritures) : <Map<String, Object?>>[];
+  final posees = paye > 0
+      ? ecritureEncaissement(apres, paye, aujourdhui, ecritures)
+      : <Map<String, Object?>>[];
   return ResultatEncaissement(
     facture: apres,
     deja: false,
@@ -115,13 +150,20 @@ ResultatEncaissement encaisser(
 }
 
 /// La créance sur l'assureur est-elle déjà constatée pour cette facture (une écriture 411 non archivée) ?
-bool creanceAssureurConstatee(Map<String, Object?> facture, List<Map<String, Object?>> ecritures) =>
-    ecritures.any((e) => e['pieceId'] == facture['id'] && e['compte'] == compteClientsAssurance && e['statut'] != 'archive');
+bool creanceAssureurConstatee(
+        Map<String, Object?> facture, List<Map<String, Object?>> ecritures) =>
+    ecritures.any((e) =>
+        e['pieceId'] == facture['id'] &&
+        e['compte'] == compteClientsAssurance &&
+        e['statut'] != 'archive');
 
 /// Numéro de pièce de caisse : celui de la première écriture de la facture, sinon `CAI-AAAA-NNNNN` (rang suivant de l'année).
-String numeroPieceCaisse(Map<String, Object?> facture, String date, List<Map<String, Object?>> ecritures) {
+String numeroPieceCaisse(Map<String, Object?> facture, String date,
+    List<Map<String, Object?>> ecritures) {
   for (final e in ecritures) {
-    if (e['pieceId'] == facture['id'] && e['journal'] == 'CAI' && _vrai(e['numero'])) return '${e['numero']}';
+    if (e['pieceId'] == facture['id'] &&
+        e['journal'] == 'CAI' &&
+        _vrai(e['numero'])) return '${e['numero']}';
   }
   final prefixe = 'CAI-${date.substring(0, 4)}-';
   var max = 0;
@@ -137,22 +179,45 @@ String numeroPieceCaisse(Map<String, Object?> facture, String date, List<Map<Str
 
 /// Écriture d'encaissement : débit 571 de la part réglée, débit 411 de la part assureur (au premier versement seulement),
 /// crédit 706 du total. Contrôlée ÉQUILIBRÉE avant d'exister (RG-10) : un déséquilibre rend une liste vide. Brouillon.
-List<Map<String, Object?>> ecritureEncaissement(Map<String, Object?> facture, double montantRegle, String aujourdhui, [List<Map<String, Object?>> ecritures = const []]) {
-  final partAssureur = creanceAssureurConstatee(facture, ecritures) ? 0.0 : _n(facture['partAssureur']);
+List<Map<String, Object?>> ecritureEncaissement(
+    Map<String, Object?> facture, double montantRegle, String aujourdhui,
+    [List<Map<String, Object?>> ecritures = const []]) {
+  final partAssureur = creanceAssureurConstatee(facture, ecritures)
+      ? 0.0
+      : _n(facture['partAssureur']);
   final total = montantRegle + partAssureur;
   if (total <= 0) return const [];
 
   final ref = '${_vrai(facture['numero']) ? facture['numero'] : facture['id']}';
   final numero = numeroPieceCaisse(facture, aujourdhui, ecritures);
   final base = <String, Object?>{
-    'numero': numero, 'date': aujourdhui, 'journal': 'CAI', 'journalLibelle': 'Journal de caisse-dépenses',
+    'numero': numero,
+    'date': aujourdhui,
+    'journal': 'CAI',
+    'journalLibelle': 'Journal de caisse-dépenses',
     'libelle': 'Encaissement facture $ref — ${facture['patient'] ?? ''}',
-    'pieceId': facture['id'], 'pieceNumero': facture['numero'], 'origine': 'Automatique — Caisse', 'statut': 'brouillon',
+    'pieceId': facture['id'],
+    'pieceNumero': facture['numero'],
+    'origine': 'Automatique — Caisse',
+    'statut': 'brouillon',
   };
   final l = <Map<String, Object?>>[];
-  if (montantRegle > 0) l.add({...base, 'compte': compteCaisse, 'debit': montantRegle, 'credit': 0.0});
+  if (montantRegle > 0)
+    l.add({
+      ...base,
+      'compte': compteCaisse,
+      'debit': montantRegle,
+      'credit': 0.0
+    });
   if (partAssureur > 0) {
-    l.add({...base, 'compte': compteClientsAssurance, 'debit': partAssureur, 'credit': 0.0, 'libelle': '${base['libelle']} — part ${_vrai(facture['assureur']) ? facture['assureur'] : 'assureur'}'});
+    l.add({
+      ...base,
+      'compte': compteClientsAssurance,
+      'debit': partAssureur,
+      'credit': 0.0,
+      'libelle':
+          '${base['libelle']} — part ${_vrai(facture['assureur']) ? facture['assureur'] : 'assureur'}'
+    });
   }
   l.add({...base, 'compte': comptePrestations, 'debit': 0.0, 'credit': total});
 

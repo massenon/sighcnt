@@ -30,12 +30,13 @@ class Bornes {
 }
 
 /// `C.addDays` : décale en jours CALENDAIRES en gardant l'heure locale (pas en tranches de 24 h).
-DateTime ajouterJours(DateTime d, int n) =>
-    DateTime(d.year, d.month, d.day + n, d.hour, d.minute, d.second, d.millisecond);
+DateTime ajouterJours(DateTime d, int n) => DateTime(
+    d.year, d.month, d.day + n, d.hour, d.minute, d.second, d.millisecond);
 
 /// `C.bornes(periodeId, fin)` — une période inconnue retombe sur la journée.
 Bornes bornes(String periodeId, DateTime fin) {
-  final p = periodes.firstWhere((x) => x.id == periodeId, orElse: () => periodes.first);
+  final p = periodes.firstWhere((x) => x.id == periodeId,
+      orElse: () => periodes.first);
   return Bornes(ajouterJours(fin, -(p.jours - 1)), fin, p.label, p.jours);
 }
 
@@ -53,8 +54,10 @@ Bornes bornesLibres(DateTime du, DateTime au) {
 
 /// `C.dansBornes(date, b)` — les deux extrémités sont incluses.
 bool dansBornes(DateTime date, Bornes b) =>
-    date.millisecondsSinceEpoch >= b.debut.millisecondsSinceEpoch && date.millisecondsSinceEpoch <= b.fin.millisecondsSinceEpoch;
+    date.millisecondsSinceEpoch >= b.debut.millisecondsSinceEpoch &&
+    date.millisecondsSinceEpoch <= b.fin.millisecondsSinceEpoch;
 
 /// `C.libellePeriode(b)` — c'est lui qui coiffe les états imprimés.
-String libellePeriode(Bornes b) =>
-    b.jours == 1 ? 'Journée du ${dateFR(b.debut)}' : 'Du ${dateFR(b.debut)} au ${dateFR(b.fin)}';
+String libellePeriode(Bornes b) => b.jours == 1
+    ? 'Journée du ${dateFR(b.debut)}'
+    : 'Du ${dateFR(b.debut)} au ${dateFR(b.fin)}';

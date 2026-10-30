@@ -46,7 +46,7 @@ async function ouvrirMaquette() {
   const jeton = (await BANC.connecter(BANC.SESSION_BANC.identifiant) || {}).jeton;
   if (!jeton) throw new Error('connexion du banc refusée');
   const gabarit = path.join(ROOT, '_extraction.html');
-  fs.writeFileSync(gabarit, '<!doctype html><html lang="fr" data-root=""><head><meta charset="utf-8"></head><body>\n'
+  fs.writeFileSync(gabarit, '<!doctype html><html lang="fr" data-root=""><head><meta charset="utf-8"><link rel="stylesheet" href="assets/css/tailwind.css"></head><body>\n'
     + SCRIPTS.map((s) => `<script src="assets/js/${s}"></script>`).join('\n') + '\n</body></html>');
   const navigateur = await chromium.launch();
   const page = await navigateur.newPage();

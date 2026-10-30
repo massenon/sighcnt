@@ -1,0 +1,199 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-impression.js — SIGH.print.ticket. date = [année, mois0, jour, h, min]. Ne pas éditer.",
+ "cas": [
+  {
+   "nom": "comptant simple",
+   "entree": {
+    "operateur": "DIEYABIDI Aïssatou",
+    "numero": "F-2026-00012",
+    "dossier": "CNT/12/26",
+    "date": [
+     2026,
+     9,
+     30,
+     14,
+     5
+    ],
+    "lignes": [
+     {
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 3000,
+      "montant": 3000
+     },
+     {
+      "designation": "Paracétamol 500 mg",
+      "quantite": 2,
+      "prixUnitaire": 150,
+      "montant": 300
+     }
+    ],
+    "total": 3300,
+    "partPatient": 3300,
+    "regle": 5000,
+    "rendu": 1700
+   },
+   "lignes": [
+    "CLINIQUE NASSIERA TOO",
+    "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "TÉL. 01 95 44 51 51 / 01 66 43 28 20",
+    "IFU 3201642748214",
+    "RCCM RB/NAT/2016-B-268",
+    "--------------------------------",
+    "OPÉRATEUR|DIEYABIDI Aïssatou",
+    "TYPE VENTE|COMPTANT",
+    "DOSSIER|CNT/12/26",
+    "N° PIÈCE|F-2026-00012",
+    "DATE|30/10/2026 14h05",
+    "--------------------------------",
+    "Consultation généraliste",
+    "  1 x 3 000|3 000",
+    "Paracétamol 500 mg",
+    "  2 x 150|300",
+    "--------------------------------",
+    "MONTANT TOTAL|3 300",
+    "NET À PAYER|3 300",
+    "RÉGLÉ|5 000",
+    "RENDU|1 700",
+    "TOTAL DÛ|0",
+    "--------------------------------",
+    "Arrêtée la présente facture à la somme de :",
+    "trois mille trois cents francs CFA",
+    "--------------------------------",
+    "QUE DIEU VOUS GUÉRISSE ! AMINE !"
+   ]
+  },
+  {
+   "nom": "assuré, part non assurée, règlement partiel",
+   "entree": {
+    "operateur": "DIEYABIDI Aïssatou",
+    "numero": "F-2026-00013-A",
+    "typeVente": "CRÉDIT",
+    "assureur": "NSIA",
+    "assure": "KPOSSOU Awa",
+    "dossier": "CNT/13/26",
+    "date": [
+     2026,
+     9,
+     30,
+     9,
+     40
+    ],
+    "lignes": [
+     {
+      "designation": "Échographie pelvienne",
+      "quantite": 1,
+      "prixUnitaire": 9000,
+      "montant": 9000
+     },
+     {
+      "designation": "Certificat médical",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "montant": 2000
+     }
+    ],
+    "total": 11000,
+    "remise": 500,
+    "partAssureur": 6300,
+    "partNonAssuree": 2000,
+    "partPatient": 4200,
+    "regle": 2000,
+    "baseMecef": 4200
+   },
+   "lignes": [
+    "CLINIQUE NASSIERA TOO",
+    "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "TÉL. 01 95 44 51 51 / 01 66 43 28 20",
+    "IFU 3201642748214",
+    "RCCM RB/NAT/2016-B-268",
+    "--------------------------------",
+    "OPÉRATEUR|DIEYABIDI Aïssatou",
+    "TYPE VENTE|CRÉDIT",
+    "ASSUREUR|NSIA",
+    "ASSURÉ|KPOSSOU Awa",
+    "DOSSIER|CNT/13/26",
+    "N° PIÈCE|F-2026-00013-A",
+    "DATE|30/10/2026 09h40",
+    "--------------------------------",
+    "Échographie pelvienne",
+    "  1 x 9 000|9 000",
+    "Certificat médical",
+    "  1 x 2 000|2 000",
+    "--------------------------------",
+    "MONTANT TOTAL|11 000",
+    "REMISE|- 500",
+    "PART ASSUREUR|6 300",
+    "DONT PART NON ASSURÉE|2 000",
+    "PART ASSURÉ|4 200",
+    "RÉGLÉ|2 000",
+    "TOTAL DÛ|2 200",
+    "BASE MECeF|4 200",
+    "--------------------------------",
+    "Arrêtée la présente facture à la somme de :",
+    "quatre mille deux cents francs CFA",
+    "--------------------------------",
+    "QUE DIEU VOUS GUÉRISSE ! AMINE !"
+   ]
+  },
+  {
+   "nom": "sans dossier, MECeF",
+   "entree": {
+    "operateur": "ADJAHO Rose",
+    "numero": "F-2026-00014",
+    "date": [
+     2026,
+     0,
+     5,
+     8,
+     0
+    ],
+    "mecef": {
+     "nim": "ET01234567",
+     "code": "ABCD-1234-EFGH-5678",
+     "compteurs": "12/34 FV",
+     "heure": "08:00:12"
+    },
+    "lignes": [
+     {
+      "designation": "Carnet de santé",
+      "quantite": 3,
+      "prixUnitaire": 500,
+      "montant": 1500
+     }
+    ],
+    "total": 1500,
+    "partPatient": 1500
+   },
+   "lignes": [
+    "CLINIQUE NASSIERA TOO",
+    "BP : 507 NATITINGOU (Rép. du Bénin)",
+    "TÉL. 01 95 44 51 51 / 01 66 43 28 20",
+    "IFU 3201642748214",
+    "RCCM RB/NAT/2016-B-268",
+    "--------------------------------",
+    "NIM : ET01234567",
+    "CODE DGI : ABCD-1234-EFGH-5678",
+    "CPT : 12/34 FV",
+    "HEURE : 08:00:12",
+    "--------------------------------",
+    "OPÉRATEUR|ADJAHO Rose",
+    "TYPE VENTE|COMPTANT",
+    "DOSSIER|VENTE AU COMPTOIR — sans dossier",
+    "N° PIÈCE|F-2026-00014",
+    "DATE|05/01/2026 08h00",
+    "--------------------------------",
+    "Carnet de santé",
+    "  3 x 500|1 500",
+    "--------------------------------",
+    "MONTANT TOTAL|1 500",
+    "NET À PAYER|1 500",
+    "--------------------------------",
+    "Arrêtée la présente facture à la somme de :",
+    "mille cinq cents francs CFA",
+    "--------------------------------",
+    "QUE DIEU VOUS GUÉRISSE ! AMINE !"
+   ]
+  }
+ ]
+}

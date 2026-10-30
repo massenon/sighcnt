@@ -357,5 +357,14 @@
    "onglets": 0.0375,
    "vide": 0.0043
   }
+ },
+ "graphiques": {
+  "seuil": 0.1,
+  "ecart_pixels": {
+   "barres": 0.0419,
+   "ligne": 0.025,
+   "anneau": 0.0334,
+   "sparkline": 0.0355
+  }
  }
 }

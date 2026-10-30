@@ -5,7 +5,15 @@ library;
 import '../droits/matrice.dart';
 
 class EcranNav {
-  const EcranNav({required this.id, required this.label, required this.icone, required this.module, required this.moduleLabel, required this.domaine, required this.hub, required this.standalone});
+  const EcranNav(
+      {required this.id,
+      required this.label,
+      required this.icone,
+      required this.module,
+      required this.moduleLabel,
+      required this.domaine,
+      required this.hub,
+      required this.standalone});
   final String id;
   final String label;
   final String? icone;
@@ -17,7 +25,14 @@ class EcranNav {
 }
 
 class RangeeManifeste {
-  const RangeeManifeste({required this.domaine, required this.code, required this.label, required this.icone, required this.alias, required this.secondaire, required this.ecrans});
+  const RangeeManifeste(
+      {required this.domaine,
+      required this.code,
+      required this.label,
+      required this.icone,
+      required this.alias,
+      required this.secondaire,
+      required this.ecrans});
   final String domaine;
   final String code;
   final String label;
@@ -37,7 +52,12 @@ class DomaineManifeste {
 
 /// Une rangée du ruban APRÈS filtrage par les droits : seuls les écrans que le rôle voit.
 class RangeeRuban {
-  const RangeeRuban({required this.code, required this.label, required this.icone, required this.hub, required this.ecrans});
+  const RangeeRuban(
+      {required this.code,
+      required this.label,
+      required this.icone,
+      required this.hub,
+      required this.ecrans});
   final String code;
   final String label;
   final String? icone;
@@ -48,7 +68,8 @@ class RangeeRuban {
 }
 
 class DomaineRuban {
-  const DomaineRuban({required this.nom, required this.icone, required this.rangees});
+  const DomaineRuban(
+      {required this.nom, required this.icone, required this.rangees});
   final String nom;
   final String? icone;
   final List<RangeeRuban> rangees;
@@ -60,7 +81,8 @@ const domainesMere = {'Poste mère'};
 
 /// Raccourci permanent du ruban (`N.RACCOURCIS`) : ouvre la page d'accueil d'un module, si le rôle en voit au moins un écran.
 class RaccourciRuban {
-  const RaccourciRuban({required this.court, required this.hub, required this.icone});
+  const RaccourciRuban(
+      {required this.court, required this.hub, required this.icone});
   final String court;
   final String hub;
   final String? icone;
@@ -79,24 +101,41 @@ class Manifeste {
     for (final raw in (j['ecrans'] as List)) {
       final e = (raw as Map).cast<String, Object?>();
       ecrans['${e['id']}'] = EcranNav(
-        id: '${e['id']}', label: '${e['label']}', icone: s(e['icone']), module: '${e['module']}', moduleLabel: '${e['moduleLabel']}',
-        domaine: '${e['domaine']}', hub: e['hub'] == true, standalone: e['standalone'] == true,
+        id: '${e['id']}',
+        label: '${e['label']}',
+        icone: s(e['icone']),
+        module: '${e['module']}',
+        moduleLabel: '${e['moduleLabel']}',
+        domaine: '${e['domaine']}',
+        hub: e['hub'] == true,
+        standalone: e['standalone'] == true,
       );
     }
     return Manifeste._(
-      [for (final d in (j['domaines'] as List)) DomaineManifeste('${(d as Map)['nom']}', s(d['icone']))],
+      [
+        for (final d in (j['domaines'] as List))
+          DomaineManifeste('${(d as Map)['nom']}', s(d['icone']))
+      ],
       [
         for (final raw in (j['modules'] as List))
           () {
             final m = (raw as Map).cast<String, Object?>();
             return RangeeManifeste(
-              domaine: '${m['domaine']}', code: '${m['code']}', label: '${m['label']}', icone: s(m['icone']),
-              alias: m['alias'] == true, secondaire: m['secondaire'] == true, ecrans: ((m['ecrans'] ?? const []) as List).cast<String>(),
+              domaine: '${m['domaine']}',
+              code: '${m['code']}',
+              label: '${m['label']}',
+              icone: s(m['icone']),
+              alias: m['alias'] == true,
+              secondaire: m['secondaire'] == true,
+              ecrans: ((m['ecrans'] ?? const []) as List).cast<String>(),
             );
           }(),
       ],
       ecrans,
-      [for (final r in ((j['raccourcis'] ?? const []) as List)) (code: '${(r as Map)['code']}', court: '${r['court']}')],
+      [
+        for (final r in ((j['raccourcis'] ?? const []) as List))
+          (code: '${(r as Map)['code']}', court: '${r['court']}')
+      ],
     );
   }
 
@@ -105,7 +144,11 @@ class Manifeste {
     final rangees = ruban.expand((d) => d.rangees).toList();
     return [
       for (final r in _raccourcis)
-        if (rangees.any((x) => x.code == r.code)) RaccourciRuban(court: r.court, hub: 'hub-${r.code.toLowerCase()}', icone: rangees.firstWhere((x) => x.code == r.code).icone),
+        if (rangees.any((x) => x.code == r.code))
+          RaccourciRuban(
+              court: r.court,
+              hub: 'hub-${r.code.toLowerCase()}',
+              icone: rangees.firstWhere((x) => x.code == r.code).icone),
     ];
   }
 
@@ -114,7 +157,8 @@ class Manifeste {
 
   /// Le ruban d'un rôle. `estMere` ouvre les domaines réservés à la mère ; il ne les OUVRE pas aux rôles sans droit :
   /// les droits restent ceux de la matrice.
-  List<DomaineRuban> ruban(MatriceDroits matrice, String role, {required bool estMere}) {
+  List<DomaineRuban> ruban(MatriceDroits matrice, String role,
+      {required bool estMere}) {
     final out = <DomaineRuban>[];
     for (final d in domaines) {
       if (!estMere && domainesMere.contains(d.nom)) continue;
@@ -125,9 +169,15 @@ class Manifeste {
             if (_ecrans[id] != null && matrice.peutVoir(role, id)) _ecrans[id]!,
         ];
         if (visibles.isEmpty) continue;
-        rangees.add(RangeeRuban(code: r.code, label: r.label, icone: r.icone, hub: 'hub-${r.code.toLowerCase()}', ecrans: visibles));
+        rangees.add(RangeeRuban(
+            code: r.code,
+            label: r.label,
+            icone: r.icone,
+            hub: 'hub-${r.code.toLowerCase()}',
+            ecrans: visibles));
       }
-      if (rangees.isNotEmpty) out.add(DomaineRuban(nom: d.nom, icone: d.icone, rangees: rangees));
+      if (rangees.isNotEmpty)
+        out.add(DomaineRuban(nom: d.nom, icone: d.icone, rangees: rangees));
     }
     return out;
   }

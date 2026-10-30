@@ -19,14 +19,39 @@ String nombre(Object? v, [int? decimales]) =>
     grouperMilliers(toFixedJs(nombreOuZero(v), decimales ?? 0));
 
 /// `C.pct(v, dec)` — une décimale par défaut.
-String pourcent(Object? v, [int? decimales]) => '${nombre(v, decimales ?? 1)}\u00A0%';
+String pourcent(Object? v, [int? decimales]) =>
+    '${nombre(v, decimales ?? 1)}\u00A0%';
 
 const _unites = [
-  'zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf',
-  'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize',
+  'zéro',
+  'un',
+  'deux',
+  'trois',
+  'quatre',
+  'cinq',
+  'six',
+  'sept',
+  'huit',
+  'neuf',
+  'dix',
+  'onze',
+  'douze',
+  'treize',
+  'quatorze',
+  'quinze',
+  'seize',
 ];
 const _dizaines = [
-  '', '', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt',
+  '',
+  '',
+  'vingt',
+  'trente',
+  'quarante',
+  'cinquante',
+  'soixante',
+  'soixante',
+  'quatre-vingt',
+  'quatre-vingt',
 ];
 
 String _centaine(int n) {
@@ -76,9 +101,28 @@ String nombreEnLettres(Object? v) {
 String montantEnLettres(Object? v) => '${nombreEnLettres(v)} francs CFA';
 
 const _mois = [
-  'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
+  'janvier',
+  'février',
+  'mars',
+  'avril',
+  'mai',
+  'juin',
+  'juillet',
+  'août',
+  'septembre',
+  'octobre',
+  'novembre',
+  'décembre',
 ];
-const _jours = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+const _jours = [
+  'dimanche',
+  'lundi',
+  'mardi',
+  'mercredi',
+  'jeudi',
+  'vendredi',
+  'samedi'
+];
 
 String _pad(int n, [int largeur = 2]) => n.toString().padLeft(largeur, '0');
 
@@ -89,7 +133,8 @@ String dateFR(DateTime d) => '${_pad(d.day)}/${_pad(d.month)}/${d.year}';
 String dateLong(DateTime d) => '${d.day} ${_mois[d.month - 1]} ${d.year}';
 
 /// `C.dateJour` — dimanche 16 août 2026 (JS : dimanche = 0).
-String dateJour(DateTime d) => '${_jours[d.weekday % 7]} ${d.day} ${_mois[d.month - 1]} ${d.year}';
+String dateJour(DateTime d) =>
+    '${_jours[d.weekday % 7]} ${d.day} ${_mois[d.month - 1]} ${d.year}';
 
 /// `C.heure` — 09h05.
 String heure(DateTime d) => '${_pad(d.hour)}h${_pad(d.minute)}';

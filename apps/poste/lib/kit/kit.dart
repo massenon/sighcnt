@@ -6,6 +6,7 @@ export 'badge.dart';
 export 'bouton.dart';
 export 'carte.dart';
 export 'formulaire.dart';
+export 'graphiques.dart';
 export 'modale.dart';
 export 'onglets.dart';
 export 'tableau.dart';

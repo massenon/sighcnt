@@ -66,8 +66,18 @@ class JetonsSigh {
     800: 0xFF1E51AF,
     900: 0xFF1E468A,
   };
-  static const List<String> policeSans = ['Inter', 'Segoe UI', 'system-ui', 'sans-serif'];
-  static const List<String> policeMono = ['Consolas', 'ui-monospace', 'monospace'];
+  static const List<String> policeSans = [
+    'Inter',
+    'Segoe UI',
+    'system-ui',
+    'sans-serif'
+  ];
+  static const List<String> policeMono = [
+    'Consolas',
+    'ui-monospace',
+    'monospace'
+  ];
+
   /// Taille de texte minimale (CDCT) : 11 pt équivalent.
   static const double tailleMinimalePt = 11;
 }

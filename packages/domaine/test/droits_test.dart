@@ -5,24 +5,37 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final brut = jsonDecode(File('../rbac/data/rbac.json').readAsStringSync()) as Map<String, Object?>;
+  final brut = jsonDecode(File('../rbac/data/rbac.json').readAsStringSync())
+      as Map<String, Object?>;
   final m = MatriceDroits.depuisJson(brut);
   final parRole = (brut['parRole'] as Map).cast<String, Map>();
 
-  test('PARITÉ EXHAUSTIVE : chaque couple rôle × écran de la matrice extraite se relit à l\'identique', () {
+  test(
+      'PARITÉ EXHAUSTIVE : chaque couple rôle × écran de la matrice extraite se relit à l\'identique',
+      () {
     var n = 0;
     parRole.forEach((role, ecrans) {
       ecrans.forEach((ecran, t) {
         final d = m.droit(role, '$ecran');
-        expect([d.voir, d.editer, d.annuler], [t[0] == 1, t[1] == 1, t[2] == 1], reason: '$role → $ecran');
-        expect([m.peutVoir(role, '$ecran'), m.peutEditer(role, '$ecran'), m.peutAnnuler(role, '$ecran')], [t[0] == 1, t[0] == 1 && t[1] == 1, t[0] == 1 && t[2] == 1], reason: '$role → $ecran (raccourcis)');
+        expect([d.voir, d.editer, d.annuler], [t[0] == 1, t[1] == 1, t[2] == 1],
+            reason: '$role → $ecran');
+        expect([
+          m.peutVoir(role, '$ecran'),
+          m.peutEditer(role, '$ecran'),
+          m.peutAnnuler(role, '$ecran')
+        ], [
+          t[0] == 1,
+          t[0] == 1 && t[1] == 1,
+          t[0] == 1 && t[2] == 1
+        ], reason: '$role → $ecran (raccourcis)');
         n++;
       });
     });
     expect(n, greaterThan(1000));
   });
 
-  test('tout ce qui n\'est pas listé est REFUSÉ : écran inconnu, rôle inconnu', () {
+  test('tout ce qui n\'est pas listé est REFUSÉ : écran inconnu, rôle inconnu',
+      () {
     expect(m.droit('caissier', 'ecran-inexistant'), Droit.aucun);
     expect(m.droit('role-invente', 'm8-caisse'), Droit.aucun);
     expect(m.peutVoir('role-invente', 'm8-caisse'), isFalse);
@@ -38,15 +51,20 @@ void main() {
     }
   });
 
-  test('décisions de la Direction (miroir de packages/rbac/test) : caissier', () {
+  test('décisions de la Direction (miroir de packages/rbac/test) : caissier',
+      () {
     expect(m.peutVoir('caissier', 'm6-stock-gros'), isFalse);
     expect(m.peutVoir('caissier', 'm12-depenses'), isFalse);
-    expect(m.droit('caissier', 'm8-facture-avoir'), const Droit(voir: true, editer: false, annuler: false));
-    expect(m.droit('caissier', 'm8-caisse'), const Droit(voir: true, editer: true, annuler: false));
+    expect(m.droit('caissier', 'm8-facture-avoir'),
+        const Droit(voir: true, editer: false, annuler: false));
+    expect(m.droit('caissier', 'm8-caisse'),
+        const Droit(voir: true, editer: true, annuler: false));
     expect(m.droit('caissier', 'm8-facture-avoir').lectureSeule, isTrue);
   });
 
-  test('biologiste (id laborantin) : pas de bon de livraison ; échographiste : exécute l\'imagerie, voit pas la caisse', () {
+  test(
+      'biologiste (id laborantin) : pas de bon de livraison ; échographiste : exécute l\'imagerie, voit pas la caisse',
+      () {
     expect(m.peutVoir('laborantin', 'm7-livraisons'), isFalse);
     expect(m.peutEditer('echographiste', 'm2-imagerie'), isTrue);
     expect(m.peutVoir('echographiste', 'm8-caisse'), isFalse);
