@@ -43,20 +43,22 @@ Les chiffres de la demande (100 000 utilisateurs, 99,99 %) sont des chiffres de 
 
 Pas de dates : elles dépendent de l'effectif Flutter/Dart/Laravel (non documenté) et du résultat du banc.
 
-## 3 bis. État d'avancement (29/10/2026)
+## 3 bis. État d'avancement (30/10/2026)
 
 | Étape | État | Où |
 |---|---|---|
-| ADR-0005 (révisions 1 à 3), PRD Flutter, spec de synchronisation, bibliothèque documentaire | **rédigés** (ADR *proposé*) | `docs/` |
-| Banc de protocole : mère, fileuls, relais chiffré, mobile, coupures, SIGKILL, restauration | **vert** (26 scénarios, ≈ 127 vérifications, mutations détectées) | `packages/sync/banc/` |
-| `packages/domaine` (Dart) | **squelette** : contrat d'opération, familles, codes ; **non compilé** (pas de SDK Dart ici) | `packages/domaine/` |
-| `apps/poste` (Flutter desktop : fileul + mère) | **squelette** non compilé | `apps/poste/` |
-| `apps/mobile` (Flutter, profils soignant / réception de secours) | **squelette** non compilé | `apps/mobile/` |
-| `apps/web` (Laravel 12 : relais + panneau) | **squelette** Laravel 12.70 qui démarre (`php artisan --version`) ; aucun code métier | `apps/web/` |
-| P0 : acceptation d'ADR-0005 ; audit de `sigh_web/` (code à fournir) ; réponses Q1–Q8 de la spec | **en attente de la Direction** | — |
-| P1 : extraction (vecteurs de tests, matrice RBAC JSON, jetons de design, manifeste de parité) | **à faire** — prochaine étape recommandée | `prototype_html/build/` |
+| ADR-0005 (révisions 1 à 3), PRD Flutter, spec de synchronisation, bibliothèque documentaire | **rédigés** (ADR *proposé*, non accepté) | `docs/` |
+| Banc de protocole : mère, fileuls, relais chiffré, mobile, coupures, SIGKILL, restauration | **vert** : 26 scénarios, 128 vérifications, sur **trois implémentations** (Node, Dart + relais Laravel) et sur **PostgreSQL** (`banc:cible`, `banc:pg`) ; mutations détectées | `packages/sync/banc/` |
+| P1 : extraction (matrice RBAC, manifeste, jetons, vecteurs, parité, ERD) | **fait**, engendré par `prototype_html/build/` | `packages/rbac`, `packages/referentiels`, `docs/architecture/` |
+| `packages/domaine` (Dart) | **compilé et testé** : formats, périodes, secteurs, jetons, contrat de synchronisation ; rejoue les vecteurs de la maquette. **Aucune règle à état** (`repartir`, `encaisser`, avoir, exercice, BFR) n'est portée | `packages/domaine/` |
+| `packages/sync_dart` (mère, fileul, mobile, supervision, sauvegarde chiffrée) | **fait**, SQLite et PostgreSQL ; tests enveloppes (interopérables avec Node), dépôt, supervision | `packages/sync_dart/` |
+| `apps/web` (relais Laravel 12 + panneau Livewire) | **fait** : 23 tests PHPUnit, panneau vérifié en navigateur | `apps/web/` |
+| `apps/poste` : console de la mère (supervision, appareils, conflits, journal, maintenance) | **fait**, 14 tests de widgets, `analyze` propre | `apps/poste/` |
+| `apps/poste` : écrans métier (caisse, patients…) | **non commencé** — aucune tranche verticale portée | — |
+| `apps/mobile` | **squelette** : aucun écran de tournée ni de réception de secours | `apps/mobile/` |
+| P0 : acceptation d'ADR-0005 ; audit de `sigh_web/` (code jamais fourni) ; réponses Q1–Q8 | **en attente de la Direction** | — |
 
-**Ce qui bloque aujourd'hui** : (1) aucun SDK Flutter/Dart dans l'environnement de rédaction — les squelettes Dart doivent être ouverts et compilés sur un poste équipé ; (2) `sigh_web/` non fourni ; (3) ADR-0005 non acceptée.
+**Non fait, et à ne pas laisser croire** : SQLCipher (base locale non chiffrée), installation de la mère comme service Windows/Linux, compilation native Android/Windows/Linux des applications, tests de charge, revue de sécurité, désignation du détenteur de la clé papier, branchement de `sigh_sync` dans les applications Flutter, portage de toute tranche métier (caisse + MECeF en premier).
 
 ## 4. Groupes documentaires (l'ordre est la dépendance)
 
