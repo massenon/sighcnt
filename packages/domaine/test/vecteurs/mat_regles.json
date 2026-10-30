@@ -1,0 +1,3242 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-maternite.js — ne pas éditer.",
+ "nouveauNe": {
+  "cas": [
+   "dans les bornes",
+   "PC trop petit",
+   "PC à 32 (borne)",
+   "PC à 38 (borne)",
+   "PC à 38,1",
+   "PT à 29,9",
+   "PT à 36 (borne)",
+   "PT à 36,1",
+   "Apgar 5 min = 6",
+   "Apgar 5 min = 7 (seuil, pas d'alerte)",
+   "Apgar manquant",
+   "mesures manquantes",
+   "trois alertes"
+  ],
+  "fiches": [
+   {
+    "id": "NV0",
+    "statut": "actif",
+    "reference": "NAI-9000",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3.1,
+    "taille": 50,
+    "pc": 34,
+    "pt": 33,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV1",
+    "statut": "actif",
+    "reference": "NAI-9001",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 31.9,
+    "pt": 33,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV2",
+    "statut": "actif",
+    "reference": "NAI-9002",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 32,
+    "pt": 33,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV3",
+    "statut": "actif",
+    "reference": "NAI-9003",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 38,
+    "pt": 33,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV4",
+    "statut": "actif",
+    "reference": "NAI-9004",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 38.1,
+    "pt": 33,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV5",
+    "statut": "actif",
+    "reference": "NAI-9005",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 34,
+    "pt": 29.9,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV6",
+    "statut": "actif",
+    "reference": "NAI-9006",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 34,
+    "pt": 36,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV7",
+    "statut": "actif",
+    "reference": "NAI-9007",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 34,
+    "pt": 36.1,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV8",
+    "statut": "actif",
+    "reference": "NAI-9008",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 34,
+    "pt": 33,
+    "apgar1": 5,
+    "apgar5": 6,
+    "apgar10": 8,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV9",
+    "statut": "actif",
+    "reference": "NAI-9009",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 34,
+    "pt": 33,
+    "apgar1": 6,
+    "apgar5": 7,
+    "apgar10": 9,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV10",
+    "statut": "actif",
+    "reference": "NAI-9010",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 34,
+    "pt": 33,
+    "apgar1": null,
+    "apgar5": null,
+    "apgar10": null,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV11",
+    "statut": "actif",
+    "reference": "NAI-9011",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": null,
+    "pt": null,
+    "apgar1": 8,
+    "apgar5": 9,
+    "apgar10": 10,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   },
+   {
+    "id": "NV12",
+    "statut": "actif",
+    "reference": "NAI-9012",
+    "accouchementId": "ACC0001",
+    "dateHeure": "2026-07-09T11:11:00.000Z",
+    "mere": "TCHANE Fatouma",
+    "mereCode": "CNT/96/26",
+    "mereId": "PAT0096",
+    "sexe": "M",
+    "poids": 3,
+    "taille": 50,
+    "pc": 30,
+    "pt": 40,
+    "apgar1": 2,
+    "apgar5": 3,
+    "apgar10": 5,
+    "reanimation": true,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": true,
+    "hepB0": false,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Faible",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Faible"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "< 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": true,
+     "carteInfantile": true
+    },
+    "elements24h": []
+   }
+  ],
+  "kpis": [
+   {
+    "label": "Dossiers bébé",
+    "valeur": "13",
+    "indice": null
+   },
+   {
+    "label": "Mesures hors bornes",
+    "valeur": "6",
+    "indice": "PC 32–38 · PT 30–36 · Apgar 5 min ≥ 7"
+   },
+   {
+    "label": "Réanimations",
+    "valeur": "13",
+    "indice": "Fonction 7 SONU"
+   },
+   {
+    "label": "Vitamine K1",
+    "valeur": "100.0 %",
+    "indice": null
+   }
+  ],
+  "lignes": [
+   "NV0",
+   "NV1",
+   "NV2",
+   "NV3",
+   "NV4",
+   "NV5",
+   "NV6",
+   "NV7",
+   "NV8",
+   "NV9",
+   "NV10",
+   "NV11",
+   "NV12"
+  ],
+  "rendu": [
+   {
+    "ref": "NAI-9000",
+    "pc": "34",
+    "pcAlerte": false,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9001",
+    "pc": "31.9",
+    "pcAlerte": true,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9002",
+    "pc": "32",
+    "pcAlerte": false,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9003",
+    "pc": "38",
+    "pcAlerte": false,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9004",
+    "pc": "38.1",
+    "pcAlerte": true,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9005",
+    "pc": "34",
+    "pcAlerte": false,
+    "pt": "29.9",
+    "ptAlerte": true,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9006",
+    "pc": "34",
+    "pcAlerte": false,
+    "pt": "36",
+    "ptAlerte": false,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9007",
+    "pc": "34",
+    "pcAlerte": false,
+    "pt": "36.1",
+    "ptAlerte": true,
+    "apgar": "8 / 9 / 10"
+   },
+   {
+    "ref": "NAI-9008",
+    "pc": "34",
+    "pcAlerte": false,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "5 / 6 / 8"
+   },
+   {
+    "ref": "NAI-9009",
+    "pc": "34",
+    "pcAlerte": false,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "6 / 7 / 9"
+   },
+   {
+    "ref": "NAI-9010",
+    "pc": "34",
+    "pcAlerte": false,
+    "pt": "33",
+    "ptAlerte": false,
+    "apgar": "— / — / —"
+   },
+   {
+    "ref": "NAI-9011",
+    "pc": "—",
+    "pcAlerte": false,
+    "pt": "—",
+    "ptAlerte": false,
+    "apgar": "8 / 9 / 10"
+   }
+  ],
+  "registre": {
+   "kpis": [
+    {
+     "label": "Naissances enregistrées",
+     "valeur": "13",
+     "indice": null
+    },
+    {
+     "label": "Garçons / Filles",
+     "valeur": "13 / 0",
+     "indice": null
+    },
+    {
+     "label": "Poids moyen",
+     "valeur": "3.01 kg",
+     "indice": null
+    },
+    {
+     "label": "À déclarer à l’état civil",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "rendu": [
+    {
+     "ref": "NAI-9000",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "34 / 33",
+     "horsBornes": false
+    },
+    {
+     "ref": "NAI-9001",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "31.9 / 33",
+     "horsBornes": true
+    },
+    {
+     "ref": "NAI-9002",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "32 / 33",
+     "horsBornes": false
+    },
+    {
+     "ref": "NAI-9003",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "38 / 33",
+     "horsBornes": false
+    },
+    {
+     "ref": "NAI-9004",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "38.1 / 33",
+     "horsBornes": true
+    },
+    {
+     "ref": "NAI-9005",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "34 / 29.9",
+     "horsBornes": true
+    },
+    {
+     "ref": "NAI-9006",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "34 / 36",
+     "horsBornes": false
+    },
+    {
+     "ref": "NAI-9007",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "34 / 36.1",
+     "horsBornes": true
+    },
+    {
+     "ref": "NAI-9008",
+     "apgar": "5 / 6 / 8",
+     "apgarAlerte": true,
+     "pc": "34 / 33",
+     "horsBornes": true
+    },
+    {
+     "ref": "NAI-9009",
+     "apgar": "6 / 7 / 9",
+     "apgarAlerte": false,
+     "pc": "34 / 33",
+     "horsBornes": false
+    },
+    {
+     "ref": "NAI-9010",
+     "apgar": "— / — / —",
+     "apgarAlerte": false,
+     "pc": "34 / 33",
+     "horsBornes": false
+    },
+    {
+     "ref": "NAI-9011",
+     "apgar": "8 / 9 / 10",
+     "apgarAlerte": false,
+     "pc": "— / —",
+     "horsBornes": false
+    }
+   ]
+  }
+ },
+ "partogramme": {
+  "fiches": [
+   {
+    "id": "P1",
+    "reference": "PARTO-9001",
+    "patient": "TEST P1",
+    "patientCode": "CNT/P1",
+    "debut": "2026-08-15T20:00:00.000Z",
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 1,
+      "dilatation": 5,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 2,
+      "dilatation": 6,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     }
+    ],
+    "clos": false,
+    "statut": "actif",
+    "accoucheur": "X",
+    "gestite": 2,
+    "parite": 1
+   },
+   {
+    "id": "P2",
+    "reference": "PARTO-9002",
+    "patient": "TEST P2",
+    "patientCode": "CNT/P2",
+    "debut": "2026-08-15T20:00:00.000Z",
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 4,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 5,
+      "dilatation": 4.5,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     }
+    ],
+    "clos": false,
+    "statut": "actif",
+    "accoucheur": "X",
+    "gestite": 2,
+    "parite": 1
+   },
+   {
+    "id": "P3",
+    "reference": "PARTO-9003",
+    "patient": "TEST P3",
+    "patientCode": "CNT/P3",
+    "debut": "2026-08-15T20:00:00.000Z",
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 5,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     }
+    ],
+    "clos": false,
+    "statut": "actif",
+    "accoucheur": "X",
+    "gestite": 2,
+    "parite": 1
+   },
+   {
+    "id": "P4",
+    "reference": "PARTO-9004",
+    "patient": "TEST P4",
+    "patientCode": "CNT/P4",
+    "debut": "2026-08-15T20:00:00.000Z",
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 5,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 3,
+      "dilatation": 3,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 8,
+      "dilatation": 10,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     }
+    ],
+    "clos": true,
+    "statut": "actif",
+    "accoucheur": "X",
+    "gestite": 2,
+    "parite": 1
+   },
+   {
+    "id": "P5",
+    "reference": "PARTO-9005",
+    "patient": "TEST P5",
+    "patientCode": "CNT/P5",
+    "debut": "2026-08-15T20:00:00.000Z",
+    "mesures": [],
+    "clos": false,
+    "statut": "actif",
+    "accoucheur": "X",
+    "gestite": 2,
+    "parite": 1
+   },
+   {
+    "id": "P6",
+    "reference": "PARTO-9006",
+    "patient": "TEST P6",
+    "patientCode": "CNT/P6",
+    "debut": "2026-08-15T20:00:00.000Z",
+    "mesures": [
+     {
+      "heure": 2,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 4,
+      "dilatation": 3,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     },
+     {
+      "heure": 12,
+      "dilatation": 9,
+      "descente": 3,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 80,
+      "liquide": "C"
+     }
+    ],
+    "clos": false,
+    "statut": "actif",
+    "accoucheur": "X",
+    "gestite": 2,
+    "parite": 1
+   }
+  ],
+  "kpis": [
+   {
+    "label": "Partogrammes",
+    "valeur": "6",
+    "indice": null
+   },
+   {
+    "label": "Travaux en cours",
+    "valeur": "5",
+    "indice": null
+   },
+   {
+    "label": "Ligne d’action franchie",
+    "valeur": "3",
+    "indice": null
+   },
+   {
+    "label": "Dilatations complètes",
+    "valeur": "1",
+    "indice": null
+   }
+  ],
+  "cartes": [
+   "Dilatation cervicale — TEST P1 (PARTO-9001)",
+   "Mesures horaires"
+  ],
+  "commandes": [
+   "TEST P1",
+   "Ouvrir un partogramme",
+   "Ajouter une mesure",
+   "Imprimer"
+  ],
+  "sans": {
+   "note": false
+  },
+  "cas": [
+   {
+    "id": "P1",
+    "ref": "PARTO-9001",
+    "note": false,
+    "mesures": [
+     [
+      "0",
+      "4",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "1",
+      "5",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "2",
+      "6",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ]
+    ],
+    "enTete": "Dilatation cervicale — TEST P1 (PARTO-9001)",
+    "texteNote": null
+   },
+   {
+    "id": "P2",
+    "ref": "PARTO-9002",
+    "note": true,
+    "mesures": [
+     [
+      "0",
+      "4",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "4",
+      "4",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "5",
+      "4.5",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ]
+    ],
+    "enTete": "Dilatation cervicale — TEST P2 (PARTO-9002)",
+    "texteNote": "La ligne d’ACTION est franchie : la dilatation est en retard de plus de 4 heures sur la ligne d’alerte. Le formulaire national appelle une décision — codes 1 à 7 : Rupture artificielle de la PDE, Antispasmodique, Ocytocine, Épisiotomie, Ventouse / Forceps, Référence, Césarienne / Laparotomie."
+   },
+   {
+    "id": "P3",
+    "ref": "PARTO-9003",
+    "note": true,
+    "mesures": [
+     [
+      "0",
+      "4",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "5",
+      "4",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ]
+    ],
+    "enTete": "Dilatation cervicale — TEST P3 (PARTO-9003)",
+    "texteNote": "La ligne d’ACTION est franchie : la dilatation est en retard de plus de 4 heures sur la ligne d’alerte. Le formulaire national appelle une décision — codes 1 à 7 : Rupture artificielle de la PDE, Antispasmodique, Ocytocine, Épisiotomie, Ventouse / Forceps, Référence, Césarienne / Laparotomie."
+   },
+   {
+    "id": "P4",
+    "ref": "PARTO-9004",
+    "note": false,
+    "mesures": [
+     [
+      "0",
+      "5",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "3",
+      "3",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "8",
+      "10",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ]
+    ],
+    "enTete": "Dilatation cervicale — TEST P4 (PARTO-9004)",
+    "texteNote": null
+   },
+   {
+    "id": "P5",
+    "ref": "PARTO-9005",
+    "note": false,
+    "mesures": [],
+    "enTete": "Dilatation cervicale — TEST P5 (PARTO-9005)",
+    "texteNote": null
+   },
+   {
+    "id": "P6",
+    "ref": "PARTO-9006",
+    "note": true,
+    "mesures": [
+     [
+      "2",
+      "4",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "4",
+      "3",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ],
+     [
+      "12",
+      "9",
+      "3",
+      "140",
+      "3",
+      "12/8",
+      "80",
+      "C"
+     ]
+    ],
+    "enTete": "Dilatation cervicale — TEST P6 (PARTO-9006)",
+    "texteNote": "La ligne d’ACTION est franchie : la dilatation est en retard de plus de 4 heures sur la ligne d’alerte. Le formulaire national appelle une décision — codes 1 à 7 : Rupture artificielle de la PDE, Antispasmodique, Ocytocine, Épisiotomie, Ventouse / Forceps, Référence, Césarienne / Laparotomie."
+   }
+  ],
+  "ouverture": {
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "debut",
+     ""
+    ],
+    [
+     "gestite",
+     ""
+    ],
+    [
+     "parite",
+     ""
+    ],
+    [
+     "accoucheur",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouveau": [
+    {
+     "id": "PARxmvvhndbk21lgs",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "debut": "2026-08-16T08:00:00.000Z",
+     "gestite": 2,
+     "parite": 1,
+     "accoucheur": "BASSONGUI Chabi Séko",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "PARTO-9007",
+     "mesures": [],
+     "clos": false
+    }
+   ],
+   "toasts": [
+    [
+     "Partogramme ouvert."
+    ]
+   ]
+  },
+  "ajouts": [
+   {
+    "saisie": {
+     "heure": 0,
+     "dilatation": 4,
+     "descente": 4,
+     "bdf": 140,
+     "contractions": 3,
+     "ta": "12/8",
+     "pouls": 82,
+     "liquide": "C"
+    },
+    "prerempli": [
+     [
+      "heure",
+      "0"
+     ],
+     [
+      "dilatation",
+      ""
+     ],
+     [
+      "descente",
+      ""
+     ],
+     [
+      "bdf",
+      ""
+     ],
+     [
+      "contractions",
+      ""
+     ],
+     [
+      "ta",
+      ""
+     ],
+     [
+      "pouls",
+      ""
+     ],
+     [
+      "liquide",
+      ""
+     ]
+    ],
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 4,
+      "descente": 4,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 82,
+      "liquide": "C"
+     }
+    ],
+    "clos": false,
+    "resume": null,
+    "toasts": [],
+    "modaleOuverte": false
+   },
+   {
+    "saisie": {
+     "heure": 5,
+     "dilatation": 4,
+     "descente": 3,
+     "bdf": 150,
+     "contractions": 4,
+     "ta": "12/8",
+     "pouls": 90,
+     "liquide": "M"
+    },
+    "prerempli": [
+     [
+      "heure",
+      "1"
+     ],
+     [
+      "dilatation",
+      ""
+     ],
+     [
+      "descente",
+      ""
+     ],
+     [
+      "bdf",
+      ""
+     ],
+     [
+      "contractions",
+      ""
+     ],
+     [
+      "ta",
+      ""
+     ],
+     [
+      "pouls",
+      ""
+     ],
+     [
+      "liquide",
+      ""
+     ]
+    ],
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 4,
+      "descente": 4,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 82,
+      "liquide": "C"
+     },
+     {
+      "heure": 5,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 150,
+      "contractions": 4,
+      "ta": "12/8",
+      "pouls": 90,
+      "liquide": "M"
+     }
+    ],
+    "clos": false,
+    "resume": null,
+    "toasts": [
+     [
+      "Un partogramme franchit la ligne d’action — une décision est attendue."
+     ]
+    ],
+    "modaleOuverte": false
+   },
+   {
+    "saisie": {
+     "heure": 3,
+     "dilatation": 6,
+     "bdf": 40
+    },
+    "prerempli": [
+     [
+      "heure",
+      "6"
+     ],
+     [
+      "dilatation",
+      ""
+     ],
+     [
+      "descente",
+      ""
+     ],
+     [
+      "bdf",
+      ""
+     ],
+     [
+      "contractions",
+      ""
+     ],
+     [
+      "ta",
+      ""
+     ],
+     [
+      "pouls",
+      ""
+     ],
+     [
+      "liquide",
+      ""
+     ]
+    ],
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 4,
+      "descente": 4,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 82,
+      "liquide": "C"
+     },
+     {
+      "heure": 3,
+      "dilatation": 6,
+      "descente": null,
+      "bdf": 40,
+      "contractions": null,
+      "ta": "",
+      "pouls": null,
+      "liquide": ""
+     },
+     {
+      "heure": 5,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 150,
+      "contractions": 4,
+      "ta": "12/8",
+      "pouls": 90,
+      "liquide": "M"
+     }
+    ],
+    "clos": false,
+    "resume": null,
+    "toasts": [
+     [
+      "Un partogramme franchit la ligne d’action — une décision est attendue."
+     ]
+    ],
+    "modaleOuverte": false
+   },
+   {
+    "saisie": {
+     "heure": 7,
+     "dilatation": 10,
+     "descente": 0,
+     "bdf": 138,
+     "contractions": 5
+    },
+    "prerempli": [
+     [
+      "heure",
+      "6"
+     ],
+     [
+      "dilatation",
+      ""
+     ],
+     [
+      "descente",
+      ""
+     ],
+     [
+      "bdf",
+      ""
+     ],
+     [
+      "contractions",
+      ""
+     ],
+     [
+      "ta",
+      ""
+     ],
+     [
+      "pouls",
+      ""
+     ],
+     [
+      "liquide",
+      ""
+     ]
+    ],
+    "mesures": [
+     {
+      "heure": 0,
+      "dilatation": 4,
+      "descente": 4,
+      "bdf": 140,
+      "contractions": 3,
+      "ta": "12/8",
+      "pouls": 82,
+      "liquide": "C"
+     },
+     {
+      "heure": 3,
+      "dilatation": 6,
+      "descente": null,
+      "bdf": 40,
+      "contractions": null,
+      "ta": "",
+      "pouls": null,
+      "liquide": ""
+     },
+     {
+      "heure": 5,
+      "dilatation": 4,
+      "descente": 3,
+      "bdf": 150,
+      "contractions": 4,
+      "ta": "12/8",
+      "pouls": 90,
+      "liquide": "M"
+     },
+     {
+      "heure": 7,
+      "dilatation": 10,
+      "descente": 0,
+      "bdf": 138,
+      "contractions": 5,
+      "ta": "",
+      "pouls": null,
+      "liquide": ""
+     }
+    ],
+    "clos": true,
+    "resume": "Dilatation complète — expulsion",
+    "toasts": [
+     [
+      "Un partogramme franchit la ligne d’action — une décision est attendue."
+     ]
+    ],
+    "modaleOuverte": false
+   }
+  ],
+  "imprime": {
+   "titre": "PARTOGRAPHIE",
+   "sousTitre": "PARTO-9007 — TCHANE Bertine",
+   "filigrane": null,
+   "cartouche": [
+    [
+     "Parturiente",
+     "TCHANE Bertine"
+    ],
+    [
+     "Dossier",
+     "CNT/1/25"
+    ],
+    [
+     "Gestité / parité",
+     "2 / 1"
+    ],
+    [
+     "Début du suivi",
+     "16/08/2026 à 08h00"
+    ],
+    [
+     "Accoucheur",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "Résumé",
+     "Dilatation complète — expulsion"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "L’Accoucheur",
+     "nom": "BASSONGUI Chabi Séko",
+     "mention": "Nom, qualification et signature"
+    }
+   ],
+   "contenu": [
+    {
+     "table": {
+      "entetes": [
+       "Heure (h)",
+       "Dilatation (cm)",
+       "Descente (/5)",
+       "BDF",
+       "CU/10 min",
+       "TA",
+       "Pouls",
+       "Liquide"
+      ],
+      "lignes": [
+       [
+        "0",
+        "4",
+        "4",
+        "140",
+        "3",
+        "12/8",
+        "82",
+        "C"
+       ],
+       [
+        "3",
+        "6",
+        "",
+        "40",
+        "",
+        "",
+        "",
+        ""
+       ],
+       [
+        "5",
+        "4",
+        "3",
+        "150",
+        "4",
+        "12/8",
+        "90",
+        "M"
+       ],
+       [
+        "7",
+        "10",
+        "0",
+        "138",
+        "5",
+        "",
+        "",
+        ""
+       ]
+      ],
+      "pied": null
+     }
+    }
+   ]
+  }
+ },
+ "dossier": {
+  "nb": 24,
+  "numeros": [
+   "00001/26",
+   "00002/26",
+   "00003/26",
+   "00004/26",
+   "00005/26"
+  ],
+  "facteurs": [
+   {
+    "code": "age_min",
+    "libelle": "Âge < 16 ans"
+   },
+   {
+    "code": "age_max",
+    "libelle": "Âge > 35 ans"
+   },
+   {
+    "code": "taille",
+    "libelle": "Taille < 1,50 m"
+   },
+   {
+    "code": "boiterie",
+    "libelle": "Boiterie"
+   },
+   {
+    "code": "parite",
+    "libelle": "Parité > 6"
+   },
+   {
+    "code": "cesarienne",
+    "libelle": "Césarienne au dernier accouchement"
+   },
+   {
+    "code": "mortne",
+    "libelle": "Mort-né au dernier accouchement"
+   },
+   {
+    "code": "drepano",
+    "libelle": "Drépanocytose SS ou SC"
+   },
+   {
+    "code": "hta",
+    "libelle": "HTA connue"
+   },
+   {
+    "code": "fausses_couches",
+    "libelle": "Fausses couches répétées"
+   },
+   {
+    "code": "diabete",
+    "libelle": "Diabète"
+   },
+   {
+    "code": "autres",
+    "libelle": "Autres facteurs"
+   }
+  ],
+  "gar": [
+   [
+    "00001/26",
+    1
+   ],
+   [
+    "00002/26",
+    3
+   ],
+   [
+    "00003/26",
+    1
+   ],
+   [
+    "00004/26",
+    1
+   ],
+   [
+    "00005/26",
+    2
+   ],
+   [
+    "00006/26",
+    0
+   ],
+   [
+    "00007/26",
+    0
+   ],
+   [
+    "00008/26",
+    0
+   ],
+   [
+    "00009/26",
+    0
+   ],
+   [
+    "00010/26",
+    0
+   ],
+   [
+    "00011/26",
+    0
+   ],
+   [
+    "00012/26",
+    1
+   ],
+   [
+    "00013/26",
+    1
+   ],
+   [
+    "00014/26",
+    3
+   ],
+   [
+    "00015/26",
+    3
+   ],
+   [
+    "00016/26",
+    1
+   ],
+   [
+    "00017/26",
+    1
+   ],
+   [
+    "00018/26",
+    1
+   ],
+   [
+    "00019/26",
+    0
+   ],
+   [
+    "00020/26",
+    1
+   ],
+   [
+    "00021/26",
+    1
+   ],
+   [
+    "00022/26",
+    1
+   ],
+   [
+    "00023/26",
+    0
+   ],
+   [
+    "00024/26",
+    0
+   ]
+  ],
+  "creations": [
+   {
+    "nom": "sans facteur",
+    "saisie": {
+     "patientCode": "CNT/1/25",
+     "dateEntree": "2026-08-16",
+     "ddr": "2026-05-10",
+     "gestite": 2,
+     "parite": 1,
+     "statutDossier": "suivi"
+    },
+    "initial": [
+     [
+      "numeroDossier",
+      "00025/26"
+     ],
+     [
+      "dateEntree",
+      "2026-08-16"
+     ],
+     [
+      "patientCode",
+      "CNT/1/25"
+     ],
+     [
+      "profession",
+      ""
+     ],
+     [
+      "nationalite",
+      ""
+     ],
+     [
+      "quartier",
+      ""
+     ],
+     [
+      "telephone",
+      ""
+     ],
+     [
+      "personneContact",
+      ""
+     ],
+     [
+      "telephoneContact",
+      ""
+     ],
+     [
+      "referee",
+      false
+     ],
+     [
+      "refereePar",
+      ""
+     ],
+     [
+      "procreateurNom",
+      ""
+     ],
+     [
+      "procreateurProfession",
+      ""
+     ],
+     [
+      "procreateurGs",
+      ""
+     ],
+     [
+      "procreateurSerologie",
+      ""
+     ],
+     [
+      "maladies",
+      ""
+     ],
+     [
+      "traitements",
+      ""
+     ],
+     [
+      "allergies",
+      ""
+     ],
+     [
+      "gestite",
+      "1"
+     ],
+     [
+      "parite",
+      "0"
+     ],
+     [
+      "avortements",
+      ""
+     ],
+     [
+      "enfantsVivants",
+      ""
+     ],
+     [
+      "enfantsDecedes",
+      ""
+     ],
+     [
+      "transfusions",
+      ""
+     ],
+     [
+      "ddr",
+      ""
+     ],
+     [
+      "taille",
+      ""
+     ],
+     [
+      "facteur_age_min",
+      false
+     ],
+     [
+      "facteur_age_max",
+      false
+     ],
+     [
+      "facteur_taille",
+      false
+     ],
+     [
+      "facteur_boiterie",
+      false
+     ],
+     [
+      "facteur_parite",
+      false
+     ],
+     [
+      "facteur_cesarienne",
+      false
+     ],
+     [
+      "facteur_mortne",
+      false
+     ],
+     [
+      "facteur_drepano",
+      false
+     ],
+     [
+      "facteur_hta",
+      false
+     ],
+     [
+      "facteur_fausses_couches",
+      false
+     ],
+     [
+      "facteur_diabete",
+      false
+     ],
+     [
+      "facteur_autres",
+      false
+     ],
+     [
+      "sageFemme",
+      ""
+     ],
+     [
+      "statutDossier",
+      "suivi"
+     ]
+    ],
+    "nouvelles": [
+     {
+      "id": "DOSxmvvhner6v8gtp",
+      "statut": "actif",
+      "numeroDossier": "00025/26",
+      "dateEntree": "2026-08-16",
+      "patientCode": "CNT/1/25",
+      "profession": "",
+      "nationalite": "",
+      "quartier": "",
+      "telephone": "",
+      "personneContact": "",
+      "telephoneContact": "",
+      "referee": false,
+      "refereePar": "",
+      "procreateurNom": "",
+      "procreateurProfession": "",
+      "procreateurGs": "",
+      "procreateurSerologie": "",
+      "maladies": "",
+      "traitements": "",
+      "allergies": "",
+      "gestite": 2,
+      "parite": 1,
+      "avortements": null,
+      "enfantsVivants": null,
+      "enfantsDecedes": null,
+      "transfusions": null,
+      "ddr": "2026-05-10",
+      "taille": null,
+      "facteur_age_min": false,
+      "facteur_age_max": false,
+      "facteur_taille": false,
+      "facteur_boiterie": false,
+      "facteur_parite": false,
+      "facteur_cesarienne": false,
+      "facteur_mortne": false,
+      "facteur_drepano": false,
+      "facteur_hta": false,
+      "facteur_fausses_couches": false,
+      "facteur_diabete": false,
+      "facteur_autres": false,
+      "sageFemme": "",
+      "statutDossier": "suivi",
+      "patientId": "PAT0001",
+      "patient": "TCHANE Bertine",
+      "age": 37,
+      "dpa": "2027-02-14",
+      "facteurs": {}
+     }
+    ],
+    "toasts": [],
+    "differe": [
+     "{\"message\":\"Dossier obstétrical créé.\",\"opts\":{\"type\":\"success\",\"duration\":7000,\"detail\":null}}"
+    ],
+    "navigue": "m4-dossier-obstetrical"
+   },
+   {
+    "nom": "deux facteurs cochés, numéro déjà pris",
+    "saisie": {
+     "patientCode": "CNT/6/25",
+     "dateEntree": "2026-08-16",
+     "numeroDossier": "00001/26",
+     "ddr": "2025-12-31",
+     "gestite": 7,
+     "parite": 7,
+     "facteur_parite": true,
+     "facteur_hta": true,
+     "referee": true,
+     "refereePar": "CS Kouandé",
+     "statutDossier": "suivi"
+    },
+    "initial": [
+     [
+      "numeroDossier",
+      "00026/26"
+     ],
+     [
+      "dateEntree",
+      "2026-08-16"
+     ],
+     [
+      "patientCode",
+      "CNT/1/25"
+     ],
+     [
+      "profession",
+      ""
+     ],
+     [
+      "nationalite",
+      ""
+     ],
+     [
+      "quartier",
+      ""
+     ],
+     [
+      "telephone",
+      ""
+     ],
+     [
+      "personneContact",
+      ""
+     ],
+     [
+      "telephoneContact",
+      ""
+     ],
+     [
+      "referee",
+      false
+     ],
+     [
+      "refereePar",
+      ""
+     ],
+     [
+      "procreateurNom",
+      ""
+     ],
+     [
+      "procreateurProfession",
+      ""
+     ],
+     [
+      "procreateurGs",
+      ""
+     ],
+     [
+      "procreateurSerologie",
+      ""
+     ],
+     [
+      "maladies",
+      ""
+     ],
+     [
+      "traitements",
+      ""
+     ],
+     [
+      "allergies",
+      ""
+     ],
+     [
+      "gestite",
+      "1"
+     ],
+     [
+      "parite",
+      "0"
+     ],
+     [
+      "avortements",
+      ""
+     ],
+     [
+      "enfantsVivants",
+      ""
+     ],
+     [
+      "enfantsDecedes",
+      ""
+     ],
+     [
+      "transfusions",
+      ""
+     ],
+     [
+      "ddr",
+      ""
+     ],
+     [
+      "taille",
+      ""
+     ],
+     [
+      "facteur_age_min",
+      false
+     ],
+     [
+      "facteur_age_max",
+      false
+     ],
+     [
+      "facteur_taille",
+      false
+     ],
+     [
+      "facteur_boiterie",
+      false
+     ],
+     [
+      "facteur_parite",
+      false
+     ],
+     [
+      "facteur_cesarienne",
+      false
+     ],
+     [
+      "facteur_mortne",
+      false
+     ],
+     [
+      "facteur_drepano",
+      false
+     ],
+     [
+      "facteur_hta",
+      false
+     ],
+     [
+      "facteur_fausses_couches",
+      false
+     ],
+     [
+      "facteur_diabete",
+      false
+     ],
+     [
+      "facteur_autres",
+      false
+     ],
+     [
+      "sageFemme",
+      ""
+     ],
+     [
+      "statutDossier",
+      "suivi"
+     ]
+    ],
+    "nouvelles": [
+     {
+      "id": "DOSxmvvhnf183daw2",
+      "statut": "actif",
+      "numeroDossier": "00001/26",
+      "dateEntree": "2026-08-16",
+      "patientCode": "CNT/6/25",
+      "profession": "",
+      "nationalite": "",
+      "quartier": "",
+      "telephone": "",
+      "personneContact": "",
+      "telephoneContact": "",
+      "referee": true,
+      "refereePar": "CS Kouandé",
+      "procreateurNom": "",
+      "procreateurProfession": "",
+      "procreateurGs": "",
+      "procreateurSerologie": "",
+      "maladies": "",
+      "traitements": "",
+      "allergies": "",
+      "gestite": 7,
+      "parite": 7,
+      "avortements": null,
+      "enfantsVivants": null,
+      "enfantsDecedes": null,
+      "transfusions": null,
+      "ddr": "2025-12-31",
+      "taille": null,
+      "facteur_age_min": false,
+      "facteur_age_max": false,
+      "facteur_taille": false,
+      "facteur_boiterie": false,
+      "facteur_parite": true,
+      "facteur_cesarienne": false,
+      "facteur_mortne": false,
+      "facteur_drepano": false,
+      "facteur_hta": true,
+      "facteur_fausses_couches": false,
+      "facteur_diabete": false,
+      "facteur_autres": false,
+      "sageFemme": "",
+      "statutDossier": "suivi",
+      "patientId": "PAT0006",
+      "patient": "DIEYABIDI Bibata",
+      "age": 27,
+      "dpa": "2026-10-07",
+      "facteurs": {
+       "parite": true,
+       "hta": true
+      }
+     }
+    ],
+    "toasts": [],
+    "differe": [
+     "{\"message\":\"Dossier obstétrical créé.\",\"opts\":{\"type\":\"success\",\"duration\":7000,\"detail\":null}}"
+    ],
+    "navigue": "m4-dossier-obstetrical"
+   },
+   {
+    "nom": "DDR manquante (refus)",
+    "saisie": {
+     "patientCode": "CNT/1/25",
+     "dateEntree": "2026-08-16",
+     "gestite": 1,
+     "parite": 0
+    },
+    "initial": [
+     [
+      "numeroDossier",
+      "00026/26"
+     ],
+     [
+      "dateEntree",
+      "2026-08-16"
+     ],
+     [
+      "patientCode",
+      "CNT/1/25"
+     ],
+     [
+      "profession",
+      ""
+     ],
+     [
+      "nationalite",
+      ""
+     ],
+     [
+      "quartier",
+      ""
+     ],
+     [
+      "telephone",
+      ""
+     ],
+     [
+      "personneContact",
+      ""
+     ],
+     [
+      "telephoneContact",
+      ""
+     ],
+     [
+      "referee",
+      false
+     ],
+     [
+      "refereePar",
+      ""
+     ],
+     [
+      "procreateurNom",
+      ""
+     ],
+     [
+      "procreateurProfession",
+      ""
+     ],
+     [
+      "procreateurGs",
+      ""
+     ],
+     [
+      "procreateurSerologie",
+      ""
+     ],
+     [
+      "maladies",
+      ""
+     ],
+     [
+      "traitements",
+      ""
+     ],
+     [
+      "allergies",
+      ""
+     ],
+     [
+      "gestite",
+      "1"
+     ],
+     [
+      "parite",
+      "0"
+     ],
+     [
+      "avortements",
+      ""
+     ],
+     [
+      "enfantsVivants",
+      ""
+     ],
+     [
+      "enfantsDecedes",
+      ""
+     ],
+     [
+      "transfusions",
+      ""
+     ],
+     [
+      "ddr",
+      ""
+     ],
+     [
+      "taille",
+      ""
+     ],
+     [
+      "facteur_age_min",
+      false
+     ],
+     [
+      "facteur_age_max",
+      false
+     ],
+     [
+      "facteur_taille",
+      false
+     ],
+     [
+      "facteur_boiterie",
+      false
+     ],
+     [
+      "facteur_parite",
+      false
+     ],
+     [
+      "facteur_cesarienne",
+      false
+     ],
+     [
+      "facteur_mortne",
+      false
+     ],
+     [
+      "facteur_drepano",
+      false
+     ],
+     [
+      "facteur_hta",
+      false
+     ],
+     [
+      "facteur_fausses_couches",
+      false
+     ],
+     [
+      "facteur_diabete",
+      false
+     ],
+     [
+      "facteur_autres",
+      false
+     ],
+     [
+      "sageFemme",
+      ""
+     ],
+     [
+      "statutDossier",
+      "suivi"
+     ]
+    ],
+    "nouvelles": [],
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "differe": [],
+    "navigue": null
+   }
+  ],
+  "series": [
+   {
+    "nom": "registre vide",
+    "numeros": [],
+    "propose": "00001/26"
+   },
+   {
+    "nom": "trois années, un archivé, un numéro illisible, un non rempli",
+    "numeros": [
+     [
+      "00007/25",
+      "actif"
+     ],
+     [
+      "00031/26",
+      "actif"
+     ],
+     [
+      "bidon",
+      "actif"
+     ],
+     [
+      "00040/26",
+      "archive"
+     ],
+     [
+      "12/26",
+      "actif"
+     ],
+     [
+      "00999/27",
+      "actif"
+     ]
+    ],
+    "propose": "00041/26"
+   },
+   {
+    "nom": "aucun numéro de l'année",
+    "numeros": [
+     [
+      "00041/25",
+      "actif"
+     ]
+    ],
+    "propose": "00001/26"
+   }
+  ],
+  "modification": {
+   "avant": {
+    "id": "DOB0003",
+    "statut": "actif",
+    "numeroDossier": "00003/26",
+    "dateEntree": "2026-04-20",
+    "patientId": "PAT0013",
+    "patient": "GARBA Aïssatou",
+    "patientCode": "CNT/13/26",
+    "age": 77,
+    "taille": 1.58,
+    "profession": "Coiffeuse",
+    "nationalite": "Béninoise",
+    "quartier": "Perma",
+    "telephone": "0487231095",
+    "personneContact": "La sœur aînée",
+    "telephoneContact": "97771257",
+    "referee": false,
+    "refereePar": "",
+    "procreateurNom": "N. Bio",
+    "procreateurProfession": "Maçon",
+    "procreateurGs": "AB+",
+    "procreateurSerologie": "Négative",
+    "maladies": "Appendicectomie en 2019",
+    "traitements": "Néant",
+    "allergies": "Non connues",
+    "gestite": 6,
+    "parite": 4,
+    "avortements": 0,
+    "enfantsVivants": 4,
+    "enfantsDecedes": 0,
+    "transfusions": 0,
+    "ddr": "2026-02-04",
+    "dpa": "2026-11-11",
+    "facteurs": {
+     "age_max": true
+    },
+    "examens": {
+     "gs": "A",
+     "rh": "Positif",
+     "coombs": "Négatif",
+     "electrophorese": "AA",
+     "hb": "10.6 g/dl",
+     "hematocrite": "40 %",
+     "plaquettes": "238 G/l",
+     "tpha": "Négatif",
+     "vdrl": "Négatif",
+     "hiv1": "Négatif",
+     "hiv2": "Négatif",
+     "toxo_igg": "Négatif",
+     "toxo_igm": "Négatif",
+     "rubeole_igg": "Négatif",
+     "rubeole_igm": "Négatif",
+     "hepatiteB": "Positif",
+     "ecbu": "Stérile",
+     "glycemie": "0.95 g/l",
+     "gp75": "Normale"
+    },
+    "vat": {
+     "VAT1": "2026-04-05",
+     "VAT2": "2026-05-05",
+     "VAT4": "2026-07-04",
+     "VAT5": "2026-08-03"
+    },
+    "droits": {
+     "0": true,
+     "1": true,
+     "2": false,
+     "3": true,
+     "4": true,
+     "5": true,
+     "6": true,
+     "7": true,
+     "8": false,
+     "9": false
+    },
+    "plan": {
+     "0": true,
+     "1": true,
+     "2": true,
+     "3": true,
+     "4": true,
+     "5": true,
+     "6": true,
+     "7": true,
+     "8": false
+    },
+    "classesMeres": [
+     "Accouchée récente"
+    ],
+    "infoPF": "",
+    "referenceCPN": "",
+    "referenceAccouchement": "",
+    "sageFemme": "BASSONGUI Chabi Séko",
+    "statutDossier": "suivi"
+   },
+   "prerempli": [
+    [
+     "numeroDossier",
+     "00003/26"
+    ],
+    [
+     "dateEntree",
+     "2026-04-20"
+    ],
+    [
+     "patientCode",
+     "CNT/13/26"
+    ],
+    [
+     "profession",
+     "Coiffeuse"
+    ],
+    [
+     "nationalite",
+     "Béninoise"
+    ],
+    [
+     "quartier",
+     "Perma"
+    ],
+    [
+     "telephone",
+     "0487231095"
+    ],
+    [
+     "personneContact",
+     "La sœur aînée"
+    ],
+    [
+     "telephoneContact",
+     "97771257"
+    ],
+    [
+     "referee",
+     false
+    ],
+    [
+     "refereePar",
+     ""
+    ],
+    [
+     "procreateurNom",
+     "N. Bio"
+    ],
+    [
+     "procreateurProfession",
+     "Maçon"
+    ],
+    [
+     "procreateurGs",
+     "AB+"
+    ],
+    [
+     "procreateurSerologie",
+     "Négative"
+    ],
+    [
+     "maladies",
+     "Appendicectomie en 2019"
+    ],
+    [
+     "traitements",
+     "Néant"
+    ],
+    [
+     "allergies",
+     "Non connues"
+    ],
+    [
+     "gestite",
+     "6"
+    ],
+    [
+     "parite",
+     "4"
+    ],
+    [
+     "avortements",
+     "0"
+    ],
+    [
+     "enfantsVivants",
+     "4"
+    ],
+    [
+     "enfantsDecedes",
+     "0"
+    ],
+    [
+     "transfusions",
+     "0"
+    ],
+    [
+     "ddr",
+     "2026-02-04"
+    ],
+    [
+     "taille",
+     "1.58"
+    ],
+    [
+     "facteur_age_min",
+     false
+    ],
+    [
+     "facteur_age_max",
+     true
+    ],
+    [
+     "facteur_taille",
+     false
+    ],
+    [
+     "facteur_boiterie",
+     false
+    ],
+    [
+     "facteur_parite",
+     false
+    ],
+    [
+     "facteur_cesarienne",
+     false
+    ],
+    [
+     "facteur_mortne",
+     false
+    ],
+    [
+     "facteur_drepano",
+     false
+    ],
+    [
+     "facteur_hta",
+     false
+    ],
+    [
+     "facteur_fausses_couches",
+     false
+    ],
+    [
+     "facteur_diabete",
+     false
+    ],
+    [
+     "facteur_autres",
+     false
+    ],
+    [
+     "sageFemme",
+     ""
+    ],
+    [
+     "statutDossier",
+     "suivi"
+    ]
+   ],
+   "apres": {
+    "id": "DOB0003",
+    "statut": "actif",
+    "numeroDossier": "00003/26",
+    "dateEntree": "2026-04-20",
+    "patientId": "PAT0013",
+    "patient": "GARBA Aïssatou",
+    "patientCode": "CNT/13/26",
+    "age": 77,
+    "taille": 1.58,
+    "profession": "Coiffeuse",
+    "nationalite": "Béninoise",
+    "quartier": "Perma",
+    "telephone": "0487231095",
+    "personneContact": "La sœur aînée",
+    "telephoneContact": "97771257",
+    "referee": false,
+    "refereePar": "",
+    "procreateurNom": "N. Bio",
+    "procreateurProfession": "Maçon",
+    "procreateurGs": "AB+",
+    "procreateurSerologie": "Négative",
+    "maladies": "Appendicectomie en 2019",
+    "traitements": "Néant",
+    "allergies": "Non connues",
+    "gestite": 6,
+    "parite": 4,
+    "avortements": 0,
+    "enfantsVivants": 4,
+    "enfantsDecedes": 0,
+    "transfusions": 0,
+    "ddr": "2026-03-01",
+    "dpa": "2026-12-06",
+    "facteurs": {
+     "age_max": true,
+     "diabete": true
+    },
+    "examens": {
+     "gs": "A",
+     "rh": "Positif",
+     "coombs": "Négatif",
+     "electrophorese": "AA",
+     "hb": "10.6 g/dl",
+     "hematocrite": "40 %",
+     "plaquettes": "238 G/l",
+     "tpha": "Négatif",
+     "vdrl": "Négatif",
+     "hiv1": "Négatif",
+     "hiv2": "Négatif",
+     "toxo_igg": "Négatif",
+     "toxo_igm": "Négatif",
+     "rubeole_igg": "Négatif",
+     "rubeole_igm": "Négatif",
+     "hepatiteB": "Positif",
+     "ecbu": "Stérile",
+     "glycemie": "0.95 g/l",
+     "gp75": "Normale"
+    },
+    "vat": {
+     "VAT1": "2026-04-05",
+     "VAT2": "2026-05-05",
+     "VAT4": "2026-07-04",
+     "VAT5": "2026-08-03"
+    },
+    "droits": {
+     "0": true,
+     "1": true,
+     "2": false,
+     "3": true,
+     "4": true,
+     "5": true,
+     "6": true,
+     "7": true,
+     "8": false,
+     "9": false
+    },
+    "plan": {
+     "0": true,
+     "1": true,
+     "2": true,
+     "3": true,
+     "4": true,
+     "5": true,
+     "6": true,
+     "7": true,
+     "8": false
+    },
+    "classesMeres": [
+     "Accouchée récente"
+    ],
+    "infoPF": "",
+    "referenceCPN": "",
+    "referenceAccouchement": "",
+    "sageFemme": "",
+    "statutDossier": "suivi",
+    "facteur_age_min": false,
+    "facteur_age_max": true,
+    "facteur_taille": false,
+    "facteur_boiterie": false,
+    "facteur_parite": false,
+    "facteur_cesarienne": false,
+    "facteur_mortne": false,
+    "facteur_drepano": false,
+    "facteur_hta": false,
+    "facteur_fausses_couches": false,
+    "facteur_diabete": true,
+    "facteur_autres": false
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées."
+    ]
+   ]
+  },
+  "fiche": {
+   "kpis": [
+    {
+     "label": "N° de dossier",
+     "valeur": "00001/26",
+     "indice": null
+    },
+    {
+     "label": "Gestité / Parité",
+     "valeur": "G7 P7",
+     "indice": null
+    },
+    {
+     "label": "Terme prévu",
+     "valeur": "07/10/2026",
+     "indice": null
+    },
+    {
+     "label": "Facteurs de surveillance",
+     "valeur": "2",
+     "indice": null
+    }
+   ],
+   "onglets": [
+    "Identité & antécédents",
+    "Soins préventifs",
+    "Consultations prénatales (0)",
+    "Accouchement & nouveau-né",
+    "Partogramme & suites"
+   ],
+   "parOnglet": [
+    {
+     "onglet": "Identité & antécédents",
+     "texte": "N° de dossier 00001/26 Gestité / Parité G7 P7 Terme prévu 07/10/2026 Facteurs de surveillance 2 Identité & antécédents Soins préventifs Consultations prénatales (0) Accouchement & nouveau-né Partogramme & suites Parturiente N° de dossier 00001/26 Nom DIEYABIDI Bibata Dossier patient CNT/6/25 Âge 27 ans Taille — Profession — Nationalité — Quartier — Téléphone — Personne à contacter — Venue Référée par CS Kouandé Date d’entrée 16/08/2026 Sage-femme référente — Procréateur Nom et prénoms — Profession — Groupe sanguin / Rhésus — Sérologie du conjoint — Antécédents Maladies et opérations Néant Traitements en cours Néant Allergies Non connues Gestité 7 Parité 7 Avortements 0 Enfants vivants 0 Enfants décédés 0 Transfusions antérieures 0 DDR 31/12/2025 Date probable de l’accouchement 07/10/2026 Facteurs de surveillance Grossesse à risque — 2 facteur(s) coché(s). C’est leur CUMUL qui classe, jamais un facteur isolé. FACTEUR RELEVÉ Parité > 6 HTA connue Examens complémentaires EXAMEN GROUPE RÉSULTAT Groupe sanguin Immuno-hématologie Non renseigné Rhésus Immuno-hématologie Non renseigné Test de Coombs indirect Immuno-hématologie Non renseigné Électrophorèse de l’hémoglobine Immuno-hématologie Non renseigné Taux d’hémoglobine Hématologie Non renseigné Hématocrite Hématologie Non renseigné Plaquettes Hématologie Non renseigné TPHA Sérologie Non renseigné VDRL Sérologie Non renseigné HIV 1 Sérologie Non renseigné HIV 2 Sérologie Non renseigné Toxoplasmose IgG Sérologie Non renseigné Toxoplasmose IgM Sérologie Non renseigné Rubéole IgG Sérologie Non renseigné Rubéole IgM Sérologie Non renseigné Hépatite B (à partir de 6 mois) Sérologie Non renseigné ECBU Bactériologie Non renseigné Glycémie à jeun Biochimie Non renseigné GP 75 Biochimie Non renseigné",
+     "cartes": [
+      "Parturiente",
+      "Parturiente",
+      "Procréateur",
+      "Procréateur",
+      "Antécédents",
+      "Antécédents",
+      "Facteurs de surveillance",
+      "Facteurs de surveillance",
+      "Examens complémentaires",
+      "Examens complémentaires"
+     ]
+    },
+    {
+     "onglet": "Soins préventifs",
+     "texte": "N° de dossier 00001/26 Gestité / Parité G7 P7 Terme prévu 07/10/2026 Facteurs de surveillance 2 Identité & antécédents Soins préventifs Consultations prénatales (0) Accouchement & nouveau-né Partogramme & suites Vaccination antitétanique DOSE DATE VAT1 — VAT2 — VAT3 — VAT4 — VAT5 — Vulgarisation des dix droits fondamentaux DROIT VULGARISÉ 1. Droit à l’information — 2. Droit d’accès — 3. Droit au choix — 4. Droit à la sécurité — 5. Droit à la confidentialité et au secret professionnel — 6. Droit au confort — 7. Droit à la dignité — 8. Droit à l’assurance et aux avantages sociaux — 9. Droit à la continuité des soins — 10. Droit d’exprimer son opinion — Plan pour l’accouchement Chacune de ces neuf lignes est une cause connue de retard le jour de l’accouchement : savoir qui décide en l’absence du mari, ou qui garde les enfants, évite l’heure perdue à la chercher. POINT DU PLAN ARRÊTÉ Lieu de l’accouchement — Accoucheur qualifié identifié — Contact de l’accoucheur — Mode de transport — Accompagnant identifié — Garde des enfants à la maison identifiée — Décideur en l’absence du mari — Épargne pour l’accouchement — Donneur de sang prévu — Autres soins promotionnels Informations sur la PF — Référence pour CPN — Référence pour accouchement — Classe des mères —",
+     "cartes": [
+      "Vaccination antitétanique",
+      "Vaccination antitétanique",
+      "Vulgarisation des dix droits fondamentaux",
+      "Vulgarisation des dix droits fondamentaux",
+      "Plan pour l’accouchement",
+      "Plan pour l’accouchement",
+      "Autres soins promotionnels",
+      "Autres soins promotionnels"
+     ]
+    },
+    {
+     "onglet": "Consultations prénatales (0)",
+     "texte": "N° de dossier 00001/26 Gestité / Parité G7 P7 Terme prévu 07/10/2026 Facteurs de surveillance 2 Identité & antécédents Soins préventifs Consultations prénatales (0) Accouchement & nouveau-né Partogramme & suites Aucune consultation prénatale rattachée.",
+     "cartes": []
+    },
+    {
+     "onglet": "Accouchement & nouveau-né",
+     "texte": "N° de dossier 00001/26 Gestité / Parité G7 P7 Terme prévu 07/10/2026 Facteurs de surveillance 2 Identité & antécédents Soins préventifs Consultations prénatales (0) Accouchement & nouveau-né Partogramme & suites La parturiente n’a pas encore accouché.",
+     "cartes": []
+    },
+    {
+     "onglet": "Partogramme & suites",
+     "texte": "N° de dossier 00001/26 Gestité / Parité G7 P7 Terme prévu 07/10/2026 Facteurs de surveillance 2 Identité & antécédents Soins préventifs Consultations prénatales (0) Accouchement & nouveau-né Partogramme & suites Partogramme Aucun partogramme ouvert. Consultations post-natales Aucune CPoN enregistrée. Le dossier rassemble ce que les écrans de M4 tiennent chacun de leur côté : la CPN, le partogramme, l’accouchement, le nouveau-né et les CPoN. Il ne les duplique pas — c’est une LECTURE, et chaque geste se fait à son écran.",
+     "cartes": [
+      "Partogramme",
+      "Partogramme",
+      "Consultations post-natales",
+      "Consultations post-natales"
+     ]
+    }
+   ],
+   "ref": ""
+  }
+ }
+}
