@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 13,
+ "ecrans_portes": 14,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -14,6 +14,14 @@
     "mode de ce poste",
     "service de synchronisation"
    ]
+  },
+  {
+   "id": "m8-caisse",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "m8-dashboard",
@@ -50,8 +58,8 @@
   {
    "id": "m8-proforma",
    "mesure": true,
-   "attendus": 9,
-   "presents": 9,
+   "attendus": 10,
+   "presents": 10,
    "taux": 1.0,
    "manquants": []
   },
@@ -106,7 +114,6 @@
     "ouverts",
     "doublons possibles",
     "tranchés (30 j)",
-    "à arbitrer",
     "n°",
     "fiche",
     "champ",
@@ -117,7 +124,8 @@
     "garder a",
     "garder b",
     "fusionner à la main",
-    "ce n’est pas un doublon"
+    "ce n’est pas un doublon",
+    "à arbitrer"
    ]
   },
   {
@@ -131,13 +139,13 @@
     "évènements (24 h)",
     "alertes",
     "erreurs",
-    "évènements",
     "quand",
     "niveau",
     "source",
     "message",
     "colonnes",
-    "exporter"
+    "exporter",
+    "évènements"
    ]
   },
   {
@@ -148,9 +156,9 @@
    "taux": 0.2,
    "manquants": [
     "vider l’activité (tests de mise en service) en gardant les essentiels : tarifs, secteurs, comptes, droits, catalogues.",
+    "ouvrir la fenêtre (30 min)",
     "fenêtre de réinitialisation",
-    "ce qui est conservé",
-    "ouvrir la fenêtre (30 min)"
+    "ce qui est conservé"
    ]
   },
   {
@@ -164,12 +172,12 @@
     "santé de la mère",
     "époque",
     "retard vers le relais",
-    "contrôles",
     "contrôle",
     "état",
     "détail",
     "sauvegarder maintenant",
-    "actualiser"
+    "actualiser",
+    "contrôles"
    ]
   }
  ]

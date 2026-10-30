@@ -149,6 +149,10 @@ class _CoquePosteState extends State<CoquePoste> {
     if (porte == null) {
       return EcranAPorter(ecran: e, donnees: widget.donnees, fil: fil);
     }
+    widget.magasin?.utilisateur =
+        widget.donnees.matrice.libelle(widget.config.role) ??
+            widget.config.role;
+    if (widget.horloge != null) widget.magasin?.horloge = widget.horloge!;
     return Builder(builder: (context) {
       // Les droits sont ceux de l'ÉCRAN (une surcharge d'écran l'emporte sur son module) ; un servant hérite du registre qu'il alimente.
       final droit = widget.donnees.matrice.droit(widget.config.role, id);

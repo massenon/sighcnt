@@ -50,11 +50,17 @@ Parite comparerContenu(
     'description',
     'kpis',
     'onglets',
-    'cartes',
     'tableaux',
     'champs'
   ]) {
     ajouter(fiche[k]);
+  }
+  // Les titres de carte portent des VALEURS du jeu (« — 73 à traiter », « du 30/10/2026 ») : on compare le libellé, chiffres neutralisés des deux côtés.
+  final chiffres = RegExp(r'\d+');
+  final cartesNeutres = <String>[];
+  for (final c in (fiche['cartes'] as List? ?? const [])) {
+    if (c is String && c.trim().isNotEmpty)
+      cartesNeutres.add(normaliser(c).replaceAll(chiffres, '#'));
   }
   // Les commandes portent des COMPTES issus du jeu (« Tous les factures409 », pagination « 1 »…) : le libellé se compare, la valeur non.
   for (final c in (fiche['commandes'] as List? ?? const [])) {
@@ -63,9 +69,12 @@ Parite comparerContenu(
     if (libelle.isNotEmpty) attendus.add(normaliser(libelle));
   }
   final uniques = attendus.toSet().toList();
+  final neutres = {for (final t in textes) t.replaceAll(chiffres, '#')};
   final manquants = [
     for (final a in uniques)
-      if (!textes.any((t) => t == a || t.contains(a))) a
+      if (!textes.any((t) => t == a || t.contains(a))) a,
+    for (final a in cartesNeutres.toSet())
+      if (!neutres.any((t) => t == a || t.contains(a))) a
   ];
-  return Parite(id, uniques.length, manquants);
+  return Parite(id, uniques.length + cartesNeutres.toSet().length, manquants);
 }

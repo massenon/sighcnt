@@ -4,7 +4,7 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 const { ouvrirMaquette } = require('./extraire');
-const COLLECTIONS = ['factures', 'patients', 'avoirs'];
+const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalyses', 'demandesImagerie', 'ordonnances', 'ecritures', 'audit'];
 const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');
 (async () => {
   fs.mkdirSync(SORTIE, { recursive: true });

@@ -44,6 +44,33 @@ void main() {
   }
 
   final magasin = Magasin.depuisDossier(Magasin.collectionsDuJeu);
+  // Le jeu de la maquette n'a aucune prescription en file (elles naissent d'une consultation) : on en pose deux pour que la file se DESSINE
+  // et que sa parité soit mesurée sur une file réelle, pas sur son état vide.
+  final f0 = magasin.collection('factures').actives.first;
+  magasin.collection('taches').inserer({
+    'id': 'T1',
+    'type': 'encaissement',
+    'statut': 'en_attente',
+    'factureId': f0['id'],
+    'reference': 'ORD-1',
+    'patient': f0['patient'],
+    'patientCode': f0['patientCode'],
+    'detail': 'Encaisser',
+    'montant': 1000,
+    'date': '2026-08-16'
+  });
+  magasin.collection('taches').inserer({
+    'id': 'T2',
+    'type': 'dispensation',
+    'statut': 'bloque',
+    'factureId': f0['id'],
+    'reference': 'ORD-1',
+    'patient': f0['patient'],
+    'patientCode': f0['patientCode'],
+    'detail': 'Délivrer',
+    'montant': 1000,
+    'date': '2026-08-16'
+  });
 
   Future<Parite?> mesurer(WidgetTester t, String id, String role) async {
     final f = fiche(id);
