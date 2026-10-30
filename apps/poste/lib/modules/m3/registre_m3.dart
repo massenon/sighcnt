@@ -8,6 +8,8 @@ import 'bloc_cra.dart';
 import 'bloc_checklist.dart';
 import 'bloc_demande_examen.dart';
 import 'bloc_pansements.dart';
+import 'bloc_sorties.dart';
+import 'bloc_avis_medical.dart';
 import 'hos_chambres.dart';
 import 'surv_administrations.dart';
 import 'surv_glasgow.dart';
@@ -43,4 +45,6 @@ final Map<String, ConstruireEcran> ecransM3 = {
   'm3-bloc-checklist': (c, cfg) => const EcranChecklistBloc(),
   'm3-demande-examen': (c, cfg) => const EcranDemandeExamen(),
   'm3-bons-pansements': (c, cfg) => const EcranBonsPansements(),
+  'm3-sorties': (c, cfg) => const EcranSorties(),
+  'm3-sortie-avis-medical': (c, cfg) => const EcranSortieAvisMedical(),
 };

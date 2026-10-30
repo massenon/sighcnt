@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show blocChecklistEntree, blocChecklistSortie;
+import 'package:sigh_domaine/sigh_domaine.dart' show blocChecklistEntree, blocChecklistSortie, iso;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -814,6 +814,221 @@ void main() {
       expect(find.widgetWithText(BoutonSigh, 'Nouveau bon de pansement'), findsNothing);
       await ouvrir(t, vide(), 'm3-bons-pansements', role: 'caissier');
       expect(find.text('Registre des bons'), findsNothing);
+    });
+  });
+
+  group('m3-sorties — RG-06 solde apuré, RG-07 trois signatures', () {
+    final c = m_(vecteurs['sorties']);
+    final jeu = m_(c['jeu']);
+    Magasin base() => magasin({'admissions': liste(jeu['admissions']), 'factures': liste(jeu['factures'])});
+    Fiche adm(Magasin m, String id) => m.collection('admissions').toutes.firstWhere((a) => a['id'] == id);
+
+    Future<void> preparer(WidgetTester t, int rang) async {
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Préparer la sortie').at(rang));
+      await t.pump(const Duration(milliseconds: 500));
+    }
+
+    cas('indicateurs et lignes identiques à la maquette (solde de TOUTES les factures du patient) ; parité N1 = 100 %', (t) async {
+      await ouvrir(t, base(), 'm3-sorties');
+      final e = m_(c['ecran']);
+      comparerKpis(t, e['kpis']);
+      comparerTableau(t, e['tableaux'], colonnes: 6);
+      await parite(t, 'm3-sorties');
+    });
+
+    cas('la fiche de sortie annonce le solde dû (RG-06) et propose les cinq états', (t) async {
+      await ouvrir(t, base(), 'm3-sorties');
+      await preparer(t, 0);
+      expect(find.text('Sortie d’hospitalisation'), findsWidgets);
+      expect(find.textContaining('RG-06 — vérification financière non satisfaite'), findsOneWidget);
+      expect(find.textContaining('Solde restant dû'), findsWidgets);
+      expect(find.text('Signatures et constat (RG-07)'.toUpperCase()), findsOneWidget);
+    });
+
+    cas('RG-07 d\'abord, puis RG-06 : chaque refus est NOMMÉ et rien n\'est écrit', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-sorties');
+      await preparer(t, 0);
+      Future<void> finaliser() => toucher(t, find.widgetWithText(BoutonSigh, 'Finaliser la sortie'));
+      await finaliser();
+      expect(find.text('RG-07 — les trois signatures sont obligatoires.'), findsOneWidget);
+      expect(find.text('Patient, infirmier traitant et constat du gardien.'), findsOneWidget);
+      await cocher(t, 'sigPatient');
+      await cocher(t, 'sigInfirmier');
+      await finaliser();
+      expect(find.text('RG-07 — les trois signatures sont obligatoires.'), findsWidgets, reason: 'deux signatures ne suffisent pas');
+      await cocher(t, 'constatGardien');
+      await finaliser();
+      expect(find.text('RG-06 — solde non apuré : une dérogation motivée est requise.'), findsOneWidget);
+      await saisir(t, 'derogation', '   ');
+      await finaliser();
+      expect(find.text('RG-06 — solde non apuré : une dérogation motivée est requise.'), findsWidgets, reason: 'une dérogation blanche ne vaut rien');
+      expect(adm(m, 'ADM1')['statut'], 'en_cours');
+      expect(adm(m, 'ADM1').containsKey('etatSortie'), isFalse);
+    });
+
+    cas('dérogation motivée : la sortie est finalisée, le lit libéré, les indicateurs suivent, le geste s\'annule (E415)', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-sorties');
+      await preparer(t, 0);
+      await choisir(t, 'etatSortie', 'Amélioré');
+      await saisir(t, 'consignes', 'Repos 7 jours');
+      for (final n in ['sigPatient', 'sigInfirmier', 'constatGardien']) {
+        await cocher(t, n);
+      }
+      await saisir(t, 'derogation', 'Accord de la Directrice Administrative');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Finaliser la sortie'));
+      final a = adm(m, 'ADM1');
+      expect([a['statut'], a['etatSortie'], a['consignes'], a['derogation']], ['sortie', 'Amélioré', 'Repos 7 jours', 'Accord de la Directrice Administrative']);
+      expect([a['signaturePatient'], a['signatureInfirmier'], a['constatGardien']], [true, true, true]);
+      expect(a['dateSortie'], iso(aujourdhui));
+      expect(find.text('Sortie finalisée — le lit A1 LIT1 est libéré.'), findsOneWidget);
+      comparerKpis(t, m_(c['finalisation'])['kpis']);
+      await toucher(t, find.text('Annuler').last);
+      expect(adm(m, 'ADM1')['statut'], 'en_cours');
+      comparerKpis(t, m_(c['ecran'])['kpis']);
+    });
+
+    cas('un solde apuré : aucune dérogation requise', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-sorties');
+      await preparer(t, 1);
+      expect(find.text('RG-06 — Vérification financière satisfaite : le solde du patient est apuré.'), findsOneWidget);
+      for (final n in ['sigPatient', 'sigInfirmier', 'constatGardien']) {
+        await cocher(t, n);
+      }
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Finaliser la sortie'));
+      final a = adm(m, 'ADM2');
+      expect(a['statut'], 'sortie');
+      expect(a['derogation'], isNull);
+      expect(a['etatSortie'], 'Guéri', reason: 'la première entrée est présélectionnée');
+      expect([kpi(t, 'Patients hospitalisés'), kpi(t, 'Sorties finalisables'), kpi(t, 'Bloquées par le solde'), kpi(t, 'Sorties réalisées')], ['2', '1', '1', '2']);
+    });
+
+    cas('le bon de sortie s\'édite avec la saisie courante : état, consignes, solde, trois signatures', (t) async {
+      await ouvrir(t, base(), 'm3-sorties');
+      await preparer(t, 0);
+      await saisir(t, 'consignes', 'Repos 7 jours');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Éditer le bon de sortie'));
+      expect(find.text('Bon de sortie d’hospitalisation'), findsWidgets);
+      expect(find.text('Référence H00001'), findsOneWidget);
+      expect(find.text('Repos 7 jours'), findsWidgets);
+      expect(find.textContaining('Solde restant dû'), findsWidgets);
+      expect(find.text('Constat de sortie'), findsWidgets);
+    });
+
+    cas('rôles : la direction prépare et imprime sans finaliser ; le caissier n\'entre pas', (t) async {
+      await ouvrir(t, base(), 'm3-sorties', role: 'direction');
+      await preparer(t, 0);
+      expect(find.widgetWithText(BoutonSigh, 'Éditer le bon de sortie'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Finaliser la sortie'), findsNothing);
+      await ouvrir(t, base(), 'm3-sorties', role: 'caissier');
+      expect(find.text('Patients en cours d’hospitalisation'), findsNothing);
+    });
+  });
+
+  group('m3-sortie-avis-medical — RG-08', () {
+    final c = m_(vecteurs['avisMedical']);
+    final jeu = m_(c['jeu']);
+    Magasin base() => magasin({'sortiesAvisMedical': liste(jeu['sorties']), 'admissions': liste(jeu['admissions'])});
+    Fiche adm(Magasin m, String id) => m.collection('admissions').toutes.firstWhere((a) => a['id'] == id);
+
+    cas('indicateurs, note de responsabilité et lignes identiques à la maquette ; parité N1 = 100 %', (t) async {
+      await ouvrir(t, base(), 'm3-sortie-avis-medical');
+      final e = m_(c['ecran']);
+      comparerKpis(t, e['kpis']);
+      comparerTableau(t, e['tableaux'], colonnes: 7);
+      expect(find.textContaining('dégage la responsabilité de la clinique'), findsOneWidget);
+      await parite(t, 'm3-sortie-avis-medical');
+    });
+
+    cas('le motif est obligatoire ; l\'avis du Procureur exige sa RÉFÉRENCE : refus nommés, rien n\'est écrit', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-sortie-avis-medical');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Consigner'));
+      expect(find.text('Le formulaire comporte des erreurs.'), findsOneWidget);
+      await saisir(t, 'motif', 'Veut rentrer au village');
+      await cocher(t, 'avisProcureur');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Consigner'));
+      expect(find.text('La référence de l’avis du Procureur est obligatoire.'), findsOneWidget);
+      expect(m.collection('sortiesAvisMedical').toutes.length, 2);
+      expect(adm(m, 'ADM1')['statut'], 'en_cours');
+    });
+
+    cas('consigner : le patient, son dossier et son lit sont recopiés ; l\'admission sort ; la liste des hospitalisés suit (E418)', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-sortie-avis-medical');
+      expect(kpi(t, 'Patients hospitalisés'), '3');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      await saisir(t, 'motif', 'Veut rentrer au village');
+      await saisir(t, 'risques', 'Infection');
+      await cocher(t, 'avisProcureur');
+      await saisir(t, 'referenceProcureur', 'PR-2026-41');
+      await cocher(t, 'decharge');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Consigner'));
+      final f = m.collection('sortiesAvisMedical').toutes.first;
+      final attendu = m_(m_(c['creation'])['cree'])['fiche'] as Map<String, Object?>;
+      for (final k in ['admissionId', 'motif', 'risques', 'avisProcureur', 'referenceProcureur', 'decharge', 'cloture', 'patient', 'patientCode', 'lit', 'reference']) {
+        expect(f[k], attendu[k], reason: k);
+      }
+      expect(adm(m, 'ADM1')['statut'], 'sortie');
+      expect(adm(m, 'ADM1')['dateSortie'], iso(aujourdhui));
+      expect(find.text('Sortie contre avis médical consignée.'), findsOneWidget);
+      expect(kpi(t, 'Patients hospitalisés'), '2', reason: 'les indicateurs sont relus à chaque geste');
+      expect(kpi(t, 'Avec avis du Procureur'), '2');
+      // Annuler remet aussi le patient en hospitalisation (E426).
+      await toucher(t, find.text('Annuler').last);
+      expect(adm(m, 'ADM1')['statut'], 'en_cours');
+      expect(m.collection('sortiesAvisMedical').actives.length, 2);
+      expect(kpi(t, 'Patients hospitalisés'), '3');
+    });
+
+    cas('modifier une procédure déjà consignée : l\'admission d\'origine reste proposée, le patient ne change pas (E419)', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-sortie-avis-medical');
+      // La procédure SAM0002 vise une admission qui n'est plus « en cours » : sans l'E419, le champ retombait sur le premier hospitalisé.
+      await toucher(t, find.byTooltip('Modifier').at(1));
+      expect(find.text('B2 LIT1 — TAKI Ganiou (CNT/5/26)'), findsOneWidget);
+      await cocher(t, 'decharge');
+      await cocher(t, 'cloture');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer').last);
+      final f = m.collection('sortiesAvisMedical').toutes.firstWhere((x) => x['reference'] == 'SAM0002');
+      expect(f['patient'], 'TAKI Ganiou');
+      expect(f['patientCode'], 'CNT/5/26');
+      expect(f['lit'], 'B2 LIT1');
+      expect([f['decharge'], f['cloture']], [true, true]);
+      expect(f['reference'], 'SAM0002', reason: 'la référence reste celle de la fiche');
+      expect(find.text('Procédure mise à jour.'), findsOneWidget);
+      expect(kpi(t, 'Dossiers clôturés'), '2');
+    });
+
+    cas('imprimer la décharge : motif, risques, avis du Procureur et trois signatures', (t) async {
+      await ouvrir(t, base(), 'm3-sortie-avis-medical');
+      await toucher(t, find.byTooltip('Imprimer le document').first);
+      expect(find.text('Sortie contre avis médical'), findsWidgets);
+      expect(find.textContaining('Consigné — PR-12'), findsOneWidget);
+      expect(find.textContaining('contre l’avis du médecin traitant'), findsOneWidget);
+      expect(find.text('La Direction'), findsWidgets);
+    });
+
+    cas('archiver : annulable ; rôles — le chirurgien écrit sans archiver, la direction lit, le caissier n\'entre pas', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-sortie-avis-medical');
+      await toucher(t, find.byTooltip('Archiver').first);
+      expect(m.collection('sortiesAvisMedical').archivees.length, 1);
+      expect(find.text('Enregistrement archivé.'), findsOneWidget);
+      await toucher(t, find.text('Annuler').last);
+      expect(m.collection('sortiesAvisMedical').archivees, isEmpty);
+      await ouvrir(t, base(), 'm3-sortie-avis-medical', role: 'chirurgien');
+      expect(find.byTooltip('Modifier'), findsWidgets);
+      expect(find.byTooltip('Archiver'), findsNothing);
+      await ouvrir(t, base(), 'm3-sortie-avis-medical', role: 'direction');
+      expect(find.widgetWithText(BoutonSigh, 'Enregistrer'), findsNothing);
+      expect(find.byTooltip('Modifier'), findsNothing);
+      expect(find.byTooltip('Imprimer le document'), findsWidgets);
+      await ouvrir(t, base(), 'm3-sortie-avis-medical', role: 'caissier');
+      expect(find.text('Registre des sorties contre avis médical'), findsNothing);
     });
   });
 }

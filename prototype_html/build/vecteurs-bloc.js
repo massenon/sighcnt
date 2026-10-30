@@ -468,6 +468,9 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       H.poser('sigPatient', true); H.poser('sigInfirmier', true); H.poser('constatGardien', true); H.poser('etatSortie', 'Guéri');
       H.viderToasts(); H.cliquer('Finaliser la sortie'); await H.dormir(400);
       out.apure.sortie = { toasts: H.toasts(), admission: H.net(colA.all().find((x) => x.id === 'ADM2')), kpis: H.kpis(racine) };
+      /* annuler la sortie : le patient revient en hospitalisation, les indicateurs suivent (E415) */
+      [...document.querySelectorAll('#toast-host button')].find((b) => /annuler/i.test(b.textContent)).click(); await H.dormir(300);
+      out.apure.annulee = { admission: H.net(colA.all().find((x) => x.id === 'ADM2')), kpis: H.kpis(racine) };
       H.retirer(racine);
       H.remettre(cols, sauve);
       return H.propre(out);
@@ -507,6 +510,13 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       H.poser('admissionId', 'ADM2'); H.poser('motif', 'Départ non motivé'); H.poser('dateSortie', '2026-08-16');
       H.viderToasts(); H.cliquer('Consigner'); await H.dormir(400);
       out.creation.sansDecharge = { toasts: H.toasts(), fiche: H.net(colS.all().find((x) => x.motif === 'Départ non motivé')), admission: H.net(colA.all().find((x) => x.id === 'ADM2')), kpis: H.kpis(racine) };
+      /* annuler la procédure remet aussi le patient en hospitalisation (E426) */
+      H.bouton(racine, 'Enregistrer').click(); await H.dormir(300);
+      H.poser('admissionId', 'ADM3'); H.poser('motif', 'Annulation test'); H.poser('dateSortie', '2026-08-16');
+      H.viderToasts(); H.cliquer('Consigner'); await H.dormir(300);
+      const avantUndo = { admission: H.net(colA.all().find((x) => x.id === 'ADM3')), actives: colS.all().filter((x) => x.statut !== 'archive').length };
+      [...document.querySelectorAll('#toast-host button')].find((b) => /annuler/i.test(b.textContent)).click(); await H.dormir(300);
+      out.annulation = { avant: avantUndo, apres: { admission: H.net(colA.all().find((x) => x.id === 'ADM3')), fiche: H.net(colS.all().find((x) => x.motif === 'Annulation test')), actives: colS.all().filter((x) => x.statut !== 'archive').length, kpis: H.kpis(racine) } };
       /* la fiche qu'on vient de créer (admission ADM1, déjà sortie) : l'éditer ne doit pas changer de patient (E419) */
       H.icone(H.ligne(racine, 'SAM0003'), 'Modifier').click(); await H.dormir(300);
       out.modifierCreee = { valeurs: { admissionId: H.valeur('admissionId'), dateSortie: H.valeur('dateSortie'), motif: H.valeur('motif') }, optsAdmission: H.optsDe('admissionId') };

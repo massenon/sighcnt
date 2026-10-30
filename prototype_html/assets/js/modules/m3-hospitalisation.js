@@ -1655,10 +1655,10 @@
                 if (a) { v.patient = a.patient; v.patientCode = a.patientCode; v.lit = a.lit; }
                 if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('SAM', 4, col.all());
                 var res = record ? col.update(record.id, v) : col.insert(v);
-                if (!record && a) S.collection('admissions').update(a.id, { statut: 'sortie', dateSortie: v.dateSortie });
+                var resAdm = (!record && a) ? S.collection('admissions').update(a.id, { statut: 'sortie', dateSortie: v.dateSortie }) : null;
                 m.close(); table.refresh(); kpis();
                 U.toast(record ? 'Procédure mise à jour.' : 'Sortie contre avis médical consignée.', {
-                  type: 'success', undo: function () { res.undo(); table.refresh(); kpis(); },
+                  type: 'success', undo: function () { res.undo(); if (resAdm) resAdm.undo(); table.refresh(); kpis(); },   /* E426 : annuler la procédure remet aussi le patient en hospitalisation */
                 });
               },
             }),

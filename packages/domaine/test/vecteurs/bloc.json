@@ -862,7 +862,7 @@
      ]
     ],
     "fiche": {
-     "id": "CPAxmsvmvr40c44m6",
+     "id": "CPAxmsvmvr40s2te0",
      "statut": "actif",
      "patientCode": "CNT/2/26",
      "date": "2026-08-16",
@@ -912,7 +912,7 @@
      ]
     ],
     "fiche": {
-     "id": "CPAxmsvmvr40p1r5v",
+     "id": "CPAxmsvmvr40ktcnw",
      "statut": "actif",
      "patientCode": "CNT/4/26",
      "date": "2026-08-16",
@@ -1429,7 +1429,7 @@
       ]
      ],
      "fiche": {
-      "id": "CROxmsvmvr40od5et",
+      "id": "CROxmsvmvr404fxzg",
       "statut": "actif",
       "patientCode": "CNT/3/26",
       "nip": "NIP-9",
@@ -1473,7 +1473,7 @@
     },
     "sansAide": {
      "fiche": {
-      "id": "CROxmsvmvr40ji1sb",
+      "id": "CROxmsvmvr406ox0h",
       "statut": "actif",
       "patientCode": "CNT/3/26",
       "nip": "NIP-10",
@@ -1888,7 +1888,7 @@
      ]
     ],
     "fiche": {
-     "id": "CRAxmsvmvr40hcs4j",
+     "id": "CRAxmsvmvr406hitk",
      "statut": "actif",
      "patientCode": "CNT/4/26",
      "dateOperation": "2026-08-16",
@@ -2474,7 +2474,7 @@
      ]
     ],
     "fiche": {
-     "id": "CKLxmsvmvr408i60o",
+     "id": "CKLxmsvmvr406pbkz",
      "statut": "actif",
      "reference": "CKL-0005",
      "moment": "sortie",
@@ -2556,7 +2556,7 @@
      ]
     ],
     "fiche": {
-     "id": "CKLxmsvmvr406kmod",
+     "id": "CKLxmsvmvr40outu4",
      "statut": "actif",
      "reference": "CKL-0006",
      "moment": "sortie",
@@ -2638,7 +2638,7 @@
     ]
    ],
    "fiche": {
-    "id": "CKLxmsvmvr409bjcx",
+    "id": "CKLxmsvmvr40zhttw",
     "statut": "actif",
     "reference": "CKL-0007",
     "moment": "entree",
@@ -3046,7 +3046,7 @@
    ],
    "demandes": [
     {
-     "id": "DEMxmsvmvr409i0ji",
+     "id": "DEMxmsvmvr40aempt",
      "statut": "actif",
      "reference": "LAB-00007",
      "codeAnalyse": "00007-2026",
@@ -3071,11 +3071,11 @@
      "indication": "Anémie",
      "hospitalise": true,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr40bpk3e",
+     "factureId": "FACxmsvmvr406xtq0",
      "factureNumero": "FE-2026-00001"
     },
     {
-     "id": "DEMxmsvmvr40vpodb",
+     "id": "DEMxmsvmvr40aje6d",
      "statut": "actif",
      "reference": "LAB-00006",
      "codeAnalyse": "00006-2026",
@@ -3100,13 +3100,13 @@
      "indication": "Anémie",
      "hospitalise": true,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr40bpk3e",
+     "factureId": "FACxmsvmvr406xtq0",
      "factureNumero": "FE-2026-00001"
     }
    ],
    "factures": [
     {
-     "id": "FACxmsvmvr40bpk3e",
+     "id": "FACxmsvmvr406xtq0",
      "statut": "actif",
      "lignes": [
       {
@@ -3123,7 +3123,7 @@
        "partAssureur": 1400,
        "partPersonnel": 0,
        "partPatient": 600,
-       "demandeId": "DEMxmsvmvr40vpodb",
+       "demandeId": "DEMxmsvmvr40aje6d",
        "produitId": null,
        "acteCode": null,
        "demandeImagerieId": null,
@@ -3146,7 +3146,7 @@
        "partAssureur": 2800,
        "partPersonnel": 0,
        "partPatient": 1200,
-       "demandeId": "DEMxmsvmvr409i0ji",
+       "demandeId": "DEMxmsvmvr40aempt",
        "produitId": null,
        "acteCode": null,
        "demandeImagerieId": null,
@@ -3185,27 +3185,27 @@
    ],
    "taches": [
     {
-     "id": "TCHxmsvmvr40ramv8",
+     "id": "TCHxmsvmvr40ohqph",
      "statut": "bloque",
      "type": "prelevement",
      "poste": "laboratoire",
      "libelle": "Patient externe — BAKO Boukari",
      "detail": "2 examen(s)",
      "reference": "FE-2026-00001",
-     "factureId": "FACxmsvmvr40bpk3e",
+     "factureId": "FACxmsvmvr406xtq0",
      "patientId": "PAT0002",
      "patient": "BAKO Boukari",
      "creeLe": "2026-08-16T10:00:00.000Z"
     },
     {
-     "id": "TCHxmsvmvr40drq2w",
+     "id": "TCHxmsvmvr40hdcxp",
      "statut": "en_attente",
      "type": "encaissement",
      "poste": "caisse",
      "libelle": "Patient externe — BAKO Boukari",
      "detail": "2 examen(s) — 6 000",
      "reference": "FE-2026-00001",
-     "factureId": "FACxmsvmvr40bpk3e",
+     "factureId": "FACxmsvmvr406xtq0",
      "patientId": "PAT0002",
      "patient": "BAKO Boukari",
      "montant": 6000,
@@ -3321,7 +3321,7 @@
    ],
    "demandes": [
     {
-     "id": "DEMxmsvmvr40maqe8",
+     "id": "DEMxmsvmvr40lv3y8",
      "statut": "actif",
      "reference": "LAB-00008",
      "codeAnalyse": "00008-2026",
@@ -3346,7 +3346,7 @@
      "indication": "Anémie",
      "hospitalise": false,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr40h5x7n",
+     "factureId": "FACxmsvmvr40tj1e9",
      "factureNumero": "FE-2026-00002"
     }
    ]
@@ -3357,7 +3357,7 @@
    ],
    "demandes": [
     {
-     "id": "DEMxmsvmvr40vcyfx",
+     "id": "DEMxmsvmvr40wsqif",
      "statut": "actif",
      "reference": "LAB-00009",
      "codeAnalyse": "00009-2026",
@@ -3382,7 +3382,7 @@
      "indication": "Anémie",
      "hospitalise": false,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr40x6xgu",
+     "factureId": "FACxmsvmvr4064f6w",
      "factureNumero": "FE-2026-00003"
     }
    ]
@@ -3515,7 +3515,7 @@
    ],
    "ordonnances": [
     {
-     "id": "ORDxmsvmvr407avsd",
+     "id": "ORDxmsvmvr405n9e7",
      "statut": "actif",
      "numero": "ORD-2026-00001",
      "date": "2026-08-16T10:00:00.000Z",
@@ -3563,13 +3563,13 @@
      "statutAnalyses": "sans_objet",
      "statutActes": "en_attente",
      "statutImagerie": "sans_objet",
-     "factureId": "FACxmsvmvr40e10hw",
+     "factureId": "FACxmsvmvr40qv7ej",
      "factureNumero": "FP-2026-00001"
     }
    ],
    "factures": [
     {
-     "id": "FACxmsvmvr40e10hw",
+     "id": "FACxmsvmvr40qv7ej",
      "statut": "actif",
      "lignes": [
       {
@@ -3665,14 +3665,14 @@
      "modePaiement": null,
      "statutPaiement": "impayee",
      "statutMecef": "en_attente",
-     "ordonnanceId": "ORDxmsvmvr407avsd",
+     "ordonnanceId": "ORDxmsvmvr405n9e7",
      "ordonnanceNumero": "ORD-2026-00001",
      "dossierConsultationId": null
     }
    ],
    "taches": [
     {
-     "id": "TCHxmsvmvr40mh1po",
+     "id": "TCHxmsvmvr40wnrmm",
      "statut": "bloque",
      "type": "acte",
      "role": "infirmier",
@@ -3681,8 +3681,8 @@
      "titre": "Exécuter les actes prescrits",
      "icon": "stethoscope",
      "reference": "ORD-2026-00001",
-     "ordonnanceId": "ORDxmsvmvr407avsd",
-     "factureId": "FACxmsvmvr40e10hw",
+     "ordonnanceId": "ORDxmsvmvr405n9e7",
+     "factureId": "FACxmsvmvr40qv7ej",
      "factureNumero": "FP-2026-00001",
      "patient": "TCHANE Bertine",
      "patientCode": "CNT/1/25",
@@ -3694,7 +3694,7 @@
      "montant": 27000
     },
     {
-     "id": "TCHxmsvmvr40l67qw",
+     "id": "TCHxmsvmvr40jjlph",
      "statut": "en_attente",
      "type": "encaissement",
      "role": "caissier",
@@ -3703,8 +3703,8 @@
      "titre": "Encaisser la prescription",
      "icon": "coins",
      "reference": "ORD-2026-00001",
-     "ordonnanceId": "ORDxmsvmvr407avsd",
-     "factureId": "FACxmsvmvr40e10hw",
+     "ordonnanceId": "ORDxmsvmvr405n9e7",
+     "factureId": "FACxmsvmvr40qv7ej",
      "factureNumero": "FP-2026-00001",
      "patient": "TCHANE Bertine",
      "patientCode": "CNT/1/25",
@@ -4519,6 +4519,50 @@
       "indice": null
      }
     ]
+   },
+   "annulee": {
+    "admission": {
+     "id": "ADM2",
+     "statut": "en_cours",
+     "reference": "H00002",
+     "chambre": "C1",
+     "lit": "C1 LIT1",
+     "dateEntree": "2026-08-14",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 2",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0002",
+     "patient": "BAKO Boukari",
+     "patientCode": "CNT/2/26",
+     "etatSortie": "Guéri",
+     "consignes": "",
+     "derogation": null,
+     "signaturePatient": true,
+     "signatureInfirmier": true,
+     "constatGardien": true
+    },
+    "kpis": [
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Sorties finalisables",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Bloquées par le solde",
+      "valeur": "0",
+      "indice": "RG-06"
+     },
+     {
+      "libelle": "Sorties réalisées",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
    }
   }
  },
@@ -4819,7 +4863,7 @@
      ]
     ],
     "fiche": {
-     "id": "SORxmsvmvr400hxry",
+     "id": "SORxmsvmvr40s58t6",
      "statut": "actif",
      "admissionId": "ADM1",
      "dateSortie": "2026-08-16",
@@ -4889,7 +4933,7 @@
      ]
     ],
     "fiche": {
-     "id": "SORxmsvmvr40b8i4e",
+     "id": "SORxmsvmvr40j75nk",
      "statut": "actif",
      "admissionId": "ADM2",
      "dateSortie": "2026-08-16",
@@ -4943,6 +4987,65 @@
     ]
    }
   },
+  "annulation": {
+   "avant": {
+    "admission": {
+     "id": "ADM3",
+     "statut": "sortie",
+     "reference": "H00003",
+     "chambre": "A2",
+     "lit": "A2 LIT1",
+     "dateEntree": "2026-08-13",
+     "dateSortie": "2026-08-16",
+     "diagnosticEntree": "Diagnostic 3",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    },
+    "actives": 5
+   },
+   "apres": {
+    "admission": {
+     "id": "ADM3",
+     "statut": "en_cours",
+     "reference": "H00003",
+     "chambre": "A2",
+     "lit": "A2 LIT1",
+     "dateEntree": "2026-08-13",
+     "dateSortie": null,
+     "diagnosticEntree": "Diagnostic 3",
+     "infirmier": "GARBA Yahouza",
+     "patientId": "PAT0003",
+     "patient": "N’TCHA Yacoubou",
+     "patientCode": "CNT/3/26"
+    },
+    "fiche": {},
+    "actives": 4,
+    "kpis": [
+     {
+      "libelle": "Sorties contre avis médical",
+      "valeur": "4",
+      "indice": null
+     },
+     {
+      "libelle": "Avec avis du Procureur",
+      "valeur": "2",
+      "indice": null
+     },
+     {
+      "libelle": "Patients hospitalisés",
+      "valeur": "1",
+      "indice": null
+     },
+     {
+      "libelle": "Dossiers clôturés",
+      "valeur": "1",
+      "indice": null
+     }
+    ]
+   }
+  },
   "modifierCreee": {
    "valeurs": {
     "admissionId": "ADM1",
@@ -4966,7 +5069,7 @@
      ]
     ],
     "fiche": {
-     "id": "SORxmsvmvr400hxry",
+     "id": "SORxmsvmvr40s58t6",
      "statut": "actif",
      "admissionId": "ADM1",
      "dateSortie": "2026-08-16",
