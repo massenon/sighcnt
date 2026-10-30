@@ -211,7 +211,7 @@ void main() {
       expect(matTexteNombre(3), '3');
       expect(matTexteNombre(3.0), '3');
       expect(matTexteNombre(3.1), '3.1');
-      expect(matTexteNombre('2,5'), '2.5');
+      expect(matTexteNombre('2.70'), '2.70');
       expect(matTexteNombre(null), '');
       expect(matNombreSaisi('3'), 3);
       expect(matNombreSaisi('3.50'), 3.5);

@@ -591,7 +591,7 @@ class EcranDossierBebe extends StatelessWidget with EcranMaquette {
         ColonneTableau(
             cle: 'vitK1',
             libelle: 'Soins J0',
-            texte: (r) => soins(r, court: true),
+            texte: (r) => soins(r).isEmpty ? 'Aucun soin tracé' : soins(r),
             rendu: (_, r) {
               final l = soins(r).isEmpty ? <String>[] : [if (matVrai(r['vitK1'])) 'Vit K1', if (matVrai(r['vpo0'])) 'VPO0', if (matVrai(r['bcg'])) 'BCG', if (matVrai(r['hepB0'])) 'Hép. B'];
               return l.isEmpty

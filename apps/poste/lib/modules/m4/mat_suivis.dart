@@ -135,7 +135,7 @@ class EcranCpn extends StatelessWidget with EcranMaquette {
         ColonneTableau(
             cle: 'gar',
             libelle: 'GAR',
-            texte: (r) => matVrai(r['gar']) ? 'À risque' : '—',
+            texte: (r) => matVrai(r['gar']) ? 'GROSSESSE À RISQUE' : '—',
             rendu: (_, r) => matVrai(r['gar']) ? const BadgeSigh('GROSSESSE À RISQUE', ton: TonSigh.danger) : matMuet('—')),
         ColonneTableau(
             cle: 'sp',
@@ -314,7 +314,7 @@ class EcranCpon extends StatelessWidget with EcranMaquette {
         ColonneTableau(
             cle: 'hemorragieAntePartum',
             libelle: 'Hémorragie ANTE-partum',
-            texte: (r) => matVrai(r['hemorragieAntePartum']) ? 'Oui — ${r['etiologieAnte'] ?? ''}' : 'Non',
+            texte: (r) => matVrai(r['hemorragieAntePartum']) ? 'OUI — ${r['etiologieAnte'] ?? 'étiologie à préciser'}' : 'Non',
             rendu: (_, r) => matVrai(r['hemorragieAntePartum'])
                 ? BadgeSigh('OUI — ${r['etiologieAnte'] ?? 'étiologie à préciser'}', ton: TonSigh.danger)
                 : matMuet('Non')),
@@ -829,7 +829,13 @@ class EcranSoinsCuratifs extends StatelessWidget with EcranMaquette {
         ColonneTableau(
             cle: 'femmeHospitalisee',
             libelle: 'Devenir (Case 27)',
-            texte: (r) => '${matVrai(r['femmeObservee']) ? 'Observée' : ''}${matVrai(r['femmeHospitalisee']) ? ' · Hospitalisée ${r['joursHospitalisation'] != null ? matTexteNombre(r['joursHospitalisation']) : '?'} j' : ''}'.trim(),
+            texte: (r) {
+              final o = [
+                if (matVrai(r['femmeObservee'])) 'Observée',
+                if (matVrai(r['femmeHospitalisee'])) 'Hospitalisée — ${r['joursHospitalisation'] != null ? matTexteNombre(r['joursHospitalisation']) : '?'} j',
+              ];
+              return o.isEmpty ? 'Retour à domicile' : o.join(' ');
+            },
             rendu: (_, r) {
               final out = <(String, TonSigh)>[
                 if (matVrai(r['femmeObservee'])) ('Observée', TonSigh.info),

@@ -83,6 +83,7 @@ num? matNum(Object? v) {
 
 /// `String(3)` → « 3 », `String(3.1)` → « 3.1 » : JavaScript n'écrit pas « 3.0 ».
 String matTexteNombre(Object? v) {
+  if (v is String) return v; // `String('2.70')` reste « 2.70 »
   final n = matNum(v);
   if (n == null) return '';
   if (n is int) return '$n';
