@@ -242,11 +242,16 @@ CREATE TABLE IF NOT EXISTS "ged"."documents" (
   "format" text,
   "statut" text,
   "taille" integer,
+  "cree_le" timestamptz,
   "archive" boolean,
+  "contenu" text,
   "libelle" text,
   "version" integer,
+  "cree_par" text,
+  "resultat" text,
   "categorie" text,
   "depose_par" text,
+  "empreinte" text,
   "rattache_a" text,
   "reference" text,
   "conservation" integer,
@@ -254,6 +259,7 @@ CREATE TABLE IF NOT EXISTS "ged"."documents" (
   "consultations" integer,
   "etat_validation" text,
   "code_rattachement" text,
+  "empreinte_balance" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "ged"."documents" IS 'Collection « documents » — GED';
@@ -554,15 +560,18 @@ CREATE TABLE IF NOT EXISTS "m12"."ecritures" (
   "journal" text,
   "libelle" text,
   "origine" text,
-  "piece_id" text,
   "cree_par" text,
-  "piece_numero" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "archive_par" text,
+  "modifie_par" text,
   "compte_libelle" text,
   "journal_libelle" text,
+  "motif_archivage" text,
+  "piece_id" text,
+  "piece_numero" text,
   "valide_le" date,
   "valide_par" text,
-  "modifie_le" timestamptz,
-  "modifie_par" text,
   "centre_cout" text,
   "extra" jsonb
 );
@@ -936,22 +945,27 @@ CREATE INDEX IF NOT EXISTS "ix_fiches_reference_statut" ON "m1"."fiches_referenc
 CREATE INDEX IF NOT EXISTS "ix_fiches_reference_patient_id" ON "m1"."fiches_reference" ("patient_id");
 CREATE TABLE IF NOT EXISTS "m1"."patients" (
   "id" text PRIMARY KEY,
-  "age" integer,
   "nom" text,
-  "code" text,
   "sexe" text,
-  "assure" boolean,
   "prenom" text,
   "statut" text,
   "cree_le" timestamptz,
+  "cree_par" text,
+  "telephone" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "archive_par" text,
+  "modifie_par" text,
+  "observation" text,
+  "motif_archivage" text,
+  "champ_inconnu_du_schema" text,
+  "age" integer,
+  "code" text,
+  "assure" boolean,
   "adresse" text,
   "externe" boolean,
-  "cree_par" text,
   "assureur" text,
   "quartier" text,
-  "telephone" text,
-  "modifie_le" timestamptz,
-  "modifie_par" text,
   "date_creation" date,
   "date_naissance" date,
   "age_reference_le" text,
@@ -977,8 +991,8 @@ CREATE TABLE IF NOT EXISTS "m1"."patients" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m1"."patients" IS 'Collection « patients » — M1 Patients & DMI';
-CREATE INDEX IF NOT EXISTS "ix_patients_code" ON "m1"."patients" ("code");
 CREATE INDEX IF NOT EXISTS "ix_patients_statut" ON "m1"."patients" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_patients_code" ON "m1"."patients" ("code");
 CREATE INDEX IF NOT EXISTS "ix_patients_souscripteur_id" ON "m1"."patients" ("souscripteur_id");
 CREATE INDEX IF NOT EXISTS "ix_patients_personnel_id" ON "m1"."patients" ("personnel_id");
 CREATE TABLE IF NOT EXISTS "m1"."pieces" (
@@ -2212,6 +2226,23 @@ CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_ordonnance_id" ON "m5"."demande
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_preleve_par_id" ON "m5"."demandes_analyses" ("preleve_par_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_dossier_consultation_id" ON "m5"."demandes_analyses" ("dossier_consultation_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_facture_id" ON "m5"."demandes_analyses" ("facture_id");
+CREATE TABLE IF NOT EXISTS "m5"."donneurs" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "nom" text,
+  "telephone" text,
+  "groupe" text,
+  "dernier_don" date,
+  "nb_dons" integer,
+  "eligible" boolean,
+  "type" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m5"."donneurs" IS 'Collection « donneurs » — M5 Laboratoire';
+CREATE INDEX IF NOT EXISTS "ix_donneurs_statut" ON "m5"."donneurs" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_donneurs_reference" ON "m5"."donneurs" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_donneurs_type" ON "m5"."donneurs" ("type");
 CREATE TABLE IF NOT EXISTS "m5"."examens_labo" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -2235,6 +2266,23 @@ CREATE TABLE IF NOT EXISTS "m5"."plages_reactif" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m5"."plages_reactif" IS 'Collection « plagesReactif » — M5 Laboratoire';
+CREATE TABLE IF NOT EXISTS "m5"."poches" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "groupe" text,
+  "volume" integer,
+  "date_prelevement" date,
+  "date_peremption" date,
+  "donneur" text,
+  "etat" text,
+  "reserve" boolean,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m5"."poches" IS 'Collection « poches » — M5 Laboratoire';
+CREATE INDEX IF NOT EXISTS "ix_poches_statut" ON "m5"."poches" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_poches_reference" ON "m5"."poches" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_poches_etat" ON "m5"."poches" ("etat");
 CREATE TABLE IF NOT EXISTS "m5"."unites_labo" (
   "id" text PRIMARY KEY,
   "source" text,
