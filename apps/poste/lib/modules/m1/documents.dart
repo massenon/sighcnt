@@ -24,6 +24,9 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
   const EcranDocuments({super.key});
 
   @override
+  String get titre => 'Documents numérisés du patient';
+
+  @override
   String get description =>
       'Ordonnances, résultats d’analyses, comptes rendus, consentements et imagerie rattachés au dossier patient.';
 
@@ -318,6 +321,9 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
 /// recensés) : des valeurs de la maquette, non des mesures du magasin.
 class EcranNumerisation extends StatelessWidget with EcranMaquette {
   const EcranNumerisation({super.key});
+
+  @override
+  String get titre => 'Plan de numérisation des dossiers';
 
   @override
   String get description => 'Suivi de la reprise progressive et priorisée des dossiers patients papier (CDCT §24).';
