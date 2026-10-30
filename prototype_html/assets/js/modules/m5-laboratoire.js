@@ -1915,7 +1915,10 @@
                 } else {
                   /* Modifier une borne la fait sortir du document : on le dit
                      dans la source plutôt que de laisser croire qu'elle en vient. */
-                  var bougee = val.min !== v.min || val.max !== v.max || val.normal !== v.normal;
+                  /* Une valeur ABSENTE (null, undefined, '') n'est pas une valeur déplacée : le formulaire rend '' pour la borne qualitative d'une
+                     variable numérique, et la comparer brute marquait « modifiée » toute fiche dont on corrigeait seulement l'intitulé (écart E182). */
+                  var vide = function (x) { return x == null || x === '' ? null : x; };
+                  var bougee = vide(val.min) !== vide(v.min) || vide(val.max) !== vide(v.max) || vide(val.normal) !== vide(v.normal);
                   if (bougee) {
                     val.source = 'Modifiée par ' + S.currentUser() + ' le ' + C.dateFR(AUJ)
                       + ' — précédemment : ' + (L.libelleReference(v) || '—');
@@ -2560,6 +2563,8 @@
       var selPeriode = el('select.select');
       PERIODES_LABO.forEach(function (x) { selPeriode.appendChild(el('option', { value: x.id }, x.label)); });
       selPeriode.value = 'mois';
+      /* La périodicité doit COMMANDER le classement des plus consommés (écart E183 : le sélecteur n'écoutait rien). */
+      selPeriode.addEventListener('change', function () { rendreGraphes(); });
 
       rendreTout();
       host.appendChild(K.source('Inventaire SAGE « Grand Stock » — les seuils d’alerte y sont absents et se '
@@ -2600,6 +2605,25 @@
         ];
       }
 
+      /** RG-03 : le stock ne peut jamais être négatif. Le champ déclarait `min: 0`, que le formulaire n'applique pas : un stock de −1 s'enregistrait (écart E185). */
+      function refuserStockNegatif(v) {
+        if (Number(v.stock) < 0) {
+          U.toast('Le stock ne peut pas être négatif.', { type: 'error', detail: 'RG-03 — corriger la quantité saisie.' });
+          return false;
+        }
+        return true;
+      }
+
+      /** `LAB-NNNN` : le plus grand rang déjà écrit au registre des produits, plus un (écart E180). */
+      function codeReactifSuivant() {
+        var max = 0;
+        colProduits.all().forEach(function (p) {
+          var c = String(p.code || '');
+          if (c.indexOf('LAB-') === 0) max = Math.max(max, parseInt(c.slice(4), 10) || 0);
+        });
+        return 'LAB-' + String(max + 1).padStart(4, '0');
+      }
+
       function rendreTout() { rendreKpi(); rendreTable(); rendreGraphes(); }
 
       function rendreKpi() {
@@ -2632,7 +2656,7 @@
         rows: function () { return produits(); },
         exportName: 'reactifs-laboratoire', pageSize: 15, searchable: true,
         rowActions: K.actionsLigne(colProduits, champsReactif(), {
-          module: 'M5', archivable: false, refresh: rendreTout,
+          module: 'M5', archivable: false, refresh: rendreTout, avant: refuserStockNegatif,
         }),
         filters: [
           {
@@ -2683,13 +2707,15 @@
         ],
         actions: [
           K.creer(colProduits, champsReactif(), {
-          module: 'M5', label: 'Nouveau réactif', titre: 'Nouveau réactif ou consommable', entite: 'Référence',
+          module: 'M5', label: 'Nouveau réactif', titre: 'Nouveau réactif ou consommable', entite: 'Référence', avant: refuserStockNegatif,
           defauts: function () { return { categorie: 'reactif', stock: 0, seuilAlerte: 10, cump: 0 }; },
           transform: function (v) {
-            if (!v.code) v.code = C.nextRef('LAB-', 4);
+            /* Le code suit le REGISTRE des produits (plus grand rang LAB- + 1), jamais un compteur de page qui repart à 1 à chaque chargement
+               et émettait un code déjà attribué (écart E180, même défaut que E8 / E142). */
+            if (!v.code) v.code = codeReactifSuivant();
             v.stock = Number(v.stock) || 0;
             v.seuilAlerte = v.seuilAlerte === '' ? null : Number(v.seuilAlerte);
-            v.seuilCritique = v.seuilCritique === '' ? null : Number(v.seuilCritique);
+            v.seuilCritique = v.seuilCritique === '' || v.seuilCritique == null ? null : Number(v.seuilCritique);   /* facultatif : vide ≠ 0 (écart E184) */
             v.cump = Number(v.cump) || 0;
             v.seuilDefiniPar = S.currentUser();
             v.seuilDefiniLe = C.iso(AUJ);

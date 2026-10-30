@@ -40,3 +40,4 @@ export 'src/stock/delivrance.dart' hide referenceSuivante, LigneStock;
 export 'src/stock/emplacements.dart' hide etatStock;
 export 'src/stock/reprise_sage.dart';
 export 'src/labo/dem_regles.dart';
+export 'src/labo/cat_regles.dart';
