@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 74,
+ "ecrans_portes": 141,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -16,6 +16,158 @@
    ]
   },
   {
+   "id": "m1-antecedents",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-certificats-externes",
+   "mesure": true,
+   "attendus": 3,
+   "presents": 3,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-constantes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-contre-reference",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-documents",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-dossier-etendu",
+   "mesure": true,
+   "attendus": 3,
+   "presents": 3,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-dossier-medical",
+   "mesure": true,
+   "attendus": 4,
+   "presents": 4,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-externe",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-numerisation",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-patient-nouveau",
+   "mesure": true,
+   "attendus": 27,
+   "presents": 27,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-patient-profil",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-patients",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-pieces",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-reference",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-affichage",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-agenda",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-agenda-medecin",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-consultation-fiche",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-consultations",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m2-dashboard-imagerie",
    "mesure": true,
    "attendus": 25,
@@ -24,10 +176,50 @@
    "manquants": []
   },
   {
+   "id": "m2-domicile",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-dossier-consultation-nouveau",
+   "mesure": true,
+   "attendus": 76,
+   "presents": 76,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-dossiers-consultation",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m2-echographie-galerie",
    "mesure": true,
    "attendus": 8,
    "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-file-attente",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-file-cabinet",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
    "taux": 1.0,
    "manquants": []
   },
@@ -84,6 +276,350 @@
    "mesure": true,
    "attendus": 17,
    "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-ordonnance-nouvelle",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-ordonnances",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-pathologies",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-prescriptions",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-registre-appels",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-rendezvous",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-salle-soins",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-visites",
+   "mesure": true,
+   "attendus": 4,
+   "presents": 4,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-administrations",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-admissions",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-bloc-checklist",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-bloc-cro",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-bons-pansements",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-chambres",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-cpa",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-cr-anesthesie",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-demande-examen",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-feuille-temperature",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-glasgow",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-observation",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-plan-lits",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-rapport",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-soins",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-sortie-avis-medical",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-sorties",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-surveillance",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-transfusion",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-visites-patients",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-accouchements",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-comptes-rendus",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-cpn",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-cpon",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-deces",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-dossier-bebe",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-dossier-obstetrical",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-dossier-obstetrical-nouveau",
+   "mesure": true,
+   "attendus": 47,
+   "presents": 47,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-maternite",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-naissances",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-partogramme",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-planification",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-ptme",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-soins-curatifs",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-sonu",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
    "taux": 1.0,
    "manquants": []
   },
