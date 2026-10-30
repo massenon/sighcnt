@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/config_poste.dart';
-import '../modules/module_sigh.dart';
+import '../core/donnees_navigation.dart';
+import '../modules/registre.dart';
 import '../sync/etat_sync.dart';
+import 'barre_superieure.dart';
+import 'ecran_a_porter.dart';
+import 'page_standard.dart';
+import 'ruban.dart';
 
-/// Coque unique du poste (fileul et mère) : barre latérale DÉRIVÉE du registre, pastille de synchronisation permanente.
+/// Coque UNIQUE du poste (fileul et mère) : barre supérieure → ruban à méga-menus → page. Elle reproduit la structure de
+/// la maquette (`#app-menubar`) ; tout ce qu'elle affiche est DÉRIVÉ du manifeste et de la matrice des droits.
 class CoquePoste extends StatefulWidget {
-  const CoquePoste({super.key, required this.config, required this.modules, required this.etatSync});
+  const CoquePoste(
+      {super.key,
+      required this.config,
+      required this.donnees,
+      required this.ecrans,
+      required this.etatSync});
   final ConfigPoste config;
-  final List<ModuleSigh> modules;
+  final DonneesNavigation donnees;
+  final Map<String, ConstruireEcran> ecrans;
   final SourceEtatSync etatSync;
 
   @override
@@ -16,32 +29,111 @@ class CoquePoste extends StatefulWidget {
 }
 
 class _CoquePosteState extends State<CoquePoste> {
-  int _index = 0;
+  String? _ecran;
+  String? _domaine;
+  bool _panneauOuvert = true;
+
+  List<DomaineRuban> get _ruban =>
+      widget.donnees.manifeste.ruban(widget.donnees.matrice, widget.config.role,
+          estMere: widget.config.estMere);
+
+  /// Page d'accueil du rôle (`home` de la maquette) si le rôle la voit, sinon le premier écran de son ruban.
+  String? _accueil(List<DomaineRuban> ruban) {
+    final home = widget.donnees.matrice.accueil(widget.config.role);
+    if (home != null &&
+        widget.donnees.matrice.peutVoir(widget.config.role, home)) return home;
+    return ruban.isEmpty ? null : ruban.first.rangees.first.ecrans.first.id;
+  }
+
+  void _ouvrir(String id) {
+    final e = widget.donnees.manifeste.ecran(id);
+    setState(() {
+      _ecran = id;
+      if (e != null)
+        _domaine = _ruban
+                .where((d) => d.rangees
+                    .any((r) => r.ecrans.any((x) => x.id == id) || r.hub == id))
+                .map((d) => d.nom)
+                .firstOrNull ??
+            _domaine;
+      // Un clic sur une pastille referme le panneau : la page appelée s'ouvre menu replié (comme la maquette).
+      _panneauOuvert = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final modules = widget.modules;
+    final ruban = _ruban;
     final libelleMode = widget.config.estMere ? 'poste mère' : 'poste fileul';
-    if (modules.isEmpty) {
-      return Scaffold(appBar: AppBar(title: Text('SIGH-CNT — $libelleMode')), body: const Center(child: Text('Aucun module n’est ouvert à votre profil.')));
+    final nomRole = widget.donnees.matrice.libelle(widget.config.role) ??
+        widget.config.role;
+    if (ruban.isEmpty) {
+      return Scaffold(
+          body: Column(children: [
+        BarreSuperieure(
+            config: widget.config, etatSync: widget.etatSync, nomRole: nomRole),
+        const Expanded(
+            child: Center(
+                child: Text('Aucun module n’est ouvert à votre profil.')))
+      ]));
     }
-    final courant = modules[_index.clamp(0, modules.length - 1)];
+    final courant = _ecran ?? _accueil(ruban)!;
+    final domaine = _domaine ??
+        ruban
+            .where((d) =>
+                d.rangees.any((r) => r.ecrans.any((e) => e.id == courant)))
+            .map((d) => d.nom)
+            .firstOrNull ??
+        ruban.first.nom;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('SIGH-CNT — $libelleMode'),
-        actions: [Padding(padding: const EdgeInsets.only(right: 16), child: Center(child: PastilleSync(source: widget.etatSync)))],
-      ),
-      body: Row(children: [
-        NavigationRail(
-          key: const Key('navigation'),
-          extended: MediaQuery.of(context).size.width >= 1000,
-          selectedIndex: _index.clamp(0, modules.length - 1),
-          onDestinationSelected: (i) => setState(() => _index = i),
-          destinations: [for (final m in modules) NavigationRailDestination(icon: Icon(m.icone), label: Text(m.libelle))],
+      body: Column(children: [
+        BarreSuperieure(
+            config: widget.config,
+            etatSync: widget.etatSync,
+            nomRole: nomRole,
+            surAccueil: () => _ouvrir(_accueil(ruban)!)),
+        Ruban(
+          domaines: ruban,
+          raccourcis: widget.donnees.manifeste.raccourcis(ruban),
+          domaineOuvert: domaine,
+          ecranCourant: courant,
+          panneauOuvert: _panneauOuvert,
+          surDomaine: (nom) => setState(() {
+            _panneauOuvert = !(_panneauOuvert && domaine == nom);
+            _domaine = nom;
+          }),
+          surEcran: _ouvrir,
+          surBascule: () => setState(() => _panneauOuvert = !_panneauOuvert),
         ),
-        const VerticalDivider(width: 1),
-        Expanded(child: KeyedSubtree(key: ValueKey(courant.id), child: courant.construire(context, widget.config))),
+        Expanded(
+            child: KeyedSubtree(
+                key: ValueKey('$courant|${widget.config.mode.name}'),
+                child: _page(courant, ruban, libelleMode))),
       ]),
     );
+  }
+
+  Widget _page(String id, List<DomaineRuban> ruban, String libelleMode) {
+    final e = widget.donnees.manifeste.ecran(id);
+    final rangee = ruban
+        .expand((d) => d.rangees.map((r) => (d, r)))
+        .where((x) => x.$2.hub == id || x.$2.ecrans.any((s) => s.id == id))
+        .firstOrNull;
+    final fil = [
+      'Accueil',
+      if (rangee != null) rangee.$1.nom,
+      if (rangee != null) rangee.$2.label,
+      e?.label ?? id
+    ];
+    if (e == null) return const Center(child: Text('Écran inconnu.'));
+    final porte = widget.ecrans[id];
+    if (porte == null)
+      return EcranAPorter(ecran: e, donnees: widget.donnees, fil: fil);
+    return PageStandard(
+        titre: e.label,
+        fil: fil,
+        module: e.module,
+        defilable: false,
+        child: porte(context, widget.config));
   }
 }

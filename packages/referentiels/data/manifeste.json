@@ -42,6 +42,24 @@
    "icone": "layout-dashboard"
   }
  ],
+ "raccourcis": [
+  {
+   "code": "M1",
+   "court": "Patients"
+  },
+  {
+   "code": "M2",
+   "court": "Consultations"
+  },
+  {
+   "code": "M6",
+   "court": "Pharmacie"
+  },
+  {
+   "code": "M8",
+   "court": "Facturation"
+  }
+ ],
  "modules": [
   {
    "domaine": "Accueil",

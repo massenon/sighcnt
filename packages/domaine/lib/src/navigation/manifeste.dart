@@ -58,9 +58,18 @@ class DomaineRuban {
 /// Domaines réservés au mode MÈRE : ils n'existent pas sur un poste fileul, quels que soient les droits.
 const domainesMere = {'Poste mère'};
 
+/// Raccourci permanent du ruban (`N.RACCOURCIS`) : ouvre la page d'accueil d'un module, si le rôle en voit au moins un écran.
+class RaccourciRuban {
+  const RaccourciRuban({required this.court, required this.hub, required this.icone});
+  final String court;
+  final String hub;
+  final String? icone;
+}
+
 class Manifeste {
-  Manifeste._(this.domaines, this.rangees, this._ecrans);
+  Manifeste._(this.domaines, this.rangees, this._ecrans, this._raccourcis);
   final List<DomaineManifeste> domaines;
+  final List<({String code, String court})> _raccourcis;
   final List<RangeeManifeste> rangees;
   final Map<String, EcranNav> _ecrans;
 
@@ -87,7 +96,17 @@ class Manifeste {
           }(),
       ],
       ecrans,
+      [for (final r in ((j['raccourcis'] ?? const []) as List)) (code: '${(r as Map)['code']}', court: '${r['court']}')],
     );
+  }
+
+  /// Les raccourcis permanents que ce ruban peut montrer : seulement ceux dont le module a un écran visible.
+  List<RaccourciRuban> raccourcis(List<DomaineRuban> ruban) {
+    final rangees = ruban.expand((d) => d.rangees).toList();
+    return [
+      for (final r in _raccourcis)
+        if (rangees.any((x) => x.code == r.code)) RaccourciRuban(court: r.court, hub: 'hub-${r.code.toLowerCase()}', icone: rangees.firstWhere((x) => x.code == r.code).icone),
+    ];
   }
 
   EcranNav? ecran(String id) => _ecrans[id];

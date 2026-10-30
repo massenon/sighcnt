@@ -1,16 +1,15 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_poste/core/config_poste.dart';
+import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/main.dart';
 import 'package:sigh_poste/mere/client_mere.dart';
-import 'package:sigh_poste/modules/module_sigh.dart';
-import 'package:sigh_poste/modules/registre.dart';
+
+import 'aide_polices.dart';
+
+final donnees = DonneesNavigation.depuisDossier();
 
 ClientMere clientVide() => ClientMere(
       base: Uri.parse('http://mere.test'),
@@ -18,83 +17,111 @@ ClientMere clientVide() => ClientMere(
       client: MockClient((req) async => http.Response('{"epoch":1,"seq_max":0,"appareils":[],"etat":"ok","controles":[]}', 200)),
     );
 
-Future<void> monter(WidgetTester t, SighPoste app) async {
-  t.view.physicalSize = const Size(1400, 900);
+Future<void> monter(WidgetTester t, {required ConfigPoste config, ClientMere? client}) async {
+  t.view.physicalSize = const Size(1600, 1000);
   t.view.devicePixelRatio = 1;
   addTearDown(t.view.resetPhysicalSize);
-  await t.pumpWidget(app);
+  await t.pumpWidget(SighPoste(donnees: donnees, config: config, client: client));
   await t.pump();
 }
 
+/// Un domaine du ruban, puis une pastille : le geste de l'agent.
+Future<void> ouvrir(WidgetTester t, String domaine, String ecran) async {
+  await t.tap(find.byKey(Key('domaine-$domaine')));
+  await t.pump();
+  await t.tap(find.byKey(Key('pastille-$ecran')));
+  await t.pump(const Duration(milliseconds: 200));
+}
+
 void main() {
-  testsDroits();
-  test('le registre : un module de la mère n\'est JAMAIS visible d\'un fileul, la mère voit tout', () {
-    final tous = [...modulesCommuns(), ...modulesMere(clientVide())];
-    final fileul = modulesVisibles(const ConfigPoste(mode: ModePoste.fileul), tous: tous);
-    final mere = modulesVisibles(const ConfigPoste(mode: ModePoste.mere), tous: tous);
-    expect(fileul.map((m) => m.id), ['accueil-poste']);
-    expect(mere.map((m) => m.id), containsAll(fileul.map((m) => m.id)));
-    expect(mere.length, fileul.length + 5);
-    expect(mere.where((m) => m.id.startsWith('mere-')).length, 5);
-  });
+  // Les VRAIES polices : en Ahem, chaque lettre est un carré de 14 px et le ruban déborde, ce que la maquette ne fait pas.
+  setUpAll(chargerPolices);
 
-  test('le filtre de droits retire un module du mode sans le rendre accessible à un autre', () {
-    final tous = [...modulesCommuns(), ...modulesMere(clientVide())];
-    final v = modulesVisibles(const ConfigPoste(mode: ModePoste.mere), tous: tous, droit: (m) => m.id != 'mere-maintenance');
-    expect(v.any((m) => m.id == 'mere-maintenance'), isFalse);
-    expect(v.any((m) => m.id == 'mere-conflits'), isTrue);
-  });
-
-  testWidgets('poste fileul : annonce son mode, aucun module de la mère dans la navigation', (t) async {
-    await monter(t, const SighPoste(config: ConfigPoste(mode: ModePoste.fileul)));
-    expect(find.text('SIGH-CNT — poste fileul'), findsOneWidget);
-    expect(find.text('Accueil du poste'), findsOneWidget);
-    for (final libelle in ['Supervision', 'Appareils', 'Conflits', 'Journal technique', 'Maintenance']) {
-      expect(find.text(libelle), findsNothing, reason: libelle);
+  testWidgets('le ruban est celui de la maquette : barre supérieure, onglets de domaine, panneau à rangées de pastilles', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin', nomPoste: 'BASSONGUI Chabi Séko'));
+    expect(find.byKey(const Key('barre-superieure')), findsOneWidget);
+    expect(find.text('NASSIERA TOO'), findsOneWidget);
+    expect(find.byKey(const Key('recherche-globale')), findsOneWidget);
+    expect(find.text('Ctrl K'), findsOneWidget);
+    expect(find.byKey(const Key('role-courant')), findsOneWidget);
+    for (final d in ['Accueil', 'Soins', 'Logistique', 'Financier', 'RH', 'Administration', 'Système', 'Pilotage']) {
+      expect(find.byKey(Key('domaine-$d')), findsOneWidget, reason: d);
     }
-    expect(find.textContaining('Hors ligne'), findsOneWidget);
+    expect(find.byKey(const Key('panneau-ruban')), findsOneWidget);
+    // Le panneau s'ouvre sur le domaine de la page d'accueil du rôle (Pilotage pour l'administrateur), pas sur les autres.
+    expect(find.byKey(const Key('pastille-dash-admin')), findsOneWidget);
+    expect(find.byKey(const Key('pastille-m14-utilisateurs')), findsNothing, reason: 'le panneau n\'ouvre que le domaine courant');
+    await t.tap(find.byKey(const Key('domaine-Système')));
+    await t.pump();
+    expect(find.byKey(const Key('pastille-m14-utilisateurs')), findsOneWidget);
+    expect(find.byKey(const Key('pastille-dash-admin')), findsNothing);
   });
 
-  testWidgets('poste mère : mêmes modules communs PLUS les siens, on navigue de l\'un à l\'autre', (t) async {
-    await monter(t, SighPoste(config: const ConfigPoste(mode: ModePoste.mere), client: clientVide()));
-    expect(find.text('SIGH-CNT — poste mère'), findsOneWidget);
-    expect(find.text('Accueil du poste'), findsOneWidget);
-    for (final libelle in ['Supervision', 'Appareils', 'Conflits', 'Journal technique', 'Maintenance']) {
-      expect(find.text(libelle), findsOneWidget, reason: libelle);
+  testWidgets('l\'ouverture se fait sur la page d\'accueil DU RÔLE, et les raccourcis permanents sont là', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin'));
+    expect(find.byKey(const Key('pastille-dash-admin')), findsOneWidget);
+    for (final r in ['Patients', 'Consultations', 'Pharmacie', 'Facturation']) {
+      expect(find.byKey(Key('raccourci-$r')), findsOneWidget, reason: r);
     }
-    await t.tap(find.text('Journal technique'));
+    await t.tap(find.byKey(const Key('raccourci-Pharmacie')));
+    await t.pump();
+    expect(find.textContaining('Identifiant : hub-m6'), findsOneWidget);
+  });
+
+  testWidgets('un POSTE FILEUL n\'a pas le domaine « Poste mère », même pour l\'administrateur', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin'));
+    expect(find.byKey(const Key('domaine-Poste mère')), findsNothing);
+    expect(find.text('SIGH — Gestion hospitalière'), findsOneWidget);
+  });
+
+  testWidgets('la MÈRE a les mêmes domaines PLUS « Poste mère » ; on y ouvre ses modules', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.mere, role: 'admin'), client: clientVide());
+    expect(find.byKey(const Key('domaine-Soins')), findsOneWidget, reason: 'la mère garde les écrans du fileul');
+    expect(find.byKey(const Key('domaine-Poste mère')), findsOneWidget);
+    expect(find.text('SIGH — poste mère'), findsOneWidget);
+    await ouvrir(t, 'Poste mère', 'mere-journal-technique');
     for (var i = 0; i < 5; i++) {
       await t.pump(const Duration(milliseconds: 100));
     }
-    expect(find.text('Aucun évènement enregistré.'), findsOneWidget);
+    expect(find.byKey(const Key('titre-page')), findsOneWidget);
+    expect(find.text('Journal technique'), findsWidgets);
+    expect(find.text('Aucun évènement enregistré.'), findsOneWidget, reason: 'écran porté : la console de la mère');
   });
 
-  testWidgets('aucun module ouvert au profil : le dit, pas d\'écran blanc', (t) async {
-    await monter(t, const SighPoste(config: ConfigPoste(mode: ModePoste.fileul), droit: _aucun));
+  testWidgets('les droits viennent de la matrice : le caissier n\'a ni « Système » ni « Poste mère », même sur la mère', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.mere, role: 'caissier'), client: clientVide());
+    expect(find.byKey(const Key('domaine-Système')), findsNothing);
+    expect(find.byKey(const Key('domaine-Poste mère')), findsNothing);
+    expect(find.byKey(const Key('domaine-Financier')), findsOneWidget);
+  });
+
+  testWidgets('un écran de la maquette pas encore converti se NOMME : tranche et parité, jamais une page vide', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.fileul, role: 'caissier'));
+    await ouvrir(t, 'Financier', 'm8-caisse');
+    expect(find.byKey(const Key('ecran-a-porter')), findsOneWidget);
+    expect(find.textContaining('Identifiant : m8-caisse'), findsOneWidget);
+    expect(find.textContaining('tranche 1'), findsOneWidget);
+    expect(find.byKey(const Key('fil-ariane')), findsOneWidget);
+  });
+
+  testWidgets('une pastille referme le panneau (la page s\'ouvre menu replié) ; la bascule le rouvre', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin'));
+    await ouvrir(t, 'Système', 'cfg-poste');
+    expect(find.byKey(const Key('panneau-ruban')), findsNothing);
+    await t.tap(find.byKey(const Key('ruban-bascule')));
+    await t.pump();
+    expect(find.byKey(const Key('panneau-ruban')), findsOneWidget);
+  });
+
+  testWidgets('aucun module ouvert au profil : le dit, pas d\'écran blanc (rôle archivé)', (t) async {
+    await monter(t, config: const ConfigPoste(mode: ModePoste.fileul, role: 'pharmacien'));
     expect(find.text('Aucun module n’est ouvert à votre profil.'), findsOneWidget);
   });
-}
 
-bool _aucun(ModuleSigh m) => false;
-
-void testsDroits() {
-  final brut = jsonDecode(File('../../packages/rbac/data/rbac.json').readAsStringSync()) as Map<String, Object?>;
-  final matrice = MatriceDroits.depuisJson(brut);
-  final tous = [...modulesCommuns(), ...modulesMere(clientVide())];
-  List<String> ids(String role, ModePoste mode) => modulesVisibles(ConfigPoste(mode: mode, role: role), tous: tous, droit: droitsDuRole(matrice, role)).map((m) => m.id).toList();
-
-  test('mère : le DAF et l\'administrateur administrent ; le caissier voit seulement l\'accueil', () {
-    expect(ids('da', ModePoste.mere).where((i) => i.startsWith('mere-')).length, 5);
-    expect(ids('admin', ModePoste.mere).where((i) => i.startsWith('mere-')).length, 5);
-    expect(ids('caissier', ModePoste.mere), ['accueil-poste']);
-  });
-
-  test('un fileul ne reçoit jamais un module de la mère, même pour un DAF', () {
-    expect(ids('da', ModePoste.fileul), ['accueil-poste']);
-  });
-
-  test('rôle archivé ou inconnu : rien, pas même l\'accueil', () {
-    expect(ids('pharmacien', ModePoste.mere), isEmpty);
-    expect(ids('role-invente', ModePoste.mere), isEmpty);
+  test('la table des écrans portés ne contient que des écrans du manifeste (aucun identifiant mort)', () {
+    final connus = donnees.manifeste.tousLesEcrans.map((e) => e.id).toSet();
+    for (final id in ['cfg-poste', 'mere-supervision', 'mere-appareils', 'mere-conflits', 'mere-journal-technique', 'mere-reinit']) {
+      expect(connus, contains(id));
+    }
   });
 }

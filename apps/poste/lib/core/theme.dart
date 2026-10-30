@@ -18,17 +18,25 @@ class ThemeSigh {
   static Color get dangerFond => _c(JetonsSigh.danger, 100);
 
   static ThemeData clair() {
-    final schema = ColorScheme.fromSeed(seedColor: navy, primary: navy, error: danger, surface: Colors.white);
+    final schema = ColorScheme.fromSeed(
+        seedColor: navy, primary: navy, error: danger, surface: Colors.white);
     return ThemeData(
       useMaterial3: true,
       colorScheme: schema,
       fontFamily: JetonsSigh.policeSans.first,
       fontFamilyFallback: JetonsSigh.policeSans.skip(1).toList(),
       scaffoldBackgroundColor: _c(JetonsSigh.navy, 50),
-      appBarTheme: AppBarTheme(backgroundColor: navy, foregroundColor: Colors.white),
-      cardTheme: CardThemeData(color: Colors.white, elevation: 1, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+      appBarTheme:
+          AppBarTheme(backgroundColor: navy, foregroundColor: Colors.white),
+      cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 1,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
       // Texte jamais sous 11 pt (CDCT) : le corps de texte garde 14.
-      textTheme: const TextTheme(bodyMedium: TextStyle(fontSize: 14), bodySmall: TextStyle(fontSize: 12)),
+      textTheme: const TextTheme(
+          bodyMedium: TextStyle(fontSize: 14),
+          bodySmall: TextStyle(fontSize: 12)),
     );
   }
 }

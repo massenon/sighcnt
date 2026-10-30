@@ -25,11 +25,12 @@ class Droit {
 /// Règle d'or, inverse de celle de la maquette pour un rôle sans fiche : ici **tout ce qui n'est pas listé est refusé**.
 /// La matrice extraite est déjà résolue (surcharges d'écran, modules, écrans universels) ; ce moteur ne recalcule rien.
 class MatriceDroits {
-  MatriceDroits._(this._parRole, this._archives, this._libelles);
+  MatriceDroits._(this._parRole, this._archives, this._libelles, this._accueils);
 
   final Map<String, Map<String, Droit>> _parRole;
   final Set<String> _archives;
   final Map<String, String> _libelles;
+  final Map<String, String> _accueils;
 
   /// `json` = contenu décodé de `rbac.json`.
   factory MatriceDroits.depuisJson(Map<String, Object?> json) {
@@ -49,6 +50,7 @@ class MatriceDroits {
       parRole,
       {for (final r in roles) if (r['archive'] == true) '${r['id']}'},
       {for (final r in roles) '${r['id']}': '${r['label']}'},
+      {for (final r in roles) if (r['home'] != null) '${r['id']}': '${r['home']}'},
     );
   }
 
@@ -58,6 +60,9 @@ class MatriceDroits {
   bool roleConnu(String role) => _libelles.containsKey(role);
 
   String? libelle(String role) => _libelles[role];
+
+  /// Page d'accueil du rôle (`home` de la maquette), si elle existe.
+  String? accueil(String role) => _accueils[role];
 
   Droit droit(String role, String ecran) {
     if (estArchive(role)) return Droit.aucun;

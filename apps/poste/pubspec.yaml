@@ -16,6 +16,7 @@ dependencies:
   drift: any
   sqlcipher_flutter_libs: any   # base locale chiffrée (SQLCipher)
   http: any
+  lucide_icons_flutter: any   # les icônes Lucide de la maquette, mêmes noms
   cryptography: any             # enveloppes chiffrées de bout en bout vers le relais
   shelf: any                    # mode mère : serveur HTTP local
   shelf_router: any
@@ -26,3 +27,19 @@ dev_dependencies:
   flutter_lints: any
 flutter:
   uses-material-design: true
+  assets:
+    - assets/donnees/
+    - assets/img/
+  fonts:
+    # Inter, la police de la maquette (jetons : Inter, Segoe UI, system-ui). Licence SIL OFL 1.1.
+    - family: Inter
+      fonts:
+        - asset: assets/polices/Inter-Regular.otf
+        - asset: assets/polices/Inter-Medium.otf
+          weight: 500
+        - asset: assets/polices/Inter-SemiBold.otf
+          weight: 600
+        - asset: assets/polices/Inter-Bold.otf
+          weight: 700
+        - asset: assets/polices/Inter-Italic.otf
+          style: italic

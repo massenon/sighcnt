@@ -107,7 +107,7 @@ async function extraireRbac() {
           parRole[ro.id][e.id] = [d.voir ? 1 : 0, d.editer ? 1 : 0, d.annuler ? 1 : 0];
         });
       });
-      return { roles, domaines, modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null };
+      return { roles, domaines, raccourcis: propre(N.RACCOURCIS), modules, ecrans, matrice, parRole, version: SIGH.store.VERSION || null };
     });
     const total = Object.values(r.parRole).reduce((a, o) => a + Object.keys(o).length, 0);
     console.log(`  ${r.roles.length} rôles · ${r.modules.length} rangées · ${r.ecrans.length} entrées d'index · ${total} droits écran×rôle`);
@@ -117,7 +117,7 @@ async function extraireRbac() {
       roles: r.roles, matriceModules: r.matrice, parRole: r.parRole });
     ecrire('packages/referentiels/data/manifeste.json', {
       _doc: 'ENGENDRÉ par prototype_html/build/extraire.js — manifeste de navigation de la maquette (domaines, rangées, écrans).',
-      domaines: r.domaines, modules: r.modules, ecrans: r.ecrans });
+      domaines: r.domaines, raccourcis: r.raccourcis, modules: r.modules, ecrans: r.ecrans });
     return r;
   } finally { await m.fermer(); }
 }

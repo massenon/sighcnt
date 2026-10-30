@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 Map<String, Object?> json(String chemin) => (jsonDecode(File(chemin).readAsStringSync()) as Map).cast<String, Object?>();
 
 void main() {
+  testsAccueilEtRaccourcis();
   final manifeste = Manifeste.depuisJson(json('../referentiels/data/manifeste.json'));
   final matrice = MatriceDroits.depuisJson(json('../rbac/data/rbac.json'));
   final cas = ((json('test/vecteurs/ruban.json'))['cas'] as List).cast<Map>();
@@ -43,5 +44,23 @@ void main() {
 
   test('un rôle archivé n\'a aucun ruban (RG-14)', () {
     expect(manifeste.ruban(matrice, 'pharmacien', estMere: true), isEmpty);
+  });
+}
+
+void testsAccueilEtRaccourcis() {
+  final manifeste = Manifeste.depuisJson(json('../referentiels/data/manifeste.json'));
+  final matrice = MatriceDroits.depuisJson(json('../rbac/data/rbac.json'));
+  test('l\'accueil d\'un rôle est un écran qu\'il VOIT (sinon la page d\'ouverture serait fermée)', () {
+    for (final r in ['admin', 'direction', 'medecin', 'caissier', 'reception', 'comptable', 'stock', 'laborantin']) {
+      final h = matrice.accueil(r);
+      expect(h, isNotNull, reason: r);
+      expect(matrice.peutVoir(r, h!), isTrue, reason: '$r → $h');
+    }
+  });
+  test('raccourcis permanents : Patients, Consultations, Pharmacie, Facturation — seulement ceux dont le module est visible', () {
+    final admin = manifeste.raccourcis(manifeste.ruban(matrice, 'admin', estMere: false));
+    expect(admin.map((r) => r.court), ['Patients', 'Consultations', 'Pharmacie', 'Facturation']);
+    final caissier = manifeste.raccourcis(manifeste.ruban(matrice, 'caissier', estMere: false));
+    expect(caissier.map((r) => r.court), isNot(contains('Consultations')));
   });
 }

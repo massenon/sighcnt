@@ -12,8 +12,10 @@ class MoteurFileul {
   final Fileul _fileul;
 
   /// `dbChemin` = fichier SQLite du poste (`:memory:` en test). `mere` = adresse de la mère, ex. `http://192.168.1.10:9000`.
-  static MoteurFileul creer({required String dbChemin, required String mere, String nom = 'poste'}) {
-    final f = Fileul(ConfigFileul(port: 0, mere: mere, dbChemin: dbChemin, nom: nom));
+  static MoteurFileul creer(
+      {required String dbChemin, required String mere, String nom = 'poste'}) {
+    final f =
+        Fileul(ConfigFileul(port: 0, mere: mere, dbChemin: dbChemin, nom: nom));
     return MoteurFileul._(f);
   }
 
@@ -23,10 +25,12 @@ class MoteurFileul {
   String get uuid => _fileul.uuid;
 
   Future<void> appairer(String code) async {
-    final (statut, corps) = await _fileul.commande('POST /appairer', {'code': code}, const {});
+    final (statut, corps) =
+        await _fileul.commande('POST /appairer', {'code': code}, const {});
     if (statut >= 400) {
       final c = corps is Map ? corps : const {};
-      throw StateError('${c['code'] ?? 'appairage_refuse'}${c['motif'] != null ? ' — ${c['motif']}' : ''}');
+      throw StateError(
+          '${c['code'] ?? 'appairage_refuse'}${c['motif'] != null ? ' — ${c['motif']}' : ''}');
     }
   }
 
@@ -35,5 +39,7 @@ class MoteurFileul {
     return InstantaneSync.depuisEtat((corps! as Map).cast<String, Object?>());
   }
 
-  SourceSyncPeriodique source({Duration intervalle = const Duration(seconds: 2)}) => SourceSyncPeriodique(lire: instantane, intervalle: intervalle);
+  SourceSyncPeriodique source(
+          {Duration intervalle = const Duration(seconds: 2)}) =>
+      SourceSyncPeriodique(lire: instantane, intervalle: intervalle);
 }

@@ -3,7 +3,8 @@
 enum ModePoste { fileul, mere }
 
 class ConfigPoste {
-  const ConfigPoste({required this.mode, this.role = 'admin', this.nomPoste = 'Poste'});
+  const ConfigPoste(
+      {required this.mode, this.role = 'admin', this.nomPoste = 'Poste'});
   final ModePoste mode;
 
   /// Rôle de l'agent connecté (identifiant technique de `packages/rbac`).
@@ -12,5 +13,6 @@ class ConfigPoste {
 
   bool get estMere => mode == ModePoste.mere;
 
-  static ModePoste modeDepuis(String valeur) => valeur == 'mere' ? ModePoste.mere : ModePoste.fileul;
+  static ModePoste modeDepuis(String valeur) =>
+      valeur == 'mere' ? ModePoste.mere : ModePoste.fileul;
 }

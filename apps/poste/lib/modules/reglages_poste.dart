@@ -30,7 +30,12 @@ class _ReglagesPosteState extends State<ReglagesPoste> {
       _codeErreur = null;
     });
     try {
-      await widget.controleur.activer(relais: _relais.text, secretMere: _secret.text, cleClinique: _cle.text, nomPoste: _nom.text, remplacer: remplacer);
+      await widget.controleur.activer(
+          relais: _relais.text,
+          secretMere: _secret.text,
+          cleClinique: _cle.text,
+          nomPoste: _nom.text,
+          remplacer: remplacer);
       _secret.clear();
       _cle.clear();
     } on ActivationRefusee catch (e) {
@@ -66,43 +71,97 @@ class _ReglagesPosteState extends State<ReglagesPoste> {
           const SizedBox(height: 8),
           Card(
             child: ListTile(
-              leading: Icon(c.estMere ? Icons.dns : Icons.computer, color: ThemeSigh.navy),
-              title: Text(c.estMere ? 'Ce poste est la MÈRE de la clinique' : 'Ce poste est un poste fileul', key: const Key('mode-courant')),
-              subtitle: Text(c.estMere ? 'Il porte aussi le service de synchronisation et les modules « Poste mère ».' : 'Il travaille avec la mère de la clinique ; il peut en devenir la mère (une seule par clinique).'),
+              leading: Icon(c.estMere ? Icons.dns : Icons.computer,
+                  color: ThemeSigh.navy),
+              title: Text(
+                  c.estMere
+                      ? 'Ce poste est la MÈRE de la clinique'
+                      : 'Ce poste est un poste fileul',
+                  key: const Key('mode-courant')),
+              subtitle: Text(c.estMere
+                  ? 'Il porte aussi le service de synchronisation et les modules « Poste mère ».'
+                  : 'Il travaille avec la mère de la clinique ; il peut en devenir la mère (une seule par clinique).'),
             ),
           ),
-          if (widget.controleur.avertissement != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(widget.controleur.avertissement!, key: const Key('avertissement'), style: TextStyle(color: ThemeSigh.attention))),
+          if (widget.controleur.avertissement != null)
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(widget.controleur.avertissement!,
+                    key: const Key('avertissement'),
+                    style: TextStyle(color: ThemeSigh.attention))),
           const SizedBox(height: 12),
           if (!c.estMere) ...[
-            Text('Activer le mode mère', style: Theme.of(context).textTheme.titleMedium),
+            Text('Activer le mode mère',
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
-            const Text('À faire sur le SERVEUR local uniquement. Exige le secret de la mère (relais) et la clé de clinique.'),
+            const Text(
+                'À faire sur le SERVEUR local uniquement. Exige le secret de la mère (relais) et la clé de clinique.'),
             const SizedBox(height: 8),
-            TextField(key: const Key('relais'), controller: _relais, decoration: const InputDecoration(labelText: 'Adresse du relais', hintText: 'https://relais.exemple.bj')),
-            TextField(key: const Key('secret'), controller: _secret, obscureText: true, decoration: const InputDecoration(labelText: 'Secret de la mère')),
-            TextField(key: const Key('cle'), controller: _cle, obscureText: true, decoration: const InputDecoration(labelText: 'Clé de clinique')),
-            TextField(key: const Key('nom'), controller: _nom, decoration: const InputDecoration(labelText: 'Nom de ce poste')),
+            TextField(
+                key: const Key('relais'),
+                controller: _relais,
+                decoration: const InputDecoration(
+                    labelText: 'Adresse du relais',
+                    hintText: 'https://relais.exemple.bj')),
+            TextField(
+                key: const Key('secret'),
+                controller: _secret,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: 'Secret de la mère')),
+            TextField(
+                key: const Key('cle'),
+                controller: _cle,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: 'Clé de clinique')),
+            TextField(
+                key: const Key('nom'),
+                controller: _nom,
+                decoration:
+                    const InputDecoration(labelText: 'Nom de ce poste')),
             if (_erreur != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(_erreur!, key: const Key('erreur'), style: TextStyle(color: ThemeSigh.danger)),
+                child: Text(_erreur!,
+                    key: const Key('erreur'),
+                    style: TextStyle(color: ThemeSigh.danger)),
               ),
             const SizedBox(height: 12),
             Row(children: [
-              FilledButton.icon(key: const Key('activer'), onPressed: _occupe ? null : _activer, icon: const Icon(Icons.dns), label: Text(_occupe ? 'Activation…' : 'Activer le mode mère')),
+              FilledButton.icon(
+                  key: const Key('activer'),
+                  onPressed: _occupe ? null : _activer,
+                  icon: const Icon(Icons.dns),
+                  label:
+                      Text(_occupe ? 'Activation…' : 'Activer le mode mère')),
               // Reprise après sinistre : proposée SEULEMENT quand le relais a dit « une mère existe » (jamais d'emblée).
               if (_codeErreur == 'mere_deja_active') ...[
                 const SizedBox(width: 12),
-                OutlinedButton(key: const Key('remplacer'), onPressed: _occupe ? null : () => _activer(remplacer: true), child: const Text('Remplacer la mère silencieuse')),
+                OutlinedButton(
+                    key: const Key('remplacer'),
+                    onPressed: _occupe ? null : () => _activer(remplacer: true),
+                    child: const Text('Remplacer la mère silencieuse')),
               ],
             ]),
           ] else ...[
-            Text('Désactiver le mode mère', style: Theme.of(context).textTheme.titleMedium),
+            Text('Désactiver le mode mère',
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
-            const Text('Arrête le service de synchronisation, libère la place au relais, conserve toutes les données. Le secret de la mère est demandé.'),
-            TextField(key: const Key('secret'), controller: _secret, obscureText: true, decoration: const InputDecoration(labelText: 'Secret de la mère')),
+            const Text(
+                'Arrête le service de synchronisation, libère la place au relais, conserve toutes les données. Le secret de la mère est demandé.'),
+            TextField(
+                key: const Key('secret'),
+                controller: _secret,
+                obscureText: true,
+                decoration:
+                    const InputDecoration(labelText: 'Secret de la mère')),
             const SizedBox(height: 12),
-            OutlinedButton.icon(key: const Key('desactiver'), onPressed: _occupe ? null : _desactiver, icon: const Icon(Icons.power_settings_new), label: const Text('Désactiver le mode mère')),
+            OutlinedButton.icon(
+                key: const Key('desactiver'),
+                onPressed: _occupe ? null : _desactiver,
+                icon: const Icon(Icons.power_settings_new),
+                label: const Text('Désactiver le mode mère')),
           ],
         ]);
       },

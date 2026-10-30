@@ -7,7 +7,11 @@ import '../core/theme.dart';
 enum NiveauSync { synchronise, enCours, enRetard, horsLigne, suspendu }
 
 class EtatSync {
-  const EtatSync({required this.niveau, this.enAttente = 0, this.aTraiter = 0, this.depuis});
+  const EtatSync(
+      {required this.niveau,
+      this.enAttente = 0,
+      this.aTraiter = 0,
+      this.depuis});
   final NiveauSync niveau;
 
   /// Opérations saisies localement qui n'ont pas encore été acceptées par la mère.
@@ -67,7 +71,8 @@ class PastilleSync extends StatelessWidget {
         final (texte, fond) = _couleurs(e.niveau);
         final maintenantFn = maintenant ?? DateTime.now;
         final details = <String>[
-          if (e.depuis != null && e.niveau != NiveauSync.synchronise) 'depuis ${_duree(maintenantFn().difference(e.depuis!))}',
+          if (e.depuis != null && e.niveau != NiveauSync.synchronise)
+            'depuis ${_duree(maintenantFn().difference(e.depuis!))}',
           if (e.enAttente > 0) '${e.enAttente} en attente',
           if (e.aTraiter > 0) '${e.aTraiter} à traiter',
         ];
@@ -76,11 +81,14 @@ class PastilleSync extends StatelessWidget {
           label: 'État de la synchronisation : $label',
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: fond, borderRadius: BorderRadius.circular(999)),
+            decoration: BoxDecoration(
+                color: fond, borderRadius: BorderRadius.circular(999)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               Icon(Icons.circle, size: 10, color: texte),
               const SizedBox(width: 6),
-              Text(label, style: TextStyle(color: texte, fontWeight: FontWeight.w600, fontSize: 12)),
+              Text(label,
+                  style: TextStyle(
+                      color: texte, fontWeight: FontWeight.w600, fontSize: 12)),
             ]),
           ),
         );
