@@ -3497,7 +3497,9 @@
           { name: 'eligible', label: 'Donneur éligible', type: 'checkbox' },
         ],
         onCreate: function () { return { eligible: true, nbDons: 1, type: 'Bénévole', dernierDon: C.iso(AUJ) }; },
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('DON-', 4); return v; },
+        /* Le rang suivant se lit sur les fiches EXISTANTES (archivées comprises) : `C.nextRef` est un compteur de page qui repart à 1 à chaque
+           chargement — un registre de 60 donneurs en créait un 61ᵉ nommé DON-0001, doublon du premier (écart E200, même défaut que E8/E120). */
+        transform: function (v) { if (!v.reference) v.reference = C.referenceSuivante('DON-', 4, col.all()); return v; },
         filters: [
           { name: 'groupe', label: 'Groupe', options: D.GROUPES_SANGUINS },
           { name: 'type', label: 'Type de don', options: ['Bénévole', 'Familial', 'Compensation'] },
