@@ -20,10 +20,13 @@ const List<Color> paletteGraphique = [
 ];
 
 class SerieGraphique {
-  const SerieGraphique(this.libelle, this.donnees, {this.couleur});
+  const SerieGraphique(this.libelle, this.donnees, {this.couleur, this.aire = true});
   final String libelle;
   final List<num> donnees;
   final Color? couleur;
+
+  /// `fill: false` de Chart.js : une courbe sans aire (deux courbes superposées se lisent mieux sans remplissage).
+  final bool aire;
 }
 
 const double _hautLegende =
@@ -346,11 +349,13 @@ class _PeintreLigne extends _Base {
       if (pts.length < 2) continue;
       final trait = _lisse(pts, 0.35);
       final col = couleurDe(series[k], k);
-      final aire = Path.from(trait)
-        ..lineTo(pts.last.dx, z.bottom)
-        ..lineTo(pts.first.dx, z.bottom)
-        ..close();
-      c.drawPath(aire, Paint()..color = col.withValues(alpha: 0x22 / 255));
+      if (series[k].aire) {
+        final aire = Path.from(trait)
+          ..lineTo(pts.last.dx, z.bottom)
+          ..lineTo(pts.first.dx, z.bottom)
+          ..close();
+        c.drawPath(aire, Paint()..color = col.withValues(alpha: 0x22 / 255));
+      }
       c.drawPath(
           trait,
           Paint()

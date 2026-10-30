@@ -4,6 +4,7 @@ import '../../core/config_poste.dart';
 import 'hos_admissions.dart';
 import 'hos_chambres.dart';
 import 'hos_plan_lits.dart';
+import 'hos_temperature.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -13,4 +14,5 @@ final Map<String, ConstruireEcran> ecransM3 = {
   'm3-admissions': (c, cfg) => const EcranAdmissions(),
   'm3-chambres': (c, cfg) => const EcranChambres(),
   'm3-plan-lits': (c, cfg) => const EcranPlanLits(),
+  'm3-feuille-temperature': (c, cfg) => const EcranFeuilleTemperature(),
 };

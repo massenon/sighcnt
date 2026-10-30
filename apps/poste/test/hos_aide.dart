@@ -83,8 +83,8 @@ Future<void> fermerDessus(WidgetTester t) async {
 }
 
 /// Les textes affichés dans la bande horizontale de [ancre] (une ligne de tableau : la référence en tête de ligne).
-List<String> ligneDe(WidgetTester t, String ancre, {double haut = 30, double bas = 30}) {
-  final y = t.getTopLeft(find.text(ancre).first).dy;
+List<String> ligneDe(WidgetTester t, String ancre, {double haut = 30, double bas = 30, int rang = 0}) {
+  final y = t.getTopLeft(find.text(ancre).at(rang)).dy;
   return [
     for (final e in find.byType(Text).evaluate())
       if ((e.widget as Text).data != null &&

@@ -1039,7 +1039,9 @@
 
         if (!rel.length) {
           vue.appendChild(U.card(null, U.empty('Aucun relevé enregistré pour ce patient.', {
-            icon: 'thermometer', action: K.btn('Saisir le premier relevé', { variant: 'primary', icon: 'plus', onclick: function () { ouvrirSaisie(); } }),
+            /* E371 : « Saisir le premier relevé » était un K.btn nu — offert à l'accueil et au profil en lecture, qui ne saisissent pas de constante
+               (RG-13), alors que « Nouveau relevé » juste au-dessus est une commande gardée. Même droit, même absence. */
+            icon: 'thermometer', action: K.commande('Saisir le premier relevé', { variant: 'primary', icon: 'plus', onclick: function () { ouvrirSaisie(); } }),
           })));
           U.icons(vue);
           return;
