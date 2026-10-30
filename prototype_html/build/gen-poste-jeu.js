@@ -6,7 +6,7 @@ const fs = require('fs'), path = require('path');
 const { ouvrirMaquette } = require('./extraire');
 const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalyses', 'demandesImagerie', 'ordonnances', 'ecritures', 'audit',
   /* émission de facture : catalogue, médicaments, natures, conventions */
-  'naturesFacture', 'actes', 'produits', 'souscripteurs', 'garanties', 'couverturesAssurance', 'mouvements'];
+  'naturesFacture', 'actes', 'produits', 'souscripteurs', 'garanties', 'couverturesAssurance', 'mouvements', 'facturesMere', 'remboursements'];
 const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');
 (async () => {
   fs.mkdirSync(SORTIE, { recursive: true });

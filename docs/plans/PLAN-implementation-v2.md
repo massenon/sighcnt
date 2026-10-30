@@ -117,3 +117,14 @@ Le kit de composants est un **clone mesuré**, pas une ressemblance : `prototype
 **Limites dites** : le formulaire d'ajout de ligne se replie sur la grille à six colonnes au lieu de la rangée unique défilante de la maquette (parité visuelle N3 non revue) ; le numéro MECeF est tiré localement (le boîtier physique attend le protocole de la Direction) ; l'aperçu du ticket n'est pas imprimé sur matériel réel.
 
 **Reste 8 écrans** : `m8-remboursements`, `m8-facture-avoir` (moteur `emettreAvoir` avec vecteurs — T18), et les 6 `mecef-*` en simulation.
+
+## Mise à jour du 30/10/2026 (tranche 1 — avoirs et remboursements : 11 écrans sur 17)
+
+**`m8-facture-avoir` et `m8-remboursements`** : N1 = 100 % (10/10 chacun), statuts « porté » verrouillés. Deux moteurs dans `packages/domaine`, tous deux rejoués sur des vecteurs engendrés par la maquette :
+- `emettreAvoir` (**19 vecteurs**, `SIGH.emettreAvoir` appelé sur des factures posées au magasin jetable) : lignes NOMMÉES obligatoires, cumul des avoirs plafonné à la facture, contre-passation plate (débit 706000, crédit 571000 espèces ou 411000 créance — l'équilibre RG-10 est construit et vérifié sur chaque vecteur), registre MECeF « en attente » ou « sans objet », **fille consolidée refusée en nommant la mère**, la facture PORTE ses avoirs sans être réécrite ;
+- `enregistrerOperation` (**6 vecteurs**, la modale réelle de `m8-remboursements` pilotée dans Chrome) : remboursement, avoir (pièce négative) ou annulation (facture repassée impayée / MECeF rejeté, jamais supprimée), motif obligatoire.
+8 tests d'écran (avoir émis puis annulé et facture restituée, refus nommés, commande d'émission absente sans droit, annulation visible).
+
+**Écarts** (`ECARTS-MAQUETTE.md`) : **E8 corrigé** dans la maquette (les références `AV-` et `RB-` venaient d'un compteur de page qui repart à 1 à chaque chargement) ; **E9, E10, E11, E12 portés fidèlement et signalés** — dont le point qui demande la Direction : *deux canaux d'avoir coexistent* (cet écran fabrique une pièce négative dans `factures`, `m8-facture-avoir` contre-passe en écritures), il faudra n'en garder qu'un.
+
+**Reste 6 écrans** : les `mecef-*` (simulation d'abord ; le boîtier physique attend le protocole de la Direction).

@@ -7,5 +7,7 @@
  "m8-recettes": "porté",
  "m8-operations": "porté",
  "m8-caisse": "porté",
- "m8-facturation": "porté"
+ "m8-facturation": "porté",
+ "m8-facture-avoir": "porté",
+ "m8-remboursements": "porté"
 }

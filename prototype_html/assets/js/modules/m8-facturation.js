@@ -1935,7 +1935,7 @@
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 var fac = factures().filter(function (x) { return x.id === v.factureId; })[0];
                 if (fac) { v.factureNumero = fac.numero; v.patient = fac.patient; v.patientCode = fac.patientCode; }
-                v.reference = C.nextRef('RB-', 5);
+                v.reference = referenceSuivante('RB-', 5, col.all()); /* série lue sur les opérations existantes (E8) */
                 var res = col.insert(v);
                 var majF = null;
                 if (v.nature === 'Facture avoir' && fac) {
@@ -2491,16 +2491,22 @@
   var MOTIFS_AVOIR = ['Erreur de facturation', 'Interruption de soins',
     'Évacuation vers un autre centre', 'Prestation non réalisée', 'Autre (préciser en observations)'];
 
+  /** Référence suivante d'une série : le plus grand rang déjà écrit pour ce préfixe, plus un. Lue sur les fiches EXISTANTES — jamais sur un compteur
+      de page (écart E8). */
+  function referenceSuivante(prefixe, largeur, fiches) {
+    var max = 0;
+    fiches.forEach(function (a) {
+      var r = String(a.reference || '');
+      if (r.indexOf(prefixe) === 0) max = Math.max(max, parseInt(r.slice(prefixe.length), 10) || 0);
+    });
+    return prefixe + String(max + 1).padStart(largeur, '0');
+  }
+
   /** La référence d'un avoir est une SÉRIE ANNUELLE lue sur les avoirs déjà émis (écart E8, corrigé le 30/10/2026) : l'ancien
       compteur vivait en mémoire de page et repartait à 1 à chaque chargement — deux avoirs de deux journées pouvaient porter
       le même numéro. Le millésime est celui de la date de l'avoir, plus un « 2026 » écrit en dur. */
   function referenceAvoir(date) {
-    var prefixe = 'AV-' + String(date).slice(0, 4) + '-';
-    var max = 0;
-    colAvoirs().all().forEach(function (a) {
-      if (String(a.reference || '').indexOf(prefixe) === 0) max = Math.max(max, parseInt(String(a.reference).slice(prefixe.length), 10) || 0);
-    });
-    return prefixe + String(max + 1).padStart(4, '0');
+    return referenceSuivante('AV-' + String(date).slice(0, 4) + '-', 4, colAvoirs().all());
   }
 
   /** Le moteur d'émission — séparé de la modale pour être SONDABLE.

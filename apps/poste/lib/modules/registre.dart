@@ -4,6 +4,7 @@ import '../core/config_poste.dart';
 import '../core/controleur_poste.dart';
 import '../mere/client_mere.dart';
 import '../mere/console.dart';
+import 'm8/avoirs.dart';
 import 'm8/caisse.dart';
 import 'm8/dashboard.dart';
 import 'm8/facturation.dart';
@@ -12,6 +13,7 @@ import 'm8/operations.dart';
 import 'm8/paiements.dart';
 import 'm8/proforma.dart';
 import 'm8/recettes.dart';
+import 'm8/remboursements.dart';
 import 'm8/reliquats.dart';
 import 'reglages_poste.dart';
 
@@ -34,6 +36,8 @@ Map<String, ConstruireEcran> ecransPortes(
     'm8-dashboard': (c, cfg) => const EcranDashboardFacturation(),
     'm8-facturation': (c, cfg) => const EcranFacturation(),
     'm8-caisse': (c, cfg) => const EcranCaisse(),
+    'm8-facture-avoir': (c, cfg) => const EcranFactureAvoir(),
+    'm8-remboursements': (c, cfg) => const EcranRemboursements(),
     'm8-factures': (c, cfg) => const EcranFactures(),
     'm8-paiements': (c, cfg) => const EcranPaiements(),
     'm8-proforma': (c, cfg) => const EcranProforma(),

@@ -148,6 +148,8 @@ class Magasin {
     'actes': 'CFG',
     'produits': 'M6',
     'mouvements': 'M6',
+    'remboursements': 'M8',
+    'facturesMere': 'M9',
     'souscripteurs': 'M9',
     'garanties': 'M9',
     'couverturesAssurance': 'M9',
@@ -227,6 +229,8 @@ class Magasin {
     'souscripteurs',
     'garanties',
     'couverturesAssurance',
-    'mouvements'
+    'mouvements',
+    'facturesMere',
+    'remboursements'
   ];
 }
