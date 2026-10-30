@@ -6194,8 +6194,8 @@
       },
       {
         "libelle": "Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "119 alertes"
       },
       {
         "libelle": "La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)",
@@ -6223,7 +6223,7 @@
         "detail": null
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles",
