@@ -1739,7 +1739,9 @@
                   var lignes = lignesDeNature(liv, nature);
                   var sess = S.session() || {};
                   var res = colPV().insert({
-                    reference: C.nextRef('PV-' + (nature === 'reactifs' ? 'REA' : 'CON') + '-2026-', 4),
+                    /* Série annuelle lue sur les PV EXISTANTS (écart E17, 30/10/2026) : le compteur de page `C.nextRef` repartait à 1
+                       à chaque chargement et réécrivait PV-CON-2026-0001 après les PV amorcés ; le millésime était écrit en dur. */
+                    reference: C.referenceSuivante('PV-' + (nature === 'reactifs' ? 'REA' : 'CON') + '-' + String(v.date).slice(0, 4) + '-', 4, colPV().all()),
                     nature: nature,
                     date: v.date,
                     livraisonRef: liv.reference, commandeRef: liv.commandeRef,
