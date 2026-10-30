@@ -8,6 +8,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sigh_sync:
+    path: ../../packages/sync_dart
   sigh_domaine:
     path: ../../packages/domaine
   drift: any
