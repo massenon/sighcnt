@@ -59,3 +59,21 @@ R1 mère arrêtée, deux dossiers · R1b plage épuisée, numéro provisoire · 
 | **Fusion de deux mères / bascule d'autorité** | non écrite |
 
 Un résultat vert ici **ne dit pas** que le produit est prêt : il dit que le protocole décrit tient sur ce qu'on lui a demandé.
+
+## Le même banc, trois implémentations (29–30/10/2026)
+
+Le banc pilote **n'importe quelle combinaison** de processus par variables d'environnement :
+
+| Variable | Valeur | Exécutable lancé |
+|---|---|---|
+| `SIGH_MERE` / `SIGH_FILEUL` / `SIGH_MOBILE` | `dart` | `packages/sync_dart/build/<x>_bundle/bundle/bin/<x>` (à construire : `packages/sync_dart/construire.sh`) ; sinon le `.js` de référence |
+| `SIGH_RELAIS` | `laravel` | le **vrai relais** `apps/web` (serveur intégré de PHP, SQLite jetable, migrations rejouées) ; sinon `relais.js` |
+
+| Passage | Résultat |
+|---|---|
+| Tout en Node (référence) | 26 scénarios, 127 vérifications |
+| Mère + fileuls Dart (scénarios sans relais) | 15 scénarios, 72 vérifications |
+| Relais Laravel seul (mère, postes et mobiles Node) | 11 scénarios relais verts après correction de l'ordre autorisation → validation |
+| **Tout en Dart + relais Laravel** (`npm run banc:cible`) | **26 scénarios, 127 vérifications, 74 s** |
+
+Ce que cela prouve en plus : le service Dart de la mère, le client Dart du poste et du mobile (SQLite embarqué, enveloppes AES-256-GCM via `package:cryptography`) et le relais Laravel parlent **le même protocole**, octet pour octet — une enveloppe chiffrée par Dart est lue par Node et réciproquement. Ce que cela ne prouve toujours pas : PostgreSQL à la place de SQLite pour la mère, SQLCipher, le service Windows, la charge, une revue de sécurité.

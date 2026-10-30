@@ -22,6 +22,8 @@
     "prototype:serveur": "npm run serveur --prefix prototype_html",
     "banc:sync": "npm run banc --prefix packages/sync",
     "prototype:referentiels": "npm run referentiels --prefix prototype_html",
-    "test:rbac": "npm test --prefix packages/rbac"
+    "test:rbac": "npm test --prefix packages/rbac",
+    "banc:dart": "npm run banc:dart --prefix packages/sync",
+    "banc:cible": "npm run banc:cible --prefix packages/sync"
   }
 }

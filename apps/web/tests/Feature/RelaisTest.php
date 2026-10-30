@@ -146,4 +146,16 @@ class RelaisTest extends TestCase
         $src = file_get_contents(app_path('Http/Controllers/RelaisController.php'));
         $this->assertDoesNotMatchRegularExpression('/openssl_|sodium_|Crypt::|Crypto|encrypt\(|decrypt\(|AES|GCM/i', $src);
     }
+
+    public function test_l_autorisation_precede_la_validation_meme_refus_quelle_que_soit_la_forme(): void
+    {
+        $a = $this->appairer('m-a');
+        $this->appairer('m-b');
+        // Enveloppe vide ET interdite : c'est l'interdiction qui répond, pas le défaut de forme.
+        $this->postJson('/depot', ['enveloppe' => ['id' => 'x', 'appareil' => 'm-b', 'dir' => 'vers_mere', 'n' => 1, 'nonce' => '', 'ct' => '']], $a)
+            ->assertStatus(403)->assertJson(['code' => 'depot_interdit']);
+        // Enveloppe permise mais mal formée : validation.
+        $this->postJson('/depot', ['enveloppe' => ['id' => 'x', 'appareil' => 'm-a', 'dir' => 'vers_mere', 'n' => 1, 'nonce' => '', 'ct' => '']], $a)
+            ->assertStatus(422)->assertJson(['code' => 'enveloppe_invalide']);
+    }
 }

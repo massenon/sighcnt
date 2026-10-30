@@ -15,13 +15,15 @@ const arg = (n, d) => { const a = process.argv.find((x) => x.startsWith('--' + n
 const PORT = +arg('port', 0); const DB = arg('db', '/tmp/relais.sqlite');
 const WEB = path.resolve(__dirname, '..', '..', '..', 'apps', 'web');
 const env = Object.assign({}, process.env, {
-  APP_ENV: 'local', APP_DEBUG: 'false', DB_CONNECTION: 'sqlite', DB_DATABASE: DB, SESSION_DRIVER: 'array', CACHE_STORE: 'array', QUEUE_CONNECTION: 'sync',
+  APP_KEY: 'base64:' + require('node:crypto').randomBytes(32).toString('base64'), APP_ENV: 'local', APP_DEBUG: 'false', DB_CONNECTION: 'sqlite', DB_DATABASE: DB, SESSION_DRIVER: 'array', CACHE_STORE: 'array', QUEUE_CONNECTION: 'sync',
   LOG_CHANNEL: 'stderr', RELAIS_SECRET_MERE: 'secret-mere', RELAIS_SEUIL_BATTEMENT_MS: arg('seuil-battement', '300000'), RELAIS_BANC: arg('banc', '0') === '1' ? 'true' : 'false',
 });
 require('node:fs').closeSync(require('node:fs').openSync(DB, 'a'));
 const m = spawnSync('php', ['artisan', 'migrate', '--force', '--no-interaction'], { cwd: WEB, env, encoding: 'utf8' });
 if (m.status !== 0) { console.error('migration impossible : ' + (m.stderr || m.stdout)); process.exit(2); }
-const php = spawn('php', ['-S', `127.0.0.1:${PORT}`, '-t', 'public', 'vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php'], { cwd: WEB, env, stdio: ['ignore', 'ignore', 'ignore'] });
+/* Comme `php artisan serve` : le serveur intégré tourne DEPUIS public/, avec le routeur de Laravel. */
+const php = spawn('php', ['-S', `127.0.0.1:${PORT}`, '-t', '.', path.join(WEB, 'vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php')],
+  { cwd: path.join(WEB, 'public'), env, stdio: ['ignore', 'ignore', 'ignore'] });
 const fin = () => { try { php.kill('SIGKILL'); } catch (e) { /* déjà arrêté */ } process.exit(0); };
 process.on('SIGTERM', fin); process.on('exit', () => { try { php.kill('SIGKILL'); } catch (e) { /* déjà arrêté */ } });
 (function attendre(essais) {

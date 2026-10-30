@@ -111,6 +111,20 @@ class RelaisController extends Controller
     public function depot(Request $r): JsonResponse
     {
         $e = (array) $r->input('enveloppe');
+        /* L'AUTORISATION AVANT LA VALIDATION : on ne dit rien de la forme d'une enveloppe à qui n'a pas le droit
+           de la déposer (le même refus, quel que soit le contenu). */
+        $dir = is_string($e['dir'] ?? null) ? $e['dir'] : '';
+        $appareilCible = is_string($e['appareil'] ?? null) ? $e['appareil'] : '';
+        if ($this->estMere($r)) {
+            if (! in_array($dir, ['vers_mobile', 'journal'], true)) {
+                $this->refus(403, 'depot_interdit', 'Sens inconnu.');
+            }
+        } else {
+            $a = $this->appareil($r);
+            if ($dir !== 'vers_mere' || $appareilCible !== $a->uuid) {
+                $this->refus(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère.');
+            }
+        }
         foreach (['id', 'appareil', 'dir', 'nonce', 'ct'] as $champ) {
             if (! isset($e[$champ]) || ! is_string($e[$champ])) {
                 $this->refus(422, 'enveloppe_invalide', "Champ manquant : $champ");
@@ -118,16 +132,6 @@ class RelaisController extends Controller
         }
         if (! isset($e['n']) || ! is_int($e['n']) || $e['n'] < 1) {
             $this->refus(422, 'enveloppe_invalide', 'Rang invalide.');
-        }
-        if ($this->estMere($r)) {
-            if (! in_array($e['dir'], ['vers_mobile', 'journal'], true)) {
-                $this->refus(403, 'depot_interdit', 'Sens inconnu.');
-            }
-        } else {
-            $a = $this->appareil($r);
-            if ($e['dir'] !== 'vers_mere' || $e['appareil'] !== $a->uuid) {
-                $this->refus(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère.');
-            }
         }
         $deja = DB::table('relais_enveloppes')->where('id', $e['id'])->first(['rid']);
         if ($deja) {
