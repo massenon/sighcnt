@@ -60,3 +60,12 @@ Sur la console de la mère (`apps/poste`, mode mère) : adresse du relais (`http
 ## 7. Mise à jour
 
 Recommencer l'étape 1 avec le nouveau code, téléverser en écrasant (en conservant `.env` et `storage/`), lancer `migrate --force` par cron à usage unique, puis `optimize:clear`.
+
+## Commandes d'exploitation du relais (30/10/2026)
+
+| Commande | Rôle |
+|---|---|
+| `php artisan relais:statut` | volumes (appareils, enveloppes par sens, Ko, dernier battement) — aucun contenu, tout est chiffré |
+| `php artisan relais:purger` | **simulation** de la purge de l'audit (365 jours par défaut, 30 minimum) ; `--oui` applique. Planifiée chaque jour à 03:10 par `schedule:run` |
+
+**Les enveloppes ne se purgent jamais depuis le relais** : le journal chiffré sert à restaurer la mère, et retirer une enveloppe d'une boîte crée un trou que la mère traite comme une altération. La rétention des enveloppes se règle côté mère. Le secret de la mère se fait tourner en changeant `RELAIS_SECRET_MERE` dans `.env` puis dans la configuration de la mère ; les jetons d'appareil se renouvellent seuls (spec, SYNC-R18).
