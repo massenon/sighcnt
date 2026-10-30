@@ -135,6 +135,7 @@ class RegistreFormulaire extends StatefulWidget {
     this.libelleRecherche = 'Rechercher…',
     this.prefixe = 'ID',
     this.groupe = false,
+    this.toastApres,
   });
 
   final CollectionMagasin collection;
@@ -174,6 +175,9 @@ class RegistreFormulaire extends StatefulWidget {
   final String? Function(Map<String, Object?> valeurs, Fiche? fiche)? avant;
   final String libelleRecherche;
   final String prefixe;
+
+  /// Remplace le message de création par défaut (la surveillance transfusionnelle signale un protocole incomplet ou un incident).
+  final void Function(BuildContext ctx, Fiche creee, VoidCallback annuler)? toastApres;
 
   /// Vrai : actions de sélection multiple de `K.crud` (imprimer la sélection, archiver).
   final bool groupe;
@@ -223,8 +227,12 @@ class _EtatRegistre extends State<RegistreFormulaire> {
                         if (creation) {
                           final r = _col.inserer(donnees, prefixe: widget.prefixe);
                           widget.apresCreation?.call(r.fiche);
-                          ToastsSigh.afficher(ctx, widget.toastCreation,
-                              type: TypeToast.succes, annuler: r.annuler);
+                          if (widget.toastApres != null) {
+                            widget.toastApres!(ctx, r.fiche, r.annuler);
+                          } else {
+                            ToastsSigh.afficher(ctx, widget.toastCreation,
+                                type: TypeToast.succes, annuler: r.annuler);
+                          }
                         } else {
                           final annuler = _col.mettreAJour(fiche['id'], donnees);
                           ToastsSigh.afficher(ctx, 'Modifications enregistrées.',

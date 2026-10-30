@@ -16,6 +16,7 @@ class ToastsSigh {
   static final List<_Entree> _pile = [];
   static OverlayEntry? _hote;
   static OverlayState? _overlay;
+  static OverlayState? _overlayPose;
 
   static void afficher(BuildContext context, String message,
       {TypeToast type = TypeToast.info,
@@ -29,8 +30,13 @@ class ToastsSigh {
     _overlay = overlay;
     final e = _Entree(message, type, detail, annuler, messageAnnulation);
     _pile.insert(0, e);
-    _hote ??= OverlayEntry(builder: (_) => const _Pile());
-    if (!(_hote!.mounted)) overlay.insert(_hote!);
+    // `OverlayEntry.mounted` ne devient vrai qu'à l'image suivante : deux messages posés dans le même geste (une surveillance enregistrée ET son alerte
+    // d'incident) insérait deux fois la même entrée. On retient donc l'overlay où l'hôte a été posé.
+    if (_hote == null || !identical(_overlayPose, overlay)) {
+      _hote = OverlayEntry(builder: (_) => const _Pile());
+      overlay.insert(_hote!);
+      _overlayPose = overlay;
+    }
     _pile.isNotEmpty ? _versions.value++ : null;
     e.minuterie = Timer(
         duree ??
