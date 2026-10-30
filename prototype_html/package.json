@@ -20,7 +20,8 @@
     "extraire": "node build/extraire.js",
     "vecteurs": "node build/vecteurs.js",
     "parite": "node build/parite.js",
-    "referentiels": "node build/extraire.js && node build/vecteurs.js && node build/parite.js"
+    "referentiels": "node build/extraire.js && node build/vecteurs.js && node build/parite.js && node build/gen-erd.js",
+    "erd": "node build/gen-erd.js"
   },
   "devDependencies": {
     "puppeteer": "^25.7.0",

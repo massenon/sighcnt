@@ -19,3 +19,12 @@ Ordre habituel : `/prd` → `/adr` (si une décision structurante se pose) → `
 Les kits du catalogue claude.ai (`sdlc-kit`, `Agentic SDLC Kit`, `plan-review-skill`) complètent
 ces skills ; ils ne les remplacent pas, parce qu'ils ignorent les règles RG-01→14 et la doctrine
 du prototype que ceux-ci portent.
+
+## Skills de la cible (Flutter, Laravel, synchronisation)
+
+| Skill | À charger pour |
+|---|---|
+| `sigh-maitre` | **toute** tâche sur la cible : les cinq règles (une source, un vecteur, une règle, un refus nommé, pas d'invention) |
+| `sigh-flutter` | `.dart`, `pubspec.yaml`, thème, formats français, tests Flutter |
+| `sigh-laravel` | `apps/web` : relais opaque, cPanel sans SSH, panneau superadmin |
+| `sigh-sync` | protocole, banc à plusieurs processus, nouveaux scénarios |
