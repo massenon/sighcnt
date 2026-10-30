@@ -727,6 +727,35 @@
         },
       ],
     },
+    /* ======================================================================
+     * RELAIS EN LIGNE (30/10/2026) — le panneau superadmin de apps/web.
+     * Quatre écrans existent déjà côté Laravel ; les autres sont ceux que
+     * l on attend d un relais exploité. Réservé à l administrateur système.
+     * Source : docs/architecture/MODULES-WEB-RELAIS.md
+     * ==================================================================== */
+    {
+      domain: 'Relais en ligne',
+      icon: 'cloud',
+      modules: [
+        {
+          code: 'RLS', label: 'Relais en ligne (apps/web)', icon: 'cloud', roles: ['admin'],
+          items: [
+            { id: 'rls-tableau', label: 'Tableau de bord du relais', icon: 'layout-dashboard' },
+            { id: 'rls-appareils', label: 'Appareils', icon: 'monitor-smartphone' },
+            { id: 'rls-boites', label: 'Boîtes aux lettres', icon: 'inbox' },
+            { id: 'rls-codes', label: 'Codes d’appairage', icon: 'ticket' },
+            { id: 'rls-indicateurs', label: 'Indicateurs reçus', icon: 'activity' },
+            { id: 'rls-alertes', label: 'Alertes et notifications', icon: 'bell-ring' },
+            { id: 'rls-journal', label: 'Journal d’audit du relais', icon: 'scroll-text' },
+            { id: 'rls-superadmin', label: 'Comptes superadmin', icon: 'user-cog' },
+            { id: 'rls-parametres', label: 'Paramètres du relais', icon: 'sliders-horizontal' },
+            { id: 'rls-hebergement', label: 'Hébergement (cPanel)', icon: 'server' },
+            { id: 'rls-sauvegarde', label: 'Sauvegarde du relais', icon: 'database-backup' },
+            { id: 'rls-opacite', label: 'Preuve d’opacité', icon: 'eye-off' },
+          ],
+        },
+      ],
+    },
     /* Pilotage vient en DERNIER : l’ordre cible des Instructions place les
        domaines de travail avant l’analyse. */
     {

@@ -44,6 +44,7 @@ Index : [`prd/README.md`](prd/README.md).
 | [`plans/PLAN-implementation-v2`](plans/PLAN-implementation-v2.md) | **Plan en vigueur (30/10/2026)** : `sigh_web` abandonné, `apps/web` seul Laravel, poste fileul/mère = une application, tâches T1→T8 et leur état |
 | [`plans/PLAN-conversion-305-ecrans`](plans/PLAN-conversion-305-ecrans.md) | Conversion fidèle des 305 écrans PHP/JS en Dart : mesures, niveaux de parité N1–N4, tranches, tâches T9→T20 |
 | [`architecture/MODULES-COMPLEMENTAIRES-MERE`](architecture/MODULES-COMPLEMENTAIRES-MERE.md) | Les 22 modules complémentaires du poste mère (5 faits, 17 à écrire) et l'activation du mode mère |
+| [`architecture/MODULES-WEB-RELAIS`](architecture/MODULES-WEB-RELAIS.md) | Les 12 modules du relais en ligne (`apps/web`) : 4 existants, 8 attendus |
 | [`architecture/ECARTS-MAQUETTE`](architecture/ECARTS-MAQUETTE.md) | Écarts de la maquette relevés au portage (portés fidèlement, signalés, à arbitrer) |
 | [`specs/SPEC-protocole-synchronisation`](specs/SPEC-protocole-synchronisation.md) | **Protocole de synchronisation** : poste mère, fileuls, mobiles, relais en ligne ; appairage, journal, curseurs, conflits, restauration, recette | brouillon 29/10/2026 |
 
