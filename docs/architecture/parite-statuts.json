@@ -60,5 +60,9 @@
  "m5-resultats-comparatif": "porté",
  "m5-impression-resultats": "porté",
  "m5-stats": "porté",
- "m5-reactifs-stats": "porté"
+ "m5-reactifs-stats": "porté",
+ "m5-catalogue": "porté",
+ "m5-unites": "porté",
+ "m5-valeurs-reference": "porté",
+ "m5-reactifs": "porté"
 }

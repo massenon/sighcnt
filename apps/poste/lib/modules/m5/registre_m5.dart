@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
+import 'cat_catalogue.dart';
+import 'cat_reactifs.dart';
+import 'cat_unites.dart';
+import 'cat_valeurs.dart';
 import 'dem_prelevement.dart';
 import 'dem_registre.dart';
 import 'dem_service.dart';
@@ -31,4 +35,9 @@ final Map<String, ConstruireEcran> ecransM5 = {
   'm5-reactifs-stats': (c, cfg) => const EcranStatsReactifs(),
   'm5-banque-sang': (c, cfg) => const EcranBanqueSang(),
   'm5-donneurs': (c, cfg) => const EcranDonneurs(),
+  // Paramétrage du laboratoire (fichiers `cat_*`) : catalogue des analyses, unités, valeurs de référence, réactifs.
+  'm5-catalogue': (c, cfg) => const EcranCatalogueAnalyses(),
+  'm5-unites': (c, cfg) => const EcranUnitesLabo(),
+  'm5-valeurs-reference': (c, cfg) => const EcranValeursReference(),
+  'm5-reactifs': (c, cfg) => const EcranReactifsLabo(),
 };

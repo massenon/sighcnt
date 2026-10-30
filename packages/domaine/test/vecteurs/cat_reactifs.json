@@ -1,0 +1,1784 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-catalogue-labo.js — ne pas éditer.",
+ "jour": "2026-10-30",
+ "reactifs": {
+  "_doc": "m5-reactifs sur des produits posés",
+  "produits": [
+   {
+    "id": "P1",
+    "code": "A1",
+    "designation": "D A1",
+    "categorie": "reactif",
+    "unite": "Boîte",
+    "stock": 0,
+    "seuilAlerte": 10,
+    "cump": 100,
+    "statut": "actif"
+   },
+   {
+    "id": "P2",
+    "code": "A2",
+    "designation": "D A2",
+    "categorie": "reactif",
+    "unite": "Boîte",
+    "stock": 5,
+    "seuilAlerte": 10,
+    "cump": 200,
+    "statut": "actif"
+   },
+   {
+    "id": "P3",
+    "code": "A3",
+    "designation": "D A3",
+    "categorie": "conso_labo",
+    "unite": "Boîte",
+    "stock": 10,
+    "seuilAlerte": 10,
+    "cump": 50,
+    "statut": "actif"
+   },
+   {
+    "id": "P4",
+    "code": "A4",
+    "designation": "D A4",
+    "categorie": "conso_labo",
+    "unite": "Boîte",
+    "stock": 11,
+    "seuilAlerte": 10,
+    "cump": 50,
+    "statut": "actif"
+   },
+   {
+    "id": "P5",
+    "code": "A5",
+    "designation": "D A5",
+    "categorie": "reactif",
+    "unite": "Boîte",
+    "stock": 7,
+    "seuilAlerte": null,
+    "cump": 300,
+    "statut": "actif"
+   },
+   {
+    "id": "P6",
+    "code": "A6",
+    "designation": "D A6",
+    "categorie": "reactif",
+    "unite": "Boîte",
+    "stock": 0,
+    "seuilAlerte": null,
+    "cump": 300,
+    "statut": "actif"
+   },
+   {
+    "id": "P7",
+    "code": "A7",
+    "designation": "D A7",
+    "categorie": "medicament",
+    "unite": "Boîte",
+    "stock": 1,
+    "seuilAlerte": 1,
+    "cump": 10,
+    "statut": "actif"
+   },
+   {
+    "id": "P8",
+    "code": "A8",
+    "designation": "D A8",
+    "categorie": "reactif",
+    "unite": "Boîte",
+    "stock": 3,
+    "seuilAlerte": 0,
+    "cump": 40,
+    "statut": "actif"
+   },
+   {
+    "id": "P9",
+    "code": "A9",
+    "designation": "D A9",
+    "categorie": "reactif",
+    "unite": "Boîte",
+    "stock": 9,
+    "seuilAlerte": 5,
+    "cump": 12,
+    "statut": "archive"
+   },
+   {
+    "id": "P10",
+    "code": "A10",
+    "designation": "D A10",
+    "categorie": "conso_labo",
+    "unite": "Boîte",
+    "stock": 2,
+    "seuilAlerte": 2,
+    "cump": 0,
+    "statut": "actif"
+   }
+  ],
+  "mouvements": [
+   {
+    "id": "M1",
+    "produitId": "P2",
+    "date": "2026-10-29",
+    "quantite": 4,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M2",
+    "produitId": "P2",
+    "date": "2026-10-25",
+    "quantite": 6,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M3",
+    "produitId": "P3",
+    "date": "2026-10-30",
+    "quantite": 3,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M4",
+    "produitId": "P4",
+    "date": "2026-10-10",
+    "quantite": 9,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M5",
+    "produitId": "P1",
+    "date": "2026-08-01",
+    "quantite": 20,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M6",
+    "produitId": "P5",
+    "date": "2026-05-02",
+    "quantite": 11,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M7",
+    "produitId": "P7",
+    "date": "2026-10-29",
+    "quantite": 50,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M8",
+    "produitId": "P2",
+    "date": "2026-10-29",
+    "quantite": 2,
+    "type": "entree",
+    "statut": "actif"
+   },
+   {
+    "id": "M9",
+    "produitId": "P8",
+    "date": "2026-10-24",
+    "quantite": 5,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M10",
+    "produitId": "P10",
+    "date": "2026-10-24",
+    "quantite": 5,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M11",
+    "produitId": "P6",
+    "date": "2026-04-29",
+    "quantite": 8,
+    "type": "sortie",
+    "statut": "actif"
+   },
+   {
+    "id": "M12",
+    "produitId": "P3",
+    "date": "2026-10-24T08:00",
+    "quantite": 1,
+    "type": "sortie",
+    "statut": "archive"
+   }
+  ],
+  "kpis": [
+   {
+    "label": "Références suivies",
+    "valeur": "8",
+    "indice": null
+   },
+   {
+    "label": "Valeur du stock",
+    "valeur": "4 270 FCFA",
+    "indice": "Valorisation au CUMP"
+   },
+   {
+    "label": "Sous le seuil d’alerte",
+    "valeur": "4",
+    "indice": "Seuils fixés par la clinique"
+   },
+   {
+    "label": "En rupture",
+    "valeur": "2",
+    "indice": null
+   }
+  ],
+  "noteSansSeuil": "2 référence(s) sans seuil d’alerte. Tant qu’un seuil n’est pas fixé, aucune alerte ne peut être émise sur ces articles — le document SAGE d’origine ne renseigne pas cette colonne, c’est à la clinique de l’arrêter.",
+  "entetes": [
+   "CODE",
+   "DÉSIGNATION",
+   "CATÉGORIE",
+   "UNITÉ",
+   "STOCK",
+   "SEUIL",
+   "CUMP",
+   "VALEUR",
+   "ÉTAT",
+   "ACTIONS"
+  ],
+  "lignes": [
+   [
+    "A1",
+    "D A1",
+    "Réactif",
+    "Boîte",
+    "0",
+    "10",
+    "100",
+    "0",
+    "Rupture",
+    ""
+   ],
+   [
+    "A2",
+    "D A2",
+    "Réactif",
+    "Boîte",
+    "5",
+    "10",
+    "200",
+    "1 000",
+    "Critique",
+    ""
+   ],
+   [
+    "A3",
+    "D A3",
+    "Consommable",
+    "Boîte",
+    "10",
+    "10",
+    "50",
+    "500",
+    "Critique",
+    ""
+   ],
+   [
+    "A4",
+    "D A4",
+    "Consommable",
+    "Boîte",
+    "11",
+    "10",
+    "50",
+    "550",
+    "Normal",
+    ""
+   ],
+   [
+    "A5",
+    "D A5",
+    "Réactif",
+    "Boîte",
+    "7",
+    "—",
+    "300",
+    "2 100",
+    "Normal",
+    ""
+   ],
+   [
+    "A6",
+    "D A6",
+    "Réactif",
+    "Boîte",
+    "0",
+    "—",
+    "300",
+    "0",
+    "Rupture",
+    ""
+   ],
+   [
+    "A8",
+    "D A8",
+    "Réactif",
+    "Boîte",
+    "3",
+    "0",
+    "40",
+    "120",
+    "Normal",
+    ""
+   ],
+   [
+    "A10",
+    "D A10",
+    "Consommable",
+    "Boîte",
+    "2",
+    "2",
+    "0",
+    "0",
+    "Critique",
+    ""
+   ]
+  ],
+  "ids": [
+   "P1",
+   "P2",
+   "P3",
+   "P4",
+   "P5",
+   "P6",
+   "P8",
+   "P10"
+  ],
+  "classesStock": [
+   "font-semibold text-danger-600",
+   "font-semibold text-warning-600",
+   "font-semibold text-warning-600",
+   "",
+   "",
+   "font-semibold text-danger-600",
+   "",
+   "font-semibold text-warning-600"
+  ],
+  "filtres": [
+   {
+    "nom": "réactifs",
+    "categorie": "reactif",
+    "niveau": "",
+    "ids": [
+     "P1",
+     "P2",
+     "P5",
+     "P6",
+     "P8"
+    ]
+   },
+   {
+    "nom": "consommables",
+    "categorie": "conso_labo",
+    "niveau": "",
+    "ids": [
+     "P3",
+     "P4",
+     "P10"
+    ]
+   },
+   {
+    "nom": "rupture",
+    "categorie": "",
+    "niveau": "rupture",
+    "ids": [
+     "P1",
+     "P6"
+    ]
+   },
+   {
+    "nom": "sous le seuil",
+    "categorie": "",
+    "niveau": "alerte",
+    "ids": [
+     "P2",
+     "P3",
+     "P10"
+    ]
+   },
+   {
+    "nom": "stock suffisant",
+    "categorie": "",
+    "niveau": "ok",
+    "ids": [
+     "P4",
+     "P8"
+    ]
+   },
+   {
+    "nom": "sans seuil",
+    "categorie": "",
+    "niveau": "sansSeuil",
+    "ids": [
+     "P5",
+     "P6"
+    ]
+   },
+   {
+    "nom": "réactifs sous le seuil",
+    "categorie": "reactif",
+    "niveau": "alerte",
+    "ids": [
+     "P2"
+    ]
+   }
+  ],
+  "periodes": [
+   {
+    "periode": "semaine",
+    "titre": "Les plus consommés — semaine",
+    "top": [
+     [
+      "D A2",
+      "10 unité(s)"
+     ],
+     [
+      "D A8",
+      "5 unité(s)"
+     ],
+     [
+      "D A10",
+      "5 unité(s)"
+     ],
+     [
+      "D A3",
+      "3 unité(s)"
+     ]
+    ],
+    "vide": null
+   },
+   {
+    "periode": "mois",
+    "titre": "Les plus consommés — mois",
+    "top": [
+     [
+      "D A2",
+      "10 unité(s)"
+     ],
+     [
+      "D A4",
+      "9 unité(s)"
+     ],
+     [
+      "D A8",
+      "5 unité(s)"
+     ],
+     [
+      "D A10",
+      "5 unité(s)"
+     ],
+     [
+      "D A3",
+      "3 unité(s)"
+     ]
+    ],
+    "vide": null
+   },
+   {
+    "periode": "trimestre",
+    "titre": "Les plus consommés — trimestre",
+    "top": [
+     [
+      "D A1",
+      "20 unité(s)"
+     ],
+     [
+      "D A2",
+      "10 unité(s)"
+     ],
+     [
+      "D A4",
+      "9 unité(s)"
+     ],
+     [
+      "D A8",
+      "5 unité(s)"
+     ],
+     [
+      "D A10",
+      "5 unité(s)"
+     ],
+     [
+      "D A3",
+      "3 unité(s)"
+     ]
+    ],
+    "vide": null
+   },
+   {
+    "periode": "semestre",
+    "titre": "Les plus consommés — semestre",
+    "top": [
+     [
+      "D A1",
+      "20 unité(s)"
+     ],
+     [
+      "D A5",
+      "11 unité(s)"
+     ],
+     [
+      "D A2",
+      "10 unité(s)"
+     ],
+     [
+      "D A4",
+      "9 unité(s)"
+     ],
+     [
+      "D A8",
+      "5 unité(s)"
+     ],
+     [
+      "D A10",
+      "5 unité(s)"
+     ],
+     [
+      "D A3",
+      "3 unité(s)"
+     ]
+    ],
+    "vide": null
+   },
+   {
+    "periode": "annee",
+    "titre": "Les plus consommés — année",
+    "top": [
+     [
+      "D A1",
+      "20 unité(s)"
+     ],
+     [
+      "D A5",
+      "11 unité(s)"
+     ],
+     [
+      "D A2",
+      "10 unité(s)"
+     ],
+     [
+      "D A4",
+      "9 unité(s)"
+     ],
+     [
+      "D A6",
+      "8 unité(s)"
+     ],
+     [
+      "D A8",
+      "5 unité(s)"
+     ],
+     [
+      "D A10",
+      "5 unité(s)"
+     ],
+     [
+      "D A3",
+      "3 unité(s)"
+     ]
+    ],
+    "vide": null
+   },
+   {
+    "periode": "libre",
+    "titre": "Les plus consommés — plage libre",
+    "top": [
+     [
+      "D A1",
+      "20 unité(s)"
+     ],
+     [
+      "D A5",
+      "11 unité(s)"
+     ],
+     [
+      "D A2",
+      "10 unité(s)"
+     ],
+     [
+      "D A4",
+      "9 unité(s)"
+     ],
+     [
+      "D A6",
+      "8 unité(s)"
+     ],
+     [
+      "D A8",
+      "5 unité(s)"
+     ],
+     [
+      "D A10",
+      "5 unité(s)"
+     ],
+     [
+      "D A3",
+      "3 unité(s)"
+     ]
+    ],
+    "vide": null
+   }
+  ],
+  "valeurParReference": [
+   {
+    "libelle": "D A5",
+    "valeur": "2 100",
+    "classe": "bg-navy-500"
+   },
+   {
+    "libelle": "D A2",
+    "valeur": "1 000",
+    "classe": "bg-danger-500"
+   },
+   {
+    "libelle": "D A4",
+    "valeur": "550",
+    "classe": "bg-navy-500"
+   },
+   {
+    "libelle": "D A3",
+    "valeur": "500",
+    "classe": "bg-danger-500"
+   },
+   {
+    "libelle": "D A8",
+    "valeur": "120",
+    "classe": "bg-navy-500"
+   },
+   {
+    "libelle": "D A10",
+    "valeur": "0",
+    "classe": "bg-danger-500"
+   },
+   {
+    "libelle": "D A6",
+    "valeur": "0",
+    "classe": "bg-navy-500"
+   },
+   {
+    "libelle": "D A1",
+    "valeur": "0",
+    "classe": "bg-danger-500"
+   }
+  ],
+  "cartesTitres": [
+   "Les plus consommés — plage libre",
+   "Valeur du stock par référence",
+   "Réactifs et consommables",
+   "Consommation au fil des mois"
+  ],
+  "aide": "Une référence dont le classement de valeur apparaît en rouge est sous son seuil d’alerte : c’est du stock immobilisé sur un article qui va manquer. Le rapprochement des deux classements — le plus consommé et le plus immobilisé — désigne les réapprovisionnements à passer en premier.",
+  "source": "Source : Inventaire SAGE « Grand Stock » — les seuils d’alerte y sont absents et se définissent ici, référence par référence."
+ },
+ "graphiques": {
+  "_doc": "graphiques de m5-reactifs (période « mois » par défaut)",
+  "anneaux": [
+   {
+    "labels": [
+     "Réactifs",
+     "Consommables de laboratoire"
+    ],
+    "data": [
+     5,
+     3
+    ]
+   }
+  ],
+  "barres": [
+   {
+    "labels": [
+     "sept. 25",
+     "octo. 25",
+     "nove. 25",
+     "déce. 25",
+     "janv. 26",
+     "févr. 26",
+     "mars. 26",
+     "avri. 26",
+     "mai. 26",
+     "juin. 26",
+     "juil. 26",
+     "août. 26"
+    ],
+    "series": [
+     {
+      "label": "Unités consommées",
+      "data": [
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "bons": {
+  "_doc": "« Bon de demande de réactifs »",
+  "bons": [
+   {
+    "nom": "trois références sous le seuil, deux sans seuil",
+    "produits": [
+     {
+      "id": "P1",
+      "code": "A1",
+      "designation": "D A1",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 0,
+      "seuilAlerte": 10,
+      "cump": 100,
+      "statut": "actif"
+     },
+     {
+      "id": "P2",
+      "code": "A2",
+      "designation": "D A2",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 5,
+      "seuilAlerte": 10,
+      "cump": 200,
+      "statut": "actif"
+     },
+     {
+      "id": "P3",
+      "code": "A3",
+      "designation": "D A3",
+      "categorie": "conso_labo",
+      "unite": "Boîte",
+      "stock": 10,
+      "seuilAlerte": 10,
+      "cump": 50,
+      "statut": "actif"
+     },
+     {
+      "id": "P4",
+      "code": "A4",
+      "designation": "D A4",
+      "categorie": "conso_labo",
+      "unite": "Boîte",
+      "stock": 11,
+      "seuilAlerte": 10,
+      "cump": 50,
+      "statut": "actif"
+     },
+     {
+      "id": "P5",
+      "code": "A5",
+      "designation": "D A5",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 7,
+      "seuilAlerte": null,
+      "cump": 300,
+      "statut": "actif"
+     },
+     {
+      "id": "P6",
+      "code": "A6",
+      "designation": "D A6",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 0,
+      "seuilAlerte": null,
+      "cump": 300,
+      "statut": "actif"
+     },
+     {
+      "id": "P7",
+      "code": "A7",
+      "designation": "D A7",
+      "categorie": "medicament",
+      "unite": "Boîte",
+      "stock": 1,
+      "seuilAlerte": 1,
+      "cump": 10,
+      "statut": "actif"
+     },
+     {
+      "id": "P8",
+      "code": "A8",
+      "designation": "D A8",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 3,
+      "seuilAlerte": 0,
+      "cump": 40,
+      "statut": "actif"
+     },
+     {
+      "id": "P9",
+      "code": "A9",
+      "designation": "D A9",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 9,
+      "seuilAlerte": 5,
+      "cump": 12,
+      "statut": "archive"
+     },
+     {
+      "id": "P10",
+      "code": "A10",
+      "designation": "D A10",
+      "categorie": "conso_labo",
+      "unite": "Boîte",
+      "stock": 2,
+      "seuilAlerte": 2,
+      "cump": 0,
+      "statut": "actif"
+     }
+    ],
+    "imprime": [
+     {
+      "titre": "Bon d’expression de besoins — Laboratoire",
+      "sousTitre": "Réactifs et consommables sous le seuil d’alerte",
+      "cartouche": [
+       [
+        "Service demandeur",
+        "Laboratoire"
+       ],
+       [
+        "Date",
+        "30/10/2026"
+       ],
+       [
+        "Références concernées",
+        "4"
+       ],
+       [
+        "Établi par",
+        "KINNOU Addoul Ganiou"
+       ]
+      ],
+      "signatures": [
+       {
+        "role": "Le Laborantin chef",
+        "nom": "KINNOU Addoul Ganiou"
+       },
+       {
+        "role": "Le Gestionnaire de Stock",
+        "nom": "MAMAN Zoukanéri"
+       },
+       {
+        "role": "La Directrice Administrative",
+        "nom": "TAKI Alimatou",
+        "mention": "Validation"
+       }
+      ],
+      "contenu": [
+       {
+        "table": {
+         "entetes": [
+          "Code",
+          "Désignation",
+          "Unité",
+          "Stock actuel",
+          "Seuil",
+          "Qté demandée",
+          "Qté accordée"
+         ],
+         "lignes": [
+          [
+           "A1",
+           "D A1",
+           "Boîte",
+           "0",
+           "10",
+           "20",
+           ""
+          ],
+          [
+           "A2",
+           "D A2",
+           "Boîte",
+           "5",
+           "10",
+           "15",
+           ""
+          ],
+          [
+           "A3",
+           "D A3",
+           "Boîte",
+           "10",
+           "10",
+           "10",
+           ""
+          ],
+          [
+           "A10",
+           "D A10",
+           "Boîte",
+           "2",
+           "2",
+           "2",
+           ""
+          ]
+         ],
+         "pied": null
+        }
+       }
+      ],
+      "filtres": [
+       [
+        "Période de consommation",
+        "Mois"
+       ]
+      ]
+     }
+    ],
+    "toasts": []
+   },
+   {
+    "nom": "aucune sous le seuil mais des références sans seuil : avertissement",
+    "produits": [
+     {
+      "id": "B1",
+      "code": "B1",
+      "designation": "D B1",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 50,
+      "seuilAlerte": 10,
+      "cump": 10,
+      "statut": "actif"
+     },
+     {
+      "id": "B2",
+      "code": "B2",
+      "designation": "D B2",
+      "categorie": "conso_labo",
+      "unite": "Boîte",
+      "stock": 8,
+      "seuilAlerte": null,
+      "cump": 10,
+      "statut": "actif"
+     }
+    ],
+    "imprime": [],
+    "toasts": [
+     [
+      "Aucune référence sous son seuil d’alerte.",
+      "1 référence(s) n’ont pas de seuil défini : elles ne peuvent pas être surveillées tant que la clinique ne l’a pas fixé."
+     ]
+    ]
+   },
+   {
+    "nom": "aucune sous le seuil, tous les seuils fixés : succès",
+    "produits": [
+     {
+      "id": "B1",
+      "code": "B1",
+      "designation": "D B1",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 50,
+      "seuilAlerte": 10,
+      "cump": 10,
+      "statut": "actif"
+     },
+     {
+      "id": "B2",
+      "code": "B2",
+      "designation": "D B2",
+      "categorie": "conso_labo",
+      "unite": "Boîte",
+      "stock": 80,
+      "seuilAlerte": 20,
+      "cump": 10,
+      "statut": "actif"
+     }
+    ],
+    "imprime": [],
+    "toasts": [
+     [
+      "Aucune référence sous son seuil d’alerte.",
+      "Le stock de réactifs et consommables est au-dessus des seuils fixés."
+     ]
+    ]
+   },
+   {
+    "nom": "seuil à zéro et stock à zéro : à commander au moins une unité",
+    "produits": [
+     {
+      "id": "B3",
+      "code": "B3",
+      "designation": "D B3",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 0,
+      "seuilAlerte": 0,
+      "cump": 10,
+      "statut": "actif"
+     },
+     {
+      "id": "B4",
+      "code": "B4",
+      "designation": "D B4",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 1,
+      "seuilAlerte": 3,
+      "cump": 10,
+      "statut": "actif"
+     },
+     {
+      "id": "B5",
+      "code": "B5",
+      "designation": "D B5",
+      "categorie": "reactif",
+      "unite": "Boîte",
+      "stock": 20,
+      "seuilAlerte": 20,
+      "cump": 10,
+      "statut": "actif"
+     }
+    ],
+    "imprime": [
+     {
+      "titre": "Bon d’expression de besoins — Laboratoire",
+      "sousTitre": "Réactifs et consommables sous le seuil d’alerte",
+      "cartouche": [
+       [
+        "Service demandeur",
+        "Laboratoire"
+       ],
+       [
+        "Date",
+        "30/10/2026"
+       ],
+       [
+        "Références concernées",
+        "3"
+       ],
+       [
+        "Établi par",
+        "KINNOU Addoul Ganiou"
+       ]
+      ],
+      "signatures": [
+       {
+        "role": "Le Laborantin chef",
+        "nom": "KINNOU Addoul Ganiou"
+       },
+       {
+        "role": "Le Gestionnaire de Stock",
+        "nom": "MAMAN Zoukanéri"
+       },
+       {
+        "role": "La Directrice Administrative",
+        "nom": "TAKI Alimatou",
+        "mention": "Validation"
+       }
+      ],
+      "contenu": [
+       {
+        "table": {
+         "entetes": [
+          "Code",
+          "Désignation",
+          "Unité",
+          "Stock actuel",
+          "Seuil",
+          "Qté demandée",
+          "Qté accordée"
+         ],
+         "lignes": [
+          [
+           "B3",
+           "D B3",
+           "Boîte",
+           "0",
+           "0",
+           "1",
+           ""
+          ],
+          [
+           "B4",
+           "D B4",
+           "Boîte",
+           "1",
+           "3",
+           "5",
+           ""
+          ],
+          [
+           "B5",
+           "D B5",
+           "Boîte",
+           "20",
+           "20",
+           "20",
+           ""
+          ]
+         ],
+         "pied": null
+        }
+       }
+      ],
+      "filtres": [
+       [
+        "Période de consommation",
+        "Mois"
+       ]
+      ]
+     }
+    ],
+    "toasts": []
+   }
+  ]
+ },
+ "saisie": {
+  "_doc": "m5-reactifs : « Nouveau réactif » → « Créer », « Modifier » (K.actionsLigne)",
+  "creations": [
+   {
+    "nom": "réactif complet",
+    "saisie": {
+     "designation": "KIT TEST",
+     "categorie": "reactif",
+     "unite": "Kit",
+     "stock": "12",
+     "seuilAlerte": "5",
+     "seuilCritique": "2",
+     "cump": "1500",
+     "emplacement": "Rayon Z",
+     "fournisseur": "LABOTECH"
+    },
+    "initial": [
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "reactif"
+     ],
+     [
+      "unite",
+      ""
+     ],
+     [
+      "stock",
+      "0"
+     ],
+     [
+      "seuilAlerte",
+      "10"
+     ],
+     [
+      "seuilCritique",
+      ""
+     ],
+     [
+      "cump",
+      "0"
+     ],
+     [
+      "emplacement",
+      ""
+     ],
+     [
+      "fournisseur",
+      ""
+     ],
+     [
+      "examensLies",
+      []
+     ]
+    ],
+    "codesExistants": [],
+    "nouvelles": [
+     {
+      "id": "PROxmvve85awy2zxu",
+      "statut": "actif",
+      "designation": "KIT TEST",
+      "categorie": "reactif",
+      "unite": "Kit",
+      "stock": 12,
+      "seuilAlerte": 5,
+      "seuilCritique": 2,
+      "cump": 1500,
+      "emplacement": "Rayon Z",
+      "fournisseur": "LABOTECH",
+      "examensLies": [],
+      "code": "LAB-0001",
+      "seuilDefiniPar": "BASSONGUI Chabi Séko",
+      "seuilDefiniLe": "2026-10-30"
+     }
+    ],
+    "toasts": [
+     [
+      "Référence créé.",
+      "KIT TEST"
+     ]
+    ],
+    "modaleOuverte": false,
+    "kpis": [
+     {
+      "label": "Références suivies",
+      "valeur": "9",
+      "indice": null
+     },
+     {
+      "label": "Valeur du stock",
+      "valeur": "22 270 FCFA",
+      "indice": "Valorisation au CUMP"
+     },
+     {
+      "label": "Sous le seuil d’alerte",
+      "valeur": "4",
+      "indice": "Seuils fixés par la clinique"
+     },
+     {
+      "label": "En rupture",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   },
+   {
+    "nom": "deuxième création dans la même page : le code suit le registre",
+    "saisie": {
+     "designation": "KIT DEUX",
+     "categorie": "conso_labo",
+     "unite": "Boîte",
+     "stock": "3",
+     "seuilAlerte": "1",
+     "cump": "200"
+    },
+    "initial": [
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "reactif"
+     ],
+     [
+      "unite",
+      ""
+     ],
+     [
+      "stock",
+      "0"
+     ],
+     [
+      "seuilAlerte",
+      "10"
+     ],
+     [
+      "seuilCritique",
+      ""
+     ],
+     [
+      "cump",
+      "0"
+     ],
+     [
+      "emplacement",
+      ""
+     ],
+     [
+      "fournisseur",
+      ""
+     ],
+     [
+      "examensLies",
+      []
+     ]
+    ],
+    "codesExistants": [
+     "LAB-0001"
+    ],
+    "nouvelles": [
+     {
+      "id": "PROxmvve85mjdiauz",
+      "statut": "actif",
+      "designation": "KIT DEUX",
+      "categorie": "conso_labo",
+      "unite": "Boîte",
+      "stock": 3,
+      "seuilAlerte": 1,
+      "seuilCritique": null,
+      "cump": 200,
+      "emplacement": "",
+      "fournisseur": "",
+      "examensLies": [],
+      "code": "LAB-0002",
+      "seuilDefiniPar": "BASSONGUI Chabi Séko",
+      "seuilDefiniLe": "2026-10-30"
+     }
+    ],
+    "toasts": [
+     [
+      "Référence créé.",
+      "KIT DEUX"
+     ]
+    ],
+    "modaleOuverte": false,
+    "kpis": [
+     {
+      "label": "Références suivies",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "label": "Valeur du stock",
+      "valeur": "22 870 FCFA",
+      "indice": "Valorisation au CUMP"
+     },
+     {
+      "label": "Sous le seuil d’alerte",
+      "valeur": "4",
+      "indice": "Seuils fixés par la clinique"
+     },
+     {
+      "label": "En rupture",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   },
+   {
+    "nom": "seuil vidé : « sans seuil », pas zéro",
+    "saisie": {
+     "designation": "SANS SEUIL",
+     "categorie": "reactif",
+     "unite": "Unité",
+     "stock": "4",
+     "seuilAlerte": "",
+     "cump": "10"
+    },
+    "initial": [
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "reactif"
+     ],
+     [
+      "unite",
+      ""
+     ],
+     [
+      "stock",
+      "0"
+     ],
+     [
+      "seuilAlerte",
+      "10"
+     ],
+     [
+      "seuilCritique",
+      ""
+     ],
+     [
+      "cump",
+      "0"
+     ],
+     [
+      "emplacement",
+      ""
+     ],
+     [
+      "fournisseur",
+      ""
+     ],
+     [
+      "examensLies",
+      []
+     ]
+    ],
+    "codesExistants": [
+     "LAB-0002",
+     "LAB-0001"
+    ],
+    "nouvelles": [],
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "modaleOuverte": true,
+    "kpis": [
+     {
+      "label": "Références suivies",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "label": "Valeur du stock",
+      "valeur": "22 870 FCFA",
+      "indice": "Valorisation au CUMP"
+     },
+     {
+      "label": "Sous le seuil d’alerte",
+      "valeur": "4",
+      "indice": "Seuils fixés par la clinique"
+     },
+     {
+      "label": "En rupture",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   },
+   {
+    "nom": "désignation manquante : refus",
+    "saisie": {
+     "categorie": "reactif",
+     "unite": "Unité",
+     "stock": "4",
+     "seuilAlerte": "3"
+    },
+    "initial": [
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "reactif"
+     ],
+     [
+      "unite",
+      ""
+     ],
+     [
+      "stock",
+      "0"
+     ],
+     [
+      "seuilAlerte",
+      "10"
+     ],
+     [
+      "seuilCritique",
+      ""
+     ],
+     [
+      "cump",
+      "0"
+     ],
+     [
+      "emplacement",
+      ""
+     ],
+     [
+      "fournisseur",
+      ""
+     ],
+     [
+      "examensLies",
+      []
+     ]
+    ],
+    "codesExistants": [
+     "LAB-0002",
+     "LAB-0001"
+    ],
+    "nouvelles": [],
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "modaleOuverte": true,
+    "kpis": [
+     {
+      "label": "Références suivies",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "label": "Valeur du stock",
+      "valeur": "22 870 FCFA",
+      "indice": "Valorisation au CUMP"
+     },
+     {
+      "label": "Sous le seuil d’alerte",
+      "valeur": "4",
+      "indice": "Seuils fixés par la clinique"
+     },
+     {
+      "label": "En rupture",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   },
+   {
+    "nom": "stock négatif : refus",
+    "saisie": {
+     "designation": "NEG",
+     "categorie": "reactif",
+     "unite": "Unité",
+     "stock": "-1",
+     "seuilAlerte": "3"
+    },
+    "initial": [
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "reactif"
+     ],
+     [
+      "unite",
+      ""
+     ],
+     [
+      "stock",
+      "0"
+     ],
+     [
+      "seuilAlerte",
+      "10"
+     ],
+     [
+      "seuilCritique",
+      ""
+     ],
+     [
+      "cump",
+      "0"
+     ],
+     [
+      "emplacement",
+      ""
+     ],
+     [
+      "fournisseur",
+      ""
+     ],
+     [
+      "examensLies",
+      []
+     ]
+    ],
+    "codesExistants": [
+     "LAB-0002",
+     "LAB-0001"
+    ],
+    "nouvelles": [],
+    "toasts": [
+     [
+      "Le stock ne peut pas être négatif.",
+      "RG-03 — corriger la quantité saisie."
+     ]
+    ],
+    "modaleOuverte": true,
+    "kpis": [
+     {
+      "label": "Références suivies",
+      "valeur": "10",
+      "indice": null
+     },
+     {
+      "label": "Valeur du stock",
+      "valeur": "22 870 FCFA",
+      "indice": "Valorisation au CUMP"
+     },
+     {
+      "label": "Sous le seuil d’alerte",
+      "valeur": "4",
+      "indice": "Seuils fixés par la clinique"
+     },
+     {
+      "label": "En rupture",
+      "valeur": "2",
+      "indice": null
+     }
+    ]
+   }
+  ],
+  "modifications": [
+   {
+    "nom": "seuil et stock corrigés",
+    "code": "A2",
+    "saisie": {
+     "stock": "25",
+     "seuilAlerte": "8"
+    },
+    "prerempli": [
+     [
+      "designation",
+      "D A2"
+     ],
+     [
+      "categorie",
+      "reactif"
+     ],
+     [
+      "unite",
+      "Boîte"
+     ],
+     [
+      "stock",
+      "5"
+     ],
+     [
+      "seuilAlerte",
+      "10"
+     ],
+     [
+      "seuilCritique",
+      ""
+     ],
+     [
+      "cump",
+      "200"
+     ],
+     [
+      "emplacement",
+      ""
+     ],
+     [
+      "fournisseur",
+      ""
+     ],
+     [
+      "examensLies",
+      []
+     ]
+    ],
+    "avant": {
+     "id": "P2",
+     "code": "A2",
+     "designation": "D A2",
+     "categorie": "reactif",
+     "unite": "Boîte",
+     "stock": 5,
+     "seuilAlerte": 10,
+     "cump": 200,
+     "statut": "actif"
+    },
+    "patch": {
+     "stock": 25,
+     "seuilAlerte": 8,
+     "seuilCritique": null,
+     "emplacement": "",
+     "fournisseur": "",
+     "examensLies": []
+    },
+    "toasts": [
+     [
+      "Modifications enregistrées."
+     ]
+    ],
+    "boutonsLigne": [
+     "Modifier"
+    ]
+   },
+   {
+    "nom": "seuil vidé",
+    "code": "A3",
+    "saisie": {
+     "seuilAlerte": ""
+    },
+    "prerempli": [
+     [
+      "designation",
+      "D A3"
+     ],
+     [
+      "categorie",
+      "conso_labo"
+     ],
+     [
+      "unite",
+      "Boîte"
+     ],
+     [
+      "stock",
+      "10"
+     ],
+     [
+      "seuilAlerte",
+      "10"
+     ],
+     [
+      "seuilCritique",
+      ""
+     ],
+     [
+      "cump",
+      "50"
+     ],
+     [
+      "emplacement",
+      ""
+     ],
+     [
+      "fournisseur",
+      ""
+     ],
+     [
+      "examensLies",
+      []
+     ]
+    ],
+    "avant": {
+     "id": "P3",
+     "code": "A3",
+     "designation": "D A3",
+     "categorie": "conso_labo",
+     "unite": "Boîte",
+     "stock": 10,
+     "seuilAlerte": 10,
+     "cump": 50,
+     "statut": "actif"
+    },
+    "patch": {},
+    "toasts": [
+     [
+      "Le formulaire comporte des erreurs."
+     ]
+    ],
+    "boutonsLigne": [
+     "Modifier"
+    ]
+   }
+  ]
+ },
+ "code": {
+  "_doc": "code attribué quand des LAB- existent déjà (archivés compris)",
+  "codes": [
+   "LAB-0007",
+   "LAB-0003",
+   "LABX-0099",
+   "A1"
+  ],
+  "nouveau": [
+   "LAB-0008"
+  ]
+ }
+}
