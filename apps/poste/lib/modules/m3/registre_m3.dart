@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
+import 'bloc_cpa.dart';
 import 'hos_admissions.dart';
 import 'hos_chambres.dart';
 import 'surv_administrations.dart';
@@ -31,4 +32,5 @@ final Map<String, ConstruireEcran> ecransM3 = {
   'm3-plan-lits': (c, cfg) => const EcranPlanLits(),
   'm3-feuille-temperature': (c, cfg) => const EcranFeuilleTemperature(),
   'm3-soins': (c, cfg) => const EcranSoins(),
+  'm3-cpa': (c, cfg) => const EcranCpa(),
 };

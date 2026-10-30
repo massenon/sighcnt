@@ -1397,14 +1397,21 @@
       + '<strong>RG-07</strong> — elle requiert la signature du patient, celle de l’infirmier traitant et le constat du gardien.',
     render: function (root) {
       var host = el('div.space-y-4');
-      var ec = enCours();
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Patients hospitalisés', value: C.num(ec.length), icon: 'bed-double', tone: 'navy' },
-        { label: 'Sorties finalisables', value: C.num(ec.filter(function (a) { return soldePatient(a.patientId) <= 0; }).length), icon: 'check-circle-2', tone: 'success' },
-        { label: 'Bloquées par le solde', value: C.num(ec.filter(function (a) { return soldePatient(a.patientId) > 0; }).length), icon: 'wallet', tone: 'danger', hint: 'RG-06' },
-        { label: 'Sorties réalisées', value: C.num(admissions().filter(function (a) { return a.statut === 'sortie'; }).length), icon: 'door-open', tone: 'info' },
-      ]));
+      /* E415 : les indicateurs se recalculent à chaque sortie finalisée (ils restaient figés sur l'état d'ouverture). */
+      var kpiHote = el('div');
+      function kpis() {
+        var ec = enCours();
+        C.clear(kpiHote);
+        kpiHote.appendChild(U.kpiGrid([
+          { label: 'Patients hospitalisés', value: C.num(ec.length), icon: 'bed-double', tone: 'navy' },
+          { label: 'Sorties finalisables', value: C.num(ec.filter(function (a) { return soldePatient(a.patientId) <= 0; }).length), icon: 'check-circle-2', tone: 'success' },
+          { label: 'Bloquées par le solde', value: C.num(ec.filter(function (a) { return soldePatient(a.patientId) > 0; }).length), icon: 'wallet', tone: 'danger', hint: 'RG-06' },
+          { label: 'Sorties réalisées', value: C.num(admissions().filter(function (a) { return a.statut === 'sortie'; }).length), icon: 'door-open', tone: 'info' },
+        ]));
+        U.icons(kpiHote);
+      }
+      kpis();
+      host.appendChild(kpiHote);
 
       var table = U.dataTable({
         title: 'Patients en cours d’hospitalisation',
@@ -1502,9 +1509,9 @@
                     consignes: v.consignes, derogation: v.derogation || null,
                     signaturePatient: true, signatureInfirmier: true, constatGardien: true,
                   });
-                m.close(); table.refresh();
+                m.close(); table.refresh(); kpis();
                 U.toast('Sortie finalisée — le lit ' + a.lit + ' est libéré.', {
-                  type: 'success', undo: function () { res.undo(); table.refresh(); },
+                  type: 'success', undo: function () { res.undo(); table.refresh(); kpis(); },
                 });
               },
             }),
@@ -1553,24 +1560,37 @@
     regle: '<strong>RG-08</strong> — toute sortie contre avis médical est motivée ; si la situation l’exige, l’avis du Procureur est consigné avant clôture du dossier.',
     render: function (root) {
       var col = S.collection('sortiesAvisMedical', { module: 'M3', entite: 'SortieAvisMedical' });
-      var ec = enCours();
       var host = el('div.space-y-4');
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Sorties contre avis médical', value: C.num(col.active().length), icon: 'file-warning', tone: 'danger' },
-        { label: 'Avec avis du Procureur', value: C.num(col.active().filter(function (r) { return r.avisProcureur; }).length), icon: 'gavel', tone: 'warning' },
-        { label: 'Patients hospitalisés', value: C.num(ec.length), icon: 'bed-double', tone: 'navy' },
-        { label: 'Dossiers clôturés', value: C.num(col.active().filter(function (r) { return r.cloture; }).length), icon: 'archive', tone: 'success' },
-      ]));
+      /* E418 : indicateurs recalculés et liste des hospitalisés relue à chaque geste (ils restaient figés sur l'état d'ouverture :
+         le patient qui venait de sortir restait proposé, les compteurs ne bougeaient pas). */
+      var kpiHote = el('div');
+      function kpis() {
+        C.clear(kpiHote);
+        kpiHote.appendChild(U.kpiGrid([
+          { label: 'Sorties contre avis médical', value: C.num(col.active().length), icon: 'file-warning', tone: 'danger' },
+          { label: 'Avec avis du Procureur', value: C.num(col.active().filter(function (r) { return r.avisProcureur; }).length), icon: 'gavel', tone: 'warning' },
+          { label: 'Patients hospitalisés', value: C.num(enCours().length), icon: 'bed-double', tone: 'navy' },
+          { label: 'Dossiers clôturés', value: C.num(col.active().filter(function (r) { return r.cloture; }).length), icon: 'archive', tone: 'success' },
+        ]));
+        U.icons(kpiHote);
+      }
+      kpis();
+      host.appendChild(kpiHote);
 
       host.appendChild(K.note('Cette procédure dégage la responsabilité de la clinique. Le motif du refus de soins et la décharge signée du patient sont impératifs.', { tone: 'warning', icon: 'triangle-alert' }));
 
       var table;
-      function champs() {
+      function champs(record) {
+        var options = enCours().map(function (a) { return { value: a.id, label: a.lit + ' — ' + a.patient + ' (' + a.patientCode + ')' }; });
+        /* E419 : à la modification, l'admission de la procédure n'est plus « en cours » (la création l'a fait sortir) — absente de la liste, le
+           champ retombait sur le PREMIER hospitalisé et l'enregistrement réécrivait le patient, le dossier et le lit de la fiche. */
+        if (record && record.admissionId && !options.some(function (o) { return o.value === record.admissionId; })) {
+          options.unshift({ value: record.admissionId, label: (record.lit || '—') + ' — ' + record.patient + ' (' + record.patientCode + ')' });
+        }
         return [
           {
             name: 'admissionId', label: 'Patient hospitalisé', type: 'select', required: true, col: 'full',
-            options: ec.map(function (a) { return { value: a.id, label: a.lit + ' — ' + a.patient + ' (' + a.patientCode + ')' }; }),
+            options: options,
           },
           { name: 'dateSortie', label: 'Date de sortie', type: 'date', required: true },
           { name: 'heureSortie', label: 'Heure', type: 'time' },
@@ -1605,8 +1625,8 @@
             K.iconBtn('pencil', 'Modifier', function () { ouvrir(r); }),
             K.iconBtn('archive', 'Archiver', function () {
               var res = col.archive(r.id);
-              table.refresh();
-              U.toast('Enregistrement archivé.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+              table.refresh(); kpis();
+              U.toast('Enregistrement archivé.', { type: 'success', undo: function () { res.undo(); table.refresh(); kpis(); } });
             }, 'ghost'),
           ];
         },
@@ -1616,7 +1636,7 @@
       return null;
 
       function ouvrir(record) {
-        var f = U.form(champs(), record || { dateSortie: C.iso(AUJ) });
+        var f = U.form(champs(record), record || { dateSortie: C.iso(AUJ) });
         var m = U.modal({
           title: record ? 'Modifier la procédure' : 'Sortie contre avis médical',
           subtitle: 'RG-08 — motif obligatoire, avis du Procureur si la situation l’exige.',
@@ -1633,12 +1653,12 @@
                 }
                 var a = admissions().filter(function (x) { return x.id === v.admissionId; })[0];
                 if (a) { v.patient = a.patient; v.patientCode = a.patientCode; v.lit = a.lit; }
-                if (!v.reference) v.reference = C.nextRef('SAM', 4);
+                if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('SAM', 4, col.all());
                 var res = record ? col.update(record.id, v) : col.insert(v);
                 if (!record && a) S.collection('admissions').update(a.id, { statut: 'sortie', dateSortie: v.dateSortie });
-                m.close(); table.refresh();
+                m.close(); table.refresh(); kpis();
                 U.toast(record ? 'Procédure mise à jour.' : 'Sortie contre avis médical consignée.', {
-                  type: 'success', undo: res.undo,
+                  type: 'success', undo: function () { res.undo(); table.refresh(); kpis(); },
                 });
               },
             }),
@@ -1917,7 +1937,7 @@
             transform: function (v) {
               var pt = patientParCode3(v.patientCode);
               return Object.assign({}, v, {
-                reference: C.nextRef('CRO-', 4),
+                reference: C.referenceSuivante('CRO-', 4, col2().all()),
                 patientId: pt ? pt.id : null,
                 patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
                 operateur: nomSoignant(v.operateurId),
@@ -1938,6 +1958,16 @@
             return [K.iconBtn('printer', 'Imprimer le compte rendu', function () { imprimer(r); })]
               .concat(K.actionsLigne(col2(), champs(), {
                 module: 'M3', detail: detail, refresh: afficher,
+                /* E411 : les NOMS portés par la fiche suivent les identifiants corrigés (opérateur, aide, anesthésiste, patient). */
+                transform: function (v) {
+                  var pt = patientParCode3(v.patientCode);
+                  return Object.assign({}, v, {
+                    patientId: pt ? pt.id : null, patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
+                    operateur: nomSoignant(v.operateurId),
+                    aideOperateur: v.aideOperateurId ? nomSoignant(v.aideOperateurId) : null,
+                    anesthesiste: nomSoignant(v.anesthesisteId),
+                  });
+                },
                 titre: function (x) { return x.reference; },
               })(r));
           },
@@ -2126,7 +2156,7 @@
                 var lignes = items.map(function (label, i) { return { label: label, coche: !!v['it' + i] }; });
                 var coches = lignes.filter(function (x) { return x.coche; }).length;
                 var res = col3().insert({
-                  reference: C.nextRef('CKL-', 4), moment: moment,
+                  reference: C.referenceSuivante('CKL-', 4, col3().all()), moment: moment,
                   dateHeure: new Date().toISOString(),
                   patientId: pt ? pt.id : null,
                   patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
@@ -3189,7 +3219,7 @@
             transform: function (v) {
               var pt = patientParCode3(v.patientCode);
               return Object.assign({}, v, {
-                reference: C.nextRef('CPA-2026-', 4),
+                reference: C.referenceSuivante('CPA-2026-', 4, colCpa().all()),
                 patientId: pt ? pt.id : null,
                 patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
               });
@@ -3215,6 +3245,10 @@
             return [K.iconBtn('printer', 'Imprimer la fiche', function () { imprimerCpa(r); })]
               .concat(K.actionsLigne(colCpa(), champs(), {
                 module: 'M3', detail: detailCpa, refresh: afficher, avant: controler,
+                transform: function (v) {   /* E411 */
+                  var pt = patientParCode3(v.patientCode);
+                  return Object.assign({}, v, { patientId: pt ? pt.id : null, patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode });
+                },
                 titre: function (x) { return x.reference; },
               })(r));
           },
@@ -3333,7 +3367,7 @@
             transform: function (v) {
               var pt = patientParCode3(v.patientCode);
               return Object.assign({}, v, {
-                reference: C.nextRef('CRA-2026-', 4),
+                reference: C.referenceSuivante('CRA-2026-', 4, colCrAnesthesie().all()),
                 patientId: pt ? pt.id : null,
                 patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
               });
@@ -3359,6 +3393,10 @@
             return [K.iconBtn('printer', 'Imprimer le compte rendu', function () { imprimerCra(r); })]
               .concat(K.actionsLigne(colCrAnesthesie(), champs(), {
                 module: 'M3', detail: detailCra, refresh: afficher,
+                transform: function (v) {   /* E411 */
+                  var pt = patientParCode3(v.patientCode);
+                  return Object.assign({}, v, { patientId: pt ? pt.id : null, patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode });
+                },
                 titre: function (x) { return x.reference; },
               })(r));
           },
@@ -3534,7 +3572,7 @@
                     patientId: pt.id,
                     analyses: v.analyses,
                     urgence: v.urgence, examenUrgent: v.examenUrgent || null,
-                    prescripteur: v.prescripteur,
+                    prescripteur: K.nomPrescripteur(v, null, 'prescripteur'),   /* E412 : jamais la valeur « EXTERNE » */
                     serviceDemandeur: v.serviceDemandeur,
                     indication: v.indication,
                     hospitalise: !!v.hospitalise,
@@ -3583,7 +3621,7 @@
             ['Sexe', pt.sexe === 'F' ? 'Féminin' : 'Masculin'],
             ['Résidence', v.residence],
             ['Service demandeur', s ? s.label : v.serviceDemandeur],
-            ['Prescripteur', v.prescripteur],
+            ['Prescripteur', K.nomPrescripteur(v, null, 'prescripteur')],
             ['Hospitalisé', v.hospitalise ? 'Oui' : 'Non'],
           ],
           contenu: el('div.space-y-2', null, [
@@ -3599,7 +3637,7 @@
                 somme: function (x) { return x.prix || 0; } },
             ], res.demandes, { total: true }),
           ]),
-          signatures: [{ role: 'Le prescripteur', nom: v.prescripteur }],
+          signatures: [{ role: 'Le prescripteur', nom: K.nomPrescripteur(v, null, 'prescripteur') }],
         });
       }
     },
