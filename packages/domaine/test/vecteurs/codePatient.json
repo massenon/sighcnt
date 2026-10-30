@@ -1,0 +1,68 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "ordre": 1,
+    "annee": 2026
+   },
+   "sortie": "CNT/1/26"
+  },
+  {
+   "entree": {
+    "ordre": 530,
+    "annee": 2025
+   },
+   "sortie": "CNT/530/25"
+  },
+  {
+   "entree": {
+    "ordre": 1234,
+    "annee": 2099
+   },
+   "sortie": "CNT/1234/99"
+  },
+  {
+   "entree": {
+    "ordre": 7,
+    "annee": 1999
+   },
+   "sortie": "CNT/7/99"
+  },
+  {
+   "entree": {
+    "ordre": 10,
+    "annee": 2000
+   },
+   "sortie": "CNT/10/00"
+  },
+  {
+   "entree": {
+    "ordre": 99999,
+    "annee": 2026
+   },
+   "sortie": "CNT/99999/26"
+  },
+  {
+   "entree": {
+    "ordre": 5,
+    "annee": "2026"
+   },
+   "sortie": "CNT/5/26"
+  },
+  {
+   "entree": {
+    "ordre": 12,
+    "annee": 26
+   },
+   "sortie": "CNT/12/26"
+  },
+  {
+   "entree": {
+    "ordre": 3,
+    "annee": 5
+   },
+   "sortie": "CNT/3/5"
+  }
+ ]
+}

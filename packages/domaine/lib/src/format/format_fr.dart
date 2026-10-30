@@ -19,7 +19,7 @@ String nombre(Object? v, [int? decimales]) =>
     grouperMilliers(toFixedJs(nombreOuZero(v), decimales ?? 0));
 
 /// `C.pct(v, dec)` — une décimale par défaut.
-String pourcent(Object? v, [int? decimales]) => '${nombre(v, decimales ?? 1)} %';
+String pourcent(Object? v, [int? decimales]) => '${nombre(v, decimales ?? 1)}\u00A0%';
 
 const _unites = [
   'zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf',
