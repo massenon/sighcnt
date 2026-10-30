@@ -55,7 +55,7 @@ void cas(String nom, Future<void> Function(WidgetTester) corps) => testWidgets(n
 void main() {
   setUpAll(chargerPolices);
 
-  for (final id in lectures.keys.where((k) => k != 'm4-dossier-obstetrical')) {
+  for (final id in lectures.keys) {
     final v = obj(lectures[id]);
     group(id, () {
       cas('indicateurs rejouent la maquette', (t) async {

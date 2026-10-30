@@ -68,6 +68,7 @@ List<MatFiche> get matFacteursSurveillance => matListe('FACTEURS_SURVEILLANCE');
 List<MatFiche> get matExamensDossier => matListe('EXAMENS_DOSSIER');
 List<String> get matDroitsFondamentaux => matTextes('DROITS_FONDAMENTAUX');
 List<String> get matPlanAccouchement => matTextes('PLAN_ACCOUCHEMENT');
+List<MatFiche> get matGrilleCpn => matListe('GRILLE_CPN');
 List<MatFiche> get matComptesRendus => matListe('COMPTES_RENDUS_MATERNITE');
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------

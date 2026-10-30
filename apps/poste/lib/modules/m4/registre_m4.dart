@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
+import 'mat_dossier.dart';
 import 'mat_partogramme.dart';
 import 'mat_registres.dart';
 import 'mat_suivis.dart';
@@ -15,6 +16,8 @@ final Map<String, ConstruireEcran> ecransM4 = {
   'm4-naissances': (c, cfg) => const EcranNaissances(),
   'm4-dossier-bebe': (c, cfg) => const EcranDossierBebe(),
   'm4-partogramme': (c, cfg) => const EcranPartogramme(),
+  'm4-dossier-obstetrical': (c, cfg) => const EcranDossierObstetrical(),
+  'm4-dossier-obstetrical-nouveau': (c, cfg) => const EcranDossierObstetricalNouveau(),
   'm4-deces': (c, cfg) => const EcranDeces(),
   'm4-cpn': (c, cfg) => const EcranCpn(),
   'm4-cpon': (c, cfg) => const EcranCpon(),
