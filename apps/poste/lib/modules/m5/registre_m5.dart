@@ -8,6 +8,9 @@ import 'res_comparatif.dart';
 import 'res_impression.dart';
 import 'res_resultats.dart';
 import 'res_stats.dart';
+import 'sang_banque.dart';
+import 'sang_donneurs.dart';
+import 'sang_stats.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -24,4 +27,8 @@ final Map<String, ConstruireEcran> ecransM5 = {
   'm5-impression-resultats': (c, cfg) => const EcranImpressionResultats(),
   'm5-resultats-comparatif': (c, cfg) => const EcranComparatifResultats(),
   'm5-stats': (c, cfg) => const EcranStatsLabo(),
+  // Banque de sang et statistiques de réactifs (fichiers `sang_*`) : activité fermée à la clinique dans la maquette, écrans portés tels quels.
+  'm5-reactifs-stats': (c, cfg) => const EcranStatsReactifs(),
+  'm5-banque-sang': (c, cfg) => const EcranBanqueSang(),
+  'm5-donneurs': (c, cfg) => const EcranDonneurs(),
 };

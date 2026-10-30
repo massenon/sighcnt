@@ -47,3 +47,4 @@ export 'src/imagerie/img_demandes_tarif.dart';
 export 'src/imagerie/cr_modalites.dart';
 export 'src/imagerie/cr_moteur.dart';
 export 'src/labo/res_labo.dart' hide resultatRendu;
+export 'src/labo/sang_regles.dart';
