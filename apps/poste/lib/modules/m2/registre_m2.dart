@@ -4,6 +4,8 @@ import '../../core/config_poste.dart';
 import 'img_demandes.dart';
 import 'img_galerie.dart';
 import 'img_poste.dart';
+import 'cr_saisie.dart';
+import 'modalites_tableau.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -13,4 +15,10 @@ final Map<String, ConstruireEcran> ecransM2 = {
   'm2-imagerie-demandes': (c, cfg) => const EcranDemandesImagerie(),
   'm2-dashboard-imagerie': (c, cfg) => const EcranPosteImagerie(),
   'm2-echographie-galerie': (c, cfg) => const EcranGalerieClichesImagerie(),
+  'm2-imagerie': (c, cfg) => echographieTableau,
+  'm2-imagerie-radiographie': (c, cfg) => radiographieTableau,
+  'm2-imagerie-mammographie': (c, cfg) => mammographieTableau,
+  'm2-imagerie-scanner': (c, cfg) => scannerTableau,
+  'm2-imagerie-irm': (c, cfg) => irmTableau,
+  'm2-imagerie-cr': (c, cfg) => const EcranCompteRenduImagerie(),
 };

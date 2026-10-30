@@ -44,3 +44,5 @@ export 'src/imagerie/img_demandes_etats.dart';
 export 'src/imagerie/img_demandes_poste.dart';
 export 'src/imagerie/img_demandes_ouverture.dart';
 export 'src/imagerie/img_demandes_tarif.dart';
+export 'src/imagerie/cr_modalites.dart';
+export 'src/imagerie/cr_moteur.dart';
