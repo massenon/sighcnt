@@ -11398,6 +11398,17 @@ async function viderMessages(page) {
     verifier('L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales',
       reg.lignes === 6 && /Sauvegarde du magasin/.test(reg.texte) && /Échéances fiscales/.test(reg.texte), 'lignes=' + reg.lignes);
 
+    /* Isolation : le registre du planificateur survit à la remise à neuf des collections, et chaque tâche a une fréquence
+       minimale (60 min pour les échéances). Un passage précédent, ses alertes résolues, ferait paraître la tâche « déjà faite »
+       — on l'exécute donc explicitement sur l'état courant du magasin. */
+    await page.evaluate(async () => {
+      const S = window.SIGH.store;
+      for (let i = 0; i < 80 && S.fileEnAttente() > 0; i++) await new Promise((r) => setTimeout(r, 250));
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      for (const code of ['echeances_fiscales', 'stock_seuils', 'lots_peremption']) {
+        await fetch(racine + 'api/notifications.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': S.jetonServeur() }, body: JSON.stringify({ action: 'executer', code }) });
+      }
+    });
     const admin = await page.evaluate(async () => {
       await window.SIGH.notifications.sonderServeur();
       return window.SIGH.notifications.etatServeur().alertes.map((a) => a.cle);
