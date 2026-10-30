@@ -13,6 +13,10 @@ import 'mvt_pertes.dart';
 import 'mvt_transferts.dart';
 import 'points_stock.dart';
 import 'points_ventes.dart';
+import 'flux_dispensation.dart';
+import 'flux_etiquetage.dart';
+import 'flux_pharmacie.dart';
+import 'flux_reprise.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -33,4 +37,9 @@ final Map<String, ConstruireEcran> ecransM6 = {
   'm6-pertes': (c, cfg) => const EcranPertes(),
   'm6-point-ventes': (_, __) => const EcranPointVentes(),
   'm6-point-stock': (_, __) => const EcranPointStock(),
+  'm6-pharmacie-interne': (c, cfg) => const EcranPharmacieInterne(),
+  'm6-pharmacie-externe': (c, cfg) => const EcranPharmacieExterne(),
+  'm6-dispensation': (c, cfg) => const EcranDispensation(),
+  'm6-etiquetage': (c, cfg) => const EcranEtiquetage(),
+  'm6-reprise': (c, cfg) => const EcranReprise(),
 };

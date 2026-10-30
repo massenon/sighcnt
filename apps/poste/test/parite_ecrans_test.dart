@@ -72,6 +72,23 @@ void main() {
     'date': '2026-08-16'
   });
 
+  // m6-pharmacie-interne / -externe : le jeu n'a aucune ordonnance (la maquette ne les sème qu'à l'ouverture de M2) ; une ordonnance réglée à deux lignes
+  // (une par voie) fait DESSINER le tableau des deux pharmacies, dont les en-têtes n'existent pas à l'état vide.
+  final pharma = magasin.collection('produits').actives.first;
+  magasin.collection('ordonnances').inserer({
+    'id': 'ORD-PARITE',
+    'numero': 'ORD-PARITE',
+    'date': '2026-08-16',
+    'patient': 'TEST Parité',
+    'patientCode': 'CNT/1/26',
+    'statutPaiement': 'soldee',
+    'statutDispensation': 'en_attente',
+    'medicaments': [
+      {'produitId': pharma['id'], 'produit': pharma['designation'], 'quantite': 1, 'posologie': '1/j', 'voie': 'orale'},
+      {'produitId': pharma['id'], 'produit': pharma['designation'], 'quantite': 1, 'posologie': '1/j', 'voie': 'parenterale'},
+    ],
+  });
+
   Future<Parite?> mesurer(WidgetTester t, String id, String role) async {
     final f = fiche(id);
     if (f == null || f['acces'] != 'ouvert') return null;

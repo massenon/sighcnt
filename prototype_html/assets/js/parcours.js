@@ -1488,9 +1488,14 @@
   function verifierStock(ordonnanceId) {
     var ord = col('ordonnances').get(ordonnanceId);
     if (!ord) throw new Error('Ordonnance introuvable.');
+    /* RG-03 : le CUMUL des lignes d'un même produit est contrôlé — deux lignes de 5 sur un stock de 8 passaient chacune seule et laissaient
+       un stock NÉGATIF (écart E42, corrigé le 30/10/2026). `disponible` est ce qui reste APRÈS les lignes précédentes du même produit. */
+    var prises = {};
     return (ord.medicaments || []).map(function (l) {
       var prod = produitParId(l.produitId);
-      var dispo = prod ? (prod.stockDetail != null ? prod.stockDetail : prod.stock) : 0;
+      var total = prod ? (prod.stockDetail != null ? prod.stockDetail : prod.stock) : 0;
+      var dispo = total - (prises[l.produitId] || 0);
+      if (prod) prises[l.produitId] = (prises[l.produitId] || 0) + l.quantite;
       return { ligne: l, produit: prod, disponible: dispo, suffisant: prod && dispo >= l.quantite };
     });
   }
@@ -1540,7 +1545,8 @@
       });
       var val = valoriserSortie(prod, x.ligne.quantite);
       return col('mouvements').insert({
-        reference: C.nextRef('M', 6),
+        /* Série lue sur les mouvements EXISTANTS, jamais sur un compteur de page qui repart à 1 à chaque chargement (écart E41b, cf. E8). */
+        reference: C.referenceSuivante('M', 6, col('mouvements').all()),
         date: new Date().toISOString(),
         produitId: prod.id, produit: prod.designation,
         type: 'sortie', typeLabel: 'Sortie',
