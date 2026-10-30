@@ -1,0 +1,1189 @@
+{
+ "_doc": "m1-externe : jeu posé, puis créations",
+ "jour": "2026-10-30",
+ "analysesCatalogue": [
+  {
+   "code": "L01",
+   "designation": "AKOP",
+   "categorie": "Parasitologie",
+   "echantillon": "Selles",
+   "delai": "24 h",
+   "prix": 2000
+  },
+  {
+   "code": "L02",
+   "designation": "ASLO",
+   "categorie": "Sérologie",
+   "echantillon": "Sang",
+   "delai": "24 h",
+   "prix": 4000
+  },
+  {
+   "code": "L03",
+   "designation": "AZOTEMIE (UREMIE)",
+   "categorie": "Biochimie",
+   "echantillon": "Sang",
+   "delai": "4 h",
+   "prix": 2500
+  },
+  {
+   "code": "L04",
+   "designation": "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+   "categorie": "Biochimie",
+   "echantillon": "Sang",
+   "delai": "4 h",
+   "prix": 3500
+  }
+ ],
+ "examensImagerie": [
+  {
+   "code": "IMG-ECHO-PEL",
+   "label": "Échographie pelvienne",
+   "tarifCode": null
+  },
+  {
+   "code": "IMG-ECHO-ABD",
+   "label": "Échographie abdominale",
+   "tarifCode": null
+  },
+  {
+   "code": "IMG-ECHO-ABP",
+   "label": "Échographie abdomino-pelvienne",
+   "tarifCode": null
+  }
+ ],
+ "servicesDemandeurs": [
+  "Maternité",
+  "Médecine",
+  "Médecine et spécialité"
+ ],
+ "niveauxUrgence": [
+  {
+   "id": "aucune",
+   "label": "Examen courant"
+  },
+  {
+   "id": "examen",
+   "label": "Un examen urgent"
+  },
+  {
+   "id": "bilan",
+   "label": "Bilan entier en urgence"
+  }
+ ],
+ "assureurs": [
+  "AFRICAINE DES ASSURANCES",
+  "NSIA ASSURANCE",
+  "OLEA ASSURANCE"
+ ],
+ "registre": {
+  "kpis": [
+   [
+    "Demandes externes",
+    "6"
+   ],
+   [
+    "En attente de caisse",
+    "1"
+   ],
+   [
+    "Résultats rendus",
+    "1"
+   ],
+   [
+    "Patients externes",
+    "2"
+   ]
+  ],
+  "onglets": [
+   "Demandes — analyses (6)",
+   "Demandes — maternité",
+   "Demandes — hospitalisation",
+   "Demandes — imagerie médicale (4)",
+   "Résultats (2)"
+  ],
+  "entetes": [
+   "N°",
+   "DATE",
+   "PATIENT",
+   "EXAMEN",
+   "SERVICE DEMANDEUR",
+   "PRESCRIPTEUR EXTÉRIEUR",
+   "ÉTAT",
+   "ACTIONS"
+  ],
+  "lignes": [
+   [
+    "LAB-00006",
+    "06/08/2026",
+    "EXT1 Un CNT/901/26",
+    "NFS",
+    "Hospitalisation et soins",
+    "Dr Ext",
+    "À saisir",
+    ""
+   ],
+   [
+    "LAB-00005",
+    "05/08/2026",
+    "EXT2 Deux CNT/902/26",
+    "NFS",
+    "Maternité",
+    "Dr Ext",
+    "Résultat rendu",
+    ""
+   ],
+   [
+    "LAB-00004",
+    "04/08/2026",
+    "EXT1 Un CNT/901/26",
+    "NFS",
+    "—",
+    "Dr Ext",
+    "À saisir",
+    ""
+   ],
+   [
+    "LAB-00003",
+    "03/08/2026",
+    "EXT1 Un CNT/901/26",
+    "NFS",
+    "—",
+    "Dr Ext",
+    "Échantillon non parvenu",
+    ""
+   ],
+   [
+    "LAB-00002",
+    "02/08/2026",
+    "EXT1 Un CNT/901/26",
+    "NFS",
+    "—",
+    "Dr Ext",
+    "Échantillon non parvenu",
+    ""
+   ],
+   [
+    "LAB-00001",
+    "01/08/2026",
+    "EXT1 Un CNT/901/26",
+    "NFS",
+    "—",
+    "Dr Ext",
+    "En attente de caisse",
+    ""
+   ]
+  ],
+  "boutonsLigne": [
+   [
+    "Voir la facture à la caisse",
+    "Saisir le résultat (laboratoire)",
+    "Ouvrir le dossier du patient"
+   ],
+   [
+    "Voir la facture à la caisse",
+    "Voir le résultat",
+    "Ouvrir le dossier du patient"
+   ],
+   [
+    "Voir la facture à la caisse",
+    "Saisir le résultat (laboratoire)",
+    "Ouvrir le dossier du patient"
+   ],
+   [
+    "Voir la facture à la caisse",
+    "Échantillon non parvenu au laboratoire. Le prélèvement puis l’acheminement doivent précéder la saisie.",
+    "Ouvrir le dossier du patient"
+   ],
+   [
+    "Voir la facture à la caisse",
+    "Échantillon non parvenu au laboratoire. Le prélèvement puis l’acheminement doivent précéder la saisie.",
+    "Ouvrir le dossier du patient"
+   ],
+   [
+    "Voir la facture à la caisse",
+    "Analyse non réglée. Le patient doit passer à la CAISSE ; le biologiste ne saisit qu’un examen payé.",
+    "Ouvrir le dossier du patient"
+   ]
+  ],
+  "parOnglet": {
+   "Demandes — maternité": {
+    "lignes": [
+     [
+      "LAB-00005",
+      "EXT2 Deux CNT/902/26",
+      "Résultat rendu"
+     ],
+     [
+      "IME-00002",
+      "EXT1 Un CNT/901/26",
+      "À exécuter"
+     ]
+    ],
+    "entetes": [
+     "N°",
+     "DATE",
+     "PATIENT",
+     "EXAMEN",
+     "SERVICE DEMANDEUR",
+     "PRESCRIPTEUR EXTÉRIEUR",
+     "ÉTAT",
+     "ACTIONS"
+    ],
+    "boutons": [
+     [
+      "Voir la facture à la caisse",
+      "Voir le résultat",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Saisir le compte rendu (poste d’imagerie)",
+      "Ouvrir le dossier du patient"
+     ]
+    ]
+   },
+   "Demandes — hospitalisation": {
+    "lignes": [
+     [
+      "LAB-00006",
+      "EXT1 Un CNT/901/26",
+      "À saisir"
+     ],
+     [
+      "IME-00004",
+      "EXT1 Un CNT/901/26",
+      "Compte rendu rendu"
+     ]
+    ],
+    "entetes": [
+     "N°",
+     "DATE",
+     "PATIENT",
+     "EXAMEN",
+     "SERVICE DEMANDEUR",
+     "PRESCRIPTEUR EXTÉRIEUR",
+     "ÉTAT",
+     "ACTIONS"
+    ],
+    "boutons": [
+     [
+      "Voir la facture à la caisse",
+      "Saisir le résultat (laboratoire)",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Voir le résultat",
+      "Ouvrir le dossier du patient"
+     ]
+    ]
+   },
+   "Demandes — imagerie": {
+    "lignes": [
+     [
+      "IME-00004",
+      "EXT1 Un CNT/901/26",
+      "Compte rendu rendu"
+     ],
+     [
+      "IME-00003",
+      "EXT1 Un CNT/901/26",
+      "Exécuté — CR à rendre"
+     ],
+     [
+      "IME-00002",
+      "EXT1 Un CNT/901/26",
+      "À exécuter"
+     ],
+     [
+      "IME-00001",
+      "EXT1 Un CNT/901/26",
+      "En attente de caisse"
+     ]
+    ],
+    "entetes": [
+     "N°",
+     "DATE",
+     "PATIENT",
+     "EXAMEN D’IMAGERIE",
+     "SERVICE DEMANDEUR",
+     "PRESCRIPTEUR EXTÉRIEUR",
+     "ÉTAT",
+     "ACTIONS"
+    ],
+    "boutons": [
+     [
+      "Voir le résultat",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Saisir le compte rendu (poste d’imagerie)",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Saisir le compte rendu (poste d’imagerie)",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Examen non réglé. Le patient doit passer à la CAISSE ; l’échographiste ne saisit qu’un examen payé.",
+      "Ouvrir le dossier du patient"
+     ]
+    ]
+   },
+   "Résultats": {
+    "lignes": [
+     [
+      "LAB-00006",
+      "EXT1 Un CNT/901/26",
+      "À saisir"
+     ],
+     [
+      "LAB-00005",
+      "EXT2 Deux CNT/902/26",
+      "Résultat rendu"
+     ],
+     [
+      "LAB-00004",
+      "EXT1 Un CNT/901/26",
+      "À saisir"
+     ],
+     [
+      "IME-00004",
+      "EXT1 Un CNT/901/26",
+      "Compte rendu rendu"
+     ],
+     [
+      "LAB-00003",
+      "EXT1 Un CNT/901/26",
+      "Échantillon non parvenu"
+     ],
+     [
+      "IME-00003",
+      "EXT1 Un CNT/901/26",
+      "Exécuté — CR à rendre"
+     ],
+     [
+      "LAB-00002",
+      "EXT1 Un CNT/901/26",
+      "Échantillon non parvenu"
+     ],
+     [
+      "IME-00002",
+      "EXT1 Un CNT/901/26",
+      "À exécuter"
+     ],
+     [
+      "LAB-00001",
+      "EXT1 Un CNT/901/26",
+      "En attente de caisse"
+     ],
+     [
+      "IME-00001",
+      "EXT1 Un CNT/901/26",
+      "En attente de caisse"
+     ]
+    ],
+    "entetes": [
+     "N°",
+     "DATE",
+     "PATIENT",
+     "EXAMEN",
+     "SERVICE DEMANDEUR",
+     "PRESCRIPTEUR EXTÉRIEUR",
+     "ÉTAT",
+     "ACTIONS"
+    ],
+    "boutons": [
+     [
+      "Voir la facture à la caisse",
+      "Saisir le résultat (laboratoire)",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Voir la facture à la caisse",
+      "Voir le résultat",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Voir la facture à la caisse",
+      "Saisir le résultat (laboratoire)",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Voir le résultat",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Voir la facture à la caisse",
+      "Échantillon non parvenu au laboratoire. Le prélèvement puis l’acheminement doivent précéder la saisie.",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Saisir le compte rendu (poste d’imagerie)",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Voir la facture à la caisse",
+      "Échantillon non parvenu au laboratoire. Le prélèvement puis l’acheminement doivent précéder la saisie.",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Saisir le compte rendu (poste d’imagerie)",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Voir la facture à la caisse",
+      "Analyse non réglée. Le patient doit passer à la CAISSE ; le biologiste ne saisit qu’un examen payé.",
+      "Ouvrir le dossier du patient"
+     ],
+     [
+      "Examen non réglé. Le patient doit passer à la CAISSE ; l’échographiste ne saisit qu’un examen payé.",
+      "Ouvrir le dossier du patient"
+     ]
+    ]
+   }
+  }
+ },
+ "creations": [
+  {
+   "nom": "deux analyses, patient sans assurance",
+   "saisie": {
+    "nom": "Gado",
+    "prenom": "Issa",
+    "sexe": "M",
+    "naissanceConnue": "age",
+    "age": "41",
+    "telephone": "97000000",
+    "residence": "Boriyoure",
+    "prescripteur": "Dr HOUNSOU Rémi",
+    "urgence": "aucune",
+    "nature": "analyses",
+    "analyses": [
+     "L01",
+     "L02"
+    ]
+   },
+   "patients": [
+    {
+     "statut": "actif",
+     "code": "CNT/1098/26",
+     "nom": "GADO",
+     "prenom": "Issa",
+     "sexe": "M",
+     "dateNaissance": null,
+     "age": 41,
+     "ageReferenceLe": "2026-10-30",
+     "telephone": "97000000",
+     "adresse": "Boriyoure",
+     "quartier": "Boriyoure",
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — accueil",
+     "prescripteurExterieur": "Dr HOUNSOU Rémi",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ],
+   "demandes": [
+    {
+     "statut": "actif",
+     "reference": "LAB-00002",
+     "codeAnalyse": "00002-2026",
+     "patientId": "PATxmvvhuous6vw1p",
+     "patientCode": "CNT/1098/26",
+     "patient": "GADO Issa",
+     "analyseCode": "L02",
+     "analyse": "ASLO",
+     "categorie": "Sérologie",
+     "echantillon": "Sang",
+     "delai": "24 h",
+     "prix": 4000,
+     "dateHeure": "2026-10-30T21:38:19.348Z",
+     "prescripteur": "Dr HOUNSOU Rémi",
+     "laborantin": null,
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "origine": "accueil-externe",
+     "origineDemande": "externe",
+     "serviceDemandeur": null,
+     "secteurDemandeur": null,
+     "indication": null,
+     "hospitalise": false,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvhuout2u1ac",
+     "factureNumero": "FE-2026-00231"
+    },
+    {
+     "statut": "actif",
+     "reference": "LAB-00001",
+     "codeAnalyse": "00001-2026",
+     "patientId": "PATxmvvhuous6vw1p",
+     "patientCode": "CNT/1098/26",
+     "patient": "GADO Issa",
+     "analyseCode": "L01",
+     "analyse": "AKOP",
+     "categorie": "Parasitologie",
+     "echantillon": "Selles",
+     "delai": "24 h",
+     "prix": 2000,
+     "dateHeure": "2026-10-30T21:38:19.348Z",
+     "prescripteur": "Dr HOUNSOU Rémi",
+     "laborantin": null,
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "origine": "accueil-externe",
+     "origineDemande": "externe",
+     "serviceDemandeur": null,
+     "secteurDemandeur": null,
+     "indication": null,
+     "hospitalise": false,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvhuout2u1ac",
+     "factureNumero": "FE-2026-00231"
+    }
+   ],
+   "imagerie": [],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "prixUnitaireNet": 2000,
+       "montantBrut": 2000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 2000,
+       "demandeId": "DEMxmvvhuoutcsmi5",
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      },
+      {
+       "id": "L002",
+       "categorie": "analyse",
+       "designation": "ASLO",
+       "quantite": 1,
+       "prixUnitaire": 4000,
+       "prixUnitaireNet": 4000,
+       "montantBrut": 4000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 4000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 4000,
+       "demandeId": "DEMxmvvhuoutpu4v6",
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FE-2026-00231",
+     "numeroMecef": null,
+     "patientId": "PATxmvvhuous6vw1p",
+     "patient": "GADO Issa",
+     "patientCode": "CNT/1098/26",
+     "date": "2026-10-30",
+     "type": "Analyses — patient externe",
+     "montantHT": 6000,
+     "montantTTC": 6000,
+     "montantBrut": 6000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 6000,
+     "montantPaye": 0,
+     "reliquat": 6000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "origineDemande": "externe",
+     "prescripteurExterieur": "Dr HOUNSOU Rémi"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "prelevement",
+     "poste": "laboratoire",
+     "libelle": "Patient externe — GADO Issa",
+     "detail": "2 examen(s)",
+     "reference": "FE-2026-00231",
+     "factureId": "FACxmvvhuout2u1ac",
+     "patientId": "PATxmvvhuous6vw1p",
+     "patient": "GADO Issa",
+     "creeLe": "2026-10-30T21:38:19.348Z"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Patient externe — GADO Issa",
+     "detail": "2 examen(s) — 6 000",
+     "reference": "FE-2026-00231",
+     "factureId": "FACxmvvhuout2u1ac",
+     "patientId": "PATxmvvhuous6vw1p",
+     "patient": "GADO Issa",
+     "montant": 6000,
+     "creeLe": "2026-10-30T21:38:19.348Z"
+    }
+   ],
+   "toasts": [],
+   "modale": "Demande enregistrée GADO Issa — CNT/1098/26 Dossier ouvert CNT/1098/26 Examens demandés 2 Facture FE-2026-00231 À régler à la caisse 6 000 FCFA Le patient se présente maintenant à la caisse avec son bulletin. Le prélèvement n’aura lieu qu’après règlement — et seuls les examens réglés seront transmis au laboratoire. Fermer Imprimer le bulletin Aller à la caisse"
+  },
+  {
+   "nom": "assuré à 80 % : la part assureur suit le taux",
+   "saisie": {
+    "nom": "Assure",
+    "prenom": "Issa",
+    "sexe": "M",
+    "naissanceConnue": "age",
+    "age": "41",
+    "telephone": "97000000",
+    "residence": "Boriyoure",
+    "prescripteur": "Dr HOUNSOU Rémi",
+    "urgence": "aucune",
+    "nature": "analyses",
+    "analyses": [
+     "L03"
+    ],
+    "assureur": "AFRICAINE DES ASSURANCES",
+    "taux": 80,
+    "indication": "Fièvre",
+    "serviceDemandeur": "Médecine"
+   },
+   "patients": [
+    {
+     "statut": "actif",
+     "code": "CNT/1099/26",
+     "nom": "ASSURE",
+     "prenom": "Issa",
+     "sexe": "M",
+     "dateNaissance": null,
+     "age": 41,
+     "ageReferenceLe": "2026-10-30",
+     "telephone": "97000000",
+     "adresse": "Boriyoure",
+     "quartier": "Boriyoure",
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — accueil",
+     "prescripteurExterieur": "Dr HOUNSOU Rémi",
+     "assure": true,
+     "assureur": "AFRICAINE DES ASSURANCES",
+     "tauxPriseEnCharge": 80
+    }
+   ],
+   "demandes": [
+    {
+     "statut": "actif",
+     "reference": "LAB-00003",
+     "codeAnalyse": "00003-2026",
+     "patientId": "PATxmvvhup77k6815",
+     "patientCode": "CNT/1099/26",
+     "patient": "ASSURE Issa",
+     "analyseCode": "L03",
+     "analyse": "AZOTEMIE (UREMIE)",
+     "categorie": "Biochimie",
+     "echantillon": "Sang",
+     "delai": "4 h",
+     "prix": 2500,
+     "dateHeure": "2026-10-30T21:38:19.795Z",
+     "prescripteur": "Dr HOUNSOU Rémi",
+     "laborantin": null,
+     "urgent": false,
+     "etatAnalyse": "en_attente",
+     "origine": "accueil-externe",
+     "origineDemande": "externe",
+     "serviceDemandeur": "Médecine",
+     "secteurDemandeur": null,
+     "indication": "Fièvre",
+     "hospitalise": false,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvhup78fkhn2",
+     "factureNumero": "FE-2026-00232"
+    }
+   ],
+   "imagerie": [],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "analyse",
+       "designation": "AZOTEMIE (UREMIE)",
+       "quantite": 1,
+       "prixUnitaire": 2500,
+       "prixUnitaireNet": 2500,
+       "montantBrut": 2500,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 2500,
+       "partAssureur": 2000,
+       "partPersonnel": 0,
+       "partPatient": 500,
+       "demandeId": "DEMxmvvhup783sckd",
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FE-2026-00232",
+     "numeroMecef": null,
+     "patientId": "PATxmvvhup77k6815",
+     "patient": "ASSURE Issa",
+     "patientCode": "CNT/1099/26",
+     "date": "2026-10-30",
+     "type": "Analyses — patient externe",
+     "montantHT": 2500,
+     "montantTTC": 2500,
+     "montantBrut": 2500,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": "AFRICAINE DES ASSURANCES",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 2000,
+     "partPatient": 500,
+     "montantPaye": 0,
+     "reliquat": 500,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "origineDemande": "externe",
+     "prescripteurExterieur": "Dr HOUNSOU Rémi"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "prelevement",
+     "poste": "laboratoire",
+     "libelle": "Patient externe — ASSURE Issa",
+     "detail": "1 examen(s)",
+     "reference": "FE-2026-00232",
+     "factureId": "FACxmvvhup78fkhn2",
+     "patientId": "PATxmvvhup77k6815",
+     "patient": "ASSURE Issa",
+     "creeLe": "2026-10-30T21:38:19.795Z"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Patient externe — ASSURE Issa",
+     "detail": "1 examen(s) — 2 500",
+     "reference": "FE-2026-00232",
+     "factureId": "FACxmvvhup78fkhn2",
+     "patientId": "PATxmvvhup77k6815",
+     "patient": "ASSURE Issa",
+     "montant": 2500,
+     "creeLe": "2026-10-30T21:38:19.795Z"
+    }
+   ],
+   "toasts": [],
+   "modale": "Demande enregistrée ASSURE Issa — CNT/1099/26 Dossier ouvert CNT/1099/26 Examens demandés 1 Facture FE-2026-00232 À régler à la caisse 500 FCFA Le patient se présente maintenant à la caisse avec son bulletin. Le prélèvement n’aura lieu qu’après règlement — et seuls les examens réglés seront transmis au laboratoire. Fermer Imprimer le bulletin Aller à la caisse"
+  },
+  {
+   "nom": "bilan urgent",
+   "saisie": {
+    "nom": "Urgent",
+    "prenom": "Issa",
+    "sexe": "M",
+    "naissanceConnue": "age",
+    "age": "41",
+    "telephone": "97000000",
+    "residence": "Boriyoure",
+    "prescripteur": "Dr HOUNSOU Rémi",
+    "urgence": "bilan",
+    "nature": "analyses",
+    "analyses": [
+     "L01"
+    ]
+   },
+   "patients": [
+    {
+     "statut": "actif",
+     "code": "CNT/1100/26",
+     "nom": "URGENT",
+     "prenom": "Issa",
+     "sexe": "M",
+     "dateNaissance": null,
+     "age": 41,
+     "ageReferenceLe": "2026-10-30",
+     "telephone": "97000000",
+     "adresse": "Boriyoure",
+     "quartier": "Boriyoure",
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — accueil",
+     "prescripteurExterieur": "Dr HOUNSOU Rémi",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ],
+   "demandes": [
+    {
+     "statut": "actif",
+     "reference": "LAB-00004",
+     "codeAnalyse": "00004-2026",
+     "patientId": "PATxmvvhuph7a2ole",
+     "patientCode": "CNT/1100/26",
+     "patient": "URGENT Issa",
+     "analyseCode": "L01",
+     "analyse": "AKOP",
+     "categorie": "Parasitologie",
+     "echantillon": "Selles",
+     "delai": "24 h",
+     "prix": 2000,
+     "dateHeure": "2026-10-30T21:38:20.155Z",
+     "prescripteur": "Dr HOUNSOU Rémi",
+     "laborantin": null,
+     "urgent": true,
+     "etatAnalyse": "en_attente",
+     "origine": "accueil-externe",
+     "origineDemande": "externe",
+     "serviceDemandeur": null,
+     "secteurDemandeur": null,
+     "indication": null,
+     "hospitalise": false,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvhuph7p5n5j",
+     "factureNumero": "FE-2026-00233"
+    }
+   ],
+   "imagerie": [],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "prixUnitaireNet": 2000,
+       "montantBrut": 2000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 2000,
+       "demandeId": "DEMxmvvhuph7h8q2m",
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": null,
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FE-2026-00233",
+     "numeroMecef": null,
+     "patientId": "PATxmvvhuph7a2ole",
+     "patient": "URGENT Issa",
+     "patientCode": "CNT/1100/26",
+     "date": "2026-10-30",
+     "type": "Analyses — patient externe",
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantBrut": 2000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 0,
+     "reliquat": 2000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "origineDemande": "externe",
+     "prescripteurExterieur": "Dr HOUNSOU Rémi"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "prelevement",
+     "poste": "laboratoire",
+     "libelle": "Patient externe — URGENT Issa",
+     "detail": "1 examen(s)",
+     "reference": "FE-2026-00233",
+     "factureId": "FACxmvvhuph7p5n5j",
+     "patientId": "PATxmvvhuph7a2ole",
+     "patient": "URGENT Issa",
+     "creeLe": "2026-10-30T21:38:20.155Z"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Patient externe — URGENT Issa",
+     "detail": "1 examen(s) — 2 000",
+     "reference": "FE-2026-00233",
+     "factureId": "FACxmvvhuph7p5n5j",
+     "patientId": "PATxmvvhuph7a2ole",
+     "patient": "URGENT Issa",
+     "montant": 2000,
+     "creeLe": "2026-10-30T21:38:20.155Z"
+    }
+   ],
+   "toasts": [],
+   "modale": "Demande enregistrée URGENT Issa — CNT/1100/26 Dossier ouvert CNT/1100/26 Examens demandés 1 Facture FE-2026-00233 À régler à la caisse 2 000 FCFA Le patient se présente maintenant à la caisse avec son bulletin. Le prélèvement n’aura lieu qu’après règlement — et seuls les examens réglés seront transmis au laboratoire. Fermer Imprimer le bulletin Aller à la caisse"
+  },
+  {
+   "nom": "imagerie : une échographie",
+   "saisie": {
+    "nom": "Echo",
+    "prenom": "Issa",
+    "sexe": "M",
+    "naissanceConnue": "age",
+    "age": "41",
+    "telephone": "97000000",
+    "residence": "Boriyoure",
+    "prescripteur": "Dr HOUNSOU Rémi",
+    "urgence": "aucune",
+    "nature": "imagerie",
+    "examens": [
+     "IMG-ECHO-PEL"
+    ],
+    "serviceDemandeur": "Maternité"
+   },
+   "patients": [
+    {
+     "statut": "actif",
+     "code": "CNT/1101/26",
+     "nom": "ECHO",
+     "prenom": "Issa",
+     "sexe": "M",
+     "dateNaissance": null,
+     "age": 41,
+     "ageReferenceLe": "2026-10-30",
+     "telephone": "97000000",
+     "adresse": "Boriyoure",
+     "quartier": "Boriyoure",
+     "dateCreation": "2026-10-30",
+     "externe": true,
+     "origineDossier": "Patient externe — imagerie",
+     "prescripteurExterieur": "Dr HOUNSOU Rémi",
+     "assure": false,
+     "assureur": null,
+     "tauxPriseEnCharge": 0
+    }
+   ],
+   "demandes": [],
+   "imagerie": [
+    {
+     "statut": "demandee",
+     "reference": "IME-00001",
+     "dateHeure": "2026-10-30T21:38:20.515Z",
+     "patientId": "PATxmvvhupr7frkg5",
+     "patientCode": "CNT/1101/26",
+     "patient": "ECHO Issa",
+     "examenCode": "IMG-ECHO-PEL",
+     "examen": "Échographie pelvienne",
+     "modalite": "echographie",
+     "prescripteur": "Dr HOUNSOU Rémi",
+     "indication": "",
+     "urgent": false,
+     "secteurDemandeur": "Maternité",
+     "origine": "externe",
+     "ordonnanceId": null,
+     "ordonnanceNumero": null,
+     "dossierConsultationId": null,
+     "prix": 9000,
+     "motifTarif": null,
+     "bloqueParPaiement": true,
+     "factureId": "FACxmvvhupr7w8ezj",
+     "factureNumero": "FI-2026-00234"
+    }
+   ],
+   "factures": [
+    {
+     "statut": "actif",
+     "lignes": [
+      {
+       "id": "L001",
+       "categorie": "imagerie",
+       "designation": "Échographie pelvienne",
+       "quantite": 1,
+       "prixUnitaire": 9000,
+       "prixUnitaireNet": 9000,
+       "montantBrut": 9000,
+       "remise": 0,
+       "motifRemise": null,
+       "montant": 9000,
+       "partAssureur": 0,
+       "partPersonnel": 0,
+       "partPatient": 9000,
+       "demandeId": null,
+       "produitId": null,
+       "acteCode": null,
+       "demandeImagerieId": "IMExmvvhupr78l0mi",
+       "statutPaiement": "du",
+       "montantRegle": 0,
+       "payeLe": null,
+       "payePar": null
+      }
+     ],
+     "numero": "FI-2026-00234",
+     "numeroMecef": null,
+     "patientId": "PATxmvvhupr7frkg5",
+     "patient": "ECHO Issa",
+     "patientCode": "CNT/1101/26",
+     "date": "2026-10-30",
+     "type": "Imagerie",
+     "montantHT": 9000,
+     "montantTTC": 9000,
+     "montantBrut": 9000,
+     "totalRemise": 0,
+     "partPersonnel": 0,
+     "priseEnChargePersonnel": false,
+     "personnelId": null,
+     "assureur": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 9000,
+     "montantPaye": 0,
+     "reliquat": 9000,
+     "modePaiement": null,
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente"
+    }
+   ],
+   "taches": [
+    {
+     "statut": "bloque",
+     "type": "imagerie",
+     "poste": "imagerie",
+     "libelle": "Examen d’imagerie — ECHO Issa",
+     "detail": "Échographie pelvienne",
+     "reference": "FI-2026-00234",
+     "factureId": "FACxmvvhupr7w8ezj",
+     "patientId": "PATxmvvhupr7frkg5",
+     "patient": "ECHO Issa",
+     "creeLe": "2026-10-30T21:38:20.515Z"
+    },
+    {
+     "statut": "en_attente",
+     "type": "encaissement",
+     "poste": "caisse",
+     "libelle": "Imagerie — ECHO Issa",
+     "detail": "1 examen(s) — 9 000",
+     "reference": "FI-2026-00234",
+     "factureId": "FACxmvvhupr7w8ezj",
+     "patientId": "PATxmvvhupr7frkg5",
+     "patient": "ECHO Issa",
+     "montant": 9000,
+     "creeLe": "2026-10-30T21:38:20.515Z"
+    }
+   ],
+   "toasts": [],
+   "modale": "Demande enregistrée ECHO Issa — CNT/1101/26 Dossier ouvert CNT/1101/26 Examens demandés 1 Facture FI-2026-00234 À régler à la caisse 9 000 FCFA Le patient se présente maintenant à la caisse avec son bulletin. Le prélèvement n’aura lieu qu’après règlement — et seuls les examens réglés seront transmis au laboratoire. Fermer Imprimer le bulletin Aller à la caisse"
+  },
+  {
+   "nom": "aucun examen coché : refus nommé",
+   "saisie": {
+    "nom": "Rien",
+    "prenom": "Issa",
+    "sexe": "M",
+    "naissanceConnue": "age",
+    "age": "41",
+    "telephone": "97000000",
+    "residence": "Boriyoure",
+    "prescripteur": "Dr HOUNSOU Rémi",
+    "urgence": "aucune",
+    "nature": "analyses",
+    "analyses": []
+   },
+   "patients": [],
+   "demandes": [],
+   "imagerie": [],
+   "factures": [],
+   "taches": [],
+   "toasts": [
+    "Cocher au moins un examen au catalogue. | Catalogue des analyses."
+   ],
+   "modale": "Nouvelle demande — patient externe Transcription d’une ordonnance extérieure Transcription, pas prescription. L’accueil reporte les examens portés sur l’ordonnance du médecin extérieur. Un dossier patient est ouvert, une facture part à la caisse, et le prélèvement reste bloqué tant qu’elle n’est pas réglée. IDENTITÉ DU PATIENT — OBLIGATOIRE POUR LUI REMETTRE SON RÉSULTAT Nom * Prénoms * Sexe * Masculin Féminin Date d"
+  },
+  {
+   "nom": "identité manquante : le formulaire refuse",
+   "saisie": {
+    "nature": "analyses",
+    "analyses": [
+     "L01"
+    ],
+    "prescripteur": "Dr X",
+    "urgence": "aucune"
+   },
+   "patients": [],
+   "demandes": [],
+   "imagerie": [],
+   "factures": [],
+   "taches": [],
+   "toasts": [
+    "Le formulaire comporte des erreurs."
+   ],
+   "modale": "Nouvelle demande — patient externe Transcription d’une ordonnance extérieure Transcription, pas prescription. L’accueil reporte les examens portés sur l’ordonnance du médecin extérieur. Un dossier patient est ouvert, une facture part à la caisse, et le prélèvement reste bloqué tant qu’elle n’est pas réglée. IDENTITÉ DU PATIENT — OBLIGATOIRE POUR LUI REMETTRE SON RÉSULTAT Nom * Ce champ est obligatoire. Prénoms * Ce c"
+  }
+ ],
+ "kpisApres": [
+  [
+   "Demandes externes",
+   "4"
+  ],
+  [
+   "En attente de caisse",
+   "4"
+  ],
+  [
+   "Résultats rendus",
+   "0"
+  ],
+  [
+   "Patients externes",
+   "3"
+  ]
+ ],
+ "ongletsApres": [
+  "Demandes — analyses (4)",
+  "Demandes — maternité",
+  "Demandes — hospitalisation",
+  "Demandes — imagerie médicale (1)",
+  "Résultats (0)"
+ ]
+}

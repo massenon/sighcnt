@@ -1,0 +1,788 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-m1.js — sorties des écrans M1 de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "prochainCode": {
+  "_doc": "m1-patient-nouveau : le champ « Code dossier » à l'ouverture (prochainCode)",
+  "anneeCourante": 2026,
+  "cas": [
+   {
+    "nom": "registre vide",
+    "codes": [],
+    "attendu": "CNT/1/26"
+   },
+   {
+    "nom": "nouveau format seul : plus grand rang + 1",
+    "codes": [
+     [
+      "CNT/1/26",
+      "actif"
+     ],
+     [
+      "CNT/12/26",
+      "actif"
+     ],
+     [
+      "CNT/7/26",
+      "actif"
+     ]
+    ],
+    "attendu": "CNT/13/26"
+   },
+   {
+    "nom": "ancien format seul",
+    "codes": [
+     [
+      "CNT530/26",
+      "actif"
+     ],
+     [
+      "CNT12/26",
+      "actif"
+     ]
+    ],
+    "attendu": "CNT/531/26"
+   },
+   {
+    "nom": "les deux formats se lisent ensemble",
+    "codes": [
+     [
+      "CNT/1109/26",
+      "actif"
+     ],
+     [
+      "CNT530/26",
+      "actif"
+     ],
+     [
+      "CNT/20/26",
+      "actif"
+     ]
+    ],
+    "attendu": "CNT/1110/26"
+   },
+   {
+    "nom": "une autre année est ignorée",
+    "codes": [
+     [
+      "CNT/900/25",
+      "actif"
+     ],
+     [
+      "CNT/4/26",
+      "actif"
+     ],
+     [
+      "CNT/50/27",
+      "actif"
+     ]
+    ],
+    "attendu": "CNT/5/26"
+   },
+   {
+    "nom": "un dossier archivé garde son rang (RG-01)",
+    "codes": [
+     [
+      "CNT/40/26",
+      "archive"
+     ],
+     [
+      "CNT/3/26",
+      "actif"
+     ]
+    ],
+    "attendu": "CNT/41/26"
+   },
+   {
+    "nom": "code illisible ignoré",
+    "codes": [
+     [
+      "CNT-X",
+      "actif"
+     ],
+     [
+      "CNT/8/26",
+      "actif"
+     ],
+     [
+      "",
+      "actif"
+     ],
+     [
+      "CNT//26",
+      "actif"
+     ]
+    ],
+    "attendu": "CNT/9/26"
+   }
+  ]
+ },
+ "creation": {
+  "_doc": "m1-patient-nouveau : formulaire rempli, « Ouvrir le dossier »",
+  "jour": "2026-10-30",
+  "assureur": {
+   "code": "NSIA",
+   "nom": "NSIA ASSURANCE"
+  },
+  "cas": [
+   {
+    "nom": "patient sans assurance, date de naissance connue",
+    "saisie": {
+     "nom": "Bio",
+     "prenom": "Zakari",
+     "sexe": "M",
+     "naissanceConnue": "date",
+     "dateNaissance": "1990-05-12",
+     "telephone": "97000001"
+    },
+    "codeAffiche": null,
+    "crees": [
+     {
+      "statut": "actif",
+      "code": "CNT/179/26",
+      "nom": "Bio",
+      "prenom": "Zakari",
+      "sexe": "M",
+      "dateNaissance": "1990-05-12",
+      "groupeSanguin": "",
+      "telephone": "97000001",
+      "quartier": "",
+      "adresse": "",
+      "personneAPrevenir": "",
+      "antecedents": [],
+      "antecedentsAutres": "",
+      "allergies": [],
+      "traitementEnCours": "",
+      "assureur": "",
+      "numeroPolice": "",
+      "tauxPriseEnCharge": 0,
+      "carteExpiration": "",
+      "assureurNom": null,
+      "age": "",
+      "ageReferenceLe": ""
+     }
+    ],
+    "toasts": [],
+    "differe": {
+     "message": "Dossier patient créé.",
+     "opts": {
+      "type": "success",
+      "duration": 7000,
+      "detail": "CNT/179/26"
+     }
+    },
+    "aller": [
+     "m1-patients"
+    ]
+   },
+   {
+    "nom": "âge déclaré : la date est effacée et l'âge est daté du jour",
+    "saisie": {
+     "nom": "Kora",
+     "prenom": "Zakari",
+     "sexe": "M",
+     "naissanceConnue": "age",
+     "dateNaissance": "1990-05-12",
+     "telephone": "97000001",
+     "age": "41"
+    },
+    "codeAffiche": null,
+    "crees": [
+     {
+      "statut": "actif",
+      "code": "CNT/180/26",
+      "nom": "Kora",
+      "prenom": "Zakari",
+      "sexe": "M",
+      "age": 41,
+      "groupeSanguin": "",
+      "telephone": "97000001",
+      "quartier": "",
+      "adresse": "",
+      "personneAPrevenir": "",
+      "antecedents": [],
+      "antecedentsAutres": "",
+      "allergies": [],
+      "traitementEnCours": "",
+      "assureur": "",
+      "numeroPolice": "",
+      "tauxPriseEnCharge": 0,
+      "carteExpiration": "",
+      "assureurNom": null,
+      "dateNaissance": "",
+      "ageReferenceLe": "2026-10-30"
+     }
+    ],
+    "toasts": [],
+    "differe": {
+     "message": "Dossier patient créé.",
+     "opts": {
+      "type": "success",
+      "duration": 7000,
+      "detail": "CNT/180/26"
+     }
+    },
+    "aller": [
+     "m1-patients"
+    ]
+   },
+   {
+    "nom": "assuré : le nom de la compagnie est repris du référentiel",
+    "saisie": {
+     "nom": "Assure",
+     "prenom": "Zakari",
+     "sexe": "M",
+     "naissanceConnue": "date",
+     "dateNaissance": "1990-05-12",
+     "telephone": "97000001",
+     "assureur": "NSIA",
+     "numeroPolice": "P-1",
+     "tauxPriseEnCharge": 80,
+     "carteExpiration": "2027-01-31"
+    },
+    "codeAffiche": null,
+    "crees": [
+     {
+      "statut": "actif",
+      "code": "CNT/181/26",
+      "nom": "Assure",
+      "prenom": "Zakari",
+      "sexe": "M",
+      "dateNaissance": "1990-05-12",
+      "groupeSanguin": "",
+      "telephone": "97000001",
+      "quartier": "",
+      "adresse": "",
+      "personneAPrevenir": "",
+      "antecedents": [],
+      "antecedentsAutres": "",
+      "allergies": [],
+      "traitementEnCours": "",
+      "assureur": "NSIA",
+      "numeroPolice": "P-1",
+      "tauxPriseEnCharge": 80,
+      "carteExpiration": "2027-01-31",
+      "assureurNom": "NSIA ASSURANCE",
+      "age": "",
+      "ageReferenceLe": ""
+     }
+    ],
+    "toasts": [],
+    "differe": {
+     "message": "Dossier patient créé.",
+     "opts": {
+      "type": "success",
+      "duration": 7000,
+      "detail": "CNT/181/26"
+     }
+    },
+    "aller": [
+     "m1-patients"
+    ]
+   },
+   {
+    "nom": "éléments médicaux : listes multiples",
+    "saisie": {
+     "nom": "Listes",
+     "prenom": "Zakari",
+     "sexe": "M",
+     "naissanceConnue": "date",
+     "dateNaissance": "1990-05-12",
+     "telephone": "97000001",
+     "antecedents": [
+      "Asthme",
+      "Épilepsie"
+     ],
+     "allergies": [
+      "Sulfamides"
+     ],
+     "groupeSanguin": "O+",
+     "traitementEnCours": "Salbutamol"
+    },
+    "codeAffiche": null,
+    "crees": [
+     {
+      "statut": "actif",
+      "code": "CNT/182/26",
+      "nom": "Listes",
+      "prenom": "Zakari",
+      "sexe": "M",
+      "dateNaissance": "1990-05-12",
+      "groupeSanguin": "O+",
+      "telephone": "97000001",
+      "quartier": "",
+      "adresse": "",
+      "personneAPrevenir": "",
+      "antecedents": [
+       "Asthme",
+       "Épilepsie"
+      ],
+      "antecedentsAutres": "",
+      "allergies": [
+       "Sulfamides"
+      ],
+      "traitementEnCours": "Salbutamol",
+      "assureur": "",
+      "numeroPolice": "",
+      "tauxPriseEnCharge": 0,
+      "carteExpiration": "",
+      "assureurNom": null,
+      "age": "",
+      "ageReferenceLe": ""
+     }
+    ],
+    "toasts": [],
+    "differe": {
+     "message": "Dossier patient créé.",
+     "opts": {
+      "type": "success",
+      "duration": 7000,
+      "detail": "CNT/182/26"
+     }
+    },
+    "aller": [
+     "m1-patients"
+    ]
+   },
+   {
+    "nom": "champ obligatoire vide : le formulaire refuse",
+    "saisie": {
+     "prenom": "Sans nom",
+     "sexe": "F",
+     "naissanceConnue": "date",
+     "dateNaissance": "1990-01-01",
+     "telephone": "1"
+    },
+    "codeAffiche": null,
+    "crees": [],
+    "toasts": [
+     "Le formulaire comporte des erreurs."
+    ],
+    "differe": null,
+    "aller": []
+   },
+   {
+    "nom": "date de naissance dans le futur : refus",
+    "saisie": {
+     "nom": "Futur",
+     "prenom": "Zakari",
+     "sexe": "M",
+     "naissanceConnue": "date",
+     "dateNaissance": "2999-01-01",
+     "telephone": "97000001"
+    },
+    "codeAffiche": null,
+    "crees": [],
+    "toasts": [
+     "Le formulaire comporte des erreurs."
+    ],
+    "differe": null,
+    "aller": []
+   },
+   {
+    "nom": "le code a été pris entre-temps : refus nommé, rien d'écrit",
+    "saisie": {
+     "nom": "Bio",
+     "prenom": "Zakari",
+     "sexe": "M",
+     "naissanceConnue": "date",
+     "dateNaissance": "1990-05-12",
+     "telephone": "97000001"
+    },
+    "codeReserve": "CNT/183/26",
+    "crees": [],
+    "toasts": [
+     "Ce code dossier est déjà attribué. Recharger la page pour obtenir le suivant."
+    ],
+    "differe": null,
+    "aller": []
+   }
+  ]
+ },
+ "repertoire": {
+  "_doc": "m1-patients sur un jeu posé",
+  "jeu": [
+   {
+    "id": "RCNT126",
+    "statut": "actif",
+    "code": "CNT/1/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "F",
+    "dateNaissance": "1990-01-01",
+    "telephone": "9/26",
+    "quartier": "Tchirimina",
+    "dateCreation": "2026-05-01"
+   },
+   {
+    "id": "RCNT226",
+    "statut": "actif",
+    "code": "CNT/2/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "M",
+    "dateNaissance": "1990-01-01",
+    "telephone": "9/26",
+    "quartier": "Boriyoure",
+    "dateCreation": "2026-05-01"
+   },
+   {
+    "id": "RCNT326",
+    "statut": "actif",
+    "code": "CNT/3/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "F",
+    "dateNaissance": "1990-01-01",
+    "telephone": "9/26",
+    "quartier": "Tchirimina",
+    "dateCreation": "2025-02-01",
+    "assureur": "NSIA",
+    "assureurNom": "NSIA ASSURANCE",
+    "souscripteur": "ACME",
+    "carteExpiration": "2027-12-31"
+   },
+   {
+    "id": "RCNT426",
+    "statut": "actif",
+    "code": "CNT/4/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "F",
+    "dateNaissance": "1990-01-01",
+    "telephone": "9/26",
+    "quartier": "Tchirimina",
+    "dateCreation": "2026-05-01",
+    "assureur": "SOS",
+    "assureurNom": "SOS ASSURANCE",
+    "carteExpiration": "2025-01-01"
+   },
+   {
+    "id": "RCNT526",
+    "statut": "actif",
+    "code": "CNT/5/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "M",
+    "dateNaissance": "1990-01-01",
+    "telephone": "9/26",
+    "quartier": "Boriyoure",
+    "dateCreation": "2026-05-01",
+    "assureur": "OLEA",
+    "assureurNom": "OLEA ASSURANCE",
+    "carteExpiration": "2026-11-02"
+   },
+   {
+    "id": "RCNT626",
+    "statut": "actif",
+    "code": "CNT/6/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "F",
+    "dateNaissance": "1990-01-01",
+    "telephone": "9/26",
+    "quartier": "Tchirimina",
+    "dateCreation": "2026-05-01",
+    "assureur": "OLEA",
+    "assureurNom": "OLEA ASSURANCE",
+    "carteExpiration": "2026-10-29"
+   },
+   {
+    "id": "RCNT726",
+    "statut": "archive",
+    "code": "CNT/7/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "F",
+    "dateNaissance": "1990-01-01",
+    "telephone": "9/26",
+    "quartier": "Tchirimina",
+    "dateCreation": "2026-05-01"
+   },
+   {
+    "id": "RCNT826",
+    "statut": "actif",
+    "code": "CNT/8/26",
+    "nom": "NOM/26",
+    "prenom": "Prénom",
+    "sexe": "F",
+    "dateNaissance": "",
+    "telephone": "9/26",
+    "quartier": "Tchirimina",
+    "dateCreation": "2026-05-01",
+    "age": 30,
+    "ageReferenceLe": "2020-01-01"
+   }
+  ],
+  "jour": "2026-10-30",
+  "kpis": [
+   [
+    "Dossiers actifs",
+    "7"
+   ],
+   [
+    "Créés en 2026",
+    "6"
+   ],
+   [
+    "Patients assurés",
+    "4",
+    "57.1 % du répertoire"
+   ],
+   [
+    "Cartes expirées",
+    "2",
+    "Facturation intégrale (RG-09)"
+   ]
+  ],
+  "onglets": [
+   "Tous les patients7",
+   "Archivés1"
+  ],
+  "lignes": [
+   [
+    "",
+    "CNT/1/26",
+    "NP NOM/26 Prénom Femme — 36 ans",
+    "9/26",
+    "Tchirimina",
+    "—",
+    "Non assuré",
+    "01/05/2026",
+    ""
+   ],
+   [
+    "",
+    "CNT/2/26",
+    "NP NOM/26 Prénom Homme — 36 ans",
+    "9/26",
+    "Boriyoure",
+    "—",
+    "Non assuré",
+    "01/05/2026",
+    ""
+   ],
+   [
+    "",
+    "CNT/3/26",
+    "NP NOM/26 Prénom Femme — 36 ans",
+    "9/26",
+    "Tchirimina",
+    "—",
+    "NSIA Carte valide ACME",
+    "01/02/2025",
+    ""
+   ],
+   [
+    "",
+    "CNT/4/26",
+    "NP NOM/26 Prénom Femme — 36 ans",
+    "9/26",
+    "Tchirimina",
+    "—",
+    "SOS CARTE NON VALIDE",
+    "01/05/2026",
+    ""
+   ],
+   [
+    "",
+    "CNT/5/26",
+    "NP NOM/26 Prénom Homme — 36 ans",
+    "9/26",
+    "Boriyoure",
+    "—",
+    "OLEA Carte valide",
+    "01/05/2026",
+    ""
+   ],
+   [
+    "",
+    "CNT/6/26",
+    "NP NOM/26 Prénom Femme — 36 ans",
+    "9/26",
+    "Tchirimina",
+    "—",
+    "OLEA CARTE NON VALIDE",
+    "01/05/2026",
+    ""
+   ],
+   [
+    "",
+    "CNT/8/26",
+    "NP NOM/26 Prénom Femme — 36 ans",
+    "9/26",
+    "Tchirimina",
+    "—",
+    "Non assuré",
+    "01/05/2026",
+    ""
+   ]
+  ],
+  "entetes": [
+   "",
+   "CODE DOSSIER",
+   "PATIENT",
+   "TÉLÉPHONE",
+   "QUARTIER",
+   "GROUPE",
+   "ASSURANCE",
+   "CRÉÉ LE",
+   "ACTIONS"
+  ],
+  "filtresDisponibles": [
+   {
+    "nom": "Sexe",
+    "options": [
+     "Sexe",
+     "Masculin",
+     "Féminin"
+    ]
+   },
+   {
+    "nom": "Couverture",
+    "options": [
+     "Couverture",
+     "Assurés",
+     "Non assurés",
+     "Carte expirée"
+    ]
+   },
+   {
+    "nom": "Quartier",
+    "options": [
+     "Quartier",
+     "Boukoumbé",
+     "Bérécingou",
+     "Kantaborifa",
+     "Kotopounga",
+     "Kouandé",
+     "Ourbouga",
+     "Peporiyakou",
+     "Perma",
+     "Santa",
+     "Tchirimina",
+     "Toucountouna",
+     "Yimporima",
+     "undefined"
+    ]
+   }
+  ],
+  "filtres": [
+   {
+    "filtre": "Sexe",
+    "valeur": "Masculin",
+    "codes": [
+     "",
+     ""
+    ]
+   },
+   {
+    "filtre": "Sexe",
+    "valeur": "Féminin",
+    "codes": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   {
+    "filtre": "Couverture",
+    "valeur": "Assurés",
+    "codes": [
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   {
+    "filtre": "Couverture",
+    "valeur": "Non assurés",
+    "codes": [
+     "",
+     "",
+     ""
+    ]
+   },
+   {
+    "filtre": "Couverture",
+    "valeur": "Carte expirée",
+    "codes": [
+     "",
+     ""
+    ]
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Boukoumbé",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Bérécingou",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Kantaborifa",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Kotopounga",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Kouandé",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Ourbouga",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Peporiyakou",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Perma",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Santa",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Tchirimina",
+    "codes": [
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Toucountouna",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "Yimporima",
+    "codes": []
+   },
+   {
+    "filtre": "Quartier",
+    "valeur": "undefined",
+    "codes": []
+   }
+  ]
+ }
+}

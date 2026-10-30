@@ -181,7 +181,7 @@
     /* --- Le laboratoire : demandes établies d'office ----------------------- */
     var demandes = analyses.map(function (a) {
       return col('demandesAnalyses').insert({
-        reference: C.nextRef('LAB-', 5),
+        reference: C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all()),
         codeAnalyse: codeAnalyse(date),
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         analyseCode: a.code, analyse: a.designation, categorie: a.categorie,
@@ -613,7 +613,7 @@
     /* Les demandes, marquées EXTERNE : le résultat se remet au patient. */
     var demandes = analyses.map(function (a) {
       return S.collection('demandesAnalyses').insert({
-        reference: C.nextRef('LAB-', 5),
+        reference: C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all()),
         codeAnalyse: codeAnalyse(date),
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         analyseCode: a.code, analyse: a.designation, categorie: a.categorie,

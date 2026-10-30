@@ -49,3 +49,8 @@ export 'src/imagerie/cr_moteur.dart';
 export 'src/labo/res_labo.dart' hide resultatRendu;
 export 'src/labo/sang_regles.dart';
 export 'src/labo/cat_regles.dart';
+export 'src/patients/pat_patients.dart';
+export 'src/patients/pat_releves.dart';
+export 'src/patients/pat_pieces.dart';
+export 'src/patients/pat_externe.dart';
+export 'src/patients/pat_fiche.dart';
