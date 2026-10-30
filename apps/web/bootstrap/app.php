@@ -15,7 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Le panneau est le seul espace authentifié du relais.
+        $middleware->redirectGuestsTo('/panneau/connexion');
+        $middleware->redirectUsersTo('/panneau');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
