@@ -6,12 +6,16 @@ const fs = require('fs'), path = require('path');
 const { ouvrirMaquette } = require('./extraire');
 const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalyses', 'demandesImagerie', 'ordonnances', 'ecritures', 'audit',
   /* émission de facture : catalogue, médicaments, natures, conventions */
-  'naturesFacture', 'actes', 'produits', 'souscripteurs', 'garanties', 'couverturesAssurance', 'mouvements', 'facturesMere', 'remboursements'];
+  'naturesFacture', 'actes', 'produits', 'souscripteurs', 'garanties', 'couverturesAssurance', 'mouvements', 'facturesMere', 'remboursements',
+  /* tranche 2 : stocks (M6) et achats (M7) */
+  'dispensations', 'emplacements', 'inventaires', 'lots', 'transferts', 'valorisationsSage', 'besoins', 'commandes', 'facturesFournisseurs', 'fournisseurs', 'livraisons', 'pvReceptions'];
 const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');
 (async () => {
   fs.mkdirSync(SORTIE, { recursive: true });
   const m = await ouvrirMaquette();
   try {
+    /* Les registres d'achats ne naissent que sur demande dans la maquette (l'ouverture de M7) : on les amorce comme elle, avant l'export. */
+    await m.page.evaluate(() => { try { SIGH.semerAchats(true); } catch (e) { console.error(e); } });
     for (const nom of COLLECTIONS) {
       const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));
