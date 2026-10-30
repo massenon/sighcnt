@@ -139,10 +139,10 @@
     });
   }
 
-  function transformNaissance(v) {
+  function transformNaissance(v, record) {
     var m = femmes().filter(function (x) { return x.code === v.mereCode; })[0];
     if (m) { v.mere = m.nom + ' ' + m.prenom; v.mereId = m.id; }
-    if (!v.reference) v.reference = C.nextRef('NAI-', 4);
+    if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('NAI-', 4, S.collection('naissances').all());
     /* La réanimation découle de l'Apgar quand personne ne l'a cochée : un
        Apgar bas sans réanimation tracée est précisément ce que le registre
        SONU doit voir. */
@@ -209,7 +209,7 @@
             { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
-        transform: function (v) { return rattacher(v, femmes()); },
+        transform: function (v, record) { return rattacher(v, femmes()); },
         beforeSave: function (v) {
           /* Le verrou du rapport (Module A) : l'âge est une donnée VITALE.
              Il vient du dossier patient — si la date de naissance y manque,
@@ -326,9 +326,9 @@
             { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
-        transform: function (v) {
+        transform: function (v, record) {
           rattacher(v, femmes());
-          if (!v.reference) v.reference = C.nextRef('ACC-', 4);
+          if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('ACC-', 4, S.collection('accouchements').all());
           v.voie = v.type === 'Césarienne' ? 'Césarienne' : 'Voie basse';
           return v;
         },
@@ -521,7 +521,7 @@
             { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
-        transform: function (v) { rattacher(v); if (!v.reference) v.reference = C.nextRef('DEC-', 4); return v; },
+        transform: function (v, record) { rattacher(v); if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('DEC-', 4, S.collection('deces').all()); return v; },
         filters: [{ name: 'lieu', label: 'Lieu', options: ['Hospitalisation', 'Urgences', 'Bloc opératoire', 'Maternité', 'Domicile'] }],
         kpis: function (rows) {
           var annee = rows.filter(function (r) { return C.toDate(r.dateHeure).getFullYear() === 2026; });
@@ -668,12 +668,12 @@
             actions: [K.creer(colCrMaternite(), champsDe(m), {
               module: 'M4', label: 'Nouveau — ' + m.label.replace('Compte rendu ', ''),
               titre: m.label, entite: 'Compte rendu', size: 'lg', apres: afficher,
-              transform: function (v) {
+              transform: function (v, record) {
                 var pt = S.collection('patients').active().filter(function (x) {
                   return x.code === v.patientCode;
                 })[0];
                 return Object.assign({}, v, {
-                  reference: C.nextRef('CRM-', 4), typeCr: m.code, typeLabel: m.label,
+                  reference: C.referenceSuivante('CRM-', 4, colCrMaternite().all()), typeCr: m.code, typeLabel: m.label,
                   patientId: pt ? pt.id : null,
                   patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
                   sageFemme: nomSoignant4(v.sageFemmeId),
@@ -784,9 +784,9 @@
           { name: 'folates', label: 'Acide folique prescrit', type: 'checkbox' },
         ];
       },
-      transform: function (v) {
+      transform: function (v, record) {
         rattacher(v, femmes());
-        if (!v.reference) v.reference = C.nextRef('CPN-', 4);
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('CPN-', 4, S.collection('grossesses').all());
         /* Facteur de risque CPN du rapport : âge < 18 ou > 35. On SIGNALE, on
            ne coche pas GAR à la place de la sage-femme. */
         var p = femmes().filter(function (x) { return x.code === v.patientCode; })[0];
@@ -1037,7 +1037,7 @@
               onclick: function () {
                 var v = f2.collect(); if (!v) return;
                 rattacher(v, femmes());
-                v.reference = C.nextRef('PARTO-', 4);
+                v.reference = C.referenceSuivante('PARTO-', 4, S.collection('partogrammes').all());
                 v.debut = new Date(v.debut).toISOString();
                 v.mesures = []; v.clos = false;
                 var res = colPartogrammes().insert(v);
@@ -1269,9 +1269,9 @@
           { name: 'sageFemme', label: 'Sage-femme', type: 'select', required: true, options: sagesFemmes() },
         ];
       },
-      transform: function (v) {
+      transform: function (v, record) {
         rattacher(v, femmes());
-        if (!v.reference) v.reference = C.nextRef('CPO-', 4);
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('CPO-', 4, S.collection('cpon').all());
         if (!v.hemorragieAntePartum) v.etiologieAnte = null;
         return v;
       },
@@ -1373,9 +1373,9 @@
           { name: 'sageFemme', label: 'Sage-femme', type: 'select', required: true, options: sagesFemmes() },
         ];
       },
-      transform: function (v) {
+      transform: function (v, record) {
         rattacher(v, femmes());
-        if (!v.reference) v.reference = C.nextRef('PF-', 4);
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('PF-', 4, S.collection('planificationFamiliale').all());
         var m2 = D.methodePF ? D.methodePF(v.methode) : null;
         v.methodeLabel = m2 ? m2.label : v.methode;
         return v;
@@ -1492,9 +1492,9 @@
           { name: 'agent', label: 'Agent (nom et qualification)', type: 'select', required: true, options: sagesFemmes() },
         ];
       },
-      transform: function (v) {
+      transform: function (v, record) {
         rattacher(v, femmes());
-        if (!v.reference) v.reference = C.nextRef('SONU-', 4);
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('SONU-', 4, S.collection('registreSONU').all());
         v.fonctions = (v.fonctions || []).map(Number).sort(function (a, b) { return a - b; });
         return v;
       },
@@ -1607,9 +1607,9 @@
           { name: 'hepBJ0', label: 'Vaccination hépatite B à J0', type: 'checkbox' },
         ];
       },
-      transform: function (v) {
+      transform: function (v, record) {
         rattacher(v, femmes());
-        if (!v.reference) v.reference = C.nextRef('PTME-', 4);
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('PTME-', 4, S.collection('ptme').all());
         return v;
       },
       kpis: function (rows) {
@@ -1716,9 +1716,9 @@
           { name: 'agent', label: 'Agent', type: 'select', required: true, options: sagesFemmes() },
         ];
       },
-      transform: function (v) {
+      transform: function (v, record) {
         rattacher(v, femmes());
-        if (!v.reference) v.reference = C.nextRef('SCM-', 4);
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('SCM-', 4, S.collection('soinsCuratifsMaternite').all());
         if (!v.femmeHospitalisee) v.joursHospitalisation = null;
         return v;
       },
@@ -1791,7 +1791,8 @@
       var m = /^(\d+)\/(\d{2})$/.exec(String(x.numeroDossier || ''));
       if (m && m[2] === an.slice(-2) && +m[1] > max) max = +m[1];
     });
-    return (max + 1) + '/' + an.slice(-2);
+    /* Cinq chiffres, comme le registre papier et les dossiers déjà ouverts (« 00007/26 ») : « 7/26 » ne se range pas avec eux (écart E404). */
+    return String(max + 1).padStart(5, '0') + '/' + an.slice(-2);
   }
 
   /** Les facteurs de surveillance COCHÉS — c'est leur cumul qui classe à risque. */
@@ -1829,7 +1830,7 @@
         return { dateEntree: C.iso(AUJ), statutDossier: 'suivi', gestite: 1, parite: 0,
           numeroDossier: numeroDossierObstetrical(AUJ) };
       },
-      transform: function (v) {
+      transform: function (v, record) {
         if (!v.numeroDossier) v.numeroDossier = numeroDossierObstetrical(v.dateEntree);
         var p = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
         if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; v.age = C.age(p.dateNaissance); }
@@ -1940,7 +1941,7 @@
             match: function (d, v) { return v === 'referee' ? !!d.referee : !d.referee; } },
         ],
         fields: champsDossier,
-        transform: function (v) {
+        transform: function (v, record) {
           if (!v.numeroDossier) v.numeroDossier = numeroDossierObstetrical(v.dateEntree);
           var p = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
           if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; v.age = C.age(p.dateNaissance); }

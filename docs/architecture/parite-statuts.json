@@ -103,5 +103,20 @@
  "m3-rapport": "porté",
  "m3-visites-patients": "porté",
  "m3-administrations": "porté",
- "m3-surveillance": "porté"
+ "m3-surveillance": "porté",
+ "m4-maternite": "porté",
+ "m4-accouchements": "porté",
+ "m4-naissances": "porté",
+ "m4-dossier-bebe": "porté",
+ "m4-deces": "porté",
+ "m4-cpn": "porté",
+ "m4-cpon": "porté",
+ "m4-planification": "porté",
+ "m4-sonu": "porté",
+ "m4-ptme": "porté",
+ "m4-soins-curatifs": "porté",
+ "m4-partogramme": "porté",
+ "m4-comptes-rendus": "porté",
+ "m4-dossier-obstetrical": "porté",
+ "m4-dossier-obstetrical-nouveau": "porté"
 }

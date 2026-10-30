@@ -848,7 +848,9 @@
           type: t, id: id, name: f.name, placeholder: f.placeholder || '',
           min: f.min, max: f.max, step: f.step || (f.type === 'money' ? 1 : null),
         });
-        ctrl.value = val;
+        /* Un champ `datetime-local` ne reçoit que « AAAA-MM-JJThh:mm » : une date ISO complète (secondes, fuseau) y est REFUSÉE par le navigateur,
+           le champ s'ouvre vide et, s'il est obligatoire, la fiche ne peut plus être corrigée sans ressaisir la date (écart E402). */
+        ctrl.value = (t === 'datetime-local' && val && /(Z|[+-]\d\d:\d\d|:\d\d\.\d+)$/.test(String(val))) ? global.SIGH.core.isoLocal(val) : val;
       }
       if (f.readonly) {
         if (ctrl.classList.contains('combo')) ctrl.disabled = true;

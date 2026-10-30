@@ -350,3 +350,18 @@ Vecteurs : `prototype_html/build/vecteurs-hospitalisation2.js` → `packages/dom
 | E383 | Le kit du poste ne pouvait pas ouvrir un champ **date** : `showDatePicker(locale: Locale('fr'))` lève « No MaterialLocalizations found » (l'application ne déclare pas `flutter_localizations`). Latent depuis le kit, jamais exercé par un test. | `locale` retiré du sélecteur (`kit/formulaire.dart`) : il s'ouvre, avec ses libellés par défaut. **La francisation du sélecteur reste à décider** (dépendance `flutter_localizations` + délégués dans `MaterialApp`). |
 | E384 | `ToastsSigh.afficher` appelé deux fois dans le même geste (surveillance transfusionnelle enregistrée **et** alerte d'incident) levait « The specified entry is already present in the target Overlay » : `OverlayEntry.mounted` ne devient vrai qu'à l'image suivante. | `kit/toast.dart` retient l'overlay où l'hôte a été posé. |
 | E385 | `U.alerter` (incident transfusionnel) émet aussi un **son** ; le kit du poste n'a pas de service audio. | Le message rouge est porté (`TypeToast.erreur`) ; le son ne l'est pas. |
+## M4 — maternité (`m4-*`) — écarts relevés en PILOTANT les écrans (30/10/2026)
+
+Vecteurs : `prototype_html/build/vecteurs-maternite.js` → `packages/domaine/test/vecteurs/mat_*.json` et `mat_donnees.dart` (référentiels engendrés). Numéros E400–E429 réservés ; E400–E406 utilisés.
+
+| # | Écart | Traitement |
+|---|---|---|
+| E400 ✅ **corrigé** | Onze références (`ACC-`, `NAI-`, `DEC-`, `CRM-`, `CPN-`, `PARTO-`, `CPO-`, `PF-`, `SONU-`, `PTME-`, `SCM-`) venaient de `C.nextRef`, compteur de page (même défaut que E8) : doublons possibles. | `C.referenceSuivante` sur le registre. Porté (`matReferenceSuivante`). |
+| E401 ✅ **corrigé** | Modifier une fiche lui attribuait une NOUVELLE référence (la `transform` ignorait la fiche corrigée) : CPN-0002 devenait CPN-0020. | `transform(v, record)` garde la référence. Porté. |
+| E402 ✅ **corrigé** | Un champ `datetime-local` prérempli depuis une date ISO complète restait vide : accouchements, naissances, bébé, décès, SONU ne pouvaient plus être modifiés sans ressaisir la date. | Normalisation dans `U.form` (`ui.js`). |
+| E403 | Le numéro de dossier obstétrical saisi n'est pas contrôlé unique (`00001/26` accepté deux fois). | Porté fidèlement, signalé (non encore porté : écran dossier). |
+| E404 ✅ **corrigé** | Le numéro proposé n'était pas rempli à cinq chiffres (`25/26`). | `00025/26`. Porté (`matNumeroDossier`). |
+| E405 | Le kit du poste n'a pas de champ date-heure. | Date + heure en deux champs, enregistrés `AAAA-MM-JJThh:mm`. |
+| E406 | « Sur l'année 2026 » du registre des décès est écrit en dur. | Porté fidèlement. |
+
+Limites du portage M4 (dites) : (1) le champ `datetime-local` devient une date et une heure (E405) ; (2) le graphique du partogramme est un tracé propre (traits interrompus là où la mesure manque : `GraphiqueLigne` n'accepte pas de trou), non rejoué contre Chart.js ; (3) la mention « Filtres appliqués » de l'état imprimé n'est pas reprise ; (4) les bornes min / max des champs numériques (Apgar 0–10…) ne sont pas contrôlées au formulaire, comme dans la maquette ; (5) la fiche de surveillance intégrée du dossier n'est lue que si l'accouchement la porte (48 premières heures) ; (6) l'alerte néonatale / d'âge CPN est posée 600 ms après le message de création (le calque des messages du kit ne supporte pas deux insertions dans la même image) ; (7) un champ à cocher obligatoire doit être COCHÉ (comptes rendus de maternité), comme `U.form`. Lots non rejoués : l'impression des comptes rendus (la maquette n'en a pas) et « Imprimer la sélection ».
