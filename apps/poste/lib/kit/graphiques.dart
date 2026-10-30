@@ -517,10 +517,22 @@ class _BarresH extends StatelessWidget {
                       .width
               ].fold<double>(0, math.max);
               final gauche = larg + 10.5;
-              final nb = math.max(2, ((c.maxWidth - gauche) / 60).floor());
-              final ech = echelleVerticale(
-                  [for (final s in series) ...s.donnees],
-                  hauteurAxe: nb * 13.2 * 1.0);
+              final valeurs = [for (final s in series) ...s.donnees];
+              final largeurAxe = c.maxWidth - gauche - 4;
+              // Chart.js mesure TOUTES les graduations générées avant de décider du saut : on génère d'abord sans saut, on mesure, puis on décide.
+              final candidates = echelleHorizontale(valeurs,
+                      largeurAxe: largeurAxe, largeurEtiquetteMax: 0)
+                  .graduations;
+              final etiqMax = [
+                for (final g in candidates)
+                  (TextPainter(
+                          text: TextSpan(text: _num(g), style: _styleTick),
+                          textDirection: TextDirection.ltr)
+                        ..layout())
+                      .width
+              ].fold<double>(0, math.max);
+              final ech = echelleHorizontale(valeurs,
+                  largeurAxe: largeurAxe, largeurEtiquetteMax: etiqMax);
               return CustomPaint(
                   key: const Key('graphique:barres-h'),
                   size: Size.infinite,

@@ -28,6 +28,25 @@ const HAUTEURS = [180, 260, 320];
       }, { series, h });
       cas.push({ series, hauteur: h, ...r });
     }
+    /* Barres HORIZONTALES (indexAxis 'y') : l'échelle est sur l'axe X ; on relève graduations ET largeur de l'axe pour que le Dart calcule le
+       nombre de graduations depuis la LARGEUR (étiquettes plus larges que hautes). */
+    const LARGEURS = [360, 600];
+    const horiz = [];
+    for (const w of LARGEURS) for (const series of SERIES) {
+      const r = await m.page.evaluate(async ({ series, w }) => {
+        const labels = series[0].map((_, i) => 'Catégorie ' + i);
+        const n = SIGH.charts.barres(labels, series.map((d, i) => ({ label: 'S' + i, data: d })), { horizontal: true, height: 240 });
+        n.style.width = w + 'px'; document.body.appendChild(n);
+        await new Promise((r) => setTimeout(r, 120));
+        const c = Chart.getChart(n.querySelector('canvas'));
+        const x = c.scales.x;
+        const sortie = { graduations: x.ticks.map((t) => t.value), largeurAxe: +x.width.toFixed(2), gauche: +c.chartArea.left.toFixed(2), etiquetteMax: +x._getLabelSizes().widest.width.toFixed(2) };
+        c.destroy(); n.remove();
+        return sortie;
+      }, { series, w });
+      horiz.push({ series, largeur: w, ...r });
+    }
+    ecrire('packages/domaine/test/vecteurs/echelle-horizontale.json', { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-graphiques.js — échelle X des barres horizontales Chart.js. Ne pas éditer.', cas: horiz });
     ecrire('packages/domaine/test/vecteurs/echelle.json', { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-graphiques.js — échelle verticale Chart.js (barres, beginAtZero). Ne pas éditer.', cas });
     console.log('  ' + cas.length + ' échelles ; exemple : ' + JSON.stringify(cas[9]));
   } finally { await m.fermer(); }

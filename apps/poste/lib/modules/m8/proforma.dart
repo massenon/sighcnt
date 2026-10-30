@@ -7,7 +7,6 @@ import '../../shell/contexte_ecran.dart';
 import 'commun.dart';
 import 'factures.dart';
 import 'impression.dart';
-import 'paiements.dart';
 
 /// `m8-proforma` — estimations remises avant réalisation des prestations. AUCUNE valeur fiscale : ni justificatif comptable, ni MECeF.
 class EcranProforma extends StatelessWidget with EcranMaquette {
@@ -20,18 +19,6 @@ class EcranProforma extends StatelessWidget with EcranMaquette {
   @override
   String get regle =>
       'La facture pro-forma n’a aucune valeur fiscale : elle ne peut ni servir de justificatif comptable ni être transmise au dispositif MECeF.';
-
-  @override
-  List<Widget> actionsEntete(BuildContext context) =>
-      accesFacturation(context, sauf: 'm8-facturation').followedBy([
-        if (ContexteEcran.of(context).ecranId != 'm8-facturation')
-          BoutonSigh(
-              libelle: 'Nouvelle facture',
-              icone: LucideIcons.plus,
-              variante: VarianteBouton.secondaire,
-              onPressed: () =>
-                  ContexteEcran.of(context).aller('m8-facturation')),
-      ]).toList();
 
   @override
   Widget build(BuildContext context) {

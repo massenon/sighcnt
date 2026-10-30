@@ -11,28 +11,6 @@ import 'commun.dart';
 import 'factures.dart';
 import 'impression.dart';
 
-/// Raccourcis d'en-tête communs aux écrans de facturation (`accesRapides()` : voisins du module puis hub), filtrés par les droits.
-List<Widget> accesFacturation(BuildContext context, {String? sauf}) {
-  final c = ContexteEcran.of(context);
-  const cibles = [
-    (
-      'm8-dashboard',
-      'Tableau de bord facturation',
-      LucideIcons.layoutDashboard
-    ),
-    ('m8-facturation', 'Nouvelle facture', LucideIcons.plus),
-  ];
-  return [
-    for (final x in cibles)
-      if (x.$1 != c.ecranId && x.$1 != sauf)
-        BoutonSigh(
-            libelle: x.$2,
-            icone: x.$3,
-            variante: VarianteBouton.secondaire,
-            onPressed: () => c.aller(x.$1)),
-  ];
-}
-
 /// `m8-paiements` — écran de travail de la caisse : il ne crée pas de facture, il ENCAISSE celles qui sont dues.
 class EcranPaiements extends StatefulWidget with EcranMaquette {
   const EcranPaiements({super.key});
@@ -44,9 +22,6 @@ class EcranPaiements extends StatefulWidget with EcranMaquette {
   @override
   String get regle =>
       'Écran de travail de la caisse : il ne crée pas de facture mais encaisse celles qui sont dues. Une facture se corrige depuis l’émission ou par un avoir — jamais par retouche d’un règlement déjà passé (RG-12).';
-
-  @override
-  List<Widget> actionsEntete(BuildContext context) => accesFacturation(context);
 
   @override
   State<EcranPaiements> createState() => _EcranPaiementsState();

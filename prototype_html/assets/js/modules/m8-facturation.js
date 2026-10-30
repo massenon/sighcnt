@@ -360,7 +360,7 @@
                 render: function () {
                   var jours = [], data = [];
                   for (var d = 1; d <= AUJ.getDate(); d++) {
-                    var jour = new Date(2026, 7, d);
+                    var jour = new Date(AUJ.getFullYear(), AUJ.getMonth(), d);
                     jours.push(String(d));
                     data.push(factures().filter(function (f) { return C.iso(f.date) === C.iso(jour); }).length);
                   }

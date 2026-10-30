@@ -9,6 +9,7 @@ import 'barre_superieure.dart';
 import 'ecran_a_porter.dart';
 import 'page_standard.dart';
 import 'contexte_ecran.dart';
+import 'acces_rapides.dart';
 import '../donnees/magasin.dart';
 import 'ruban.dart';
 
@@ -177,11 +178,23 @@ class _CoquePosteState extends State<CoquePoste> {
               defilable: w is EcranMaquette ? true : false,
               description: w is EcranMaquette ? w.description : null,
               regle: w is EcranMaquette ? w.regle : null,
-              actions: w is EcranMaquette ? w.actionsEntete(context) : const [],
+              actions: _actions(context, e, ruban, w),
               child: w);
         }),
       );
     });
+  }
+
+  List<Widget> _actions(
+      BuildContext context, EcranNav e, List<DomaineRuban> ruban, Widget w) {
+    final declarees =
+        w is EcranMaquette ? w.actionsEntete(context) : <Widget>[];
+    return [
+      ...declarees,
+      if (w is EcranMaquette)
+        ...accesRapides(
+            ecran: e, ruban: ruban, declarees: declarees, aller: _ouvrir),
+    ];
   }
 
   static final Magasin _magasinVide = Magasin();

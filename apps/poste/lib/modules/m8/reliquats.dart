@@ -9,7 +9,6 @@ import '../../shell/contexte_ecran.dart';
 import 'commun.dart';
 import 'factures.dart';
 import 'impression.dart';
-import 'paiements.dart';
 
 /// `m8-reliquats` — suivi des règlements différés. Le patient qui ne peut pas payer prend un ENGAGEMENT écrit ; faute de règlement, il bascule en
 /// CLIENT INSOLVABLE : la créance reste due et tracée, elle n'est jamais effacée (RG-14).
@@ -23,9 +22,6 @@ class EcranReliquats extends StatelessWidget with EcranMaquette {
   @override
   String get regle =>
       'Le reliquat est enregistré à l’ouverture puis régularisé au règlement différé. Le patient qui ne peut pas payer prend un engagement écrit chez le comptable, avec une date ou un échéancier. Faute de règlement, il bascule en client insolvable : la créance reste due et tracée, elle n’est jamais effacée.';
-
-  @override
-  List<Widget> actionsEntete(BuildContext context) => accesFacturation(context);
 
   static int _jours(Fiche f, DateTime auj) {
     final d = DateTime.tryParse('${f['date']}');

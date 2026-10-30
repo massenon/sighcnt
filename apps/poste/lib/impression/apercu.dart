@@ -18,6 +18,41 @@ class ImpressionPoste {
     await f.writeAsBytes(pdf);
     return f.path;
   };
+
+  /// Exécuteur de commande (injectable : les tests n'envoient rien à une imprimante).
+  static Future<ProcessResult> Function(String exe, List<String> args) lancer =
+      (exe, args) => Process.run(exe, args);
+
+  /// Système d'exploitation (injectable pour tester la commande de chaque plateforme).
+  static String systeme = Platform.operatingSystem;
+
+  /// Commande d'impression d'un PDF vers l'imprimante PAR DÉFAUT du système : `lp` (Linux, macOS, CUPS) ou le verbe « Print » du shell (Windows).
+  /// Le résultat est RENDU, jamais avalé : pas d'imprimante par défaut, pas de pilote → un refus nommé que l'écran affiche.
+  static (String, List<String>) commande(String chemin) => switch (systeme) {
+        'windows' => (
+            'powershell',
+            [
+              '-NoProfile',
+              '-Command',
+              'Start-Process -FilePath "${chemin.replaceAll('"', '')}" -Verb Print'
+            ]
+          ),
+        _ => ('lp', [chemin]),
+      };
+
+  /// Imprime sur l'imprimante par défaut. `null` = lancée ; sinon le motif du refus. NON testé ici sur matériel réel.
+  static Future<String?> imprimer(String chemin) async {
+    final (exe, args) = commande(chemin);
+    try {
+      final r = await lancer(exe, args);
+      if (r.exitCode == 0) return null;
+      final detail = '${r.stderr}'.trim();
+      return 'Impression refusée par le système (code ${r.exitCode})${detail.isEmpty ? '' : ' : $detail'}. Vérifier qu’une imprimante par défaut est installée.';
+    } on ProcessException catch (e) {
+      return 'Aucune commande d’impression disponible (${e.executable}). Enregistrer le PDF puis l’imprimer depuis un lecteur de PDF.';
+    }
+  }
+
   static int _compteur = 0;
   static int prochainNumero() => ++_compteur;
 }
@@ -42,8 +77,9 @@ Future<void> afficherApercu(BuildContext context, PieceA4 piece) =>
             variante: VarianteBouton.secondaire,
             onPressed: fermer),
         BoutonSigh(
-            libelle: 'Imprimer / PDF',
-            icone: LucideIcons.printer,
+            libelle: 'Enregistrer en PDF',
+            icone: LucideIcons.fileDown,
+            variante: VarianteBouton.secondaire,
             onPressed: () async {
               final p = await PolicesPdf.charger();
               final octets = await pdfA4(piece, p);

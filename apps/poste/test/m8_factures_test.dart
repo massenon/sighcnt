@@ -154,4 +154,26 @@ void main() {
     expect(f.length, greaterThan(100));
     expect((f.first as Map).containsKey('numero'), isTrue);
   });
+
+  testWidgets(
+      'accès rapides DÉDUITS du manifeste : voisins du module puis accueil du module, sans doublon d\'une action déclarée',
+      (t) async {
+    final m = await magasin();
+    await ouvrir(t, m);
+    // Factures déclare 2 actions (Avoirs, Nouvelle facture) → UN seul raccourci déduit (le voisin), « Nouvelle facture » n'est pas reproposé.
+    expect(find.widgetWithText(BoutonSigh, 'Tableau de bord facturation'),
+        findsOneWidget);
+    expect(find.widgetWithText(BoutonSigh, 'Nouvelle facture'), findsOneWidget);
+    await toucher(
+        t, find.widgetWithText(BoutonSigh, 'Tableau de bord facturation'));
+    for (var i = 0; i < 3; i++) {
+      await t.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Chiffre d’affaires du jour'), findsOneWidget);
+    // Sans le droit de VOIR l'écran voisin, le raccourci est ABSENT (le ruban est déjà filtré par le rôle).
+    await ouvrir(t, m, role: 'caissier');
+    expect(
+        find.widgetWithText(BoutonSigh, 'Facturation & Caisse'), findsNothing,
+        reason: '3 raccourcis au plus : 1 déclaré (Avoirs) + voisins');
+  });
 }

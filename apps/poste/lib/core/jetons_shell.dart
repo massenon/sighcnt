@@ -65,37 +65,18 @@ class JetonsShell {
   static const Color slate700 = Color(0xFF334155);
   static const Color slate800 = Color(0xFF1E293B);
   static const Color slate900 = Color(0xFF0F172A);
-
   /// Ombres de tailwind.config.js (boxShadow card / raise / pop), couleur rgb(11 30 61).
   static const Color _ombre = Color(0xFF0B1E3D);
   static const List<BoxShadow> ombreCarte = [
-    BoxShadow(
-        color: Color.fromRGBO(11, 30, 61, 0.05),
-        offset: Offset(0, 1),
-        blurRadius: 2),
-    BoxShadow(
-        color: Color.fromRGBO(11, 30, 61, 0.06),
-        offset: Offset(0, 1),
-        blurRadius: 3),
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.05), offset: Offset(0, 1), blurRadius: 2),
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.06), offset: Offset(0, 1), blurRadius: 3),
   ];
   static const List<BoxShadow> ombreRelief = [
-    BoxShadow(
-        color: Color.fromRGBO(11, 30, 61, 0.10),
-        offset: Offset(0, 4),
-        blurRadius: 12,
-        spreadRadius: -2),
-    BoxShadow(
-        color: Color.fromRGBO(11, 30, 61, 0.06),
-        offset: Offset(0, 2),
-        blurRadius: 6,
-        spreadRadius: -2),
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.10), offset: Offset(0, 4), blurRadius: 12, spreadRadius: -2),
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.06), offset: Offset(0, 2), blurRadius: 6, spreadRadius: -2),
   ];
   static const List<BoxShadow> ombrePop = [
-    BoxShadow(
-        color: Color.fromRGBO(11, 30, 61, 0.22),
-        offset: Offset(0, 12),
-        blurRadius: 32,
-        spreadRadius: -8),
+    BoxShadow(color: Color.fromRGBO(11, 30, 61, 0.22), offset: Offset(0, 12), blurRadius: 32, spreadRadius: -8),
   ];
   static Color get ombre => _ombre;
 }

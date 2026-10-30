@@ -136,11 +136,8 @@ ResultatCaisse encaisserFacture(
     final taches = m.collection('taches');
     for (final t in taches.actives.where((t) => t['factureId'] == factureId)) {
       if (t['type'] == 'encaissement') {
-        annulations.add(taches.mettreAJour(t['id'], {
-          'statut': 'fait',
-          'faitLe': iso,
-          'faitPar': m.utilisateur
-        }));
+        annulations.add(taches.mettreAJour(t['id'],
+            {'statut': 'fait', 'faitLe': iso, 'faitPar': m.utilisateur}));
       } else if (t['statut'] == 'bloque') {
         annulations.add(taches.mettreAJour(t['id'], {'statut': 'en_attente'}));
         debloquees.add('${t['type']}');

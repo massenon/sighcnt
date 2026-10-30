@@ -136,10 +136,10 @@ void main() {
       (t) async {
     await monter(t,
         config: const ConfigPoste(mode: ModePoste.fileul, role: 'caissier'));
-    await ouvrir(t, 'Financier', 'm8-caisse');
+    await ouvrir(t, 'Financier', 'm9-compagnies');
     expect(find.byKey(const Key('ecran-a-porter')), findsOneWidget);
-    expect(find.textContaining('Identifiant : m8-caisse'), findsOneWidget);
-    expect(find.textContaining('tranche 1'), findsOneWidget);
+    expect(find.textContaining('Identifiant : m9-compagnies'), findsOneWidget);
+    expect(find.textContaining('tranche 5'), findsOneWidget);
     expect(find.byKey(const Key('fil-ariane')), findsOneWidget);
   });
 
