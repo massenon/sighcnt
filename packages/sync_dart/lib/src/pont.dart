@@ -33,6 +33,15 @@ class Enveloppes {
     };
   }
 
+  /// Chiffre un fichier entier (sauvegarde) : `nonce (12) ‖ chiffré ‖ tag (16)`, métadonnée authentifiée `aad`.
+  Future<List<int>> chiffrerOctets(List<int> clair, String aad) async {
+    final b = await _aes.encrypt(clair, secretKey: _cle, aad: utf8.encode(aad));
+    return [...b.nonce, ...b.cipherText, ...b.mac.bytes];
+  }
+
+  Future<List<int>> dechiffrerOctets(List<int> brut, String aad) =>
+      _aes.decrypt(SecretBox(brut.sublist(12, brut.length - 16), nonce: brut.sublist(0, 12), mac: Mac(brut.sublist(brut.length - 16))), secretKey: _cle, aad: utf8.encode(aad));
+
   /// Lève une exception si l'authentification échoue (altération, mauvaise clé, métadonnées déplacées).
   Future<Map<String, Object?>> dechiffrer(Map env) async {
     final brut = base64.decode(env['ct'] as String);
@@ -65,7 +74,10 @@ class Pont {
     env = Enveloppes(_cleOctets);
   }
 
-  void alerter(Map<String, Object?> a) => alertes.add({'quand': maintenantMs(), ...a});
+  void alerter(Map<String, Object?> a) {
+    alertes.add({'quand': maintenantMs(), ...a});
+    mere.evenementAsync('alerte', 'relais', 'Alerte ${a['type']} (appareil ${a['appareil'] ?? '—'})');
+  }
 
   Future<Map<String, Object?>> rel(String methode, String chemin, [Map<String, Object?>? corps]) async {
     final req = await _http.openUrl(methode, Uri.parse('${mere.cfg.relais}$chemin')).timeout(const Duration(milliseconds: 1500));
@@ -76,8 +88,11 @@ class Pont {
     final texte = await utf8.decoder.bind(rep).join().timeout(const Duration(milliseconds: 1500));
     final j = texte.isEmpty ? <String, Object?>{} : (jsonDecode(texte) as Map).cast<String, Object?>();
     if (rep.statusCode >= 400) throw Err(rep.statusCode, '${j['code'] ?? 'http_${rep.statusCode}'}', '${j['motif'] ?? ''}');
+    _dernierOk = maintenantMs();
     return j;
   }
+
+  int _dernierOk = 0;
 
   // --- côté administration ------------------------------------------------------------------------------
   Future<void> declarerCode(String hash) async {
@@ -330,6 +345,7 @@ class Pont {
     }, 250);
     tour(repliquer, 250);
     tour(() async {
+      await mere.verrou.executer(() => base.poserMeta('relais_dernier_ok', _dernierOk));
       await rel('POST', '/mere/battement', {});
       final (patients, seq, repSeq) = await _sous(() async => (
             (await base.select("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0")).first['n'],

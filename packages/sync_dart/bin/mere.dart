@@ -13,6 +13,9 @@ Future<void> main(List<String> args) async {
     secretRelais: arg(args, 'secret-relais', 'secret-mere'),
     restaurer: arg(args, 'restaurer', '0') == '1',
     cleBase64: arg(args, 'cle', ''),
+    dossierSauvegardes: arg(args, 'sauvegardes', 'sauvegardes'),
+    heureSauvegarde: int.tryParse(arg(args, 'sauvegarde-heure', '2')) ?? 2,
+    conservation: int.tryParse(arg(args, 'conservation', '7')) ?? 7,
   ));
   await m.demarrer();
 }

@@ -50,7 +50,7 @@ abstract class Depot {
   Future<void> recalerSequence(String table, String colonne, int valeur);
 
   /// Copie de sécurité AVANT un geste irréversible ; rend le chemin du fichier produit.
-  Future<String> sauvegarder(String prefixe);
+  Future<String> sauvegarder(String prefixe, {String? dossier});
 
   Future<void> fermer();
 
@@ -124,8 +124,10 @@ class DepotSqlite extends Depot {
       db.execute("INSERT OR REPLACE INTO sqlite_sequence(name,seq) VALUES(?,?)", [table, valeur]);
 
   @override
-  Future<String> sauvegarder(String prefixe) async {
-    final f = '${chemin == ':memory:' ? prefixe : chemin}.$prefixe-${DateTime.now().millisecondsSinceEpoch}.bak';
+  Future<String> sauvegarder(String prefixe, {String? dossier}) async {
+    final nom = '${chemin == ':memory:' ? 'mere' : chemin.split(RegExp(r'[\\/]')).last}.$prefixe-${DateTime.now().millisecondsSinceEpoch}.bak';
+    final f = dossier != null ? '${Directory(dossier).absolute.path}/$nom' : '${chemin == ':memory:' ? Directory.systemTemp.path : File(chemin).parent.path}/$nom';
+    Directory(File(f).parent.path).createSync(recursive: true);
     db.execute("VACUUM INTO '${f.replaceAll("'", '')}'");
     return f;
   }
@@ -204,8 +206,10 @@ class DepotPostgres extends Depot {
   /// Sauvegarde logique en JSON (indépendante de la présence de `pg_dump` sur le poste) : toutes les tables de la mère.
   /// La sauvegarde SYSTÈME (pg_dump chiffré, réplica hors site) reste celle de l'exploitation (spec §10).
   @override
-  Future<String> sauvegarder(String prefixe) async {
-    final f = '${Directory.systemTemp.path}/mere-$nom.$prefixe-${DateTime.now().millisecondsSinceEpoch}.json';
+  Future<String> sauvegarder(String prefixe, {String? dossier}) async {
+    final d = dossier ?? Directory.systemTemp.path;
+    Directory(d).createSync(recursive: true);
+    final f = '${Directory(d).absolute.path}/mere-$nom.$prefixe-${DateTime.now().millisecondsSinceEpoch}.json';
     final sortie = <String, Object?>{};
     for (final t in tablesMere) {
       sortie[t] = await select('SELECT * FROM $t');

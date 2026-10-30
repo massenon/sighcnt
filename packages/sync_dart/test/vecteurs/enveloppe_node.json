@@ -1,0 +1,26 @@
+{
+ "_doc": "Enveloppe chiffrée PAR NODE (banc/crypto.js) avec la clé 0x00..0x1f ; Dart doit la déchiffrer.",
+ "cle_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+ "charge": {
+  "type": "journal",
+  "ops": [
+   {
+    "seq": 1,
+    "collection": "patients",
+    "champs": {
+     "nom": "Zébulon-Éléonore",
+     "telephone": "0123456789",
+     "note": "ça va « très » bien — 100 %"
+    }
+   }
+  ]
+ },
+ "enveloppe": {
+  "id": "journal-1",
+  "appareil": "mere",
+  "dir": "journal",
+  "n": 1,
+  "nonce": "SyvWxVimIvm9kIeU",
+  "ct": "Zd8cyV79GzT+312OTM9LeBYLAyvPiR6RUomgfsvYG2RRwtq6C6V0BxwBeEdKRz4G8Xki4Xz2gNpeK5LnDpRZcGj8HRM0JaUSob1+RixKU3ZAmndV3vjDl9j9PuCN7lOG91ZtfTYqt3kZm7llZiVa6fRGTY54l4Om/jMR4y/fcwl2In8/TSN80FSL5vSNfJMaaqCj9nNP8Jmq3VFxz4aAAnr1n/s1T1or470ng8FTS7r+W2aW6/xu"
+ }
+}

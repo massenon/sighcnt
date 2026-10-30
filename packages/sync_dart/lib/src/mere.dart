@@ -12,6 +12,7 @@ import 'dart:math';
 import 'commun.dart';
 import 'depot.dart';
 import 'pont.dart';
+import 'supervision.dart';
 
 /// Une famille par collection (PRD §8) : A fiche descriptive · B journal · C pièce émise · D agrégat à invariant ·
 /// R référentiel (la mère seule écrit).
@@ -43,7 +44,8 @@ const _ddl = '''
   CREATE TABLE IF NOT EXISTS baux (appareil TEXT, article TEXT, reste BIGINT, PRIMARY KEY (appareil, article));
   CREATE TABLE IF NOT EXISTS acks (marque TEXT, appareil TEXT, PRIMARY KEY (marque, appareil));
   CREATE TABLE IF NOT EXISTS portee (appareil TEXT, collection TEXT, fiche TEXT, PRIMARY KEY (appareil, collection, fiche));
-  CREATE TABLE IF NOT EXISTS sortie (appareil TEXT, n BIGINT, charge TEXT, depose INTEGER DEFAULT 0, PRIMARY KEY (appareil, n))
+  CREATE TABLE IF NOT EXISTS sortie (appareil TEXT, n BIGINT, charge TEXT, depose INTEGER DEFAULT 0, PRIMARY KEY (appareil, n));
+  CREATE TABLE IF NOT EXISTS evenements (id {AUTO}, quand BIGINT, niveau TEXT, source TEXT, message TEXT)
 ''';
 
 class Appareil {
@@ -71,6 +73,9 @@ class ConfigMere {
     this.secretRelais = 'secret-mere',
     this.restaurer = false,
     this.cleBase64 = '',
+    this.dossierSauvegardes = 'sauvegardes',
+    this.heureSauvegarde = 2,
+    this.conservation = 7,
   });
   final int port;
 
@@ -83,6 +88,11 @@ class ConfigMere {
   final String secretRelais;
   final bool restaurer;
   final String cleBase64;
+
+  /// Sauvegarde quotidienne, CHIFFRÉE avec la clé de clinique : dossier, heure locale de déclenchement, nombre conservé.
+  final String dossierSauvegardes;
+  final int heureSauvegarde;
+  final int conservation;
 }
 
 class Mere {
@@ -93,6 +103,7 @@ class Mere {
   final Verrou verrou = Verrou();
   late final Pont pont = Pont(this);
   HttpServer? _serveur;
+  Timer? _sauvegardeur;
 
   static Future<Mere> creer(ConfigMere cfg) async {
     final base = await Depot.ouvrir(cfg.dbChemin);
@@ -124,6 +135,15 @@ class Mere {
         'INSERT INTO operations(id,appareil,epoch,hlc,collection,fiche,type,champs,famille) VALUES(?,?,?,?,?,?,?,?,?) RETURNING seq',
         [op['id'], appareil, await base.metaInt('epoch'), op['hlc'] ?? 0, op['collection'], op['fiche'], op['type'], enJson(champs), familles[op['collection']]]);
     return r.first['seq'] as int;
+  }
+
+  /// Journal technique de la mère (RG-12) : erreurs, alertes, gestes d'administration. Jamais de donnée de santé.
+  Future<void> evenement(String niveau, String source, String message) =>
+      base.exec('INSERT INTO evenements(quand,niveau,source,message) VALUES(?,?,?,?)', [maintenantMs(), niveau, source, message]);
+
+  /// À appeler HORS verrou (alerte venue d'une minuterie, erreur interne d'une requête).
+  void evenementAsync(String niveau, String source, String message) {
+    unawaited(verrou.executer(() => evenement(niveau, source, message)).catchError((Object _) {}));
   }
 
   Future<num> reserve(String article) async =>
@@ -355,6 +375,7 @@ class Mere {
         if (maintenantMs() > (c['expire'] as int)) throw Err(403, 'code_expire', 'Ce code a expiré.');
         await base.exec('UPDATE codes SET utilise=1 WHERE code=?', [c['code']]);
         await base.exec('INSERT INTO appareils(uuid,etiquette,role,etat) VALUES(?,?,?,?)', [b['uuid'], c['etiquette'], c['role'], 'actif']);
+        await evenement('info', 'appairage', 'Appareil appairé : ${c['etiquette']} (${c['role']})');
         return {'epoch': await base.metaInt('epoch'), ...await emettreJetons(b['uuid'] as String)};
       case 'POST /renouveler':
         final m = RegExp(r'^([^.]+)\.(.+)$').firstMatch('${b['renouvellement'] ?? ''}');
@@ -409,6 +430,7 @@ class Mere {
       case 'POST /admin/revoquer':
         adminOk(req);
         await base.exec("UPDATE appareils SET etat='revoque' WHERE uuid=?", [b['uuid']]);
+        await evenement('info', 'administration', 'Appareil révoqué : ${b['uuid']}');
         pont.revoquerAuRelais('${b['uuid']}');
         return {'ok': true};
       case 'POST /admin/lot':
@@ -446,6 +468,17 @@ class Mere {
           'bloques': (await base.select("SELECT k FROM meta WHERE k LIKE 'bloque:%' AND v<>''")).map((x) => (x['k'] as String).substring(7)).toList(),
           'depot': base.dialecte,
         };
+      case 'POST /admin/sauvegarder':
+        adminOk(req);
+        return {'fichier': await sauvegarderChiffre(prefixe: 'manuelle')};
+      case 'GET /admin/supervision':
+        adminOk(req);
+        final controles = await controlesMere(this);
+        return {'etat': etatGlobal(controles), 'controles': controles, 'depot': base.dialecte, 'quand': maintenantMs()};
+      case 'GET /admin/journal':
+        adminOk(req);
+        final lim = min(int.tryParse(q['limite'] ?? '') ?? 100, 500);
+        return (await base.select('SELECT id,quand,niveau,source,message FROM evenements ORDER BY id DESC LIMIT ?', [lim])).toList();
       case 'GET /admin/fiche':
         adminOk(req);
         final f = await lire(q['collection'] ?? '', q['id'] ?? '');
@@ -505,6 +538,7 @@ class Mere {
         if (b['confirmation'] != _clinique) throw Err(422, 'confirmation_invalide', 'Saisir le nom de la clinique pour confirmer.');
         if (b['second'] == null || b['second'] == '' || b['second'] == false) throw Err(422, 'second_profil_requis', 'Un second profil (DAF ou Direction) doit confirmer.');
         final sauvegarde = await base.sauvegarder('avant-reinit');
+        await evenement('alerte', 'administration', 'Réinitialisation des données (sauvegarde préalable : $sauvegarde)');
         await base.tx(() async {
           final liste = essentielles.map((c) => "'$c'").join(',');
           await base.exec('DELETE FROM operations WHERE collection NOT IN ($liste)');
@@ -522,6 +556,24 @@ class Mere {
     throw Err(404, 'route_inconnue', 'Route inconnue.');
   }
 
+  /// Sauvegarde chiffrée (AES-256-GCM, clé de clinique) : le fichier en clair n'existe que le temps de l'écriture.
+  /// Conserve les `conservation` dernières ; rend le chemin du fichier chiffré. Appelée sous le verrou.
+  Future<String> sauvegarderChiffre({String prefixe = 'quotidienne'}) async {
+    final clair = await base.sauvegarder(prefixe, dossier: cfg.dossierSauvegardes);
+    final fichier = File(clair);
+    final chiffre = File('$clair.enc');
+    chiffre.writeAsBytesSync(await pont.env.chiffrerOctets(fichier.readAsBytesSync(), 'sauvegarde-mere'));
+    fichier.deleteSync();
+    final dossier = Directory(cfg.dossierSauvegardes);
+    final anciennes = dossier.listSync().whereType<File>().where((f) => f.path.contains('.$prefixe-') && f.path.endsWith('.enc')).toList()..sort((a, b) => a.path.compareTo(b.path));
+    for (final f in anciennes.take(anciennes.length > cfg.conservation ? anciennes.length - cfg.conservation : 0)) {
+      f.deleteSync();
+    }
+    await base.poserMeta('derniere_sauvegarde', maintenantMs());
+    await evenement('info', 'sauvegarde', 'Sauvegarde chiffrée : ${chiffre.path}');
+    return chiffre.path;
+  }
+
   /// Le code d'un mobile : la base d'abord (sous verrou), puis le relais (réseau, hors verrou — une panne d'Internet
   /// ne doit jamais bloquer les postes de la clinique).
   Future<Object?> codeMobile(HttpRequest req, Map<String, Object?> b) async {
@@ -535,6 +587,15 @@ class Mere {
   Future<void> demarrer() async {
     _serveur = await HttpServer.bind(InternetAddress.loopbackIPv4, cfg.port);
     pont.demarrer();
+    // Sauvegarde quotidienne : toutes les 5 minutes on regarde si l'heure est venue et si la dernière a plus de 20 h.
+    _sauvegardeur = Timer.periodic(const Duration(minutes: 5), (_) async {
+      try {
+        final due = DateTime.now().hour >= cfg.heureSauvegarde && maintenantMs() - await base.metaInt('derniere_sauvegarde') > 20 * 3600 * 1000;
+        if (due) await verrou.executer(() => sauvegarderChiffre());
+      } catch (e) {
+        evenementAsync('erreur', 'sauvegarde', 'Sauvegarde quotidienne impossible : $e');
+      }
+    });
     _serveur!.listen((req) async {
       final b = await corpsJson(req);
       final q = req.uri.queryParameters;
@@ -549,6 +610,7 @@ class Mere {
       } catch (e, s) {
         statut = 500;
         out = {'code': 'erreur_interne', 'motif': '$e', 'pile': '$s'.split('\n').take(3).join(' | ')};
+        evenementAsync('erreur', 'requete', '${req.method} ${req.uri.path} : $e');
       }
       try {
         await repondre(req, statut, out);
@@ -558,6 +620,7 @@ class Mere {
   }
 
   Future<void> arreter() async {
+    _sauvegardeur?.cancel();
     await _serveur?.close(force: true);
     await base.fermer();
   }
