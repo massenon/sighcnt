@@ -3943,10 +3943,13 @@ async function viderMessages(page) {
       N.NAV.forEach((d) => d.modules.forEach((m) => modules.push(m.code)));
       const ferme = {};
       modules.forEach((c) => { ferme[c] = { voir: false, editer: false, annuler: false }; });
+      /* Comme la création réelle (m14-securite) : un écran UNIVERSEL ne cède que devant une surcharge d'écran. */
+      const fermesEcrans = {};
+      N.ids().forEach((id) => { const e = N.get(id); if (e && e.universel) fermesEcrans[id] = { voir: false, editer: false, annuler: false }; });
       col.insert({
         role: 'archiviste', nouveau: true, statut: 'actif', libelle: 'Archiviste',
         libelleOrigine: 'Archiviste', couleur: 'neutral', accueil: 'dash-admin',
-        droits: ferme, droitsEcrans: {},
+        droits: ferme, droitsEcrans: fermesEcrans,
       });
       N.invaliderRbac();
       const ecrans = [];
