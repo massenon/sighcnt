@@ -155,14 +155,9 @@
    "id": "m6-transferts",
    "mesure": true,
    "attendus": 22,
-   "presents": 18,
-   "taux": 0.818,
-   "manquants": [
-    "n° bon",
-    "date",
-    "réceptionnaire",
-    "opérateur"
-   ]
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "m7-besoins",
