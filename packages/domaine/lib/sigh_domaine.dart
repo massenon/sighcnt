@@ -24,3 +24,5 @@ export 'src/graphiques/echelle.dart';
 export 'src/impression/identite.dart';
 export 'src/impression/ticket.dart';
 export 'src/impression/etat.dart';
+
+export 'src/achats/achats.dart';
