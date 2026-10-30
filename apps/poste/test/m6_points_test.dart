@@ -26,7 +26,7 @@ Map<String, Object?> cas(String famille, String nom) =>
 
 String norm(Object? s) => '${s ?? ''}'.replaceAll(RegExp(r'\s+'), ' ').trim();
 
-Magasin magasin() => Magasin.depuisDossier(Magasin.collectionsDuJeu);
+Magasin magasin() => Magasin.depuisDossier(Magasin.collectionsDuJeu, 'test/fixtures/jeu_sobre');
 
 Future<void> ouvrir(WidgetTester t, Magasin m, String ecran) async {
   t.view.physicalSize = const Size(1600, 1100);

@@ -15,7 +15,7 @@ final donnees = DonneesNavigation.depuisDossier();
 final aujourdhui = DateTime(2026, 10, 30);
 num n(Object? v) => v is num ? v : (num.tryParse('${v ?? ''}') ?? 0);
 
-Magasin magasin() => Magasin.depuisDossier(Magasin.collectionsDuJeu);
+Magasin magasin() => Magasin.depuisDossier(Magasin.collectionsDuJeu, 'test/fixtures/jeu_sobre');
 
 Future<void> ouvrir(WidgetTester t, Magasin m, String ecran,
     {String role = 'admin'}) async {

@@ -12,7 +12,9 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   /* tranche 3 : laboratoire (M5) et imagerie (M2) */
   'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'donneurs', 'poches', 'personnel', 'examensImagerie', 'variablesImagerie', 'clichesImagerie', 'resultatsImagerie',
   'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications'];
-const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');
+/* SIGH_JEU=sobre : jeu SANS le peuplement des parcours, sur lequel les vecteurs des tranches 1-2 ont été tirés (fixture de test). */
+const SOBRE = process.env.SIGH_JEU === 'sobre';
+const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'test', 'fixtures', 'jeu_sobre') : path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');
 (async () => {
   fs.mkdirSync(SORTIE, { recursive: true });
   const m = await ouvrirMaquette();
@@ -26,7 +28,7 @@ const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'd
     });
     /* LE JEU DE DÉMONSTRATION COMPLET : le peuplement des parcours (demandes d'analyses et d'imagerie, ordonnances, tâches, transferts…) est déclenché par
        la page au démarrage dans la maquette ; la page d'extraction ne le fait pas, d'où des collections vides à l'export. */
-    await m.page.evaluate(() => { try { SIGH.peuplerParcours(); } catch (e) { console.error(e); } });
+    if (!SOBRE) await m.page.evaluate(() => { try { SIGH.peuplerParcours(); } catch (e) { console.error(e); } });
     for (const nom of COLLECTIONS) {
       const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));
