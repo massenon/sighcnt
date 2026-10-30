@@ -728,7 +728,7 @@
             /* Le contrôle métier de l'appelant : il refuse EN LE DISANT
                (son propre toast) et retourne false — rien n'est écrit. */
             if (typeof avant === 'function' && avant(v, record) === false) return;
-            if (typeof transform === 'function') v = transform(v);
+            if (typeof transform === 'function') v = transform(v, record);   /* E364 : la fiche corrigée est transmise */
             var res = col.update(record.id, v);
             m.close();
             if (apres) apres();

@@ -2285,7 +2285,7 @@
     }
 
     var rec = col('administrations').insert({
-      reference: C.nextRef('ADM-', 5),
+      reference: C.referenceSuivante('ADM-', 5, col('administrations').all()),   /* E363 : série lue sur le registre, jamais un compteur de page */
       prescriptionId: prescriptionId, prescriptionRef: pres.reference,
       ligneIndex: ligneIndex, libelle: ligne.libelle,
       patientId: pres.patientId, patientCode: pres.patientCode, patient: pres.patient,
