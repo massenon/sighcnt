@@ -78,7 +78,7 @@ Future<void> imprimerPiece(BuildContext ctx, PieceA4 Function(ContexteEcran) fab
   return afficherApercu(ctx, fabrique(c));
 }
 
-List<Fiche> lignesDeBon(Fiche b) => [
+List<Fiche> lignesDeBonAchat(Fiche b) => [
       for (final l in (b['lignes'] as List? ?? const []))
         (l as Map).cast<String, Object?>()
     ];

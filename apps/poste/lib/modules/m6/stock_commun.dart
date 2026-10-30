@@ -21,7 +21,7 @@ const typographieMono = TextStyle(
 
 /// Les noms qui signent les états de stock dans la maquette (`m6-stock.js`), repris tels quels.
 const gestionnaireStock = 'MAMAN Zoukanéri';
-const directriceAdministrative = 'TAKI Alimatou';
+const directriceAdministrativeStock = 'TAKI Alimatou';
 const pharmacien = 'DIEYABIDI Aïssatou';
 
 num qte(Object? v) => nombreOuZero(v);

@@ -36,6 +36,6 @@ export 'src/impression/ticket.dart';
 export 'src/impression/etat.dart';
 
 export 'src/achats/achats.dart';
-export 'src/stock/delivrance.dart';
-export 'src/stock/emplacements.dart';
+export 'src/stock/delivrance.dart' hide referenceSuivante, LigneStock;
+export 'src/stock/emplacements.dart' hide etatStock;
 export 'src/stock/reprise_sage.dart';

@@ -42,7 +42,7 @@ PieceA4 pieceCommande(Fiche cm,
             valeur: (l) => m(l['montant']),
             droite: true,
             somme: (l) => n(l['montant'])),
-      ], lignes: lignesDeBon(cm))),
+      ], lignes: lignesDeBonAchat(cm))),
     ],
     signatures: const [
       Signature('Le Gestionnaire de Stock', nom: 'MAMAN Zoukanéri'),
@@ -152,8 +152,8 @@ class EcranCommandes extends StatelessWidget with EcranMaquette {
                       cle: 'nbLignes',
                       libelle: 'Articles',
                       droite: true,
-                      valeur: (x) => lignesDeBon(x).length,
-                      texte: (x) => '${lignesDeBon(x).length}'),
+                      valeur: (x) => lignesDeBonAchat(x).length,
+                      texte: (x) => '${lignesDeBonAchat(x).length}'),
                   ColonneTableau(
                       cle: 'montant',
                       libelle: 'Montant',
@@ -275,7 +275,7 @@ void _consulter(BuildContext ecran, Fiche cm) {
                   droite: true),
               ColonneMini('P.U.', (l) => m(l['prixUnitaire']), droite: true),
               ColonneMini('Montant', (l) => m(l['montant']), droite: true),
-            ], lignes: lignesDeBon(cm))),
+            ], lignes: lignesDeBonAchat(cm))),
       ]),
       pied: (fermer) => [
             if (cm['statutCommande'] == 'attente_validation' && c.droit.editer)
@@ -324,7 +324,7 @@ class _EtatModaleCommande extends State<_ModaleCommande> {
   void initState() {
     super.initState();
     final c = widget.contexte;
-    _lignes = widget.record == null ? [] : lignesDeBon(widget.record!);
+    _lignes = widget.record == null ? [] : lignesDeBonAchat(widget.record!);
     _produits = articlesDuReferentiel(c.magasin);
     _f = ControleurFormulaire([
       const ChampDef(

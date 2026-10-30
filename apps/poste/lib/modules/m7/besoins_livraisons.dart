@@ -48,7 +48,7 @@ PieceA4 pieceLivraison(Fiche l,
             valeur: (x) => m(x['montant']),
             droite: true,
             somme: (x) => n(x['montant'])),
-      ], lignes: lignesDeBon(l))),
+      ], lignes: lignesDeBonAchat(l))),
     ],
     signatures: const [
       Signature('Le Livreur', mention: 'Fournisseur'),
@@ -157,8 +157,8 @@ class EcranLivraisons extends StatelessWidget with EcranMaquette {
                       cle: 'nbLignes',
                       libelle: 'Articles',
                       droite: true,
-                      valeur: (l) => lignesDeBon(l).length,
-                      texte: (l) => '${lignesDeBon(l).length}'),
+                      valeur: (l) => lignesDeBonAchat(l).length,
+                      texte: (l) => '${lignesDeBonAchat(l).length}'),
                   ColonneTableau(
                       cle: 'montant',
                       libelle: 'Montant',
@@ -234,7 +234,7 @@ void _consulter(BuildContext ecran, Fiche l) {
                               fontWeight: FontWeight.w600))
                       : const BadgeSigh('OK', ton: TonSigh.succes)),
               ColonneMini('Montant', (x) => m(x['montant']), droite: true),
-            ], lignes: lignesDeBon(l))),
+            ], lignes: lignesDeBonAchat(l))),
       ]),
       pied: (_) => [
             BoutonSigh(

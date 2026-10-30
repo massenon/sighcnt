@@ -51,7 +51,7 @@ PieceA4 pieceBon(Fiche b,
             libelle: 'Quantité livrée',
             valeur: (l) => l['quantiteLivree'] ?? '',
             droite: true),
-      ], lignes: lignesDeBon(b))),
+      ], lignes: lignesDeBonAchat(b))),
     ],
     signatures: [
       Signature('Le Demandeur', nom: '${b['demandeur'] ?? ''}'),
@@ -285,8 +285,8 @@ class _TableauBesoins extends StatelessWidget {
             cle: 'nbLignes',
             libelle: 'Articles',
             droite: true,
-            valeur: (b) => lignesDeBon(b).length,
-            texte: (b) => '${lignesDeBon(b).length}'),
+            valeur: (b) => lignesDeBonAchat(b).length,
+            texte: (b) => '${lignesDeBonAchat(b).length}'),
         ColonneTableau(
             cle: 'quantites',
             libelle: 'Demandé / Accordé',
@@ -450,7 +450,7 @@ void _consulter(BuildContext ctx, Fiche b) {
                       ? nombre(l['quantiteLivree'])
                       : '—',
                   droite: true),
-            ], lignes: lignesDeBon(b))),
+            ], lignes: lignesDeBonAchat(b))),
       ]),
       pied: (fermer) => [
             BoutonSigh(
@@ -576,7 +576,7 @@ class _EtatModaleArbitrage extends State<_ModaleArbitrage> {
                     ? '—'
                     : nombre(l['quantiteAccordee']),
                 droite: true),
-          ], lignes: lignesDeBon(widget.bon)),
+          ], lignes: lignesDeBonAchat(widget.bon)),
           const SizedBox(height: 12),
           FormulaireSigh(controleur: _f),
           const SizedBox(height: 16),
@@ -670,7 +670,7 @@ class _EtatModaleBon extends State<_ModaleBon> {
     super.initState();
     final c = widget.contexte;
     final r = widget.record;
-    _lignes = r == null ? [] : lignesDeBon(r);
+    _lignes = r == null ? [] : lignesDeBonAchat(r);
     _produits = articlesDuReferentiel(c.magasin);
     // Seul celui qui tient le circuit choisit l'étape ; un agent qui exprime un besoin n'a pas à se placer lui-même en « validation DA ».
     final pilote = pilotageCircuit(role: c.role, droitEditer: c.droit.editer);

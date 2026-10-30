@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 40,
+ "ecrans_portes": 50,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -28,6 +28,22 @@
    "mesure": true,
    "attendus": 24,
    "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-dispensation",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-etiquetage",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
    "taux": 1.0,
    "manquants": []
   },
@@ -72,6 +88,22 @@
    "manquants": []
   },
   {
+   "id": "m6-pharmacie-externe",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-pharmacie-interne",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m6-point-stock",
    "mesure": true,
    "attendus": 23,
@@ -92,6 +124,14 @@
    "mesure": true,
    "attendus": 23,
    "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-reprise",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
    "taux": 1.0,
    "manquants": []
   },
@@ -125,6 +165,30 @@
    ]
   },
   {
+   "id": "m7-besoins",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-commandes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-ecarts",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m7-factures-fournisseurs",
    "mesure": true,
    "attendus": 19,
@@ -141,6 +205,14 @@
    "manquants": []
   },
   {
+   "id": "m7-livraisons",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m7-pv-reception-consommables",
    "mesure": true,
    "attendus": 18,
@@ -153,6 +225,14 @@
    "mesure": true,
    "attendus": 18,
    "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-receptions",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },

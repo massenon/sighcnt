@@ -134,8 +134,8 @@ class EcranReceptions extends StatelessWidget with EcranMaquette {
                       cle: 'nbLignes',
                       libelle: 'Articles',
                       droite: true,
-                      valeur: (x) => lignesDeBon(x).length,
-                      texte: (x) => '${lignesDeBon(x).length}'),
+                      valeur: (x) => lignesDeBonAchat(x).length,
+                      texte: (x) => '${lignesDeBonAchat(x).length}'),
                   ColonneTableau(
                       cle: 'montant',
                       libelle: 'Montant',
@@ -187,7 +187,7 @@ class _EtatModaleReception extends State<_ModaleReception> {
   @override
   void initState() {
     super.initState();
-    _lignes = lignesDeBon(widget.commande);
+    _lignes = lignesDeBonAchat(widget.commande);
     // Par défaut, tout ce qui est commandé est reçu.
     _recus = [
       for (final l in _lignes) TextEditingController(text: '${l['quantite']}')

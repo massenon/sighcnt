@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/emplacements.dart' as emp show etatStock;
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
@@ -181,7 +182,7 @@ class EcranEtiquetage extends StatelessWidget with EcranMaquette {
             titre: 'Articles par emplacement',
             lignes: [
               for (final p in produits)
-                {...p, 'etat': etatStock(p), 'emplacement': p['emplacement']}
+                {...p, 'etat': emp.etatStock(p), 'emplacement': p['emplacement']}
             ],
             nomExport: 'emplacements',
             taillePage: 15,

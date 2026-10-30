@@ -140,3 +140,18 @@ Le kit de composants est un **clone mesuré**, pas une ressemblance : `prototype
 **Limite dite** : le sélecteur d'exercice (en-tête M12) n'est pas porté ; les registres MECeF montrent tous les exercices.
 
 **La tranche 1 est complète : 17 écrans portés.** Restent la tranche 2 (27 écrans) et les suivantes, ainsi que les moteurs à état (T18) et les modules complémentaires de la mère (T19).
+
+## Mise à jour du 30/10/2026 (tranche 2 — stocks et achats : 43 écrans portés sur 321)
+
+**26 écrans de plus portés à N1 = 100 % mesuré** (statuts « porté » verrouillés), par six agents en parallèle sur la méthode de `docs/plans/BRIEF-PORTAGE-ECRAN.md`, fusionnés ici :
+- **M6 (16)** : `m6-dashboard`, `m6-produits`, `m6-stock-gros`, `m6-stock-detail`, `m6-lots`, `m6-alertes`, `m6-mouvements`, `m6-inventaire`, `m6-inventaire-feuille`, `m6-pertes`, `m6-pharmacie-interne`, `m6-pharmacie-externe`, `m6-dispensation`, `m6-etiquetage`, `m6-reprise`, `m6-point-ventes`, `m6-point-stock`.
+- **M7 (9)** : `m7-besoins`, `m7-commandes`, `m7-livraisons`, `m7-receptions`, `m7-ecarts`, `m7-pv-reception-consommables`, `m7-pv-reception-reactifs`, `m7-fournisseurs`, `m7-factures-fournisseurs`.
+- Chaque règle chiffrée est dans `packages/domaine` (domaine : 554 tests) et rejouée sur des vecteurs tirés des écrans réels de la maquette ; poste : 297 tests verts.
+
+**Pas encore porté de la tranche 2** : `m6-transferts` (N1 0,818). La collection `transferts` est **vide** dans le jeu exporté alors que la maquette montre 20 bons : le tableau vide n'affiche pas ses en-têtes. Le peuplement `transfertsGrosDetail` rend 0 sur la base jetable sans erreur ; cause non élucidée. L'écran est écrit et testé (N1 100 % avec un bon posé) ; il attend le jeu.
+
+**Écarts** : chaque agent a consigné les siens dans `ECARTS-MAQUETTE.md` ; **les numéros E17 et suivants se chevauchent entre sections** (renumérotation à faire). Plusieurs sont des corrections de la maquette indiscutables (références issues d'un compteur de page, deux lignes d'un même produit qui passaient chacune le contrôle de stock et menaient à un stock négatif — RG-03 violé —, ordonnances jamais délivrables à cause d'un statut mal nommé) ; d'autres sont à arbitrer par la Direction (dont **RG-04 contournable** : « Valider (DA) » offert à tout profil qui écrit dans M7).
+
+**Fusion** : trois agents avaient défini des noms identiques dans `packages/domaine` (`FicheStock`, `etatStock`, `trierStable`, `referenceSuivante`, `LigneStock`, `TypeMouvement`…) ; le barrel (`sigh_domaine.dart`) en garde une version et les fichiers qui ont besoin de l'autre l'importent par son chemin. Dette à solder : un espace de noms par domaine.
+
+**Limites dites** : aucune comparaison visuelle (N3) ; aucun test sur imprimante ; `ordonnances` et `taches` vides dans le jeu (les pharmacies s'ouvrent vides sur le jeu actuel) ; la bascule de valorisation des sorties (prix de vente ou CUMP) n'est pas dans le jeu ; `notifications` n'est pas déclarée au magasin.

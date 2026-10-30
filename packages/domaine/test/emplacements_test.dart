@@ -1,5 +1,6 @@
 // Rejoue les vecteurs de m6-etiquetage (prototype_html/build/vecteurs-etiquetage.js) : plan des rayons, indicateurs, étiquettes, fiche d'un emplacement créé.
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/emplacements.dart' as emp show etatStock;
 import 'package:test/test.dart';
 
 import 'aide_vecteurs.dart';
@@ -49,7 +50,7 @@ void main() {
   test('l\'état d\'un article : rupture, critique (au seuil ou dessous), normal', () {
     final etats = {for (final l in liste((lu['tables'] as List)[1]['lignes'])) (l['cellules'] as List)[1]: (l['cellules'] as List)[5]};
     for (final p in produits) {
-      final attendu = {'rupture': 'Rupture', 'critique': 'Critique', 'normal': 'Normal'}[etatStock(p)];
+      final attendu = {'rupture': 'Rupture', 'critique': 'Critique', 'normal': 'Normal'}[emp.etatStock(p)];
       expect(attendu, etats[p['code']], reason: '${p['code']}');
     }
   });

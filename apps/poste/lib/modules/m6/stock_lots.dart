@@ -88,7 +88,7 @@ class EcranLotsStock extends StatelessWidget with EcranMaquette {
               Signature('Le Pharmacien', nom: pharmacien),
               Signature('Le Gestionnaire de Stock', nom: gestionnaireStock),
               Signature('La Directrice Administrative',
-                  nom: directriceAdministrative),
+                  nom: directriceAdministrativeStock),
             ],
             reference:
                 PieceA4.reference_(auj, ImpressionPoste.prochainNumero()),

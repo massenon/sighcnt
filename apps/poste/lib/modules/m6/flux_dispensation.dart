@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/delivrance.dart' as dv show LigneStock;
 
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
@@ -233,15 +234,15 @@ class EcranDispensation extends StatelessWidget with EcranMaquette {
               titre: 'Lignes à servir',
               sansRemplissage: true,
               child: MiniTableauSigh(colonnes: [
-                ColonneMini('Produit', (e) => '${(e['e'] as LigneStock).ligne['produit']}'),
+                ColonneMini('Produit', (e) => '${(e['e'] as dv.LigneStock).ligne['produit']}'),
                 ColonneMini('Posologie', (e) {
-                  final p = (e['e'] as LigneStock).ligne['posologie'];
+                  final p = (e['e'] as dv.LigneStock).ligne['posologie'];
                   return p == null || p == '' ? '—' : '$p';
                 }),
-                ColonneMini('Demandé', (e) => '${(e['e'] as LigneStock).ligne['quantite']}', droite: true),
-                ColonneMini('En pharmacie', (e) => _js((e['e'] as LigneStock).disponible), droite: true),
-                ColonneMini('Servable', (e) => (e['e'] as LigneStock).suffisant ? 'Oui' : 'Stock insuffisant',
-                    rendu: (e) => (e['e'] as LigneStock).suffisant
+                ColonneMini('Demandé', (e) => '${(e['e'] as dv.LigneStock).ligne['quantite']}', droite: true),
+                ColonneMini('En pharmacie', (e) => _js((e['e'] as dv.LigneStock).disponible), droite: true),
+                ColonneMini('Servable', (e) => (e['e'] as dv.LigneStock).suffisant ? 'Oui' : 'Stock insuffisant',
+                    rendu: (e) => (e['e'] as dv.LigneStock).suffisant
                         ? const BadgeSigh('Oui', ton: TonSigh.succes)
                         : const BadgeSigh('Stock insuffisant', ton: TonSigh.danger)),
               ], lignes: [
