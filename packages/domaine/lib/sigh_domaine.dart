@@ -26,6 +26,7 @@ export 'src/achats/factures_fournisseurs.dart';
 export 'src/stock/referentiels_stock.dart';
 export 'src/stock/stock.dart';
 export 'src/graphiques/echelle.dart';
+export 'src/stock/mouvements_stock.dart';
 export 'src/impression/identite.dart';
 export 'src/impression/ticket.dart';
 export 'src/impression/etat.dart';

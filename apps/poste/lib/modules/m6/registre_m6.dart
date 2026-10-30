@@ -6,6 +6,11 @@ import 'stock_dashboard.dart';
 import 'stock_lots.dart';
 import 'stock_niveaux.dart';
 import 'stock_produits.dart';
+import 'mvt_inventaire.dart';
+import 'mvt_inventaire_feuille.dart';
+import 'mvt_mouvements.dart';
+import 'mvt_pertes.dart';
+import 'mvt_transferts.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -18,4 +23,10 @@ final Map<String, ConstruireEcran> ecransM6 = {
   'm6-stock-detail': (c, cfg) => const EcranNiveauStock.detail(),
   'm6-lots': (c, cfg) => const EcranLotsStock(),
   'm6-alertes': (c, cfg) => const EcranAlertesStock(),
+  // Mouvements de stock : transferts multi-lignes, mouvements, inventaires et leur feuille, pertes (fichiers `mvt_*`).
+  'm6-transferts': (c, cfg) => const EcranTransferts(),
+  'm6-mouvements': (c, cfg) => const EcranMouvements(),
+  'm6-inventaire': (c, cfg) => const EcranInventaires(),
+  'm6-inventaire-feuille': (c, cfg) => const EcranInventaireFeuille(),
+  'm6-pertes': (c, cfg) => const EcranPertes(),
 };
