@@ -4,7 +4,8 @@
   "private": true,
   "description": "Prototype HTML du Systeme Integre de Gestion Hospitaliere — Clinique NASSIERA TOO SARL",
   "scripts": {
-    "pages": "node build/gen-pages.js",
+    "pages": "node build/gen-pages.js && node build/gen-mobile.js",
+    "mobile:check": "node build/check-mobile.js",
     "safelist": "node build/gen-safelist.js",
     "compta": "node build/gen-compta.js",
     "css": "tailwindcss -i src/input.css -o assets/css/tailwind.css --minify",
