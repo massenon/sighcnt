@@ -52,7 +52,7 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         ['ligne 100 % assureur (part patient 0) : réglée par un versement nul', [ligne('B1', 'Consultation', 0, 5000), ligne('B2', 'Pansement', 1500)], [{ montant: 1500 }]],
         ['facture sans lignes (pièce antérieure au modèle) : partiel puis solde par montant', [], [{ montant: 3000 }, { montant: 99999 }], { montantTTC: 8000, partPatient: 8000, reliquat: 8000 }],
         ['facture sans lignes, sans partPatient : le TTC fait le dû', [], [{}], { montantTTC: 4500, partPatient: null, reliquat: 4500 }],
-        ['numéro de pièce sans chiffres : l\'écriture prend l\'id', [ligne('C1', 'Consultation', 1000)], [{ lignes: ['C1'] }], { numero: null }],
+        ['numéro de facture sans chiffres : la pièce prend le rang suivant de la série annuelle', [ligne('C1', 'Consultation', 1000)], [{ lignes: ['C1'] }], { numero: null }],
       ];
 
       const out = [];
@@ -60,6 +60,8 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         const [nom, lignes, pas, extra] = d;
         const f = poser(lignes, extra);
         const initiale = propre(f);
+        /* Les écritures DÉJÀ au journal (série annuelle des numéros, créance assureur déjà constatée) font partie de l'entrée. */
+        const existantes = propre(S.collection('ecritures').all().filter((e) => e.journal === 'CAI').map((e) => ({ numero: e.numero, pieceId: e.pieceId, compte: e.compte, statut: e.statut, journal: e.journal })));
         const etapes = [];
         for (const opts of pas) {
           const avant = new Set(ecrituresDe(f.id));
@@ -81,7 +83,7 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
             ecritures: propre(ecr.map((e) => ({ numero: e.numero, date: e.date, journal: e.journal, compte: e.compte, libelle: e.libelle, debit: e.debit, credit: e.credit, statut: e.statut, origine: e.origine, pieceNumero: e.pieceNumero === undefined ? null : e.pieceNumero }))),
           });
         }
-        out.push({ nom, facture: propre({ numero: initiale.numero === undefined ? null : initiale.numero, id: initiale.id, patient: initiale.patient, assureur: initiale.assureur, lignes: initiale.lignes, montantTTC: initiale.montantTTC, partPatient: initiale.partPatient, partAssureur: initiale.partAssureur, montantPaye: initiale.montantPaye, statutPaiement: initiale.statutPaiement }), etapes });
+        out.push({ nom, ecrituresExistantes: existantes, facture: propre({ numero: initiale.numero === undefined ? null : initiale.numero, id: initiale.id, patient: initiale.patient, assureur: initiale.assureur, lignes: initiale.lignes, montantTTC: initiale.montantTTC, partPatient: initiale.partPatient, partAssureur: initiale.partAssureur, montantPaye: initiale.montantPaye, statutPaiement: initiale.statutPaiement }), etapes });
       }
       return out;
     });

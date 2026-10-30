@@ -1175,15 +1175,49 @@
     prestations: { num: '706000', libelle: 'Services vendus — prestations de soins' },
   };
 
+  /* LA PART ASSUREUR SE CONSTATE UNE SEULE FOIS (correction du 30/10/2026, écart E1 de ECARTS-MAQUETTE.md).
+     Elle était ré-inscrite à CHAQUE versement partiel : une facture assurée réglée en deux fois par le patient posait
+     deux fois la créance sur la compagnie (411) et deux fois le produit correspondant (706). Désormais le PREMIER
+     versement constate la créance assureur ; les suivants ne constatent que ce que le patient verse.
+     Au total, sur la vie de la facture : 706 = montant facturé, 411 = part assureur, 571 = part patient. */
+  function creanceAssureurDejaConstatee(facture) {
+    return col('ecritures').all().some(function (e) {
+      return e.pieceId === facture.id && e.compte === COMPTES_CAISSE.clientsAssurance.num && e.statut !== 'archive';
+    });
+  }
+
+  /* LE NUMÉRO DE PIÈCE EST UNE SÉRIE ANNUELLE (correction du 30/10/2026, écart E3). Il prenait les cinq derniers chiffres
+     du numéro de facture — deux factures de deux années pouvaient se heurter, une facture sans chiffres donnait « CAI-2026-8 »
+     — et le millésime était écrit en dur. Désormais : le millésime est celui de la date de l'écriture, le rang est le
+     suivant de la série de l'année, et les versements d'une même facture REPRENNENT le numéro de sa première écriture. */
+  function numeroPieceCaisse(facture, date) {
+    var existante = col('ecritures').all().filter(function (e) {
+      return e.pieceId === facture.id && e.journal === 'CAI' && e.numero;
+    })[0];
+    if (existante) return existante.numero;
+    var annee = String(date).slice(0, 4);
+    var prefixe = 'CAI-' + annee + '-';
+    var max = 0;
+    col('ecritures').all().forEach(function (e) {
+      if (typeof e.numero === 'string' && e.numero.indexOf(prefixe) === 0) {
+        var n = parseInt(e.numero.slice(prefixe.length), 10);
+        if (n > max) max = n;
+      }
+    });
+    return prefixe + C.pad(max + 1, 5);
+  }
+
   function ecrireEncaissement(facture, montantRegle) {
     var lignes = [];
-    var partAssureur = Number(facture.partAssureur) || 0;
+    var constatee = creanceAssureurDejaConstatee(facture);
+    var partAssureur = constatee ? 0 : (Number(facture.partAssureur) || 0);
     var total = montantRegle + partAssureur;
     if (total <= 0) return [];
 
-    var numero = 'CAI-2026-' + String(facture.numero || facture.id).replace(/[^0-9]/g, '').slice(-5);
+    var date = C.iso(new Date());
+    var numero = numeroPieceCaisse(facture, date);
     var base = {
-      numero: numero, date: C.iso(new Date()),
+      numero: numero, date: date,
       journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
       libelle: 'Encaissement facture ' + (facture.numero || facture.id)
         + ' — ' + (facture.patient || ''),

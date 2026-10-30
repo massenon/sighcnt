@@ -6,9 +6,10 @@
 ///
 /// Les vecteurs (`test/vecteurs/encaissement.json`) sont des SÉQUENCES de versements engendrées par la maquette.
 ///
-/// ⚠ Deux comportements de la maquette sont portés FIDÈLEMENT et signalés plutôt que « corrigés » (voir
-/// docs/architecture/ECARTS-MAQUETTE.md) : la part assureur est ré-écrite à chaque versement partiel, et une pièce sans
-/// lignes accepte un versement supérieur au dû.
+/// Corrigés dans la maquette PUIS portés (docs/architecture/ECARTS-MAQUETTE.md, E1 et E3, décision du 30/10/2026) :
+///   · la part assureur n'est constatée (411 / 706) qu'au PREMIER versement d'une facture ;
+///   · le numéro de pièce est une série annuelle : millésime de la date, rang suivant, repris par les versements suivants.
+/// Reste porté fidèlement et signalé : une pièce sans lignes accepte un versement supérieur au dû (E2).
 library;
 
 import '../format/js.dart';
@@ -44,6 +45,7 @@ ResultatEncaissement encaisser(
   required String aujourdhui,
   required String maintenant,
   String utilisateur = '',
+  List<Map<String, Object?>> ecritures = const [],
 }) {
   if (facture['statutPaiement'] == 'soldee') {
     return ResultatEncaissement(facture: facture, deja: true, lignesReglees: const [], montantRegle: null, restantDu: null, ecritures: const []);
@@ -101,27 +103,47 @@ ResultatEncaissement encaisser(
     'dernierReglement': {'date': maintenant, 'montant': paye, 'mode': modeRetenu, 'lignes': reglees.map((l) => l['id']).toList(), 'encaissePar': utilisateur},
   };
 
-  final ecritures = paye > 0 ? ecritureEncaissement(apres, paye, aujourdhui) : <Map<String, Object?>>[];
+  final posees = paye > 0 ? ecritureEncaissement(apres, paye, aujourdhui, ecritures) : <Map<String, Object?>>[];
   return ResultatEncaissement(
     facture: apres,
     deja: false,
     lignesReglees: [for (final l in reglees) '${l['id']}'],
     montantRegle: paye,
     restantDu: restantDu,
-    ecritures: ecritures,
+    ecritures: posees,
   );
 }
 
-/// Écriture d'encaissement : débit 571 de la part réglée, débit 411 de la part assureur, crédit 706 du total.
-/// Contrôlée ÉQUILIBRÉE avant d'exister (RG-10) : un déséquilibre rend une liste vide. Elle naît en BROUILLON.
-List<Map<String, Object?>> ecritureEncaissement(Map<String, Object?> facture, double montantRegle, String aujourdhui) {
-  final partAssureur = _n(facture['partAssureur']);
+/// La créance sur l'assureur est-elle déjà constatée pour cette facture (une écriture 411 non archivée) ?
+bool creanceAssureurConstatee(Map<String, Object?> facture, List<Map<String, Object?>> ecritures) =>
+    ecritures.any((e) => e['pieceId'] == facture['id'] && e['compte'] == compteClientsAssurance && e['statut'] != 'archive');
+
+/// Numéro de pièce de caisse : celui de la première écriture de la facture, sinon `CAI-AAAA-NNNNN` (rang suivant de l'année).
+String numeroPieceCaisse(Map<String, Object?> facture, String date, List<Map<String, Object?>> ecritures) {
+  for (final e in ecritures) {
+    if (e['pieceId'] == facture['id'] && e['journal'] == 'CAI' && _vrai(e['numero'])) return '${e['numero']}';
+  }
+  final prefixe = 'CAI-${date.substring(0, 4)}-';
+  var max = 0;
+  for (final e in ecritures) {
+    final n = e['numero'];
+    if (n is String && n.startsWith(prefixe)) {
+      final rang = int.tryParse(n.substring(prefixe.length)) ?? 0;
+      if (rang > max) max = rang;
+    }
+  }
+  return '$prefixe${(max + 1).toString().padLeft(5, '0')}';
+}
+
+/// Écriture d'encaissement : débit 571 de la part réglée, débit 411 de la part assureur (au premier versement seulement),
+/// crédit 706 du total. Contrôlée ÉQUILIBRÉE avant d'exister (RG-10) : un déséquilibre rend une liste vide. Brouillon.
+List<Map<String, Object?>> ecritureEncaissement(Map<String, Object?> facture, double montantRegle, String aujourdhui, [List<Map<String, Object?>> ecritures = const []]) {
+  final partAssureur = creanceAssureurConstatee(facture, ecritures) ? 0.0 : _n(facture['partAssureur']);
   final total = montantRegle + partAssureur;
   if (total <= 0) return const [];
 
   final ref = '${_vrai(facture['numero']) ? facture['numero'] : facture['id']}';
-  final chiffres = ref.replaceAll(RegExp(r'[^0-9]'), '');
-  final numero = 'CAI-2026-${chiffres.length > 5 ? chiffres.substring(chiffres.length - 5) : chiffres}';
+  final numero = numeroPieceCaisse(facture, aujourdhui, ecritures);
   final base = <String, Object?>{
     'numero': numero, 'date': aujourdhui, 'journal': 'CAI', 'journalLibelle': 'Journal de caisse-dépenses',
     'libelle': 'Encaissement facture $ref — ${facture['patient'] ?? ''}',

@@ -3,9 +3,239 @@
  "cas": [
   {
    "nom": "une ligne nommée (la 2e) : partiel",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00901",
-    "id": "FACxmvukksm976ny2",
+    "id": "FACxmvumpzdg26ufu",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -90,7 +320,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00901",
+       "numero": "CAI-2026-00127",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -102,7 +332,7 @@
        "pieceNumero": "FC-2026-00901"
       },
       {
-       "numero": "CAI-2026-00901",
+       "numero": "CAI-2026-00127",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -119,9 +349,253 @@
   },
   {
    "nom": "toutes les lignes nommées : soldée, base MECeF = tout le versé",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00902",
-    "id": "FACxmvukksmbc01rv",
+    "id": "FACxmvumpzf5i9k53",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -212,7 +686,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00902",
+       "numero": "CAI-2026-00128",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -224,7 +698,7 @@
        "pieceNumero": "FC-2026-00902"
       },
       {
-       "numero": "CAI-2026-00902",
+       "numero": "CAI-2026-00128",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -241,9 +715,267 @@
   },
   {
    "nom": "nommées en deux fois : partielle puis soldée, le cumul se lit sur la facture",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00903",
-    "id": "FACxmvukksmcfxir6",
+    "id": "FACxmvumpzf6xa7ys",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -328,7 +1060,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00903",
+       "numero": "CAI-2026-00129",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -340,7 +1072,7 @@
        "pieceNumero": "FC-2026-00903"
       },
       {
-       "numero": "CAI-2026-00903",
+       "numero": "CAI-2026-00129",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -399,7 +1131,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00903",
+       "numero": "CAI-2026-00129",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -411,7 +1143,7 @@
        "pieceNumero": "FC-2026-00903"
       },
       {
-       "numero": "CAI-2026-00903",
+       "numero": "CAI-2026-00129",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -470,7 +1202,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00903",
+       "numero": "CAI-2026-00129",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -482,7 +1214,7 @@
        "pieceNumero": "FC-2026-00903"
       },
       {
-       "numero": "CAI-2026-00903",
+       "numero": "CAI-2026-00129",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -499,9 +1231,309 @@
   },
   {
    "nom": "montant 6000 : la 1re ligne (5000) passe, les autres (3000, 2000) ne tiennent pas dans 1000",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00904",
-    "id": "FACxmvukksmeezjoe",
+    "id": "FACxmvumpzf847v28",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -584,7 +1616,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00904",
+       "numero": "CAI-2026-00130",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -596,7 +1628,7 @@
        "pieceNumero": "FC-2026-00904"
       },
       {
-       "numero": "CAI-2026-00904",
+       "numero": "CAI-2026-00130",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -613,9 +1645,323 @@
   },
   {
    "nom": "montant 8000 : 5000 + 3000, la 3e ne tient pas",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00905",
-    "id": "FACxmvukksmfxq4jz",
+    "id": "FACxmvumpzf9chugr",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -700,7 +2046,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00905",
+       "numero": "CAI-2026-00131",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -712,7 +2058,7 @@
        "pieceNumero": "FC-2026-00905"
       },
       {
-       "numero": "CAI-2026-00905",
+       "numero": "CAI-2026-00131",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -729,9 +2075,337 @@
   },
   {
    "nom": "montant 7000 : 5000, la 2e (3000) saute, la 3e (2000) tient dans le reste",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00906",
-    "id": "FACxmvukksmfqdra6",
+    "id": "FACxmvumpzfae3ewc",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -816,7 +2490,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00906",
+       "numero": "CAI-2026-00132",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -828,7 +2502,7 @@
        "pieceNumero": "FC-2026-00906"
       },
       {
-       "numero": "CAI-2026-00906",
+       "numero": "CAI-2026-00132",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -845,9 +2519,351 @@
   },
   {
    "nom": "montant 4000 : aucune ligne n'est couverte ENTIÈREMENT : rien n'est réglé",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00907",
-    "id": "FACxmvukksmfjz4kd",
+    "id": "FACxmvumpzfbmz92e",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -930,7 +2946,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00907",
+       "numero": "CAI-2026-00133",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -942,7 +2958,7 @@
        "pieceNumero": "FC-2026-00907"
       },
       {
-       "numero": "CAI-2026-00907",
+       "numero": "CAI-2026-00133",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -959,9 +2975,365 @@
   },
   {
    "nom": "montant omis : le dû total",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00908",
-    "id": "FACxmvukksmg6b3q1",
+    "id": "FACxmvumpzfb9xurv",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -1046,7 +3418,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00908",
+       "numero": "CAI-2026-00134",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1058,7 +3430,7 @@
        "pieceNumero": "FC-2026-00908"
       },
       {
-       "numero": "CAI-2026-00908",
+       "numero": "CAI-2026-00134",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1075,9 +3447,379 @@
   },
   {
    "nom": "mode de règlement transmis",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00909",
-    "id": "FACxmvukksmg37u2q",
+    "id": "FACxmvumpzfc3ihju",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -1163,7 +3905,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00909",
+       "numero": "CAI-2026-00135",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1175,7 +3917,7 @@
        "pieceNumero": "FC-2026-00909"
       },
       {
-       "numero": "CAI-2026-00909",
+       "numero": "CAI-2026-00135",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1192,9 +3934,393 @@
   },
   {
    "nom": "ligne inconnue : rien réglé, aucune écriture",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00910",
-    "id": "FACxmvukksmh1az39",
+    "id": "FACxmvumpzfdokeqf",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -1279,9 +4405,393 @@
   },
   {
    "nom": "une ligne déjà réglée n'est pas réglée deux fois",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00911",
-    "id": "FACxmvukksmhhetgb",
+    "id": "FACxmvumpzfdkn435",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -1366,7 +4876,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00911",
+       "numero": "CAI-2026-00136",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1378,7 +4888,7 @@
        "pieceNumero": "FC-2026-00911"
       },
       {
-       "numero": "CAI-2026-00911",
+       "numero": "CAI-2026-00136",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1438,7 +4948,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00911",
+       "numero": "CAI-2026-00136",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1450,7 +4960,7 @@
        "pieceNumero": "FC-2026-00911"
       },
       {
-       "numero": "CAI-2026-00911",
+       "numero": "CAI-2026-00136",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1467,9 +4977,421 @@
   },
   {
    "nom": "facture déjà soldée : « deja », rien ne bouge",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00912",
-    "id": "FACxmvukksmi66jp5",
+    "id": "FACxmvumpzfesk8qx",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -1560,7 +5482,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00912",
+       "numero": "CAI-2026-00137",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1572,7 +5494,7 @@
        "pieceNumero": "FC-2026-00912"
       },
       {
-       "numero": "CAI-2026-00912",
+       "numero": "CAI-2026-00137",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1635,9 +5557,435 @@
   },
   {
    "nom": "assuré : part assureur 7000 → écriture 571 + 411 / 706 équilibrée",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00913",
-    "id": "FACxmvukksmi1eoyu",
+    "id": "FACxmvumpzffapzds",
     "patient": "TEST Patient",
     "assureur": "ASS-A",
     "lignes": [
@@ -1708,7 +6056,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00913",
+       "numero": "CAI-2026-00138",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1720,7 +6068,7 @@
        "pieceNumero": "FC-2026-00913"
       },
       {
-       "numero": "CAI-2026-00913",
+       "numero": "CAI-2026-00138",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "411110",
@@ -1732,7 +6080,7 @@
        "pieceNumero": "FC-2026-00913"
       },
       {
-       "numero": "CAI-2026-00913",
+       "numero": "CAI-2026-00138",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1786,31 +6134,19 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00913",
+       "numero": "CAI-2026-00138",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
        "libelle": "Encaissement facture FC-2026-00913 — TEST Patient",
        "debit": 0,
-       "credit": 15000,
+       "credit": 1000,
        "statut": "brouillon",
        "origine": "Automatique — Caisse",
        "pieceNumero": "FC-2026-00913"
       },
       {
-       "numero": "CAI-2026-00913",
-       "date": "2026-10-30",
-       "journal": "CAI",
-       "compte": "411110",
-       "libelle": "Encaissement facture FC-2026-00913 — TEST Patient — part ASS-A",
-       "debit": 14000,
-       "credit": 0,
-       "statut": "brouillon",
-       "origine": "Automatique — Caisse",
-       "pieceNumero": "FC-2026-00913"
-      },
-      {
-       "numero": "CAI-2026-00913",
+       "numero": "CAI-2026-00138",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1827,9 +6163,470 @@
   },
   {
    "nom": "ligne 100 % assureur (part patient 0) : réglée par un versement nul",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "411110",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00914",
-    "id": "FACxmvukksmknel31",
+    "id": "FACxmvumpzfgd4y2u",
     "patient": "TEST Patient",
     "assureur": "ASS-A",
     "lignes": [
@@ -1900,7 +6697,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00914",
+       "numero": "CAI-2026-00139",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1912,7 +6709,7 @@
        "pieceNumero": "FC-2026-00914"
       },
       {
-       "numero": "CAI-2026-00914",
+       "numero": "CAI-2026-00139",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "411110",
@@ -1924,7 +6721,7 @@
        "pieceNumero": "FC-2026-00914"
       },
       {
-       "numero": "CAI-2026-00914",
+       "numero": "CAI-2026-00139",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -1941,9 +6738,491 @@
   },
   {
    "nom": "facture sans lignes (pièce antérieure au modèle) : partiel puis solde par montant",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "411110",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "411110",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00915",
-    "id": "FACxmvukksmk97sa7",
+    "id": "FACxmvumpzfh1gsgv",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [],
@@ -1978,7 +7257,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00915",
+       "numero": "CAI-2026-00140",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -1990,7 +7269,7 @@
        "pieceNumero": "FC-2026-00915"
       },
       {
-       "numero": "CAI-2026-00915",
+       "numero": "CAI-2026-00140",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -2027,7 +7306,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00915",
+       "numero": "CAI-2026-00140",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -2039,7 +7318,7 @@
        "pieceNumero": "FC-2026-00915"
       },
       {
-       "numero": "CAI-2026-00915",
+       "numero": "CAI-2026-00140",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -2056,9 +7335,519 @@
   },
   {
    "nom": "facture sans lignes, sans partPatient : le TTC fait le dû",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "411110",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "411110",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": "FC-2026-00916",
-    "id": "FACxmvukksmlnozan",
+    "id": "FACxmvumpzfig71l9",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [],
@@ -2091,7 +7880,7 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-00916",
+       "numero": "CAI-2026-00141",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
@@ -2103,7 +7892,7 @@
        "pieceNumero": "FC-2026-00916"
       },
       {
-       "numero": "CAI-2026-00916",
+       "numero": "CAI-2026-00141",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
@@ -2119,10 +7908,534 @@
    ]
   },
   {
-   "nom": "numéro de pièce sans chiffres : l'écriture prend l'id",
+   "nom": "numéro de facture sans chiffres : la pièce prend le rang suivant de la série annuelle",
+   "ecrituresExistantes": [
+    {
+     "numero": "CAI-2026-00141",
+     "pieceId": "FACxmvumpzfig71l9",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00141",
+     "pieceId": "FACxmvumpzfig71l9",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00140",
+     "pieceId": "FACxmvumpzfh1gsgv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "411110",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00139",
+     "pieceId": "FACxmvumpzfgd4y2u",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "411110",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00138",
+     "pieceId": "FACxmvumpzffapzds",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00137",
+     "pieceId": "FACxmvumpzfesk8qx",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00136",
+     "pieceId": "FACxmvumpzfdkn435",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00135",
+     "pieceId": "FACxmvumpzfc3ihju",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00134",
+     "pieceId": "FACxmvumpzfb9xurv",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00133",
+     "pieceId": "FACxmvumpzfbmz92e",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00132",
+     "pieceId": "FACxmvumpzfae3ewc",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00131",
+     "pieceId": "FACxmvumpzf9chugr",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00130",
+     "pieceId": "FACxmvumpzf847v28",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00129",
+     "pieceId": "FACxmvumpzf6xa7ys",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00128",
+     "pieceId": "FACxmvumpzf5i9k53",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "706000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00127",
+     "pieceId": "FACxmvumpzdg26ufu",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00095",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00079",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00054",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00074",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00024",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00021",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00126",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00016",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "605100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00083",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00002",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00008",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00042",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "605200",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00001",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "605200",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00052",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00025",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00063",
+     "compte": "411000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00028",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "628100",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00041",
+     "compte": "571000",
+     "statut": "validee",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "605100",
+     "statut": "brouillon",
+     "journal": "CAI"
+    },
+    {
+     "numero": "CAI-2026-00092",
+     "compte": "571000",
+     "statut": "brouillon",
+     "journal": "CAI"
+    }
+   ],
    "facture": {
     "numero": null,
-    "id": "FACxmvukksmldvu8v",
+    "id": "FACxmvumpzfjy96dr",
     "patient": "TEST Patient",
     "assureur": null,
     "lignes": [
@@ -2179,11 +8492,11 @@
      },
      "ecritures": [
       {
-       "numero": "CAI-2026-8",
+       "numero": "CAI-2026-00142",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "706000",
-       "libelle": "Encaissement facture FACxmvukksmldvu8v — TEST Patient",
+       "libelle": "Encaissement facture FACxmvumpzfjy96dr — TEST Patient",
        "debit": 0,
        "credit": 1000,
        "statut": "brouillon",
@@ -2191,11 +8504,11 @@
        "pieceNumero": null
       },
       {
-       "numero": "CAI-2026-8",
+       "numero": "CAI-2026-00142",
        "date": "2026-10-30",
        "journal": "CAI",
        "compte": "571000",
-       "libelle": "Encaissement facture FACxmvukksmldvu8v — TEST Patient",
+       "libelle": "Encaissement facture FACxmvumpzfjy96dr — TEST Patient",
        "debit": 1000,
        "credit": 0,
        "statut": "brouillon",

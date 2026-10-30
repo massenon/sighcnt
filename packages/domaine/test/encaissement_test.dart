@@ -9,6 +9,7 @@ Map<String, Object?> m(Object? v) => (v! as Map).cast<String, Object?>();
 List<Map<String, Object?>> l(Object? v) => ((v ?? const []) as List).map(m).toList();
 
 void main() {
+  testsCorrections();
   final f = File('test/vecteurs/encaissement.json');
   if (!f.existsSync()) fail('vecteurs absents : lancer `node prototype_html/build/vecteurs-encaissement.js`');
   final cas = l((jsonDecode(f.readAsStringSync()) as Map)['cas']);
@@ -16,6 +17,7 @@ void main() {
   for (final c in cas) {
     test('${c['nom']}', () {
       var facture = m(c['facture']);
+      final journal = l(c['ecrituresExistantes']);
       var i = 0;
       for (final etape in l(c['etapes'])) {
         i++;
@@ -28,7 +30,9 @@ void main() {
           mode: opts['mode'] as String?,
           aujourdhui: date,
           maintenant: '2026-10-30T10:00:00.000Z',
+          ecritures: journal,
         );
+        journal.addAll(r.ecritures.map((e) => {'numero': e['numero'], 'pieceId': e['pieceId'], 'compte': e['compte'], 'statut': e['statut'], 'journal': e['journal']}));
         final raison = 'versement $i';
         expect(r.deja, etape['deja'], reason: raison);
         expect(r.lignesReglees, etape['lignesReglees'], reason: raison);
@@ -88,5 +92,47 @@ void main() {
     final avant = jsonEncode(fac);
     encaisser(fac, lignes: ['L1'], aujourdhui: '2026-10-30', maintenant: 'x');
     expect(jsonEncode(fac), avant);
+  });
+}
+
+void testsCorrections() {
+  Map<String, Object?> facture() => {
+        'id': 'F9', 'numero': 'FC-2026-00009', 'patient': 'T', 'assureur': 'ASS-A', 'partPatient': 3000, 'partAssureur': 14000, 'montantTTC': 17000, 'montantPaye': 0,
+        'lignes': [
+          {'id': 'A1', 'partPatient': 2000, 'statutPaiement': 'du'},
+          {'id': 'A2', 'partPatient': 1000, 'statutPaiement': 'du'},
+        ],
+      };
+
+  test('E1 corrigé : la créance assureur est constatée UNE fois sur la vie de la facture (706 = facturé, 411 = part assureur, 571 = part patient)', () {
+    final journal = <Map<String, Object?>>[];
+    var f = facture();
+    final toutes = <Map<String, Object?>>[];
+    for (final ligne in ['A1', 'A2']) {
+      final r = encaisser(f, lignes: [ligne], aujourdhui: '2026-10-30', maintenant: 'x', ecritures: journal);
+      journal.addAll(r.ecritures);
+      toutes.addAll(r.ecritures);
+      f = r.facture;
+    }
+    double somme(String compte, String sens) => toutes.where((e) => e['compte'] == compte).fold(0.0, (a, e) => a + (e[sens]! as num));
+    expect(somme('411110', 'debit'), 14000);
+    expect(somme('571000', 'debit'), 3000);
+    expect(somme('706000', 'credit'), 17000);
+    expect(toutes.fold(0.0, (a, e) => a + (e['debit']! as num)), toutes.fold(0.0, (a, e) => a + (e['credit']! as num)));
+  });
+
+  test('E3 corrigé : série annuelle (millésime de la date, rang suivant), reprise par les versements d\'une même facture', () {
+    final journal = <Map<String, Object?>>[
+      {'numero': 'CAI-2026-00007', 'pieceId': 'AUTRE', 'compte': '571000', 'journal': 'CAI'},
+      {'numero': 'CAI-2027-00002', 'pieceId': 'AUTRE2', 'compte': '571000', 'journal': 'CAI'},
+    ];
+    final r1 = encaisser(facture(), lignes: ['A1'], aujourdhui: '2026-10-30', maintenant: 'x', ecritures: journal);
+    expect(r1.ecritures.first['numero'], 'CAI-2026-00008');
+    journal.addAll(r1.ecritures);
+    final r2 = encaisser(r1.facture, lignes: ['A2'], aujourdhui: '2026-10-31', maintenant: 'x', ecritures: journal);
+    expect(r2.ecritures.first['numero'], 'CAI-2026-00008', reason: 'même facture, même pièce');
+    final autre = {...facture(), 'id': 'F10', 'numero': 'FC-2027-00009'};
+    final r3 = encaisser(autre, lignes: ['A1'], aujourdhui: '2027-01-05', maintenant: 'x', ecritures: journal);
+    expect(r3.ecritures.first['numero'], 'CAI-2027-00003', reason: 'millésime de la date, plus 2026 en dur');
   });
 }
