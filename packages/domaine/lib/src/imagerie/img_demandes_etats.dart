@@ -26,8 +26,8 @@ EtatImagerie etatImagerie(Object? id) =>
     EtatImagerie('$id', '$id', 'neutral');
 
 /// Une modalité d'imagerie : l'écran de son tableau et l'icône Lucide de son pictogramme.
-class ModaliteImagerie {
-  const ModaliteImagerie(this.code, this.libelle, this.ecran, this.icone);
+class ModaliteDemandeImagerie {
+  const ModaliteDemandeImagerie(this.code, this.libelle, this.ecran, this.icone);
   final String code;
   final String libelle;
   final String ecran;
@@ -35,25 +35,25 @@ class ModaliteImagerie {
 }
 
 /// Les cinq modalités (`D.IMAGERIE.MODALITES`) : UN socle, cinq modalités — la modalité est une PROPRIÉTÉ DE L'EXAMEN, lue au catalogue.
-const modalitesImagerie = <ModaliteImagerie>[
-  ModaliteImagerie('echographie', 'Échographie', 'm2-imagerie', 'scan-line'),
-  ModaliteImagerie(
+const modalitesDemandeImagerie = <ModaliteDemandeImagerie>[
+  ModaliteDemandeImagerie('echographie', 'Échographie', 'm2-imagerie', 'scan-line'),
+  ModaliteDemandeImagerie(
       'radiographie', 'Radiographie', 'm2-imagerie-radiographie', 'bone'),
-  ModaliteImagerie(
+  ModaliteDemandeImagerie(
       'mammographie', 'Mammographie', 'm2-imagerie-mammographie', 'ribbon'),
-  ModaliteImagerie('scanner', 'Scanner', 'm2-imagerie-scanner', 'radiation'),
-  ModaliteImagerie('irm', 'IRM — imagerie par résonance magnétique',
+  ModaliteDemandeImagerie('scanner', 'Scanner', 'm2-imagerie-scanner', 'radiation'),
+  ModaliteDemandeImagerie('irm', 'IRM — imagerie par résonance magnétique',
       'm2-imagerie-irm', 'magnet'),
 ];
 
 /// `imModalite(code)` : une modalité inconnue s'affiche sous son code.
-ModaliteImagerie modaliteImagerie(String code) =>
-    modalitesImagerie.where((m) => m.code == code).firstOrNull ??
-    ModaliteImagerie(code, code, '', 'scan-line');
+ModaliteDemandeImagerie modaliteDemandeImagerie(String code) =>
+    modalitesDemandeImagerie.where((m) => m.code == code).firstOrNull ??
+    ModaliteDemandeImagerie(code, code, '', 'scan-line');
 
 /// `imModaliteDe(codeExamen)` : la modalité se lit au CATALOGUE (`examensImagerie`) ; un examen sans modalité déclarée — ou absent du
 /// catalogue — reste à l'échographie, où il était saisi avant la vague 61.
-String modaliteDeExamen(
+String modaliteDemandeDeExamen(
     Iterable<Map<String, Object?>> catalogue, Object? codeExamen) {
   for (final x in catalogue) {
     if (x['statut'] == 'archive' || x['code'] != codeExamen) continue;

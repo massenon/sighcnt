@@ -162,7 +162,7 @@ OuvertureImagerie ouvrirDemandeImagerie({
       'patient': nomComplet,
       'examenCode': code,
       'examen': ex != null ? '${ex['label']}' : code,
-      'modalite': modaliteDeExamen(catalogue, code),
+      'modalite': modaliteDemandeDeExamen(catalogue, code),
       'prescripteur': _vrai(prescripteur) ? prescripteur : '—',
       'indication': _vrai(indication) ? indication : '',
       'urgent': urgent,

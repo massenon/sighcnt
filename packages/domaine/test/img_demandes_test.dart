@@ -21,17 +21,17 @@ void main() {
     });
     test('les cinq modalités : code, libellé, écran, icône', () {
       final lus = liste(v['modalites']);
-      expect(modalitesImagerie.length, lus.length);
-      for (final (i, m) in modalitesImagerie.indexed) {
+      expect(modalitesDemandeImagerie.length, lus.length);
+      for (final (i, m) in modalitesDemandeImagerie.indexed) {
         expect([m.code, m.libelle, m.ecran, m.icone], [lus[i]['code'], lus[i]['label'], lus[i]['ecran'], lus[i]['icone']]);
       }
     });
     test('un état inconnu s’affiche sous son identifiant, un examen inconnu reste à l’échographie', () {
       expect(etatImagerie('zzz').libelle, 'zzz');
       expect(etatImagerie('zzz').ton, 'neutral');
-      expect(modaliteDeExamen(catalogue, 'IMG-INCONNU'), 'echographie');
+      expect(modaliteDemandeDeExamen(catalogue, 'IMG-INCONNU'), 'echographie');
       for (final x in examens) {
-        expect(modaliteDeExamen(catalogue, x['code']), x['modalite']);
+        expect(modaliteDemandeDeExamen(catalogue, x['code']), x['modalite']);
       }
     });
   });

@@ -26,7 +26,7 @@ class LigneModalite {
       required this.payees,
       required this.redaction,
       required this.rendus});
-  final ModaliteImagerie modalite;
+  final ModaliteDemandeImagerie modalite;
   final int attente, payees, redaction, rendus;
 }
 
@@ -68,15 +68,15 @@ PosteImagerie posteImagerie({
         : (_vrai(r['date']) ? '${r['date']}' : '');
     return (t.length > 7 ? t.substring(0, 7) : t) == moisCourant;
   }).toList();
-  bool de(FicheImg x, ModaliteImagerie m) =>
-      modaliteDeExamen(catalogue, x['examenCode']) == m.code;
+  bool de(FicheImg x, ModaliteDemandeImagerie m) =>
+      modaliteDemandeDeExamen(catalogue, x['examenCode']) == m.code;
   return PosteImagerie(
     payees: trierPar(payees, (r) => r['dateHeure']),
     attente: attente,
     redaction: redaction,
     rendusMois: rendusMois,
     parModalite: [
-      for (final m in modalitesImagerie)
+      for (final m in modalitesDemandeImagerie)
         LigneModalite(m,
             attente: attente.where((x) => de(x, m)).length,
             payees: payees.where((x) => de(x, m)).length,

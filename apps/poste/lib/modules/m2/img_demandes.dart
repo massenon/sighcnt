@@ -62,7 +62,7 @@ List<(String, String)> rubriquesLibres(String modalite) => modalite ==
 
 /// `detailCR(r)` — l'en-tête et les rubriques rédigées. Le tableau « Résultats » (variables de l'examen) n'est pas porté (écart E108).
 Widget detailCompteRendu(Fiche r, List<Fiche> catalogue) {
-  final modalite = modaliteDeExamen(catalogue, r['examenCode']);
+  final modalite = modaliteDemandeDeExamen(catalogue, r['examenCode']);
   final age = r['age'];
   return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
     DescListeSigh([
@@ -140,11 +140,11 @@ class EcranDemandesImagerie extends StatelessWidget with EcranMaquette {
               ...d,
               'modalite': _vrai(d['modalite'])
                   ? d['modalite']
-                  : modaliteDeExamen(catalogue, d['examenCode'])
+                  : modaliteDemandeDeExamen(catalogue, d['examenCode'])
             }
         ];
         String modLibelle(Fiche r) =>
-            modaliteImagerie(modaliteDeExamen(catalogue, r['examenCode']))
+            modaliteDemandeImagerie(modaliteDemandeDeExamen(catalogue, r['examenCode']))
                 .libelle;
         // OUVRIR une demande est un acte de PRESCRIPTION : l'échographiste exécute et saisit le CR, mais ne prescrit pas.
         final peutOuvrir = c.droit.editer && c.role != 'echographiste';
@@ -173,7 +173,7 @@ class EcranDemandesImagerie extends StatelessWidget with EcranMaquette {
                 lignes: lignes,
                 filtres: [
                   FiltreTableau(nom: 'modalite', libelle: 'Modalité', options: [
-                    for (final x in modalitesImagerie)
+                    for (final x in modalitesDemandeImagerie)
                       OptionChamp(x.code, x.libelle)
                   ]),
                   FiltreTableau(nom: 'statut', libelle: 'État', options: [
