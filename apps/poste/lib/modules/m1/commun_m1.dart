@@ -128,7 +128,11 @@ class RegistreM1 extends StatefulWidget {
     this.libelleConsulter = 'Consulter',
     this.libelleModifier = 'Modifier',
     this.creerVers,
+    this.valeursEdition,
   });
+
+  /// Valeurs du formulaire d'une fiche EXISTANTE quand elles diffèrent de ses champs (une date et une heure saisies à part).
+  final Map<String, Object?> Function(Fiche)? valeursEdition;
 
   /// `creerVers` : la création se fait sur une PAGE (gabarit de saisie), non en modale.
   final String? creerVers;
@@ -209,7 +213,7 @@ class _RegistreM1State extends State<RegistreM1> {
     final ctl = ControleurFormulaire(
         defs,
         existante != null
-            ? valeursFormulaire(existante)
+            ? (widget.valeursEdition?.call(existante) ?? valeursFormulaire(existante))
             : (widget.valeursInitiales?.call(c) ?? const {}));
     afficherModale<void>(ctx,
         titre: existante == null
