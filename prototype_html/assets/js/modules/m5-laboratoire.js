@@ -257,13 +257,16 @@
     ]));
   }
 
-  function transformerDemande(v) {
+  function transformerDemande(v, record) {
     var p = patients().filter(function (x) { return x.code === v.patientCode; })[0];
     /* Pas de dossier choisi : on en OUVRE un, par la fabrique unique du
        parcours — jamais en recopiant ici la création d'un patient. */
     if (!p && String(v.nom || '').trim() && PR.dossierExterne) {
       p = PR.dossierExterne({
         nom: v.nom, prenom: v.prenom, sexe: v.sexe, dateNaissance: v.dateNaissance,
+        /* L'âge DÉCLARÉ se transmet à la fabrique : le formulaire le demande (K.champsAge), et le laisser
+           tomber ici écrivait un dossier sans âge ni date de naissance (écart E143). */
+        age: v.age,
         telephone: v.telephone, residence: v.residence,
         prescripteur: v.prescripteur,
         origineDossier: 'Patient externe — laboratoire',
@@ -271,17 +274,21 @@
       v.patientCode = p.code;
       v.origineDemande = 'externe';
     }
-    ['nom', 'prenom', 'sexe', 'dateNaissance', 'telephone', 'residence'].forEach(function (k) { delete v[k]; });
+    ['nom', 'prenom', 'sexe', 'dateNaissance', 'naissanceConnue', 'age', 'telephone', 'residence'].forEach(function (k) { delete v[k]; });
     if (p) { v.patientId = p.id; v.patient = p.nom + ' ' + p.prenom; }
     var a = analyseParCode(v.analyseCode);
     if (a) {
       v.analyse = a.designation; v.categorie = a.categorie;
       v.echantillon = a.echantillon; v.delai = a.delai; v.prix = a.prix;
     }
-    if (!v.reference) v.reference = C.nextRef('LAB-', 5);
+    /* Le rang suit le REGISTRE (C.referenceSuivante), jamais un compteur de page : C.nextRef repart à 1 à chaque
+       chargement et émettait un LAB-00001 déjà attribué (écart E142). */
+    /* À la MODIFICATION, la référence et le code d'analyse déjà attribués sont conservés : le formulaire ne les porte pas,
+       et `!v.reference` les faisait réattribuer à chaque édition (écart E149). */
+    if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all());
     /* Le code d'analyse vient de la fabrique UNIQUE du parcours — le poser
        ici en dur recréerait la règle en deux exemplaires. */
-    if (!v.codeAnalyse && PR.codeAnalyse) v.codeAnalyse = PR.codeAnalyse(v.dateHeure);
+    if (!v.codeAnalyse && PR.codeAnalyse) v.codeAnalyse = (record && record.codeAnalyse) || PR.codeAnalyse(v.dateHeure);
     return v;
   }
 
@@ -2037,7 +2044,9 @@
 
       /** Une demande est-elle réglée ? Le parcours pose `bloquee` tant que non. */
       function reglee(r) {
-        return !r.bloquee && r.statutPaiement !== 'impaye';
+        /* `bloqueParPaiement` est le champ que le parcours pose et que l'encaissement lève ; l'ancien test (`bloquee`,
+           inexistant) tenait toutes les demandes pour réglées et laissait prélever sans caisse (écart E140). */
+        return !r.bloquee && !r.bloqueParPaiement && r.statutPaiement !== 'impaye';
       }
 
       function afficher() {
@@ -3205,7 +3214,9 @@
   ecranDemandesService('m5-demandes-maternite', 'Demandes — maternité',
     'Les demandes d’analyses prescrites par la maternité : CPN, bilans d’admission, suites de couches.',
     function (r) {
-      return /MATERN/i.test(String(r.secteurDemandeur || '')) || r.serviceDemandeur === 'maternite';
+      /* Le service se lit AUSSI dans son libellé : le jeu écrit « Maternité » là où la fiche du service écrit
+         l'identifiant `maternite` — le test strict sur l'identifiant laissait la vue vide (écart E145). */
+      return /MATERN/i.test(String(r.secteurDemandeur || '')) || /MATERN/i.test(String(r.serviceDemandeur || ''));
     },
     'La sage-femme y suit ses bilans ; le RBAC métier continue de décider qui lit les résultats.');
 

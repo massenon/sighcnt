@@ -36,6 +36,8 @@ class CrudStock extends StatefulWidget {
     this.ongletsSup,
     this.referenceToast,
     this.libelleRecherche,
+    this.valeursEdition,
+    this.transformerExistante,
   });
 
   final CollectionMagasin collection;
@@ -64,6 +66,15 @@ class CrudStock extends StatefulWidget {
   final List<OngletDef> Function(BuildContext)? ongletsSup;
   final String? Function(Fiche)? referenceToast;
   final String? libelleRecherche;
+
+  /// Valeurs du formulaire d'une fiche EXISTANTE (par défaut : ses champs, les nombres en texte). Utile quand un champ du formulaire n'est pas un champ
+  /// de la fiche (une date et une heure saisies à part, enregistrées ensemble).
+  final Map<String, Object?> Function(Fiche)? valeursEdition;
+
+  /// Comme [transformer], mais reçoit la fiche corrigée (`transform(values, record)` de la maquette) : permet de garder ce que le formulaire ne porte pas
+  /// (référence, code déjà attribués).
+  final Fiche Function(BuildContext, Map<String, Object?>, Fiche?)?
+      transformerExistante;
 
   @override
   State<CrudStock> createState() => _CrudStockState();
@@ -116,7 +127,9 @@ class _CrudStockState extends State<CrudStock> {
   void _saisir(BuildContext ctx, {Fiche? existante}) {
     final c = ContexteEcran.of(ctx);
     final ctl = ControleurFormulaire(widget.champs(c.magasin),
-        existante != null ? _enTexte(existante) : widget.valeursInitiales());
+        existante != null
+            ? (widget.valeursEdition?.call(existante) ?? _enTexte(existante))
+            : widget.valeursInitiales());
     afficherModale<void>(ctx,
         titre: existante == null
             ? 'Nouveau ${widget.entite}'
@@ -145,7 +158,9 @@ class _CrudStockState extends State<CrudStock> {
                       ToastsSigh.afficher(ctx, motif, type: TypeToast.erreur);
                       return;
                     }
-                    final fiche = widget.transformer(ctx, saisie);
+                    final fiche = widget.transformerExistante != null
+                        ? widget.transformerExistante!(ctx, saisie, existante)
+                        : widget.transformer(ctx, saisie);
                     fermer();
                     if (existante == null) {
                       final r = widget.collection.inserer({
