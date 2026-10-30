@@ -9,6 +9,7 @@ import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/impression/apercu.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
+import 'package:sigh_poste/modules/m3/bloc_cro.dart';
 
 import 'aide_polices.dart';
 import 'parite/extracteur.dart';
@@ -53,6 +54,7 @@ List<Fiche> patients() => [
 Magasin magasin(Map<String, List<Fiche>> plus) => Magasin({
       'patients': patients(),
       'soignants': jeuJson('soignants'),
+      'catalogueTarifs': jeuJson('catalogueTarifs'),
       'audit': const <Fiche>[],
       for (final e in plus.entries) e.key: [for (final f in e.value) {...f}],
     }, 'POSTE');
@@ -273,6 +275,203 @@ void main() {
       expect(find.textContaining('Lecture seule'), findsOneWidget);
       await ouvrir(t, base(), 'm3-cpa', role: 'caissier');
       expect(find.text('Nouvelle CPA'), findsNothing);
+    });
+  });
+
+  group('m3-bloc-cro — compte rendu opératoire, trois intervenants nommés', () {
+    final c = m_(m_(vecteurs['cpa'])['cro']);
+    final jeu = m_(m_(vecteurs['cpa'])['jeu']);
+    Magasin base() => magasin({'crOperatoires': liste(jeu['cro']), 'cpa': liste(jeu['cpa'])});
+
+    cas('indicateurs et lignes identiques à la maquette ; parité N1 = 100 %', (t) async {
+      await ouvrir(t, base(), 'm3-bloc-cro');
+      final e = m_(c['ecran']);
+      comparerKpis(t, e['kpis']);
+      comparerTableau(t, e['tableaux'], colonnes: 6);
+      await parite(t, 'm3-bloc-cro');
+    });
+
+    cas('l\'opérateur se choisit parmi les MÉDECINS ; l\'aide-opérateur est facultatif, l\'anesthésiste obligatoire', (t) async {
+      final defs = EcranCro.champs(base());
+      final op = defs.firstWhere((d) => d.nom == 'operateurId');
+      expect([for (final o in op.options) o.valeur], [for (final o in m_(c['creation'])['optsOperateur'] as List) (o as List)[0]]);
+      expect(op.requis, isTrue);
+      expect(defs.firstWhere((d) => d.nom == 'aideOperateurId').requis, isFalse);
+      expect(defs.firstWhere((d) => d.nom == 'aideOperateurId').options.first.libelle, '— aucun —');
+      expect(defs.firstWhere((d) => d.nom == 'anesthesisteId').requis, isTrue);
+    });
+
+    cas('création : le compte rendu porte ses trois intervenants NOMMÉS et la référence suit le registre', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-cro');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      expect(find.text('Le formulaire comporte des erreurs.'), findsOneWidget);
+      expect(m.collection('crOperatoires').toutes.length, 5);
+      await choisir(t, 'patientCode', 'CNT/3/26 — N’TCHA Yacoubou');
+      await saisir(t, 'nip', 'NIP-9');
+      await dateAujourdhui(t, 'dateOperation');
+      await saisir(t, 'diagnosticPeroperatoire', 'Kyste');
+      await saisir(t, 'intervention', 'Kystectomie');
+      await saisir(t, 'anesthesie', 'Rachianesthésie');
+      await saisir(t, 'cro', 'Ligne 1\nLigne 2');
+      await choisir(t, 'operateurId', 'TAKI Orou — Médecin Généraliste');
+      await choisir(t, 'aideOperateurId', 'OROU YO Alimatou — Infirmier(ère)');
+      await choisir(t, 'anesthesisteId', 'ADAM Colette — Sage-femme');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      final attendu = m_(m_(c['creation'])['cree'])['fiche'] as Map<String, Object?>;
+      final f = parRef(m, 'crOperatoires', 'CRO-0006');
+      for (final k in ['patientId', 'patient', 'patientCode', 'nip', 'operateurId', 'operateur', 'aideOperateurId', 'aideOperateur', 'anesthesisteId', 'anesthesiste', 'cro', 'intervention']) {
+        expect(f[k], attendu[k], reason: k);
+      }
+      expect(find.text('Compte rendu opératoire créé.'), findsOneWidget);
+    });
+
+    cas('sans aide-opérateur : la fiche porte null, l\'indicateur le compte', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-cro');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'));
+      await saisir(t, 'nip', 'NIP-10');
+      await dateAujourdhui(t, 'dateOperation');
+      for (final n in ['diagnosticPeroperatoire', 'intervention', 'anesthesie', 'cro']) {
+        await saisir(t, n, 'x');
+      }
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      final f = m.collection('crOperatoires').toutes.first;
+      expect(f['aideOperateur'], isNull);
+      expect(f['operateur'], isNot('—'));
+      expect(kpi(t, 'Sans aide-opérateur'), '6');
+    });
+
+    cas('modifier l\'opérateur : le NOM porté par la pièce de preuve suit l\'identifiant (E411)', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-cro');
+      await toucher(t, find.byTooltip('Modifier').at(3));
+      expect(find.text('CRO-0002'), findsWidgets);
+      await choisir(t, 'operateurId', 'AHOHOU Rodrigue — Échographiste');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final f = parRef(m, 'crOperatoires', 'CRO-0002');
+      expect(f['operateurId'], 'SOI04');
+      expect(f['operateur'], 'AHOHOU Rodrigue');
+      expect(f['reference'], 'CRO-0002');
+    });
+
+    cas('imprimer : trois signatures, une par responsabilité', (t) async {
+      await ouvrir(t, base(), 'm3-bloc-cro');
+      await toucher(t, find.byTooltip('Imprimer le compte rendu').first);
+      expect(find.text('COMPTE RENDU OPÉRATOIRE'), findsWidgets);
+      expect(find.text('L’opérateur'), findsWidgets);
+      expect(find.text('L’aide-opérateur'), findsWidgets);
+      expect(find.text('L’anesthésiste'), findsWidgets);
+    });
+
+    cas('archiver : motif obligatoire, annulable ; la direction ne fait que lire', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-cro');
+      await toucher(t, find.byTooltip('Archiver').first);
+      await t.enterText(find.byType(TextField).last, 'Erreur de saisie');
+      await t.pump();
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Archiver').last);
+      expect(m.collection('crOperatoires').archivees.single['_motifArchivage'], 'Erreur de saisie');
+      expect(kpi(t, 'Comptes rendus'), '4');
+      await toucher(t, find.text('Annuler').last);
+      expect(m.collection('crOperatoires').archivees, isEmpty);
+      await ouvrir(t, base(), 'm3-bloc-cro', role: 'direction');
+      expect(find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'), findsNothing);
+      expect(find.byTooltip('Modifier'), findsNothing);
+      expect(find.byTooltip('Imprimer le compte rendu'), findsWidgets);
+    });
+  });
+
+  group('m3-cr-anesthesie — compte rendu d\'anesthésie', () {
+    final c = m_(vecteurs['cra']);
+    final jeu = m_(c['jeu']);
+    Magasin base() => magasin({
+          'crAnesthesie': liste(jeu['cra']),
+          'crOperatoires': liste(jeu['cro']),
+          'cpa': liste(jeu['cpa'])
+        });
+
+    cas('indicateurs et lignes identiques à la maquette ; parité N1 = 100 %', (t) async {
+      await ouvrir(t, base(), 'm3-cr-anesthesie');
+      final e = m_(c['ecran']);
+      comparerKpis(t, e['kpis']);
+      comparerTableau(t, e['tableaux'], colonnes: 7);
+      await parite(t, 'm3-cr-anesthesie');
+    });
+
+    cas('« Aucun incident » s\'écrit : le champ est obligatoire ; un incident se nomme', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-cr-anesthesie');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      expect(find.text('Le formulaire comporte des erreurs.'), findsOneWidget);
+      expect(find.text('Ce champ est obligatoire.'), findsWidgets);
+      expect(m.collection('crAnesthesie').toutes.length, 4);
+      expect(find.textContaining('« Aucun incident » s’écrit'), findsOneWidget);
+    });
+
+    cas('une heure hors format est refusée par le formulaire', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-cr-anesthesie');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'));
+      await saisir(t, 'heureInduction', '25:99');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      expect(find.text('Heure attendue au format HH:MM.'), findsOneWidget);
+      expect(m.collection('crAnesthesie').toutes.length, 4);
+    });
+
+    cas('création complète : la fiche et les indicateurs suivent la maquette', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-cr-anesthesie');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'));
+      await choisir(t, 'patientCode', 'CNT/4/26 — PARAISO Sabi');
+      await dateAujourdhui(t, 'dateOperation');
+      await choisir(t, 'croReference', 'CRO-0001 — TCHANE Bertine');
+      await saisir(t, 'agents', 'Kétamine');
+      await saisir(t, 'heureInduction', '10:00');
+      await saisir(t, 'heureFin', '11:00');
+      await saisir(t, 'incidents', 'Aucun incident');
+      await saisir(t, 'heureArriveeReveil', '11:10');
+      await saisir(t, 'etatReveil', 'Éveillé');
+      await choisir(t, 'decisionSortie', 'Surveillance prolongée en salle de réveil');
+      await saisir(t, 'anesthesiste', 'ADAM Colette');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      final attendu = m_(m_(c['creation'])['cree']);
+      final f = parRef(m, 'crAnesthesie', 'CRA-2026-0005');
+      final fa = m_(attendu['fiche']);
+      for (final k in ['patient', 'patientId', 'patientCode', 'croReference', 'technique', 'agents', 'heureInduction', 'heureFin', 'incidents', 'heureArriveeReveil', 'etatReveil', 'decisionSortie', 'anesthesiste', 'surveillancePerop']) {
+        expect(f[k] ?? '', fa[k] ?? '', reason: k);
+      }
+      for (final k in liste(attendu['kpis'])) {
+        expect(_s(kpi(t, '${k['libelle']}')), _s(k['valeur']), reason: '${k['libelle']}');
+      }
+      expect(find.text('Compte rendu d’anesthésie créé.'), findsOneWidget);
+    });
+
+    cas('modifier un incident : l\'indicateur « avec incident nommé » suit', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-cr-anesthesie');
+      expect(kpi(t, 'Avec incident nommé'), '1');
+      await toucher(t, find.byTooltip('Modifier').at(3));
+      await saisir(t, 'incidents', 'Désaturation brève');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(parRef(m, 'crAnesthesie', 'CRA-2026-0004')['incidents'], 'Désaturation brève');
+      expect(kpi(t, 'Avec incident nommé'), '2');
+    });
+
+    cas('imprimer : signature de l\'anesthésiste et mention « pour information » à l\'opérateur', (t) async {
+      await ouvrir(t, base(), 'm3-cr-anesthesie');
+      await toucher(t, find.byTooltip('Imprimer le compte rendu').first);
+      expect(find.text('COMPTE RENDU D’ANESTHÉSIE'), findsWidgets);
+      expect(find.text('Pour information'), findsWidgets);
+    });
+
+    cas('rôles : le caissier n\'entre pas ; la direction lit', (t) async {
+      await ouvrir(t, base(), 'm3-cr-anesthesie', role: 'direction');
+      expect(find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'), findsNothing);
+      await ouvrir(t, base(), 'm3-cr-anesthesie', role: 'caissier');
+      expect(find.text('Comptes rendus d’anesthésie'), findsNothing);
     });
   });
 }
