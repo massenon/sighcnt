@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 63,
+ "ecrans_portes": 74,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -88,6 +88,41 @@
    "manquants": []
   },
   {
+   "id": "m5-banque-sang",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 2,
+   "taux": 0.1,
+   "manquants": [
+    "banque de sang",
+    "gestion des poches de sang par groupe, dates de péremption et demandes de transfusion.",
+    "poches en stock",
+    "disponibles",
+    "péremption sous 7 jours",
+    "périmées à détruire",
+    "n° poche",
+    "volume",
+    "prélèvement",
+    "péremption",
+    "reste",
+    "donneur",
+    "réservée",
+    "bon de demande de sang",
+    "colonnes",
+    "exporter",
+    "disponibilité par groupe sanguin",
+    "poches de sang"
+   ]
+  },
+  {
+   "id": "m5-catalogue",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m5-demandes",
    "mesure": true,
    "attendus": 24,
@@ -112,10 +147,101 @@
    "manquants": []
   },
   {
+   "id": "m5-donneurs",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 2,
+   "taux": 0.1,
+   "manquants": [
+    "donneurs & transfusions",
+    "registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément.",
+    "donneurs enregistrés",
+    "éligibles",
+    "dons cumulés",
+    "donneurs bénévoles",
+    "tous les donneurs",
+    "archivés",
+    "n°",
+    "donneur",
+    "téléphone",
+    "type de don",
+    "dons",
+    "dernier don",
+    "éligibilité",
+    "colonnes",
+    "exporter",
+    "nouveau"
+   ]
+  },
+  {
+   "id": "m5-impression-resultats",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m5-prelevement",
    "mesure": true,
    "attendus": 17,
    "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-reactifs",
+   "mesure": true,
+   "attendus": 27,
+   "presents": 27,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-reactifs-stats",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-resultats",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-resultats-comparatif",
+   "mesure": true,
+   "attendus": 5,
+   "presents": 5,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-stats",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-unites",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-valeurs-reference",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
    "taux": 1.0,
    "manquants": []
   },
