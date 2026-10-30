@@ -20,10 +20,13 @@ const List<Color> paletteGraphique = [
 ];
 
 class SerieGraphique {
-  const SerieGraphique(this.libelle, this.donnees, {this.couleur});
+  const SerieGraphique(this.libelle, this.donnees, {this.couleur, this.aire = true});
   final String libelle;
   final List<num> donnees;
   final Color? couleur;
+
+  /// `fill: false` de Chart.js : une courbe sans aire (deux courbes superposées se lisent mieux sans remplissage).
+  final bool aire;
 }
 
 const double _hautLegende =
@@ -104,8 +107,14 @@ class _Cartesien extends StatelessWidget {
       required this.etiquettes,
       required this.series,
       required this.hauteur,
-      required this.peintre});
+      required this.peintre,
+      this.bornes,
+      this.empile = false});
   final String type;
+  final (double, double)? bornes;
+
+  /// Barres empilées (`stack: true`) : l'échelle suit les TOTAUX par catégorie, non la plus haute série.
+  final bool empile;
   final List<String> etiquettes;
   final List<SerieGraphique> series;
   final double hauteur;
@@ -114,8 +123,17 @@ class _Cartesien extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final traceH = hauteur - _hautLegende - _hautAxeX + 0.0;
-    final ech = echelleVerticale([for (final s in series) ...s.donnees],
-        hauteurAxe: traceH - 0);
+    final ech = bornes != null
+        ? echelleVerticaleBornee(bornes!.$1, bornes!.$2, hauteurAxe: traceH)
+        : echelleVerticale(
+            empile
+                ? [
+                    for (var i = 0; i < etiquettes.length; i++)
+                      series.fold<num>(
+                          0, (a, s) => a + (i < s.donnees.length ? s.donnees[i] : 0))
+                  ]
+                : [for (final s in series) ...s.donnees],
+            hauteurAxe: traceH - 0);
     final largeurEtiquette = [
       for (final g in ech.graduations)
         (TextPainter(
@@ -156,7 +174,11 @@ class GraphiqueBarres extends StatelessWidget {
       required this.etiquettes,
       required this.series,
       this.hauteur = 260,
-      this.horizontal = false});
+      this.horizontal = false,
+      this.empile = false});
+
+  /// `stack: true` (barres verticales) : les séries s'empilent dans une seule barre par catégorie, de la première (en bas) à la dernière.
+  final bool empile;
 
   /// `horizontal: true` (`indexAxis: 'y'`) : une barre par catégorie, épaisseur max 22. Échelle calculée comme l'axe vertical — non rejouée
   /// contre Chart.js pour ce sens (les vecteurs ne couvrent que les barres verticales).
@@ -173,7 +195,8 @@ class GraphiqueBarres extends StatelessWidget {
           etiquettes: etiquettes,
           series: series,
           hauteur: hauteur,
-          peintre: (e, g) => _PeintreBarres(etiquettes, series, e, g));
+          empile: empile,
+          peintre: (e, g) => _PeintreBarres(etiquettes, series, e, g, empile));
 }
 
 /// `SIGH.charts.ligne` : trait de 2 px, tension 0,35, aire remplie à 13 % (`couleur + '22'`), sans point.
@@ -182,14 +205,21 @@ class GraphiqueLigne extends StatelessWidget {
       {super.key,
       required this.etiquettes,
       required this.series,
-      this.hauteur = 260});
+      this.hauteur = 260,
+      this.min,
+      this.max});
   final List<String> etiquettes;
   final List<SerieGraphique> series;
   final double hauteur;
 
+  /// `scales.y: { beginAtZero: false, min, max }` : axe borné (courbe de température 35–41 °C). Absents : l'axe part de zéro.
+  final double? min;
+  final double? max;
+
   @override
   Widget build(BuildContext context) => _Cartesien(
       type: 'en courbes',
+      bornes: min != null && max != null ? (min!, max!) : null,
       etiquettes: etiquettes,
       series: series,
       hauteur: hauteur,
@@ -249,7 +279,8 @@ abstract class _Base extends CustomPainter {
 }
 
 class _PeintreBarres extends _Base {
-  _PeintreBarres(super.e, super.s, super.ech, super.g);
+  _PeintreBarres(super.e, super.s, super.ech, super.g, [this.empile = false]);
+  final bool empile;
 
   @override
   void paint(Canvas c, Size s) {
@@ -257,6 +288,26 @@ class _PeintreBarres extends _Base {
     final z = zone(s);
     final n = etiquettes.length;
     final pas = z.width / n;
+    if (empile) {
+      // Une barre par catégorie (80 % de sa part, 90 % de cela, 38 px au plus), les séries superposées.
+      final epaisseur = math.min(pas * 0.8 * 0.9, 38.0);
+      for (var i = 0; i < n; i++) {
+        final x = z.left + pas * (i + 0.5) - epaisseur / 2;
+        var cumul = 0.0;
+        for (var k = 0; k < series.length; k++) {
+          final v = i < series[k].donnees.length ? series[k].donnees[i].toDouble() : 0.0;
+          if (v <= 0) continue;
+          final yHaut = yDe(z, cumul + v), yBas = yDe(z, cumul);
+          c.drawRRect(
+              RRect.fromRectAndRadius(Rect.fromLTRB(x, yHaut, x + epaisseur, yBas),
+                  const Radius.circular(4)),
+              Paint()..color = couleurDe(series[k], k));
+          cumul += v;
+        }
+      }
+      etiquettesX(c, s, (i) => z.left + pas * (i + 0.5));
+      return;
+    }
     // Chart.js : catégorie à 80 %, barre à 90 % de sa part, épaisseur plafonnée à 38 px.
     final part = pas * 0.8 / series.length;
     final epaisseur = math.min(part * 0.9, 38.0);
@@ -298,11 +349,13 @@ class _PeintreLigne extends _Base {
       if (pts.length < 2) continue;
       final trait = _lisse(pts, 0.35);
       final col = couleurDe(series[k], k);
-      final aire = Path.from(trait)
-        ..lineTo(pts.last.dx, z.bottom)
-        ..lineTo(pts.first.dx, z.bottom)
-        ..close();
-      c.drawPath(aire, Paint()..color = col.withValues(alpha: 0x22 / 255));
+      if (series[k].aire) {
+        final aire = Path.from(trait)
+          ..lineTo(pts.last.dx, z.bottom)
+          ..lineTo(pts.first.dx, z.bottom)
+          ..close();
+        c.drawPath(aire, Paint()..color = col.withValues(alpha: 0x22 / 255));
+      }
       c.drawPath(
           trait,
           Paint()

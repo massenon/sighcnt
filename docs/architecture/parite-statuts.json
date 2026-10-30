@@ -118,5 +118,10 @@
  "m4-partogramme": "porté",
  "m4-comptes-rendus": "porté",
  "m4-dossier-obstetrical": "porté",
- "m4-dossier-obstetrical-nouveau": "porté"
+ "m4-dossier-obstetrical-nouveau": "porté",
+ "m3-admissions": "porté",
+ "m3-observation": "porté",
+ "m3-plan-lits": "porté",
+ "m3-feuille-temperature": "porté",
+ "m3-soins": "porté"
 }

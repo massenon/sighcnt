@@ -114,6 +114,8 @@ void main() {
         controleur: ctl,
         client: client,
         ecranInitial: id,
+        // Les fiches de la maquette ont été extraites le 30/10/2026 à 10 h : certains libellés (durées de séjour du plan des lits) en dépendent.
+        horloge: () => DateTime(2026, 10, 30, 10),
         magasin: magasin));
     for (var i = 0; i < 4; i++) {
       await t.pump(const Duration(milliseconds: 100));

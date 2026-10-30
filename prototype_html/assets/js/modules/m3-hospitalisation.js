@@ -169,8 +169,9 @@
       return [
         K.btn('Plan des lits', { icon: 'layout-grid', onclick: function () { global.SIGH.app.go('m3-plan-lits'); } }),
         K.btn('Feuille de soins', { icon: 'heart-pulse', onclick: function () { global.SIGH.app.go('m3-soins'); } }),
-        K.btn('Mettre en observation', { variant: 'primary', icon: 'user-plus', onclick: function () { if (ouvrirAdmissionObservation) ouvrirAdmissionObservation(); } }),
-      ];
+        /* E372 : une mise en observation est un geste clinique — commande gardée (absente de qui lit seulement), comme « Nouveau relevé ». */
+        K.commande('Mettre en observation', { variant: 'primary', icon: 'user-plus', onclick: function () { if (ouvrirAdmissionObservation) ouvrirAdmissionObservation(); } }),
+      ].filter(Boolean);
     },
     render: function (root) {
       ouvrirAdmissionObservation = function () { admettre(); };   /* E362 */
@@ -298,10 +299,10 @@
               return [K.iconBtn('printer', 'Imprimer la feuille', function () { imprimer(o); })];
             }
             return [
-              K.iconBtn('thermometer', 'Relever les constantes', function () { relever(o); }),
-              K.iconBtn('log-out', 'Décider de l’orientation', function () { orienter(o); }),
+              K.commandeIcone('thermometer', 'Relever les constantes', function () { relever(o); }),
+              K.commandeIcone('log-out', 'Décider de l’orientation', function () { orienter(o); }),
               K.iconBtn('printer', 'Imprimer la feuille', function () { imprimer(o); }),
-            ];
+            ].filter(Boolean);
           },
         }));
         U.icons(panneau);
@@ -502,7 +503,7 @@
             { label: 'Relevé par', key: 'par' },
           ], cs)
           : U.empty('Aucun relevé enregistré.', { icon: 'thermometer' }),
-        o.statutObservation === 'en_cours'
+        o.statutObservation === 'en_cours' && K.droits('M3').editer
           ? [K.btn('Relever les constantes', { size: 'sm', variant: 'primary', icon: 'thermometer', onclick: function () { relever(o); } })]
           : null));
 
@@ -515,7 +516,7 @@
         }
 
         var pied = [K.btn('Imprimer la feuille', { icon: 'printer', onclick: function () { imprimer(o); } })];
-        if (o.statutObservation === 'en_cours') {
+        if (o.statutObservation === 'en_cours' && K.droits('M3').editer) {
           pied.unshift(K.btn('Prescrire', { icon: 'file-plus', onclick: function () { prescrire(o); } }));
           pied.push(K.btn('Décider de l’orientation', { variant: 'primary', icon: 'log-out', onclick: function () { orienter(o); } }));
         }
@@ -864,7 +865,9 @@
         var slot = tousLits().filter(function (s) { return s.lit.label === v.lit; })[0];
         if (slot) { v.chambre = slot.chambre.code; v.typeChambre = slot.chambre.type; }
         if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('H', 5, S.collection('admissions').all());   /* E360 : série lue sur le registre, jamais un compteur de page */
-        if (!v.statut) v.statut = 'en_cours';
+        /* E370 : le formulaire ne porte pas le statut ; le forcer à « en_cours » rouvrait une admission SORTIE à la moindre correction (lit de
+           nouveau occupé, séjour sans fin). Une fiche existante garde son statut. */
+        if (!v.statut) v.statut = (record && record.statut) || 'en_cours';
         return v;
       },
       beforeSave: function (v, record) {
@@ -1037,7 +1040,9 @@
 
         if (!rel.length) {
           vue.appendChild(U.card(null, U.empty('Aucun relevé enregistré pour ce patient.', {
-            icon: 'thermometer', action: K.btn('Saisir le premier relevé', { variant: 'primary', icon: 'plus', onclick: function () { ouvrirSaisie(); } }),
+            /* E371 : « Saisir le premier relevé » était un K.btn nu — offert à l'accueil et au profil en lecture, qui ne saisissent pas de constante
+               (RG-13), alors que « Nouveau relevé » juste au-dessus est une commande gardée. Même droit, même absence. */
+            icon: 'thermometer', action: K.commande('Saisir le premier relevé', { variant: 'primary', icon: 'plus', onclick: function () { ouvrirSaisie(); } }),
           })));
           U.icons(vue);
           return;
