@@ -221,12 +221,21 @@
       function enAttente() { return col.active().filter(function (d) { return d.etatValidation === 'en_attente'; }); }
       function rejetes() { return col.active().filter(function (d) { return d.etatValidation === 'rejete'; }); }
 
-      host.appendChild(U.kpiGrid([
-        { label: 'Documents à valider', value: C.num(enAttente().length), icon: 'file-clock', tone: 'warning' },
-        { label: 'Rejetés à corriger', value: C.num(rejetes().length), icon: 'file-x', tone: 'danger' },
-        { label: 'Validés', value: C.num(col.active().filter(function (d) { return d.etatValidation === 'valide'; }).length), icon: 'file-check-2', tone: 'success' },
-        { label: 'Délai moyen de validation', value: '2 jours', icon: 'timer', tone: 'info' },
-      ]));
+      /* Les indicateurs se RECALCULENT à chaque geste (E562) : figés à l'ouverture, ils annonçaient 38 documents à valider
+         après qu'on en eût validé un. */
+      var kpiHote = el('div');
+      function peindreKpis() {
+        C.clear(kpiHote);
+        kpiHote.appendChild(U.kpiGrid([
+          { label: 'Documents à valider', value: C.num(enAttente().length), icon: 'file-clock', tone: 'warning' },
+          { label: 'Rejetés à corriger', value: C.num(rejetes().length), icon: 'file-x', tone: 'danger' },
+          { label: 'Validés', value: C.num(col.active().filter(function (d) { return d.etatValidation === 'valide'; }).length), icon: 'file-check-2', tone: 'success' },
+          { label: 'Délai moyen de validation', value: '2 jours', icon: 'timer', tone: 'info' },
+        ]));
+        U.icons(kpiHote);
+      }
+      peindreKpis();
+      host.appendChild(kpiHote);
 
       /* Circuit */
       var circuit = el('div.flex.flex-wrap.items-center.gap-1\\.5');
@@ -249,7 +258,7 @@
         columns: [
           { key: 'reference', label: 'Référence', nowrap: true, render: function (d) { return el('span.font-mono.text-xs', { text: d.reference }); } },
           { key: 'libelle', label: 'Document' },
-          { key: 'categorie', label: 'Catégorie', text: categorieLabel, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
+          { key: 'categorie', label: 'Catégorie', text: function (d) { return categorieLabel(d.categorie); }, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
           { key: 'rattacheA', label: 'Rattaché à' },
           { key: 'date', label: 'Date de dépôt', nowrap: true, text: function (d) { return C.dateFR(d.date); }, render: function (d) { return C.dateFR(d.date); } },
           { key: 'deposePar', label: 'Déposé par' },
@@ -268,9 +277,9 @@
             onclick: function () {
               var sel = getSelected();
               var majs = sel.map(function (d) { return col.update(d.id, { etatValidation: 'valide' }); });
-              clear(); table.refresh();
+              clear(); table.refresh(); peindreKpis();
               U.toast(sel.length + ' document(s) validé(s).', {
-                type: 'success', undo: function () { majs.forEach(function (m) { m.undo(); }); table.refresh(); },
+                type: 'success', undo: function () { majs.forEach(function (m) { m.undo(); }); table.refresh(); peindreKpis(); },
               });
             },
           })];
@@ -282,8 +291,8 @@
               size: 'sm', variant: 'success', icon: 'check',
               onclick: function () {
                 var res = col.update(d.id, { etatValidation: 'valide', signe: true });
-                table.refresh();
-                U.toast('Document validé et signé.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                table.refresh(); peindreKpis();
+                U.toast('Document validé et signé.', { type: 'success', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
               },
             }),
             K.iconBtn('x', 'Rejeter', function () {
@@ -293,8 +302,8 @@
               }).then(function (r) {
                 if (!r) return;
                 var res = col.update(d.id, { etatValidation: 'rejete', motifRejet: r.motif });
-                table.refresh();
-                U.toast('Document rejeté.', { type: 'warning', undo: function () { res.undo(); table.refresh(); } });
+                table.refresh(); peindreKpis();
+                U.toast('Document rejeté.', { type: 'warning', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
               });
             }, 'ghost'),
           ];
@@ -373,7 +382,7 @@
         columns: [
           { key: 'reference', label: 'Référence', nowrap: true, render: function (d) { return el('span.font-mono.text-xs', { text: d.reference }); } },
           { key: 'libelle', label: 'Document' },
-          { key: 'categorie', label: 'Catégorie', text: categorieLabel, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
+          { key: 'categorie', label: 'Catégorie', text: function (d) { return categorieLabel(d.categorie); }, render: function (d) { return U.badge(categorieLabel(d.categorie), 'navy'); } },
           { key: 'date', label: 'Date du document', nowrap: true, text: function (d) { return C.dateFR(d.date); }, render: function (d) { return C.dateFR(d.date); } },
           { key: 'conservation', label: 'Conservation', align: 'right', render: function (d) { return d.conservation + ' ans'; } },
           {
@@ -407,7 +416,7 @@
               contenu: P.tableau([
                 { label: 'Référence', key: 'reference' },
                 { label: 'Document', key: 'libelle' },
-                { label: 'Catégorie', value: categorieLabel },
+                { label: 'Catégorie', value: function (d) { return categorieLabel(d.categorie); } },
                 { label: 'Date', value: function (d) { return C.dateFR(d.date); } },
                 { label: 'Conservation', value: function (d) { return d.conservation + ' ans'; } },
                 { label: 'Échéance', value: function (d) { return C.dateFR(echeance(d)); } },
