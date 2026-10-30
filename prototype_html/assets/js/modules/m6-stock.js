@@ -2669,8 +2669,10 @@
       var grille = el('div.grid.gap-3', { class: 'sm:grid-cols-2 lg:grid-cols-3' });
       C.sortBy(Object.keys(parEmplacement).map(function (k) { return { k: k, items: parEmplacement[k] }; }), 'k').forEach(function (x) {
         var carte = el('div.rounded-xl.border.border-slate-200.bg-white.p-3.shadow-card');
+        /* `groupBy` fait de l'absence d'emplacement la CHAÎNE « undefined » : la carte s'intitulait « undefined » (écart E48, corrigé le 30/10/2026). */
+        var casier = (x.k && x.k !== 'undefined') ? x.k : 'Sans emplacement';
         carte.appendChild(el('div.mb-2.flex.items-center.justify-between', null, [
-          el('span.text-sm.font-semibold.text-slate-800', { text: x.k || 'Sans emplacement' }),
+          el('span.text-sm.font-semibold.text-slate-800', { text: casier }),
           U.badge(x.items.length + ' article' + (x.items.length > 1 ? 's' : ''), 'navy'),
         ]));
         var ul = el('ul.space-y-1');
@@ -2683,7 +2685,7 @@
         if (x.items.length > 6) ul.appendChild(el('li.text-xs.text-slate-400', { text: '+ ' + (x.items.length - 6) + ' autre(s)' }));
         carte.appendChild(ul);
         carte.appendChild(K.btn('Étiquettes', {
-          size: 'sm', icon: 'tag', onclick: function () { etiquettes(x.items, x.k); },
+          size: 'sm', icon: 'tag', onclick: function () { etiquettes(x.items, casier); },
         }));
         grille.appendChild(carte);
       });
@@ -3057,7 +3059,9 @@
   function voieDe(ligne, produit) {
     if (ligne && ligne.voie) return ligne.voie;
     var f = String((produit && (produit.forme || produit.designation)) || '').toLowerCase();
-    if (/inject|amp\.|ampoule|perfus|solut|iv\b|im\b|flacon/.test(f)) return 'parenterale';
+    /* « inj » : c'est ainsi que le catalogue désigne un injectable (48 désignations sur 184). Sans lui, aucun injectable n'arrivait en
+       pharmacie interne — ils tombaient tous en voie orale (écart E41, corrigé le 30/10/2026). */
+    if (/inject|\binj\b|amp\.|ampoule|perfus|solut|iv\b|im\b|flacon/.test(f)) return 'parenterale';
     return 'orale';
   }
 
@@ -3086,8 +3090,10 @@
                 id: o.id + ':' + i, ordonnance: o, index: i, ligne: l, produit: pr,
                 numero: o.numero, date: o.date, patient: o.patient, patientCode: o.patientCode,
                 designation: l.produit, quantite: l.quantite, posologie: l.posologie,
-                paye: o.statutPaiement === 'payee',
-                delivre: o.statutDispensation === 'delivree',
+                /* Les états que le parcours ÉCRIT sont « soldee » (PR.encaisser) et « servie » (PR.delivrer) : comparer à « payee » /
+                   « delivree » laissait toute ordonnance réglée « Non réglée » à jamais (écart E40, corrigé le 30/10/2026). */
+                paye: o.statutPaiement === 'soldee',
+                delivre: o.statutDispensation === 'servie',
                 stock: pr ? pr.stock : null,
                 couvert: pr ? pr.stock >= l.quantite : false,
               });
@@ -3173,7 +3179,7 @@
             var avant = r.produit.stock;
             S.collection('produits').update(r.produit.id, { stock: avant - r.quantite });
             S.collection('mouvements', { module: 'M6', entite: 'MouvementStock', prefix: 'MVT' }).insert({
-              reference: C.nextRef('MVT-', 5), date: C.iso(new Date()),
+              reference: C.referenceSuivante('MVT-', 5, S.collection('mouvements').all()), date: C.iso(new Date()),
               type: voie === 'parenterale' ? 'delivrance_interne' : 'delivrance_externe',
               produitId: r.produit.id, produit: r.designation,
               quantite: r.quantite, sens: 'sortie',
@@ -3182,8 +3188,10 @@
               justificatif: 'Ordonnance ' + r.numero,
               destination: voie === 'parenterale' ? 'Salle de soins' : 'Patient',
             });
-            colOrdonnances6().update(r.ordonnance.id, { statutDispensation: 'delivree' });
-            if (PR.alerterStock) PR.alerterStock(r.produit.id);
+            colOrdonnances6().update(r.ordonnance.id, { statutDispensation: 'servie' });
+            /* `alerterStock` attend une LISTE d'identifiants : passer l'identifiant nu levait « forEach is not a function » APRÈS l'écriture du
+               mouvement — la vue ne se rafraîchissait pas et le message de succès ne paraissait jamais (écart E44, corrigé le 30/10/2026). */
+            if (PR.alerterStock) PR.alerterStock([r.produit.id], r.numero);
             afficher();
             U.toast('Délivré — stock ramené à ' + C.num(avant - r.quantite) + '.', {
               type: 'success', detail: r.designation + ' — ' + r.patient,

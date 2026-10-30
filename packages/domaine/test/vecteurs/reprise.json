@@ -1,0 +1,3703 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-reprise.js — m6-reprise piloté. Ne pas éditer.",
+ "valorisationsSemees": 34,
+ "avecSurcouche": {
+  "kpi": [
+   {
+    "libelle": "Articles repris",
+    "valeur": "184",
+    "indice": null
+   },
+   {
+    "libelle": "Unités en stock",
+    "valeur": "12 080",
+    "indice": null
+   },
+   {
+    "libelle": "Valeur reprise",
+    "valeur": "3 976 459 FCFA",
+    "indice": "Valorisation CMUP"
+   },
+   {
+    "libelle": "Articles non valorisés",
+    "valeur": "0",
+    "indice": "Prix de revient absent du document et non saisi"
+   },
+   {
+    "libelle": "Valorisés par la clinique",
+    "valeur": "32",
+    "indice": "1 320 094 FCFA ajoutés à la valeur du stock"
+   }
+  ],
+  "lot": [
+   "Référence du lot",
+   "IMPORT-SAGE-20260715",
+   "Système d’origine",
+   "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "Document source",
+   "Inventaire : Grand Stock",
+   "Date d’arrêté",
+   "15/07/2026",
+   "Date de tirage",
+   "15/07/2026 à 13h25",
+   "Tenue de compte",
+   "F CFA",
+   "Méthode de valorisation",
+   "CMUP (coût unitaire moyen pondéré)",
+   "Total du document",
+   "12 080 unités — 3 976 459 FCFA",
+   "Contrôle de cohérence",
+   "Quantités concordantes",
+   "Validation Gestionnaire de Stock",
+   "En attente"
+  ],
+  "boutons": [
+   "Valider la reprise",
+   "Éditer le bordereau",
+   "Articles repris184",
+   "Points à traiter0",
+   "Rapprochement au catalogue tarifaire",
+   "Colonnes",
+   "Exporter",
+   "Tout désélectionner",
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "onglets": [
+   "Articles repris184",
+   "Points à traiter0",
+   "Rapprochement au catalogue tarifaire"
+  ],
+  "articles": {
+   "tables": [
+    {
+     "entetes": [
+      "RÉFÉRENCE SAGE",
+      "DÉSIGNATION",
+      "CATÉGORIE AFFECTÉE",
+      "UNITÉ",
+      "QTÉ REPRISE",
+      "P.R. UNITAIRE (CMUP)",
+      "P.R. GLOBAL",
+      "SEUIL PROPOSÉ"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "ABA",
+        "ABAISSE LANGUE",
+        "Consommables médicaux",
+        "Unité",
+        "2",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ACC",
+        "ACCUZON",
+        "Médicaments",
+        "Unité",
+        "50",
+        "1 000",
+        "49 996",
+        "10"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ACE",
+        "ACE MISO 200 µg 1 CP",
+        "Médicaments",
+        "Comprimé",
+        "24",
+        "250",
+        "6 000",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ACU",
+        "ACUPAN 20 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "50",
+        "650",
+        "32 500",
+        "10"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ADRE",
+        "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+        "Médicaments",
+        "Ampoule",
+        "5",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "AIG",
+        "AIGUILLE DE PL",
+        "Consommables médicaux",
+        "Unité",
+        "52",
+        "53",
+        "2 740",
+        "10"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ALC",
+        "ALCOOL",
+        "Consommables médicaux",
+        "Flacon",
+        "8",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ALE",
+        "ALESE ABSORBANT",
+        "Consommables médicaux",
+        "Unité",
+        "25",
+        "11",
+        "268",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "AMI",
+        "AMINOPHYLLINE 250 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "140",
+        "500",
+        "70 000",
+        "28"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ANT",
+        "ANTISEPTIQUE",
+        "Consommables médicaux",
+        "Unité",
+        "76",
+        "À valoriser",
+        "16",
+        "15"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ART120",
+        "ARTESUNATE 120 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "5",
+        "2 200",
+        "11 000",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ARTE60",
+        "ARTESUNATE 60 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "40",
+        "1 084",
+        "43 345",
+        "8"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ATR",
+        "ATROPINE 1MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "30",
+        "1 000",
+        "30 000",
+        "6"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BAN",
+        "BANDE VELPEAU",
+        "Consommables médicaux",
+        "Rouleau",
+        "24",
+        "700",
+        "16 800",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BANE",
+        "BANDE ELASTIQUE",
+        "Consommables médicaux",
+        "Rouleau",
+        "24",
+        "300",
+        "7 200",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BANG",
+        "BANDE A GAZ",
+        "Consommables médicaux",
+        "Rouleau",
+        "14",
+        "263",
+        "3 682",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BAV",
+        "BAVETTE/MASQUE CHIRURGICAL",
+        "Consommables médicaux",
+        "Unité",
+        "77",
+        "À valoriser",
+        "0",
+        "15"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BEC",
+        "BECTACEF 1G INJ",
+        "Médicaments",
+        "Ampoule",
+        "14",
+        "2 350",
+        "32 900",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BEN",
+        "BENZATHINE PENICILLINE 2.4MUI INJ",
+        "Médicaments",
+        "Ampoule",
+        "60",
+        "1 150",
+        "69 000",
+        "12"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BIP10",
+        "BILPATRIX 10 CM",
+        "Consommables médicaux",
+        "Unité",
+        "3",
+        "1 900",
+        "5 700",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BIP15",
+        "BIPLATRIX 15 CM",
+        "Consommables médicaux",
+        "Unité",
+        "3",
+        "2 700",
+        "8 100",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BIP20",
+        "BIPLATRIX 20 CM",
+        "Consommables médicaux",
+        "Unité",
+        "1",
+        "2 040",
+        "2 040",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BOIT",
+        "BOITE DE SECURITE",
+        "Consommables médicaux",
+        "Boîte",
+        "75",
+        "À valoriser",
+        "0",
+        "15"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BT",
+        "BETADINE JAUNE 500ML",
+        "Consommables médicaux",
+        "Flacon",
+        "26",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BUP",
+        "BUPIVACAINE HYPERBARE/4ML",
+        "Médicaments",
+        "Unité",
+        "50",
+        "À valoriser",
+        "1",
+        "10"
+       ],
+       "actions": []
+      }
+     ]
+    }
+   ],
+   "filtres": [
+    [
+     "Catégorie",
+     "Médicaments",
+     "Réactifs de laboratoire",
+     "Consommables de laboratoire",
+     "Consommables médicaux",
+     "Fournitures administratives",
+     "Produits d’entretien",
+     "Petit matériel médical",
+     "Immobilisations"
+    ],
+    [
+     "Valorisation",
+     "Valorisés",
+     "Non valorisés"
+    ]
+   ],
+   "pied": [
+    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+   ]
+  },
+  "points": {
+   "texte": [
+    "32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
+    "Le seuil d’alerte ne figure pas non plus dans le document SAGE. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
+   ],
+   "tables": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "DÉSIGNATION",
+      "CATÉGORIE",
+      "QUANTITÉ",
+      "PRIX DE REVIENT",
+      "ORIGINE DE LA VALEUR",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "ABA",
+        "ABAISSE LANGUE",
+        "Consommables médicaux",
+        "2",
+        "650 valeur : 1 300",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "ADRE",
+        "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+        "Médicaments",
+        "5",
+        "549 valeur : 2 745",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "ALC",
+        "ALCOOL",
+        "Consommables médicaux",
+        "8",
+        "650 valeur : 5 200",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "BAV",
+        "BAVETTE/MASQUE CHIRURGICAL",
+        "Consommables médicaux",
+        "77",
+        "650 valeur : 50 050",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "BOIT",
+        "BOITE DE SECURITE",
+        "Consommables médicaux",
+        "75",
+        "650 valeur : 48 750",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "BT",
+        "BETADINE JAUNE 500ML",
+        "Consommables médicaux",
+        "26",
+        "650 valeur : 16 900",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "CALO",
+        "CALOT",
+        "Consommables médicaux",
+        "10",
+        "650 valeur : 6 500",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "CAR",
+        "CARTABLE D’ECHOGRAPHIE",
+        "Fournitures administratives",
+        "10",
+        "100 valeur : 1 000",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "CARR",
+        "CARTABLE DE RADIOLOGIE",
+        "Fournitures administratives",
+        "40",
+        "100 valeur : 4 000",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "COT",
+        "COTON HYDROPHYLE 500 G",
+        "Consommables médicaux",
+        "1",
+        "650 valeur : 650",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "COT2",
+        "COTON CARDE",
+        "Consommables médicaux",
+        "11",
+        "650 valeur : 7 150",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "ECO",
+        "ECOUVILLON",
+        "Consommables de laboratoire",
+        "100",
+        "2 500 valeur : 250 000",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "EPH",
+        "EPHEDRINE 30 MG INJ",
+        "Médicaments",
+        "40",
+        "549 valeur : 21 960",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "GELE",
+        "GEL ECHO",
+        "Consommables médicaux",
+        "2",
+        "650 valeur : 1 300",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "JAV",
+        "EAU DE JAVEL EN POUDRE",
+        "Produits d’entretien",
+        "3",
+        "595 valeur : 1 785",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "LAC",
+        "LACTIV SOL 200ML",
+        "Produits d’entretien",
+        "3",
+        "595 valeur : 1 785",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "LAMEL",
+        "LAMELLE COUVRE OBJET B/100",
+        "Consommables de laboratoire",
+        "10",
+        "2 500 valeur : 25 000",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "MAN20",
+        "MANITOL 20% FL/500ML",
+        "Médicaments",
+        "3",
+        "549 valeur : 1 647",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "MASB",
+        "MASQUE FACIAL BEBE",
+        "Consommables médicaux",
+        "12",
+        "650 valeur : 7 800",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      },
+      {
+       "cellules": [
+        "MERS3",
+        "MERSITURE N°03",
+        "Consommables médicaux",
+        "2",
+        "650 valeur : 1 300",
+        "Décision de la Direction du 01/09/2026 — médiane de la catégorie, à confirmer ; confirmée par la Direction le 01/09/2026 Direction — 01/09/2026",
+        ""
+       ],
+       "actions": [
+        "Corriger la valorisation|"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "rapprochement": {
+   "texte": [
+    "Articles repris",
+    "184",
+    "Unités en stock",
+    "12 080",
+    "Valeur reprise",
+    "3 976 459 FCFA",
+    "Valorisation CMUP",
+    "Articles non valorisés",
+    "0",
+    "Prix de revient absent du document et non saisi",
+    "Valorisés par la clinique",
+    "32",
+    "1 320 094 FCFA ajoutés à la valeur du stock",
+    "Lot de migration",
+    "Valider la reprise",
+    "Éditer le bordereau",
+    "Référence du lot",
+    "IMPORT-SAGE-20260715",
+    "Système d’origine",
+    "SAGE_100_GESTION_COMMERCIALE_15.01",
+    "Document source",
+    "Inventaire : Grand Stock",
+    "Date d’arrêté",
+    "15/07/2026",
+    "Date de tirage",
+    "15/07/2026 à 13h25",
+    "Tenue de compte",
+    "F CFA",
+    "Méthode de valorisation",
+    "CMUP (coût unitaire moyen pondéré)",
+    "Total du document",
+    "12 080 unités — 3 976 459 FCFA",
+    "Contrôle de cohérence",
+    "Quantités concordantes",
+    "Validation Gestionnaire de Stock",
+    "En attente",
+    "Articles repris184",
+    "Points à traiter0",
+    "Rapprochement au catalogue tarifaire",
+    "Désignations au catalogue",
+    "144",
+    "Correspondances exactes",
+    "42",
+    "Correspondances approchées",
+    "21",
+    "Sans correspondance en stock",
+    "81",
+    "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire SAGE recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
+    "Correspondance",
+    "exacte",
+    "approchée",
+    "absente",
+    "Colonnes",
+    "Exporter",
+    "N°\tDÉSIGNATION AU CATALOGUE TARIFAIRE\tRÉF. STOCK\tDÉSIGNATION À L’INVENTAIRE\tPRIX PROPOSÉ (CMUP)\tCORRESPONDANCE",
+    "1\tACCUZON 1 G INJ\tACC\tACCUZON\t1 000\tApprochée",
+    "2\tACE-MISO\tACE\tACE MISO 200 µg 1 CP\t250\tApprochée",
+    "3\tAMINOPHILLINE 250 MG INJ\t—\t—\tÀ fixer\tAbsente",
+    "4\tAMPICILLINE 0,5 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "5\tAMPICILLINE 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "6\tARTESUNATE 120 MG INJ\tART120\tARTESUNATE 120 MG INJ\t2 200\tExacte",
+    "7\tARTESUNATE 30 MG INJ\tART120\tARTESUNATE 120 MG INJ\t2 200\tApprochée",
+    "8\tARTESUNATE 60 MG INJ\tARTE60\tARTESUNATE 60 MG INJ\t1 084\tExacte",
+    "9\tASPEGIC 0,5 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "10\tASPEGIC 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "11\tATROPINE 1 MG INJ\tATR\tATROPINE 1MG INJ\t1 000\tExacte",
+    "12\tBANDE A GAZ\tBANG\tBANDE A GAZ\t263\tExacte",
+    "13\tBANDE VELPEAU\tBAN\tBANDE VELPEAU\t700\tExacte",
+    "14\tBENZATHINE PENICILLINE 2,4 MUI INJ\tBEN\tBENZATHINE PENICILLINE 2.4MUI INJ\t1 150\tExacte",
+    "15\tBETACEF 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "16\tBIPLATRIX 10 CM\tBIP15\tBIPLATRIX 15 CM\t2 700\tApprochée",
+    "17\tBIPLATRIX 15 CM\tBIP15\tBIPLATRIX 15 CM\t2 700\tExacte",
+    "18\tBIPLATRIX 20 CM\tBIP20\tBIPLATRIX 20 CM\t2 040\tExacte",
+    "19\tCAFEINE 50 MG INJ\tCAF\tCAFEINE 50 MG INJ\t591\tExacte",
+    "20\tCACL 10 ML INJ\t—\t—\tÀ fixer\tAbsente",
+    "21\tCATAPRESSAN 0,15 MG INJ\tCATA\tCATAPRESSAN 0.15 MG INJ\t750\tExacte",
+    "22\tCATHETER G16\t—\t—\tÀ fixer\tAbsente",
+    "23\tCATHETER G18\t—\t—\tÀ fixer\tAbsente",
+    "24\tCATHETER G20\t—\t—\tÀ fixer\tAbsente",
+    "25\tCATHETER G22\t—\t—\tÀ fixer\tAbsente",
+    "Affichage de 1 à 25 sur 144 enregistrements",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+   ],
+   "tables": [
+    {
+     "entetes": [
+      "N°",
+      "DÉSIGNATION AU CATALOGUE TARIFAIRE",
+      "RÉF. STOCK",
+      "DÉSIGNATION À L’INVENTAIRE",
+      "PRIX PROPOSÉ (CMUP)",
+      "CORRESPONDANCE"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "1",
+        "ACCUZON 1 G INJ",
+        "ACC",
+        "ACCUZON",
+        "1 000",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "2",
+        "ACE-MISO",
+        "ACE",
+        "ACE MISO 200 µg 1 CP",
+        "250",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "3",
+        "AMINOPHILLINE 250 MG INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "4",
+        "AMPICILLINE 0,5 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "5",
+        "AMPICILLINE 1 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "6",
+        "ARTESUNATE 120 MG INJ",
+        "ART120",
+        "ARTESUNATE 120 MG INJ",
+        "2 200",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "7",
+        "ARTESUNATE 30 MG INJ",
+        "ART120",
+        "ARTESUNATE 120 MG INJ",
+        "2 200",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "8",
+        "ARTESUNATE 60 MG INJ",
+        "ARTE60",
+        "ARTESUNATE 60 MG INJ",
+        "1 084",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "9",
+        "ASPEGIC 0,5 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "10",
+        "ASPEGIC 1 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "11",
+        "ATROPINE 1 MG INJ",
+        "ATR",
+        "ATROPINE 1MG INJ",
+        "1 000",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "12",
+        "BANDE A GAZ",
+        "BANG",
+        "BANDE A GAZ",
+        "263",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "13",
+        "BANDE VELPEAU",
+        "BAN",
+        "BANDE VELPEAU",
+        "700",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "14",
+        "BENZATHINE PENICILLINE 2,4 MUI INJ",
+        "BEN",
+        "BENZATHINE PENICILLINE 2.4MUI INJ",
+        "1 150",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "15",
+        "BETACEF 1 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "16",
+        "BIPLATRIX 10 CM",
+        "BIP15",
+        "BIPLATRIX 15 CM",
+        "2 700",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "17",
+        "BIPLATRIX 15 CM",
+        "BIP15",
+        "BIPLATRIX 15 CM",
+        "2 700",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "18",
+        "BIPLATRIX 20 CM",
+        "BIP20",
+        "BIPLATRIX 20 CM",
+        "2 040",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "19",
+        "CAFEINE 50 MG INJ",
+        "CAF",
+        "CAFEINE 50 MG INJ",
+        "591",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "20",
+        "CACL 10 ML INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "21",
+        "CATAPRESSAN 0,15 MG INJ",
+        "CATA",
+        "CATAPRESSAN 0.15 MG INJ",
+        "750",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "22",
+        "CATHETER G16",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "23",
+        "CATHETER G18",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "24",
+        "CATHETER G20",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "25",
+        "CATHETER G22",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "sansSurcouche": {
+  "kpi": [
+   {
+    "libelle": "Articles repris",
+    "valeur": "184",
+    "indice": null
+   },
+   {
+    "libelle": "Unités en stock",
+    "valeur": "12 080",
+    "indice": null
+   },
+   {
+    "libelle": "Valeur reprise",
+    "valeur": "3 976 459 FCFA",
+    "indice": "Valorisation CMUP"
+   },
+   {
+    "libelle": "Articles non valorisés",
+    "valeur": "32",
+    "indice": "Prix de revient absent du document et non saisi"
+   },
+   {
+    "libelle": "Valorisés par la clinique",
+    "valeur": "0",
+    "indice": "aucune saisie à ce jour"
+   }
+  ],
+  "lot": [
+   "Référence du lot",
+   "IMPORT-SAGE-20260715",
+   "Système d’origine",
+   "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "Document source",
+   "Inventaire : Grand Stock",
+   "Date d’arrêté",
+   "15/07/2026",
+   "Date de tirage",
+   "15/07/2026 à 13h25",
+   "Tenue de compte",
+   "F CFA",
+   "Méthode de valorisation",
+   "CMUP (coût unitaire moyen pondéré)",
+   "Total du document",
+   "12 080 unités — 3 976 459 FCFA",
+   "Contrôle de cohérence",
+   "Quantités concordantes",
+   "Validation Gestionnaire de Stock",
+   "En attente"
+  ],
+  "boutons": [
+   "Valider la reprise",
+   "Éditer le bordereau",
+   "Articles repris184",
+   "Points à traiter32",
+   "Rapprochement au catalogue tarifaire",
+   "Colonnes",
+   "Exporter",
+   "Tout désélectionner",
+   "1",
+   "2",
+   "3",
+   "4"
+  ],
+  "onglets": [
+   "Articles repris184",
+   "Points à traiter32",
+   "Rapprochement au catalogue tarifaire"
+  ],
+  "articles": {
+   "tables": [
+    {
+     "entetes": [
+      "RÉFÉRENCE SAGE",
+      "DÉSIGNATION",
+      "CATÉGORIE AFFECTÉE",
+      "UNITÉ",
+      "QTÉ REPRISE",
+      "P.R. UNITAIRE (CMUP)",
+      "P.R. GLOBAL",
+      "SEUIL PROPOSÉ"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "ABA",
+        "ABAISSE LANGUE",
+        "Consommables médicaux",
+        "Unité",
+        "2",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ACC",
+        "ACCUZON",
+        "Médicaments",
+        "Unité",
+        "50",
+        "1 000",
+        "49 996",
+        "10"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ACE",
+        "ACE MISO 200 µg 1 CP",
+        "Médicaments",
+        "Comprimé",
+        "24",
+        "250",
+        "6 000",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ACU",
+        "ACUPAN 20 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "50",
+        "650",
+        "32 500",
+        "10"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ADRE",
+        "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+        "Médicaments",
+        "Ampoule",
+        "5",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "AIG",
+        "AIGUILLE DE PL",
+        "Consommables médicaux",
+        "Unité",
+        "52",
+        "53",
+        "2 740",
+        "10"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ALC",
+        "ALCOOL",
+        "Consommables médicaux",
+        "Flacon",
+        "8",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ALE",
+        "ALESE ABSORBANT",
+        "Consommables médicaux",
+        "Unité",
+        "25",
+        "11",
+        "268",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "AMI",
+        "AMINOPHYLLINE 250 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "140",
+        "500",
+        "70 000",
+        "28"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ANT",
+        "ANTISEPTIQUE",
+        "Consommables médicaux",
+        "Unité",
+        "76",
+        "À valoriser",
+        "16",
+        "15"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ART120",
+        "ARTESUNATE 120 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "5",
+        "2 200",
+        "11 000",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ARTE60",
+        "ARTESUNATE 60 MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "40",
+        "1 084",
+        "43 345",
+        "8"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "ATR",
+        "ATROPINE 1MG INJ",
+        "Médicaments",
+        "Ampoule",
+        "30",
+        "1 000",
+        "30 000",
+        "6"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BAN",
+        "BANDE VELPEAU",
+        "Consommables médicaux",
+        "Rouleau",
+        "24",
+        "700",
+        "16 800",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BANE",
+        "BANDE ELASTIQUE",
+        "Consommables médicaux",
+        "Rouleau",
+        "24",
+        "300",
+        "7 200",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BANG",
+        "BANDE A GAZ",
+        "Consommables médicaux",
+        "Rouleau",
+        "14",
+        "263",
+        "3 682",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BAV",
+        "BAVETTE/MASQUE CHIRURGICAL",
+        "Consommables médicaux",
+        "Unité",
+        "77",
+        "À valoriser",
+        "0",
+        "15"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BEC",
+        "BECTACEF 1G INJ",
+        "Médicaments",
+        "Ampoule",
+        "14",
+        "2 350",
+        "32 900",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BEN",
+        "BENZATHINE PENICILLINE 2.4MUI INJ",
+        "Médicaments",
+        "Ampoule",
+        "60",
+        "1 150",
+        "69 000",
+        "12"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BIP10",
+        "BILPATRIX 10 CM",
+        "Consommables médicaux",
+        "Unité",
+        "3",
+        "1 900",
+        "5 700",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BIP15",
+        "BIPLATRIX 15 CM",
+        "Consommables médicaux",
+        "Unité",
+        "3",
+        "2 700",
+        "8 100",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BIP20",
+        "BIPLATRIX 20 CM",
+        "Consommables médicaux",
+        "Unité",
+        "1",
+        "2 040",
+        "2 040",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BOIT",
+        "BOITE DE SECURITE",
+        "Consommables médicaux",
+        "Boîte",
+        "75",
+        "À valoriser",
+        "0",
+        "15"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BT",
+        "BETADINE JAUNE 500ML",
+        "Consommables médicaux",
+        "Flacon",
+        "26",
+        "À valoriser",
+        "0",
+        "5"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "BUP",
+        "BUPIVACAINE HYPERBARE/4ML",
+        "Médicaments",
+        "Unité",
+        "50",
+        "À valoriser",
+        "1",
+        "10"
+       ],
+       "actions": []
+      }
+     ]
+    }
+   ],
+   "filtres": [
+    [
+     "Catégorie",
+     "Médicaments",
+     "Réactifs de laboratoire",
+     "Consommables de laboratoire",
+     "Consommables médicaux",
+     "Fournitures administratives",
+     "Produits d’entretien",
+     "Petit matériel médical",
+     "Immobilisations"
+    ],
+    [
+     "Valorisation",
+     "Valorisés",
+     "Non valorisés"
+    ]
+   ],
+   "pied": [
+    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+   ]
+  },
+  "points": {
+   "texte": [
+    "32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
+    "Le seuil d’alerte ne figure pas non plus dans le document SAGE. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
+   ],
+   "tables": [
+    {
+     "entetes": [
+      "RÉFÉRENCE",
+      "DÉSIGNATION",
+      "CATÉGORIE",
+      "QUANTITÉ",
+      "PRIX DE REVIENT",
+      "ORIGINE DE LA VALEUR",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "ABA",
+        "ABAISSE LANGUE",
+        "Consommables médicaux",
+        "2",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "ADRE",
+        "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+        "Médicaments",
+        "5",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "ALC",
+        "ALCOOL",
+        "Consommables médicaux",
+        "8",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "BAV",
+        "BAVETTE/MASQUE CHIRURGICAL",
+        "Consommables médicaux",
+        "77",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "BOIT",
+        "BOITE DE SECURITE",
+        "Consommables médicaux",
+        "75",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "BT",
+        "BETADINE JAUNE 500ML",
+        "Consommables médicaux",
+        "26",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "CALO",
+        "CALOT",
+        "Consommables médicaux",
+        "10",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "CAR",
+        "CARTABLE D’ECHOGRAPHIE",
+        "Fournitures administratives",
+        "10",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "CARR",
+        "CARTABLE DE RADIOLOGIE",
+        "Fournitures administratives",
+        "40",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "COT",
+        "COTON HYDROPHYLE 500 G",
+        "Consommables médicaux",
+        "1",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "COT2",
+        "COTON CARDE",
+        "Consommables médicaux",
+        "11",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "ECO",
+        "ECOUVILLON",
+        "Consommables de laboratoire",
+        "100",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "EPH",
+        "EPHEDRINE 30 MG INJ",
+        "Médicaments",
+        "40",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "GELE",
+        "GEL ECHO",
+        "Consommables médicaux",
+        "2",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "JAV",
+        "EAU DE JAVEL EN POUDRE",
+        "Produits d’entretien",
+        "3",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "LAC",
+        "LACTIV SOL 200ML",
+        "Produits d’entretien",
+        "3",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "LAMEL",
+        "LAMELLE COUVRE OBJET B/100",
+        "Consommables de laboratoire",
+        "10",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "MAN20",
+        "MANITOL 20% FL/500ML",
+        "Médicaments",
+        "3",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "MASB",
+        "MASQUE FACIAL BEBE",
+        "Consommables médicaux",
+        "12",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      },
+      {
+       "cellules": [
+        "MERS3",
+        "MERSITURE N°03",
+        "Consommables médicaux",
+        "2",
+        "à saisir",
+        "absente du document SAGE",
+        ""
+       ],
+       "actions": [
+        "Valoriser|"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "rapprochement": {
+   "texte": [
+    "Articles repris",
+    "184",
+    "Unités en stock",
+    "12 080",
+    "Valeur reprise",
+    "3 976 459 FCFA",
+    "Valorisation CMUP",
+    "Articles non valorisés",
+    "32",
+    "Prix de revient absent du document et non saisi",
+    "Valorisés par la clinique",
+    "0",
+    "aucune saisie à ce jour",
+    "Lot de migration",
+    "Valider la reprise",
+    "Éditer le bordereau",
+    "Référence du lot",
+    "IMPORT-SAGE-20260715",
+    "Système d’origine",
+    "SAGE_100_GESTION_COMMERCIALE_15.01",
+    "Document source",
+    "Inventaire : Grand Stock",
+    "Date d’arrêté",
+    "15/07/2026",
+    "Date de tirage",
+    "15/07/2026 à 13h25",
+    "Tenue de compte",
+    "F CFA",
+    "Méthode de valorisation",
+    "CMUP (coût unitaire moyen pondéré)",
+    "Total du document",
+    "12 080 unités — 3 976 459 FCFA",
+    "Contrôle de cohérence",
+    "Quantités concordantes",
+    "Validation Gestionnaire de Stock",
+    "En attente",
+    "Articles repris184",
+    "Points à traiter32",
+    "Rapprochement au catalogue tarifaire",
+    "Désignations au catalogue",
+    "144",
+    "Correspondances exactes",
+    "42",
+    "Correspondances approchées",
+    "21",
+    "Sans correspondance en stock",
+    "81",
+    "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire SAGE recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
+    "Correspondance",
+    "exacte",
+    "approchée",
+    "absente",
+    "Colonnes",
+    "Exporter",
+    "N°\tDÉSIGNATION AU CATALOGUE TARIFAIRE\tRÉF. STOCK\tDÉSIGNATION À L’INVENTAIRE\tPRIX PROPOSÉ (CMUP)\tCORRESPONDANCE",
+    "1\tACCUZON 1 G INJ\tACC\tACCUZON\t1 000\tApprochée",
+    "2\tACE-MISO\tACE\tACE MISO 200 µg 1 CP\t250\tApprochée",
+    "3\tAMINOPHILLINE 250 MG INJ\t—\t—\tÀ fixer\tAbsente",
+    "4\tAMPICILLINE 0,5 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "5\tAMPICILLINE 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "6\tARTESUNATE 120 MG INJ\tART120\tARTESUNATE 120 MG INJ\t2 200\tExacte",
+    "7\tARTESUNATE 30 MG INJ\tART120\tARTESUNATE 120 MG INJ\t2 200\tApprochée",
+    "8\tARTESUNATE 60 MG INJ\tARTE60\tARTESUNATE 60 MG INJ\t1 084\tExacte",
+    "9\tASPEGIC 0,5 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "10\tASPEGIC 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "11\tATROPINE 1 MG INJ\tATR\tATROPINE 1MG INJ\t1 000\tExacte",
+    "12\tBANDE A GAZ\tBANG\tBANDE A GAZ\t263\tExacte",
+    "13\tBANDE VELPEAU\tBAN\tBANDE VELPEAU\t700\tExacte",
+    "14\tBENZATHINE PENICILLINE 2,4 MUI INJ\tBEN\tBENZATHINE PENICILLINE 2.4MUI INJ\t1 150\tExacte",
+    "15\tBETACEF 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+    "16\tBIPLATRIX 10 CM\tBIP15\tBIPLATRIX 15 CM\t2 700\tApprochée",
+    "17\tBIPLATRIX 15 CM\tBIP15\tBIPLATRIX 15 CM\t2 700\tExacte",
+    "18\tBIPLATRIX 20 CM\tBIP20\tBIPLATRIX 20 CM\t2 040\tExacte",
+    "19\tCAFEINE 50 MG INJ\tCAF\tCAFEINE 50 MG INJ\t591\tExacte",
+    "20\tCACL 10 ML INJ\t—\t—\tÀ fixer\tAbsente",
+    "21\tCATAPRESSAN 0,15 MG INJ\tCATA\tCATAPRESSAN 0.15 MG INJ\t750\tExacte",
+    "22\tCATHETER G16\t—\t—\tÀ fixer\tAbsente",
+    "23\tCATHETER G18\t—\t—\tÀ fixer\tAbsente",
+    "24\tCATHETER G20\t—\t—\tÀ fixer\tAbsente",
+    "25\tCATHETER G22\t—\t—\tÀ fixer\tAbsente",
+    "Affichage de 1 à 25 sur 144 enregistrements",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+   ],
+   "tables": [
+    {
+     "entetes": [
+      "N°",
+      "DÉSIGNATION AU CATALOGUE TARIFAIRE",
+      "RÉF. STOCK",
+      "DÉSIGNATION À L’INVENTAIRE",
+      "PRIX PROPOSÉ (CMUP)",
+      "CORRESPONDANCE"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "1",
+        "ACCUZON 1 G INJ",
+        "ACC",
+        "ACCUZON",
+        "1 000",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "2",
+        "ACE-MISO",
+        "ACE",
+        "ACE MISO 200 µg 1 CP",
+        "250",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "3",
+        "AMINOPHILLINE 250 MG INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "4",
+        "AMPICILLINE 0,5 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "5",
+        "AMPICILLINE 1 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "6",
+        "ARTESUNATE 120 MG INJ",
+        "ART120",
+        "ARTESUNATE 120 MG INJ",
+        "2 200",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "7",
+        "ARTESUNATE 30 MG INJ",
+        "ART120",
+        "ARTESUNATE 120 MG INJ",
+        "2 200",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "8",
+        "ARTESUNATE 60 MG INJ",
+        "ARTE60",
+        "ARTESUNATE 60 MG INJ",
+        "1 084",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "9",
+        "ASPEGIC 0,5 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "10",
+        "ASPEGIC 1 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "11",
+        "ATROPINE 1 MG INJ",
+        "ATR",
+        "ATROPINE 1MG INJ",
+        "1 000",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "12",
+        "BANDE A GAZ",
+        "BANG",
+        "BANDE A GAZ",
+        "263",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "13",
+        "BANDE VELPEAU",
+        "BAN",
+        "BANDE VELPEAU",
+        "700",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "14",
+        "BENZATHINE PENICILLINE 2,4 MUI INJ",
+        "BEN",
+        "BENZATHINE PENICILLINE 2.4MUI INJ",
+        "1 150",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "15",
+        "BETACEF 1 G INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "16",
+        "BIPLATRIX 10 CM",
+        "BIP15",
+        "BIPLATRIX 15 CM",
+        "2 700",
+        "Approchée"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "17",
+        "BIPLATRIX 15 CM",
+        "BIP15",
+        "BIPLATRIX 15 CM",
+        "2 700",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "18",
+        "BIPLATRIX 20 CM",
+        "BIP20",
+        "BIPLATRIX 20 CM",
+        "2 040",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "19",
+        "CAFEINE 50 MG INJ",
+        "CAF",
+        "CAFEINE 50 MG INJ",
+        "591",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "20",
+        "CACL 10 ML INJ",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "21",
+        "CATAPRESSAN 0,15 MG INJ",
+        "CATA",
+        "CATAPRESSAN 0.15 MG INJ",
+        "750",
+        "Exacte"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "22",
+        "CATHETER G16",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "23",
+        "CATHETER G18",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "24",
+        "CATHETER G20",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      },
+      {
+       "cellules": [
+        "25",
+        "CATHETER G22",
+        "—",
+        "—",
+        "À fixer",
+        "Absente"
+       ],
+       "actions": []
+      }
+     ]
+    }
+   ]
+  }
+ },
+ "saisie": {
+  "code": "ABA",
+  "modale": "Valoriser — ABAISSE LANGUE ABAISSE LANGUE — 2 unité(s) en stock. Cette référence figure à l’inventaire SAGE sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé. Prix de revient unitaire (FCFA) * RG-02 — les médicaments se facturent au prix d’achat, sans marge. Origine de la valeur * Facture fournisseur, bon de commande, relevé de prix… Sans origine, la valeur ne se vérifie pas. Observation Annuler Valoriser",
+  "champs": [
+   "f_prixRevient=",
+   "f_source=",
+   "f_observation="
+  ],
+  "videEncore": {
+   "modaleOuverte": true,
+   "toasts": [],
+   "fiches": 0
+  },
+  "sansSource": {
+   "modaleOuverte": true,
+   "fiches": 0
+  },
+  "ok": {
+   "toasts": [
+    [
+     "Référence valorisée.",
+     "ABAISSE LANGUE — 850 l’unité, soit 1 700 de stock."
+    ]
+   ],
+   "fiche": {
+    "code": "ABA",
+    "designation": "ABAISSE LANGUE",
+    "prixRevient": 850,
+    "source": "Facture UBIPHARM n° 4471",
+    "observation": "Relevé du 28/10",
+    "auteur": "c.bassongui",
+    "date": "2026-10-30"
+   },
+   "fiches": 1,
+   "lu": {
+    "kpi": [
+     {
+      "libelle": "Articles repris",
+      "valeur": "184",
+      "indice": null
+     },
+     {
+      "libelle": "Unités en stock",
+      "valeur": "12 080",
+      "indice": null
+     },
+     {
+      "libelle": "Valeur reprise",
+      "valeur": "3 976 459 FCFA",
+      "indice": "Valorisation CMUP"
+     },
+     {
+      "libelle": "Articles non valorisés",
+      "valeur": "31",
+      "indice": "Prix de revient absent du document et non saisi"
+     },
+     {
+      "libelle": "Valorisés par la clinique",
+      "valeur": "1",
+      "indice": "1 700 FCFA ajoutés à la valeur du stock"
+     }
+    ],
+    "lot": [
+     "Référence du lot",
+     "IMPORT-SAGE-20260715",
+     "Système d’origine",
+     "SAGE_100_GESTION_COMMERCIALE_15.01",
+     "Document source",
+     "Inventaire : Grand Stock",
+     "Date d’arrêté",
+     "15/07/2026",
+     "Date de tirage",
+     "15/07/2026 à 13h25",
+     "Tenue de compte",
+     "F CFA",
+     "Méthode de valorisation",
+     "CMUP (coût unitaire moyen pondéré)",
+     "Total du document",
+     "12 080 unités — 3 976 459 FCFA",
+     "Contrôle de cohérence",
+     "Quantités concordantes",
+     "Validation Gestionnaire de Stock",
+     "En attente"
+    ],
+    "boutons": [
+     "Valider la reprise",
+     "Éditer le bordereau",
+     "Articles repris184",
+     "Points à traiter31",
+     "Rapprochement au catalogue tarifaire",
+     "Colonnes",
+     "Exporter",
+     "Tout désélectionner",
+     "1",
+     "2",
+     "3",
+     "4"
+    ],
+    "onglets": [
+     "Articles repris184",
+     "Points à traiter31",
+     "Rapprochement au catalogue tarifaire"
+    ],
+    "articles": {
+     "tables": [
+      {
+       "entetes": [
+        "RÉFÉRENCE SAGE",
+        "DÉSIGNATION",
+        "CATÉGORIE AFFECTÉE",
+        "UNITÉ",
+        "QTÉ REPRISE",
+        "P.R. UNITAIRE (CMUP)",
+        "P.R. GLOBAL",
+        "SEUIL PROPOSÉ"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "ABA",
+          "ABAISSE LANGUE",
+          "Consommables médicaux",
+          "Unité",
+          "2",
+          "À valoriser",
+          "0",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ACC",
+          "ACCUZON",
+          "Médicaments",
+          "Unité",
+          "50",
+          "1 000",
+          "49 996",
+          "10"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ACE",
+          "ACE MISO 200 µg 1 CP",
+          "Médicaments",
+          "Comprimé",
+          "24",
+          "250",
+          "6 000",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ACU",
+          "ACUPAN 20 MG INJ",
+          "Médicaments",
+          "Ampoule",
+          "50",
+          "650",
+          "32 500",
+          "10"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ADRE",
+          "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+          "Médicaments",
+          "Ampoule",
+          "5",
+          "À valoriser",
+          "0",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "AIG",
+          "AIGUILLE DE PL",
+          "Consommables médicaux",
+          "Unité",
+          "52",
+          "53",
+          "2 740",
+          "10"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ALC",
+          "ALCOOL",
+          "Consommables médicaux",
+          "Flacon",
+          "8",
+          "À valoriser",
+          "0",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ALE",
+          "ALESE ABSORBANT",
+          "Consommables médicaux",
+          "Unité",
+          "25",
+          "11",
+          "268",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "AMI",
+          "AMINOPHYLLINE 250 MG INJ",
+          "Médicaments",
+          "Ampoule",
+          "140",
+          "500",
+          "70 000",
+          "28"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ANT",
+          "ANTISEPTIQUE",
+          "Consommables médicaux",
+          "Unité",
+          "76",
+          "À valoriser",
+          "16",
+          "15"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ART120",
+          "ARTESUNATE 120 MG INJ",
+          "Médicaments",
+          "Ampoule",
+          "5",
+          "2 200",
+          "11 000",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ARTE60",
+          "ARTESUNATE 60 MG INJ",
+          "Médicaments",
+          "Ampoule",
+          "40",
+          "1 084",
+          "43 345",
+          "8"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "ATR",
+          "ATROPINE 1MG INJ",
+          "Médicaments",
+          "Ampoule",
+          "30",
+          "1 000",
+          "30 000",
+          "6"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BAN",
+          "BANDE VELPEAU",
+          "Consommables médicaux",
+          "Rouleau",
+          "24",
+          "700",
+          "16 800",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BANE",
+          "BANDE ELASTIQUE",
+          "Consommables médicaux",
+          "Rouleau",
+          "24",
+          "300",
+          "7 200",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BANG",
+          "BANDE A GAZ",
+          "Consommables médicaux",
+          "Rouleau",
+          "14",
+          "263",
+          "3 682",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BAV",
+          "BAVETTE/MASQUE CHIRURGICAL",
+          "Consommables médicaux",
+          "Unité",
+          "77",
+          "À valoriser",
+          "0",
+          "15"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BEC",
+          "BECTACEF 1G INJ",
+          "Médicaments",
+          "Ampoule",
+          "14",
+          "2 350",
+          "32 900",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BEN",
+          "BENZATHINE PENICILLINE 2.4MUI INJ",
+          "Médicaments",
+          "Ampoule",
+          "60",
+          "1 150",
+          "69 000",
+          "12"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BIP10",
+          "BILPATRIX 10 CM",
+          "Consommables médicaux",
+          "Unité",
+          "3",
+          "1 900",
+          "5 700",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BIP15",
+          "BIPLATRIX 15 CM",
+          "Consommables médicaux",
+          "Unité",
+          "3",
+          "2 700",
+          "8 100",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BIP20",
+          "BIPLATRIX 20 CM",
+          "Consommables médicaux",
+          "Unité",
+          "1",
+          "2 040",
+          "2 040",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BOIT",
+          "BOITE DE SECURITE",
+          "Consommables médicaux",
+          "Boîte",
+          "75",
+          "À valoriser",
+          "0",
+          "15"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BT",
+          "BETADINE JAUNE 500ML",
+          "Consommables médicaux",
+          "Flacon",
+          "26",
+          "À valoriser",
+          "0",
+          "5"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "BUP",
+          "BUPIVACAINE HYPERBARE/4ML",
+          "Médicaments",
+          "Unité",
+          "50",
+          "À valoriser",
+          "1",
+          "10"
+         ],
+         "actions": []
+        }
+       ]
+      }
+     ],
+     "filtres": [
+      [
+       "Catégorie",
+       "Médicaments",
+       "Réactifs de laboratoire",
+       "Consommables de laboratoire",
+       "Consommables médicaux",
+       "Fournitures administratives",
+       "Produits d’entretien",
+       "Petit matériel médical",
+       "Immobilisations"
+      ],
+      [
+       "Valorisation",
+       "Valorisés",
+       "Non valorisés"
+      ]
+     ],
+     "pied": [
+      "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+     ]
+    },
+    "points": {
+     "texte": [
+      "32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire, pour 1 082 unités. Aucun document ne les tarife : le catalogue « Tarifs des médicaments » a lui aussi ses colonnes de prix vierges, et une seule de ces références y figure — sans montant. Les inventer fabriquerait une valeur de stock que personne n’a arrêtée.",
+      "Le seuil d’alerte ne figure pas non plus dans le document SAGE. Le système propose 20 % de la quantité relevée (minimum 5 unités) ; ces valeurs doivent être arrêtées article par article avec le Gestionnaire de Stock et le Pharmacien avant la mise en service des alertes."
+     ],
+     "tables": [
+      {
+       "entetes": [
+        "RÉFÉRENCE",
+        "DÉSIGNATION",
+        "CATÉGORIE",
+        "QUANTITÉ",
+        "PRIX DE REVIENT",
+        "ORIGINE DE LA VALEUR",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "ABA",
+          "ABAISSE LANGUE",
+          "Consommables médicaux",
+          "2",
+          "850 valeur : 1 700",
+          "Facture UBIPHARM n° 4471 c.bassongui — 30/10/2026",
+          ""
+         ],
+         "actions": [
+          "Corriger la valorisation|"
+         ]
+        },
+        {
+         "cellules": [
+          "ADRE",
+          "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+          "Médicaments",
+          "5",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "ALC",
+          "ALCOOL",
+          "Consommables médicaux",
+          "8",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "BAV",
+          "BAVETTE/MASQUE CHIRURGICAL",
+          "Consommables médicaux",
+          "77",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "BOIT",
+          "BOITE DE SECURITE",
+          "Consommables médicaux",
+          "75",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "BT",
+          "BETADINE JAUNE 500ML",
+          "Consommables médicaux",
+          "26",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "CALO",
+          "CALOT",
+          "Consommables médicaux",
+          "10",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "CAR",
+          "CARTABLE D’ECHOGRAPHIE",
+          "Fournitures administratives",
+          "10",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "CARR",
+          "CARTABLE DE RADIOLOGIE",
+          "Fournitures administratives",
+          "40",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "COT",
+          "COTON HYDROPHYLE 500 G",
+          "Consommables médicaux",
+          "1",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "COT2",
+          "COTON CARDE",
+          "Consommables médicaux",
+          "11",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "ECO",
+          "ECOUVILLON",
+          "Consommables de laboratoire",
+          "100",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "EPH",
+          "EPHEDRINE 30 MG INJ",
+          "Médicaments",
+          "40",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "GELE",
+          "GEL ECHO",
+          "Consommables médicaux",
+          "2",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "JAV",
+          "EAU DE JAVEL EN POUDRE",
+          "Produits d’entretien",
+          "3",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "LAC",
+          "LACTIV SOL 200ML",
+          "Produits d’entretien",
+          "3",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "LAMEL",
+          "LAMELLE COUVRE OBJET B/100",
+          "Consommables de laboratoire",
+          "10",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "MAN20",
+          "MANITOL 20% FL/500ML",
+          "Médicaments",
+          "3",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "MASB",
+          "MASQUE FACIAL BEBE",
+          "Consommables médicaux",
+          "12",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        },
+        {
+         "cellules": [
+          "MERS3",
+          "MERSITURE N°03",
+          "Consommables médicaux",
+          "2",
+          "à saisir",
+          "absente du document SAGE",
+          ""
+         ],
+         "actions": [
+          "Valoriser|"
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    "rapprochement": {
+     "texte": [
+      "Articles repris",
+      "184",
+      "Unités en stock",
+      "12 080",
+      "Valeur reprise",
+      "3 976 459 FCFA",
+      "Valorisation CMUP",
+      "Articles non valorisés",
+      "31",
+      "Prix de revient absent du document et non saisi",
+      "Valorisés par la clinique",
+      "1",
+      "1 700 FCFA ajoutés à la valeur du stock",
+      "Lot de migration",
+      "Valider la reprise",
+      "Éditer le bordereau",
+      "Référence du lot",
+      "IMPORT-SAGE-20260715",
+      "Système d’origine",
+      "SAGE_100_GESTION_COMMERCIALE_15.01",
+      "Document source",
+      "Inventaire : Grand Stock",
+      "Date d’arrêté",
+      "15/07/2026",
+      "Date de tirage",
+      "15/07/2026 à 13h25",
+      "Tenue de compte",
+      "F CFA",
+      "Méthode de valorisation",
+      "CMUP (coût unitaire moyen pondéré)",
+      "Total du document",
+      "12 080 unités — 3 976 459 FCFA",
+      "Contrôle de cohérence",
+      "Quantités concordantes",
+      "Validation Gestionnaire de Stock",
+      "En attente",
+      "Articles repris184",
+      "Points à traiter31",
+      "Rapprochement au catalogue tarifaire",
+      "Désignations au catalogue",
+      "144",
+      "Correspondances exactes",
+      "42",
+      "Correspondances approchées",
+      "21",
+      "Sans correspondance en stock",
+      "81",
+      "Le catalogue « Tarifs des médicaments et accessoires » recense les articles vendables ; l’inventaire SAGE recense les articles détenus. Le rapprochement ci-dessous permet d’attribuer un prix à chaque désignation du catalogue à partir du CMUP relevé (RG-02 — vente au prix d’achat), et de repérer les articles du catalogue absents du stock.",
+      "Correspondance",
+      "exacte",
+      "approchée",
+      "absente",
+      "Colonnes",
+      "Exporter",
+      "N°\tDÉSIGNATION AU CATALOGUE TARIFAIRE\tRÉF. STOCK\tDÉSIGNATION À L’INVENTAIRE\tPRIX PROPOSÉ (CMUP)\tCORRESPONDANCE",
+      "1\tACCUZON 1 G INJ\tACC\tACCUZON\t1 000\tApprochée",
+      "2\tACE-MISO\tACE\tACE MISO 200 µg 1 CP\t250\tApprochée",
+      "3\tAMINOPHILLINE 250 MG INJ\t—\t—\tÀ fixer\tAbsente",
+      "4\tAMPICILLINE 0,5 G INJ\t—\t—\tÀ fixer\tAbsente",
+      "5\tAMPICILLINE 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+      "6\tARTESUNATE 120 MG INJ\tART120\tARTESUNATE 120 MG INJ\t2 200\tExacte",
+      "7\tARTESUNATE 30 MG INJ\tART120\tARTESUNATE 120 MG INJ\t2 200\tApprochée",
+      "8\tARTESUNATE 60 MG INJ\tARTE60\tARTESUNATE 60 MG INJ\t1 084\tExacte",
+      "9\tASPEGIC 0,5 G INJ\t—\t—\tÀ fixer\tAbsente",
+      "10\tASPEGIC 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+      "11\tATROPINE 1 MG INJ\tATR\tATROPINE 1MG INJ\t1 000\tExacte",
+      "12\tBANDE A GAZ\tBANG\tBANDE A GAZ\t263\tExacte",
+      "13\tBANDE VELPEAU\tBAN\tBANDE VELPEAU\t700\tExacte",
+      "14\tBENZATHINE PENICILLINE 2,4 MUI INJ\tBEN\tBENZATHINE PENICILLINE 2.4MUI INJ\t1 150\tExacte",
+      "15\tBETACEF 1 G INJ\t—\t—\tÀ fixer\tAbsente",
+      "16\tBIPLATRIX 10 CM\tBIP15\tBIPLATRIX 15 CM\t2 700\tApprochée",
+      "17\tBIPLATRIX 15 CM\tBIP15\tBIPLATRIX 15 CM\t2 700\tExacte",
+      "18\tBIPLATRIX 20 CM\tBIP20\tBIPLATRIX 20 CM\t2 040\tExacte",
+      "19\tCAFEINE 50 MG INJ\tCAF\tCAFEINE 50 MG INJ\t591\tExacte",
+      "20\tCACL 10 ML INJ\t—\t—\tÀ fixer\tAbsente",
+      "21\tCATAPRESSAN 0,15 MG INJ\tCATA\tCATAPRESSAN 0.15 MG INJ\t750\tExacte",
+      "22\tCATHETER G16\t—\t—\tÀ fixer\tAbsente",
+      "23\tCATHETER G18\t—\t—\tÀ fixer\tAbsente",
+      "24\tCATHETER G20\t—\t—\tÀ fixer\tAbsente",
+      "25\tCATHETER G22\t—\t—\tÀ fixer\tAbsente",
+      "Affichage de 1 à 25 sur 144 enregistrements",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "Source : Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026."
+     ],
+     "tables": [
+      {
+       "entetes": [
+        "N°",
+        "DÉSIGNATION AU CATALOGUE TARIFAIRE",
+        "RÉF. STOCK",
+        "DÉSIGNATION À L’INVENTAIRE",
+        "PRIX PROPOSÉ (CMUP)",
+        "CORRESPONDANCE"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "1",
+          "ACCUZON 1 G INJ",
+          "ACC",
+          "ACCUZON",
+          "1 000",
+          "Approchée"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "2",
+          "ACE-MISO",
+          "ACE",
+          "ACE MISO 200 µg 1 CP",
+          "250",
+          "Approchée"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "3",
+          "AMINOPHILLINE 250 MG INJ",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "4",
+          "AMPICILLINE 0,5 G INJ",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "5",
+          "AMPICILLINE 1 G INJ",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "6",
+          "ARTESUNATE 120 MG INJ",
+          "ART120",
+          "ARTESUNATE 120 MG INJ",
+          "2 200",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "7",
+          "ARTESUNATE 30 MG INJ",
+          "ART120",
+          "ARTESUNATE 120 MG INJ",
+          "2 200",
+          "Approchée"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "8",
+          "ARTESUNATE 60 MG INJ",
+          "ARTE60",
+          "ARTESUNATE 60 MG INJ",
+          "1 084",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "9",
+          "ASPEGIC 0,5 G INJ",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "10",
+          "ASPEGIC 1 G INJ",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "11",
+          "ATROPINE 1 MG INJ",
+          "ATR",
+          "ATROPINE 1MG INJ",
+          "1 000",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "12",
+          "BANDE A GAZ",
+          "BANG",
+          "BANDE A GAZ",
+          "263",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "13",
+          "BANDE VELPEAU",
+          "BAN",
+          "BANDE VELPEAU",
+          "700",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "14",
+          "BENZATHINE PENICILLINE 2,4 MUI INJ",
+          "BEN",
+          "BENZATHINE PENICILLINE 2.4MUI INJ",
+          "1 150",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "15",
+          "BETACEF 1 G INJ",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "16",
+          "BIPLATRIX 10 CM",
+          "BIP15",
+          "BIPLATRIX 15 CM",
+          "2 700",
+          "Approchée"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "17",
+          "BIPLATRIX 15 CM",
+          "BIP15",
+          "BIPLATRIX 15 CM",
+          "2 700",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "18",
+          "BIPLATRIX 20 CM",
+          "BIP20",
+          "BIPLATRIX 20 CM",
+          "2 040",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "19",
+          "CAFEINE 50 MG INJ",
+          "CAF",
+          "CAFEINE 50 MG INJ",
+          "591",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "20",
+          "CACL 10 ML INJ",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "21",
+          "CATAPRESSAN 0,15 MG INJ",
+          "CATA",
+          "CATAPRESSAN 0.15 MG INJ",
+          "750",
+          "Exacte"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "22",
+          "CATHETER G16",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "23",
+          "CATHETER G18",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "24",
+          "CATHETER G20",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        },
+        {
+         "cellules": [
+          "25",
+          "CATHETER G22",
+          "—",
+          "—",
+          "À fixer",
+          "Absente"
+         ],
+         "actions": []
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ },
+ "correction": {
+  "modale": "Corriger la valorisation — ABAISSE LANGUE ABAISSE LANGUE — 2 unité(s) en stock. Cette référence figure à l’inventaire SAGE sans prix de revient. La valeur saisie ici ne modifie pas le document : elle est enregistrée à part, avec son auteur et sa date, pour que l’audit distingue toujours ce que le document portait de ce que la clinique a décidé. Prix de revient unitaire (FCFA) * RG-02 — les médicaments se facturent au prix d’achat, sans marge. Origine de la valeur * Facture fournisseur, bon de commande, relevé de prix… Sans origine, la valeur ne se vérifie pas. Observation Annuler Corriger",
+  "champs": [
+   "f_prixRevient=850",
+   "f_source=Facture UBIPHARM n° 4471",
+   "f_observation=Relevé du 28/10"
+  ],
+  "apres": {
+   "toasts": [
+    [
+     "Référence valorisée.",
+     "ABAISSE LANGUE — 900 l’unité, soit 1 800 de stock."
+    ]
+   ],
+   "fiches": 1,
+   "fiche": {
+    "code": "ABA",
+    "designation": "ABAISSE LANGUE",
+    "prixRevient": 900,
+    "source": "Facture UBIPHARM n° 4471",
+    "observation": "Relevé du 28/10",
+    "auteur": "c.bassongui",
+    "date": "2026-10-30"
+   }
+  }
+ },
+ "validation": {
+  "modale": "Valider la reprise du stock initial ? Cette validation atteste que le contrôle physique contradictoire a été réalisé et que les 184 articles repris correspondent au stock effectivement détenu. Elle engage le Gestionnaire de Stock et est journalisée. Annuler Valider la reprise",
+  "apres": {
+   "toasts": [
+    [
+     "Reprise validée.",
+     "Le stock initial devient la situation de référence."
+    ]
+   ],
+   "audit": [
+    {
+     "action": "Validation",
+     "module": "M6",
+     "entite": "LotImportStock",
+     "reference": "IMPORT-SAGE-20260715"
+    }
+   ]
+  }
+ },
+ "bordereau": {
+  "titre": "Bordereau de reprise du stock initial",
+  "texte": [
+   "Bordereau de reprise du stock initial",
+   "Réf. CNT-20261030-0001",
+   "Imprimer / Enregistrer en PDF",
+   "Archiver",
+   "Fermer",
+   "CLINIQUE NASSIERA TOO",
+   "BP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20",
+   "AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020",
+   "IFU : 3201642748214 RCCM : RB/NAT/2016-B-268",
+   "E-mail : cliniquenassiera@gmail.com",
+   "Votre santé, notre raison de vivre",
+   "BORDEREAU DE REPRISE DU STOCK INITIAL",
+   "Import IMPORT-SAGE-20260715 — Inventaire : Grand Stock",
+   "Référence du lot :",
+   "IMPORT-SAGE-20260715",
+   "Système d’origine :",
+   "SAGE_100_GESTION_COMMERCIALE_15.01",
+   "Date d’arrêté :",
+   "15/07/2026",
+   "Articles repris :",
+   "184",
+   "Unités :",
+   "12 080",
+   "Valeur reprise :",
+   "3 976 459 FCFA",
+   "Référence\tDésignation\tQté en stock\tP.R. unitaire\tP.R. global",
+   "ABA\tABAISSE LANGUE\t2",
+   "ACC\tACCUZON\t50\t1 000\t49 996",
+   "ACE\tACE MISO 200 µg 1 CP\t24\t250\t6 000",
+   "ACU\tACUPAN 20 MG INJ\t50\t650\t32 500",
+   "ADRE\tADRENALINE 1 MG INJ (EPINEPHRINE)\t5",
+   "AIG\tAIGUILLE DE PL\t52\t53\t2 740",
+   "ALC\tALCOOL\t8",
+   "ALE\tALESE ABSORBANT\t25\t11\t268",
+   "AMI\tAMINOPHYLLINE 250 MG INJ\t140\t500\t70 000",
+   "ANT\tANTISEPTIQUE\t76\t\t16",
+   "ART120\tARTESUNATE 120 MG INJ\t5\t2 200\t11 000",
+   "ARTE60\tARTESUNATE 60 MG INJ\t40\t1 084\t43 345",
+   "ATR\tATROPINE 1MG INJ\t30\t1 000\t30 000",
+   "BAN\tBANDE VELPEAU\t24\t700\t16 800",
+   "BANE\tBANDE ELASTIQUE\t24\t300\t7 200",
+   "BANG\tBANDE A GAZ\t14\t263\t3 682",
+   "BAV\tBAVETTE/MASQUE CHIRURGICAL\t77",
+   "BEC\tBECTACEF 1G INJ\t14\t2 350\t32 900",
+   "BEN\tBENZATHINE PENICILLINE 2.4MUI INJ\t60\t1 150\t69 000",
+   "BIP10\tBILPATRIX 10 CM\t3\t1 900\t5 700",
+   "BIP15\tBIPLATRIX 15 CM\t3\t2 700\t8 100",
+   "BIP20\tBIPLATRIX 20 CM\t1\t2 040\t2 040",
+   "BOIT\tBOITE DE SECURITE\t75",
+   "BT\tBETADINE JAUNE 500ML\t26",
+   "BUP\tBUPIVACAINE HYPERBARE/4ML\t50\t\t1",
+   "CACL\tCACL 1 G INJ\t250\t500\t124 996",
+   "CAF\tCAFEINE 50 MG INJ\t8\t591\t4 728",
+   "CALO\tCALOT\t10",
+   "CAN2\tCANNULE DE GUEDELE N°2\t4\t500\t2 000",
+   "CANG3\tCANUL DE GUEDEL 3\t5\t500\t2 500",
+   "CANG4\tCANUL DE GUEDEL 4\t6\t600\t3 600",
+   "CANG5\tCANNUL DE GUEDELLE N°5\t4\t500\t2 000",
+   "CANG6\tCANUL DE GUEDEL 6\t2\t500\t1 000",
+   "CAR\tCARTABLE D’ECHOGRAPHIE\t10",
+   "CARR\tCARTABLE DE RADIOLOGIE\t40",
+   "CAS\tCASAQUE RENFORCEE\t2\t3 173\t6 346",
+   "CATA\tCATAPRESSAN 0.15 MG INJ\t50\t750\t37 500",
+   "CATH\tCATHETHER G\t330\t150\t49 500",
+   "CEF\tCEFOTAXIME 1000 MG INJ\t7\t2 900\t20 300",
+   "CHA\tCHAMPS ABDOMINAL\t6\t76\t454",
+   "CHLG\tCHLORXY-G GEL\t5\t1 400\t7 000",
+   "CIP\tCIPLOX 200 MG INJ\t120\t650\t77 999",
+   "CM\tCARNET DE MATERNITE\t150\t100\t15 000",
+   "COM30\tCOMPRESSE STERILE 30X30\t20\t100\t1 990",
+   "COM4\tCOMPRESSE NON STERILE BTE DE 100\t4\t1 826\t7 302",
+   "COM40\tCOMPRESSE STERILE 40X40\t500\t150\t74 954",
+   "CONEB\tCONE BLEU\t4\t2 200\t8 799",
+   "CONEJ\tCONE JAUNE\t4\t2 200\t8 799",
+   "COT\tCOTON HYDROPHYLE 500 G\t1",
+   "COT2\tCOTON CARDE\t11",
+   "CS\tCARNET DE SOINS\t102\t100\t10 190",
+   "CSL\tCARNET DE SANTE DE L’ENFANT\t5\t300\t1 500",
+   "DEX\tDEXAMETHASONE 4 MG INJ\t310\t350\t108 356",
+   "DIA\tDIAZEPAM 10 MG INJ\t10\t166\t1 660",
+   "DIC\tDICLOFENAC 75 MG INJ\t30\t145\t4 340",
+   "DIU\tDIU/STERILET\t94\t100\t9 400",
+   "DRAR12\tDRAIN DE REDON N°12\t3\t5 000\t15 000",
+   "DRAR16\tDRAIN DE REDON N°16\t3\t2 188\t6 564",
+   "DRAR18\tDRAIN DE REDON N°18\t2\t5 000\t10 000",
+   "ECO\tECOUVILLON\t100",
+   "EPH\tEPHEDRINE 30 MG INJ\t40",
+   "EPI23\tEPIPLEX G23\t76\t51\t3 845",
+   "EXA\tEXACYL 0.5 G INJ\t20\t750\t14 999",
+   "FIC\tFICHE D’OBSERVATION\t62\t2\t110",
+   "FILTA\tFILTRE ANTI BACTERIEN ADULTE\t12\t2 000\t24 000",
+   "FILTE\tFILTRE ANTI BACTERIEN ENFANT\t2\t2 000\t4 000",
+   "FLA\tFLAGYL 500 MG INJ\t20\t700\t13 995",
+   "FORL\tFORLAX SACHET\t10\t200\t2 000",
+   "G10.250\tSERUM GLUCOSE 10% 250 ML\t15\t550\t8 245",
+   "G5.250\tSERUM GLUCOSE 5% 250 ML\t20\t600\t11 996",
+   "G5.500\tSERUM GLUCOSE 5% 500 ML\t90\t550\t49 500",
+   "GANR\tGANT DE REVISION UTERINE 1 UNITE\t100\t114\t11 400",
+   "GELE\tGEL ECHO\t2",
+   "GEN\tGENTAMICINE 80 MG INJ\t100\t150\t15 000",
+   "GENC\tGENTA COLLYRE\t3\t852\t2 556",
+   "GL\tGANT D’EXAMEN 1 PAIRE\t2200\t25\t55 243",
+   "GLYR\tGLYCEMIE CAPILLAIRE\t100\t1 000\t100 000",
+   "GSACH\tGANT EN SACHET\t17\t214\t3 631",
+   "HAL\tHALDOL 5 MG INJ\t5\t250\t1 250",
+   "HBB\tHBB 20 MG INJ\t60\t166\t9 940",
+   "HEMOC\tHEMOGLOBINE CAPILLAIRE\t100\t1 024\t102 400",
+   "HEPAD\tHEPARINE 1CC INJ\t23\t595\t13 685",
+   "ISF\tISOFLURANE\t6\t778\t4 666",
+   "JAV\tEAU DE JAVEL EN POUDRE\t3",
+   "JER10\tJERSEY 10 CM BTE\t12\t650\t7 800",
+   "KCL\tKCL 1 G INJ\t50\t300\t15 000",
+   "KET\tKETAMINE 50MG/ML 10ML INJ\t5\t3 961\t19 805",
+   "LAC\tLACTIV SOL 200ML\t3",
+   "LAM\tLAME DE BISTOURIS\t100\t100\t10 040",
+   "LAME\tLAME PORTE OBJET B/72\t2\t600\t1 200",
+   "LAMEL\tLAMELLE COUVRE OBJET B/100\t10",
+   "LAS\tLASILIX/FUROSEMIDE 20 MG INJ\t114\t124\t14 122",
+   "LID\tLIDOCAINE 1CC INJ\t795\t25\t19 882",
+   "LID2\tLIDOCAINE 2% INJ\t15\t158\t2 375",
+   "LOX\tLOXEN /NICARDIPINE 50 MG INJ\t15\t1 400\t21 000",
+   "LUNA\tLUNETTE D’O2 ADULTE\t14\t603\t8 440",
+   "LUNE\tLUNETTE D’O2 ENFANT\t19\t671\t12 757",
+   "MAGN\tMAGNESIUM 1.5 G/10 ML INJ\t7\t226\t1 582",
+   "MAN20\tMANITOL 20% FL/500ML\t3",
+   "MASA\tMASQUE FACIAL D’O2 ADULTE\t8\t2 250\t18 000",
+   "MASB\tMASQUE FACIAL BEBE\t12",
+   "MASE\tMASQUE FACIAL D’O2 ENFANT\t11\t2 250\t24 750",
+   "MCG\tMICROGYNON\t40\t500\t20 000",
+   "MERS3\tMERSITURE N°03\t2",
+   "MOR\tMORPHINE 10 MG INJ\t30\t1 270\t38 102",
+   "NACL\tNACL 1 G INJ\t200\t100\t20 000",
+   "NOR\tNORISTERAT/LAAFIA INJ\t24\t450\t10 800",
+   "NOV2.5\tNOVALGIN 2.5 G INJ\t700\t700\t489 897",
+   "NOV5\tNOVALGIN 500 MG INJ\t300\t300\t90 000",
+   "OMO\tOMO SACHET\t111",
+   "OMP\tOMEPRAZOLE/CAPRAZOLE 40MG INJ\t50\t2 700\t135 000",
+   "ORD\tORDONANCIER\t28\t587\t16 434",
+   "PAR1\tPARACETAMOL 1G INJ\t200\t1 350\t269 996",
+   "PEN1\tPENI G 1 MUI INJ\t50\t500\t25 000",
+   "PERF\tPERFUSEUR\t51\t150\t7 647",
+   "PH\tPAPIER HYGIENIQUE\t21",
+   "PHE200\tPHENOBARBITAL 200 MG INJ\t11\t729\t8 019",
+   "POC\tPOCHE D’URINE\t50\t416\t20 820",
+   "POCS\tPOCHE DE STOMIE\t11\t5 000\t55 000",
+   "PRIM\tPRIMPERAN 10 MG INJ\t500\t150\t75 000",
+   "PROA\tPROTECTION ADULTE\t40\t1 000\t40 000",
+   "PROP\tPROPOFOL 200MG/20ML\t10\t266\t2 660",
+   "PROS\tPROKEFEN SUPPO\t60\t175\t10 500",
+   "PROSG\tPROSTIGMINE 0.5MG/1ML S INJ\t5",
+   "RL\tRINGER LACTATE 500 ML\t90\t650\t58 499",
+   "ROBA\tROBINET D’ARRET 03 VOIES\t45\t100\t4 500",
+   "SACH100\tSACHET POUBELLE 100 L\t147",
+   "SACH50\tSACHET POUBELLE 50 L\t4",
+   "SACN5\tSACHET NOIR 5F\t8",
+   "SAL\tSALBUTAMOL 0.5 MG INJ\t30\t194\t5 824",
+   "SAP10\tSONDE D’ASPIRATION N°10\t5\t250\t1 250",
+   "SAP12\tSONDE D’ASPIRATION N°12\t21\t500\t10 500",
+   "SAP14\tSONDE D’ASPIRATION N°14\t15\t475\t7 125",
+   "SAP16\tSONDE D’ASPIRATION N°16\t13\t424\t5 512",
+   "SAP6\tSONDE D’ASPIRATION N°06\t1\t396\t396",
+   "SAP8\tSONDE D’ASPIRATION N°08\t5\t250\t1 250",
+   "SAV\tSAVON LIQUIDE 1 LITRE ET DEMI\t1",
+   "SAY\tSAYANA PRESS\t10\t200\t2 000",
+   "SB\tSERUM BICABONATE 1.4 % 500 ML\t3",
+   "SER\tSERENATAL CP\t60",
+   "SNG14\tSONDE NASOGASTRIQUE N°14\t18\t700\t12 600",
+   "SNG16\tSONDE NASOGASTRIQUE N°16\t4\t700\t2 800",
+   "SNG18\tSONDE NASOGASTRIQUE N°18\t8\t550\t4 400",
+   "SNG6\tSONDE NASOGASTRIQUE N°06\t5\t700\t3 500",
+   "SNG8\tSONDE NASOGASTRIQUE N°08\t21\t700\t14 700",
+   "SOL10\tSOLVANT 10 ML INJ\t200\t100\t20 000",
+   "SPA\tSPASFON 40 MG INJ\t12\t538\t6 460",
+   "SPAR/14\tSPARADRAP 1/4\t4\t1 709\t6 834",
+   "SPARV\tSPARADRAP PVV\t80\t200\t15 987",
+   "SPE\tSPECULUM VAGINAL\t16\t499\t7 990",
+   "SS5\tSERUM SALE 0.9% 500 ML\t120\t650\t78 000",
+   "SUI\tSERINGUE A INSULINE 1ML\t6\t148\t890",
+   "SUU10\tSERINGUE 10 CC\t100\t100\t10 000",
+   "SUU20\tSERINGUE 20 CC\t5\t200\t1 000",
+   "SUU50\tSERINGUE 50 CC\t77\t496\t38 226",
+   "SV2/14\tSONDE VESICALE 02 VOIES N°14\t20\t700\t14 000",
+   "SV2V12\tSONDE VESICALE 2 VOIES N°12\t10\t700\t7 000",
+   "SV2V16\tSONDE VESICALE 02 VOIES N°16\t9\t571\t5 140",
+   "SV2V18\tSONDE VESICALE 2 VOIES N°18\t10\t700\t7 000",
+   "SV2V8\tSONDE VESICALE 2 VOIES N°8\t10\t393\t3 930",
+   "SV3V18\tSONDE VESICALE 3 VOIES N°18\t5\t1 500\t7 500",
+   "SV3V20\tSONDE VESICALE 3 VOIES N°20\t9\t1 500\t13 500",
+   "SV3V22\tSONDE VESICALE 3 VOIES N°22\t4\t1 219\t4 876",
+   "SV3VS20\tSONDE VESICALE SILICONE 03 VOIES N°20\t2\t3 000\t6 000",
+   "TBG\tTBG URINAIRE\t60\t1 001\t60 034",
+   "TIC\tTICKET DE CAISSE\t22",
+   "TRAM\tTRAMAGEN 100 MG INJ\t160\t549\t87 810",
+   "TROC\tTROUSSE DE CESARIENNE\t4\t10 000\t40 000",
+   "TROU\tTROUSSE UNIVERSEL\t6\t15 000\t90 000",
+   "TUBAK\tTUBE AKOP\t179",
+   "TUBEB\tTUBE BOUCHON BLEU\t2\t2 500\t5 000",
+   "TUBEC\tTUBE BOUCHON CENDRE\t1\t4 206\t4 206",
+   "TUBECB\tTUBE ECBU\t81",
+   "TUBER\tTUBE BOUCHON ROUGE PLASTIC\t2\t849\t1 698",
+   "TUBER2\tTUBE BOUCHON ROUGE EN VERRE\t3\t3 400\t10 200",
+   "TUBEV\tTUBE BOUCHON VIOLET\t2\t839\t1 678",
+   "VEC\tVECURO-M\t8\t1 350\t10 800",
+   "VIC.0\tFIL VICRYL 0\t1\t2 250\t2 250",
+   "VIC1\tFIL VICRYL 1\t24\t2 250\t54 000",
+   "VIC2\tFIL VICRYL 2\t36\t2 250\t81 000",
+   "VIC2.0\tFIL VICRYL 2/0\t36\t2 250\t81 000",
+   "VITB2\tVITAMINE B/C 2 ML INJ\t100\t300\t30 000",
+   "VITC\tVITAMINE C 500 MG INJ\t225\t160\t35 940",
+   "VITK\tVITAMINE K1 10 MG INJ\t50\t250\t12 500",
+   "TOTAL GRAND STOCK\t\t12 080\t\t3 976 459",
+   "Fait à Natitingou, le 30 octobre 2026",
+   "Le Gestionnaire de Stock",
+   "MAMAN Zoukanéri",
+   "Contrôle physique",
+   "Le Pharmacien",
+   "DIEYABIDI Aïssatou",
+   "Signature",
+   "La Directrice Administrative",
+   "TAKI Alimatou",
+   "Validation de la reprise",
+   "CLINIQUE NASSIERA TOO SARL — RB/NAT/2016-B-268 — IFU 3201642748214",
+   "Document généré par BASSONGUI Chabi Séko le 30/10/2026 à 17h59",
+   "Réf. document : CNT-20261030-0001",
+   "Édité depuis le SIGH-CNT"
+  ],
+  "table": {
+   "entetes": [
+    "Référence",
+    "Désignation",
+    "Qté en stock",
+    "P.R. unitaire",
+    "P.R. global"
+   ],
+   "lignes": 184,
+   "premieres": [
+    [
+     "ABA",
+     "ABAISSE LANGUE",
+     "2",
+     "",
+     ""
+    ],
+    [
+     "ACC",
+     "ACCUZON",
+     "50",
+     "1 000",
+     "49 996"
+    ],
+    [
+     "ACE",
+     "ACE MISO 200 µg 1 CP",
+     "24",
+     "250",
+     "6 000"
+    ]
+   ],
+   "pied": [
+    [
+     "TOTAL GRAND STOCK",
+     "",
+     "12 080",
+     "",
+     "3 976 459"
+    ]
+   ]
+  }
+ },
+ "fichesDuJeu": 34
+}
