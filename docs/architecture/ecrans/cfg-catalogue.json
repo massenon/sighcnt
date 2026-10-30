@@ -1,0 +1,64 @@
+{
+ "id": "cfg-catalogue",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Catalogue tarifaire (deux prix)",
+ "acces": "ouvert",
+ "titre": "Catalogue tarifaire (deux prix)",
+ "description": "Les six grilles officielles : consultations, imageries, analyses, AMI, gynéco-obstétrique, certificats.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Catalogue tarifaire (deux prix)"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Divergence à arbitrer — Consultation prénatale : La Direction a énoncé 15 000 F ; le document tarifaire porte 1 500 / 5 000. Le prototype retient le document ; écraser une pièce écrite par une phrase, ou l’inverse, serait décider à la place de la clinique.",
+  "3 acte(s) arbitré(s) par la Direction, dont le tarif ne suit pas la grille relevée : LAB-HIV — HIV · LAB-SPER — Spermogramme · PSE — Pose de sérum. Un arbitrage tranché n’est pas une divergence en attente : il est appliqué et daté. Ne pas le « corriger » sans nouvelle décision écrite."
+ ],
+ "onglets": [
+  "Consultations",
+  "Imagerie médicale",
+  "Analyses de laboratoire",
+  "Actes médico-infirmiers",
+  "Actes gynéco-obstétricaux et kits",
+  "Certificats et attestations"
+ ],
+ "kpis": [
+  "Actes au catalogue",
+  "Non couverts par les assurances",
+  "Couverts par SOS seule",
+  "Prix non renseigné"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Code",
+   "Désignation",
+   "Prix non assuré",
+   "Prix assuré",
+   "Écart",
+   "Document d’origine",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Consultations6",
+  "Imagerie médicale23",
+  "Analyses de laboratoire41",
+  "Actes médico-infirmiers40",
+  "Actes gynéco-obstétricaux et kits31",
+  "Certificats et attestations6",
+  "Colonnes",
+  "Exporter",
+  "Nouvel acte"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

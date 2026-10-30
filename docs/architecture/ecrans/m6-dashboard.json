@@ -1,0 +1,60 @@
+{
+ "id": "m6-dashboard",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Tableau de bord stock",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Stocks",
+ "description": "Valeur du stock, produits critiques, péremptions, rotation et visualisation par catégorie.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Tableau de bord stock"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "51 produit(s) sous le seuil d’alerte — établir un bon de commande (validation DA requise, RG-04).",
+  "17 lot(s) périmé(s) — retour aux fournisseurs habilités (CAME, SoBAPS) et valorisation de la perte."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Valeur totale du stock",
+  "Références gérées",
+  "Produits critiques",
+  "Produits périmés",
+  "Valeur stock gros",
+  "Valeur stock détail",
+  "Mouvements du mois",
+  "Péremption sous 90 j"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Valeur du stock par catégorie",
+  "Répartition gros / détail",
+  "Mouvements de stock (12 mois)",
+  "État des péremptions",
+  "Produits à réapprovisionner en priorité"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Désignation",
+   "Catégorie",
+   "Stock",
+   "Seuil",
+   "Emplacement",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Toutes les alertes"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 8
+}

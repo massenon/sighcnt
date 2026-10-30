@@ -1,0 +1,57 @@
+{
+ "id": "m2-dossiers-consultation",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Dossiers de consultation",
+ "acces": "ouvert",
+ "titre": "Dossiers de consultation",
+ "description": "Anamnèse, antécédents et examen clinique structuré (IPPOA) par appareil — le dossier que la fiche de consultation récapitule.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Consultations & prescriptions",
+  "Dossiers de consultation"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Enchaînement — 1. l’accueil relève les constantes · 2. vous enregistrez le dossier (anamnèse, antécédents, examen IPPOA) · 3. « Ouvrir la fiche de consultation » : synthèse, diagnostic et SEULE étape de prescription · 4. la caisse encaisse une facture globale, puis pharmacie, laboratoire et imagerie exécutent."
+ ],
+ "onglets": [],
+ "kpis": [
+  "En attente",
+  "En consultation",
+  "En attente labo / imagerie",
+  "Clôturés",
+  "Venues du jour"
+ ],
+ "cartes": [
+  "Dossiers de consultation"
+ ],
+ "tableaux": [
+  [
+   "Dossier",
+   "Venue",
+   "Patient",
+   "Venue",
+   "Motif",
+   "Examen IPPOA",
+   "Praticien",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau dossier",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 5
+}

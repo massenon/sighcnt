@@ -1,0 +1,52 @@
+{
+ "id": "m1-contre-reference",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Fiches de contre-référence",
+ "acces": "ouvert",
+ "titre": "Fiches de contre-référence",
+ "description": "Retours des centres d’accueil sur les patients référés : diagnostic de sortie, concordance, évolution.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Fiches de contre-référence"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "Une discordance de diagnostic ou une référence jugée non justifiée n’est pas une faute à masquer : c’est l’information la plus utile que le centre d’accueil puisse renvoyer. Le taux de concordance mesure la qualité de l’orientation, pas la compétence d’un agent."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Contre-références reçues",
+  "Diagnostics concordants",
+  "Références justifiées",
+  "Décès au centre d’accueil"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Fiche de référence",
+   "Patient",
+   "Centre d’accueil",
+   "Arrivée",
+   "Évolution",
+   "Concordance",
+   "Justifiée",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Enregistrer une contre-référence"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

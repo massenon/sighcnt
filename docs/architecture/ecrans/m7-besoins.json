@@ -1,0 +1,52 @@
+{
+ "id": "m7-besoins",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Bons d’expression de besoins",
+ "acces": "ouvert",
+ "titre": "Bons d’expression de besoins",
+ "description": "Demandes internes des services : désignation, date, secteur demandeur, quantité voulue et quantité accordée.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "Bons d’expression de besoins"
+ ],
+ "actions": [
+  "Bons de commande",
+  "Bons de livraison",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [
+  "Exprimez ici vos besoins de fournitures — papier, produits d’entretien, stylos, petit matériel. La DAF arbitre, puis l’achat et la distribution suivent : vous voyez l’avancement sans avoir à le demander."
+ ],
+ "onglets": [
+  "Mes demandes",
+  "Arbitrage & validation DAF",
+  "Besoins validés — achats & logistique",
+  "Tous les bons"
+ ],
+ "kpis": [
+  "Mes demandes",
+  "En attente d’arbitrage DAF",
+  "Livrés",
+  "Montant estimé cumulé"
+ ],
+ "cartes": [
+  "Circuit de traitement",
+  "Mes demandes"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Mes demandes0",
+  "Arbitrage & validation DAF9",
+  "Besoins validés — achats & logistique7",
+  "Tous les bons20",
+  "Colonnes",
+  "Exporter",
+  "Nouveau bon"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

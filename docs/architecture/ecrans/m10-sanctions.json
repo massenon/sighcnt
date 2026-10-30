@@ -1,0 +1,58 @@
+{
+ "id": "m10-sanctions",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Sanctions",
+ "acces": "ouvert",
+ "titre": "Sanctions",
+ "description": "Sanctions issues des évaluations mensuelles et sanctions disciplinaires, avec incidence sur le salaire.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Sanctions"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "Les sanctions sont exclusivement issues du barème NS 131/07/DM/DA/CNT/2026. Aucune retenue ne peut être appliquée hors de ce cadre.",
+  "Les quatre axes du barème NS 131/07/DM/DA/CNT/2026 — ponctualité et assiduité, exécution des tâches, attitude envers les patients, respect de la hiérarchie — ne pèsent pas du même poids. Ce croisement montre lequel appelle une action de la Direction, plutôt que de traiter les sanctions une à une."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Sanctions prononcées",
+  "Agents concernés",
+  "Montant total retenu",
+  "Prélèvement moyen"
+ ],
+ "cartes": [
+  "Registre des sanctions",
+  "Sanctions par direction et service",
+  "Critères sanctionnés (NS 131)",
+  "Montant retenu par critère"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Période",
+   "Agent",
+   "Service",
+   "Critères sanctionnés",
+   "Retenue",
+   "Montant",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

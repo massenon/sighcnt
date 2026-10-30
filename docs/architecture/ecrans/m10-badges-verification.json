@@ -1,0 +1,38 @@
+{
+ "id": "m10-badges-verification",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Vérifier un badge",
+ "acces": "ouvert",
+ "titre": "Vérifier un badge",
+ "description": "Le badge présenté est-il valide ? Réponse immédiate, avec la photo et la fonction — et la vérification est journalisée.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Vérifier un badge"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [
+  "La saisie manuelle est acceptée autant que le scan : refuser le numéro à la main rendrait le contrôle impossible le jour où le QR est abîmé — c’est-à-dire le jour où il sert le plus."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Badge présenté",
+  "Badges retirés — à refuser à l’entrée"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Vérifier"
+ ],
+ "champs": [
+  "Numéro de série ou code scanné"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

@@ -1,0 +1,48 @@
+{
+ "id": "m10-badges-modeles",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Modèles de badge",
+ "acces": "ouvert",
+ "titre": "Modèles de badge",
+ "description": "Les gabarits : format, orientation, zones imprimées et mentions du verso.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Modèles de badge"
+ ],
+ "actions": [
+  "Fiches de poste",
+  "Tableau de bord RH",
+  "Ressources humaines"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les modèles de badge",
+  "Archivés"
+ ],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Modèle",
+   "Format",
+   "Orientation",
+   "Zones imprimées",
+   "Par défaut",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les modèles de badge1",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 0
+}

@@ -1,0 +1,61 @@
+{
+ "id": "m12-rentabilite-groupes",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Recettes & charges par groupe",
+ "acces": "ouvert",
+ "titre": "Recettes & charges par groupe",
+ "description": "Recettes par groupe de prestation, charges par centre de coûts, et le bénéfice brut par groupe — rapprochement arrêté.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Recettes & charges par groupe"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [
+  "Les charges transverses (16 831 000 — administration, entretien, ambulance, non imputé) ne sont PAS ventilées : les répartir exigerait une clé qu’aucun document ne donne. Le bénéfice brut se lit AVANT elles — la ligne globale de l’en-tête les inclut."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Recettes facturées (lignes)",
+  "Charges validées (classe 6)",
+  "Écart brut global",
+  "Brouillons écartés"
+ ],
+ "cartes": [
+  "Recettes par groupe de prestation",
+  "Rapprochement ARRÊTÉ le 01/09/2026 — centre par centre, contestable ligne à ligne",
+  "Bénéfice brut par groupe — avant charges transverses"
+ ],
+ "tableaux": [
+  [
+   "Groupe",
+   "Recettes"
+  ],
+  [
+   "Centre de coûts",
+   "Charges",
+   "Rattaché au groupe"
+  ],
+  [
+   "Groupe",
+   "Recettes",
+   "Charges rattachées",
+   "Bénéfice brut"
+  ]
+ ],
+ "commandes": [
+  "Toute la période"
+ ],
+ "champs": [
+  "Du",
+  "au"
+ ],
+ "nbTableaux": 3,
+ "nbKpis": 4
+}

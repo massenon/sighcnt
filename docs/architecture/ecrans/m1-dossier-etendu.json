@@ -1,0 +1,29 @@
+{
+ "id": "m1-dossier-etendu",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Dossier de consultation étendu",
+ "acces": "ouvert",
+ "titre": "Dossier de consultation étendu",
+ "description": "Page de renvoi : le dossier de consultation vit désormais dans son propre écran.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Dossier de consultation étendu"
+ ],
+ "actions": [],
+ "regle": [
+  "Le dossier de consultation a déménagé dans son propre écran — « Soins › Consultations & prescriptions › Dossiers de consultation » (14/09/2026). Le dossier s’y enregistre d’abord (anamnèse, antécédents, examen clinique IPPOA) ; la fiche de consultation en fait ensuite le récapitulatif et porte seule la prescription."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Ouvrir les dossiers de consultation"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

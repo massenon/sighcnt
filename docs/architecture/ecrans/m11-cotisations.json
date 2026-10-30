@@ -1,0 +1,72 @@
+{
+ "id": "m11-cotisations",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Cotisations CNSS / ITS / VPS",
+ "acces": "ouvert",
+ "titre": "Cotisations CNSS / ITS / VPS",
+ "description": "États des cotisations sociales et fiscales, exploitables pour les déclarations périodiques.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Cotisations CNSS / ITS / VPS"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "CNSS part ouvrière",
+  "CNSS part patronale",
+  "CNSS totale à verser",
+  "ITS retenu",
+  "VPS",
+  "ORTB Radio",
+  "ORTB Télé",
+  "Masse salariale brute",
+  "Coût employeur"
+ ],
+ "cartes": [
+  "Détail des cotisations — octobre 2026",
+  "Barème ITS appliqué"
+ ],
+ "tableaux": [
+  [
+   "Mat.",
+   "Agent",
+   "N° CNSS",
+   "Brut",
+   "CNSS ouvrière",
+   "CNSS patronale",
+   "VPS",
+   "ITS",
+   "ORTB Radio",
+   "ORTB Télé",
+   "ORTB total"
+  ],
+  [
+   "Tranche de revenu",
+   "Taux"
+  ]
+ ],
+ "commandes": [
+  "État CNSS",
+  "État ITS",
+  "État VPS",
+  "État ORTB",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [
+  "Période"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 9
+}

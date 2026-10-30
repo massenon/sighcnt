@@ -1,0 +1,56 @@
+{
+ "id": "m14-taches",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Tâches planifiées",
+ "acces": "ouvert",
+ "titre": "Tâches planifiées",
+ "description": "Ce que le serveur évalue à heure fixe — échéances, péremptions, seuils de stock, rendez-vous du lendemain, créances âgées, sauvegarde — et ce qu’il a trouvé.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Tâches planifiées"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Rôles & permissions (RBAC)",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Tâches actives",
+  "En erreur",
+  "En retard sur leur fréquence",
+  "Alertes ouvertes (dernière passe)"
+ ],
+ "cartes": [
+  "Registre des tâches",
+  "Dernières exécutions"
+ ],
+ "tableaux": [
+  [
+   "Tâche",
+   "Fréquence",
+   "Dernière exécution",
+   "Résultat",
+   "Durée",
+   "Alertes"
+  ],
+  [
+   "Début (UTC)",
+   "Tâche",
+   "Résultat",
+   "Déclenchée par",
+   "Durée",
+   "Alertes"
+  ]
+ ],
+ "commandes": [
+  "Exécuter"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

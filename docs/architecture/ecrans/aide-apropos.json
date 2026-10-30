@@ -1,0 +1,38 @@
+{
+ "id": "aide-apropos",
+ "module": "SUP",
+ "domaine": "Système",
+ "libelleManifeste": "Aide & À propos",
+ "acces": "ouvert",
+ "titre": "Aide & À propos",
+ "description": "Documentation d’usage : présentation du logiciel, guide des modules et foire aux questions.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Aide & assistance",
+  "Aide & À propos"
+ ],
+ "actions": [],
+ "regle": [
+  "Les quatorze règles de gestion du cahier des charges sont appliquées et rappelées à l’écran là où elles s’imposent : identifiant patient, marge nulle sur les médicaments, stock jamais négatif, signatures de sortie, validité des cartes d’assurance, équilibre des écritures, journalisation et archivage logique."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Modules fonctionnels",
+  "Écrans disponibles",
+  "Règles de gestion appliquées",
+  "Profils d’utilisateur"
+ ],
+ "cartes": [
+  "À propos",
+  "Modules du logiciel",
+  "Foire aux questions"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Contacter l’éditeur"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

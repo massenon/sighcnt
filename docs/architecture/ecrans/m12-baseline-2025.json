@@ -1,0 +1,70 @@
+{
+ "id": "m12-baseline-2025",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Baseline 2025",
+ "acces": "ouvert",
+ "titre": "Baseline financière 2025",
+ "description": "Compte de résultat réel de l’exercice 2025, servant de référence de comparaison à l’exercice courant.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Baseline 2025"
+ ],
+ "actions": [
+  "Imprimer le compte de résultat 2025",
+  "Tableau de bord comptable",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "Écart de 141 667 FCFA entre la ligne « TOTAL » du classeur (208 380 091 FCFA) et la somme de son propre détail (208 521 758 FCFA).",
+  "Diagnostic : l’écart n’est pas un arrondi. Les 33 lignes du détail somment exactement à leur propre total — le détail est cohérent avec lui-même. Et le montant de l’écart, 141 667 FCFA, est précisément l’échéance mensuelle de la ligne « FONDS DE GARANTIE » (novembre et décembre). La ligne « TOTAL » du classeur omet une échéance ; c’est elle qui est fautive, non le détail.Conséquence retenue : la baseline s’appuie sur le détail, soit 208 521 758 FCFA. Le service comptable est invité à corriger la formule de totalisation du classeur — la correction porte sur le document source, pas sur le logiciel.",
+  "3 poste(s) de dépense sans numéro de compte dans le classeur source, pour 3 281 118 FCFA. Les trois relèvent du même emprunt bancaire. Un rattachement est proposé ci-dessous : c’est une proposition à valider par le service comptable, pas une imputation appliquée — rattacher d’office un montant à un compte fausserait la balance sans que personne ne l’ait décidé."
+ ],
+ "onglets": [
+  "Détail mensuel",
+  "Postes de charges",
+  "Comparaison 2025 /"
+ ],
+ "kpis": [
+  "Chiffre d’affaires 2025",
+  "Charges d’exploitation",
+  "Résultat 2025",
+  "Chiffre d’affaires moyen",
+  "Meilleur mois",
+  "Mois le plus faible",
+  "Postes de charges",
+  "Hors exploitation"
+ ],
+ "cartes": [
+  "Contrôles de cohérence du document source",
+  "Chiffre d’affaires mensuel 2025",
+  "Chiffre d’affaires, charges et résultat"
+ ],
+ "tableaux": [
+  [
+   "Poste du classeur",
+   "Montant 2025",
+   "Compte proposé",
+   "Pourquoi ce compte"
+  ],
+  [
+   "Mois",
+   "Chiffre d’affaires",
+   "Charges",
+   "Résultat",
+   "Marge"
+  ]
+ ],
+ "commandes": [
+  "Détail mensuel",
+  "Postes de charges30",
+  "Comparaison 2025 / 2026",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 8
+}

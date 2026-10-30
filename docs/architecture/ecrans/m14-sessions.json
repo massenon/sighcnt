@@ -1,0 +1,54 @@
+{
+ "id": "m14-sessions",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Sessions actives",
+ "acces": "ouvert",
+ "titre": "Sessions actives",
+ "description": "Connexions en cours, postes de travail et délai d’inactivité avant verrouillage.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Sessions actives"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Rôles & permissions (RBAC)",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "Sur les postes partagés — accueil et caisse — un délai d’inactivité de 15 minutes entraîne le verrouillage automatique de l’écran."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Sessions ouvertes",
+  "Postes distincts",
+  "Verrouillées pour inactivité",
+  "Délai de verrouillage"
+ ],
+ "cartes": [
+  "Sessions en cours"
+ ],
+ "tableaux": [
+  [
+   "Identifiant",
+   "Utilisateur",
+   "Rôle",
+   "Poste",
+   "Adresse réseau",
+   "Ouverture",
+   "Inactivité",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Clôturer"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

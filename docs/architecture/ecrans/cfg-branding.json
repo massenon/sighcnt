@@ -1,0 +1,56 @@
+{
+ "id": "cfg-branding",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Identité & papier à en-tête",
+ "acces": "ouvert",
+ "titre": "Identité & papier à en-tête",
+ "description": "Paramétrage de l’identité visuelle et des mentions légales reprises sur tous les documents édités.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Identité & papier à en-tête"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Référentiel tarifaire",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "CLINIQUE NASSIERA TOOBP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020IFU : 3201642748214 RCCM : RB/NAT/2016-B-268E-mail : cliniquenassiera@gmail.com— corps du document —CLINIQUE NASSIERA TOO SARL — RB/NAT/2016-B-268 — IFU 3201642748214 · Document généré par BASSONGUI Chabi Séko le 30/10/2026 à 07h48 · Réf. CNT-XXXXXXXX-0001",
+  "Logo principalUtilisé sur tous les états et dans l’applicationÀ fournir",
+  "Logo monochromePour les impressions en noir et blancÀ fournir"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Paramètres de l’identité",
+  "Aperçu du papier à en-tête",
+  "Ressources graphiques"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Enregistrer",
+  "Prévisualiser un état",
+  "Déposer une ressource"
+ ],
+ "champs": [
+  "Dénomination sociale *",
+  "Sigle",
+  "Forme juridique",
+  "Devise ou slogan",
+  "Adresse géographique",
+  "Adresse postale",
+  "Téléphones",
+  "Adresse électronique",
+  "IFU *",
+  "RCCM *",
+  "N° d’autorisation d’ouverture",
+  "Logo de part et d’autre de la dénomination",
+  "Pied de page normalisé (utilisateur, date, identifiant)",
+  "Filigrane par défaut"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

@@ -1,0 +1,60 @@
+{
+ "id": "dash-stock",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Gestionnaire de stock",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Gestion des stocks",
+ "description": "Stock gros et détail, mouvements, cycle d’achat, inventaires et suivi des écarts.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Gestionnaire de stock"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "51 produit(s) sous le seuil d’alerte",
+  "17 lot(s) périmé(s) à retourner",
+  "37 lot(s) à péremption proche (FEFO)"
+ ],
+ "onglets": [],
+ "kpis": [
+  "Références gérées",
+  "Valeur totale du stock",
+  "Mouvements du mois",
+  "Alertes actives"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Derniers mouvements",
+  "Valeur du stock par catégorie",
+  "Répartition des mouvements"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Produit",
+   "Type",
+   "Quantité",
+   "Justificatif",
+   "Opérateur"
+  ]
+ ],
+ "commandes": [
+  "Voir les alertes",
+  "Point des ventes",
+  "Nouveau transfert",
+  "FEFO",
+  "Inventorier",
+  "Registre complet"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

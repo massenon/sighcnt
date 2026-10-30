@@ -1,0 +1,44 @@
+{
+ "id": "m11-bulletins",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Bulletins de paie",
+ "acces": "ouvert",
+ "titre": "Bulletins de paie",
+ "description": "Bulletins générés, statut de validation et édition avec l’entête officielle de la clinique.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Bulletins de paie"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [
+  "Les bulletins sont produits par le moteur de calcul : ils ne sont pas modifiables directement. Toute correction passe par la reprise du calcul de la période."
+ ],
+ "onglets": [
+  "Tous les bulletins",
+  "Archivés"
+ ],
+ "kpis": [
+  "Bulletins générés",
+  "Masse salariale brute",
+  "Net à payer",
+  "En attente de validation"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Tous les bulletins0",
+  "Archivés0",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

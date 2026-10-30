@@ -1,0 +1,78 @@
+{
+ "id": "dash-maternite",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Maternité",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Maternité",
+ "description": "Travail en cours, termes de la semaine, grossesses à risque, accouchements et nouveau-nés du mois.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Maternité"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "Un terme DÉPASSÉ n’est pas une erreur de saisie : c’est la femme qu’il faut rappeler. Le dossier reste « suivi » tant que l’accouchement n’est pas enregistré."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Dossiers suivis",
+  "Grossesses à risque (GAR)",
+  "Accouchements du mois",
+  "Nouveau-nés vivants du mois"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Travail en cours — salle d’accouchement",
+  "Termes attendus — les quinze prochains jours",
+  "Grossesses à risque suivies",
+  "Lecture du mois",
+  "Accouchements du mois par type",
+  "Facteurs de surveillance les plus fréquents"
+ ],
+ "tableaux": [
+  [
+   "Parturiente",
+   "Dossier",
+   "G / P",
+   "Début du travail",
+   "Dilatation",
+   "Descente",
+   "Accoucheur"
+  ],
+  [
+   "N° dossier",
+   "Parturiente",
+   "Terme prévu",
+   "Échéance",
+   "Surveillance",
+   "Sage-femme",
+   "Téléphone"
+  ],
+  [
+   "N° dossier",
+   "Parturiente",
+   "Âge",
+   "G / P",
+   "Facteurs relevés"
+  ]
+ ],
+ "commandes": [
+  "Partogrammes",
+  "Dossier obstétrical",
+  "CPN & carte maternelle",
+  "Partogramme",
+  "CPoN",
+  "Dossiers"
+ ],
+ "champs": [],
+ "nbTableaux": 3,
+ "nbKpis": 4
+}

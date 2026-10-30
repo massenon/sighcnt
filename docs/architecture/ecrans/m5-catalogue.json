@@ -1,0 +1,59 @@
+{
+ "id": "m5-catalogue",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Catalogue des analyses",
+ "acces": "ouvert",
+ "titre": "Catalogue des analyses",
+ "description": "Référentiel des 48 analyses réalisées par le laboratoire de la clinique, avec catégorie, échantillon, délai et tarif.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Catalogue des analyses"
+ ],
+ "actions": [
+  "Imprimer le catalogue",
+  "Demandes d’analyses",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les analyses",
+  "Par catégorie",
+  "Archivés"
+ ],
+ "kpis": [
+  "Analyses au catalogue",
+  "Catégories",
+  "Tarif moyen",
+  "Tarifs à confirmer"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Code",
+   "Désignation",
+   "Catégorie",
+   "Échantillon",
+   "Tarif",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les analyses48",
+  "Par catégorie",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

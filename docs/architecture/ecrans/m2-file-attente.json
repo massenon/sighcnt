@@ -1,0 +1,67 @@
+{
+ "id": "m2-file-attente",
+ "module": "M2",
+ "domaine": "Accueil",
+ "libelleManifeste": "File d’attente",
+ "acces": "ouvert",
+ "titre": "File d’attente",
+ "description": "Gestion des files par poste : ordre d’arrivée tempéré par la priorité de triage.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "RDV, Visites & Consultations",
+  "File d’attente"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Le rang affiché n’est pas un champ : il découle de la priorité et de l’heure d’arrivée. Faire passer un patient devant se fait en changeant sa priorité, ce qui est tracé — et non en réécrivant un numéro."
+ ],
+ "onglets": [
+  "Accueil",
+  "Consultation",
+  "Caisse",
+  "Salle de prélèvement",
+  "Pharmacie",
+  "Salle de soins",
+  "Imagerie médicale"
+ ],
+ "kpis": [
+  "Patients en attente",
+  "Dont urgences",
+  "Servis aujourd’hui",
+  "Attente moyenne"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Rang",
+   "N° d’appel",
+   "Patient",
+   "Priorité",
+   "Arrivé à",
+   "Attente",
+   "Motif",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Accueil2",
+  "Consultation1",
+  "Caisse4",
+  "Salle de prélèvement4",
+  "Pharmacie3",
+  "Salle de soins0",
+  "Imagerie médicale0",
+  "Colonnes",
+  "Exporter",
+  "Inscrire un patient",
+  "Appeler"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

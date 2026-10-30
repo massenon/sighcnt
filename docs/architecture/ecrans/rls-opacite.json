@@ -1,0 +1,42 @@
+{
+ "id": "rls-opacite",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Preuve d’opacité",
+ "acces": "ouvert",
+ "titre": "Preuve d’opacité",
+ "description": "Ce que le relais détient et ne détient pas : la démonstration que l’hébergeur ne peut rien lire.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Preuve d’opacité"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Clé de clinique au relais",
+  "Entropie moyenne",
+  "Noms de collection lisibles"
+ ],
+ "cartes": [
+  "Ce que le relais voit"
+ ],
+ "tableaux": [
+  [
+   "Information",
+   "Visible ?"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 3
+}

@@ -1,0 +1,50 @@
+{
+ "id": "m12-journaux",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Journaux comptables",
+ "acces": "ouvert",
+ "titre": "Journaux comptables",
+ "description": "Journaux d’achats, ventes, caisse, banque, salaires, immobilisations et opérations diverses.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Journaux comptables"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Journaux ouverts",
+  "Écritures totales",
+  "Total débit",
+  "Total crédit"
+ ],
+ "cartes": [
+  "Journaux comptables"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Intitulé",
+   "Compte de contrepartie",
+   "Écritures",
+   "Total débit",
+   "Total crédit",
+   "Équilibre",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,31 @@
+{
+ "id": "hub-mecef",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "MECeF — Facture normalisée",
+ "acces": "ouvert",
+ "titre": "MECeF — Facture normalisée",
+ "description": "Tous les écrans du module MECEF — MECeF — Facture normalisée.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée"
+ ],
+ "actions": [
+  "Tableau de bord fiscal",
+  "Factures normalisées",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [
+  "Assurances & Créances",
+  "Comptabilité SYSCOHADA"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

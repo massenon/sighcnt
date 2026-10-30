@@ -1,0 +1,44 @@
+{
+ "id": "m11-dashboard",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Tableau de bord paie",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Paie",
+ "description": "Masse salariale, primes, cotisations sociales et fiscales, avances et coût employeur.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Tableau de bord paie"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Calcul de la paie",
+  "Paie & Primes"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Masse salariale brute",
+  "Net à payer",
+  "Total des primes",
+  "Sanctions (NS 131)",
+  "CNSS part ouvrière",
+  "CNSS part patronale",
+  "ITS retenu",
+  "Coût employeur total"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Décomposition de la masse salariale",
+  "Répartition des charges et retenues",
+  "Masse salariale par service",
+  "Évolution de la masse salariale (12 mois)"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 8
+}

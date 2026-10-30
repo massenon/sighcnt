@@ -1,0 +1,29 @@
+{
+ "id": "m1-certificats-externes",
+ "module": "M1",
+ "domaine": "Accueil",
+ "libelleManifeste": "Certificats — patients externes",
+ "acces": "ouvert",
+ "titre": "Certificats — patients externes",
+ "description": "Page de renvoi : les pièces des patients externes figurent au registre unique.",
+ "fil": [
+  "Accueil",
+  "Accueil",
+  "Patients & Dossier médical",
+  "Certificats — patients externes"
+ ],
+ "actions": [],
+ "regle": [
+  "Les certificats des patients adressés de l’extérieur ont rejoint le registre unique — « Certificats & attestations », onglet Patients externes (22/09/2026). La délivrance y ouvre au besoin le dossier du patient, et la pièce passe par la caisse comme celle d’un patient de la clinique."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Ouvrir le registre des certificats"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

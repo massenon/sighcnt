@@ -1,0 +1,65 @@
+{
+ "id": "m6-reprise",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Reprise SAGE 100",
+ "acces": "ouvert",
+ "titre": "Reprise SAGE 100",
+ "description": "Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Reprise SAGE 100"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [],
+ "onglets": [
+  "Articles repris",
+  "Points à traiter",
+  "Rapprochement au catalogue tarifaire"
+ ],
+ "kpis": [
+  "Articles repris",
+  "Unités en stock",
+  "Valeur reprise",
+  "Articles non valorisés",
+  "Valorisés par la clinique"
+ ],
+ "cartes": [
+  "Lot de migration"
+ ],
+ "tableaux": [
+  [
+   "Référence SAGE",
+   "Désignation",
+   "Catégorie affectée",
+   "Unité",
+   "Qté reprise",
+   "P.R. unitaire (CMUP)",
+   "P.R. global",
+   "Seuil proposé"
+  ]
+ ],
+ "commandes": [
+  "Valider la reprise",
+  "Éditer le bordereau",
+  "Articles repris184",
+  "Points à traiter0",
+  "Rapprochement au catalogue tarifaire",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 5
+}

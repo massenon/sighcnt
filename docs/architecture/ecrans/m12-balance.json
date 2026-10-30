@@ -1,0 +1,58 @@
+{
+ "id": "m12-balance",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Balance générale & âgée",
+ "acces": "ouvert",
+ "titre": "Balance générale & âgée",
+ "description": "Balance des comptes, contrôle d’équilibre et balance âgée des comptes de tiers.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Balance générale & âgée"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "Balance déséquilibrée — écart de 1 954 000 FCFA. Ce contrôle doit être régularisé avant toute clôture (RG-10)."
+ ],
+ "onglets": [
+  "Balance générale",
+  "Balance âgée (tiers)"
+ ],
+ "kpis": [
+  "Comptes mouvementés",
+  "Total débit",
+  "Total crédit",
+  "Équilibre (RG-10)"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Compte",
+   "Intitulé",
+   "Classe",
+   "Mvts",
+   "Mouvement débit",
+   "Mouvement crédit",
+   "Solde débiteur",
+   "Solde créditeur"
+  ]
+ ],
+ "commandes": [
+  "Balance générale",
+  "Balance âgée (tiers)",
+  "Colonnes",
+  "Exporter",
+  "Imprimer la balance",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,43 @@
+{
+ "id": "dash-echographiste",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Échographie",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Échographie",
+ "description": "Examens d’imagerie à réaliser et comptes rendus à rendre au prescripteur.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Échographie"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [
+  "Votre compte n’a aucun accès financier — ni caisse, ni assurances, ni comptabilité. C’est une condition posée par la Direction : un manipulateur qui verrait la caisse pourrait faire dépendre l’examen du paiement, ce qui n’est pas son rôle. Le dossier patient vous est ouvert en lecture seule, et vous ne modifiez pas les prescriptions d’un autre service."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus au total",
+  "Rendus au prescripteur",
+  "Ce mois-ci",
+  "Examens au catalogue"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Ce que votre profil ne voit pas"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Imagerie médicale",
+  "Nouveau compte rendu"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

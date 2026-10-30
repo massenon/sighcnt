@@ -1,0 +1,28 @@
+{
+ "id": "hub-m11",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Paie & Primes",
+ "acces": "ouvert",
+ "titre": "Paie & Primes",
+ "description": "Tous les écrans du module M11 — Paie & Primes.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

@@ -1,0 +1,47 @@
+{
+ "id": "cfg-certificats",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Certificats médicaux",
+ "acces": "ouvert",
+ "titre": "Certificats médicaux",
+ "description": "Génération, numérotation et archivage des certificats délivrés par la clinique.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Certificats médicaux"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Certificats délivrés",
+  "Types au catalogue",
+  "Délivrés ce mois",
+  "Praticiens signataires"
+ ],
+ "cartes": [
+  "Types de certificats — cliquer pour rédiger",
+  "Registre des certificats délivrés"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Certificat médical de reposAucun délivré",
+  "Certificat médical de grossesseAucun délivré",
+  "Attestation d’accouchementAucun délivré",
+  "Certificat médical initialAucun délivré",
+  "Certificat médical de guérisonAucun délivré",
+  "Certificat prénuptialAucun délivré",
+  "Certificat d’aptitude physiqueAucun délivré",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

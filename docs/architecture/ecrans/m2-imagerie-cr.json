@@ -1,0 +1,39 @@
+{
+ "id": "m2-imagerie-cr",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Compte rendu d’imagerie — saisie",
+ "acces": "ouvert",
+ "titre": "Compte rendu d’imagerie",
+ "description": "En-tête et variables d’un compte rendu d’imagerie — échographie, radiographie, mammographie, scanner ou IRM.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Imagerie médicale",
+  "Compte rendu d’imagerie — saisie"
+ ],
+ "actions": [
+  "Enregistrer le compte rendu"
+ ],
+ "regle": [
+  "L’en-tête de ce compte rendu n’a pas été relevé — la saisie s’ouvre depuis le tableau de la modalité, qui demande l’examen et le patient.",
+  "Les mesures se saisissent en texte : « environ 12 mm », « sup à 5 cm ». Un champ numérique refuserait ce que le praticien écrit réellement.",
+  "Un champ de précision n’apparaît que lorsque la valeur l’appelle — « Autre » ouvre le sien."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Nouveau compte rendu — Échographie",
+  "Enchaînement du parcours",
+  "Règles de saisie"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Revenir au tableau",
+  "Annuler",
+  "Enregistrer le compte rendu"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

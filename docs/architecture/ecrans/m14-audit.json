@@ -1,0 +1,60 @@
+{
+ "id": "m14-audit",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Journal d’audit",
+ "acces": "ouvert",
+ "titre": "Journal d’audit",
+ "description": "Traçabilité intégrale : création, modification, validation, archivage et connexions.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Journal d’audit"
+ ],
+ "actions": [
+  "Utilisateurs",
+  "Rôles & permissions (RBAC)",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "La durée de conservation du journal d’audit est fixée contractuellement à cinq ans minimum pour les données financières et médicales."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Actions journalisées",
+  "Utilisateurs tracés",
+  "Modules concernés",
+  "Tentatives infructueuses"
+ ],
+ "cartes": [
+  "Journal d’audit",
+  "Actions par module",
+  "Répartition par type d’action"
+ ],
+ "tableaux": [
+  [
+   "Horodatage",
+   "Utilisateur",
+   "Action",
+   "Module",
+   "Entité concernée",
+   "Référence",
+   "Poste",
+   "Résultat"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Imprimer le journal",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,55 @@
+{
+ "id": "adm-enquetes",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Enquêtes & questionnaires",
+ "acces": "ouvert",
+ "titre": "Enquêtes & questionnaires",
+ "description": "Le générateur de questionnaires : le formulaire de saisie naît du modèle, comme sur KoboCollect.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Enquêtes & questionnaires"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [],
+ "onglets": [
+  "Modèles (1)",
+  "Liens de partage (0)"
+ ],
+ "kpis": [
+  "Modèles d’enquête",
+  "Réponses recueillies",
+  "Dont par lien partagé",
+  "Liens ouverts",
+  "Modèles à valider"
+ ],
+ "cartes": [
+  "Modèles"
+ ],
+ "tableaux": [
+  [
+   "Enquête",
+   "Questions",
+   "Réponses",
+   "Statut",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Modèles (1)",
+  "Liens de partage (0)",
+  "Colonnes",
+  "Exporter",
+  "Nouveau modèle",
+  "Recueillir"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 5
+}

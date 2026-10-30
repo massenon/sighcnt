@@ -1,0 +1,41 @@
+{
+ "id": "adm-satisfaction",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Satisfaction des patients",
+ "acces": "ouvert",
+ "titre": "Satisfaction des patients",
+ "description": "La lecture de l’enquête de satisfaction : notes moyennes par question, recommandation, derniers commentaires.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Satisfaction des patients"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [
+  "Questionnaire validé par la Direction le 01/09/2026. Les réponses du jeu de démonstration restent marquées comme telles par leur champ « saisi par ».",
+  "« Rien à signaler. »15/08/2026",
+  "« Très satisfaite des sages-femmes. »29/07/2026"
+ ],
+ "onglets": [],
+ "kpis": [
+  "Réponses recueillies",
+  "Note moyenne globale",
+  "Recommanderaient la clinique",
+  "Avec commentaire libre"
+ ],
+ "cartes": [
+  "Note moyenne par question",
+  "Derniers commentaires"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

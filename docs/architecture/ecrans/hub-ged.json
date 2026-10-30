@@ -1,0 +1,31 @@
+{
+ "id": "hub-ged",
+ "module": "GED",
+ "domaine": "Administration",
+ "libelleManifeste": "Gestion documentaire",
+ "acces": "ouvert",
+ "titre": "Gestion documentaire",
+ "description": "Tous les écrans du module GED — Gestion documentaire.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Gestion documentaire"
+ ],
+ "actions": [
+  "Bibliothèque documentaire",
+  "Workflow de validation",
+  "Gestion documentaire"
+ ],
+ "regle": [
+  "Administration & Ambulance",
+  "Rapports & Impression"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

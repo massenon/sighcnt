@@ -1,0 +1,59 @@
+{
+ "id": "m4-maternite",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Suivi maternité",
+ "acces": "ouvert",
+ "titre": "Suivi maternité",
+ "description": "Consultations prénatales, terme, date prévue d’accouchement et niveau de risque obstétrical.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Suivi maternité"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "CPN & carte maternelle",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les suivis de grossesse",
+  "Archivés"
+ ],
+ "kpis": [
+  "Grossesses suivies",
+  "Accouchements sous 15 jours",
+  "Grossesses à risque",
+  "CPN moyennes"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Patiente",
+   "Terme (SA)",
+   "Date prévue",
+   "Échéance",
+   "CPN réalisées",
+   "Groupe",
+   "Risque",
+   "Sage-femme",
+   "Observations",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les suivis de grossesse32",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

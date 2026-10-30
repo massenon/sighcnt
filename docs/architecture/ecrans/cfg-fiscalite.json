@@ -1,0 +1,69 @@
+{
+ "id": "cfg-fiscalite",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Paramètres fiscaux (IFU / RCCM)",
+ "acces": "ouvert",
+ "titre": "Paramètres fiscaux (IFU / RCCM)",
+ "description": "Identifiants fiscaux, numérotation des documents et paramètres de la facturation normalisée.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Paramètres fiscaux (IFU / RCCM)"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+  "4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026. Une déclaration précède généralement le paiement.",
+  "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Échéances suivies",
+  "Mensuelles",
+  "Dans les 30 jours",
+  "CCIB annuelle"
+ ],
+ "cartes": [
+  "Identification fiscale de l’établissement",
+  "Numérotation des documents",
+  "Obligations déclaratives",
+  "Calendrier fiscal et social"
+ ],
+ "tableaux": [
+  [
+   "Type de document",
+   "Préfixe",
+   "Format",
+   "Séquence"
+  ],
+  [
+   "Déclaration",
+   "Périodicité",
+   "Échéance",
+   "Écran producteur"
+  ],
+  [
+   "Code",
+   "Obligation",
+   "Périodicité",
+   "Prochaine échéance",
+   "Dans",
+   "Règle appliquée"
+  ]
+ ],
+ "commandes": [
+  "Configuration MECeF",
+  "Éditer",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 3,
+ "nbKpis": 4
+}

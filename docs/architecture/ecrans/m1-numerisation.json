@@ -1,0 +1,40 @@
+{
+ "id": "m1-numerisation",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Plan de numérisation",
+ "acces": "ouvert",
+ "titre": "Plan de numérisation des dossiers",
+ "description": "Suivi de la reprise progressive et priorisée des dossiers patients papier (CDCT §24).",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Plan de numérisation"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Dossiers papier recensés",
+  "Dossiers numérisés",
+  "Dossiers actifs prioritaires",
+  "Reste à traiter (prioritaires)"
+ ],
+ "cartes": [
+  "Avancement par lot de reprise",
+  "Cadence de numérisation (12 derniers mois)",
+  "Répartition du fonds"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Éditer l’état d’avancement"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

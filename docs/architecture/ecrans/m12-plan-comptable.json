@@ -1,0 +1,61 @@
+{
+ "id": "m12-plan-comptable",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Plan comptable OHADA",
+ "acces": "ouvert",
+ "titre": "Plan comptable OHADA",
+ "description": "Référentiel des comptes du plan SYSCOHADA utilisés par la clinique, par classe.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Plan comptable OHADA"
+ ],
+ "actions": [
+  "Imprimer le plan comptable",
+  "Tableau de bord comptable",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les comptes",
+  "Par classe",
+  "Archivés"
+ ],
+ "kpis": [
+  "Comptes paramétrés",
+  "Issus des documents",
+  "Classes utilisées",
+  "Comptes mouvementés"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N° de compte",
+   "Intitulé",
+   "Classe",
+   "Journal usuel",
+   "Provenance",
+   "Écritures",
+   "Solde",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les comptes112",
+  "Par classe",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

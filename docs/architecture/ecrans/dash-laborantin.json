@@ -1,0 +1,64 @@
+{
+ "id": "dash-laborantin",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Biologiste médical",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Laboratoire",
+ "description": "Demandes d’analyses, résultats à saisir, consommation de réactifs et banque de sang.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Biologiste médical"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Analyses au catalogue",
+  "Demandes en attente",
+  "Résultats du jour",
+  "Réactifs sous seuil"
+ ],
+ "cartes": [
+  "Prélèvements à réaliser — 78 à traiter, 66 en attente de caisse",
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Analyses les plus demandées",
+  "Analyses réalisées (12 mois)",
+  "Répartition par catégorie d’analyse"
+ ],
+ "tableaux": [
+  [
+   "Origine",
+   "Patient",
+   "À faire",
+   "Montant",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "Valider",
+  "Salle de prélèvement",
+  "Saisir",
+  "Rectifier",
+  "Réactifs",
+  "Catalogue des 48 analyses"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

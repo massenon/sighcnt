@@ -1,0 +1,63 @@
+{
+ "id": "m5-reactifs",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Réactifs & consommables",
+ "acces": "ouvert",
+ "titre": "Réactifs & consommables de laboratoire",
+ "description": "Suivi des stocks de réactifs, consommation rattachée aux analyses réalisées et carnet de demande.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Réactifs & consommables"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [
+  "Une référence dont le classement de valeur apparaît en rouge est sous son seuil d’alerte : c’est du stock immobilisé sur un article qui va manquer. Le rapprochement des deux classements — le plus consommé et le plus immobilisé — désigne les réapprovisionnements à passer en premier."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Références suivies",
+  "Valeur du stock",
+  "Sous le seuil d’alerte",
+  "En rupture"
+ ],
+ "cartes": [
+  "Stock des réactifs et consommables",
+  "Les plus consommés — mois",
+  "Valeur du stock par référence",
+  "Réactifs et consommables",
+  "Consommation au fil des mois"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Désignation",
+   "Catégorie",
+   "Unité",
+   "Stock",
+   "Seuil",
+   "CUMP",
+   "Valeur",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau réactif",
+  "Bon de demande de réactifs",
+  "Bon d’expression de besoins"
+ ],
+ "champs": [
+  "Période de consommation"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

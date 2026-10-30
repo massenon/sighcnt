@@ -1,0 +1,44 @@
+{
+ "id": "m8-operations",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Opérations de caisse",
+ "acces": "ouvert",
+ "titre": "Opérations de caisse",
+ "description": "Tickets, factures et avoirs passés en caisse, avec inventaire journalier ou hebdomadaire.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Opérations de caisse"
+ ],
+ "actions": [
+  "Recettes par période",
+  "Émettre une facture",
+  "Tableau de bord facturation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Opérations",
+  "Encaissé",
+  "Reste à encaisser",
+  "Avoirs"
+ ],
+ "cartes": [
+  "Ventilation des encaissements",
+  "Pièces passées en caisse"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Inventaire de caisse",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Périodicité",
+  "Arrêtée au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

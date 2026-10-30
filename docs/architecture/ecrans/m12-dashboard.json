@@ -1,0 +1,55 @@
+{
+ "id": "m12-dashboard",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Tableau de bord comptable",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Comptabilité SYSCOHADA",
+ "description": "Équilibre des journaux, trésorerie, charges et produits, créances et dettes.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Tableau de bord comptable"
+ ],
+ "actions": [
+  "Plan comptable OHADA",
+  "Journaux comptables",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "90 écriture(s) en brouillon à valider."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Trésorerie disponible",
+  "Chiffre d’affaires",
+  "Charges",
+  "Résultat",
+  "Créances clients",
+  "Dettes fournisseurs",
+  "Écritures de l’exercice",
+  "Équilibre (RG-10)"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Produits et charges (12 mois)",
+  "Écritures par journal",
+  "Charges par centre de coûts",
+  "Origine des écritures",
+  "Automatisation des écritures"
+ ],
+ "tableaux": [
+  [
+   "Opération métier",
+   "Module d’origine",
+   "Journal",
+   "Compte débité",
+   "Compte crédité"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 8
+}

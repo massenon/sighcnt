@@ -1,0 +1,46 @@
+{
+ "id": "dash-admin-agent",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Agent administratif",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Agent administratif",
+ "description": "Courriers, réunions, événements, notes de service et gestion documentaire.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Agent administratif"
+ ],
+ "actions": [
+  "Médecin",
+  "Infirmier / Sage-femme",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Courriers du mois",
+  "Réunions planifiées",
+  "Notes de service actives",
+  "Documents à valider"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Notes de service en vigueur"
+ ],
+ "tableaux": [
+  [
+   "Référence",
+   "Objet",
+   "Signature",
+   "Statut"
+  ]
+ ],
+ "commandes": [
+  "Courriers"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

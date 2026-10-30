@@ -1,0 +1,8 @@
+{
+ "id": "m5-banque-sang",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Banque de sang",
+ "acces": "erreur",
+ "erreur": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#page-content') to be visible\u001b[22"
+}

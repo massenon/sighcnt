@@ -1,0 +1,3074 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/extraire-ecrans.js — ne pas éditer.",
+ "ecrans": [
+  {
+   "id": "hub-m2",
+   "acces": "ouvert",
+   "titre": "RDV, Visites & Consultations",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m2-agenda",
+   "acces": "ouvert",
+   "titre": "Agenda",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m2-rendezvous",
+   "acces": "ouvert",
+   "titre": "Rendez-vous & visites",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 14
+  },
+  {
+   "id": "m2-file-attente",
+   "acces": "ouvert",
+   "titre": "File d’attente",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 7,
+   "commandes": 11
+  },
+  {
+   "id": "m2-file-cabinet",
+   "acces": "ouvert",
+   "titre": "File par cabinet",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m2-agenda-medecin",
+   "acces": "ouvert",
+   "titre": "Agenda du médecin",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m2-affichage",
+   "acces": "ouvert",
+   "titre": "Écran d’appel des patients",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m2-domicile",
+   "acces": "ouvert",
+   "titre": "Consultations & soins à domicile",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m2-registre-appels",
+   "acces": "ouvert",
+   "titre": "Registre des appels",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m2-consultations",
+   "acces": "ouvert",
+   "titre": "Consultations",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "hub-m1",
+   "acces": "ouvert",
+   "titre": "Patients & Dossier médical",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m1-patients",
+   "acces": "ouvert",
+   "titre": "Répertoire des patients",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m1-patient-profil",
+   "acces": "ouvert",
+   "titre": "Fiche patient",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 19
+  },
+  {
+   "id": "m1-externe",
+   "acces": "ouvert",
+   "titre": "Patient externe — demande d’analyses",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 5,
+   "commandes": 11
+  },
+  {
+   "id": "m1-antecedents",
+   "acces": "ouvert",
+   "titre": "Antécédents & allergies",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m1-pieces",
+   "acces": "ouvert",
+   "titre": "Certificats & attestations",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 4,
+   "commandes": 12
+  },
+  {
+   "id": "m1-constantes",
+   "acces": "ouvert",
+   "titre": "Constantes à l’accueil",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m1-reference",
+   "acces": "ouvert",
+   "titre": "Fiches de référence",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 4,
+   "commandes": 10
+  },
+  {
+   "id": "m1-contre-reference",
+   "acces": "ouvert",
+   "titre": "Fiches de contre-référence",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m1-documents",
+   "acces": "ouvert",
+   "titre": "Documents numérisés du patient",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m1-numerisation",
+   "acces": "ouvert",
+   "titre": "Plan de numérisation des dossiers",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m2-dossiers-consultation",
+   "acces": "ouvert",
+   "titre": "Dossiers de consultation",
+   "kpis": 5,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m2-consultation-fiche",
+   "acces": "ouvert",
+   "titre": "Fiche de consultation",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m2-pathologies",
+   "acces": "ouvert",
+   "titre": "Pathologies & morbidité",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m2-ordonnances",
+   "acces": "ouvert",
+   "titre": "Ordonnances",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m2-prescriptions",
+   "acces": "ouvert",
+   "titre": "Prescriptions",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 4,
+   "commandes": 12
+  },
+  {
+   "id": "m2-salle-soins",
+   "acces": "ouvert",
+   "titre": "Salle de soins",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m2-dashboard-imagerie",
+   "acces": "ouvert",
+   "titre": "Poste d’imagerie médicale",
+   "kpis": 4,
+   "tableaux": 3,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m2-imagerie-demandes",
+   "acces": "ouvert",
+   "titre": "Demandes d’imagerie médicale",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 9
+  },
+  {
+   "id": "m2-imagerie",
+   "acces": "ouvert",
+   "titre": "Tableau Échographie",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m2-imagerie-radiographie",
+   "acces": "ouvert",
+   "titre": "Tableau Radiographie",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m2-imagerie-mammographie",
+   "acces": "ouvert",
+   "titre": "Tableau Mammographie",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m2-imagerie-scanner",
+   "acces": "ouvert",
+   "titre": "Tableau Scanner",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m2-imagerie-irm",
+   "acces": "ouvert",
+   "titre": "Tableau IRM — imagerie par résonance magnétique",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m2-echographie-galerie",
+   "acces": "ouvert",
+   "titre": "Galerie des clichés",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "hub-m3",
+   "acces": "ouvert",
+   "titre": "Hospitalisation",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m3-admissions",
+   "acces": "ouvert",
+   "titre": "Admissions",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m3-observation",
+   "acces": "ouvert",
+   "titre": "Mise en observation",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 2,
+   "commandes": 4
+  },
+  {
+   "id": "m3-plan-lits",
+   "acces": "ouvert",
+   "titre": "Plan des lits",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 19
+  },
+  {
+   "id": "m3-chambres",
+   "acces": "ouvert",
+   "titre": "Chambres & lits",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m3-feuille-temperature",
+   "acces": "ouvert",
+   "titre": "Feuille de température",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m3-soins",
+   "acces": "ouvert",
+   "titre": "Feuille de soins",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m3-administrations",
+   "acces": "ouvert",
+   "titre": "Administration des traitements",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "m3-cpa",
+   "acces": "ouvert",
+   "titre": "Consultation pré-anesthésique",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m3-bloc-cro",
+   "acces": "ouvert",
+   "titre": "Comptes rendus opératoires",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m3-cr-anesthesie",
+   "acces": "ouvert",
+   "titre": "Comptes rendus d’anesthésie",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m3-bloc-checklist",
+   "acces": "ouvert",
+   "titre": "Check-listes du bloc",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m3-demande-examen",
+   "acces": "ouvert",
+   "titre": "Demande d’examen",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m3-bons-pansements",
+   "acces": "ouvert",
+   "titre": "Bons de pansement",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m3-surveillance",
+   "acces": "ouvert",
+   "titre": "Fiche de surveillance",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m3-transfusion",
+   "acces": "ouvert",
+   "titre": "Surveillance transfusionnelle",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m3-glasgow",
+   "acces": "ouvert",
+   "titre": "Score de Glasgow",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m3-rapport",
+   "acces": "ouvert",
+   "titre": "Rapport médical",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m3-visites-patients",
+   "acces": "ouvert",
+   "titre": "Visites aux patients hospitalisés",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m3-sorties",
+   "acces": "ouvert",
+   "titre": "Sorties d’hospitalisation",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m3-sortie-avis-medical",
+   "acces": "ouvert",
+   "titre": "Sortie contre avis médical",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "hub-m4",
+   "acces": "ouvert",
+   "titre": "Maternité, Naissances & Décès",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m4-dossier-obstetrical",
+   "acces": "ouvert",
+   "titre": "Dossier obstétrical",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m4-maternite",
+   "acces": "ouvert",
+   "titre": "Suivi maternité",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m4-cpn",
+   "acces": "ouvert",
+   "titre": "CPN & carte maternelle",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "m4-partogramme",
+   "acces": "ouvert",
+   "titre": "Partogramme",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "m4-accouchements",
+   "acces": "ouvert",
+   "titre": "Accouchements",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 9
+  },
+  {
+   "id": "m4-dossier-bebe",
+   "acces": "ouvert",
+   "titre": "Dossier bébé & soins du nouveau-né",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 9
+  },
+  {
+   "id": "m4-cpon",
+   "acces": "ouvert",
+   "titre": "Consultations post-natales (CPoN)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "m4-planification",
+   "acces": "ouvert",
+   "titre": "Planification familiale",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m4-sonu",
+   "acces": "ouvert",
+   "titre": "Registre SONUB / SONUC",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m4-ptme",
+   "acces": "ouvert",
+   "titre": "Registre PTME",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m4-soins-curatifs",
+   "acces": "ouvert",
+   "titre": "Soins curatifs & urgences maternité",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m4-comptes-rendus",
+   "acces": "ouvert",
+   "titre": "Comptes rendus de maternité",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 9
+  },
+  {
+   "id": "m4-naissances",
+   "acces": "ouvert",
+   "titre": "Registre des naissances",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 9
+  },
+  {
+   "id": "m4-deces",
+   "acces": "ouvert",
+   "titre": "Registre des décès",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "hub-m5",
+   "acces": "ouvert",
+   "titre": "Laboratoire",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m5-demandes",
+   "acces": "ouvert",
+   "titre": "Demandes d’analyses",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m5-demandes-maternite",
+   "acces": "ouvert",
+   "titre": "Demandes — maternité",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m5-demandes-hospitalisation",
+   "acces": "ouvert",
+   "titre": "Demandes — hospitalisation",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m5-resultats",
+   "acces": "ouvert",
+   "titre": "Saisie des résultats",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 3,
+   "commandes": 8
+  },
+  {
+   "id": "m5-resultats-comparatif",
+   "acces": "ouvert",
+   "titre": "Comparatif des résultats",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m5-impression-resultats",
+   "acces": "ouvert",
+   "titre": "Impression des résultats",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m5-catalogue",
+   "acces": "ouvert",
+   "titre": "Catalogue des analyses",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 9
+  },
+  {
+   "id": "m5-unites",
+   "acces": "ouvert",
+   "titre": "Unités de mesure",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m5-valeurs-reference",
+   "acces": "ouvert",
+   "titre": "Valeurs de référence",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 10
+  },
+  {
+   "id": "m5-prelevement",
+   "acces": "ouvert",
+   "titre": "Salle de prélèvement",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 10
+  },
+  {
+   "id": "m5-stats",
+   "acces": "ouvert",
+   "titre": "Statistiques du laboratoire",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m5-reactifs",
+   "acces": "ouvert",
+   "titre": "Réactifs & consommables de laboratoire",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m5-reactifs-stats",
+   "acces": "ouvert",
+   "titre": "Statistiques des réactifs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m5-banque-sang",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m5-donneurs",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "hub-m6",
+   "acces": "ouvert",
+   "titre": "Pharmacie & Stocks",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m6-pharmacie-interne",
+   "acces": "ouvert",
+   "titre": "Pharmacie interne — urgences",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m6-pharmacie-externe",
+   "acces": "ouvert",
+   "titre": "Pharmacie externe — voie orale",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m6-dashboard",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Stocks",
+   "kpis": 8,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m6-produits",
+   "acces": "ouvert",
+   "titre": "Référentiel produits",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m6-stock-gros",
+   "acces": "ouvert",
+   "titre": "Stock gros (magasin central)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m6-stock-detail",
+   "acces": "ouvert",
+   "titre": "Stock détail (pharmacie d’urgence)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m6-transferts",
+   "acces": "ouvert",
+   "titre": "Transferts gros → détail",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m6-mouvements",
+   "acces": "ouvert",
+   "titre": "Mouvements de stock",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m6-lots",
+   "acces": "ouvert",
+   "titre": "Lots & péremptions (FEFO)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 11
+  },
+  {
+   "id": "m6-alertes",
+   "acces": "ouvert",
+   "titre": "Alertes & seuils",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 3,
+   "commandes": 6
+  },
+  {
+   "id": "m6-inventaire",
+   "acces": "ouvert",
+   "titre": "Inventaires",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m6-pertes",
+   "acces": "ouvert",
+   "titre": "Pertes, casses & rebuts",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 9
+  },
+  {
+   "id": "m6-dispensation",
+   "acces": "ouvert",
+   "titre": "Dispensation",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m6-etiquetage",
+   "acces": "ouvert",
+   "titre": "Étiquetage & emplacements",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 10
+  },
+  {
+   "id": "m6-reprise",
+   "acces": "ouvert",
+   "titre": "Reprise SAGE 100",
+   "kpis": 5,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 12
+  },
+  {
+   "id": "m6-point-ventes",
+   "acces": "ouvert",
+   "titre": "Suivi des ventes",
+   "kpis": 8,
+   "tableaux": 0,
+   "onglets": 6,
+   "commandes": 15
+  },
+  {
+   "id": "m6-point-stock",
+   "acces": "ouvert",
+   "titre": "Point du stock valorisé",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 9
+  },
+  {
+   "id": "hub-m7",
+   "acces": "ouvert",
+   "titre": "Achats & Fournisseurs",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m7-besoins",
+   "acces": "ouvert",
+   "titre": "Bons d’expression de besoins",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 4,
+   "commandes": 7
+  },
+  {
+   "id": "m7-commandes",
+   "acces": "ouvert",
+   "titre": "Bons de commande",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m7-livraisons",
+   "acces": "ouvert",
+   "titre": "Bons de livraison",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m7-receptions",
+   "acces": "ouvert",
+   "titre": "Réceptions & contrôles",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m7-ecarts",
+   "acces": "ouvert",
+   "titre": "Écarts de livraison",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m7-pv-reception-consommables",
+   "acces": "ouvert",
+   "titre": "PV de réception — consommables",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m7-pv-reception-reactifs",
+   "acces": "ouvert",
+   "titre": "PV de réception — réactifs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m7-fournisseurs",
+   "acces": "ouvert",
+   "titre": "Fournisseurs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m7-factures-fournisseurs",
+   "acces": "ouvert",
+   "titre": "Factures fournisseurs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "hub-m8",
+   "acces": "ouvert",
+   "titre": "Facturation & Caisse",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m8-dashboard",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Facturation & Caisse",
+   "kpis": 8,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m8-facturation",
+   "acces": "ouvert",
+   "titre": "Nouvelle facture",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m8-factures",
+   "acces": "ouvert",
+   "titre": "Factures",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m8-proforma",
+   "acces": "ouvert",
+   "titre": "Factures pro-forma",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m8-paiements",
+   "acces": "ouvert",
+   "titre": "Paiements",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 10
+  },
+  {
+   "id": "m8-reliquats",
+   "acces": "ouvert",
+   "titre": "Reliquats",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m8-remboursements",
+   "acces": "ouvert",
+   "titre": "Remboursements & annulations",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m8-facture-avoir",
+   "acces": "ouvert",
+   "titre": "Factures d’avoir",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m8-caisse",
+   "acces": "ouvert",
+   "titre": "État de caisse journalier",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m8-operations",
+   "acces": "ouvert",
+   "titre": "Opérations de caisse",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m8-recettes",
+   "acces": "ouvert",
+   "titre": "Recettes par période",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "hub-m9",
+   "acces": "ouvert",
+   "titre": "Assurances & Créances",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m9-dashboard",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Assurances",
+   "kpis": 8,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m9-compagnies",
+   "acces": "ouvert",
+   "titre": "Compagnies d’assurance partenaires",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m9-assures",
+   "acces": "ouvert",
+   "titre": "Assurés & cartes",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m9-conventions",
+   "acces": "ouvert",
+   "titre": "Conventions & garanties",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 6
+  },
+  {
+   "id": "m9-prises-en-charge",
+   "acces": "ouvert",
+   "titre": "Prises en charge",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m9-factures-assureur",
+   "acces": "ouvert",
+   "titre": "Relevé & facture mensuelle assureur",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m9-facture-mere",
+   "acces": "ouvert",
+   "titre": "Facture mère assurance",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 3,
+   "commandes": 5
+  },
+  {
+   "id": "m9-historique",
+   "acces": "ouvert",
+   "titre": "Historique par assureur",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m9-creances",
+   "acces": "ouvert",
+   "titre": "Créances assureurs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "m9-relances",
+   "acces": "ouvert",
+   "titre": "Relances",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "hub-mecef",
+   "acces": "ouvert",
+   "titre": "MECeF — Facture normalisée",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "mecef-dashboard",
+   "acces": "ouvert",
+   "titre": "Tableau de bord fiscal — MECeF",
+   "kpis": 8,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "mecef-factures",
+   "acces": "ouvert",
+   "titre": "Factures normalisées",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "mecef-transmission",
+   "acces": "ouvert",
+   "titre": "Transmission & réponses",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 13
+  },
+  {
+   "id": "mecef-avoirs",
+   "acces": "ouvert",
+   "titre": "Avoirs & annulations",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "mecef-journal",
+   "acces": "ouvert",
+   "titre": "Journal des transactions fiscales",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "mecef-config",
+   "acces": "ouvert",
+   "titre": "Configuration fiscale",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "hub-m12",
+   "acces": "ouvert",
+   "titre": "Comptabilité SYSCOHADA",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m12-dashboard",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Comptabilité SYSCOHADA",
+   "kpis": 8,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m12-plan-comptable",
+   "acces": "ouvert",
+   "titre": "Plan comptable OHADA",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 11
+  },
+  {
+   "id": "m12-journaux",
+   "acces": "ouvert",
+   "titre": "Journaux comptables",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m12-ecritures",
+   "acces": "ouvert",
+   "titre": "Écritures comptables",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m12-depenses",
+   "acces": "ouvert",
+   "titre": "Dépenses journalières",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 12
+  },
+  {
+   "id": "m12-grand-livre",
+   "acces": "ouvert",
+   "titre": "Grand livre",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 9
+  },
+  {
+   "id": "m12-balance",
+   "acces": "ouvert",
+   "titre": "Balance générale & âgée",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "m12-analytique",
+   "acces": "ouvert",
+   "titre": "Comptabilité analytique",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m12-budgets",
+   "acces": "ouvert",
+   "titre": "Budgets",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 6
+  },
+  {
+   "id": "m12-immobilisations",
+   "acces": "ouvert",
+   "titre": "Immobilisations & amortissements",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 6
+  },
+  {
+   "id": "m12-banques",
+   "acces": "ouvert",
+   "titre": "Banques & rapprochements",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m12-compte-resultat",
+   "acces": "ouvert",
+   "titre": "Compte de résultat",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m12-flux-tresorerie",
+   "acces": "ouvert",
+   "titre": "Tableau des flux de trésorerie",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m12-seuil-rentabilite",
+   "acces": "ouvert",
+   "titre": "Seuil de rentabilité",
+   "kpis": 6,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m12-etats-financiers",
+   "acces": "ouvert",
+   "titre": "États financiers de synthèse",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 5,
+   "commandes": 8
+  },
+  {
+   "id": "m12-baseline-2025",
+   "acces": "ouvert",
+   "titre": "Baseline financière 2025",
+   "kpis": 8,
+   "tableaux": 2,
+   "onglets": 3,
+   "commandes": 5
+  },
+  {
+   "id": "m12-echeances",
+   "acces": "ouvert",
+   "titre": "Échéances fiscales & paiements",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m12-cloture",
+   "acces": "ouvert",
+   "titre": "Exercices & clôtures",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 6
+  },
+  {
+   "id": "m12-ouverture",
+   "acces": "ouvert",
+   "titre": "Bilan d’ouverture & à-nouveaux",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "hub-m10",
+   "acces": "ouvert",
+   "titre": "Ressources humaines",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m10-fiches-poste",
+   "acces": "ouvert",
+   "titre": "Fiches de poste",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m10-dashboard",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Ressources humaines",
+   "kpis": 8,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m10-personnel",
+   "acces": "ouvert",
+   "titre": "Personnel",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m10-employe-profil",
+   "acces": "ouvert",
+   "titre": "Fiche employé",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 6,
+   "commandes": 8
+  },
+  {
+   "id": "m10-contrats",
+   "acces": "ouvert",
+   "titre": "Contrats",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m10-badges",
+   "acces": "ouvert",
+   "titre": "Badges du personnel",
+   "kpis": 6,
+   "tableaux": 1,
+   "onglets": 4,
+   "commandes": 9
+  },
+  {
+   "id": "m10-badges-verification",
+   "acces": "ouvert",
+   "titre": "Vérifier un badge",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m10-badges-modeles",
+   "acces": "ouvert",
+   "titre": "Modèles de badge",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m10-badges-impression",
+   "acces": "ouvert",
+   "titre": "Planche d’impression des badges",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m10-planning",
+   "acces": "ouvert",
+   "titre": "Planning & gardes",
+   "kpis": 4,
+   "tableaux": 3,
+   "onglets": 0,
+   "commandes": 10
+  },
+  {
+   "id": "m10-stats-gardes",
+   "acces": "ouvert",
+   "titre": "Statistiques de garde",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m10-stats-permanences",
+   "acces": "ouvert",
+   "titre": "Statistiques des permanences",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m10-stats-presence",
+   "acces": "ouvert",
+   "titre": "Taux de présence par service",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "m10-presences",
+   "acces": "ouvert",
+   "titre": "Présences & absences",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m10-conges",
+   "acces": "ouvert",
+   "titre": "Congés",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "m10-missions",
+   "acces": "ouvert",
+   "titre": "Ordres de mission",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m10-evaluations",
+   "acces": "ouvert",
+   "titre": "Évaluations mensuelles (NS 131)",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m10-sanctions",
+   "acces": "ouvert",
+   "titre": "Sanctions",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "m10-primes",
+   "acces": "ouvert",
+   "titre": "Primes diverses (NS 132)",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m10-evenements",
+   "acces": "ouvert",
+   "titre": "Événements du personnel",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m10-participations",
+   "acces": "ouvert",
+   "titre": "Frais de participation",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m10-assurance-personnel",
+   "acces": "ouvert",
+   "titre": "Assurance du personnel",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m10-prestataires",
+   "acces": "ouvert",
+   "titre": "Prestataires externes",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m10-securite-entretien",
+   "acces": "ouvert",
+   "titre": "Sécurité & entretien",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "hub-m11",
+   "acces": "ouvert",
+   "titre": "Paie & Primes",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m11-prets-etudes",
+   "acces": "ouvert",
+   "titre": "Prêts-études et avances",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m11-dashboard",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Paie",
+   "kpis": 8,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m11-calcul",
+   "acces": "ouvert",
+   "titre": "Calcul de la paie",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m11-bulletins",
+   "acces": "ouvert",
+   "titre": "Bulletins de paie",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 2,
+   "commandes": 4
+  },
+  {
+   "id": "m11-cotisations",
+   "acces": "ouvert",
+   "titre": "Cotisations CNSS / ITS / VPS",
+   "kpis": 9,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 9
+  },
+  {
+   "id": "m11-heures-sup",
+   "acces": "ouvert",
+   "titre": "Heures supplémentaires",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "m11-avances",
+   "acces": "ouvert",
+   "titre": "Avances sur salaire",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 5
+  },
+  {
+   "id": "m11-ortb",
+   "acces": "ouvert",
+   "titre": "Redevance ORTB",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "m11-validation",
+   "acces": "ouvert",
+   "titre": "Validation de la paie",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "hub-m13",
+   "acces": "ouvert",
+   "titre": "Administration & Ambulance",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m13-courriers",
+   "acces": "ouvert",
+   "titre": "Courriers (départ / arrivée)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m13-reunions",
+   "acces": "ouvert",
+   "titre": "Réunions",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "m13-evenements",
+   "acces": "ouvert",
+   "titre": "Événements & notifications",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "m13-plan-annuel",
+   "acces": "ouvert",
+   "titre": "Plan annuel de travail",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m13-notes-service",
+   "acces": "ouvert",
+   "titre": "Notes de service",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m13-ambulance",
+   "acces": "ouvert",
+   "titre": "Interventions ambulance",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m13-repertoire-ambulances",
+   "acces": "ouvert",
+   "titre": "Répertoire des ambulances",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m13-maintenance",
+   "acces": "ouvert",
+   "titre": "Parc technique & maintenance",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 7
+  },
+  {
+   "id": "adm-validations",
+   "acces": "ouvert",
+   "titre": "Validations en attente",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "adm-enquetes",
+   "acces": "ouvert",
+   "titre": "Enquêtes & questionnaires",
+   "kpis": 5,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 6
+  },
+  {
+   "id": "adm-satisfaction",
+   "acces": "ouvert",
+   "titre": "Satisfaction des patients",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "hub-ged",
+   "acces": "ouvert",
+   "titre": "Gestion documentaire",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "ged-bibliotheque",
+   "acces": "ouvert",
+   "titre": "Bibliothèque documentaire",
+   "kpis": 8,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "ged-workflow",
+   "acces": "ouvert",
+   "titre": "Workflow de validation",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "ged-archives",
+   "acces": "ouvert",
+   "titre": "Archivage & conservation",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "hub-rap",
+   "acces": "ouvert",
+   "titre": "Rapports & Impression",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rapports-bibliotheque",
+   "acces": "ouvert",
+   "titre": "Bibliothèque des états",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "rapports-direction",
+   "acces": "ouvert",
+   "titre": "États de la Direction",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "rapports-generateur",
+   "acces": "ouvert",
+   "titre": "Générateur de rapports",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "rapports-historique",
+   "acces": "ouvert",
+   "titre": "Historique des éditions",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "hub-m14",
+   "acces": "ouvert",
+   "titre": "Sécurité & Utilisateurs",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m14-utilisateurs",
+   "acces": "ouvert",
+   "titre": "Utilisateurs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m14-roles",
+   "acces": "ouvert",
+   "titre": "Rôles & permissions (RBAC)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 5,
+   "commandes": 6
+  },
+  {
+   "id": "m14-soignants",
+   "acces": "ouvert",
+   "titre": "Prescripteurs & exécutants de soins",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 8
+  },
+  {
+   "id": "m14-sessions",
+   "acces": "ouvert",
+   "titre": "Sessions actives",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m14-audit",
+   "acces": "ouvert",
+   "titre": "Journal d’audit",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "m14-sauvegardes",
+   "acces": "ouvert",
+   "titre": "Sauvegardes & restauration",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 11
+  },
+  {
+   "id": "m14-taches",
+   "acces": "ouvert",
+   "titre": "Tâches planifiées",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "hub-cfg",
+   "acces": "ouvert",
+   "titre": "Configuration Clinique",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "cfg-organisation",
+   "acces": "ouvert",
+   "titre": "Organisation & organigramme",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 7
+  },
+  {
+   "id": "cfg-branding",
+   "acces": "ouvert",
+   "titre": "Identité & papier à en-tête",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "cfg-tarifs",
+   "acces": "ouvert",
+   "titre": "Référentiel tarifaire",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 4,
+   "commandes": 12
+  },
+  {
+   "id": "cfg-catalogue",
+   "acces": "ouvert",
+   "titre": "Catalogue tarifaire (deux prix)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 6,
+   "commandes": 9
+  },
+  {
+   "id": "cfg-imagerie-catalogue",
+   "acces": "ouvert",
+   "titre": "Catalogue de l’imagerie",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "cfg-entetes",
+   "acces": "ouvert",
+   "titre": "Papier à en-tête officiel",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "cfg-types-piece",
+   "acces": "ouvert",
+   "titre": "Types de pièces certifiantes",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "cfg-rappels",
+   "acces": "ouvert",
+   "titre": "Rappels & messages",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 6
+  },
+  {
+   "id": "cfg-certificats",
+   "acces": "ouvert",
+   "titre": "Certificats médicaux",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 9
+  },
+  {
+   "id": "cfg-natures-facture",
+   "acces": "ouvert",
+   "titre": "Natures de facture",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "cfg-centres-couts",
+   "acces": "ouvert",
+   "titre": "Centres de coûts",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "cfg-regles",
+   "acces": "ouvert",
+   "titre": "Règles métier versionnées",
+   "kpis": 4,
+   "tableaux": 4,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "cfg-fiscalite",
+   "acces": "ouvert",
+   "titre": "Paramètres fiscaux (IFU / RCCM)",
+   "kpis": 4,
+   "tableaux": 3,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "cfg-comptabilite",
+   "acces": "ouvert",
+   "titre": "Paramètres comptables & obligations",
+   "kpis": 4,
+   "tableaux": 3,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "cfg-notifications",
+   "acces": "ouvert",
+   "titre": "Notifications",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "cfg-compte",
+   "acces": "ouvert",
+   "titre": "Mon compte",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "cfg-modules",
+   "acces": "ouvert",
+   "titre": "Activité des modules",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "cfg-systeme",
+   "acces": "ouvert",
+   "titre": "Paramètres système",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 4,
+   "commandes": 15
+  },
+  {
+   "id": "cfg-poste",
+   "acces": "ouvert",
+   "titre": "Ce poste",
+   "kpis": 2,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "hub-mere",
+   "acces": "ouvert",
+   "titre": "Exploitation de la synchronisation",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "mere-supervision",
+   "acces": "ouvert",
+   "titre": "Supervision",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "mere-appareils",
+   "acces": "ouvert",
+   "titre": "Appareils et appairage",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "mere-conflits",
+   "acces": "ouvert",
+   "titre": "Conflits et doublons",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "mere-a-traiter",
+   "acces": "ouvert",
+   "titre": "« À traiter » consolidé",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "mere-journal-operations",
+   "acces": "ouvert",
+   "titre": "Journal des opérations",
+   "kpis": 3,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "mere-plages-baux",
+   "acces": "ouvert",
+   "titre": "Plages de numéros et baux de stock",
+   "kpis": 3,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "mere-lots-tournee",
+   "acces": "ouvert",
+   "titre": "Lots de tournée (mobiles)",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "mere-journal-technique",
+   "acces": "ouvert",
+   "titre": "Journal technique",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "mere-sauvegardes",
+   "acces": "ouvert",
+   "titre": "Sauvegardes et restauration",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 5
+  },
+  {
+   "id": "mere-cle-clinique",
+   "acces": "ouvert",
+   "titre": "Clé de clinique",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "mere-integrite",
+   "acces": "ouvert",
+   "titre": "Intégrité et altérations",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "mere-reinit",
+   "acces": "ouvert",
+   "titre": "Réinitialisation de production",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "mere-relais",
+   "acces": "ouvert",
+   "titre": "Relais en ligne",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "mere-indicateurs",
+   "acces": "ouvert",
+   "titre": "Indicateurs publiés",
+   "kpis": 3,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "mere-service",
+   "acces": "ouvert",
+   "titre": "Service et démarrage",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "mere-base",
+   "acces": "ouvert",
+   "titre": "Base de données locale",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "mere-reseau",
+   "acces": "ouvert",
+   "titre": "Réseau local",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "mere-planificateur",
+   "acces": "ouvert",
+   "titre": "Planificateur",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "mere-notifications",
+   "acces": "ouvert",
+   "titre": "Notifications serveur",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "mere-mise-en-service",
+   "acces": "ouvert",
+   "titre": "Assistant de première mise en service",
+   "kpis": 1,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "mere-mises-a-jour",
+   "acces": "ouvert",
+   "titre": "Mises à jour et compatibilité",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "mere-import",
+   "acces": "ouvert",
+   "titre": "Import de migration",
+   "kpis": 2,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "hub-rls",
+   "acces": "ouvert",
+   "titre": "Relais en ligne (apps/web)",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-tableau",
+   "acces": "ouvert",
+   "titre": "Tableau de bord du relais",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-appareils",
+   "acces": "ouvert",
+   "titre": "Appareils",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "rls-boites",
+   "acces": "ouvert",
+   "titre": "Boîtes aux lettres",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-codes",
+   "acces": "ouvert",
+   "titre": "Codes d’appairage",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-indicateurs",
+   "acces": "ouvert",
+   "titre": "Indicateurs reçus",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-alertes",
+   "acces": "ouvert",
+   "titre": "Alertes et notifications",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "rls-journal",
+   "acces": "ouvert",
+   "titre": "Journal d’audit du relais",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-superadmin",
+   "acces": "ouvert",
+   "titre": "Comptes superadmin",
+   "kpis": 0,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "rls-parametres",
+   "acces": "ouvert",
+   "titre": "Paramètres du relais",
+   "kpis": 0,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-hebergement",
+   "acces": "ouvert",
+   "titre": "Hébergement (cPanel)",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "rls-sauvegarde",
+   "acces": "ouvert",
+   "titre": "Sauvegarde du relais",
+   "kpis": 2,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "rls-opacite",
+   "acces": "ouvert",
+   "titre": "Preuve d’opacité",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "hub-pil",
+   "acces": "ouvert",
+   "titre": "Pilotage & analyse",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "dash-direction",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Direction",
+   "kpis": 12,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "dash-da",
+   "acces": "ouvert",
+   "titre": "Statistiques de la Direction",
+   "kpis": 8,
+   "tableaux": 1,
+   "onglets": 6,
+   "commandes": 12
+  },
+  {
+   "id": "dash-croise",
+   "acces": "ouvert",
+   "titre": "Tableau de bord dynamique croisé",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "dash-admin",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Administration système",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m4-stats-maternite",
+   "acces": "ouvert",
+   "titre": "Statistiques maternité & naissances",
+   "kpis": 8,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m2-stats-echographie",
+   "acces": "ouvert",
+   "titre": "Statistiques de l’imagerie médicale",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "m5-stats-examens",
+   "acces": "ouvert",
+   "titre": "Statistiques des examens",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m2-stats-consultations",
+   "acces": "ouvert",
+   "titre": "Statistiques des consultations",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m3-stats-bloc",
+   "acces": "ouvert",
+   "titre": "Statistiques du bloc & de l’anesthésie",
+   "kpis": 6,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m3-stats-hospitalisations",
+   "acces": "ouvert",
+   "titre": "Statistiques des hospitalisations",
+   "kpis": 6,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m10-cout-agent",
+   "acces": "ouvert",
+   "titre": "Coût global de l’agent",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m12-rentabilite-groupes",
+   "acces": "ouvert",
+   "titre": "Recettes & charges par groupe",
+   "kpis": 4,
+   "tableaux": 3,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m12-tableau-decisionnel",
+   "acces": "ouvert",
+   "titre": "Tableau de bord décisionnel",
+   "kpis": 4,
+   "tableaux": 5,
+   "onglets": 2,
+   "commandes": 8
+  },
+  {
+   "id": "m12-bfr",
+   "acces": "ouvert",
+   "titre": "Besoin en fonds de roulement",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 9
+  },
+  {
+   "id": "m12-cout-activite",
+   "acces": "ouvert",
+   "titre": "Coût à l’activité",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "hub-dash",
+   "acces": "ouvert",
+   "titre": "Tableaux de bord par poste",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "dash-medecin",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Médecin",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 7
+  },
+  {
+   "id": "dash-infirmier",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Infirmier / Sage-femme",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "dash-pharmacien",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Pharmacie",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 8
+  },
+  {
+   "id": "dash-laborantin",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Laboratoire",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 13
+  },
+  {
+   "id": "dash-stock",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Gestion des stocks",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "dash-caissier",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Caisse",
+   "kpis": 4,
+   "tableaux": 2,
+   "onglets": 0,
+   "commandes": 13
+  },
+  {
+   "id": "dash-comptable",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Comptabilité",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "dash-rh",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Ressources humaines",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "dash-receptionniste",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Accueil",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 13
+  },
+  {
+   "id": "dash-admin-agent",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Agent administratif",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "dash-ambulancier",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Ambulance",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "dash-aide-soignant",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Aide-soignante",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "dash-echographiste",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Échographie",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "dash-surveillant",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Surveillant",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "dash-assistant-comptable",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Assistant de Direction",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "dash-chirurgien",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Chirurgien",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "dash-anesthesiste",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Anesthésiste",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "dash-aide-comptable",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Assistant Comptable",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "dash-maternite",
+   "acces": "ouvert",
+   "titre": "Tableau de bord — Maternité",
+   "kpis": 4,
+   "tableaux": 3,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "dash-patient",
+   "acces": "ouvert",
+   "titre": "Espace patient",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "auth-forgot",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "auth-reset",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "auth-2fa",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "auth-lock",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "error-404",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "error-403",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "aide-apropos",
+   "acces": "ouvert",
+   "titre": "Aide & À propos",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "contact-editeur",
+   "acces": "ouvert",
+   "titre": "Contactez l’éditeur",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "m1-dossier-medical",
+   "acces": "ouvert",
+   "titre": "Dossier médical informatisé",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m1-dossier-etendu",
+   "acces": "ouvert",
+   "titre": "Dossier de consultation étendu",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "m2-dossier-consultation-nouveau",
+   "acces": "ouvert",
+   "titre": "Dossier de consultation",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m2-ordonnance-nouvelle",
+   "acces": "ouvert",
+   "titre": "Nouvelle ordonnance",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 6
+  },
+  {
+   "id": "m2-imagerie-cr",
+   "acces": "ouvert",
+   "titre": "Compte rendu d’imagerie",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m6-inventaire-feuille",
+   "acces": "ouvert",
+   "titre": "Feuille d’inventaire",
+   "kpis": 3,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m1-patient-nouveau",
+   "acces": "ouvert",
+   "titre": "Ouvrir un dossier patient",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 4
+  },
+  {
+   "id": "m4-dossier-obstetrical-nouveau",
+   "acces": "ouvert",
+   "titre": "Ouvrir un dossier obstétrical",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 3
+  },
+  {
+   "id": "m2-visites",
+   "acces": "ouvert",
+   "titre": "Registre des visites de suivi clinique",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "m1-certificats-externes",
+   "acces": "ouvert",
+   "titre": "Certificats — patients externes",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 1
+  },
+  {
+   "id": "enquete-publique",
+   "acces": "erreur",
+   "titre": null,
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  }
+ ]
+}

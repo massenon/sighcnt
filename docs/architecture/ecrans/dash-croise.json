@@ -1,0 +1,46 @@
+{
+ "id": "dash-croise",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Tableau de bord dynamique croisé",
+ "acces": "ouvert",
+ "titre": "Tableau de bord dynamique croisé",
+ "description": "Croiser librement soins, actes, analyses, stock, facturation, patients, personnel et gardes.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Tableau de bord dynamique croisé"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [
+  "ConsultationsSoins prescritsAnalyses de laboratoireMouvements de stockFacturationPatientsPersonnelActes réalisésSoins exécutésGardes et vacations",
+  "MoisMédecinServiceMotif",
+  "— aucun —MoisMédecinServiceMotif"
+ ],
+ "onglets": [],
+ "kpis": [
+  "Source",
+  "Enregistrements retenus",
+  "Nombre de consultations",
+  "Croisement"
+ ],
+ "cartes": [
+  "Construire le croisement"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [
+  "Source",
+  "Lignes",
+  "Colonnes",
+  "Mesure",
+  "Période"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -1,0 +1,31 @@
+{
+ "id": "hub-m1",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Patients & Dossier médical",
+ "acces": "ouvert",
+ "titre": "Patients & Dossier médical",
+ "description": "Tous les écrans du module M1 — Patients & Dossier médical.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "Consultations & prescriptions",
+  "Maternité, Naissances & Décès"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

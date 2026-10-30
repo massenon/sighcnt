@@ -1,0 +1,46 @@
+{
+ "id": "m9-dashboard",
+ "module": "M9",
+ "domaine": "Financier",
+ "libelleManifeste": "Tableau de bord assurances",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Assurances",
+ "description": "Assurés, validité des cartes, prises en charge, créances par compagnie et relances.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Assurances & Créances",
+  "Tableau de bord assurances"
+ ],
+ "actions": [
+  "Compagnies partenaires",
+  "Assurés & cartes",
+  "Assurances & Créances"
+ ],
+ "regle": [
+  "52 carte(s) d’assurance expirée(s). En application de la règle RG-09, la facturation de ces patients doit être intégrale tant que la carte n’est pas renouvelée."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Compagnies partenaires",
+  "Patients assurés",
+  "Cartes valides",
+  "Cartes expirées",
+  "Factures avec prise en charge",
+  "Créances assureurs",
+  "Montant total pris en charge",
+  "Taux moyen de prise en charge"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Créances par compagnie",
+  "Répartition des assurés par compagnie",
+  "Prises en charge (12 mois)",
+  "Validité des cartes"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 8
+}

@@ -1,0 +1,40 @@
+{
+ "id": "m3-bons-pansements",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Bons de pansement",
+ "acces": "ouvert",
+ "titre": "Bons de pansement",
+ "description": "Prescription des pansements, réglés à la caisse séance par séance et exécutés en salle de soins.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Bons de pansement"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Bons émis",
+  "Séances en attente de règlement",
+  "Types au catalogue",
+  "Tarif du pansement"
+ ],
+ "cartes": [
+  "Registre des bons"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau bon de pansement"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

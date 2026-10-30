@@ -1,0 +1,60 @@
+{
+ "id": "m13-plan-annuel",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Plan annuel de travail",
+ "acces": "ouvert",
+ "titre": "Plan annuel de travail",
+ "description": "Programmation annuelle des activités de la clinique, par axe et par trimestre.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Plan annuel de travail"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Réunions",
+  "Administration & Ambulance"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Actions programmées",
+  "Réalisées",
+  "En cours",
+  "Planifiées"
+ ],
+ "cartes": [
+  "Plan annuel de travail 2026",
+  "Détail des actions"
+ ],
+ "tableaux": [
+  [
+   "Action",
+   "Axe",
+   "T1",
+   "T2",
+   "T3",
+   "T4",
+   "Avancement"
+  ],
+  [
+   "N°",
+   "Action",
+   "Axe",
+   "Période",
+   "Responsable",
+   "Avancement",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Imprimer le plan",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

@@ -1,0 +1,64 @@
+{
+ "id": "m11-calcul",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Calcul de la paie",
+ "acces": "ouvert",
+ "titre": "Calcul de la paie",
+ "description": "Consolidation automatique : salaire de base, primes du planning, sanctions, cotisations et retenues.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Calcul de la paie"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Agents concernés",
+  "Masse salariale brute",
+  "Total des retenues",
+  "Net à payer"
+ ],
+ "cartes": [
+  "Détail du calcul — octobre 2026"
+ ],
+ "tableaux": [
+  [
+   "Mat.",
+   "Agent",
+   "Base",
+   "G",
+   "P",
+   "Primes",
+   "Brut",
+   "Sanction",
+   "CNSS",
+   "ITS",
+   "Avance sur salaire",
+   "Événements",
+   "Net à payer",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Lancer le calcul",
+  "Générer les bulletins",
+  "Éditer le journal de paie",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [
+  "Période de paie"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

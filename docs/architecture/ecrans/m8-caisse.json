@@ -4,7 +4,7 @@
  "domaine": "Financier",
  "libelleManifeste": "État de caisse journalier",
  "acces": "ouvert",
- "titre": "État de caisse journalierM8",
+ "titre": "État de caisse journalier",
  "description": "Arrêté de caisse : encaissements du jour ventilés par mode de règlement et par nature de prestation.",
  "fil": [
   "Accueil",
@@ -55,11 +55,7 @@
   "3",
   "4",
   "5",
-  "Éditer l’arrêté de caisse",
-  "Colonnes",
-  "Exporter",
-  "Colonnes",
-  "Exporter"
+  "Éditer l’arrêté de caisse"
  ],
  "champs": [
   "Journée de caisse"

@@ -1,0 +1,50 @@
+{
+ "id": "cfg-compte",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Mon compte",
+ "acces": "ouvert",
+ "titre": "Mon compte",
+ "description": "Informations personnelles, sécurité du compte et préférences d’affichage.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Mon compte"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Politique en vigueur : 12 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Informations personnelles",
+  "Sécurité du compte",
+  "Périmètre d’accès",
+  "Activité récente"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Enregistrer",
+  "Modifier le mot de passe",
+  "Matrice RBAC"
+ ],
+ "champs": [
+  "Nom et prénoms *",
+  "Identifiant de connexion",
+  "Poste",
+  "Téléphone",
+  "Adresse électronique",
+  "Mot de passe actuel *",
+  "Nouveau mot de passe *",
+  "Confirmer le nouveau mot de passe *",
+  "Activer l’authentification à deux facteurs"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

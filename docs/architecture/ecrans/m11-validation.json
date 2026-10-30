@@ -1,0 +1,36 @@
+{
+ "id": "m11-validation",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Validation Direction",
+ "acces": "ouvert",
+ "titre": "Validation de la paie",
+ "description": "Soumission des bulletins à la Direction pour validation avant diffusion aux agents.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Validation Direction"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Périodes traitées",
+  "Bulletins à valider",
+  "Bulletins validés",
+  "Net à payer cumulé"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Calculer la paie"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

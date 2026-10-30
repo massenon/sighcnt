@@ -1,0 +1,55 @@
+{
+ "id": "m7-factures-fournisseurs",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Factures fournisseurs",
+ "acces": "ouvert",
+ "titre": "Factures fournisseurs",
+ "description": "Rapprochement facture pro-forma → validation → facture normalisée → bordereau de livraison.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "Factures fournisseurs"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de commande",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [
+  "1 anomalie(s) de rapprochement détectée(s) : le montant facturé diffère du montant livré. Vérification requise avant règlement."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Factures fournisseurs",
+  "Rapprochées",
+  "Anomalies",
+  "Impayées"
+ ],
+ "cartes": [
+  "Factures fournisseurs"
+ ],
+ "tableaux": [
+  [
+   "N° interne",
+   "N° fournisseur",
+   "Date",
+   "Fournisseur",
+   "BL rattaché",
+   "Montant livré",
+   "Montant facturé",
+   "Écart",
+   "Échéance",
+   "Règlement",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

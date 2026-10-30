@@ -1,0 +1,54 @@
+{
+ "id": "dash-infirmier",
+ "module": "DASH",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Infirmier / Sage-femme",
+ "acces": "ouvert",
+ "titre": "Tableau de bord — Infirmier / Sage-femme",
+ "description": "Patients hospitalisés, relevés de constantes attendus, sorties à préparer et gardes du jour.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Tableaux de bord par poste",
+  "Infirmier / Sage-femme"
+ ],
+ "actions": [
+  "Médecin",
+  "Pharmacie",
+  "Tableaux de bord par poste"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Patients hospitalisés",
+  "Lits libres",
+  "Relevés de constantes attendus",
+  "Sorties à préparer"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Ce que vous faites ici — vos parcours",
+  "Patients hospitalisés — service"
+ ],
+ "tableaux": [
+  [
+   "Lit",
+   "Patient",
+   "Dossier",
+   "Entrée",
+   "Jours",
+   "Diagnostic",
+   "Prise en charge"
+  ]
+ ],
+ "commandes": [
+  "Salle de soins",
+  "Fiche de surveillance",
+  "Surveiller",
+  "Sorties",
+  "Plan des lits"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

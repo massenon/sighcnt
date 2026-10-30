@@ -1,0 +1,57 @@
+{
+ "id": "m12-seuil-rentabilite",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Seuil de rentabilité",
+ "acces": "ouvert",
+ "titre": "Seuil de rentabilité",
+ "description": "Charges fixes et variables, marge sur coût variable, seuil, point mort et marge de sécurité.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Seuil de rentabilité"
+ ],
+ "actions": [
+  "Compte de résultat",
+  "Tableau de bord comptable",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "La répartition fixe / variable est une proposition. Aucun plan comptable ne la porte : elle relève de l’analyse de gestion. Elle est affichée compte par compte ci-dessous et se corrige d’un clic — le seuil se recalcule aussitôt.",
+  "305 463 107 FCFA de chiffre d’affaires couvrent les charges. Au-delà, chaque franc encaissé rapporte 8.3 % de marge. Le seuil n’est pas atteint sur la période retenue.Le seuil suppose la structure constante : il vaut pour un niveau d’activité voisin de l’actuel. L’extrapoler au double serait faux — il faudrait embaucher, et les charges fixes changeraient de palier."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Chiffre d’affaires",
+  "Charges variables",
+  "Charges fixes",
+  "Marge sur coût variable",
+  "Seuil de rentabilité",
+  "Marge de sécurité"
+ ],
+ "cartes": [
+  "Couverture des charges par le chiffre d’affaires",
+  "Nature des charges — proposition corrigeable"
+ ],
+ "tableaux": [
+  [
+   "Compte",
+   "Intitulé",
+   "Nature retenue",
+   "Montant",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Imprimer l’analyse",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Période",
+  "Arrêté au"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 6
+}

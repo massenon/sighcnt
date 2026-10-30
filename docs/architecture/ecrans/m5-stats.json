@@ -1,0 +1,47 @@
+{
+ "id": "m5-stats",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Statistiques du laboratoire",
+ "acces": "ouvert",
+ "titre": "Statistiques du laboratoire",
+ "description": "Examens réalisés par service, âge, sexe, période et origine du patient ; consommation des réactifs.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Statistiques du laboratoire"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Examens demandés",
+  "Résultats rendus",
+  "Demandes urgentes",
+  "Patients distincts"
+ ],
+ "cartes": [
+  "Statistiques"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Appliquer",
+  "Imprimer l’état"
+ ],
+ "champs": [
+  "Périodicité",
+  "Du",
+  "Au",
+  "Section",
+  "Service demandeur",
+  "Origine du patient",
+  "Sexe"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -1,0 +1,57 @@
+{
+ "id": "m2-ordonnances",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Ordonnances",
+ "acces": "ouvert",
+ "titre": "Ordonnances",
+ "description": "Prescriptions émises, suivi de leur dispensation en pharmacie et réédition.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Consultations & prescriptions",
+  "Ordonnances"
+ ],
+ "actions": [
+  "File d’attente caisse",
+  "Demandes d’analyses",
+  "Nouvelle ordonnance"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Ordonnances émises",
+  "En attente d’encaissement",
+  "À délivrer en pharmacie",
+  "Valeur prescrite"
+ ],
+ "cartes": [
+  "Ordonnances"
+ ],
+ "tableaux": [
+  [
+   "N° ordonnance",
+   "Date",
+   "Patient",
+   "Prescripteur",
+   "Contenu",
+   "Montant",
+   "Caisse",
+   "Pharmacie",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle ordonnance",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

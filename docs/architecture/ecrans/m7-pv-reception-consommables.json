@@ -1,0 +1,51 @@
+{
+ "id": "m7-pv-reception-consommables",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "PV de réception — consommables",
+ "acces": "ouvert",
+ "titre": "PV de réception — consommables",
+ "description": "Procès-verbaux de réception des consommables : quantités, écarts, réserves et signatures.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "PV de réception — consommables"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de commande",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "PV établis",
+  "Conformes",
+  "Avec réserves",
+  "Non conformes"
+ ],
+ "cartes": [
+  "Registre des procès-verbaux"
+ ],
+ "tableaux": [
+  [
+   "N° PV",
+   "Date",
+   "Bon de livraison",
+   "Fournisseur",
+   "Lignes",
+   "Conclusion",
+   "Magasinier",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau PV"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

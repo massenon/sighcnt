@@ -1,0 +1,60 @@
+{
+ "id": "m11-heures-sup",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Heures supplémentaires",
+ "acces": "ouvert",
+ "titre": "Heures supplémentaires",
+ "description": "Déclaration et valorisation des heures effectuées au-delà de l’horaire contractuel.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Heures supplémentaires"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les déclarations",
+  "Archivés"
+ ],
+ "kpis": [
+  "Déclarations",
+  "Heures déclarées",
+  "Montant à payer",
+  "En attente de validation"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Période",
+   "Mat.",
+   "Agent",
+   "Service",
+   "Heures",
+   "Taux horaire",
+   "Majoration",
+   "Montant",
+   "Motif",
+   "Validation",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les déclarations20",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

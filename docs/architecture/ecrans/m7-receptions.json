@@ -1,0 +1,60 @@
+{
+ "id": "m7-receptions",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Réceptions & contrôles",
+ "acces": "ouvert",
+ "titre": "Réceptions & contrôles",
+ "description": "Réception physique des livraisons, vérification contradictoire par 2 à 3 personnes et entrée en stock gros.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "Réceptions & contrôles"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de commande",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [
+  "Les trois documents portent le même montant : c’est ce rapprochement que le système contrôle. La convention de numérotation du fournisseur est [AA][B|L|F][agence][séquence 5 chiffres] — B pour le bon, L pour la livraison, F pour la facture.",
+  "La facture est certifiée MECeF : code DGI GT32-Z4DN-SBSS-JXSP-ULDC-5URR, total HT 182 725 FCFA, AIB 1 % 1 827 FCFA, net à payer 184 552 FCFA. La TVA y est portée à zéro, les produits de santé étant exonérés."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Commandes à réceptionner",
+  "Réceptions réalisées",
+  "Valeur attendue",
+  "Fournisseurs concernés"
+ ],
+ "cartes": [
+  "Modèle de référence — liasse SoBAPS du cadrage",
+  "Commandes en attente de réception"
+ ],
+ "tableaux": [
+  [
+   "Étape",
+   "Document",
+   "Date",
+   "Montant"
+  ],
+  [
+   "N° commande",
+   "Date",
+   "Fournisseur",
+   "Articles",
+   "Montant",
+   "Validée par",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Réceptionner"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

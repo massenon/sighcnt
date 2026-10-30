@@ -1,0 +1,54 @@
+{
+ "id": "m7-ecarts",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Écarts de livraison",
+ "acces": "ouvert",
+ "titre": "Écarts de livraison",
+ "description": "Suivi des manquants entre commande et livraison, avec prise en compte automatique lors de la livraison suivante.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "Écarts de livraison"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de commande",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [
+  "Les manquants sont notifiés au fournisseur et reportés automatiquement sur la livraison suivante, conformément au processus de la clinique."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Écarts constatés",
+  "Livraisons concernées",
+  "Valeur des manquants",
+  "Fournisseurs concernés"
+ ],
+ "cartes": [
+  "Écarts entre commande et livraison"
+ ],
+ "tableaux": [
+  [
+   "N° BL",
+   "Commande",
+   "Date",
+   "Fournisseur",
+   "Article",
+   "Commandé",
+   "Livré",
+   "Écart",
+   "Valeur"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Éditer l’état des manquants"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

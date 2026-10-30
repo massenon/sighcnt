@@ -1,0 +1,59 @@
+{
+ "id": "m4-dossier-bebe",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Dossier bébé & soins du nouveau-né",
+ "acces": "ouvert",
+ "titre": "Dossier bébé & soins du nouveau-né",
+ "description": "PC et PT obligatoires, Apgar aux trois temps, vitamine K1, réanimation et vaccins de naissance.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Dossier bébé & soins du nouveau-né"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les dossiers bébé",
+  "Archivés"
+ ],
+ "kpis": [
+  "Dossiers bébé",
+  "Mesures hors bornes",
+  "Réanimations",
+  "Vitamine K1"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Nouveau-né de",
+   "Poids (kg)",
+   "PC (cm)",
+   "PT (cm)",
+   "Apgar 1/5/10",
+   "Réanimation",
+   "Soins J0",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les dossiers bébé48",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

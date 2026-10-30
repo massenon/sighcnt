@@ -1,0 +1,45 @@
+{
+ "id": "contact-editeur",
+ "module": "SUP",
+ "domaine": "Système",
+ "libelleManifeste": "Contactez l’éditeur",
+ "acces": "ouvert",
+ "titre": "Contactez l’éditeur",
+ "description": "Assistance technique, suggestions d’amélioration et signalement d’anomalies.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Aide & assistance",
+  "Contactez l’éditeur"
+ ],
+ "actions": [],
+ "regle": [
+  "Capture d’écran (facultative)Joindre une capture d’écranAucune capture jointe.",
+  "Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Envoyer un message",
+  "Signaler une anomalie",
+  "Coordonnées de l’éditeur",
+  "Avant de nous écrire"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Envoyer le message",
+  "M2 — RDV, Visites & Consultations",
+  "Joindre une capture d’écran",
+  "Signaler l’anomalie",
+  "Consulter l’aide & la FAQ"
+ ],
+ "champs": [
+  "Objet *",
+  "Message *",
+  "Module concerné *",
+  "Description du problème *",
+  "Étapes pour reproduire"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

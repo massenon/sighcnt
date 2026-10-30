@@ -1,0 +1,58 @@
+{
+ "id": "m5-stats-examens",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Statistiques des examens",
+ "acces": "ouvert",
+ "titre": "Statistiques des examens",
+ "description": "Les examens du laboratoire selon plusieurs axes : service demandeur, âge, sexe, période, interne ou externe.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Statistiques des examens"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Examens (population filtrée)",
+  "Résultats rendus",
+  "Urgents",
+  "Patients externes"
+ ],
+ "cartes": [
+  "Par section d’examen",
+  "Par service demandeur",
+  "Par tranche d’âge",
+  "Détail par examen"
+ ],
+ "tableaux": [
+  [
+   "Examen",
+   "Demandes"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4"
+ ],
+ "champs": [
+  "Du",
+  "Au",
+  "Service demandeur",
+  "Sexe",
+  "Tranche d’âge",
+  "Origine"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

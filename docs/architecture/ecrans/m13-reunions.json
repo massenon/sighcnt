@@ -1,0 +1,58 @@
+{
+ "id": "m13-reunions",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Réunions",
+ "acces": "ouvert",
+ "titre": "Réunions",
+ "description": "Planification des réunions, convocations, ordres du jour et comptes rendus.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Réunions"
+ ],
+ "actions": [
+  "Courriers (départ / arrivée)",
+  "Événements & notifications",
+  "Administration & Ambulance"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les réunions",
+  "Archivés"
+ ],
+ "kpis": [
+  "Réunions enregistrées",
+  "À venir",
+  "Comptes rendus à rédiger",
+  "Participants cumulés"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Heure",
+   "Type",
+   "Lieu",
+   "Présidée par",
+   "Participants",
+   "Statut",
+   "Compte rendu",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les réunions18",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

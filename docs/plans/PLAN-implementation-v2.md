@@ -63,3 +63,12 @@ Compilation Windows/Android, SQLCipher, service Windows, MECeF physique (protoco
 | Prototypes | **fait** : 22 pages « Poste mère », 12 pages « Relais en ligne », simulateur mobile (21 écrans, 4 profils, iPhone 14 / Pixel 8) | `npm run mobile:check` 92/92 ; `build/check.js` 0 erreur |
 | T9 Activation du mode mère à l'exécution | **fait** | relais : `POST /mere/activer` (34 tests PHPUnit) ; poste : 43 tests ; le mode vit dans `poste.json`, plus dans une option de compilation |
 | Plan en sprints | **fait** | `PLAN-SPRINTS.md` |
+
+## Mise à jour du 30/10/2026 (fin de journée)
+
+| Tâche | État | Preuve |
+|---|---|---|
+| T10a Coque à l'image de la maquette | **fait** | barre supérieure, ruban à méga-menus **identique à `N.tree()` pour les 22 rôles** (vecteurs), page standard, 187 icônes Lucide, police Inter, accueil du rôle, raccourcis permanents ; 44 tests |
+| T10b/c Composants de données (tableau, formulaire 6 colonnes, modale, tiroir, onglets, graphiques, impression) | **non commencé** | prochain sprint (S2–S3) |
+| T11 Outillage de parité | **fait** (N1) | 341 fiches de la maquette extraites (`docs/architecture/ecrans/`, 332 ouvertes ; 9 sans page de contenu : banque de sang fermée, écrans d'authentification, enquête publique) ; mesure N1 des écrans Flutter portés : **6 portés, parité de 6 % à 40 %** (`rapport-parite-flutter.json`) ; un statut « porté » est refusé tant que N1 < 100 % |
+| Conversion des 321 écrans | **6 écrans ont une page Flutter, aucun n'est à parité** | les 315 autres s'affichent « à convertir » avec leur tranche |

@@ -1,0 +1,44 @@
+{
+ "id": "m10-stats-permanences",
+ "module": "M10",
+ "domaine": "RH",
+ "libelleManifeste": "Statistiques des permanences",
+ "acces": "ouvert",
+ "titre": "Statistiques des permanences",
+ "description": "Nombre de permanences assurées par agent, par service et par fonction, sur la période choisie.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Ressources humaines",
+  "Statistiques des permanences"
+ ],
+ "actions": [
+  "Statistiques de garde",
+  "Planning",
+  "Fiches de poste"
+ ],
+ "regle": [
+  "Du 01/10/2026 au 30/10/2026 — 0 permanence(s) assurée(s) par 0 agent(s). La permanence court de 08h à 18h ; la garde de vingt-quatre heures est comptée sur son propre écran."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Permanences assurées",
+  "Agents concernés",
+  "Moyenne par agent",
+  "Le plus sollicité"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Imprimer l’état",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Périodicité",
+  "Arrêtée au",
+  "Service"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}
