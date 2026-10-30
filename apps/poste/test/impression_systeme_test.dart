@@ -14,7 +14,9 @@ void main() {
       'commande par plateforme : lp (Linux, macOS), verbe Print du shell (Windows)',
       () {
     ImpressionPoste.systeme = 'linux';
-    expect(ImpressionPoste.commande('/tmp/a.pdf'), ('lp', ['/tmp/a.pdf']));
+    final (exeL, argsL) = ImpressionPoste.commande('/tmp/a.pdf');
+    expect(exeL, 'lp');
+    expect(argsL, ['/tmp/a.pdf']);
     ImpressionPoste.systeme = 'macos';
     expect(ImpressionPoste.commande('/tmp/a.pdf').$1, 'lp');
     ImpressionPoste.systeme = 'windows';
