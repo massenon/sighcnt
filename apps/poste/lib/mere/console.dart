@@ -9,9 +9,15 @@ import 'client_mere.dart';
 /// annonce et appelle les gestes que la mère accepte ; tout refus s'affiche avec la cause nommée par la mère.
 /// Les conflits (qui contiennent des données de santé) s'arbitrent ICI et nulle part ailleurs : le panneau en ligne
 /// n'en montre que le nombre.
+/// Les cinq rubriques de la console : chacune est aussi un MODULE de la coque (réservé au mode mère).
+enum SectionMere { supervision, appareils, conflits, journal, maintenance }
+
 class ConsoleMere extends StatefulWidget {
-  const ConsoleMere({super.key, required this.client, this.intervalle = const Duration(seconds: 3), this.maintenant});
+  const ConsoleMere({super.key, required this.client, this.intervalle = const Duration(seconds: 3), this.maintenant, this.section});
   final ClientMere client;
+
+  /// Renseignée : la console n'affiche QUE cette rubrique, sans cadre ni onglets (elle vit dans la coque).
+  final SectionMere? section;
   final Duration intervalle;
   final DateTime Function()? maintenant;
 
@@ -79,6 +85,7 @@ class _ConsoleMereState extends State<ConsoleMere> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.section != null) return _rubrique(widget.section!);
     return DefaultTabController(
       length: 5,
       child: Scaffold(
@@ -102,6 +109,23 @@ class _ConsoleMereState extends State<ConsoleMere> {
         ]),
       ),
     );
+  }
+
+  Widget _rubrique(SectionMere s) {
+    return Column(children: [
+      if (_panne != null) MaterialBanner(content: Text(_panne!), backgroundColor: ThemeSigh.dangerFond, actions: const [SizedBox.shrink()]),
+      Expanded(
+        child: _etat == null
+            ? const Center(child: CircularProgressIndicator())
+            : switch (s) {
+                SectionMere.supervision => _supervision(_etat!),
+                SectionMere.appareils => _appareils(_etat!),
+                SectionMere.conflits => _conflitsVue(),
+                SectionMere.journal => _journalVue(),
+                SectionMere.maintenance => _maintenance(_etat!),
+              },
+      ),
+    ]);
   }
 
   // --- Supervision ----------------------------------------------------------------------------------------------
