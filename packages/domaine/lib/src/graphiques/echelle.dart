@@ -102,3 +102,19 @@ int _decimales(double pas) {
   }
   return d;
 }
+
+/// Axe vertical BORNÉ (`scales.y: { beginAtZero: false, min, max }`, ex. la courbe de température 35–41 °C) : le pas est le « joli » nombre de
+/// `(max − min) / espaces`, les graduations vont de `min` à `max` (bornes comprises). Non rejoué contre Chart.js (les vecteurs ne couvrent que les
+/// axes partant de zéro) — l'étendue de la courbe de température est entière et les graduations sont celles de la maquette (35, 36 … 41).
+EchelleVerticale echelleVerticaleBornee(double min, double max,
+    {required double hauteurAxe, double taillePolice = 11}) {
+  final maxTicks = math.min(11, (hauteurAxe / (taillePolice * 1.2)).ceil());
+  final pas = _joli((max - min) / math.max(maxTicks - 1, 1));
+  final t = <double>[min];
+  final dec = _decimales(pas);
+  for (var v = (min / pas).floor() * pas + pas; v < max - pas / 1000; v += pas) {
+    if (v > min + pas / 1000) t.add(double.parse(v.toStringAsFixed(dec)));
+  }
+  t.add(max);
+  return EchelleVerticale(t);
+}

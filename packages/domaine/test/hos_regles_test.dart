@@ -61,6 +61,22 @@ void main() {
     expect(modif['reference'], jeu.first['reference']);
   });
 
+  test('E370 : corriger une admission SORTIE ne la rouvre pas (le formulaire ne porte pas le statut)', () {
+    final jeu = liste(m(d['admissions'])['jeu']);
+    final sortie = jeu.firstWhere((x) => x['statut'] == 'sortie');
+    final modif = hosConstruireAdmission({'diagnosticEntree': 'corrigé'}, sortie, const [], jeu, reference: referenceSuivante);
+    expect(modif['statut'], 'sortie');
+    // une création, elle, s'ouvre
+    expect(hosConstruireAdmission({'lit': 'A1 LIT2'}, null, const [], jeu, reference: referenceSuivante)['statut'], 'en_cours');
+  });
+
+  test('courbe de température : axe borné 35–41 (graduations entières, bornes comprises)', () {
+    final e = echelleVerticaleBornee(35, 41, hauteurAxe: 188);
+    expect(e.graduations, [35, 36, 37, 38, 39, 40, 41]);
+    expect(e.min, 35);
+    expect(e.max, 41);
+  });
+
   test('plan des lits : durée de séjour et occupation', () {
     final a = m(d['admissions']);
     final fin = liste(a['etatFinal']).where((f) => f['statut'] != 'archive').toList();

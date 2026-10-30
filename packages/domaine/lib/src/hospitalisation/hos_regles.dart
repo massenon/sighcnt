@@ -188,7 +188,8 @@ HosFiche hosConstruireAdmission(Map<String, Object?> v, HosFiche? fiche,
     r['reference'] = fiche?['reference'] ??
         reference('H', 5, admissionsToutes);
   }
-  r['statut'] ??= 'en_cours';
+  // E370 : une admission existante GARDE son statut (le formulaire n'en porte pas) — sinon corriger une admission sortie la rouvrirait.
+  r['statut'] ??= fiche?['statut'] ?? 'en_cours';
   return r;
 }
 

@@ -864,7 +864,9 @@
         var slot = tousLits().filter(function (s) { return s.lit.label === v.lit; })[0];
         if (slot) { v.chambre = slot.chambre.code; v.typeChambre = slot.chambre.type; }
         if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('H', 5, S.collection('admissions').all());   /* E360 : série lue sur le registre, jamais un compteur de page */
-        if (!v.statut) v.statut = 'en_cours';
+        /* E370 : le formulaire ne porte pas le statut ; le forcer à « en_cours » rouvrait une admission SORTIE à la moindre correction (lit de
+           nouveau occupé, séjour sans fin). Une fiche existante garde son statut. */
+        if (!v.statut) v.statut = (record && record.statut) || 'en_cours';
         return v;
       },
       beforeSave: function (v, record) {

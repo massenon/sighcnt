@@ -26,6 +26,10 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
       try { SIGH.semerAchats(true); } catch (e) { console.error(e); }
       try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m7-pv-reception-consommables'].render(r); r.remove(); } catch (e) { console.error(e); }
     });
+    /* La mise en observation est amorcée PAR SON ÉCRAN (`amorcerObservations`, local à m3-hospitalisation.js : 18 séjours à l'ouverture) : on monte
+       l'écran comme l'agent, sinon `observations` s'exporte vide. Avant le peuplement des parcours : le jeu sobre l'amorce aussi. */
+    await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m3-hospitalisation.js') });
+    await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m3-observation'].render(r); r.remove(); } catch (e) { console.error(e); } });
     /* LE JEU DE DÉMONSTRATION COMPLET : le peuplement des parcours (demandes d'analyses et d'imagerie, ordonnances, tâches, transferts…) est déclenché par
        la page au démarrage dans la maquette ; la page d'extraction ne le fait pas, d'où des collections vides à l'export. */
     if (!SOBRE) await m.page.evaluate(() => { try { SIGH.peuplerParcours(); } catch (e) { console.error(e); } });
