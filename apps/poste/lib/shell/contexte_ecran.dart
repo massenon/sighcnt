@@ -53,6 +53,9 @@ class ContexteEcran extends InheritedWidget {
 
 /// Un écran qui déclare lui-même son en-tête de page (`SIGH.screen({title, description, regle, actions})`).
 mixin EcranMaquette on Widget {
+  /// Titre de la page quand il diffère de l'intitulé du ruban (`SIGH.screen({title})`).
+  String? get titre => null;
+
   String? get description => null;
 
   /// Texte brut (les balises de mise en forme de la maquette sont retirées).

@@ -167,7 +167,7 @@ class _CoquePosteState extends State<CoquePoste> {
         child: Builder(builder: (context) {
           final w = porte(context, widget.config);
           return PageStandard(
-              titre: e.label,
+              titre: (w is EcranMaquette ? w.titre : null) ?? e.label,
               fil: fil,
               module: e.module,
               defilable: w is EcranMaquette ? true : false,

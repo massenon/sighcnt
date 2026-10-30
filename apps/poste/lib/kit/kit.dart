@@ -14,3 +14,4 @@ export 'ton.dart';
 export 'detail.dart';
 export 'toast.dart';
 export 'crud.dart';
+export 'tableau_de_bord.dart';
