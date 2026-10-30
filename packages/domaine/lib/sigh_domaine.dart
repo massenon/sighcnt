@@ -52,3 +52,8 @@ export 'src/labo/cat_regles.dart';
 export 'src/consultation/consultation.dart';
 export 'src/hospitalisation/hos_regles.dart';
 export 'src/consultation/ag_accueil.dart';
+export 'src/patients/pat_patients.dart';
+export 'src/patients/pat_releves.dart';
+export 'src/patients/pat_pieces.dart';
+export 'src/patients/pat_externe.dart';
+export 'src/patients/pat_fiche.dart';

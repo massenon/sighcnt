@@ -32,6 +32,9 @@ const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'tes
     /* Le registre des appels est amorcé PAR SON ÉCRAN (m2-registre-appels) : on le monte comme l'agent. */
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m2-consultations.js') }).catch(() => {});
     await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m2-registre-appels'].render(r); r.remove(); } catch (e) { console.error(e); } });
+    /* La bibliothèque documentaire du patient est amorcée PAR SON ÉCRAN (m1-documents). */
+    await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m1-patients.js') }).catch(() => {});
+    await m.page.evaluate(() => { try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m1-documents'].render(r); r.remove(); } catch (e) { console.error(e); } });
     for (const nom of COLLECTIONS) {
       const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));

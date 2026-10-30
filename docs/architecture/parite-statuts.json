@@ -83,5 +83,19 @@
  "m2-affichage": "porté",
  "m2-file-cabinet": "porté",
  "m2-agenda-medecin": "porté",
- "m2-registre-appels": "porté"
+ "m2-registre-appels": "porté",
+ "m1-patients": "porté",
+ "m1-patient-nouveau": "porté",
+ "m1-patient-profil": "porté",
+ "m1-antecedents": "porté",
+ "m1-constantes": "porté",
+ "m1-reference": "porté",
+ "m1-contre-reference": "porté",
+ "m1-pieces": "porté",
+ "m1-externe": "porté",
+ "m1-documents": "porté",
+ "m1-numerisation": "porté",
+ "m1-dossier-medical": "porté",
+ "m1-dossier-etendu": "porté",
+ "m1-certificats-externes": "porté"
 }
