@@ -136,6 +136,9 @@ class RegistreFormulaire extends StatefulWidget {
     this.prefixe = 'ID',
     this.groupe = false,
     this.toastApres,
+    this.triInitial,
+    this.sensInitial = 'asc',
+    this.titreModification,
   });
 
   final CollectionMagasin collection;
@@ -175,6 +178,11 @@ class RegistreFormulaire extends StatefulWidget {
   final String? Function(Map<String, Object?> valeurs, Fiche? fiche)? avant;
   final String libelleRecherche;
   final String prefixe;
+  final String? triInitial;
+  final String sensInitial;
+
+  /// Référence nommée au titre de la modale de modification (`Modifier l’enregistrement …`) quand elle diffère du titre de la fiche.
+  final String Function(Fiche)? titreModification;
 
   /// Remplace le message de création par défaut (la surveillance transfusionnelle signale un protocole incomplet ou un incident).
   final void Function(BuildContext ctx, Fiche creee, VoidCallback annuler)? toastApres;
@@ -197,7 +205,7 @@ class _EtatRegistre extends State<RegistreFormulaire> {
     afficherModale<void>(ctx,
             titre: creation
                 ? widget.titreCreation
-                : 'Modifier l’enregistrement ${widget.titreFiche(fiche)}',
+                : 'Modifier l’enregistrement ${(widget.titreModification ?? widget.titreFiche)(fiche)}',
             sousTitre: creation ? widget.sousTitreCreation : null,
             taille: widget.tailleCreation,
             corps: FormulaireSigh(controleur: ctl),
@@ -296,6 +304,8 @@ class _EtatRegistre extends State<RegistreFormulaire> {
       filtres: widget.filtres,
       taillePage: widget.taillePage,
       selectionnable: true,
+      triInitial: widget.triInitial,
+      sensInitial: widget.sensInitial,
       nomExport: widget.nomExport,
       messageVide: widget.messageVide,
       libelleRecherche: widget.libelleRecherche,
