@@ -38,6 +38,9 @@ class CrudStock extends StatefulWidget {
     this.libelleRecherche,
     this.valeursEdition,
     this.transformerExistante,
+    this.refuserExistante,
+    this.champsPour,
+    this.messageModification = 'Modification enregistrée.',
   });
 
   final CollectionMagasin collection;
@@ -75,6 +78,15 @@ class CrudStock extends StatefulWidget {
   /// (référence, code déjà attribués).
   final Fiche Function(BuildContext, Map<String, Object?>, Fiche?)?
       transformerExistante;
+
+  /// `beforeSave(values, record)` : comme [refuser], mais reçoit la fiche corrigée (un lit déjà occupé par CETTE admission n'est pas un refus).
+  final String? Function(Map<String, Object?>, Fiche?)? refuserExistante;
+
+  /// `fields(record)` : les champs dépendent de la fiche corrigée (la liste des lits libres propose le lit COURANT). Remplace [champs] quand présent.
+  final List<ChampDef> Function(Magasin, Fiche?)? champsPour;
+
+  /// Le message de la modification (« Modifications enregistrées. » dans certains registres de la maquette).
+  final String messageModification;
 
   @override
   State<CrudStock> createState() => _CrudStockState();
@@ -126,7 +138,8 @@ class _CrudStockState extends State<CrudStock> {
   /// La saisie (création ou modification) : modale à six colonnes, champs obligatoires contrôlés, refus nommé (`beforeSave`), annulation visible.
   void _saisir(BuildContext ctx, {Fiche? existante}) {
     final c = ContexteEcran.of(ctx);
-    final ctl = ControleurFormulaire(widget.champs(c.magasin),
+    final ctl = ControleurFormulaire(
+        widget.champsPour?.call(c.magasin, existante) ?? widget.champs(c.magasin),
         existante != null
             ? (widget.valeursEdition?.call(existante) ?? _enTexte(existante))
             : widget.valeursInitiales());
@@ -153,7 +166,9 @@ class _CrudStockState extends State<CrudStock> {
                           type: TypeToast.erreur);
                       return;
                     }
-                    final motif = widget.refuser?.call(saisie);
+                    final motif = widget.refuserExistante != null
+                        ? widget.refuserExistante!(saisie, existante)
+                        : widget.refuser?.call(saisie);
                     if (motif != null) {
                       ToastsSigh.afficher(ctx, motif, type: TypeToast.erreur);
                       return;
@@ -176,7 +191,7 @@ class _CrudStockState extends State<CrudStock> {
                     } else {
                       final annuler =
                           widget.collection.mettreAJour(existante['id'], fiche);
-                      ToastsSigh.afficher(ctx, 'Modification enregistrée.',
+                      ToastsSigh.afficher(ctx, widget.messageModification,
                           type: TypeToast.succes,
                           detail: widget.referenceToast?.call(existante),
                           annuler: annuler);

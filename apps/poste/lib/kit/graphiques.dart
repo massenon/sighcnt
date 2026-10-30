@@ -104,8 +104,10 @@ class _Cartesien extends StatelessWidget {
       required this.etiquettes,
       required this.series,
       required this.hauteur,
-      required this.peintre});
+      required this.peintre,
+      this.bornes});
   final String type;
+  final (double, double)? bornes;
   final List<String> etiquettes;
   final List<SerieGraphique> series;
   final double hauteur;
@@ -114,8 +116,10 @@ class _Cartesien extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final traceH = hauteur - _hautLegende - _hautAxeX + 0.0;
-    final ech = echelleVerticale([for (final s in series) ...s.donnees],
-        hauteurAxe: traceH - 0);
+    final ech = bornes != null
+        ? echelleVerticaleBornee(bornes!.$1, bornes!.$2, hauteurAxe: traceH)
+        : echelleVerticale([for (final s in series) ...s.donnees],
+            hauteurAxe: traceH - 0);
     final largeurEtiquette = [
       for (final g in ech.graduations)
         (TextPainter(
@@ -182,14 +186,21 @@ class GraphiqueLigne extends StatelessWidget {
       {super.key,
       required this.etiquettes,
       required this.series,
-      this.hauteur = 260});
+      this.hauteur = 260,
+      this.min,
+      this.max});
   final List<String> etiquettes;
   final List<SerieGraphique> series;
   final double hauteur;
 
+  /// `scales.y: { beginAtZero: false, min, max }` : axe borné (courbe de température 35–41 °C). Absents : l'axe part de zéro.
+  final double? min;
+  final double? max;
+
   @override
   Widget build(BuildContext context) => _Cartesien(
       type: 'en courbes',
+      bornes: min != null && max != null ? (min!, max!) : null,
       etiquettes: etiquettes,
       series: series,
       hauteur: hauteur,
