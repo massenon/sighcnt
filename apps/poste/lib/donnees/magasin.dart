@@ -223,6 +223,8 @@ class Magasin {
     'souscripteurs': 'M9',
     'garanties': 'M9',
     'couverturesAssurance': 'M9',
+    'assureurs': 'M9',
+    'relances': 'M9',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
@@ -370,6 +372,8 @@ class Magasin {
     'rendezvous',
     'visites',
     'antecedents',
-    'documents'
+    'documents',
+    'assureurs',
+    'relances'
   ];
 }
