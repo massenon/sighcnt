@@ -1361,13 +1361,14 @@
         ];
       },
       onCreate: function () { return { date: C.iso(AUJ), type: 'entree', stockType: 'gros' }; },
-      transform: function (v) {
+      transform: function (v, record) {
         var p = produits().filter(function (x) { return x.id === v.produitId; })[0];
         if (p) v.produit = p.designation;
         var t = D.TYPES_MOUVEMENT.filter(function (x) { return x.id === v.type; })[0];
         if (t) v.typeLabel = t.label;
         v.utilisateur = S.currentUser();
-        if (!v.reference) v.reference = C.nextRef('M', 6);
+        /* Un mouvement ÉDITÉ garde son numéro : la maquette en attribuait un nouveau à chaque modification (E19). */
+        if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('M', 6, S.collection('mouvements').all()); /* série lue sur les mouvements existants (E17) */
         return v;
       },
       beforeSave: function (v) {
@@ -1984,7 +1985,7 @@
         var vals = toutes();
         var ecarts = vals.filter(function (x) { return x.ecart !== 0; });
         var enr = {
-          reference: C.nextRef('INV-', 4),
+          reference: C.referenceSuivante('INV-', 4, col.all()), /* série lue sur les inventaires existants (E17) */
           date: entete.date, type: entete.type, perimetre: entete.perimetre,
           magasin: entete.magasin, magasinLabel: magasinLabel,
           operateur: entete.operateur, statutInv: 'valide',
@@ -2010,7 +2011,7 @@
           else maj.stockGros = Math.max(0, (pr.stockGros || 0) + x.ecart);
           S.collection('produits').update(pr.id, maj);
           var mv = S.collection('mouvements', { module: 'M6', entite: 'MouvementStock' }).insert({
-            reference: C.nextRef('M', 6), date: entete.date,
+            reference: C.referenceSuivante('M', 6, S.collection('mouvements').all()), date: entete.date, /* (E17) */
             produitId: pr.id, produit: pr.designation,
             type: 'inventaire', typeLabel: 'Régularisation inventaire',
             quantite: Math.abs(x.ecart), stockType: entete.magasin,
@@ -2151,8 +2152,9 @@
                 }
                 var valeurPerte = q * (prod.cump || 0);
                 var res = colMouvements().insert({
-                  reference: C.nextRef('MVT-', 5),
+                  reference: C.referenceSuivante('MVT-', 5, colMouvements().all()), /* (E17) */
                   date: v.date, type: v.type,
+                  typeLabel: (D.TYPES_MOUVEMENT.filter(function (x) { return x.id === v.type; })[0] || {}).label, /* sans lui, la colonne « Nature » du registre restait vide (E18) */
                   produitId: prod.id, produit: prod.designation, unite: prod.unite,
                   quantite: q, sens: 'sortie',
                   valeur: valeurPerte, cump: prod.cump || 0,
