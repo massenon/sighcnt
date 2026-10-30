@@ -2931,7 +2931,7 @@
             transform: function (v) {
               var pt = patientParCode3(v.patientCode);
               return Object.assign({}, v, {
-                reference: C.nextRef('RAP-', 4),
+                reference: C.referenceSuivante('RAP-', 4, col6().all()),   /* E380 : série lue sur le registre, jamais un compteur de page */
                 patientId: pt ? pt.id : null,
                 patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
                 age: pt ? C.age(pt.dateNaissance) : null,
