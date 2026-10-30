@@ -6245,8 +6245,8 @@
       },
       {
         "libelle": "Aucune erreur de projection récente",
-        "ok": false,
-        "detail": "[{\"collection\":\"remboursements\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 13:03:11.09539\"},{\"collection\":\"remboursements\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 13:03:10.451406\"},{\"collection\":\"remboursements\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 13:02:29.845755\"},{\"collection\":\"remboursements\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 13:02:29.16233\"},{\"collection\":\"remboursements\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 13:02:17.077018\"},{\"collection\":\"remboursements\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 13:02:16.443693\"},{\"collection\":\"planAnnuel\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 00:26:25.708939\"},{\"collection\":\"prestataires\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 00:26:16.299908\"},{\"collection\":\"conges\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 00:26:11.415938\"},{\"collection\":\"contrats\",\"message\":\"Collection absente du schéma relationnel : relancer node build/gen-schema-pg.js\",\"le\":\"2026-10-30 00:26:05.194016\"}]"
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
@@ -6279,7 +6279,7 @@
         "detail": null
       }
     ],
-    "ok": false
+    "ok": true
   },
   {
     "nom": "Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état",
