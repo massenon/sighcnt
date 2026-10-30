@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show blocChecklistEntree, blocChecklistSortie;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -472,6 +473,109 @@ void main() {
       expect(find.widgetWithText(BoutonSigh, 'Nouveau compte rendu'), findsNothing);
       await ouvrir(t, base(), 'm3-cr-anesthesie', role: 'caissier');
       expect(find.text('Comptes rendus d’anesthésie'), findsNothing);
+    });
+  });
+
+  group('m3-bloc-checklist — deux listes séparées, l\'incomplète est signalée jamais refusée', () {
+    final c = m_(vecteurs['checklist']);
+    Magasin base() => magasin({'checklistsBloc': liste(c['jeu'])});
+    Finder onglet(String libelle) =>
+        find.descendant(of: find.byKey(const Key('kit:onglets-barre')), matching: find.textContaining(libelle));
+
+    cas('indicateurs, onglet d\'entrée et onglet de sortie identiques à la maquette ; parité N1 = 100 %', (t) async {
+      await ouvrir(t, base(), 'm3-bloc-checklist');
+      final e = m_(c['ecran']);
+      comparerKpis(t, e['kpis']);
+      comparerTableau(t, e['tableaux'], colonnes: 4);
+      expect(find.textContaining('arrêtées par les praticiens du bloc le 01/09/2026'), findsOneWidget);
+      await parite(t, 'm3-bloc-checklist');
+      await toucher(t, onglet('Check-liste de sortie'));
+      comparerTableau(t, m_(c['sortieOnglet'])['tableaux'], colonnes: 4);
+    });
+
+    cas('la liste de sortie est une AUTRE liste : neuf points, non les douze de l\'entrée', (t) async {
+      await ouvrir(t, base(), 'm3-bloc-checklist');
+      await toucher(t, onglet('Check-liste de sortie'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Remplir la check-liste'));
+      expect(find.text('Check-liste de sortie'), findsWidgets);
+      for (final p in blocChecklistSortie) {
+        expect(find.text(p), findsOneWidget);
+      }
+      expect(find.text(blocChecklistEntree.first), findsNothing);
+      expect(find.textContaining('Avant la sortie de salle'), findsWidgets);
+    });
+
+    cas('rien de coché : la check-liste s\'enregistre quand même, SIGNALÉE « 9 point(s) NON vérifié(s) »', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-checklist');
+      await toucher(t, onglet('Check-liste de sortie'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Remplir la check-liste'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(find.text('Check-liste enregistrée — 9 point(s) NON vérifié(s).'), findsOneWidget);
+      final f = parRef(m, 'checklistsBloc', 'CKL-0005');
+      expect([f['coches'], f['total'], f['moment']], [0, 9, 'sortie']);
+      expect(kpi(t, 'Incomplètes'), '3');
+      expect(kpi(t, 'Sortie'), '3');
+      // L'annulation est visible : la fiche est archivée.
+      await toucher(t, find.text('Annuler').last);
+      expect(parRef(m, 'checklistsBloc', 'CKL-0005')['statut'], 'archive');
+    });
+
+    cas('trois points cochés : la fiche garde chaque point et son état', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-checklist');
+      await toucher(t, onglet('Check-liste de sortie'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Remplir la check-liste'));
+      await choisir(t, 'patientCode', 'CNT/4/26 — PARAISO Sabi');
+      await choisir(t, 'responsableId', 'BOUKARI Nadège — Sage-femme');
+      for (final n in ['it0', 'it1', 'it2']) {
+        await cocher(t, n);
+      }
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final attendu = m_(m_(m_(c['remplirSortie'])['incomplete'])['fiche']);
+      final f = parRef(m, 'checklistsBloc', 'CKL-0005');
+      expect(f['coches'], 3);
+      expect(f['items'], attendu['items']);
+      expect(f['patient'], 'PARAISO Sabi');
+      expect(f['responsableId'], 'SOI14');
+      expect(f['responsable'], 'BOUKARI Nadège');
+      expect(DateTime.parse('${f['dateHeure']}').isUtc, isTrue);
+    });
+
+    cas('tout coché : « Check-liste complète enregistrée. »', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-checklist');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Remplir la check-liste'));
+      for (var i = 0; i < blocChecklistEntree.length; i++) {
+        await cocher(t, 'it$i');
+      }
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(find.text('Check-liste complète enregistrée.'), findsOneWidget);
+      final f = parRef(m, 'checklistsBloc', 'CKL-0005');
+      expect([f['coches'], f['total'], f['moment']], [12, 12, 'entree']);
+      expect(kpi(t, 'Incomplètes'), '2');
+    });
+
+    cas('consulter montre chaque point (Oui / NON) ; « Modifier » est absent (E421), « Archiver » demande un motif', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-bloc-checklist');
+      expect(find.byTooltip('Modifier'), findsNothing);
+      await toucher(t, find.byTooltip('Consulter').last);
+      expect(find.text('Points vérifiés'.toUpperCase()), findsOneWidget);
+      expect(find.text('NON'), findsWidgets);
+      expect(find.text('Oui'), findsWidgets);
+      await t.tapAt(const Offset(20, 300));
+      await t.pump(const Duration(milliseconds: 400));
+      await toucher(t, find.byTooltip('Archiver').first);
+      expect(find.text('Archiver cet enregistrement ?'), findsOneWidget);
+    });
+
+    cas('rôles : la direction lit sans remplir ; le caissier n\'entre pas', (t) async {
+      await ouvrir(t, base(), 'm3-bloc-checklist', role: 'direction');
+      expect(find.widgetWithText(BoutonSigh, 'Remplir la check-liste'), findsNothing);
+      expect(find.byTooltip('Consulter'), findsWidgets);
+      await ouvrir(t, base(), 'm3-bloc-checklist', role: 'caissier');
+      expect(find.text('Check-listes du bloc'), findsNothing);
     });
   });
 }

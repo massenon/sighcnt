@@ -20,9 +20,9 @@ class RegistreBloc extends StatefulWidget {
     required this.colonnes,
     required this.entite,
     required this.prefixeId,
-    required this.libelleNouveau,
-    required this.titreNouveau,
-    required this.champs,
+    this.libelleNouveau,
+    this.titreNouveau,
+    this.champs,
     this.lignes,
     this.valeursInitiales,
     this.avant,
@@ -47,9 +47,9 @@ class RegistreBloc extends StatefulWidget {
   /// `opts.entite` : « CPA créé. »
   final String entite;
   final String prefixeId;
-  final String libelleNouveau;
-  final String titreNouveau;
-  final List<ChampDef> Function(ContexteEcran, Fiche? existante) champs;
+  final String? libelleNouveau;
+  final String? titreNouveau;
+  final List<ChampDef> Function(ContexteEcran, Fiche? existante)? champs;
   final List<Fiche> Function(List<Fiche> actives)? lignes;
   final Map<String, Object?> Function(ContexteEcran)? valeursInitiales;
 
@@ -105,11 +105,11 @@ class _RegistreBlocState extends State<RegistreBloc> {
 
   void _saisir(BuildContext ctx, {Fiche? existante}) {
     final c = ContexteEcran.of(ctx);
-    final defs = widget.champs(c, existante);
+    final defs = widget.champs!(c, existante);
     final ctl = ControleurFormulaire(
         defs, existante != null ? valeursFormulaire(existante) : (widget.valeursInitiales?.call(c) ?? const {}));
     afficherModale<void>(ctx,
-        titre: existante == null ? widget.titreNouveau : 'Modifier l’enregistrement',
+        titre: existante == null ? widget.titreNouveau ?? 'Nouvel enregistrement' : 'Modifier l’enregistrement',
         sousTitre: existante == null
             ? 'Les champs marqués d’un astérisque sont obligatoires.'
             : '${existante['reference'] ?? existante['numero'] ?? existante['code'] ?? existante['id']}',
@@ -175,9 +175,9 @@ class _RegistreBlocState extends State<RegistreBloc> {
       messageVide: widget.messageVide,
       actions: [
         ...widget.actionsBarre,
-        if (c.droit.editer)
+        if (c.droit.editer && widget.libelleNouveau != null && widget.champs != null)
           BoutonSigh(
-              libelle: widget.libelleNouveau,
+              libelle: widget.libelleNouveau!,
               icone: LucideIcons.plus,
               taille: TailleBouton.sm,
               onPressed: () => _saisir(context)),
@@ -186,7 +186,7 @@ class _RegistreBlocState extends State<RegistreBloc> {
         if (widget.actionsSup != null) ...widget.actionsSup!(ctx, f),
         if (widget.detail != null)
           BoutonIcone(icone: LucideIcons.eye, libelle: 'Consulter', onPressed: () => _ouvrirDetail(ctx, f)),
-        if (widget.modifiable && c.droit.editer)
+        if (widget.modifiable && widget.champs != null && c.droit.editer)
           BoutonIcone(icone: LucideIcons.pencil, libelle: 'Modifier', onPressed: () => _saisir(ctx, existante: f)),
         if (c.droit.annuler)
           BoutonIcone(icone: LucideIcons.archive, libelle: 'Archiver', onPressed: () => _archiver(ctx, f)),
