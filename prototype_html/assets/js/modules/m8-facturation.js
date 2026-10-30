@@ -891,7 +891,7 @@
             montantRemises: remisePiece,
             assureur: assPiece > 0 ? patientCourant.assureur : null,
             souscripteur: t.souscripteur ? t.souscripteur.nom : null,
-            numeroPolice: t.souscripteur ? t.souscripteur.numeroPolice : null,
+            numeroPolice: t.souscripteur ? t.souscripteur.police : null,
             tauxPriseEnCharge: totalPiece ? Math.round(assPiece * 100 / totalPiece) : 0,
             partAssurance: assPiece, partPatient: patPiece,
             montantPaye: reglePiece, reliquat: patPiece - reglePiece,

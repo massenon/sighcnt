@@ -110,8 +110,19 @@ class CollectionMagasin extends ChangeNotifier {
 }
 
 class Magasin {
-  Magasin([Map<String, Iterable<Fiche>> jeux = const {}, this.poste = 'POSTE'])
-      : _jeux = {for (final e in jeux.entries) e.key: e.value};
+  Magasin([
+    Map<String, Iterable<Fiche>> jeux = const {},
+    this.poste = 'POSTE',
+    this.referentiels = const {},
+  ]) : _jeux = {for (final e in jeux.entries) e.key: e.value};
+
+  /// Référentiels STATIQUES de la maquette (`D.ANALYSES`, `D.TYPES_CHAMBRE`…) : ils ne sont pas des collections, on ne les écrit pas.
+  final Map<String, Object?> referentiels;
+
+  List<Fiche> referentiel(String nom) => [
+        for (final f in (referentiels[nom] as List? ?? const []))
+          (f as Map).cast<String, Object?>()
+      ];
   final Map<String, Iterable<Fiche>> _jeux;
   final Map<String, CollectionMagasin> _c = {};
 
@@ -133,6 +144,13 @@ class Magasin {
     'demandesAnalyses': 'M5',
     'demandesImagerie': 'M2',
     'ecritures': 'M12',
+    'naturesFacture': 'CFG',
+    'actes': 'CFG',
+    'produits': 'M6',
+    'mouvements': 'M6',
+    'souscripteurs': 'M9',
+    'garanties': 'M9',
+    'couverturesAssurance': 'M9',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
@@ -174,6 +192,10 @@ class Magasin {
       Magasin({
         for (final n in noms)
           n: _lire(await rootBundle.loadString('$dossier/$n.json'))
+      }, 'POSTE', {
+        ...(jsonDecode(await rootBundle.loadString('$dossier/referentiels.json'))
+                as Map)
+            .cast<String, Object?>()
       });
 
   /// Pour les tests : mêmes fichiers, lus sur le disque.
@@ -182,6 +204,10 @@ class Magasin {
       Magasin({
         for (final n in noms)
           n: _lire(File('$dossier/$n.json').readAsStringSync())
+      }, 'POSTE', {
+        ...(jsonDecode(File('$dossier/referentiels.json').readAsStringSync())
+                as Map)
+            .cast<String, Object?>()
       });
 
   /// Collections que les écrans portés lisent (le jeu est engendré par `prototype_html/build/gen-poste-jeu.js`).
@@ -194,6 +220,13 @@ class Magasin {
     'demandesImagerie',
     'ordonnances',
     'ecritures',
-    'audit'
+    'audit',
+    'naturesFacture',
+    'actes',
+    'produits',
+    'souscripteurs',
+    'garanties',
+    'couverturesAssurance',
+    'mouvements'
   ];
 }

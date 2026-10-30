@@ -48,6 +48,7 @@ List<Fiche> lignesDe(Fiche f) {
 /// `etatFacture(f, {proforma})` : la facture normalisée (ou pro-forma, non fiscale) imprimable. Le total des colonnes est REFAIT depuis les lignes.
 PieceA4 pieceFacture(Fiche f,
     {bool proforma = false,
+    Fiche? jumelle,
     required String utilisateur,
     required DateTime edite,
     required String reference}) {
@@ -147,7 +148,9 @@ PieceA4 pieceFacture(Fiche f,
     ],
     blocs: [
       if (f['libelleVolet'] != null)
-        BlocTexte('${f['libelleVolet']}', gras: true),
+        BlocTexte(
+            '${f['libelleVolet']}${jumelle != null ? ' — pièce jumelle : ${jumelle['numero']}' : ''}',
+            gras: true),
       BlocTableau(TableauEtat(colonnes: colonnes, lignes: lignes)),
       BlocTableau(rep),
       BlocTexte(

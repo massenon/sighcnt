@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import 'package:sigh_domaine/sigh_domaine.dart';
+
 import '../kit/kit.dart';
 import 'feuilles.dart';
 import 'pdf.dart';
@@ -88,6 +90,44 @@ Future<void> afficherApercu(BuildContext context, PieceA4 piece) =>
               if (context.mounted)
                 ToastsSigh.afficher(context, 'PDF enregistré.',
                     type: TypeToast.succes, detail: chemin);
+            }),
+      ],
+    );
+
+/// Aperçu du ROULEAU de caisse 80 mm (`P.ticket`) : gabarit distinct du A4, même modale, même enregistrement PDF.
+Future<void> afficherApercuTicket(
+        BuildContext context, EntreeTicket entree, String reference) =>
+    afficherModale<void>(
+      context,
+      titre: 'Ticket de caisse',
+      sousTitre: reference,
+      taille: TailleModale.sm,
+      corps: Container(
+        color: const Color(0xFFE2E8F0),
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Center(
+                child: FeuilleTicket(entree: entree, reference: reference))),
+      ),
+      pied: (fermer) => [
+        BoutonSigh(
+            libelle: 'Fermer',
+            variante: VarianteBouton.secondaire,
+            onPressed: fermer),
+        BoutonSigh(
+            libelle: 'Enregistrer en PDF',
+            icone: LucideIcons.fileDown,
+            variante: VarianteBouton.secondaire,
+            onPressed: () async {
+              final p = await PolicesPdf.charger();
+              final octets = await pdfTicket(entree, reference, p);
+              final chemin =
+                  await ImpressionPoste.enregistrer(octets, reference);
+              if (context.mounted) {
+                ToastsSigh.afficher(context, 'PDF enregistré.',
+                    type: TypeToast.succes, detail: chemin);
+              }
             }),
       ],
     );

@@ -355,7 +355,10 @@ class _Case extends StatelessWidget {
           label: def.libelle,
           excludeSemantics: true,
           onTap: () => ctl.poser(def.nom, !coche),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
+          child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             Container(
               width: 16,
               height: 16,
@@ -370,11 +373,12 @@ class _Case extends StatelessWidget {
                   : null,
             ),
             const SizedBox(width: 8),
-            Text(def.libelle,
-                style: const TextStyle(
-                    color: JetonsShell.slate700,
-                    fontSize: 14,
-                    height: 20 / 14)),
+            Flexible(
+                child: Text(def.libelle,
+                    style: const TextStyle(
+                        color: JetonsShell.slate700,
+                        fontSize: 14,
+                        height: 20 / 14))),
           ]),
         ),
       ),

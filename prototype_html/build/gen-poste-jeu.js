@@ -4,7 +4,9 @@
 'use strict';
 const fs = require('fs'), path = require('path');
 const { ouvrirMaquette } = require('./extraire');
-const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalyses', 'demandesImagerie', 'ordonnances', 'ecritures', 'audit'];
+const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalyses', 'demandesImagerie', 'ordonnances', 'ecritures', 'audit',
+  /* émission de facture : catalogue, médicaments, natures, conventions */
+  'naturesFacture', 'actes', 'produits', 'souscripteurs', 'garanties', 'couverturesAssurance', 'mouvements'];
 const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');
 (async () => {
   fs.mkdirSync(SORTIE, { recursive: true });
@@ -15,5 +17,9 @@ const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'd
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));
       console.log(`  ${nom} : ${lignes.length} fiches, ${(fs.statSync(path.join(SORTIE, nom + '.json')).size / 1024).toFixed(0)} Ko`);
     }
+    /* Référentiels STATIQUES de la maquette (ne sont pas des collections) : analyses, chambres, secteurs. */
+    const ref = await m.page.evaluate(() => JSON.parse(JSON.stringify({ analyses: SIGH.data.ANALYSES, typesChambre: SIGH.data.TYPES_CHAMBRE, secteursActivite: SIGH.data.SECTEURS_ACTIVITE || [] })));
+    fs.writeFileSync(path.join(SORTIE, 'referentiels.json'), JSON.stringify(ref));
+    console.log(`  referentiels : ${ref.analyses.length} analyses, ${ref.typesChambre.length} types de chambre, ${ref.secteursActivite.length} secteurs`);
   } finally { await m.fermer(); }
 })().catch((e) => { console.error(e); process.exit(1); });

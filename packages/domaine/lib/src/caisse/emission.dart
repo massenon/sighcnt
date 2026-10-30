@@ -297,7 +297,7 @@ ResultatEmission emettreFacture({
       'montantRemises': remisePiece,
       'assureur': assPiece > 0 ? patient['assureur'] : null,
       'souscripteur': sous?['nom'],
-      'numeroPolice': sous?['numeroPolice'],
+      'numeroPolice': sous?['police'],
       'tauxPriseEnCharge': totalPiece != 0 ? arrondiJs(assPiece * 100 / totalPiece) : 0,
       'partAssurance': assPiece,
       'partPatient': patPiece,

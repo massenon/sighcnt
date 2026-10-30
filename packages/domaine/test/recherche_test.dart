@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:test/test.dart';
 
@@ -28,4 +31,17 @@ void main() {
     ]);
     expect(c, '﻿"Nom";"Note"\r\n"A ""x""";""\r\n"B";"12"');
   });
+  triNaturelContreLaMaquette();
+}
+
+// Le tri naturel est rejoué sur les ordres rendus par `C.sortBy` de la maquette (prototype_html/build/vecteurs-tri.js).
+void triNaturelContreLaMaquette() {
+  final f = File('test/vecteurs/tri.json');
+  if (!f.existsSync()) fail('vecteurs absents : lancer `node prototype_html/build/vecteurs-tri.js`');
+  for (final c in (jsonDecode(f.readAsStringSync()) as Map)['cas'] as List) {
+    test('tri naturel : ${c['nom']}', () {
+      final entree = (c['entree'] as List).cast<String>();
+      expect(trierPar<String>(entree, (x) => x), (c['sortie'] as List).cast<String>());
+    });
+  }
 }

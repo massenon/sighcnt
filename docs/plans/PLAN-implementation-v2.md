@@ -101,3 +101,19 @@ Le kit de composants est un **clone mesuré**, pas une ressemblance : `prototype
 **Reste 10 écrans** : `m8-facturation` (émission), `m8-remboursements`, `m8-facture-avoir` (moteur `emettreAvoir` à porter avec vecteurs — T18), `m8-caisse` (file des prescriptions à encaisser : moteur `encaisser` déjà porté, collections `taches`/`ordonnances` à exporter), et les 6 `mecef-*` (simulation d'abord ; le boîtier physique attend le protocole de la Direction).
 
 **Limites dites** : pas de journal d'audit (S4) ; l'impression écrit un PDF dans le dossier temporaire (pas d'imprimante) ; barres horizontales non rejouées contre Chart.js ; l'en-tête de page n'affiche pas encore les accès rapides déduits du manifeste (`accesRapides()`).
+
+## Mise à jour du 30/10/2026 (tranche 1 — `m8-facturation` porté : 9 écrans sur 17)
+
+**`m8-facturation` (émission de facture)** : N1 = 100 % (25/25), statut « porté » verrouillé. Le moteur `emettreFacture` (`packages/domaine/lib/src/caisse/emission.dart`) porte la saisie d'une ligne (remise en % ou en FCFA, catégorie de garantie, **RG-03** sur le cumul des ajouts d'un même médicament), la répartition RG-09 ligne par ligne, la **scission en deux pièces** (`-A` couvert, `-B` non couvert — une seule pièce sans assurance ou si tout est du même côté), la base MECeF = part réglée par le patient, l'allocation du règlement sur les pièces et les sorties de stock. **Rejoué sur 24 vecteurs** engendrés en PILOTANT l'écran réel de la maquette dans Chrome (`prototype_html/build/vecteurs-emission.js`). 9 tests d'écran (UNE pièce, deux pièces jumelles à numéros consécutifs, pro-forma sans MECeF ni sortie de stock, RG-03 refusé nommément, annulation visible et stock restitué, ticket 80 mm, commandes d'écriture absentes sans droit).
+
+**Pourquoi deux pièces** : les lignes couvertes se réclament à l'assureur (relevé et facture mensuelle, contestables ligne à ligne) ; celles qu'aucune compagnie ne couvre (certificats hors SOS, planification familiale, exclus) ne regardent que le patient. Les mêler rendrait la créance indémontrable le jour du litige et fausserait la base MECeF.
+
+**Écarts relevés** (`docs/architecture/ECARTS-MAQUETTE.md`) : **E6b corrigé** dans la maquette (le numéro de la pièce `-B` comptait deux fois la `-A`) ; **E6 porté et signalé** (millésime `2026` écrit en dur dans le numéro) ; E7 était un faux positif de ma lecture (le souscripteur porte `police`) — retiré.
+
+**Corrigé au passage dans le domaine** : `comparerNaturel` (tri des tableaux) classait `CNT900/25` avant `CNT/1/25` ; il suit désormais l'ordre d'ICU (ponctuation < chiffres < lettres, minuscule avant majuscule), **rejoué sur les ordres rendus par `C.sortBy`** (`tri.json`). L'écran s'ouvrait sur le mauvais patient.
+
+**Données ajoutées au jeu du poste** : `naturesFacture`, `actes`, `produits`, `souscripteurs`, `garanties`, `couverturesAssurance`, `mouvements`, plus les référentiels statiques (`referentiels.json` : 48 analyses, types de chambre, secteurs). Le jeu n'a **aucune garantie saisie** : « aucune grille n'est présumée », donc un assuré y est facturé intégralement au patient avec le motif « convention non saisie » — les tests posent leur propre garantie.
+
+**Limites dites** : le formulaire d'ajout de ligne se replie sur la grille à six colonnes au lieu de la rangée unique défilante de la maquette (parité visuelle N3 non revue) ; le numéro MECeF est tiré localement (le boîtier physique attend le protocole de la Direction) ; l'aperçu du ticket n'est pas imprimé sur matériel réel.
+
+**Reste 8 écrans** : `m8-remboursements`, `m8-facture-avoir` (moteur `emettreAvoir` avec vecteurs — T18), et les 6 `mecef-*` en simulation.

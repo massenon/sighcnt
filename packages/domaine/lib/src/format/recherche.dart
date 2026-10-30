@@ -19,19 +19,61 @@ String normaliser(Object? s) {
 bool correspond(Object? botte, String aiguille) =>
     normaliser(botte).contains(normaliser(aiguille));
 
-/// Comparaison « naturelle » française : les nombres se comparent comme nombres, le reste sans accents ni casse.
+/// Rang d'un caractère à la manière d'ICU (`localeCompare(…, 'fr', {numeric: true})`) : ponctuation et symboles, puis chiffres, puis lettres.
+int _rang(String c) {
+  final u = c.codeUnitAt(0);
+  if (u >= 0x30 && u <= 0x39) return 1;
+  final lettre = (u >= 0x61 && u <= 0x7a) || u > 0x7f;
+  return lettre ? 2 : 0;
+}
+
+/// Ordre de la ponctuation dans la collation racine d'ICU : l'espace, puis « _ - , ; : ! ? . » et le reste.
+const _ordrePonctuation = ' _-,;:!?.\'"()[]{}@*/\\&#%`^+<=>|~\$';
+int _cle(String c) {
+  final r = _rang(c);
+  if (r != 0) return r * 1000 + c.codeUnitAt(0);
+  final k = _ordrePonctuation.indexOf(c);
+  return k >= 0 ? k : 500 + c.codeUnitAt(0) % 400;
+}
+
+/// Comparaison « naturelle » française : les suites de chiffres se comparent comme nombres, le reste sans accents ni casse,
+/// et `CNT/1/25` précède `CNT900/25` (la ponctuation passe avant les chiffres, comme dans `Intl`).
 int comparerNaturel(Object? a, Object? b) {
   final x = normaliser(a), y = normaliser(b);
-  final re = RegExp(r'(\d+)|(\D+)');
-  final xs = re.allMatches(x).map((m) => m[0]!).toList();
-  final ys = re.allMatches(y).map((m) => m[0]!).toList();
-  for (var i = 0; i < xs.length && i < ys.length; i++) {
-    final p = xs[i], q = ys[i];
-    final pn = int.tryParse(p), qn = int.tryParse(q);
-    final c = (pn != null && qn != null) ? pn.compareTo(qn) : p.compareTo(q);
-    if (c != 0) return c;
+  var i = 0, j = 0;
+  while (i < x.length && j < y.length) {
+    final p = x[i], q = y[j];
+    final pn = _rang(p) == 1, qn = _rang(q) == 1;
+    if (pn && qn) {
+      var ie = i, je = j;
+      while (ie < x.length && _rang(x[ie]) == 1) {
+        ie++;
+      }
+      while (je < y.length && _rang(y[je]) == 1) {
+        je++;
+      }
+      final c = BigInt.parse(x.substring(i, ie)).compareTo(BigInt.parse(y.substring(j, je)));
+      if (c != 0) return c;
+      i = ie;
+      j = je;
+      continue;
+    }
+    if (p != q) return _cle(p).compareTo(_cle(q));
+    i++;
+    j++;
   }
-  return xs.length.compareTo(ys.length);
+  final reste = (x.length - i).compareTo(y.length - j);
+  if (reste != 0) return reste;
+  // Égalité à la casse près : la minuscule précède la majuscule (« a1 » avant « A1 »).
+  final sa = a.toString(), sb = b.toString();
+  for (var k = 0; k < sa.length && k < sb.length; k++) {
+    if (sa[k] != sb[k]) {
+      final minA = sa[k] == sa[k].toLowerCase();
+      final minB = sb[k] == sb[k].toLowerCase();
+      if (minA != minB) return minA ? -1 : 1;
+    }
+  }
+  return 0;
 }
 
 /// `C.sortBy` : les valeurs absentes passent en dernier, les nombres se comparent entre eux.

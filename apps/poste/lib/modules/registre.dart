@@ -6,6 +6,7 @@ import '../mere/client_mere.dart';
 import '../mere/console.dart';
 import 'm8/caisse.dart';
 import 'm8/dashboard.dart';
+import 'm8/facturation.dart';
 import 'm8/factures.dart';
 import 'm8/operations.dart';
 import 'm8/paiements.dart';
@@ -31,6 +32,7 @@ Map<String, ConstruireEcran> ecransPortes(
   return {
     // Tranche 1 — Caisse, MECeF, impression.
     'm8-dashboard': (c, cfg) => const EcranDashboardFacturation(),
+    'm8-facturation': (c, cfg) => const EcranFacturation(),
     'm8-caisse': (c, cfg) => const EcranCaisse(),
     'm8-factures': (c, cfg) => const EcranFactures(),
     'm8-paiements': (c, cfg) => const EcranPaiements(),

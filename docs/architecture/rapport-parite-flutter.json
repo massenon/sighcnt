@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 14,
+ "ecrans_portes": 15,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -28,6 +28,14 @@
    "mesure": true,
    "attendus": 24,
    "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-facturation",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
    "taux": 1.0,
    "manquants": []
   },

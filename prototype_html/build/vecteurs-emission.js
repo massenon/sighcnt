@@ -28,11 +28,11 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       const poser = (col, fiche) => col.insert(fiche).record;
 
       /* fiches de test : un employeur à grille (consultation 80 % plafonnée, médicament 70 %, analyses 100 %) */
-      const sA = poser(colSous, { nom: 'Employeur EMI', assureur: 'ASS-EMI', numeroPolice: 'PE-1' });
+      const sA = poser(colSous, { nom: 'Employeur EMI', assureur: 'ASS-EMI', police: 'PE-1' });
       poser(colGar, { souscripteurId: sA.id, assureur: 'ASS-EMI', categorie: 'consultation', libelle: 'Consultation', taux: 80, plafond: 5000, unitePlafond: 'acte' });
       poser(colGar, { souscripteurId: sA.id, assureur: 'ASS-EMI', categorie: 'medicament', libelle: 'Médicaments', taux: 70, plafond: null });
       poser(colGar, { souscripteurId: sA.id, assureur: 'ASS-EMI', categorie: 'analyse', libelle: 'Analyses biologiques', taux: 100, plafond: null });
-      const sansGrille = poser(colSous, { nom: 'Employeur sans grille', assureur: 'ASS-NOG', numeroPolice: 'PN-1' });
+      const sansGrille = poser(colSous, { nom: 'Employeur sans grille', assureur: 'ASS-NOG', police: 'PN-1' });
 
       const patient = (code, extra) => poser(colPat, Object.assign({ code, nom: 'EMISSION', prenom: code, statut: 'actif' }, extra));
       const pNA = patient('NA');

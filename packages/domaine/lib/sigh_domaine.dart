@@ -8,6 +8,7 @@ export 'src/sync/familles.dart';
 export 'src/sync/codes.dart';
 export 'src/format/format_fr.dart';
 export 'src/format/recherche.dart';
+export 'src/format/js.dart' show nombreOuZero, arrondiJs;
 export 'src/referentiels/regles.dart';
 export 'src/referentiels/periodes.dart';
 export 'src/design/jetons.dart';

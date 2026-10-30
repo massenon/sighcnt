@@ -11,12 +11,13 @@ String _ref(ContexteEcran c) =>
 
 /// Aperçu de la facture (ou pro-forma) : la pièce est établie à l'instant de l'impression, par l'agent connecté (RG-12).
 Future<void> imprimerFacture(BuildContext ctx, Fiche f,
-    {bool proforma = false}) {
+    {bool proforma = false, Fiche? jumelle}) {
   final c = ContexteEcran.of(ctx);
   return afficherApercu(
       ctx,
       pieceFacture(f,
           proforma: proforma,
+          jumelle: jumelle,
           utilisateur: c.utilisateur,
           edite: c.aujourdhui,
           reference: _ref(c)));
