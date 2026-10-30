@@ -39,3 +39,7 @@ export 'src/achats/achats.dart';
 export 'src/stock/delivrance.dart' hide referenceSuivante, LigneStock;
 export 'src/stock/emplacements.dart' hide etatStock;
 export 'src/stock/reprise_sage.dart';
+export 'src/imagerie/img_demandes_etats.dart';
+export 'src/imagerie/img_demandes_poste.dart';
+export 'src/imagerie/img_demandes_ouverture.dart';
+export 'src/imagerie/img_demandes_tarif.dart';

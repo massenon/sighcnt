@@ -738,7 +738,8 @@
       /* RG-09 : la validité de la carte À LA DATE décide du tarif. */
       var pr = D.tarifPrix ? D.tarifPrix((ex && ex.tarifCode) || code, assure) : { montant: null };
       return col_.insert({
-        reference: C.nextRef('IME-', 5),
+        /* Lue sur les demandes EXISTANTES (écart E100) : le compteur de page de nextRef repartait à 1 à chaque chargement. */
+        reference: C.referenceSuivante('IME-', 5, col_.all()),
         dateHeure: date,
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         examenCode: code, examen: ex ? ex.label : code,
@@ -796,7 +797,9 @@
     var cree = creerDemandesImagerie(p, v.examens, date, v);
     var demandes = cree.demandes;
 
-    var taux = p.assureur ? (p.tauxPriseEnCharge || 0) : 0;
+    /* RG-09 (écart E101) : la part de l'assureur ne se calcule QUE si la carte est valide à la date — le tarif non assuré était bien
+       appliqué sur carte expirée, mais 80 % de la pièce partaient quand même à l'assureur. */
+    var taux = (p.assureur && carteValide(p, date)) ? (p.tauxPriseEnCharge || 0) : 0;
     var lignes = construireLignes({
       taux: taux, personnelId: p.personnelId || null,
       autres: cree.lignes,

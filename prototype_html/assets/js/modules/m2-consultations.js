@@ -4990,10 +4990,14 @@
                 try {
                   res = PR.ouvrirDemandeImagerie({
                     patientId: pt ? pt.id : null, examens: v.examens,
-                    nom: v.nom, prenom: v.prenom, sexe: v.sexe, dateNaissance: v.dateNaissance,
+                    /* Écart E103 : l'âge déclaré (« date inconnue ») était saisi puis jamais transmis — le dossier externe naissait sans âge. */
+                    nom: v.nom, prenom: v.prenom, sexe: v.sexe, dateNaissance: v.dateNaissance, age: v.age,
                     telephone: v.telephone, residence: v.residence,
                     origine: pt ? 'consultation' : 'externe',
-                    prescripteur: v.prescripteur, indication: v.indication, urgent: !!v.urgent,
+                    /* Écart E102 : la liste porte « EXTERNE » pour un prescripteur du dehors ; le nom saisi au champ libre
+                       n'était jamais lu, et le compte rendu ne pouvait plus lui être renvoyé. */
+                    prescripteur: K.nomPrescripteur(v, null, 'prescripteur'),
+                    indication: v.indication, urgent: !!v.urgent,
                   });
                 } catch (err) { U.toast(err.message, { type: 'error' }); return; }
                 m.close(); afficher();
