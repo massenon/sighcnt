@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 50,
+ "ecrans_portes": 63,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -14,6 +14,110 @@
     "mode de ce poste",
     "service de synchronisation"
    ]
+  },
+  {
+   "id": "m2-dashboard-imagerie",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-echographie-galerie",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-cr",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-demandes",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-irm",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-mammographie",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-radiographie",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-scanner",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-demandes",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-demandes-hospitalisation",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-demandes-maternite",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-prelevement",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "m6-alertes",
