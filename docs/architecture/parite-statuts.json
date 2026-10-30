@@ -64,5 +64,14 @@
  "m5-catalogue": "porté",
  "m5-unites": "porté",
  "m5-valeurs-reference": "porté",
- "m5-reactifs": "porté"
+ "m5-reactifs": "porté",
+ "m2-consultations": "porté",
+ "m2-dossiers-consultation": "porté",
+ "m2-dossier-consultation-nouveau": "porté",
+ "m2-consultation-fiche": "porté",
+ "m2-pathologies": "porté",
+ "m2-ordonnances": "porté",
+ "m2-ordonnance-nouvelle": "porté",
+ "m2-prescriptions": "porté",
+ "m2-salle-soins": "porté"
 }
