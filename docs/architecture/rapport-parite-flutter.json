@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 27,
+ "ecrans_portes": 40,
  "ecrans": [
   {
    "id": "cfg-poste",
@@ -13,6 +13,115 @@
     "mode du poste : fileul ou mère. la mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).",
     "mode de ce poste",
     "service de synchronisation"
+   ]
+  },
+  {
+   "id": "m6-alertes",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-dashboard",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-inventaire",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-inventaire-feuille",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-lots",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-mouvements",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-pertes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-point-stock",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-point-ventes",
+   "mesure": true,
+   "attendus": 33,
+   "presents": 33,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-produits",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-stock-detail",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-stock-gros",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-transferts",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 18,
+   "taux": 0.818,
+   "manquants": [
+    "n° bon",
+    "date",
+    "réceptionnaire",
+    "opérateur"
    ]
   },
   {

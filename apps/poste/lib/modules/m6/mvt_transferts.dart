@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/mouvements_stock.dart' as mv show typesStock, categoriesProduit, typesMouvement;
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
@@ -196,7 +197,7 @@ class _EtatTransferts extends State<EcranTransferts> {
       libelleRecherche: 'Article, code, lot, n° de bon…',
       messageVide: 'Aucun article transféré.',
       filtres: [
-        FiltreTableau(nom: 'categorie', libelle: 'Famille', options: [for (final f in categoriesProduit) OptionChamp(f.$1, f.$2)]),
+        FiltreTableau(nom: 'categorie', libelle: 'Famille', options: [for (final f in mv.categoriesProduit) OptionChamp(f.$1, f.$2)]),
         filtreDestination,
       ],
       actions: [

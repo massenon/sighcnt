@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/points.dart' as pts show etatStock, trierStable;
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
@@ -189,7 +190,7 @@ class _EtatPointStock extends State<EcranPointStock> {
                             icone: LucideIcons.printer,
                             onPressed: () => imprimerPoint(
                                 context,
-                                etatStock(vue, lignes, b, fin, _methode,
+                                pts.etatStock(vue, lignes, b, fin, _methode,
                                     familles: familles.length),
                                 filtres: _filtresEnForce(jourAuj)))),
                   ])),

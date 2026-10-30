@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/mouvements_stock.dart' as mv show typesStock, categoriesProduit, typesMouvement;
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
@@ -22,8 +23,8 @@ String dateDe(Object? v) {
 /// Les produits actifs du magasin.
 List<Fiche> produitsActifs(ContexteEcran c) => c.magasin.collection('produits').actives;
 
-/// `valeurStock(rows)` : Σ stock × CUMP.
-num valeurStock(Iterable<Fiche> rows) => rows.fold<num>(0, (a, p) => a + n(p['stock']) * n(p['cump']));
+/// `valeurCumpStock(rows)` : Σ stock × CUMP.
+num valeurCumpStock(Iterable<Fiche> rows) => rows.fold<num>(0, (a, p) => a + n(p['stock']) * n(p['cump']));
 
 /// Le ton d'un badge de la maquette (`success`, `navy`, `danger`…) → ton du kit.
 TonSigh tonDe(String? t) => switch (t) {
@@ -37,7 +38,7 @@ TonSigh tonDe(String? t) => switch (t) {
 
 /// `D.TYPES_STOCK` : libellé d'un stock.
 String stockLabel(Object? id) {
-  for (final s in typesStock) {
+  for (final s in mv.typesStock) {
     if (s.$1 == id) return s.$2;
   }
   return '$id';

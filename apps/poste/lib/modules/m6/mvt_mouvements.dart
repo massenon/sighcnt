@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/mouvements_stock.dart' as mv show typesStock, categoriesProduit, typesMouvement;
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
@@ -120,8 +121,8 @@ class EcranMouvements extends StatelessWidget with EcranMaquette {
       messageVide: archive ? 'Aucun enregistrement archivé.' : 'Aucun mouvement enregistré.',
       indiceVide: archive ? null : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
       filtres: [
-        FiltreTableau(nom: 'type', libelle: 'Type', options: [for (final t in typesMouvement) OptionChamp(t.id, t.libelle)]),
-        FiltreTableau(nom: 'stockType', libelle: 'Stock', options: [for (final s in typesStock) OptionChamp(s.$1, s.$2)]),
+        FiltreTableau(nom: 'type', libelle: 'Type', options: [for (final t in mv.typesMouvement) OptionChamp(t.id, t.libelle)]),
+        FiltreTableau(nom: 'stockType', libelle: 'Stock', options: [for (final s in mv.typesStock) OptionChamp(s.$1, s.$2)]),
       ],
       alClicLigne: (r) => _detail(ctx, c, r),
       actions: [
@@ -255,10 +256,10 @@ class EcranMouvements extends StatelessWidget with EcranMaquette {
           requis: true,
           col: ColChamp.plein,
           options: [for (final p in produits) OptionChamp('${p['id']}', '${p['designation']} (stock : ${p['stock']})')]),
-      ChampDef(nom: 'type', libelle: 'Type de mouvement', type: TypeChamp.select, requis: true, options: [for (final t in typesMouvement) OptionChamp(t.id, t.libelle)]),
+      ChampDef(nom: 'type', libelle: 'Type de mouvement', type: TypeChamp.select, requis: true, options: [for (final t in mv.typesMouvement) OptionChamp(t.id, t.libelle)]),
       ChampDef(nom: 'quantite', libelle: 'Quantité', type: TypeChamp.nombre, requis: true, valider: (v, _) => n(v) < 1 ? 'La valeur minimale est 1.' : null),
       const ChampDef(nom: 'date', libelle: 'Date', type: TypeChamp.date, requis: true),
-      ChampDef(nom: 'stockType', libelle: 'Stock concerné', type: TypeChamp.select, requis: true, options: [for (final s in typesStock) OptionChamp(s.$1, s.$2)]),
+      ChampDef(nom: 'stockType', libelle: 'Stock concerné', type: TypeChamp.select, requis: true, options: [for (final s in mv.typesStock) OptionChamp(s.$1, s.$2)]),
       const ChampDef(nom: 'justificatif', libelle: 'Justificatif', requis: true, col: ColChamp.plein, aide: 'RG-03 — obligatoire pour toute sortie de stock.'),
     ], {
       if (existant == null)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/points.dart' as pts show etatStock, trierStable;
 
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
@@ -76,8 +77,8 @@ class _EtatPointVentes extends State<EcranPointVentes> {
         }
       }
     }
-    final optClients = trierStable(clients.entries.toList(), (e) => e.value);
-    final optArticles = trierStable(articles.entries.toList(), (e) => e.value);
+    final optClients = pts.trierStable(clients.entries.toList(), (e) => e.value);
+    final optArticles = pts.trierStable(articles.entries.toList(), (e) => e.value);
     _libellesClients = clients;
     _libellesArticles = articles;
 

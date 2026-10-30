@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/points.dart' as pts show etatStock, trierStable;
 import 'package:test/test.dart';
 
 typedef M = Map<String, Object?>;
@@ -111,7 +112,7 @@ void main() {
   test('l\'apostrophe typographique est de la ponctuation : « N’TCHA » précède « NKOUÉ » (écart E45)', () {
     expect(comparerNaturel('N’TCHA Alassane', 'NKOUÉ Jean'), lessThan(0));
     expect(comparerNaturel('N\'TCHA', 'NKOUÉ'), lessThan(0));
-    expect(trierStable(['NKOUÉ Jean', 'N’TCHA Alassane', 'NAMBONI'], (x) => x), ['N’TCHA Alassane', 'NAMBONI', 'NKOUÉ Jean'],
+    expect(pts.trierStable(['NKOUÉ Jean', 'N’TCHA Alassane', 'NAMBONI'], (x) => x), ['N’TCHA Alassane', 'NAMBONI', 'NKOUÉ Jean'],
         reason: 'la ponctuation passe avant les lettres (ICU, non-ignorable)');
   });
 
@@ -255,7 +256,7 @@ void main() {
           expect(c['graphiques'], isEmpty);
         }
 
-        comparerEtat(etatStock(vue, lignes, b, jour(s['date'] ?? '2026-08-16'), methode, familles: familles.length),
+        comparerEtat(pts.etatStock(vue, lignes, b, jour(s['date'] ?? '2026-08-16'), methode, familles: familles.length),
             (c['impression'] as Map).cast<String, Object?>(), 'impression');
       });
     }

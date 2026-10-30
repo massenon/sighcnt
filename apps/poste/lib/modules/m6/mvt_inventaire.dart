@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_domaine/src/stock/mouvements_stock.dart' as mv show typesStock, categoriesProduit, typesMouvement;
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
@@ -43,7 +44,7 @@ class EcranInventaires extends StatelessWidget with EcranMaquette {
           KpiGrilleSigh(kpis: [
             KpiSigh(libelle: 'Inventaires réalisés', valeur: nombre(rows.length), icone: LucideIcons.clipboardCheck),
             KpiSigh(libelle: 'Références à inventorier', valeur: nombre(produits.length), icone: LucideIcons.package, ton: TonSigh.info),
-            KpiSigh(libelle: 'Valeur théorique', valeur: money(valeurStock(produits)), icone: LucideIcons.wallet, ton: TonSigh.succes),
+            KpiSigh(libelle: 'Valeur théorique', valeur: money(valeurCumpStock(produits)), icone: LucideIcons.wallet, ton: TonSigh.succes),
             KpiSigh(libelle: 'Dernier inventaire', valeur: dernier == null ? 'Aucun' : dateDe(dernier), icone: LucideIcons.calendarCheck, ton: TonSigh.neutre),
           ]),
           const SizedBox(height: 16),
@@ -126,7 +127,7 @@ class EcranInventaires extends StatelessWidget with EcranMaquette {
           libelle: 'Périmètre',
           type: TypeChamp.select,
           requis: true,
-          options: [const OptionChamp('Tous les articles'), for (final cat in categoriesProduit) OptionChamp(cat.$2)]),
+          options: [const OptionChamp('Tous les articles'), for (final cat in mv.categoriesProduit) OptionChamp(cat.$2)]),
       const ChampDef(nom: 'operateur', libelle: 'Réalisé par', requis: true),
     ], {
       'date': iso(c.aujourdhui),

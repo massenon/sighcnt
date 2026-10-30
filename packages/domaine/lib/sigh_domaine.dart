@@ -25,9 +25,12 @@ export 'src/achats/fournisseurs_m7.dart';
 export 'src/achats/factures_fournisseurs.dart';
 export 'src/stock/referentiels_stock.dart';
 export 'src/stock/stock.dart';
-export 'src/stock/points.dart';
+// points.dart et mouvements_stock.dart définissent des noms que stock.dart / referentiels_stock.dart définissent aussi (écrits en parallèle) :
+// le barrel garde UNE version de chacun ; les fichiers qui ont besoin de l'autre l'importent par son chemin.
+export 'src/stock/points.dart' hide etatStock, trierStable;
 export 'src/graphiques/echelle.dart';
-export 'src/stock/mouvements_stock.dart';
+export 'src/stock/mouvements_stock.dart'
+    hide FicheStock, TypeMouvement, categoriesProduit, typesMouvement, typesStock;
 export 'src/impression/identite.dart';
 export 'src/impression/ticket.dart';
 export 'src/impression/etat.dart';
