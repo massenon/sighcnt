@@ -3,7 +3,7 @@ import 'package:sigh_sync/sigh_sync.dart';
 /// Lancement : `mere --port=9000 --db=mere.sqlite --admin=secret [--relais=URL --cle=BASE64 --restaurer=1]`.
 /// Écrit `PRET <port>` sur la sortie standard dès que le service écoute.
 Future<void> main(List<String> args) async {
-  final m = Mere(ConfigMere(
+  final m = await Mere.creer(ConfigMere(
     port: int.tryParse(arg(args, 'port', '0')) ?? 0,
     dbChemin: arg(args, 'db', ':memory:'),
     admin: arg(args, 'admin', 'admin-banc'),

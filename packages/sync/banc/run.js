@@ -23,6 +23,15 @@ const path = require('node:path');
 const { Commutateur } = require('./proxy');
 
 const ADMIN = 'admin-banc';
+/* SIGH_MERE_DB=pg + SIGH_PG_URL=postgres://utilisateur:motdepasse@hôte:port : la mère (Dart) travaille sur UNE BASE POSTGRESQL
+   JETABLE par scénario (créée au début, supprimée à la fin) — jamais la base de travail. */
+const PG_URL = process.env.SIGH_MERE_DB === 'pg' ? (process.env.SIGH_PG_URL || '') : '';
+function psql(sql) {
+  const u = new URL(PG_URL);
+  const r = require('node:child_process').spawnSync('psql', ['-q', '-v', 'ON_ERROR_STOP=1', '-d', 'postgres', '-c', sql], {
+    env: Object.assign({}, process.env, { PGHOST: u.hostname, PGPORT: u.port || '5432', PGUSER: decodeURIComponent(u.username), PGPASSWORD: decodeURIComponent(u.password) }), encoding: 'utf8' });
+  if (r.status !== 0) throw new Error('psql : ' + (r.stderr || r.stdout));
+}
 const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
 async function attendre(cond, ms = 10000) {
   const t0 = Date.now();
@@ -88,6 +97,16 @@ async function monde(opts = {}) {
     admin: (methode, chemin, corps) => appel(`http://127.0.0.1:${portMere}`, methode, chemin, corps, { 'x-admin': ADMIN }),
     direct: (methode, chemin, corps, entetes) => appel(`http://127.0.0.1:${portMere}`, methode, chemin, corps, entetes),
   };
+  /* Une base pour la mère : un fichier SQLite, ou — avec SIGH_MERE_DB=pg — une base PostgreSQL jetable. */
+  m.basesPg = [];
+  m.baseMere = async (nom) => {
+    if (!PG_URL) return path.join(dir, `mere-${nom}.sqlite`);
+    if (process.env.SIGH_MERE !== 'dart') throw new Error('SIGH_MERE_DB=pg exige SIGH_MERE=dart (la mère Node reste sur SQLite)');
+    const nomBd = 'sigh_banc_' + require('node:crypto').randomBytes(5).toString('hex');
+    psql(`CREATE DATABASE ${nomBd}`); m.basesPg.push(nomBd);
+    return `${PG_URL.replace(/\/$/, '')}/${nomBd}`;
+  };
+  m.mere.db = await m.baseMere('principale');
   await m.mere.demarrer();
   m.reseau = new Commutateur(portMere);
   m.portReseau = await m.reseau.demarrer();
@@ -155,6 +174,7 @@ async function monde(opts = {}) {
     if (m.relais && process.env.SIGH_RELAIS === 'laravel') require('node:child_process').spawnSync('pkill', ['-f', `php -S 127.0.0.1:${m.relais.port}`]);
     if (m.internet) { m.internet.arreter(); m.reseauMobile.arreter(); }
     m.reseau.arreter(); await dormir(100);
+    for (const bd of m.basesPg) { try { psql(`DROP DATABASE IF EXISTS ${bd} WITH (FORCE)`); } catch (e) { /* tant pis */ } }
     try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { /* tant pis */ }
   };
   return m;
@@ -187,6 +207,10 @@ const scenarios = {
     verifier('deux codes distincts, aucun doublon (RG-01)', new Set(codes(a)).size === 2 && codes(a).every((c) => /^CNT\/\d+\/26$/.test(c)), codes(a));
     verifier('les deux postes tiennent les mêmes codes', JSON.stringify(codes(a)) === JSON.stringify(codes(b)));
     verifier('la mère n\'en a que deux', (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 2);
+    if (process.env.SIGH_MERE === 'dart') {
+      const depot = (await m.mere.admin('GET', '/admin/etat')).json.depot;
+      verifier(`la mère travaille bien sur le dépôt demandé (${PG_URL ? 'PostgreSQL' : 'SQLite'})`, depot === (PG_URL ? 'pg' : 'sqlite'), depot);
+    }
     await m.fermer();
   },
   async R1b() {
@@ -563,7 +587,7 @@ const scenarios = {
     await attendre(async () => { const e = (await m.mere.admin('GET', '/admin/etat')).json; return (await f1.vide()) && e.rep_seq === e.seq_max && e.seq_max > 0; }, 15000);
     const avant = (await m.mere.admin('GET', '/admin/empreinte')).json; const ea = (await m.mere.admin('GET', '/admin/etat')).json;
     await m.mere.tuer(); await f1.tuer();
-    m.mere.db = path.join(m.dir, 'mere-neuve.sqlite'); m.mere.opts = { cle, restaurer: true };
+    m.mere.db = await m.baseMere('neuve'); m.mere.opts = { cle, restaurer: true };
     await m.mere.demarrer();
     verifier('la restauration se termine', await attendre(async () => (await m.mere.admin('GET', '/admin/etat')).json.restauration === 'terminee', 15000), (await m.mere.admin('GET', '/admin/etat')).json.restauration);
     const apres = (await m.mere.admin('GET', '/admin/empreinte')).json;
@@ -593,7 +617,7 @@ const scenarios = {
     await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'Apres reinit' } });
     await attendre(async () => { const e = (await m.mere.admin('GET', '/admin/etat')).json; return (await f1.vide()) && e.rep_seq === e.seq_max && e.seq_max > 0; }, 15000);
     await m.mere.tuer();
-    m.mere.db = path.join(m.dir, 'mere-neuve.sqlite'); m.mere.opts = { cle, restaurer: true };
+    m.mere.db = await m.baseMere('neuve'); m.mere.opts = { cle, restaurer: true };
     await m.mere.demarrer();
     await attendre(async () => (await m.mere.admin('GET', '/admin/etat')).json.restauration === 'terminee', 15000);
     const f8 = await m.fileul('F8');
@@ -602,7 +626,7 @@ const scenarios = {
     verifier('seule l\'activité d\'APRÈS la réinitialisation revient (1 dossier)', l.length === 1 && l[0].data.nom === 'Apres reinit', l.map((x) => x.data.nom));
     verifier('les essentiels (tarifs) sont là', (await f8.vue('tarifs', 'CONSULT')).data.prix === 5000);
     await m.mere.tuer();
-    m.mere.db = path.join(m.dir, 'mere-mauvaise-cle.sqlite'); m.mere.opts = { cle: require('node:crypto').randomBytes(32).toString('base64'), restaurer: true };
+    m.mere.db = await m.baseMere('mauvaise-cle'); m.mere.opts = { cle: require('node:crypto').randomBytes(32).toString('base64'), restaurer: true };
     await m.mere.demarrer();
     verifier('avec une MAUVAISE clé, la restauration échoue', await attendre(async () => String((await m.mere.admin('GET', '/admin/etat')).json.restauration).startsWith('echec'), 15000));
     verifier('et ne laisse AUCUNE donnée à demi restaurée', (await m.mere.admin('GET', '/admin/empreinte')).json.n === 0);

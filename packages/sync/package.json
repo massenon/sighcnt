@@ -12,6 +12,7 @@
     "test": "node --no-warnings banc/run.js",
     "banc:dart": "SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js",
     "banc:laravel": "SIGH_RELAIS=laravel node --no-warnings banc/run.js",
-    "banc:cible": "SIGH_RELAIS=laravel SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js"
+    "banc:cible": "SIGH_RELAIS=laravel SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js",
+    "banc:pg": "SIGH_MERE_DB=pg SIGH_RELAIS=laravel SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js"
   }
 }

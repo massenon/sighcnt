@@ -13,6 +13,7 @@ import 'dart:io';
 import 'package:cryptography/cryptography.dart';
 
 import 'commun.dart';
+import 'depot.dart';
 import 'mere.dart';
 
 /// Chiffrement des enveloppes : même format que le banc Node (`crypto.js`) — nonce de 12 octets, `ct = chiffré ‖ tag`,
@@ -42,25 +43,27 @@ class Enveloppes {
 }
 
 class Pont {
-  Pont(this.mere) {
-    final c = mere.cfg.cleBase64.isNotEmpty ? mere.cfg.cleBase64 : (mere.base.meta('cle') ?? '');
-    _cleOctets = c.isNotEmpty ? base64.decode(c) : _cleAleatoire();
-    mere.base.poserMeta('cle', base64.encode(_cleOctets));
-    env = Enveloppes(_cleOctets);
-  }
+  Pont(this.mere);
 
   final Mere mere;
-  late final List<int> _cleOctets;
-  late final Enveloppes env;
+  late List<int> _cleOctets;
+  late Enveloppes env;
   final List<Map<String, Object?>> alertes = [];
   final HttpClient _http = HttpClient()..connectionTimeout = const Duration(milliseconds: 1500);
   final List<Timer> _minuteries = [];
 
   String get cleBase64 => base64.encode(_cleOctets);
   bool get actif => mere.cfg.relais.isNotEmpty;
-  Base get base => mere.base;
+  Depot get base => mere.base;
 
-  static List<int> _cleAleatoire() => List<int>.generate(32, (_) => int.parse(hexAlea(1), radix: 16));
+  /// Lit ou fabrique la clé de clinique. Elle est conservée dans la base de la mère DANS CE BANC ; en production :
+  /// coffre du système + copie papier sous scellé (spec §12).
+  Future<void> initialiser() async {
+    final c = mere.cfg.cleBase64.isNotEmpty ? mere.cfg.cleBase64 : (await base.meta('cle') ?? '');
+    _cleOctets = c.isNotEmpty ? base64.decode(c) : List<int>.generate(32, (_) => int.parse(hexAlea(1), radix: 16));
+    await base.poserMeta('cle', base64.encode(_cleOctets));
+    env = Enveloppes(_cleOctets);
+  }
 
   void alerter(Map<String, Object?> a) => alertes.add({'quand': maintenantMs(), ...a});
 
@@ -89,99 +92,112 @@ class Pont {
   }
 
   /// Une charge pour un mobile : mise en file PERSISTANTE (rang contigu) ; elle est chiffrée au dépôt.
-  void publier(String uuid, Map<String, Object?> charge) {
-    final n = base.metaInt('sortie_n:$uuid') + 1;
-    base.poserMeta('sortie_n:$uuid', n);
-    base.exec('INSERT INTO sortie(appareil,n,charge) VALUES(?,?,?)', [uuid, n, enJson(charge)]);
+  /// À appeler sous le verrou du dépôt.
+  Future<void> publier(String uuid, Map<String, Object?> charge) async {
+    final n = await base.metaInt('sortie_n:$uuid') + 1;
+    await base.poserMeta('sortie_n:$uuid', n);
+    await base.exec('INSERT INTO sortie(appareil,n,charge) VALUES(?,?,?)', [uuid, n, enJson(charge)]);
   }
 
-  Map<String, Object?> lot(Map<String, Object?> b) {
+  /// Lot de tournée : sous le verrou (appelé par la route d'administration).
+  Future<Map<String, Object?>> lot(Map<String, Object?> b) async {
     final fiches = <Map<String, Object?>>[];
     for (final f in (b['fiches'] as List)) {
-      final x = mere.lire('${(f as Map)['collection']}', '${f['id']}');
+      final x = await mere.lire('${(f as Map)['collection']}', '${f['id']}');
       if (x == null) continue;
-      base.exec('INSERT OR IGNORE INTO portee(appareil,collection,fiche) VALUES(?,?,?)', [b['uuid'], f['collection'], f['id']]);
+      await base.exec('INSERT INTO portee(appareil,collection,fiche) VALUES(?,?,?) ON CONFLICT DO NOTHING', [b['uuid'], f['collection'], f['id']]);
       fiches.add({'collection': f['collection'], 'id': f['id'], 'data': x.data, 'fieldseq': x.fieldseq, 'archive': x.archive});
     }
-    publier('${b['uuid']}', {'type': 'lot', 'expire': maintenantMs() + (nb(b['ttl_ms']) == 0 ? 48 * 3600 * 1000 : nb(b['ttl_ms']).toInt()), 'fiches': fiches});
+    await publier('${b['uuid']}', {'type': 'lot', 'expire': maintenantMs() + (nb(b['ttl_ms']) == 0 ? 48 * 3600 * 1000 : nb(b['ttl_ms']).toInt()), 'fiches': fiches});
     return {'fiches': fiches.length};
   }
 
-  // --- tours de boucle ------------------------------------------------------------------------------------------
+  // --- tours de boucle : le dépôt sous verrou, le réseau HORS verrou ------------------------------------------------
+  Future<T> _sous<T>(Future<T> Function() f) => mere.verrou.executer(f);
+
   Future<void> expedier() async {
-    for (final r in base.select('SELECT * FROM sortie WHERE depose=0 ORDER BY appareil, n').toList()) {
+    final lignes = await _sous(() => base.select('SELECT * FROM sortie WHERE depose=0 ORDER BY appareil, n'));
+    for (final r in lignes) {
       final uuid = r['appareil'] as String;
       final n = r['n'] as int;
       final charge = (jsonDecode(r['charge'] as String) as Map).cast<String, Object?>();
       await rel('POST', '/depot', {'enveloppe': await env.chiffrer(charge, id: 'm-$uuid-$n', appareil: uuid, dir: 'vers_mobile', n: n)});
-      base.exec('UPDATE sortie SET depose=1 WHERE appareil=? AND n=?', [uuid, n]);
+      await _sous(() => base.exec('UPDATE sortie SET depose=1 WHERE appareil=? AND n=?', [uuid, n]));
     }
   }
 
   Future<void> repliquer() async {
-    if (base.meta('restauration') == 'en_cours') return;
-    if ((base.meta('marqueur_epoch') ?? '').isNotEmpty) {
-      final n = base.metaInt('rep_n') + 1;
-      await rel('POST', '/depot', {'enveloppe': await env.chiffrer({'type': 'epoch', 'epoch': base.metaInt('epoch')}, id: 'journal-$n', appareil: 'mere', dir: 'journal', n: n)});
-      base.poserMeta('rep_n', n);
-      base.poserMeta('marqueur_epoch', '');
+    if (await _sous(() => base.meta('restauration')) == 'en_cours') return;
+    if ((await _sous(() => base.meta('marqueur_epoch')) ?? '').isNotEmpty) {
+      final (n, epoch) = await _sous(() async => (await base.metaInt('rep_n') + 1, await base.metaInt('epoch')));
+      await rel('POST', '/depot', {'enveloppe': await env.chiffrer({'type': 'epoch', 'epoch': epoch}, id: 'journal-$n', appareil: 'mere', dir: 'journal', n: n)});
+      await _sous(() async {
+        await base.poserMeta('rep_n', n);
+        await base.poserMeta('marqueur_epoch', '');
+      });
     }
-    final ops = base
-        .select('SELECT seq,id,appareil,epoch,hlc,collection,fiche,type,champs,famille FROM operations WHERE seq>? ORDER BY seq LIMIT 100', [base.metaInt('rep_seq')])
-        .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})
-        .toList();
-    if (ops.isEmpty) return;
-    final n = base.metaInt('rep_n') + 1;
-    await rel('POST', '/depot', {'enveloppe': await env.chiffrer({'type': 'journal', 'ops': ops}, id: 'journal-$n', appareil: 'mere', dir: 'journal', n: n)});
-    base.poserMeta('rep_n', n);
-    base.poserMeta('rep_seq', ops.last['seq']);
-  }
-
-  void diffuser() {
-    for (final a in base.select("SELECT uuid FROM appareils WHERE role='mobile' AND etat='actif'").toList()) {
-      final uuid = a['uuid'] as String;
-      final brut = base.meta('sortie_seq:$uuid');
-      if (brut == null) continue;
-      final cur = int.parse(brut);
-      final ops = base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>? ORDER BY seq LIMIT 100', [cur]).toList();
-      if (ops.isEmpty) continue;
-      final siennes = ops
-          .where((o) => base.select('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?', [uuid, o['collection'], o['fiche']]).isNotEmpty)
+    final (ops, n) = await _sous(() async {
+      final lignes = (await base.select(
+              'SELECT seq,id,appareil,epoch,hlc,collection,fiche,type,champs,famille FROM operations WHERE seq>? ORDER BY seq LIMIT 100', [await base.metaInt('rep_seq')]))
           .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})
           .toList();
-      base.poserMeta('sortie_seq:$uuid', ops.last['seq']);
-      if (siennes.isNotEmpty) publier(uuid, {'type': 'ops', 'ops': siennes});
-    }
+      return (lignes, await base.metaInt('rep_n') + 1);
+    });
+    if (ops.isEmpty) return;
+    await rel('POST', '/depot', {'enveloppe': await env.chiffrer({'type': 'journal', 'ops': ops}, id: 'journal-$n', appareil: 'mere', dir: 'journal', n: n)});
+    await _sous(() async {
+      await base.poserMeta('rep_n', n);
+      await base.poserMeta('rep_seq', ops.last['seq']);
+    });
   }
 
-  void traiterEnveloppe(String uuid, Map<String, Object?> p) {
+  /// Ce que la mère publie aux mobiles : les opérations des fiches de LEUR portée. Sous le verrou, sans réseau.
+  Future<void> diffuser() => _sous(() async {
+        for (final a in await base.select("SELECT uuid FROM appareils WHERE role='mobile' AND etat='actif'")) {
+          final uuid = a['uuid'] as String;
+          final brut = await base.meta('sortie_seq:$uuid');
+          if (brut == null) continue;
+          final ops = await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>? ORDER BY seq LIMIT 100', [int.parse(brut)]);
+          if (ops.isEmpty) continue;
+          final siennes = <Map<String, Object?>>[];
+          for (final o in ops) {
+            final dans = await base.select('SELECT 1 FROM portee WHERE appareil=? AND collection=? AND fiche=?', [uuid, o['collection'], o['fiche']]);
+            if (dans.isNotEmpty) siennes.add({...o, 'champs': jsonDecode(o['champs'] as String)});
+          }
+          await base.poserMeta('sortie_seq:$uuid', ops.last['seq']);
+          if (siennes.isNotEmpty) await publier(uuid, {'type': 'ops', 'ops': siennes});
+        }
+      });
+
+  /// Sous le verrou ET dans une transaction (appelée depuis `relever`).
+  Future<void> traiterEnveloppe(String uuid, Map<String, Object?> p) async {
     if (p['type'] == 'hello') {
-      if (base.select('SELECT 1 FROM appareils WHERE uuid=?', [uuid]).isNotEmpty) return;
-      final r = base.select('SELECT * FROM codes WHERE code=?', ['${p['code'] ?? ''}']);
+      if ((await base.select('SELECT 1 FROM appareils WHERE uuid=?', [uuid])).isNotEmpty) return;
+      final r = await base.select('SELECT * FROM codes WHERE code=?', ['${p['code'] ?? ''}']);
       final c = r.isEmpty ? null : r.first;
       if (c == null || c['role'] != 'mobile' || (c['utilise'] as int) != 0 || maintenantMs() > (c['expire'] as int)) {
         alerter({'type': 'appareil_inconnu', 'appareil': uuid});
-        base.poserMeta('bloque:$uuid', 'inconnu');
+        await base.poserMeta('bloque:$uuid', 'inconnu');
         return;
       }
-      base.exec('UPDATE codes SET utilise=1 WHERE code=?', [c['code']]);
-      base.exec("INSERT INTO appareils(uuid,etiquette,role,etat,profil) VALUES(?,?,'mobile','actif',?)", [uuid, c['etiquette'], p['profil']]);
-      final debut = base.metaInt('next_patient');
+      await base.exec('UPDATE codes SET utilise=1 WHERE code=?', [c['code']]);
+      await base.exec("INSERT INTO appareils(uuid,etiquette,role,etat,profil) VALUES(?,?,'mobile','actif',?)", [uuid, c['etiquette'], p['profil']]);
+      final debut = await base.metaInt('next_patient');
       final fin = debut + 19;
-      base.poserMeta('next_patient', fin + 1);
-      base.exec('INSERT INTO plages(appareil,nom,debut,fin) VALUES(?,?,?,?)', [uuid, 'patients', debut, fin]);
-      base.poserMeta('sortie_seq:$uuid', mere.seqMax());
-      publier(uuid, {'type': 'bienvenue', 'epoch': base.metaInt('epoch'), 'plage': {'debut': debut, 'fin': fin}});
+      await base.poserMeta('next_patient', fin + 1);
+      await base.exec('INSERT INTO plages(appareil,nom,debut,fin) VALUES(?,?,?,?)', [uuid, 'patients', debut, fin]);
+      await base.poserMeta('sortie_seq:$uuid', await mere.seqMax());
+      await publier(uuid, {'type': 'bienvenue', 'epoch': await base.metaInt('epoch'), 'plage': {'debut': debut, 'fin': fin}});
       return;
     }
-    final r = base.select('SELECT * FROM appareils WHERE uuid=?', [uuid]);
+    final r = await base.select('SELECT * FROM appareils WHERE uuid=?', [uuid]);
     if (r.isEmpty || r.first['etat'] == 'revoque') return;
     final app = Appareil(uuid, r.first['role'] as String, r.first['profil'] as String?);
     if (p['type'] == 'push') {
       try {
-        publier(uuid, {'type': 'accuse', 'resultats': mere.pousser(app, p)['resultats']});
+        await publier(uuid, {'type': 'accuse', 'resultats': (await mere.pousser(app, p))['resultats']});
       } on Err catch (e) {
-        publier(uuid, {'type': 'accuse', 'erreur': e.code, 'epoch_mere': e.corps['epoch_mere']});
+        await publier(uuid, {'type': 'accuse', 'erreur': e.code, 'epoch_mere': e.corps['epoch_mere']});
       }
     }
   }
@@ -190,18 +206,17 @@ class Pont {
     final liste = (await rel('GET', '/mere/appareils'))['appareils'] as List;
     for (final a in liste) {
       final uuid = (a as Map)['uuid'] as String;
-      if ((base.meta('bloque:$uuid') ?? '').isNotEmpty) continue;
-      final dernier = base.metaInt('recu_n:$uuid');
-      if ((a['max_n'] as int) <= dernier) continue;
+      final (bloque, dernier) = await _sous(() async => ((await base.meta('bloque:$uuid')) ?? '', await base.metaInt('recu_n:$uuid')));
+      if (bloque.isNotEmpty || (a['max_n'] as int) <= dernier) continue;
       final envs = (await rel('GET', '/releve?dir=vers_mere&appareil=$uuid&depuis_n=$dernier&limite=50'))['env'] as List;
       for (final e in envs) {
         final enveloppe = e as Map;
-        final attendu = base.metaInt('recu_n:$uuid') + 1;
         final n = enveloppe['n'] as int;
+        final attendu = await _sous(() async => await base.metaInt('recu_n:$uuid') + 1);
         if (n < attendu) continue;
         if (n > attendu) {
           alerter({'type': 'trou', 'appareil': uuid, 'attendu': attendu, 'recu': n});
-          base.poserMeta('bloque:$uuid', 'trou');
+          await _sous(() => base.poserMeta('bloque:$uuid', 'trou'));
           break;
         }
         Map<String, Object?> p;
@@ -209,20 +224,20 @@ class Pont {
           p = await env.dechiffrer(enveloppe);
         } catch (_) {
           alerter({'type': 'authentification', 'appareil': uuid, 'n': n});
-          base.poserMeta('bloque:$uuid', 'auth');
+          await _sous(() => base.poserMeta('bloque:$uuid', 'auth'));
           break;
         }
-        base.tx(() {
-          traiterEnveloppe(uuid, p);
-          base.poserMeta('recu_n:$uuid', n);
-        });
+        await _sous(() => base.tx(() async {
+              await traiterEnveloppe(uuid, p);
+              await base.poserMeta('recu_n:$uuid', n);
+            }));
       }
     }
   }
 
   /// Restauration depuis le relais : TOUT est déchiffré et vérifié AVANT la moindre écriture.
   Future<void> restaurer() async {
-    base.poserMeta('restauration', 'en_cours');
+    await _sous(() => base.poserMeta('restauration', 'en_cours'));
     try {
       final charges = <Map<String, Object?>>[];
       var n = 0;
@@ -237,63 +252,65 @@ class Pont {
         if (rep['fin'] == true) break;
       }
       if (charges.isEmpty) throw 'journal vide';
-      var maxSeq = 0;
-      var maxEpoch = 1;
-      base.tx(() {
-        for (final p in charges) {
-          if (p['type'] == 'epoch') {
-            final liste = essentielles.map((c) => "'$c'").join(',');
-            base.exec('DELETE FROM operations WHERE collection NOT IN ($liste)');
-            base.exec('DELETE FROM fiches WHERE collection NOT IN ($liste)');
-            maxEpoch = maxEpoch > (p['epoch'] as int) ? maxEpoch : p['epoch'] as int;
-            continue;
-          }
-          for (final o in (p['ops'] as List)) {
-            final op = (o as Map).cast<String, Object?>();
-            final champs = (op['champs'] as Map).cast<String, Object?>();
-            base.exec('INSERT INTO operations(seq,id,appareil,epoch,hlc,collection,fiche,type,champs,famille) VALUES(?,?,?,?,?,?,?,?,?,?)',
-                [op['seq'], op['id'], op['appareil'], op['epoch'], op['hlc'], op['collection'], op['fiche'], op['type'], enJson(champs), op['famille']]);
-            final f = mere.lire(op['collection'] as String, op['fiche'] as String) ?? Fiche({}, {}, false);
-            final seq = op['seq'] as int;
-            switch (op['type']) {
-              case 'creer' || 'modifier':
-                f.data.addAll(champs);
-                for (final k in champs.keys) {
-                  f.fieldseq[k] = seq;
+      await _sous(() => base.tx(() async {
+            var maxSeq = 0;
+            var maxEpoch = 1;
+            for (final p in charges) {
+              if (p['type'] == 'epoch') {
+                final liste = essentielles.map((c) => "'$c'").join(',');
+                await base.exec('DELETE FROM operations WHERE collection NOT IN ($liste)');
+                await base.exec('DELETE FROM fiches WHERE collection NOT IN ($liste)');
+                maxEpoch = maxEpoch > (p['epoch'] as int) ? maxEpoch : p['epoch'] as int;
+                continue;
+              }
+              for (final o in (p['ops'] as List)) {
+                final op = (o as Map).cast<String, Object?>();
+                final champs = (op['champs'] as Map).cast<String, Object?>();
+                await base.exec('INSERT INTO operations(seq,id,appareil,epoch,hlc,collection,fiche,type,champs,famille) VALUES(?,?,?,?,?,?,?,?,?,?)',
+                    [op['seq'], op['id'], op['appareil'], op['epoch'], op['hlc'], op['collection'], op['fiche'], op['type'], enJson(champs), op['famille']]);
+                final f = await mere.lire(op['collection'] as String, op['fiche'] as String) ?? Fiche({}, {}, false);
+                final seq = op['seq'] as int;
+                switch (op['type']) {
+                  case 'creer' || 'modifier':
+                    f.data.addAll(champs);
+                    for (final k in champs.keys) {
+                      f.fieldseq[k] = seq;
+                    }
+                  case 'archiver':
+                    f.archive = true;
+                  case 'restaurer':
+                    f.archive = false;
+                  case 'sortie':
+                    f.data['qte'] = nb(f.data['qte']) - nb(champs['qte']);
+                    f.fieldseq['qte'] = seq;
                 }
-              case 'archiver':
-                f.archive = true;
-              case 'restaurer':
-                f.archive = false;
-              case 'sortie':
-                f.data['qte'] = nb(f.data['qte']) - nb(champs['qte']);
-                f.fieldseq['qte'] = seq;
+                await mere.ecrire(op['collection'] as String, op['fiche'] as String, f);
+                if (seq > maxSeq) maxSeq = seq;
+                if ((op['epoch'] as int) > maxEpoch) maxEpoch = op['epoch'] as int;
+              }
             }
-            mere.ecrire(op['collection'] as String, op['fiche'] as String, f);
-            if (seq > maxSeq) maxSeq = seq;
-            if ((op['epoch'] as int) > maxEpoch) maxEpoch = op['epoch'] as int;
-          }
-        }
-        final nums = base
-            .select("SELECT json_extract(data,'\$.code') AS c FROM fiches WHERE collection='patients'")
-            .map((r) => int.tryParse(RegExp(r'^CNT/(\d+)/26$').firstMatch('${r['c'] ?? ''}')?.group(1) ?? '') ?? 0)
-            .toList();
-        final plusGrand = nums.fold<int>(1000, (a, b) => a > b ? a : b);
-        base.poserMeta('next_patient', plusGrand + 1);
-        base.poserMeta('rep_seq', maxSeq);
-        base.poserMeta('rep_n', n);
-        base.poserMeta('epoch', maxEpoch + 1);
-        base.exec("INSERT OR REPLACE INTO sqlite_sequence(name,seq) VALUES('operations',?)", [maxSeq]);
-      });
-      base.poserMeta('restauration', 'terminee');
+            final nums = (await base.select("SELECT ${base.champJson('data', 'code')} AS c FROM fiches WHERE collection='patients'"))
+                .map((r) => int.tryParse(RegExp(r'^CNT/(\d+)/26$').firstMatch('${r['c'] ?? ''}')?.group(1) ?? '') ?? 0)
+                .toList();
+            final plusGrand = nums.fold<int>(1000, (a, b) => a > b ? a : b);
+            await base.poserMeta('next_patient', plusGrand + 1);
+            await base.poserMeta('rep_seq', maxSeq);
+            await base.poserMeta('rep_n', n);
+            await base.poserMeta('epoch', maxEpoch + 1);
+            await base.recalerSequence('operations', 'seq', maxSeq);
+          }));
+      await _sous(() => base.poserMeta('restauration', 'terminee'));
     } catch (e) {
-      base.poserMeta('restauration', 'echec: $e');
+      await _sous(() => base.poserMeta('restauration', 'echec: $e'));
     }
   }
 
-  void demarrer() {
+  Future<void> demarrer() async {
     if (!actif) return;
-    if (mere.cfg.restaurer && (base.select('SELECT COUNT(*) AS n FROM operations').first['n'] as int) == 0) unawaited(restaurer());
+    unawaited(() async {
+      final vide = await _sous(() async => (await base.select('SELECT COUNT(*) AS n FROM operations')).first['n'] as int) == 0;
+      if (mere.cfg.restaurer && vide) await restaurer();
+    }());
     void tour(Future<void> Function() f, int ms) {
       var occupe = false;
       _minuteries.add(Timer.periodic(Duration(milliseconds: ms), (_) async {
@@ -306,21 +323,21 @@ class Pont {
       }));
     }
 
-    tour(() async => base.meta('restauration') == 'en_cours' ? null : await relever(), 250);
+    tour(() async => await _sous(() => base.meta('restauration')) == 'en_cours' ? null : await relever(), 250);
     tour(() async {
-      diffuser();
+      await diffuser();
       await expedier();
     }, 250);
     tour(repliquer, 250);
     tour(() async {
       await rel('POST', '/mere/battement', {});
-      final seq = mere.seqMax();
+      final (patients, seq, repSeq) = await _sous(() async => (
+            (await base.select("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0")).first['n'],
+            await mere.seqMax(),
+            await base.metaInt('rep_seq'),
+          ));
       await rel('POST', '/mere/indicateurs', {
-        'indicateurs': {
-          'patients_actifs': base.select("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0").first['n'],
-          'seq_max': seq,
-          'retard_replication': seq - base.metaInt('rep_seq'),
-        },
+        'indicateurs': {'patients_actifs': patients, 'seq_max': seq, 'retard_replication': seq - repSeq},
       });
     }, 300);
   }

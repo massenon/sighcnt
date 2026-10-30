@@ -10,6 +10,7 @@ dependencies:
   sqlite3: any
   crypto: any
   cryptography: any
+  postgres: any
 dev_dependencies:
   test: any
   lints: any

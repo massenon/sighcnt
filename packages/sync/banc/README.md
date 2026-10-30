@@ -76,4 +76,6 @@ Le banc pilote **n'importe quelle combinaison** de processus par variables d'env
 | Relais Laravel seul (mère, postes et mobiles Node) | 11 scénarios relais verts après correction de l'ordre autorisation → validation |
 | **Tout en Dart + relais Laravel** (`npm run banc:cible`) | **26 scénarios, 127 vérifications, 74 s** |
 
-Ce que cela prouve en plus : le service Dart de la mère, le client Dart du poste et du mobile (SQLite embarqué, enveloppes AES-256-GCM via `package:cryptography`) et le relais Laravel parlent **le même protocole**, octet pour octet — une enveloppe chiffrée par Dart est lue par Node et réciproquement. Ce que cela ne prouve toujours pas : PostgreSQL à la place de SQLite pour la mère, SQLCipher, le service Windows, la charge, une revue de sécurité.
+| **Mère sur PostgreSQL** (`npm run banc:pg`, `SIGH_PG_URL=postgres://utilisateur:motdepasse@hôte:port`) | **26 scénarios, 128 vérifications, 85 s** — une base PostgreSQL jetable par scénario, supprimée à la fin |
+
+Ce que cela prouve en plus : le service Dart de la mère, le client Dart du poste et du mobile (SQLite embarqué, enveloppes AES-256-GCM via `package:cryptography`) et le relais Laravel parlent **le même protocole**, octet pour octet — une enveloppe chiffrée par Dart est lue par Node et réciproquement. Ce que cela ne prouve toujours pas : SQLCipher, le service Windows, la charge (aucun volume), la tenue aux pannes de PostgreSQL lui-même (arrêt brutal en pleine transaction), une revue de sécurité.
