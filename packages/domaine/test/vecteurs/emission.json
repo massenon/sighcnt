@@ -1,0 +1,3373 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-emission.js — l'écran m8-facturation piloté. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "nom": "non assuré : une seule pièce, règlement total",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "analyse",
+      "designation": "AKOP",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Carnet de santé",
+      "quantite": 2,
+      "prixUnitaire": 500,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 230,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00231",
+     "baseMecef": 3000,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "analyse",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      },
+      {
+       "nature": "libre",
+       "designation": "Carnet de santé",
+       "quantite": 2,
+       "prixUnitaire": 500,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 500,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 3000,
+     "montantTTC": 3000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 3000,
+     "montantPaye": 3000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.190Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "non assuré : règlement partiel, reliquat",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "analyse",
+      "designation": "AKOP",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Carnet de santé",
+      "quantite": 2,
+      "prixUnitaire": 500,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": 1200,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 231,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00232",
+     "baseMecef": 1200,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "analyse",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      },
+      {
+       "nature": "libre",
+       "designation": "Carnet de santé",
+       "quantite": 2,
+       "prixUnitaire": 500,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 500,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 3000,
+     "montantTTC": 3000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 3000,
+     "montantPaye": 1200,
+     "reliquat": 1800,
+     "modePaiement": "especes",
+     "statutPaiement": "partielle",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.267Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "non assuré : règlement supérieur au dû, plafonné",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": 99999,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 232,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00233",
+     "baseMecef": 1000,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.336Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "non assuré : règlement nul, impayée",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": 0,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 233,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00234",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 0,
+     "reliquat": 1000,
+     "modePaiement": "especes",
+     "statutPaiement": "impayee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.413Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "non assuré : mode MTN",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "mtn",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 234,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00235",
+     "baseMecef": 1000,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "mtn",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.480Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "non assuré : opération dissociée du dossier (vente au comptoir)",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Carnet de santé",
+      "quantite": 1,
+      "prixUnitaire": 500,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 235,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": true,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00236",
+     "baseMecef": 500,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": null,
+     "operationDissociee": true,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Carnet de santé",
+       "quantite": 1,
+       "prixUnitaire": 500,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 500,
+       "categorie": "autre",
+       "montant": 500,
+       "partAssureur": 0,
+       "partPatient": 500,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 500,
+     "montantTTC": 500,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 500,
+     "montantPaye": 500,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.703Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "pro-forma : rien d'encaissé, pas de base MECeF",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": 1000,
+    "mode": "especes",
+    "proforma": true,
+    "date": "2026-10-30",
+    "rangDebut": 236,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "PRO-2026-00237",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 0,
+     "reliquat": 1000,
+     "modePaiement": "especes",
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "proforma": true,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.771Z",
+     "mecef": false
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "assuré : lignes couvertes ET non couvertes → deux pièces -A / -B",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Certificat hors convention",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 237,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00239-B",
+     "baseMecef": 2000,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "non_couvert",
+     "libelleVolet": "Prestations non couvertes — à la charge du patient",
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Certificat hors convention",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "autre",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Aucune garantie pour la catégorie « autre »",
+       "taux": 0
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 2000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.844Z",
+     "mecef": true
+    },
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00238-A",
+     "baseMecef": 1000,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "couvert",
+     "libelleVolet": "Prestations couvertes par l’assurance",
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 4000,
+       "partPatient": 1000,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      }
+     ],
+     "montantHT": 5000,
+     "montantTTC": 5000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 4000,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.844Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "assuré, deux pièces : règlement partiel qui ne couvre que la pièce -A",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Certificat hors convention",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": 100,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 239,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00241-B",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "non_couvert",
+     "libelleVolet": "Prestations non couvertes — à la charge du patient",
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Certificat hors convention",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "autre",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Aucune garantie pour la catégorie « autre »",
+       "taux": 0
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 0,
+     "reliquat": 2000,
+     "modePaiement": "especes",
+     "statutPaiement": "impayee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.933Z",
+     "mecef": true
+    },
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00240-A",
+     "baseMecef": 100,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "couvert",
+     "libelleVolet": "Prestations couvertes par l’assurance",
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 4000,
+       "partPatient": 1000,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      }
+     ],
+     "montantHT": 5000,
+     "montantTTC": 5000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 4000,
+     "partPatient": 1000,
+     "montantPaye": 100,
+     "reliquat": 900,
+     "modePaiement": "especes",
+     "statutPaiement": "partielle",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.933Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "assuré, deux pièces : règlement qui déborde sur la pièce -B",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Certificat hors convention",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": 1500,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 241,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00243-B",
+     "baseMecef": 500,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "non_couvert",
+     "libelleVolet": "Prestations non couvertes — à la charge du patient",
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Certificat hors convention",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "autre",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Aucune garantie pour la catégorie « autre »",
+       "taux": 0
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 500,
+     "reliquat": 1500,
+     "modePaiement": "especes",
+     "statutPaiement": "partielle",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.014Z",
+     "mecef": true
+    },
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00242-A",
+     "baseMecef": 1000,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "couvert",
+     "libelleVolet": "Prestations couvertes par l’assurance",
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 4000,
+       "partPatient": 1000,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      }
+     ],
+     "montantHT": 5000,
+     "montantTTC": 5000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 4000,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.013Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "assuré, deux pièces : pro-forma",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Certificat hors convention",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": true,
+    "date": "2026-10-30",
+    "rangDebut": 243,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "PRO-2026-00245-B",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "non_couvert",
+     "libelleVolet": "Prestations non couvertes — à la charge du patient",
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Certificat hors convention",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "autre",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Aucune garantie pour la catégorie « autre »",
+       "taux": 0
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 0,
+     "reliquat": 2000,
+     "modePaiement": "especes",
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "proforma": true,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.101Z",
+     "mecef": false
+    },
+    {
+     "statut": "actif",
+     "numero": "PRO-2026-00244-A",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "couvert",
+     "libelleVolet": "Prestations couvertes par l’assurance",
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 4000,
+       "partPatient": 1000,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      }
+     ],
+     "montantHT": 5000,
+     "montantTTC": 5000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 4000,
+     "partPatient": 1000,
+     "montantPaye": 0,
+     "reliquat": 1000,
+     "modePaiement": "especes",
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "proforma": true,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.101Z",
+     "mecef": false
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "assuré : tout est couvert → une pièce, base MECeF sur la part patient",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "analyse",
+      "designation": "AKOP",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 245,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00246",
+     "baseMecef": 1000,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 4000,
+       "partPatient": 1000,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      },
+      {
+       "nature": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "analyse",
+       "montant": 2000,
+       "partAssureur": 2000,
+       "partPatient": 0,
+       "motifCouverture": "Garantie Analyses biologiques — 100 %",
+       "taux": 100
+      }
+     ],
+     "montantHT": 7000,
+     "montantTTC": 7000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 86,
+     "partAssurance": 6000,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.167Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "assuré : analyses 100 % → part patient nulle, MECeF en attente",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "analyse",
+      "designation": "AKOP",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 246,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00247",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "analyse",
+       "montant": 2000,
+       "partAssureur": 2000,
+       "partPatient": 0,
+       "motifCouverture": "Garantie Analyses biologiques — 100 %",
+       "taux": 100
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 100,
+     "partAssurance": 2000,
+     "partPatient": 0,
+     "montantPaye": 0,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "en_attente",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.242Z",
+     "mecef": false
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "carte expirée (RG-09) : tout au patient, une pièce",
+    "patient": {
+     "id": "PATxmvuyu9tvd0dd5",
+     "statut": "actif",
+     "code": "EXP",
+     "nom": "EMISSION",
+     "prenom": "EXP",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2020-01-01",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "analyse",
+      "designation": "AKOP",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 247,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00248",
+     "baseMecef": 7000,
+     "patientId": "PATxmvuyu9tvd0dd5",
+     "patient": "EMISSION EXP",
+     "patientCode": "EXP",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 0,
+       "partPatient": 5000,
+       "motifCouverture": "Carte non valide à la date de facturation (RG-09)",
+       "taux": 0
+      },
+      {
+       "nature": "analyse",
+       "designation": "AKOP",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "analyse",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Carte non valide à la date de facturation (RG-09)",
+       "taux": 0
+      }
+     ],
+     "montantHT": 7000,
+     "montantTTC": 7000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 7000,
+     "montantPaye": 7000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.340Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "convention non saisie : tout au patient, une pièce",
+    "patient": {
+     "id": "PATxmvuyu9tvyh9wd",
+     "statut": "actif",
+     "code": "NOG",
+     "nom": "EMISSION",
+     "prenom": "NOG",
+     "assureur": "ASS-NOG",
+     "assureurNom": "NOG",
+     "souscripteurId": "SOUxmvuyu9tvnhres",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 248,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvnhres",
+      "statut": "actif",
+      "nom": "Employeur sans grille",
+      "assureur": "ASS-NOG",
+      "numeroPolice": "PN-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00249",
+     "baseMecef": 5000,
+     "patientId": "PATxmvuyu9tvyh9wd",
+     "patient": "EMISSION NOG",
+     "patientCode": "NOG",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 0,
+       "partPatient": 5000,
+       "motifCouverture": "Convention non saisie pour Employeur sans grille",
+       "taux": 0
+      }
+     ],
+     "montantHT": 5000,
+     "montantTTC": 5000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur sans grille",
+     "numeroPolice": "PN-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 5000,
+     "montantPaye": 5000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.429Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "remise en % avec motif personnel",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 10,
+      "typeRemise": "pct",
+      "motif": "personnel",
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 249,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00250",
+     "baseMecef": 1800,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 10,
+       "remiseUnitaire": 200,
+       "motifRemise": "personnel",
+       "prixNet": 1800,
+       "categorie": "autre",
+       "montant": 1800,
+       "partAssureur": 0,
+       "partPatient": 1800,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1800,
+     "montantTTC": 1800,
+     "montantRemises": 200,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1800,
+     "montantPaye": 1800,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.521Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "remise en FCFA supérieure au prix : plafonnée au prix",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 3,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 5000,
+      "typeRemise": "montant",
+      "motif": "direction",
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 250,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00251",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 3,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": null,
+       "remiseUnitaire": 1000,
+       "motifRemise": "direction",
+       "prixNet": 0,
+       "categorie": "autre",
+       "montant": 0,
+       "partAssureur": 0,
+       "partPatient": 0,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 0,
+     "montantTTC": 0,
+     "montantRemises": 3000,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 0,
+     "montantPaye": 0,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "en_attente",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.603Z",
+     "mecef": false
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "remise sur un assuré : elle diminue la base avant la prise en charge",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 20,
+      "typeRemise": "pct",
+      "motif": "client",
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 251,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00252",
+     "baseMecef": 800,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 20,
+       "remiseUnitaire": 1000,
+       "motifRemise": "client",
+       "prixNet": 4000,
+       "categorie": "consultation",
+       "montant": 4000,
+       "partAssureur": 3200,
+       "partPatient": 800,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      }
+     ],
+     "montantHT": 4000,
+     "montantTTC": 4000,
+     "montantRemises": 1000,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 3200,
+     "partPatient": 800,
+     "montantPaye": 800,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.693Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "médicament : sortie de stock RG-03, justificatif = numéro de pièce",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "medicament",
+      "designation": "ACCUZON (13 Unité)",
+      "quantite": 2,
+      "prixUnitaire": 1000,
+      "produitId": "PRD0002",
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "stockDetail": 13,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 252,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": [
+     {
+      "id": "PRD0002",
+      "stockDetail": 13,
+      "stock": 50
+     }
+    ]
+   },
+   "sorties": [
+    {
+     "produitId": "PRD0002",
+     "quantite": 2,
+     "type": "sortie",
+     "stockType": "detail",
+     "justificatif": "Facture FN-2026-00253"
+    }
+   ],
+   "stocks": [
+    {
+     "produitId": "PRD0002",
+     "avant": {
+      "stockDetail": 13,
+      "stock": 50
+     },
+     "apres": {
+      "stockDetail": 11,
+      "stock": 48
+     }
+    }
+   ],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00253",
+     "baseMecef": 2000,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "medicament",
+       "designation": "ACCUZON (13 Unité)",
+       "quantite": 2,
+       "prixUnitaire": 1000,
+       "produitId": "PRD0002",
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "medicament",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 2000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:08.809Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "RG-03 : quantité supérieure au stock en pharmacie → la ligne n'est pas ajoutée, rien à émettre",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "medicament",
+      "designation": "ACCUZON (11 Unité)",
+      "quantite": 100000,
+      "prixUnitaire": 1000,
+      "produitId": "PRD0002",
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "stockDetail": 11,
+      "ajoutee": false
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 253,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": []
+  },
+  {
+   "entree": {
+    "nom": "RG-03 : deux ajouts du même médicament dont le cumul dépasse le stock → le second est refusé",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "medicament",
+      "designation": "ACCUZON (11 Unité)",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": "PRD0002",
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "stockDetail": 11,
+      "ajoutee": true
+     },
+     {
+      "nature": "medicament",
+      "designation": "ACCUZON (11 Unité)",
+      "quantite": 100000,
+      "prixUnitaire": 1000,
+      "produitId": "PRD0002",
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "stockDetail": 11,
+      "ajoutee": false
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 253,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": [
+     {
+      "id": "PRD0002",
+      "stockDetail": 11,
+      "stock": 48
+     }
+    ]
+   },
+   "sorties": [
+    {
+     "produitId": "PRD0002",
+     "quantite": 1,
+     "type": "sortie",
+     "stockType": "detail",
+     "justificatif": "Facture FN-2026-00254"
+    }
+   ],
+   "stocks": [
+    {
+     "produitId": "PRD0002",
+     "avant": {
+      "stockDetail": 11,
+      "stock": 48
+     },
+     "apres": {
+      "stockDetail": 10,
+      "stock": 47
+     }
+    }
+   ],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00254",
+     "baseMecef": 1000,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "medicament",
+       "designation": "ACCUZON (11 Unité)",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": "PRD0002",
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "medicament",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:09.027Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "catégories : hospitalisation, ligne libre « ambulance », ligne libre « consultation »",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "hospitalisation",
+      "designation": "Journée — chambre Standard",
+      "quantite": 2,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Transfert ambulance",
+      "quantite": 1,
+      "prixUnitaire": 15000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Consultation à domicile",
+      "quantite": 1,
+      "prixUnitaire": 4000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 254,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00256-B",
+     "baseMecef": 25000,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "non_couvert",
+     "libelleVolet": "Prestations non couvertes — à la charge du patient",
+     "lignes": [
+      {
+       "nature": "hospitalisation",
+       "designation": "Journée — chambre Standard",
+       "quantite": 2,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "hospitalisation",
+       "montant": 10000,
+       "partAssureur": 0,
+       "partPatient": 10000,
+       "motifCouverture": "Aucune garantie pour la catégorie « hospitalisation »",
+       "taux": 0
+      },
+      {
+       "nature": "libre",
+       "designation": "Transfert ambulance",
+       "quantite": 1,
+       "prixUnitaire": 15000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 15000,
+       "categorie": "ambulance",
+       "montant": 15000,
+       "partAssureur": 0,
+       "partPatient": 15000,
+       "motifCouverture": "Aucune garantie pour la catégorie « ambulance »",
+       "taux": 0
+      }
+     ],
+     "montantHT": 25000,
+     "montantTTC": 25000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 25000,
+     "montantPaye": 25000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:09.151Z",
+     "mecef": true
+    },
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00255-A",
+     "baseMecef": 800,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "couvert",
+     "libelleVolet": "Prestations couvertes par l’assurance",
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Consultation à domicile",
+       "quantite": 1,
+       "prixUnitaire": 4000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 4000,
+       "categorie": "consultation",
+       "montant": 4000,
+       "partAssureur": 3200,
+       "partPatient": 800,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      }
+     ],
+     "montantHT": 4000,
+     "montantTTC": 4000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 80,
+     "partAssurance": 3200,
+     "partPatient": 800,
+     "montantPaye": 800,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:09.151Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "médicament, pro-forma : aucune sortie de stock",
+    "patient": {
+     "id": "PATxmvuyu9tvixrdr",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "medicament",
+      "designation": "ACCUZON (10 Unité)",
+      "quantite": 2,
+      "prixUnitaire": 1000,
+      "produitId": "PRD0002",
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "stockDetail": 10,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": true,
+    "date": "2026-10-30",
+    "rangDebut": 256,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "PRO-2026-00257",
+     "baseMecef": 0,
+     "patientId": "PATxmvuyu9tvixrdr",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "medicament",
+       "designation": "ACCUZON (10 Unité)",
+       "quantite": 2,
+       "prixUnitaire": 1000,
+       "produitId": "PRD0002",
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "medicament",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 0,
+     "reliquat": 2000,
+     "modePaiement": "especes",
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "proforma": true,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:09.276Z",
+     "mecef": false
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "assuré + médicament + non couvert : trois lignes, deux pièces, sortie de stock",
+    "patient": {
+     "id": "PATxmvuyu9tvgnfd9",
+     "statut": "actif",
+     "code": "ASS",
+     "nom": "EMISSION",
+     "prenom": "ASS",
+     "assureur": "ASS-EMI",
+     "assureurNom": "EMI",
+     "souscripteurId": "SOUxmvuyu9tvukjva",
+     "carteExpiration": "2099-12-31",
+     "tauxPriseEnCharge": 80,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:07.171Z"
+    },
+    "saisie": [
+     {
+      "nature": "medicament",
+      "designation": "ACCUZON (10 Unité)",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": "PRD0002",
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "stockDetail": 10,
+      "ajoutee": true
+     },
+     {
+      "nature": "acte",
+      "designation": "Consultation généraliste",
+      "quantite": 1,
+      "prixUnitaire": 5000,
+      "produitId": null,
+      "secteur": "Médecine générale",
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     },
+     {
+      "nature": "libre",
+      "designation": "Certificat hors convention",
+      "quantite": 1,
+      "prixUnitaire": 2000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2026-10-30",
+    "rangDebut": 257,
+    "souscripteurs": [
+     {
+      "id": "SOUxmvuyu9tvukjva",
+      "statut": "actif",
+      "nom": "Employeur EMI",
+      "assureur": "ASS-EMI",
+      "numeroPolice": "PE-1",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "garanties": [
+     {
+      "id": "GARxmvuyu9tv8i4vg",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "analyse",
+      "libelle": "Analyses biologiques",
+      "taux": 100,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tv0ev5x",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "medicament",
+      "libelle": "Médicaments",
+      "taux": 70,
+      "plafond": null,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     },
+     {
+      "id": "GARxmvuyu9tvtxei4",
+      "statut": "actif",
+      "souscripteurId": "SOUxmvuyu9tvukjva",
+      "assureur": "ASS-EMI",
+      "categorie": "consultation",
+      "libelle": "Consultation",
+      "taux": 80,
+      "plafond": 5000,
+      "unitePlafond": "acte",
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T12:46:07.171Z"
+     }
+    ],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": [
+     {
+      "id": "PRD0002",
+      "stockDetail": 10,
+      "stock": 47
+     }
+    ]
+   },
+   "sorties": [
+    {
+     "produitId": "PRD0002",
+     "quantite": 1,
+     "type": "sortie",
+     "stockType": "detail",
+     "justificatif": "Facture FN-2026-00258-A"
+    }
+   ],
+   "stocks": [
+    {
+     "produitId": "PRD0002",
+     "avant": {
+      "stockDetail": 10,
+      "stock": 47
+     },
+     "apres": {
+      "stockDetail": 9,
+      "stock": 46
+     }
+    }
+   ],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00259-B",
+     "baseMecef": 2000,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "non_couvert",
+     "libelleVolet": "Prestations non couvertes — à la charge du patient",
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Certificat hors convention",
+       "quantite": 1,
+       "prixUnitaire": 2000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 2000,
+       "categorie": "autre",
+       "montant": 2000,
+       "partAssureur": 0,
+       "partPatient": 2000,
+       "motifCouverture": "Aucune garantie pour la catégorie « autre »",
+       "taux": 0
+      }
+     ],
+     "montantHT": 2000,
+     "montantTTC": 2000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 2000,
+     "montantPaye": 2000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:09.411Z",
+     "mecef": true
+    },
+    {
+     "statut": "actif",
+     "numero": "FN-2026-00258-A",
+     "baseMecef": 1300,
+     "patientId": "PATxmvuyu9tvgnfd9",
+     "patient": "EMISSION ASS",
+     "patientCode": "ASS",
+     "operationDissociee": false,
+     "date": "2026-10-30",
+     "type": "Consultation généraliste",
+     "volet": "couvert",
+     "libelleVolet": "Prestations couvertes par l’assurance",
+     "lignes": [
+      {
+       "nature": "medicament",
+       "designation": "ACCUZON (10 Unité)",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": "PRD0002",
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "medicament",
+       "montant": 1000,
+       "partAssureur": 700,
+       "partPatient": 300,
+       "motifCouverture": "Garantie Médicaments — 70 %",
+       "taux": 70
+      },
+      {
+       "nature": "acte",
+       "designation": "Consultation généraliste",
+       "quantite": 1,
+       "prixUnitaire": 5000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 5000,
+       "categorie": "consultation",
+       "montant": 5000,
+       "partAssureur": 4000,
+       "partPatient": 1000,
+       "motifCouverture": "Garantie Consultation — 80 %",
+       "taux": 80
+      }
+     ],
+     "montantHT": 6000,
+     "montantTTC": 6000,
+     "montantRemises": 0,
+     "assureur": "ASS-EMI",
+     "souscripteur": "Employeur EMI",
+     "numeroPolice": "PE-1",
+     "tauxPriseEnCharge": 78,
+     "partAssurance": 4700,
+     "partPatient": 1300,
+     "montantPaye": 1300,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T12:46:09.411Z",
+     "mecef": true
+    }
+   ]
+  }
+ ]
+}

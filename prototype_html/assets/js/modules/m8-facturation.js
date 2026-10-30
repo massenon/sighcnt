@@ -856,6 +856,9 @@
         }
 
         var creees = [], annulations = [];
+        /* Le rang part du nombre de factures AVANT l'émission : le relire dans la boucle compterait deux fois la pièce -A
+           déjà insérée et laisserait un trou entre -A et -B (écart E6b, corrigé le 30/10/2026). */
+        var rangDebut = factures().length;
         pieces.forEach(function (piece, rang) {
           var totalPiece = C.sum(piece.lignes, 'montant');
           var assPiece = C.sum(piece.lignes, 'partAssureur');
@@ -868,7 +871,7 @@
 
           var suffixe = piece.volet === 'couvert' ? '-A' : (piece.volet === 'non_couvert' ? '-B' : '');
           var f = {
-            numero: (proforma ? 'PRO-2026-' : 'FN-2026-') + C.pad(factures().length + 1 + rang, 5) + suffixe,
+            numero: (proforma ? 'PRO-2026-' : 'FN-2026-') + C.pad(rangDebut + 1 + rang, 5) + suffixe,
             /* Point fiscal : la MECeF ne normalise que la part réglée par le
                patient. Une pièce entièrement à la charge de l'assureur n'y va
                pas, et les remises n'y entrent jamais. */
@@ -888,7 +891,7 @@
             montantRemises: remisePiece,
             assureur: assPiece > 0 ? patientCourant.assureur : null,
             souscripteur: t.souscripteur ? t.souscripteur.nom : null,
-            numeroPolice: t.souscripteur ? t.souscripteur.police : null,
+            numeroPolice: t.souscripteur ? t.souscripteur.numeroPolice : null,
             tauxPriseEnCharge: totalPiece ? Math.round(assPiece * 100 / totalPiece) : 0,
             partAssurance: assPiece, partPatient: patPiece,
             montantPaye: reglePiece, reliquat: patPiece - reglePiece,
