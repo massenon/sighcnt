@@ -52,10 +52,15 @@ Parite comparerContenu(
     'onglets',
     'cartes',
     'tableaux',
-    'commandes',
     'champs'
   ]) {
     ajouter(fiche[k]);
+  }
+  // Les commandes portent des COMPTES issus du jeu (« Tous les factures409 », pagination « 1 »…) : le libellé se compare, la valeur non.
+  for (final c in (fiche['commandes'] as List? ?? const [])) {
+    if (c is! String) continue;
+    final libelle = c.replaceFirst(RegExp(r'\d+$'), '').trim();
+    if (libelle.isNotEmpty) attendus.add(normaliser(libelle));
   }
   final uniques = attendus.toSet().toList();
   final manquants = [

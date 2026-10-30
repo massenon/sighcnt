@@ -30,6 +30,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/donnees/
+    - assets/donnees/jeu/
     - assets/img/
     - assets/polices/pdf/
   fonts:

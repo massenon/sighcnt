@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:sigh_poste/core/config_poste.dart';
+import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/core/controleur_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/core/parametres_poste.dart';
@@ -42,6 +43,8 @@ void main() {
         : null;
   }
 
+  final magasin = Magasin.depuisDossier(Magasin.collectionsDuJeu);
+
   Future<Parite?> mesurer(WidgetTester t, String id, String role) async {
     final f = fiche(id);
     if (f == null || f['acces'] != 'ouvert') return null;
@@ -63,7 +66,11 @@ void main() {
             role: role,
             nomPoste: 'Test'));
     await t.pumpWidget(SighPoste(
-        donnees: donnees, controleur: ctl, client: client, ecranInitial: id));
+        donnees: donnees,
+        controleur: ctl,
+        client: client,
+        ecranInitial: id,
+        magasin: magasin));
     for (var i = 0; i < 4; i++) {
       await t.pump(const Duration(milliseconds: 100));
     }

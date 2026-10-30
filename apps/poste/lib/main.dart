@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sigh_sync/sigh_sync.dart';
 
+import 'donnees/magasin.dart';
 import 'core/config_poste.dart';
 import 'core/controleur_poste.dart';
 import 'core/donnees_navigation.dart';
@@ -63,6 +64,7 @@ Future<void> main() async {
   runApp(SighPoste(
       controleur: controleur,
       donnees: await DonneesNavigation.chargerAssets(),
+      magasin: await Magasin.depuisAssets(Magasin.collectionsDuJeu),
       etatSync: moteur.source()));
 }
 
@@ -74,6 +76,7 @@ class SighPoste extends StatelessWidget {
       this.controleur,
       this.client,
       this.etatSync,
+      this.magasin,
       this.ecranInitial});
 
   /// Données de navigation engendrées (manifeste, droits, parité).
@@ -85,6 +88,9 @@ class SighPoste extends StatelessWidget {
   final ClientMere? client;
   final SourceEtatSync? etatSync;
   final String? ecranInitial;
+
+  /// Données des écrans portés (jeu de démonstration ; la base locale viendra derrière la même interface).
+  final Magasin? magasin;
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +124,7 @@ class SighPoste extends StatelessWidget {
       donnees: donnees,
       ecranInitial: ecranInitial,
       ecrans: ecransPortes(controleur: ctl, client: cl),
+      magasin: magasin,
       etatSync: etatSync ??
           ValueNotifier(const EtatSync(niveau: NiveauSync.horsLigne)),
     );

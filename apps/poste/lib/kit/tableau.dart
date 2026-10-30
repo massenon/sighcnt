@@ -69,6 +69,8 @@ class TableauSigh extends StatefulWidget {
     this.nomExport = 'export',
     this.alExporter,
     this.actions = const [],
+    this.actionsGroupe,
+    this.libelleRecherche = 'Rechercher…',
   });
 
   final List<ColonneTableau> colonnes;
@@ -85,10 +87,15 @@ class TableauSigh extends StatefulWidget {
   final String? triInitial;
   final String sensInitial;
   final String nomExport;
+  final String libelleRecherche;
 
   /// Reçoit `(nomDeFichier, contenuCsv)` : l'écriture du fichier appartient à la plateforme, pas au kit.
   final void Function(String nom, String csv)? alExporter;
   final List<Widget> actions;
+
+  /// Commandes de la barre de sélection (`bulkActions`) : reçoivent les lignes sélectionnées et la fonction qui désélectionne.
+  final List<Widget> Function(
+      BuildContext, List<Ligne> selection, VoidCallback effacer)? actionsGroupe;
 
   @override
   State<TableauSigh> createState() => TableauSighState();
@@ -280,7 +287,7 @@ class TableauSighState extends State<TableauSigh> {
                         key: const Key('kit:tableau-recherche'),
                         style: styleSaisie,
                         decoration: decorationChamp(
-                            indicatif: 'Rechercher…',
+                            indicatif: widget.libelleRecherche,
                             prefixe: const Padding(
                                 padding: EdgeInsets.only(left: 10, right: 6),
                                 child: Icon(LucideIcons.search,
@@ -331,6 +338,16 @@ class TableauSighState extends State<TableauSigh> {
                   height: 20 / 14,
                   fontWeight: FontWeight.w500)),
           const Spacer(),
+          if (widget.actionsGroupe != null)
+            for (final a in widget.actionsGroupe!(
+                context,
+                [
+                  for (final r in lignesFiltrees)
+                    if (_selection.contains(r['id'])) r
+                ],
+                () => setState(_selection.clear)))
+              Padding(padding: const EdgeInsets.only(left: 8), child: a),
+          const SizedBox(width: 8),
           BoutonSigh(
               libelle: 'Tout désélectionner',
               variante: VarianteBouton.fantome,
@@ -352,7 +369,9 @@ class TableauSighState extends State<TableauSigh> {
         builder: (context, c) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
-                constraints: BoxConstraints(minWidth: c.maxWidth),
+                // Largeur imposée : comme une table CSS, les colonnes se resserrent (retour à la ligne) avant que la table ne déborde.
+                constraints:
+                    BoxConstraints(minWidth: c.maxWidth, maxWidth: c.maxWidth),
                 child: Table(
                   key: const Key('kit:tableau-table'),
                   columnWidths: colonnes,
@@ -511,7 +530,8 @@ class TableauSighState extends State<TableauSigh> {
               alignment:
                   col.droite ? Alignment.centerRight : Alignment.centerLeft,
               child: Row(mainAxisSize: MainAxisSize.min, children: [
-                Text(col.libelle.toUpperCase(), style: _styleTete),
+                Flexible(
+                    child: Text(col.libelle.toUpperCase(), style: _styleTete)),
                 if (actif)
                   Padding(
                       padding: const EdgeInsets.only(left: 4),

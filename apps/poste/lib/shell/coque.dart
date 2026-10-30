@@ -8,6 +8,8 @@ import '../sync/etat_sync.dart';
 import 'barre_superieure.dart';
 import 'ecran_a_porter.dart';
 import 'page_standard.dart';
+import 'contexte_ecran.dart';
+import '../donnees/magasin.dart';
 import 'ruban.dart';
 
 /// Coque UNIQUE du poste (fileul et mère) : barre supérieure → ruban à méga-menus → page. Elle reproduit la structure de
@@ -19,11 +21,15 @@ class CoquePoste extends StatefulWidget {
       required this.donnees,
       required this.ecrans,
       required this.etatSync,
+      this.magasin,
       this.ecranInitial});
   final ConfigPoste config;
   final DonneesNavigation donnees;
   final Map<String, ConstruireEcran> ecrans;
   final SourceEtatSync etatSync;
+
+  /// Données des écrans portés (vide si absent).
+  final Magasin? magasin;
 
   /// Ouvre directement cet écran (lien profond, mesure de parité). Sans droit sur lui, la page d'accueil du rôle s'ouvre.
   final String? ecranInitial;
@@ -136,13 +142,36 @@ class _CoquePosteState extends State<CoquePoste> {
     ];
     if (e == null) return const Center(child: Text('Écran inconnu.'));
     final porte = widget.ecrans[id];
-    if (porte == null)
+    if (porte == null) {
       return EcranAPorter(ecran: e, donnees: widget.donnees, fil: fil);
-    return PageStandard(
-        titre: e.label,
-        fil: fil,
-        module: e.module,
-        defilable: false,
-        child: porte(context, widget.config));
+    }
+    return Builder(builder: (context) {
+      // Les droits sont ceux de l'ÉCRAN (une surcharge d'écran l'emporte sur son module) ; un servant hérite du registre qu'il alimente.
+      final droit = widget.donnees.matrice.droit(widget.config.role, id);
+      return ContexteEcran(
+        ecranId: id,
+        role: widget.config.role,
+        droit: droit,
+        magasin: widget.magasin ?? _magasinVide,
+        aller: (cible) {
+          if (widget.donnees.matrice.peutVoir(widget.config.role, cible))
+            _ouvrir(cible);
+        },
+        child: Builder(builder: (context) {
+          final w = porte(context, widget.config);
+          return PageStandard(
+              titre: e.label,
+              fil: fil,
+              module: e.module,
+              defilable: w is EcranMaquette ? true : false,
+              description: w is EcranMaquette ? w.description : null,
+              regle: w is EcranMaquette ? w.regle : null,
+              actions: w is EcranMaquette ? w.actionsEntete(context) : const [],
+              child: w);
+        }),
+      );
+    });
   }
+
+  static final Magasin _magasinVide = Magasin();
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../core/jetons_shell.dart';
+import '../kit/carte.dart';
 
 /// Gabarit de page de la maquette : fil d'Ariane → titre + code du module → description → devise → commandes → règle
 /// (encadré bleu) → contenu. Même ordre, mêmes gabarits typographiques (titre 20/600, texte 14, devise 12 italique).
@@ -94,22 +95,7 @@ class PageStandard extends StatelessWidget {
       ]),
       if (regle != null) ...[
         const SizedBox(height: 14),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-          decoration: BoxDecoration(
-              color: const Color(0xFFEFF6FF),
-              border: Border.all(color: const Color(0xFFBFDBFE)),
-              borderRadius: BorderRadius.circular(8)),
-          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Icon(LucideIcons.info, size: 15, color: Color(0xFF2563EB)),
-            const SizedBox(width: 10),
-            Expanded(
-                child: Text(regle!,
-                    style: const TextStyle(
-                        color: JetonsShell.slate700, fontSize: 13))),
-          ]),
-        ),
+        NoteSigh(regle!),
       ],
       const SizedBox(height: 16),
     ];

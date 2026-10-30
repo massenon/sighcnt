@@ -9,7 +9,7 @@
 | Hubs de module (un par module, engendrés) | 22 |
 | Écrans nommés par au moins un scénario de la maquette | 201 (63 %) |
 | Écrans **sans** scénario (recette à écrire) | 120 |
-| Écrans portés | 0 |
+| Écrans portés | 1 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 74 |
 
@@ -19,7 +19,7 @@
 
 | Tranche | Écrans | Avec scénario | Portés | Recettés |
 |---|---|---|---|---|
-| 1 · caisse + MECeF + impression | 17 | 8 | 0 | 0 |
+| 1 · caisse + MECeF + impression | 17 | 8 | 1 | 0 |
 | 2 · pharmacie, stocks, achats | 27 | 21 | 0 | 0 |
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 21 | 0 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 0 | 0 |
@@ -38,7 +38,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m8-dashboard` | Tableau de bord facturation | M8 | 8 | — | non commencé |
 | `m8-facturation` | Nouvelle facture | M8 | 7 | 10, 12, 16, 18, 31, 33 | non commencé |
 | `m8-facture-avoir` | Factures d’avoir | M8 | 8 | 47 | non commencé |
-| `m8-factures` | Factures | M8 | 8 | 11, 29, 47 | non commencé |
+| `m8-factures` | Factures | M8 | 8 | 11, 29, 47 | porté |
 | `m8-operations` | Opérations de caisse | M8 | 8 | 19 | non commencé |
 | `m8-paiements` | Paiements | M8 | 7 | — | non commencé |
 | `m8-proforma` | Factures pro-forma | M8 | 8 | — | non commencé |

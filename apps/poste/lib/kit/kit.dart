@@ -11,3 +11,6 @@ export 'modale.dart';
 export 'onglets.dart';
 export 'tableau.dart';
 export 'ton.dart';
+export 'detail.dart';
+export 'toast.dart';
+export 'crud.dart';
