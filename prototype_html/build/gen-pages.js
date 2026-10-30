@@ -23,7 +23,7 @@ const MODULE_FILES = {
   M4: 'm4-maternite', M5: 'm5-laboratoire', M6: 'm6-stock', M7: 'm7-achats',
   M8: 'm8-facturation', M9: 'm9-assurances', MECEF: 'mecef', M12: 'm12-comptabilite',
   M10: 'm10-rh', M11: 'm11-paie', M13: 'm13-administration', GED: 'ged',
-  RAP: 'rapports', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
+  RAP: 'rapports', MERE: 'mere', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
 };
 
 const SCRIPTS = [

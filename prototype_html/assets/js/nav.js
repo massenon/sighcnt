@@ -667,6 +667,66 @@
         },
       ],
     },
+    /* ======================================================================
+     * POSTE MÈRE (30/10/2026) — les 22 modules complémentaires du mode mère.
+     * Un seul module (MERE), cinq rangées : la première est canonique, les
+     * autres sont secondaires (même code, aucun second hub). Réservé à
+     * l administrateur et à la DAF : c est le serveur de la clinique.
+     * Source : docs/architecture/MODULES-COMPLEMENTAIRES-MERE.md
+     * ==================================================================== */
+    {
+      domain: 'Poste mère',
+      icon: 'server',
+      modules: [
+        {
+          code: 'MERE', label: 'Exploitation de la synchronisation', icon: 'refresh-cw', roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-supervision', label: 'Supervision', icon: 'heart-pulse' },
+            { id: 'mere-appareils', label: 'Appareils et appairage', icon: 'monitor-smartphone' },
+            { id: 'mere-conflits', label: 'Conflits et doublons', icon: 'git-compare' },
+            { id: 'mere-a-traiter', label: '« À traiter » consolidé', icon: 'octagon-alert' },
+            { id: 'mere-journal-operations', label: 'Journal des opérations', icon: 'list-ordered' },
+            { id: 'mere-plages-baux', label: 'Plages de numéros et baux de stock', icon: 'hash' },
+            { id: 'mere-lots-tournee', label: 'Lots de tournée (mobiles)', icon: 'package' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Sécurité et continuité', icon: 'shield-check', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-journal-technique', label: 'Journal technique', icon: 'scroll-text' },
+            { id: 'mere-sauvegardes', label: 'Sauvegardes et restauration', icon: 'database-backup' },
+            { id: 'mere-cle-clinique', label: 'Clé de clinique', icon: 'key-round' },
+            { id: 'mere-integrite', label: 'Intégrité et altérations', icon: 'shield-alert' },
+            { id: 'mere-reinit', label: 'Réinitialisation de production', icon: 'trash-2' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Liaison avec le relais', icon: 'cloud', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-relais', label: 'Relais en ligne', icon: 'cloud' },
+            { id: 'mere-indicateurs', label: 'Indicateurs publiés', icon: 'eye-off' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Plateforme locale', icon: 'server-cog', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-service', label: 'Service et démarrage', icon: 'power' },
+            { id: 'mere-base', label: 'Base de données locale', icon: 'database' },
+            { id: 'mere-reseau', label: 'Réseau local', icon: 'network' },
+            { id: 'mere-planificateur', label: 'Planificateur', icon: 'timer' },
+            { id: 'mere-notifications', label: 'Notifications serveur', icon: 'bell-ring' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Cycle de vie', icon: 'rocket', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-mise-en-service', label: 'Assistant de première mise en service', icon: 'wand-sparkles' },
+            { id: 'mere-mises-a-jour', label: 'Mises à jour et compatibilité', icon: 'package-check' },
+            { id: 'mere-import', label: 'Import de migration', icon: 'file-up' },
+          ],
+        },
+      ],
+    },
     /* Pilotage vient en DERNIER : l’ordre cible des Instructions place les
        domaines de travail avant l’analyse. */
     {
