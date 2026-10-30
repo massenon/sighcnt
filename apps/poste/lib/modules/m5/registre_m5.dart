@@ -4,6 +4,10 @@ import '../../core/config_poste.dart';
 import 'dem_prelevement.dart';
 import 'dem_registre.dart';
 import 'dem_service.dart';
+import 'res_comparatif.dart';
+import 'res_impression.dart';
+import 'res_resultats.dart';
+import 'res_stats.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -15,4 +19,9 @@ final Map<String, ConstruireEcran> ecransM5 = {
   'm5-demandes-maternite': (c, cfg) => const EcranDemandesService.maternite(),
   'm5-demandes-hospitalisation': (c, cfg) => const EcranDemandesService.hospitalisation(),
   'm5-prelevement': (c, cfg) => const EcranPrelevement(),
+  // Le résultat d'analyse (fichiers `res_*`) : les deux verrous, l'impression filtrée par le règlement, le comparatif des antériorités, les statistiques.
+  'm5-resultats': (c, cfg) => const EcranResultats(),
+  'm5-impression-resultats': (c, cfg) => const EcranImpressionResultats(),
+  'm5-resultats-comparatif': (c, cfg) => const EcranComparatifResultats(),
+  'm5-stats': (c, cfg) => const EcranStatsLabo(),
 };

@@ -55,5 +55,9 @@
  "m5-demandes": "porté",
  "m5-prelevement": "porté",
  "m5-demandes-maternite": "porté",
- "m5-demandes-hospitalisation": "porté"
+ "m5-demandes-hospitalisation": "porté",
+ "m5-resultats": "porté",
+ "m5-resultats-comparatif": "porté",
+ "m5-impression-resultats": "porté",
+ "m5-stats": "porté"
 }
