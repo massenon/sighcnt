@@ -11,6 +11,8 @@ import 'mvt_inventaire_feuille.dart';
 import 'mvt_mouvements.dart';
 import 'mvt_pertes.dart';
 import 'mvt_transferts.dart';
+import 'points_stock.dart';
+import 'points_ventes.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -29,4 +31,6 @@ final Map<String, ConstruireEcran> ecransM6 = {
   'm6-inventaire': (c, cfg) => const EcranInventaires(),
   'm6-inventaire-feuille': (c, cfg) => const EcranInventaireFeuille(),
   'm6-pertes': (c, cfg) => const EcranPertes(),
+  'm6-point-ventes': (_, __) => const EcranPointVentes(),
+  'm6-point-stock': (_, __) => const EcranPointStock(),
 };

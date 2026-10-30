@@ -449,6 +449,8 @@ class _Liste extends StatelessWidget {
     if (_multi) {
       final l = (v as List).cast<String>();
       if (l.isEmpty) return '';
+      // `U.combo` : un ou deux libellés, puis « N sélectionnées ».
+      if (l.length > 2) return '${l.length} sélectionnées';
       return l
           .map((x) => def.options
               .firstWhere((o) => o.valeur == x, orElse: () => OptionChamp(x))
