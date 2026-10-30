@@ -670,46 +670,46 @@
     "filtre": "Sexe",
     "valeur": "Masculin",
     "codes": [
-     "",
-     ""
+     "CNT/2/26",
+     "CNT/5/26"
     ]
    },
    {
     "filtre": "Sexe",
     "valeur": "Féminin",
     "codes": [
-     "",
-     "",
-     "",
-     "",
-     ""
+     "CNT/1/26",
+     "CNT/3/26",
+     "CNT/4/26",
+     "CNT/6/26",
+     "CNT/8/26"
     ]
    },
    {
     "filtre": "Couverture",
     "valeur": "Assurés",
     "codes": [
-     "",
-     "",
-     "",
-     ""
+     "CNT/3/26",
+     "CNT/4/26",
+     "CNT/5/26",
+     "CNT/6/26"
     ]
    },
    {
     "filtre": "Couverture",
     "valeur": "Non assurés",
     "codes": [
-     "",
-     "",
-     ""
+     "CNT/1/26",
+     "CNT/2/26",
+     "CNT/8/26"
     ]
    },
    {
     "filtre": "Couverture",
     "valeur": "Carte expirée",
     "codes": [
-     "",
-     ""
+     "CNT/4/26",
+     "CNT/6/26"
     ]
    },
    {
@@ -761,11 +761,11 @@
     "filtre": "Quartier",
     "valeur": "Tchirimina",
     "codes": [
-     "",
-     "",
-     "",
-     "",
-     ""
+     "CNT/1/26",
+     "CNT/3/26",
+     "CNT/4/26",
+     "CNT/6/26",
+     "CNT/8/26"
     ]
    },
    {

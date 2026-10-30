@@ -134,7 +134,7 @@ const veut = (n) => quoi === 'tout' || quoi === n;
       for (const s of selects) {
         for (const o of [...s.options].slice(1)) {
           s.value = o.value; s.dispatchEvent(new Event('change')); await dormir(40);
-          filtres.push({ filtre: s.getAttribute('aria-label') || s.name || s.id, valeur: norm(o.textContent), codes: lignes(root).map((l) => l[0]) });
+          filtres.push({ filtre: s.getAttribute('aria-label') || s.name || s.id, valeur: norm(o.textContent), codes: lignes(root).map((l) => l[1]) });
         }
         s.value = ''; s.dispatchEvent(new Event('change')); await dormir(30);
       }
