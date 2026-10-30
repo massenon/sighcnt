@@ -3,7 +3,7 @@
      node build/gen-poste-jeu.js → apps/poste/assets/donnees/jeu/<collection>.json */
 'use strict';
 const fs = require('fs'), path = require('path');
-const { ouvrirMaquette } = require('./extraire');
+const { ouvrirMaquette, ROOT } = require('./extraire');
 const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalyses', 'demandesImagerie', 'ordonnances', 'ecritures', 'audit',
   /* émission de facture : catalogue, médicaments, natures, conventions */
   'naturesFacture', 'actes', 'produits', 'souscripteurs', 'garanties', 'couverturesAssurance', 'mouvements', 'facturesMere', 'remboursements',
@@ -15,7 +15,12 @@ const SORTIE = path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'd
   const m = await ouvrirMaquette();
   try {
     /* Les registres d'achats ne naissent que sur demande dans la maquette (l'ouverture de M7) : on les amorce comme elle, avant l'export. */
-    await m.page.evaluate(() => { try { SIGH.semerAchats(true); } catch (e) { console.error(e); } });
+    await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m7-achats.js') });
+    /* Les PV de réception sont amorcés PAR LEUR ÉCRAN (`amorcerPV`, local à m7-achats.js) : on monte l'écran comme l'agent, sinon l'export est vide. */
+    await m.page.evaluate(() => {
+      try { SIGH.semerAchats(true); } catch (e) { console.error(e); }
+      try { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m7-pv-reception-consommables'].render(r); r.remove(); } catch (e) { console.error(e); }
+    });
     for (const nom of COLLECTIONS) {
       const lignes = await m.page.evaluate((n) => JSON.parse(JSON.stringify(SIGH.store.collection(n).all().concat(SIGH.store.collection(n).archived()), (k, v) => (v === null ? undefined : v))), nom);
       fs.writeFileSync(path.join(SORTIE, nom + '.json'), JSON.stringify(lignes));
