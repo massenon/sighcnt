@@ -46,6 +46,7 @@ List<Fiche> patients() => [
           'nom': p.$1,
           'prenom': p.$2,
           'sexe': i % 2 == 0 ? 'F' : 'M',
+          if (i == 1) ...{'assureur': 'SUNU', 'tauxPriseEnCharge': 70},
           'dateNaissance': '1970-01-01',
           'adresse': 'Santa, Natitingou',
           'quartier': 'Kotopounga',
@@ -58,7 +59,7 @@ Magasin magasin(Map<String, List<Fiche>> plus) => Magasin({
       'catalogueTarifs': jeuJson('catalogueTarifs'),
       'audit': const <Fiche>[],
       for (final e in plus.entries) e.key: [for (final f in e.value) {...f}],
-    }, 'POSTE');
+    }, 'POSTE', {...(jsonDecode(File('assets/donnees/jeu/referentiels.json').readAsStringSync()) as Map).cast<String, Object?>()});
 
 Future<void> ouvrir(WidgetTester t, Magasin m, String ecran, {String role = 'admin'}) async {
   t.view.physicalSize = const Size(1600, 1100);
@@ -132,11 +133,13 @@ void comparerKpis(WidgetTester t, Object? attendus) {
 
 void comparerTableau(WidgetTester t, Object? attendu, {int colonnes = -1}) {
   final tab = t.widget<TableauSigh>(find.byType(TableauSigh).first);
+  final vue = t.state<TableauSighState>(find.byType(TableauSigh).first).lignesFiltrees;
   final lignes = m_((attendu as List).single)['lignes'] as List;
-  expect(tab.lignes.length, lignes.length);
+  expect(vue.length, lignes.length);
   for (var i = 0; i < lignes.length; i++) {
     final l = (lignes[i] as List).cast<String>();
-    final obtenu = cellules(tab, tab.lignes[i]);
+    final obtenu = cellules(tab, vue[i]);
+
     final n = colonnes < 0 ? obtenu.length : colonnes;
     expect([for (final x in obtenu.take(n)) _s(x)], [for (final x in l.take(n)) _s(x)], reason: 'ligne $i');
   }
@@ -576,6 +579,135 @@ void main() {
       expect(find.byTooltip('Consulter'), findsWidgets);
       await ouvrir(t, base(), 'm3-bloc-checklist', role: 'caissier');
       expect(find.text('Check-listes du bloc'), findsNothing);
+    });
+  });
+
+  group('m3-demande-examen — la fiche de demande du service', () {
+    final c = m_(vecteurs['demandeExamen']);
+    Magasin base() => magasin({'demandesAnalyses': liste(c['jeu']), 'factures': [], 'taches': []});
+
+    Future<void> cocherExamens(WidgetTester t, List<String> libelles) async {
+      await choisir(t, 'analyses', libelles.first);
+      for (final l in libelles.skip(1)) {
+        await toucher(t, find.text(l).last);
+      }
+      // Le panneau d'une liste à cases reste ouvert d'un choix à l'autre : un clic hors du panneau le referme.
+      await t.tapAt(const Offset(5, 5));
+      await t.pump(const Duration(milliseconds: 300));
+    }
+
+    Future<void> remplir(WidgetTester t, {String prescripteur = 'BASSONGUI Chabi Séko — Directeur Médical'}) async {
+      await choisir(t, 'patientCode', 'CNT/2/26 — BAKO Boukari');
+      await saisir(t, 'residence', 'Natitingou');
+      await choisir(t, 'prescripteur', prescripteur);
+      await saisir(t, 'indication', 'Anémie');
+      await cocherExamens(t, ['L01 — AKOP', 'L02 — ASLO']);
+    }
+
+    cas('indicateurs et lignes identiques à la maquette ; parité N1 = 100 %', (t) async {
+      await ouvrir(t, base(), 'm3-demande-examen');
+      final e = m_(c['ecran']);
+      comparerKpis(t, e['kpis']);
+      comparerTableau(t, e['tableaux'], colonnes: 7);
+      await parite(t, 'm3-demande-examen');
+    });
+
+    cas('« un examen urgent » sans le nommer : refus NOMMÉ, la fiche n\'est pas émise', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-demande-examen');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouvelle fiche de demande'));
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre la fiche'));
+      expect(find.text('Le formulaire comporte des erreurs.'), findsOneWidget);
+      await remplir(t);
+      await choisir(t, 'urgence', 'Un examen urgent');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre la fiche'));
+      expect(find.text('Nommer L’EXAMEN urgent.'), findsOneWidget);
+      expect(find.textContaining('laisserait le laboratoire deviner'), findsOneWidget);
+      expect(m.collection('demandesAnalyses').toutes.length, 5);
+      expect(m.collection('factures').toutes, isEmpty);
+    });
+
+    cas('émission : demandes bloquées par le paiement, facture à lignes payables, caisse saisie, prélèvement en attente, fiche imprimée', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-demande-examen');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouvelle fiche de demande'));
+      await remplir(t);
+      await choisir(t, 'urgence', 'Un examen urgent');
+      await choisir(t, 'examenUrgent', 'ASLO');
+      await cocher(t, 'hospitalise');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre la fiche'));
+      final em = m_(c['emission']);
+      final attendu = liste(em['demandes']);
+      final obtenu = m.collection('demandesAnalyses').toutes.take(2).toList();
+      expect(obtenu.length, 2);
+      for (var i = 0; i < 2; i++) {
+        for (final k in ['reference', 'codeAnalyse', 'patientCode', 'analyseCode', 'prix', 'prescripteur', 'urgent', 'etatAnalyse', 'origine', 'origineDemande', 'serviceDemandeur', 'secteurDemandeur', 'indication', 'hospitalise', 'bloqueParPaiement', 'factureNumero']) {
+          expect(obtenu[i][k], attendu[i][k], reason: 'demande $i : $k');
+        }
+      }
+      final fac = m.collection('factures').toutes.single;
+      final fa = liste(em['factures']).single;
+      for (final k in ['numero', 'montantTTC', 'partAssurance', 'partPatient', 'reliquat', 'statutPaiement', 'assureur', 'tauxPriseEnCharge', 'type', 'origineDemande']) {
+        expect(fac[k], fa[k], reason: 'facture : $k');
+      }
+      expect([for (final l in (fac['lignes'] as List)) (l as Map)['statutPaiement']], ['du', 'du']);
+      expect([for (final l in (fac['lignes'] as List)) (l as Map)['demandeId']], [for (final d in obtenu.reversed) d['id']]);
+      expect([for (final x in m.collection('taches').toutes) '${x['type']}:${x['statut']}'], [for (final x in liste(em['taches'])) '${x['type']}:${x['statut']}']);
+      expect(find.text('Fiche émise — 2 examen(s).'), findsOneWidget);
+      expect(find.text('Facture FE-2026-00001 à la caisse ; le prélèvement suivra le règlement.'), findsOneWidget);
+      expect(find.text('FICHE DE DEMANDE D’EXAMEN'), findsWidgets);
+      expect(find.text('Urgence : Un examen urgent — L02'), findsWidgets);
+      expect(kpi(t, 'Fiches du service'), '6');
+    });
+
+    cas('bilan entier en urgence : toutes les demandes sont urgentes ; hors maternité, aucun secteur demandeur', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-demande-examen');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouvelle fiche de demande'));
+      await choisir(t, 'patientCode', 'CNT/3/26 — N’TCHA Yacoubou');
+      await saisir(t, 'residence', 'Natitingou');
+      await choisir(t, 'serviceDemandeur', 'Médecine');
+      await saisir(t, 'indication', 'Anémie');
+      await cocherExamens(t, ['L03 — AZOTEMIE (UREMIE)']);
+      await choisir(t, 'urgence', 'Bilan entier en urgence');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre la fiche'));
+      final d = m.collection('demandesAnalyses').toutes.first;
+      final attendu = liste(m_(c['bilan'])['demandes']).single;
+      expect(d['urgent'], true);
+      expect(d['serviceDemandeur'], 'medecine');
+      expect(d['secteurDemandeur'], isNull);
+      expect(d['reference'], 'LAB-00006', reason: 'la série suit le registre : cinq fiches posées');
+      expect([d['analyseCode'], d['urgent'], d['serviceDemandeur'], d['secteurDemandeur']], [attendu['analyseCode'], attendu['urgent'], attendu['serviceDemandeur'], attendu['secteurDemandeur']]);
+    });
+
+    cas('prescripteur extérieur : son NOM est enregistré, jamais la valeur « EXTERNE » (E412)', (t) async {
+      final m = base();
+      await ouvrir(t, m, 'm3-demande-examen');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouvelle fiche de demande'));
+      expect(find.text('Prescripteur extérieur — nom, qualification et structure *'), findsNothing);
+      await remplir(t, prescripteur: '— Prescripteur extérieur à la clinique —');
+      await saisir(t, 'prescripteurExterne', 'Dr SALIFOU Aminou, Centre de santé de Perma');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre la fiche'));
+      final d = m.collection('demandesAnalyses').toutes.first;
+      expect(d['prescripteur'], 'Dr SALIFOU Aminou, Centre de santé de Perma (extérieur)');
+      expect(d['prescripteur'], liste(m_(c['externe'])['demandes']).single['prescripteur']);
+    });
+
+    cas('la résidence se reprend du dossier au choix du patient, sans écraser une saisie', (t) async {
+      await ouvrir(t, base(), 'm3-demande-examen');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Nouvelle fiche de demande'));
+      await choisir(t, 'patientCode', 'CNT/6/25 — DIEYABIDI Bibata');
+      expect(find.text('Santa, Natitingou'), findsOneWidget);
+      await saisir(t, 'residence', 'Boriyoure');
+      await choisir(t, 'patientCode', 'CNT/7/25 — OROU YO Adissa');
+      expect(find.text('Boriyoure'), findsOneWidget);
+    });
+
+    cas('rôles : la direction lit sans émettre ; le caissier n\'entre pas', (t) async {
+      await ouvrir(t, base(), 'm3-demande-examen', role: 'direction');
+      expect(find.widgetWithText(BoutonSigh, 'Nouvelle fiche de demande'), findsNothing);
+      await ouvrir(t, base(), 'm3-demande-examen', role: 'caissier');
+      expect(find.text('Registre des fiches de demande'), findsNothing);
     });
   });
 }

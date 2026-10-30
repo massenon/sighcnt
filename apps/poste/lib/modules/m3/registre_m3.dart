@@ -6,6 +6,7 @@ import 'bloc_cpa.dart';
 import 'bloc_cro.dart';
 import 'bloc_cra.dart';
 import 'bloc_checklist.dart';
+import 'bloc_demande_examen.dart';
 import 'hos_chambres.dart';
 import 'surv_administrations.dart';
 import 'surv_glasgow.dart';
@@ -39,4 +40,5 @@ final Map<String, ConstruireEcran> ecransM3 = {
   'm3-bloc-cro': (c, cfg) => const EcranCro(),
   'm3-cr-anesthesie': (c, cfg) => const EcranCra(),
   'm3-bloc-checklist': (c, cfg) => const EcranChecklistBloc(),
+  'm3-demande-examen': (c, cfg) => const EcranDemandeExamen(),
 };

@@ -277,6 +277,24 @@ BlocRefus? blocRefusDemandeExamen(Map<String, Object?> v) =>
             '« Un examen urgent » sans le nommer laisserait le laboratoire deviner.')
         : null;
 
+/// La valeur de la liste des prescripteurs qui désigne un prescripteur du DEHORS (`K.PRESCRIPTEUR_EXTERNE`).
+const blocPrescripteurExterne = 'EXTERNE';
+
+/// `K.nomPrescripteur(v, null, 'prescripteur')` : le nom à porter sur la pièce — jamais la valeur « EXTERNE » (écart E412 : la maquette l'enregistrait
+/// telle quelle et perdait le nom saisi, alors que c'est lui qui permet de renvoyer le compte rendu).
+String blocNomPrescripteur(Object? prescripteur, Object? externe) {
+  if (prescripteur != blocPrescripteurExterne) return _s(prescripteur);
+  final libre = _s(externe).trim();
+  return libre.isNotEmpty ? '$libre (extérieur)' : 'Prescripteur extérieur';
+}
+
+/// `C.age(naissance)` en texte : « 56 ans » (jours écoulés / 365,25, arrondis à l'entier inférieur), « — » sans date de naissance.
+String blocAgeTexte(Object? dateNaissance, DateTime auj) {
+  if (!_vrai(dateNaissance)) return '—';
+  final n = (hosJoursEntre(dateNaissance, auj) / 365.25).floor();
+  return '${n < 0 ? 0 : n} ans';
+}
+
 /// Le secteur demandeur porté par la demande : seule la maternité en a un (RBAC métier — la sage-femme lit les résultats de son secteur).
 String? blocSecteurDemandeur(Object? serviceDemandeur) =>
     serviceDemandeur == 'maternite' ? 'MATERNITÉ' : null;
