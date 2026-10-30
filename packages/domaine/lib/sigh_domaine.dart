@@ -10,3 +10,4 @@ export 'src/format/format_fr.dart';
 export 'src/referentiels/regles.dart';
 export 'src/referentiels/periodes.dart';
 export 'src/design/jetons.dart';
+export 'src/droits/matrice.dart';

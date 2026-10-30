@@ -5,7 +5,7 @@ import '../core/config_poste.dart';
 /// Un module de la coque. La navigation est DÉRIVÉE du registre (comme `nav.js` pour la maquette) : aucun lien écrit à
 /// la main, et un module d'un autre mode n'est jamais affiché.
 class ModuleSigh {
-  const ModuleSigh({required this.id, required this.libelle, required this.icone, required this.modes, required this.construire, this.groupe = 'Poste'});
+  const ModuleSigh({required this.id, required this.libelle, required this.icone, required this.modes, required this.construire, this.groupe = 'Poste', this.ecran, this.roles});
   final String id;
   final String libelle;
   final IconData icone;
@@ -13,6 +13,12 @@ class ModuleSigh {
   /// Modes qui portent ce module : un module commun déclare les deux, un module de la mère déclare `{mere}` seulement.
   final Set<ModePoste> modes;
   final String groupe;
+
+  /// Identifiant d'écran dans la matrice RBAC (`packages/rbac`) : le module est visible si le rôle VOIT cet écran.
+  final String? ecran;
+
+  /// Pour un module sans écran de maquette (ceux de la mère) : les rôles qui l'administrent. Ni `ecran` ni `roles` = fermé.
+  final Set<String>? roles;
   final Widget Function(BuildContext contexte, ConfigPoste config) construire;
 
   bool disponiblePour(ConfigPoste c) => modes.contains(c.mode);

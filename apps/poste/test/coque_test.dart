@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/main.dart';
 import 'package:sigh_poste/mere/client_mere.dart';
@@ -23,6 +27,7 @@ Future<void> monter(WidgetTester t, SighPoste app) async {
 }
 
 void main() {
+  testsDroits();
   test('le registre : un module de la mère n\'est JAMAIS visible d\'un fileul, la mère voit tout', () {
     final tous = [...modulesCommuns(), ...modulesMere(clientVide())];
     final fileul = modulesVisibles(const ConfigPoste(mode: ModePoste.fileul), tous: tous);
@@ -71,3 +76,25 @@ void main() {
 }
 
 bool _aucun(ModuleSigh m) => false;
+
+void testsDroits() {
+  final brut = jsonDecode(File('../../packages/rbac/data/rbac.json').readAsStringSync()) as Map<String, Object?>;
+  final matrice = MatriceDroits.depuisJson(brut);
+  final tous = [...modulesCommuns(), ...modulesMere(clientVide())];
+  List<String> ids(String role, ModePoste mode) => modulesVisibles(ConfigPoste(mode: mode, role: role), tous: tous, droit: droitsDuRole(matrice, role)).map((m) => m.id).toList();
+
+  test('mère : le DAF et l\'administrateur administrent ; le caissier voit seulement l\'accueil', () {
+    expect(ids('da', ModePoste.mere).where((i) => i.startsWith('mere-')).length, 5);
+    expect(ids('admin', ModePoste.mere).where((i) => i.startsWith('mere-')).length, 5);
+    expect(ids('caissier', ModePoste.mere), ['accueil-poste']);
+  });
+
+  test('un fileul ne reçoit jamais un module de la mère, même pour un DAF', () {
+    expect(ids('da', ModePoste.fileul), ['accueil-poste']);
+  });
+
+  test('rôle archivé ou inconnu : rien, pas même l\'accueil', () {
+    expect(ids('pharmacien', ModePoste.mere), isEmpty);
+    expect(ids('role-invente', ModePoste.mere), isEmpty);
+  });
+}
