@@ -198,3 +198,10 @@ String matSousTitreDetail(Fiche r) {
   }
   return '';
 }
+
+/// `U.alerter(…)` : l'alerte de sécurité clinique suit le message de création (posée une fois la modale refermée, jamais dans la même image).
+void matAlerteDiffere(BuildContext ctx, String message) {
+  Future<void>.delayed(const Duration(milliseconds: 600), () {
+    if (ctx.mounted) ToastsSigh.afficher(ctx, message, type: TypeToast.attention);
+  });
+}

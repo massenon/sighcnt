@@ -417,7 +417,7 @@ Fiche _fiche_naissance(BuildContext ctx, Fiche v, Fiche? existante) {
   _nombres(v, const ['poids', 'taille', 'pc', 'pt', 'apgar1', 'apgar5', 'apgar10']);
   matRecomposerDateHeure(v, 'dateHeure');
   if (matAlertesNouveauNe(v).isNotEmpty) {
-    ToastsSigh.afficher(ctx, matMessageAlerteNouveauNe, type: TypeToast.attention);
+    matAlerteDiffere(ctx, matMessageAlerteNouveauNe);
   }
   return matSansNuls(v);
 }

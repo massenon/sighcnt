@@ -110,7 +110,7 @@ class EcranCpn extends StatelessWidget with EcranMaquette {
       // Facteur de risque CPN : on SIGNALE, on ne coche pas GAR à la place de la sage-femme.
       final p = matFemmes(c.magasin).where((x) => x['code'] == v['patientCode']).firstOrNull;
       if (p != null && p['dateNaissance'] != null && matAgeHorsFenetreCpn(p['dateNaissance'], matVrai(v['gar']), c.aujourdhui)) {
-        ToastsSigh.afficher(ctx, matMessageAgeCpn(), type: TypeToast.attention);
+        matAlerteDiffere(ctx, matMessageAgeCpn());
       }
       return matSansNuls(v);
     }
