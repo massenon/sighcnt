@@ -11,7 +11,7 @@ const COLLECTIONS = ['factures', 'patients', 'avoirs', 'taches', 'demandesAnalys
   'dispensations', 'emplacements', 'inventaires', 'lots', 'transferts', 'valorisationsSage', 'besoins', 'commandes', 'facturesFournisseurs', 'fournisseurs', 'livraisons', 'pvReceptions',
   /* tranche 3 : laboratoire (M5) et imagerie (M2) */
   'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif', 'donneurs', 'poches', 'personnel', 'examensImagerie', 'variablesImagerie', 'clichesImagerie', 'resultatsImagerie',
-  'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications'];
+  'catalogueTarifs', 'consultations', 'dossiersConsultation', 'prescriptions', 'constantes', 'pathologies', 'soignants', 'notifications'];
 /* SIGH_JEU=sobre : jeu SANS le peuplement des parcours, sur lequel les vecteurs des tranches 1-2 ont été tirés (fixture de test). */
 const SOBRE = process.env.SIGH_JEU === 'sobre';
 const SORTIE = SOBRE ? path.resolve(__dirname, '..', '..', 'apps', 'poste', 'test', 'fixtures', 'jeu_sobre') : path.resolve(__dirname, '..', '..', 'apps', 'poste', 'assets', 'donnees', 'jeu');

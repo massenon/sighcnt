@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 
 typedef M = Map<String, Object?>;
 
-const jeu = '../../apps/poste/assets/donnees/jeu';
+const jeu = '../../apps/poste/test/fixtures/jeu_sobre';
 
 List<M> charger(String nom) => (jsonDecode(File('$jeu/$nom.json').readAsStringSync()) as List)
     .map((x) => (x as Map).cast<String, Object?>())
