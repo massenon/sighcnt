@@ -4,7 +4,11 @@ import '../core/config_poste.dart';
 import '../core/controleur_poste.dart';
 import '../mere/client_mere.dart';
 import '../mere/console.dart';
+import 'ged/registre_ged.dart';
 import 'm1/registre_m1.dart';
+import 'm13/registre_m13.dart';
+import 'm14/registre_m14.dart';
+import 'm9/registre_m9.dart';
 import 'm2/registre_m2.dart';
 import 'm3/registre_m3.dart';
 import 'm4/registre_m4.dart';
@@ -45,6 +49,10 @@ Map<String, ConstruireEcran> ecransPortes(
     'm8-facturation': (c, cfg) => const EcranFacturation(),
     'm8-caisse': (c, cfg) => const EcranCaisse(),
     // Tranche 2 — chaque module déclare ses écrans dans SON registre (un fichier par module : pas de conflit d'édition).
+    ...ecransGED,
+    ...ecransM13,
+    ...ecransM14,
+    ...ecransM9,
     ...ecransM1,
     ...ecransM2,
     ...ecransM3,

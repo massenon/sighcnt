@@ -23,9 +23,9 @@
         "detail": null
       },
       {
-        "libelle": "Le code patient est pré-attribué au format CNT[n°]/[année]",
-        "ok": false,
-        "detail": "code : CNT/1110/26"
+        "libelle": "Le code patient est pré-attribué au format CNT/[n°]/[année] (E300 : le format en vigueur depuis la vague 26)",
+        "ok": true,
+        "detail": null
       },
       {
         "libelle": "Le champ code est en lecture seule (RG-01)",
@@ -103,7 +103,7 @@
         "detail": null
       }
     ],
-    "ok": false
+    "ok": true
   },
   {
     "nom": "Navigation par sous-onglets",
