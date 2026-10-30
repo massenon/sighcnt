@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/config_poste.dart';
+import '../core/controleur_poste.dart';
 import '../mere/client_mere.dart';
 import '../mere/console.dart';
 import 'module_sigh.dart';
+import 'reglages_poste.dart';
 
 const _tous = {ModePoste.fileul, ModePoste.mere};
 const _mere = {ModePoste.mere};
@@ -15,7 +17,7 @@ const rolesAdminMere = {'admin', 'da'};
 
 /// Modules présents sur TOUT poste. Les tranches métier (caisse + MECeF, pharmacie, laboratoire…) s'ajoutent ici,
 /// dans l'ordre de `docs/architecture/PARITE-MAQUETTE.md` ; aucune n'est portée à ce jour.
-List<ModuleSigh> modulesCommuns() => [
+List<ModuleSigh> modulesCommuns([ControleurPoste? controleur]) => [
       ModuleSigh(
         id: 'accueil-poste',
         libelle: 'Accueil du poste',
@@ -24,6 +26,16 @@ List<ModuleSigh> modulesCommuns() => [
         roles: {'*'},   // page d'accueil du poste : tout rôle actif
         construire: (c, cfg) => Center(child: Text(cfg.estMere ? 'Poste mère — aucun module métier porté pour l’instant.' : 'Poste fileul — aucun module métier porté pour l’instant.')),
       ),
+      // « Ce poste » : où se décide que ce poste est la mère. Administrateur et DAF seulement, sur n'importe quel poste.
+      if (controleur != null)
+        ModuleSigh(
+          id: 'poste-reglages',
+          libelle: 'Ce poste',
+          icone: Icons.settings_applications_outlined,
+          modes: _tous,
+          roles: rolesAdminMere,
+          construire: (c, cfg) => ReglagesPoste(controleur: controleur),
+        ),
     ];
 
 /// Modules RÉSERVÉS à la mère : la console, rubrique par rubrique. Le client du service local est injecté.

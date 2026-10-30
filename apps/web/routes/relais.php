@@ -14,6 +14,8 @@ Route::get('/releve', [RelaisController::class, 'releve']);
 Route::get('/mere/appareils', [RelaisController::class, 'appareilsMere']);
 Route::get('/compteur', [RelaisController::class, 'compteur']);
 Route::post('/mere/revoquer', [RelaisController::class, 'revoquer']);
+Route::post('/mere/activer', [RelaisController::class, 'activerMere']);
+Route::post('/mere/desactiver', [RelaisController::class, 'desactiverMere']);
 Route::post('/mere/battement', [RelaisController::class, 'battement']);
 Route::post('/mere/indicateurs', [RelaisController::class, 'indicateurs']);
 Route::get('/admin/etat', [RelaisController::class, 'etat']);

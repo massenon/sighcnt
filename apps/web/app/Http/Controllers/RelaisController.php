@@ -197,6 +197,54 @@ class RelaisController extends Controller
         return response()->json(['ok' => true]);
     }
 
+    /**
+     * UNE SEULE MÈRE PAR CLINIQUE (30/10/2026). Le poste qui s'active en mode mère se déclare ici ; une seconde déclaration
+     * est REFUSÉE en nommant la première. Une mère silencieuse depuis plus que le seuil de battement peut être remplacée
+     * explicitement (reprise après sinistre) ; une mère vivante, jamais.
+     */
+    public function activerMere(Request $r): JsonResponse
+    {
+        $this->exigerMere($r);
+        $uuid = trim((string) $r->input('uuid'));
+        if ($uuid === '') {
+            $this->refus(422, 'uuid_requis', 'Identifiant du poste requis.');
+        }
+        $etiquette = mb_substr(trim((string) $r->input('etiquette', 'Poste mère')), 0, 80);
+        $remplacer = (bool) $r->input('remplacer', false);
+        $actuelle = json_decode((string) $this->meta('mere_active'), true);
+        $maintenant = (int) (microtime(true) * 1000);
+
+        if (is_array($actuelle) && ($actuelle['uuid'] ?? null) !== $uuid) {
+            $bt = $this->meta('battement');
+            $age = $bt ? $maintenant - (int) $bt : null;
+            $silencieuse = $age === null || $age > (int) config('relais.seuil_battement_ms');
+            if (! $remplacer) {
+                $this->refus(409, 'mere_deja_active', 'Une mère est déjà active : « '.($actuelle['etiquette'] ?? '?').' » depuis le '.date('d/m/Y H:i', (int) (($actuelle['depuis'] ?? 0) / 1000)).'. Il ne peut y avoir qu\'un seul poste mère par clinique.');
+            }
+            if (! $silencieuse) {
+                $this->refus(409, 'mere_vivante', 'La mère « '.($actuelle['etiquette'] ?? '?').' » a battu il y a '.round($age / 1000).' s : elle ne peut pas être remplacée tant qu\'elle est vivante. Arrêtez-la d\'abord.');
+            }
+            DB::table('relais_audit')->insert(['quand' => $maintenant, 'acteur' => 'mere:'.$uuid, 'action' => 'mere_remplacee', 'detail' => ($actuelle['etiquette'] ?? '?').' → '.$etiquette]);
+        } elseif (! is_array($actuelle)) {
+            DB::table('relais_audit')->insert(['quand' => $maintenant, 'acteur' => 'mere:'.$uuid, 'action' => 'mere_activee', 'detail' => $etiquette]);
+        }
+        $this->poserMeta('mere_active', json_encode(['uuid' => $uuid, 'etiquette' => $etiquette, 'depuis' => $maintenant], JSON_UNESCAPED_UNICODE));
+
+        return response()->json(['ok' => true]);
+    }
+
+    public function desactiverMere(Request $r): JsonResponse
+    {
+        $this->exigerMere($r);
+        $actuelle = json_decode((string) $this->meta('mere_active'), true);
+        if (is_array($actuelle) && ($actuelle['uuid'] ?? null) === (string) $r->input('uuid')) {
+            DB::table('relais_meta')->where('k', 'mere_active')->delete();
+            DB::table('relais_audit')->insert(['quand' => (int) (microtime(true) * 1000), 'acteur' => 'mere:'.$actuelle['uuid'], 'action' => 'mere_desactivee', 'detail' => $actuelle['etiquette'] ?? '']);
+        }
+
+        return response()->json(['ok' => true]);
+    }
+
     public function battement(Request $r): JsonResponse
     {
         $this->exigerMere($r);

@@ -54,3 +54,12 @@ Compilation Windows/Android, SQLCipher, service Windows, MECeF physique (protoco
 | T8 Packaging (service Windows/Linux, SQLCipher, compilation native) | non commencé — **impossible dans cet environnement** | |
 
 Écarts de la maquette découverts en portant : `docs/architecture/ECARTS-MAQUETTE.md` (quatre, dont deux touchent la comptabilité — **décision de la Direction attendue**).
+
+## Mise à jour du 30/10/2026 (soir)
+
+| Tâche | État | Preuve |
+|---|---|---|
+| T6 (partie 2) | **écarts E1 et E3 corrigés** dans la maquette puis portés | vecteurs régénérés ; 64 tests du domaine |
+| Prototypes | **fait** : 22 pages « Poste mère », 12 pages « Relais en ligne », simulateur mobile (21 écrans, 4 profils, iPhone 14 / Pixel 8) | `npm run mobile:check` 92/92 ; `build/check.js` 0 erreur |
+| T9 Activation du mode mère à l'exécution | **fait** | relais : `POST /mere/activer` (34 tests PHPUnit) ; poste : 43 tests ; le mode vit dans `poste.json`, plus dans une option de compilation |
+| Plan en sprints | **fait** | `PLAN-SPRINTS.md` |
