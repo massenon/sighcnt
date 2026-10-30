@@ -410,8 +410,7 @@ class _Date extends StatelessWidget {
               context: context,
               initialDate: base,
               firstDate: DateTime(1900),
-              lastDate: DateTime(2100),
-              locale: const Locale('fr'));
+              lastDate: DateTime(2100));
           if (d != null)
             ctl.poser(def.nom,
                 '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}');
@@ -459,8 +458,7 @@ class _DateHeure extends StatelessWidget {
               context: context,
               initialDate: base,
               firstDate: DateTime(1900),
-              lastDate: DateTime(2100),
-              locale: const Locale('fr'));
+              lastDate: DateTime(2100));
           if (d == null || !context.mounted) return;
           final h = await showTimePicker(
               context: context,
