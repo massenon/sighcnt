@@ -23,12 +23,13 @@ bool correspond(Object? botte, String aiguille) =>
 int _rang(String c) {
   final u = c.codeUnitAt(0);
   if (u >= 0x30 && u <= 0x39) return 1;
-  final lettre = (u >= 0x61 && u <= 0x7a) || u > 0x7f;
+  // Les apostrophes typographiques (‘ ’) sont de la ponctuation, pas des lettres : « N’TCHA » précède « NKOUÉ », comme avec l'apostrophe droite.
+  final lettre = (u >= 0x61 && u <= 0x7a) || (u > 0x7f && u != 0x2018 && u != 0x2019);
   return lettre ? 2 : 0;
 }
 
 /// Ordre de la ponctuation dans la collation racine d'ICU : l'espace, puis « _ - , ; : ! ? . » et le reste.
-const _ordrePonctuation = ' _-,;:!?.\'"()[]{}@*/\\&#%`^+<=>|~\$';
+const _ordrePonctuation = ' _-,;:!?.\'‘’"()[]{}@*/\\&#%`^+<=>|~\$';
 int _cle(String c) {
   final r = _rang(c);
   if (r != 0) return r * 1000 + c.codeUnitAt(0);

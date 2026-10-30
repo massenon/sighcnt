@@ -3818,12 +3818,13 @@
           var rows = C.sortBy(Object.keys(parPiece).map(function (k) {
             var g = parPiece[k], tt = cumuler(g), pp = pourcentages(tt);
             return {
-              date: C.dateFR(g[0].date), numero: g[0].numero, client: g[0].patient,
+              date: C.dateFR(g[0].date), dateIso: g[0].date, numero: g[0].numero, client: g[0].patient,
               brut: tt.brut, remise: tt.remise, assureur: tt.assureur,
               personnel: tt.personnel, paye: tt.encaisse, reste: tt.patient - tt.encaisse,
               pcRemise: pp.remise, pcAssureur: pp.assureur, pcPersonnel: pp.personnel,
             };
-          }), 'date');
+          /* Tri sur la date ISO, jamais sur son texte « jj/mm/aaaa » : trié comme texte, le 02/07 précédait le 01/08 (écart E40). */
+          }), 'dateIso');
           /* La cellule imprime son texte, la colonne sait rendre son nombre :
              c'est ce couple qui laisse le pied totaliser ce qui est REELLEMENT
              imprimé, sans que l'appelant fournisse un total. */
