@@ -18,7 +18,7 @@
     "inventaire-rbac": "node build/inventaire-rbac.js",
     "serveur": "node build/serveur.js",
     "extraire": "node build/extraire.js",
-    "vecteurs": "node build/vecteurs.js",
+    "vecteurs": "node build/vecteurs.js && node build/vecteurs-prise-en-charge.js",
     "parite": "node build/parite.js",
     "referentiels": "node build/extraire.js && node build/vecteurs.js && node build/parite.js && node build/gen-erd.js",
     "erd": "node build/gen-erd.js"
