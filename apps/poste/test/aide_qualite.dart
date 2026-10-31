@@ -52,6 +52,8 @@ Future<void> toucher(WidgetTester t, Finder f) async {
   await t.ensureVisible(f);
   await t.pump();
   await t.tap(f);
+  // Une route (modale, tiroir) se monte à la première image et s'anime à la suivante : deux pas, sinon le bouton d'un tiroir est encore hors champ.
+  await t.pump();
   await t.pump(const Duration(milliseconds: 300));
 }
 
