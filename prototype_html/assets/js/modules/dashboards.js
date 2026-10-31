@@ -3332,7 +3332,7 @@
         var adm = S.collection('admissions').active().filter(function (a) { return !a.dateSortie; });
         var rel = S.collection('releves', { module: 'M3', entite: 'FeuilleTemperature' }).active()
           .filter(function (r) { return r.date === C.iso(AUJ); });
-        var visites = S.collection('visitesPatients').active().filter(function (v) {
+        var visites = S.collection('visitesHospi').active().filter(function (v) {
           return String(v.date || '').slice(0, 10) === C.iso(AUJ);
         });
         return [
@@ -3420,7 +3420,7 @@
           { label: 'Comptes rendus au total', value: C.num(tous.length), icon: 'scan-line', tone: 'navy' },
           { label: 'Rendus au prescripteur', value: C.num(rendus.length), icon: 'send', tone: 'success' },
           { label: 'Ce mois-ci', value: C.num(mois.length), icon: 'calendar', tone: 'info' },
-          { label: 'Examens au catalogue', value: C.num((D.IMAGERIE && D.IMAGERIE.EXAMENS || []).length),
+          { label: 'Examens au catalogue', value: C.num(S.collection('examensImagerie').active().length),
             icon: 'list', tone: 'neutral' },
         ];
       },
@@ -3490,7 +3490,7 @@
         var pres = S.collection('presences').active().filter(function (x) {
           return String(x.date || '').slice(0, 10) === C.iso(AUJ);
         });
-        var retards = pres.filter(function (x) { return x.retard || x.statut === 'retard'; });
+        var retards = pres.filter(function (x) { return x.etat === 'retard'; });
         return {
           valeur: retards.length, unite: 'retard(s)',
           question: 'constatés aujourd’hui',
@@ -3509,8 +3509,8 @@
           return String(x.date || '').slice(0, 10) === C.iso(AUJ);
         });
         var conges = S.collection('conges').active().filter(function (x) {
-          return x.statut !== 'archive' && String(x.debut || '') <= C.iso(AUJ)
-            && String(x.fin || '') >= C.iso(AUJ);
+          return x.statutConge === 'valide' && String(x.dateDebut || '') <= C.iso(AUJ)
+            && String(x.dateFin || '') >= C.iso(AUJ);
         });
         return [
           { label: 'Présences pointées aujourd’hui', value: C.num(pres.length), icon: 'user-check', tone: 'success' },
