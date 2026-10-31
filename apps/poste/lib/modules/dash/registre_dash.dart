@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'tba_caissier.dart';
+import 'tba_comptable.dart';
 import 'tba_infirmier.dart';
 import 'tba_laborantin.dart';
 import 'tba_medecin.dart';
@@ -20,4 +21,5 @@ final Map<String, ConstruireEcran> ecransDASH = {
   'dash-laborantin': (c, cfg) => const EcranDashLaborantin(),
   'dash-stock': (c, cfg) => const EcranDashStock(),
   'dash-caissier': (c, cfg) => const EcranDashCaissier(),
+  'dash-comptable': (c, cfg) => const EcranDashComptable(),
 };
