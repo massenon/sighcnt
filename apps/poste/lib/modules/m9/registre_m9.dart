@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import '../../core/config_poste.dart';
 import 'assures.dart';
 import 'compagnies.dart';
+import 'creances.dart';
+import 'historique.dart';
+import 'prises_en_charge.dart';
+import 'relances.dart';
 import 'tableau_bord.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
@@ -13,4 +17,8 @@ final Map<String, ConstruireEcran> ecransM9 = {
   'm9-dashboard': (c, cfg) => const EcranDashboardAssurances(),
   'm9-compagnies': (c, cfg) => const EcranCompagnies(),
   'm9-assures': (c, cfg) => const EcranAssures(),
+  'm9-prises-en-charge': (c, cfg) => const EcranPrisesEnCharge(),
+  'm9-historique': (c, cfg) => const EcranHistoriqueAssureur(),
+  'm9-creances': (c, cfg) => const EcranCreances(),
+  'm9-relances': (c, cfg) => const EcranRelances(),
 };

@@ -95,6 +95,7 @@ PieceA4 pieceM9(ContexteEcran c,
         List<(String, String)> cartouche = const [],
         List<TableauEtat> tableaux = const [],
         List<BlocPiece> blocs = const [],
+        List<(String, String)> filtres = const [],
         List<Signature> signatures = const []}) =>
     PieceA4(
         titre: titre,
@@ -105,6 +106,7 @@ PieceA4 pieceM9(ContexteEcran c,
         cartouche: cartouche,
         tableaux: tableaux,
         blocs: blocs,
+        filtres: filtres,
         signatures: signatures);
 
 const signDaf = Signature('La Directrice Administrative', nom: 'TAKI Alimatou');
