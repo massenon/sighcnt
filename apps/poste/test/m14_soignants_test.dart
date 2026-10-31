@@ -95,7 +95,7 @@ void main() {
     expect(find.text('Affichage de 1 à 10 sur 10 enregistrements'), findsOneWidget);
   });
 
-  casM14('modification : l'habilitation à exécuter change, le nom reste celui du dossier RH', (t) async {
+  casM14('modification : l\'habilitation à exécuter change, le nom reste celui du dossier RH', (t) async {
     final m = magasinM14();
     // La première ligne du tableau (tri par nom) : sa commande « Modifier » est la première.
     final cible = ([...m.collection('soignants').actives]..sort((x, y) => '${x['nomComplet']}'.compareTo('${y['nomComplet']}'))).first;

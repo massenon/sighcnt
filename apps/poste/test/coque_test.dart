@@ -135,10 +135,10 @@ void main() {
       'un écran de la maquette pas encore converti se NOMME : tranche et parité, jamais une page vide',
       (t) async {
     await monter(t,
-        config: const ConfigPoste(mode: ModePoste.fileul, role: 'caissier'));
-    await ouvrir(t, 'Financier', 'm9-compagnies');
+        config: const ConfigPoste(mode: ModePoste.fileul, role: 'comptable'));
+    await ouvrir(t, 'Financier', 'm12-dashboard');
     expect(find.byKey(const Key('ecran-a-porter')), findsOneWidget);
-    expect(find.textContaining('Identifiant : m9-compagnies'), findsOneWidget);
+    expect(find.textContaining('Identifiant : m12-dashboard'), findsOneWidget);
     expect(find.textContaining('tranche 5'), findsOneWidget);
     expect(find.byKey(const Key('fil-ariane')), findsOneWidget);
   });
