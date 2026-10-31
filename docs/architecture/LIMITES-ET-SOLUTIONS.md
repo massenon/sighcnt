@@ -102,3 +102,28 @@ Règle conservée : on ne corrige **jamais d'office** une règle de gestion — 
 ## Ce que je vous demande
 
 Répondre **par numéro** : `A1 oui`, `B5 oui avec …`, `D10 : durée 36 mois`, etc. Tout ce qui est marqué **T** sera traité sans autre question ; tout ce qui est **V** attend votre réponse.
+
+
+---
+
+## Décisions de la Direction du 31/10/2026 : « Je valide et j'accepte tout »
+
+Toutes les solutions V du présent document sont **validées**, avec les valeurs proposées quand une valeur était demandée :
+
+- **D10 (badge)** : validité 24 mois, format `BDG-NNNNN-AAAA` conservé, verso « propriété de la clinique, à rapporter si trouvé » + téléphone d'en-tête, pas de pointage en v1.
+- **C2** : les 16 tarifs d'imagerie en attente sont **arrêtés** le 31/10/2026 (`tarifArreteLe` sur le catalogue vivant, la semence garde son marquage). Méthode de valorisation : fiche datée, défaut inchangé (prix de vente) tant que la Direction ne bascule pas.
+- **RLS (12 écrans)** : déclarés « porté (apps/web) » après contrôle de parité contre le panneau Laravel existant.
+- **MERE (22 écrans)** : portés depuis la spécification du protocole et le moteur de synchronisation (tâche T19).
+- **Banque de sang et donneurs** : débloqués par A4.
+- **Statut des écrans autonomes non mesurables** : « porté », avec la mention « non mesurable » et des tests de comportement.
+- **Règle de rédaction** : plus de tirets cadratins (—), demi-cadratins (–) ni de traits d'union utilisés comme ponctuation dans le code, les commentaires, les textes d'interface et les paragraphes `text-xs text-info-900` ; on utilise la virgule, les deux-points, les parenthèses ou le point. Les identifiants (ids kebab, noms de fichiers, intervalles, dates) restent syntaxe.
+
+### Plan d'exécution (maquette d'abord pour toute règle de gestion, puis poste)
+
+| Vague | Contenu | Statut |
+|---|---|---|
+| 1 | A1+A5 (session nominative, authentification hachée) ; A4 (droits à chaud, banque de sang, onglet poste/rôle/accès) ; B5+B10 ; B6+A2+E742 ; B7+B8+B11+C3+C4 | lancée |
+| 2 | B1+B3+B4 (exercice partout, archive GED, doublon liasse) ; C1+C2+A3 ; D2+D3 ; F (branding, certificats) | après vague 1 |
+| 3 | D5+D6+D7 (fichier natif, français, tel/son) ; E2+E3+E4 (jeu figé, horloge, schéma) ; E5+E6 | après vague 2 |
+| 4 | MERE (22 écrans) ; RLS (12, contrôle de parité apps/web) | après vague 1 |
+| 5 | D8+D9+E1+E8+E9 (matériel : imprimantes, boîtier MECeF, builds natifs, synchronisation) | à la finalisation, avec vos fournitures |
