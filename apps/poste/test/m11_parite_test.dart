@@ -45,6 +45,8 @@ void main() {
         await t.pump(const Duration(milliseconds: 100));
       }
       final p = comparerContenu(id, f, textesVisibles(t));
+      // ignore: avoid_print
+      print('PARITE $id : ${p.presents}/${p.attendus} libellés, taux ${p.taux}');
       expect(p.manquants, isEmpty, reason: '$id : il manque ${p.manquants} (taux ${p.taux})');
       expect(p.taux, 1.0);
       await t.pump(const Duration(seconds: 10));
