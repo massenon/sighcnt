@@ -23,6 +23,7 @@ import 'parite/extracteur.dart';
 const ecransMesures = [
   'cfg-natures-facture',
   'cfg-organisation',
+  'cfg-tarifs',
 ];
 
 void main() {
