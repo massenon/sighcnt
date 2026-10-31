@@ -9,6 +9,13 @@ import 'cfa_organisation.dart';
 import 'cfa_pieces.dart';
 import 'cfa_rappels.dart';
 import 'cfa_tarifs.dart';
+import 'cfb_centres.dart';
+import 'cfb_compte.dart';
+import 'cfb_fiscal.dart';
+import 'cfb_modules.dart';
+import 'cfb_notifications.dart';
+import 'cfb_regles.dart';
+import 'cfb_systeme.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -25,4 +32,13 @@ final Map<String, ConstruireEcran> ecransCFG = {
   'cfg-rappels': (c, cfg) => const EcranRappels(),
   'cfg-imagerie-catalogue': (c, cfg) => const EcranImagerieCatalogue(),
   'cfg-natures-facture': (c, cfg) => const EcranNaturesFacture(),
+  // CFG (B)
+  'cfg-centres-couts': (c, cfg) => const EcranCentresCouts(),
+  'cfg-regles': (c, cfg) => const EcranRegles(),
+  'cfg-fiscalite': (c, cfg) => const EcranFiscalite(),
+  'cfg-comptabilite': (c, cfg) => const EcranComptabilite(),
+  'cfg-notifications': (c, cfg) => const EcranNotifications(),
+  'cfg-compte': (c, cfg) => const EcranCompte(),
+  'cfg-modules': (c, cfg) => const EcranModules(),
+  'cfg-systeme': (c, cfg) => const EcranSysteme(),
 };

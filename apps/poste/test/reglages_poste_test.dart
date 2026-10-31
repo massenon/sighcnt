@@ -43,7 +43,7 @@ ControleurPoste controleur(
 }
 
 Future<void> monter(WidgetTester t, ControleurPoste c) async {
-  t.view.physicalSize = const Size(1400, 1000);
+  t.view.physicalSize = const Size(1800, 1400);
   t.view.devicePixelRatio = 1;
   addTearDown(t.view.resetPhysicalSize);
   await t.pumpWidget(SighPoste(

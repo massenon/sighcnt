@@ -1354,7 +1354,8 @@
         }).then(function (ok) {
           if (!ok) return;
           var avant = methodeCourante();
-          S.storage.set(CLE_VALO, o.id);
+          /* E880 : une ancienne ligne `S.storage.set(CLE_VALO, …)` lisait une constante que personne ne déclare — ReferenceError dans la
+             promesse, donc ni bascule, ni journal, ni message : le paramètre de valorisation ne s'appliquait JAMAIS. La bascule vit au socle. */
           S.setValorisationSortie(o.id);
           S.log('Paramétrage', 'M6', 'Valorisation des sorties', o.id, { methode: avant }, { methode: o.id });
           dessinerValorisation();
@@ -2312,6 +2313,8 @@
           danger: fermer, requireMotif: fermer,
         }).then(function (rep) {
           if (!rep) return;
+          /* E881 : `update` modifie la fiche EN PLACE — le journal lisait `f.actif` APRÈS l'écriture et portait la même valeur avant et après. */
+          var actifAvant = f.actif;
           col().update(f.id, {
             actif: !fermer,
             motif: fermer ? (rep.motif || f.motif) : f.motif,
@@ -2322,7 +2325,7 @@
           });
           N.invaliderModules();
           S.log(fermer ? 'Fermeture d’une activité' : 'Réouverture d’une activité',
-            'CFG', 'Activité', f.code, { actif: f.actif }, { actif: !fermer });
+            'CFG', 'Activité', f.code, { actif: actifAvant }, { actif: !fermer });
           afficher();
           U.toast(fermer ? 'Activité fermée.' : 'Activité rouverte.', {
             type: 'success',

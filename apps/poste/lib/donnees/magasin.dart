@@ -93,6 +93,17 @@ class CollectionMagasin extends ChangeNotifier {
     if (_fiches.length > max) _fiches.removeRange(max, _fiches.length);
   }
 
+  /// Remplace TOUT le contenu de la collection (CFG › « Jeux de test » : vider les données d'activité, régénérer le jeu de démonstration). Aucun journal ici :
+  /// l'appelant inscrit le geste dans le journal conservé (RG-12). Les gardes de la collection ne jouent pas — c'est une remise à neuf, non une écriture de fiche.
+  void remplacerContenu(Iterable<Fiche> fiches) {
+    _fiches
+      ..clear()
+      ..addAll([
+        for (final f in fiches) {...f}
+      ]);
+    notifyListeners();
+  }
+
   /// Met à jour des champs de la fiche (`col.update`) et rend la fonction qui RESTITUE l'état d'avant. Rien n'est supprimé : un champ ajouté
   /// par la mise à jour est retiré à l'annulation.
   VoidCallback mettreAJour(Object? id, Fiche patch) {
@@ -316,6 +327,8 @@ class Magasin {
     'bulletins': 'M11',
     'exercices': 'M12',
     'objectifsPilotage': 'M12',
+    'modulesActifs': 'CFG',
+    'reglages': 'CFG',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
@@ -529,6 +542,7 @@ class Magasin {
     'heuresSup',
     'bulletins',
     'exercices',
-    'objectifsPilotage'
+    'objectifsPilotage',
+    'modulesActifs'
   ];
 }

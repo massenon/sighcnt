@@ -259,5 +259,14 @@
  "dash-comptable": "porté",
  "dash-rh": "porté",
  "dash-receptionniste": "porté",
- "dash-admin-agent": "porté"
+ "dash-admin-agent": "porté",
+ "cfg-centres-couts": "porté",
+ "cfg-regles": "porté",
+ "cfg-fiscalite": "porté",
+ "cfg-comptabilite": "porté",
+ "cfg-notifications": "porté",
+ "cfg-compte": "porté",
+ "cfg-modules": "porté",
+ "cfg-systeme": "porté",
+ "cfg-poste": "porté"
 }
