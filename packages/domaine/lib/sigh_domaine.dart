@@ -74,3 +74,4 @@ export 'src/rh/rhb_regles.dart';
 export 'src/comptabilite/cpc_exercice.dart';
 export 'src/comptabilite/cpc_baseline.dart';
 export 'src/comptabilite/cpc_echeances.dart';
+export 'src/comptabilite/cpc_bfr.dart';

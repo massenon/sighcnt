@@ -8,8 +8,7 @@ library;
 
 import '../format/format_fr.dart';
 import '../format/js.dart';
-
-typedef CpcFiche = Map<String, Object?>;
+import 'cpa_referentiels.dart' show CpaFiche;
 
 /// `ETATS_ECHEANCE` : (identifiant, libellé, ton) dans l'ordre de la maquette.
 const List<(String, String, String)> cpcEtatsEcheance = [
@@ -40,7 +39,7 @@ int cpcJoursAvant(DateTime auj, Object? echeance) {
 }
 
 /// `calculerEtat(e)` : jamais stocké, toujours recalculé.
-String cpcCalculerEtat(CpcFiche e, DateTime auj) {
+String cpcCalculerEtat(CpaFiche e, DateTime auj) {
   if (e['paye'] == true) return 'payee';
   final j = cpcJoursAvant(auj, e['echeance']);
   if (j < 0) return 'en_retard';
@@ -51,7 +50,7 @@ String cpcCalculerEtat(CpcFiche e, DateTime auj) {
 }
 
 /// Les lignes du tableau : la fiche, son état calculé et son délai.
-List<CpcFiche> cpcLignesEcheances(Iterable<CpcFiche> actives, DateTime auj) => [
+List<CpaFiche> cpcLignesEcheances(Iterable<CpaFiche> actives, DateTime auj) => [
       for (final e in actives) {...e, 'etat': cpcCalculerEtat(e, auj), 'jours': cpcJoursAvant(auj, e['echeance'])}
     ];
 
@@ -67,11 +66,11 @@ class CpcAlerteEcheance {
   final String titre, detail;
 
   /// L'échéance que le bouton « Valider le paiement » vise (retard et paiement proche seulement).
-  final CpcFiche? cible;
+  final CpaFiche? cible;
 }
 
 /// La barre de notification de l'écran, dans l'ordre de la maquette : retards, paiements sous dix jours, déclarations ; sinon « Aucune échéance en attente ».
-List<CpcAlerteEcheance> cpcBarreEcheances(List<CpcFiche> lignes) {
+List<CpcAlerteEcheance> cpcBarreEcheances(List<CpaFiche> lignes) {
   final retard = [for (final e in lignes) if (e['etat'] == 'en_retard') e];
   final aPayer = [for (final e in lignes) if (e['etat'] == 'a_payer') e];
   final decl = [for (final e in lignes) if (e['etat'] == 'declaration') e];
@@ -111,7 +110,7 @@ List<CpcAlerteEcheance> cpcBarreEcheances(List<CpcFiche> lignes) {
 
 /// L'alerte SONORE de l'ouverture : le comptable ne consulte pas l'écran tous les jours, c'est l'écran qui doit l'avertir. `null` s'il n'y a ni retard ni
 /// paiement sous dix jours.
-({String message, String son, String type, String detail})? cpcAlerteOuverture(List<CpcFiche> lignes) {
+({String message, String son, String type, String detail})? cpcAlerteOuverture(List<CpaFiche> lignes) {
   final retard = [for (final e in lignes) if (e['etat'] == 'en_retard') e];
   final aPayer = [for (final e in lignes) if (e['etat'] == 'a_payer') e];
   if (retard.isEmpty && aPayer.isEmpty) return null;
@@ -125,7 +124,7 @@ List<CpcAlerteEcheance> cpcBarreEcheances(List<CpcFiche> lignes) {
 }
 
 /// Le rappel d'une échéance (`rappeler(e)`).
-({String message, String detail}) cpcRappel(CpcFiche e) {
+({String message, String detail}) cpcRappel(CpaFiche e) {
   final j = e['jours'] as int;
   final decl = e['declaration'];
   return (
@@ -136,7 +135,7 @@ List<CpcAlerteEcheance> cpcBarreEcheances(List<CpcFiche> lignes) {
 }
 
 /// Le patch d'un paiement validé : son auteur, sa date, son montant et sa référence de quittance (RG-12). La saisie vide de l'observation s'écrit `null`.
-CpcFiche cpcPatchPaiement(
+CpaFiche cpcPatchPaiement(
         {required String datePaiement, required num montant, required String moyen, required String reference, required String valideePar, String? observation}) =>
     {
       'paye': true,
@@ -149,7 +148,7 @@ CpcFiche cpcPatchPaiement(
     };
 
 /// Le patch d'une validation annulée : l'échéance redevient due, le motif est consigné — la trace du paiement initial reste au journal d'audit.
-CpcFiche cpcPatchAnnulation(String motif) => {
+CpaFiche cpcPatchAnnulation(String motif) => {
       'paye': false,
       'datePaiement': null,
       'montant': null,

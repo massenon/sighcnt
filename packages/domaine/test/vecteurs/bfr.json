@@ -1,0 +1,2239 @@
+{
+ "moteur": {
+  "defaut": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-08-01",
+    "fin": "2026-10-30",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 1479323,
+   "bfrJours": 305,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "sansOptions": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-08-01",
+    "fin": "2026-10-30",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 1479323,
+   "bfrJours": 305,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "j30": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-09-30",
+    "fin": "2026-10-30",
+    "jours": 30
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 0,
+   "bfrJours": null,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "j180": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-05-03",
+    "fin": "2026-10-30",
+    "jours": 180
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 4395513,
+   "bfrJours": 205,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "j365": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2025-10-30",
+    "fin": "2026-10-30",
+    "jours": 365
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 6688044,
+   "bfrJours": 274,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "aout": {
+   "arrete": "2026-08-16",
+   "fenetre": {
+    "debut": "2026-05-18",
+    "fin": "2026-08-16",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 2799879,
+   "bfrJours": 161,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "futur": {
+   "arrete": "2027-03-01",
+   "fenetre": {
+    "debut": "2026-12-01",
+    "fin": "2027-03-01",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 0,
+   "bfrJours": null,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "sansCA": {
+   "arrete": "2024-01-01",
+   "fenetre": {
+    "debut": "2023-12-02",
+    "fin": "2024-01-01",
+    "jours": 30
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 0,
+   "bfrJours": null,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "valorisation": "prixVente",
+  "sansDettes": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-08-01",
+    "fin": "2026-10-30",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 0,
+   "bfr": 8228218,
+   "caPeriode": 1479323,
+   "bfrJours": 501,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 0,
+   "incomplet": [
+    "les factures fournisseurs"
+   ]
+  },
+  "sansRien": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-08-01",
+    "fin": "2026-10-30",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 0,
+   "dettes": 0,
+   "bfr": 2854586,
+   "caPeriode": 1479323,
+   "bfrJours": 174,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 0,
+   "incomplet": [
+    "les produits du stock",
+    "les factures fournisseurs"
+   ]
+  },
+  "nbParStatut": {
+   "factures": 409
+  },
+  "alertes": [
+   {
+    "seuil": 60,
+    "assureur": "OLEA",
+    "montant": 331365,
+    "nb": 16,
+    "jours": 295
+   },
+   {
+    "seuil": 60,
+    "assureur": "SOS",
+    "montant": 242949,
+    "nb": 16,
+    "jours": 331
+   },
+   {
+    "seuil": 60,
+    "assureur": "ASCOMA",
+    "montant": 228147,
+    "nb": 10,
+    "jours": 193
+   },
+   {
+    "seuil": 60,
+    "assureur": "NSIA",
+    "montant": 181404,
+    "nb": 18,
+    "jours": 242
+   },
+   {
+    "seuil": 60,
+    "assureur": "DAYO",
+    "montant": 153606,
+    "nb": 17,
+    "jours": 216
+   },
+   {
+    "seuil": 60,
+    "assureur": "SUNU",
+    "montant": 122855,
+    "nb": 10,
+    "jours": 316
+   },
+   {
+    "seuil": 60,
+    "assureur": "NOBILA",
+    "montant": 105921,
+    "nb": 11,
+    "jours": 304
+   },
+   {
+    "seuil": 60,
+    "assureur": "AFR",
+    "montant": 95717,
+    "nb": 10,
+    "jours": 246
+   },
+   {
+    "seuil": 60,
+    "assureur": "GAB",
+    "montant": 90086,
+    "nb": 8,
+    "jours": 221
+   },
+   {
+    "seuil": 60,
+    "assureur": "TRANSVIE",
+    "montant": 56140,
+    "nb": 4,
+    "jours": 212
+   },
+   {
+    "seuil": 60,
+    "assureur": "BECOTRA",
+    "montant": 56084,
+    "nb": 6,
+    "jours": 328
+   },
+   {
+    "seuil": 60,
+    "assureur": "ASK",
+    "montant": 40780,
+    "nb": 8,
+    "jours": 276
+   },
+   {
+    "seuil": 60,
+    "assureur": "SANLAM",
+    "montant": 28080,
+    "nb": 3,
+    "jours": 185
+   }
+  ],
+  "alertesAout": [
+   {
+    "seuil": 60,
+    "assureur": "ASCOMA",
+    "montant": 191510,
+    "nb": 6,
+    "jours": 118
+   },
+   {
+    "seuil": 60,
+    "assureur": "SOS",
+    "montant": 180167,
+    "nb": 10,
+    "jours": 256
+   },
+   {
+    "seuil": 60,
+    "assureur": "OLEA",
+    "montant": 163285,
+    "nb": 13,
+    "jours": 220
+   },
+   {
+    "seuil": 60,
+    "assureur": "NSIA",
+    "montant": 155315,
+    "nb": 12,
+    "jours": 167
+   },
+   {
+    "seuil": 60,
+    "assureur": "DAYO",
+    "montant": 75309,
+    "nb": 8,
+    "jours": 141
+   },
+   {
+    "seuil": 60,
+    "assureur": "AFR",
+    "montant": 65577,
+    "nb": 6,
+    "jours": 171
+   },
+   {
+    "seuil": 60,
+    "assureur": "GAB",
+    "montant": 60936,
+    "nb": 5,
+    "jours": 146
+   },
+   {
+    "seuil": 60,
+    "assureur": "SUNU",
+    "montant": 58855,
+    "nb": 6,
+    "jours": 241
+   },
+   {
+    "seuil": 60,
+    "assureur": "NOBILA",
+    "montant": 50823,
+    "nb": 8,
+    "jours": 229
+   },
+   {
+    "seuil": 60,
+    "assureur": "ASK",
+    "montant": 30780,
+    "nb": 6,
+    "jours": 201
+   },
+   {
+    "seuil": 60,
+    "assureur": "BECOTRA",
+    "montant": 30644,
+    "nb": 4,
+    "jours": 253
+   },
+   {
+    "seuil": 60,
+    "assureur": "SANLAM",
+    "montant": 22800,
+    "nb": 2,
+    "jours": 110
+   },
+   {
+    "seuil": 60,
+    "assureur": "TRANSVIE",
+    "montant": 11900,
+    "nb": 1,
+    "jours": 137
+   }
+  ],
+  "alertesSansFin": [
+   {
+    "seuil": 60,
+    "assureur": "OLEA",
+    "montant": 331365,
+    "nb": 16,
+    "jours": 295
+   },
+   {
+    "seuil": 60,
+    "assureur": "SOS",
+    "montant": 242949,
+    "nb": 16,
+    "jours": 331
+   },
+   {
+    "seuil": 60,
+    "assureur": "ASCOMA",
+    "montant": 228147,
+    "nb": 10,
+    "jours": 193
+   },
+   {
+    "seuil": 60,
+    "assureur": "NSIA",
+    "montant": 181404,
+    "nb": 18,
+    "jours": 242
+   },
+   {
+    "seuil": 60,
+    "assureur": "DAYO",
+    "montant": 153606,
+    "nb": 17,
+    "jours": 216
+   },
+   {
+    "seuil": 60,
+    "assureur": "SUNU",
+    "montant": 122855,
+    "nb": 10,
+    "jours": 316
+   },
+   {
+    "seuil": 60,
+    "assureur": "NOBILA",
+    "montant": 105921,
+    "nb": 11,
+    "jours": 304
+   },
+   {
+    "seuil": 60,
+    "assureur": "AFR",
+    "montant": 95717,
+    "nb": 10,
+    "jours": 246
+   },
+   {
+    "seuil": 60,
+    "assureur": "GAB",
+    "montant": 90086,
+    "nb": 8,
+    "jours": 221
+   },
+   {
+    "seuil": 60,
+    "assureur": "TRANSVIE",
+    "montant": 56140,
+    "nb": 4,
+    "jours": 212
+   },
+   {
+    "seuil": 60,
+    "assureur": "BECOTRA",
+    "montant": 56084,
+    "nb": 6,
+    "jours": 328
+   },
+   {
+    "seuil": 60,
+    "assureur": "ASK",
+    "montant": 40780,
+    "nb": 8,
+    "jours": 276
+   },
+   {
+    "seuil": 60,
+    "assureur": "SANLAM",
+    "montant": 28080,
+    "nb": 3,
+    "jours": 185
+   }
+  ],
+  "alertesSeuil45": [
+   {
+    "seuil": 45,
+    "assureur": "OLEA",
+    "montant": 331365,
+    "nb": 16,
+    "jours": 295
+   },
+   {
+    "seuil": 45,
+    "assureur": "SOS",
+    "montant": 242949,
+    "nb": 16,
+    "jours": 331
+   },
+   {
+    "seuil": 45,
+    "assureur": "ASCOMA",
+    "montant": 228147,
+    "nb": 10,
+    "jours": 193
+   },
+   {
+    "seuil": 45,
+    "assureur": "NSIA",
+    "montant": 181404,
+    "nb": 18,
+    "jours": 242
+   },
+   {
+    "seuil": 45,
+    "assureur": "DAYO",
+    "montant": 153606,
+    "nb": 17,
+    "jours": 216
+   },
+   {
+    "seuil": 45,
+    "assureur": "SUNU",
+    "montant": 122855,
+    "nb": 10,
+    "jours": 316
+   },
+   {
+    "seuil": 45,
+    "assureur": "NOBILA",
+    "montant": 105921,
+    "nb": 11,
+    "jours": 304
+   },
+   {
+    "seuil": 45,
+    "assureur": "AFR",
+    "montant": 95717,
+    "nb": 10,
+    "jours": 246
+   },
+   {
+    "seuil": 45,
+    "assureur": "GAB",
+    "montant": 90086,
+    "nb": 8,
+    "jours": 221
+   },
+   {
+    "seuil": 45,
+    "assureur": "TRANSVIE",
+    "montant": 56140,
+    "nb": 4,
+    "jours": 212
+   },
+   {
+    "seuil": 45,
+    "assureur": "BECOTRA",
+    "montant": 56084,
+    "nb": 6,
+    "jours": 328
+   },
+   {
+    "seuil": 45,
+    "assureur": "ASK",
+    "montant": 40780,
+    "nb": 8,
+    "jours": 276
+   },
+   {
+    "seuil": 45,
+    "assureur": "SANLAM",
+    "montant": 28080,
+    "nb": 3,
+    "jours": 185
+   }
+  ],
+  "alertesSeuil120": [
+   {
+    "seuil": 120,
+    "assureur": "ASCOMA",
+    "montant": 211797,
+    "nb": 7,
+    "jours": 193
+   },
+   {
+    "seuil": 120,
+    "assureur": "SOS",
+    "montant": 207777,
+    "nb": 13,
+    "jours": 331
+   },
+   {
+    "seuil": 120,
+    "assureur": "OLEA",
+    "montant": 163285,
+    "nb": 13,
+    "jours": 295
+   },
+   {
+    "seuil": 120,
+    "assureur": "NSIA",
+    "montant": 155315,
+    "nb": 12,
+    "jours": 242
+   },
+   {
+    "seuil": 120,
+    "assureur": "DAYO",
+    "montant": 93489,
+    "nb": 10,
+    "jours": 216
+   },
+   {
+    "seuil": 120,
+    "assureur": "AFR",
+    "montant": 65577,
+    "nb": 6,
+    "jours": 246
+   },
+   {
+    "seuil": 120,
+    "assureur": "GAB",
+    "montant": 60936,
+    "nb": 5,
+    "jours": 221
+   },
+   {
+    "seuil": 120,
+    "assureur": "SUNU",
+    "montant": 58855,
+    "nb": 6,
+    "jours": 316
+   },
+   {
+    "seuil": 120,
+    "assureur": "NOBILA",
+    "montant": 50823,
+    "nb": 8,
+    "jours": 304
+   },
+   {
+    "seuil": 120,
+    "assureur": "BECOTRA",
+    "montant": 37844,
+    "nb": 5,
+    "jours": 328
+   },
+   {
+    "seuil": 120,
+    "assureur": "ASK",
+    "montant": 34780,
+    "nb": 7,
+    "jours": 276
+   },
+   {
+    "seuil": 120,
+    "assureur": "SANLAM",
+    "montant": 22800,
+    "nb": 2,
+    "jours": 185
+   },
+   {
+    "seuil": 120,
+    "assureur": "TRANSVIE",
+    "montant": 11900,
+    "nb": 1,
+    "jours": 212
+   }
+  ],
+  "alertesSemence": [
+   {
+    "seuil": 60,
+    "assureur": "OLEA",
+    "montant": 331365,
+    "nb": 16,
+    "jours": 295
+   },
+   {
+    "seuil": 60,
+    "assureur": "SOS",
+    "montant": 242949,
+    "nb": 16,
+    "jours": 331
+   },
+   {
+    "seuil": 60,
+    "assureur": "ASCOMA",
+    "montant": 228147,
+    "nb": 10,
+    "jours": 193
+   },
+   {
+    "seuil": 60,
+    "assureur": "NSIA",
+    "montant": 181404,
+    "nb": 18,
+    "jours": 242
+   },
+   {
+    "seuil": 60,
+    "assureur": "DAYO",
+    "montant": 153606,
+    "nb": 17,
+    "jours": 216
+   },
+   {
+    "seuil": 60,
+    "assureur": "SUNU",
+    "montant": 122855,
+    "nb": 10,
+    "jours": 316
+   },
+   {
+    "seuil": 60,
+    "assureur": "NOBILA",
+    "montant": 105921,
+    "nb": 11,
+    "jours": 304
+   },
+   {
+    "seuil": 60,
+    "assureur": "AFR",
+    "montant": 95717,
+    "nb": 10,
+    "jours": 246
+   },
+   {
+    "seuil": 60,
+    "assureur": "GAB",
+    "montant": 90086,
+    "nb": 8,
+    "jours": 221
+   },
+   {
+    "seuil": 60,
+    "assureur": "TRANSVIE",
+    "montant": 56140,
+    "nb": 4,
+    "jours": 212
+   },
+   {
+    "seuil": 60,
+    "assureur": "BECOTRA",
+    "montant": 56084,
+    "nb": 6,
+    "jours": 328
+   },
+   {
+    "seuil": 60,
+    "assureur": "ASK",
+    "montant": 40780,
+    "nb": 8,
+    "jours": 276
+   },
+   {
+    "seuil": 60,
+    "assureur": "SANLAM",
+    "montant": 28080,
+    "nb": 3,
+    "jours": 185
+   }
+  ],
+  "objectifsSemence": [
+   "dso",
+   "creance_agee",
+   "bfr_jours",
+   "occupation_lits",
+   "rotation_stock",
+   "couverture_stock",
+   "delai_transmission",
+   "facturation_normalisee"
+  ],
+  "creanceAgee": {
+   "id": "creance_agee",
+   "statut": "actif",
+   "axe": "tresorerie",
+   "label": "Ancienneté maximale d’une créance assureur",
+   "unite": "jours",
+   "cible": 60,
+   "alerte": 90,
+   "sens": "bas",
+   "aValider": true,
+   "source": "BFR_TABLEAU.txt — « facture d’assurance impayée > 60 jours »",
+   "aide": "Au-delà, la compagnie est relancée et le DAF alerté."
+  }
+ },
+ "ecranBfr": {
+  "defaut": {
+   "kpis": [
+    {
+     "label": "En-cours clients",
+     "valeur": "2 854 586 FCFA",
+     "indice": "1 733 134 assureurs · 1 121 452 patients"
+    },
+    {
+     "label": "Valorisation des stocks",
+     "valeur": "5 373 632 FCFA",
+     "indice": "méthode en vigueur : prix de vente"
+    },
+    {
+     "label": "Dettes fournisseurs",
+     "valeur": "3 216 634 FCFA",
+     "indice": "5 facture(s) non réglée(s)"
+    },
+    {
+     "label": "Besoin en fonds de roulement",
+     "valeur": "5 011 584 FCFA",
+     "indice": "305 jours de chiffre d’affaires"
+    }
+   ],
+   "notes": [
+    "Les trois encours sont arrêtés au 30/10/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 01/08/2026 au 30/10/2026.",
+    "5 011 584 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+   ],
+   "cartes": [
+    "Composition du besoin",
+    "Ce que le cycle finance",
+    "Redescendre à la source"
+   ],
+   "boutons": [
+    "Imprimer l’état du BFR",
+    "Ouvrir la balance âgée des créances",
+    "Ouvrir le point de stock",
+    "Ouvrir les factures fournisseurs",
+    "Colonnes affichées",
+    "Exporter",
+    "Ouvrir les relances",
+    "Tout désélectionner",
+    "1",
+    "2"
+   ],
+   "tables": [
+    {
+     "titre": "Ce que le cycle finance",
+     "entetes": [
+      "COMPOSANTE",
+      "REGISTRE D’ORIGINE",
+      "MONTANT"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Part assureur des factures",
+        "M9 — Créances assureurs",
+        "1 733 134"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Restes à charge non soldés",
+        "M8 — Factures",
+        "1 121 452"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Stock détenu",
+        "M6 — Point de stock",
+        "5 373 632"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Dettes fournisseurs (à déduire)",
+        "M7 — Factures fournisseurs",
+        "-3 216 634"
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    },
+    {
+     "titre": null,
+     "entetes": [
+      "COMPAGNIE",
+      "FACTURES",
+      "ANCIENNETÉ MAXIMALE",
+      "MONTANT DÛ"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "OLEA ASSURANCE",
+        "16",
+        "295 jours",
+        "331 365"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "SOS ASSURANCE",
+        "16",
+        "331 jours",
+        "242 949"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "ASCOMA ASSURANCE",
+        "10",
+        "193 jours",
+        "228 147"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "NSIA ASSURANCE",
+        "18",
+        "242 jours",
+        "181 404"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DAYO ASSURANCE",
+        "17",
+        "216 jours",
+        "153 606"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "SUNU ASSURANCE",
+        "10",
+        "316 jours",
+        "122 855"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "NOBILA ASSURANCE",
+        "11",
+        "304 jours",
+        "105 921"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AFRICAINE DES ASSURANCES",
+        "10",
+        "246 jours",
+        "95 717"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "GAB ASSURANCE",
+        "8",
+        "221 jours",
+        "90 086"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "TRANSVIE ASSURANCE",
+        "4",
+        "212 jours",
+        "56 140"
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "graphiques": [
+    {
+     "type": "anneau",
+     "etiquettes": [
+      "Créances assureurs",
+      "Restes à charge patients",
+      "Stocks"
+     ],
+     "series": [
+      1733134,
+      1121452,
+      5373632
+     ]
+    }
+   ]
+  },
+  "controles": {
+   "labels": [
+    "Encours arrêtés au",
+    "Chiffre d’affaires observé sur"
+   ],
+   "date": "2026-10-30",
+   "periode": "90",
+   "options": [
+    [
+     "30",
+     "30 derniers jours"
+    ],
+    [
+     "90",
+     "90 derniers jours"
+    ],
+    [
+     "180",
+     "6 derniers mois"
+    ],
+    [
+     "365",
+     "12 derniers mois"
+    ]
+   ]
+  },
+  "variations": {
+   "j30": {
+    "kpis": [
+     [
+      "En-cours clients",
+      "2 854 586 FCFA",
+      "1 733 134 assureurs · 1 121 452 patients"
+     ],
+     [
+      "Valorisation des stocks",
+      "5 373 632 FCFA",
+      "méthode en vigueur : prix de vente"
+     ],
+     [
+      "Dettes fournisseurs",
+      "3 216 634 FCFA",
+      "5 facture(s) non réglée(s)"
+     ],
+     [
+      "Besoin en fonds de roulement",
+      "5 011 584 FCFA",
+      "CA nul sur la période"
+     ]
+    ],
+    "notes": [
+     "Les trois encours sont arrêtés au 30/10/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 30/09/2026 au 30/10/2026.",
+     "5 011 584 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+    ],
+    "nbTables": 2,
+    "alertes": []
+   },
+   "j180": {
+    "kpis": [
+     [
+      "En-cours clients",
+      "2 854 586 FCFA",
+      "1 733 134 assureurs · 1 121 452 patients"
+     ],
+     [
+      "Valorisation des stocks",
+      "5 373 632 FCFA",
+      "méthode en vigueur : prix de vente"
+     ],
+     [
+      "Dettes fournisseurs",
+      "3 216 634 FCFA",
+      "5 facture(s) non réglée(s)"
+     ],
+     [
+      "Besoin en fonds de roulement",
+      "5 011 584 FCFA",
+      "205 jours de chiffre d’affaires"
+     ]
+    ],
+    "notes": [
+     "Les trois encours sont arrêtés au 30/10/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 03/05/2026 au 30/10/2026.",
+     "5 011 584 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+    ],
+    "nbTables": 2,
+    "alertes": []
+   },
+   "j365": {
+    "kpis": [
+     [
+      "En-cours clients",
+      "2 854 586 FCFA",
+      "1 733 134 assureurs · 1 121 452 patients"
+     ],
+     [
+      "Valorisation des stocks",
+      "5 373 632 FCFA",
+      "méthode en vigueur : prix de vente"
+     ],
+     [
+      "Dettes fournisseurs",
+      "3 216 634 FCFA",
+      "5 facture(s) non réglée(s)"
+     ],
+     [
+      "Besoin en fonds de roulement",
+      "5 011 584 FCFA",
+      "274 jours de chiffre d’affaires"
+     ]
+    ],
+    "notes": [
+     "Les trois encours sont arrêtés au 30/10/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 30/10/2025 au 30/10/2026.",
+     "5 011 584 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+    ],
+    "nbTables": 2,
+    "alertes": []
+   },
+   "aout": {
+    "kpis": [
+     [
+      "En-cours clients",
+      "2 854 586 FCFA",
+      "1 733 134 assureurs · 1 121 452 patients"
+     ],
+     [
+      "Valorisation des stocks",
+      "5 373 632 FCFA",
+      "méthode en vigueur : prix de vente"
+     ],
+     [
+      "Dettes fournisseurs",
+      "3 216 634 FCFA",
+      "5 facture(s) non réglée(s)"
+     ],
+     [
+      "Besoin en fonds de roulement",
+      "5 011 584 FCFA",
+      "161 jours de chiffre d’affaires"
+     ]
+    ],
+    "notes": [
+     "Les trois encours sont arrêtés au 16/08/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 18/05/2026 au 16/08/2026.",
+     "5 011 584 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+    ],
+    "nbTables": 2,
+    "alertes": []
+   },
+   "futur": {
+    "kpis": [
+     [
+      "En-cours clients",
+      "2 854 586 FCFA",
+      "1 733 134 assureurs · 1 121 452 patients"
+     ],
+     [
+      "Valorisation des stocks",
+      "5 373 632 FCFA",
+      "méthode en vigueur : prix de vente"
+     ],
+     [
+      "Dettes fournisseurs",
+      "3 216 634 FCFA",
+      "5 facture(s) non réglée(s)"
+     ],
+     [
+      "Besoin en fonds de roulement",
+      "5 011 584 FCFA",
+      "CA nul sur la période"
+     ]
+    ],
+    "notes": [
+     "Les trois encours sont arrêtés au 01/03/2027 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 01/12/2026 au 01/03/2027.",
+     "5 011 584 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+    ],
+    "nbTables": 2,
+    "alertes": []
+   }
+  },
+  "piece": {
+   "titre": "Besoin en fonds de roulement",
+   "sousTitre": "Encours arrêtés au 30/10/2026",
+   "cartouche": [
+    [
+     "En-cours clients",
+     "2 854 586 FCFA"
+    ],
+    [
+     "dont part assureurs",
+     "1 733 134 FCFA"
+    ],
+    [
+     "Valorisation des stocks",
+     "5 373 632 FCFA"
+    ],
+    [
+     "Dettes fournisseurs",
+     "3 216 634 FCFA"
+    ],
+    [
+     "Besoin en fonds de roulement",
+     "5 011 584 FCFA"
+    ],
+    [
+     "En jours de chiffre d’affaires",
+     "305 jours"
+    ]
+   ],
+   "contenu": "ComposanteRegistre d’origineMontantPart assureur des facturesM9 — Créances assureurs1 733 134Restes à charge non soldésM8 — Factures1 121 452Stock détenuM6 — Point de stock5 373 632Dettes fournisseurs (à déduire)M7 — Factures fournisseurs-3 216 634TOTAL5 011 584",
+   "tables": [],
+   "signatures": [
+    {
+     "role": "Le Comptable"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    }
+   ]
+  },
+  "navigations": [
+   "m9-creances",
+   "m6-point-stock",
+   "m7-factures-fournisseurs",
+   "m9-relances"
+  ],
+  "entetes": [
+   "Tableau décisionnel",
+   "Créances assureurs"
+  ],
+  "incomplet": {
+   "notes": [
+    "Les trois encours sont arrêtés au 30/10/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 01/08/2026 au 30/10/2026.",
+    "Calcul incomplet — les factures fournisseurs ne sont pas amorcés sur ce poste. Le BFR affiché est donc surestimé de la dette qui manque : ouvrez le registre concerné pour que la composante entre dans le calcul.",
+    "8 228 218 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+   ],
+   "kpis": [
+    [
+     "En-cours clients",
+     "2 854 586 FCFA",
+     "1 733 134 assureurs · 1 121 452 patients"
+    ],
+    [
+     "Valorisation des stocks",
+     "5 373 632 FCFA",
+     "méthode en vigueur : prix de vente"
+    ],
+    [
+     "Dettes fournisseurs",
+     "0 FCFA",
+     "0 facture(s) non réglée(s)"
+    ],
+    [
+     "Besoin en fonds de roulement",
+     "8 228 218 FCFA",
+     "501 jours de chiffre d’affaires"
+    ]
+   ]
+  },
+  "sansAlerte": {
+   "texte": "nu M6 — Point de stock 5 373 632 Dettes fournisseurs (à déduire) M7 — Factures fournisseurs -3 216 634 Redescendre à la source Ouvrir la balance âgée des créances Ouvrir le point de stock Ouvrir les factures fournisseurs Aucune créance au-delà du seuil retenu.",
+   "notes": [
+    "Les trois encours sont arrêtés au 30/10/2026 — ils ne dépendent pas de la fenêtre choisie. Seul le chiffre d’affaires, et donc le BFR exprimé en jours, se lit sur la période du 01/08/2026 au 30/10/2026.",
+    "3 278 450 FCFA que la clinique finance sur sa propre trésorerie : elle a payé ses fournisseurs et constitué son stock avant d’être réglée par ses clients et par les compagnies. C’est ce montant qu’un découvert ou un fonds de roulement doit couvrir."
+   ]
+  }
+ },
+ "ecranCout": {
+  "bfrAvant": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-08-01",
+    "fin": "2026-10-30",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 1479323,
+   "bfrJours": 305,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "controles": {
+   "du": "2026-08-01",
+   "au": "2026-10-30",
+   "labels": [
+    "Du",
+    "au"
+   ]
+  },
+  "defaut": {
+   "kpis": [
+    [
+     "Prestations facturées",
+     "1 479 323 FCFA",
+     null
+    ],
+    [
+     "Consommables sortis",
+     "752 261 FCFA",
+     null
+    ],
+    [
+     "Marge sur consommables",
+     "727 062 FCFA",
+     null
+    ],
+    [
+     "Taux de marge",
+     "49.1 %",
+     "hors personnel et charges de structure"
+    ]
+   ],
+   "notes": [
+    "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+    "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+   ],
+   "groupes": [
+    [
+     "Imagerie médicale",
+     "25",
+     "963 000",
+     "0",
+     "963 000",
+     "100.0 %"
+    ],
+    [
+     "Laboratoire",
+     "71",
+     "299 500",
+     "44 025",
+     "255 475",
+     "85.3 %"
+    ],
+    [
+     "Hospitalisation et soins",
+     "13",
+     "113 300",
+     "476 626",
+     "-363 326",
+     "-320.7 %"
+    ],
+    [
+     "Pharmacie",
+     "35",
+     "59 523",
+     "231 610",
+     "-172 087",
+     "-289.1 %"
+    ],
+    [
+     "Consultation",
+     "5",
+     "38 000",
+     "0",
+     "38 000",
+     "100.0 %"
+    ],
+    [
+     "Maternité",
+     "2",
+     "6 000",
+     "0",
+     "6 000",
+     "100.0 %"
+    ]
+   ],
+   "entetes": [
+    "GROUPE DE PRESTATION",
+    "LIGNES FACTURÉES",
+    "FACTURÉ",
+    "CONSOMMABLES",
+    "MARGE",
+    "TAUX"
+   ],
+   "prevision": {
+    "entetes": [
+     "MOIS",
+     "ADMISSIONS",
+     "INDICE",
+     "BFR PROJETÉ"
+    ],
+    "lignes": [
+     [
+      "Mars",
+      "7",
+      "0.46",
+      "2 313 039"
+     ],
+     [
+      "Avril",
+      "17",
+      "1.12",
+      "5 617 380"
+     ],
+     [
+      "Mai",
+      "18",
+      "1.19",
+      "5 947 814"
+     ],
+     [
+      "Juin",
+      "10",
+      "0.66",
+      "3 304 341"
+     ],
+     [
+      "Juillet",
+      "12",
+      "0.79",
+      "3 965 209"
+     ],
+     [
+      "Août",
+      "27",
+      "1.78",
+      "8 921 721"
+     ]
+    ]
+   },
+   "cartes": [
+    "Recette et consommation par groupe",
+    "Prévision saisonnière du besoin de financement"
+   ],
+   "texte": "Du au Imprimer l’analyse Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe. Prestations facturées 1 479 323 FCFA Consommables sortis 752 261 FCFA Marge sur consommables 727 062 FCFA Taux de marge 49.1 % hors personnel et charges de structure Recette et consommation par groupe Marge sur consommables par groupe de prestation Colonnes Exporter GROUPE DE PRESTATION LIGNES FACTURÉES FACTURÉ CONSOMMABLES MARGE TAUX Imagerie médicale 25 963 000 0 963 000 100.0 % Laboratoire 71 299 500 44 025 255 475 85.3 % Hospitalisation et soins 13 113 300 476 626 -363 326 -320.7 % Pharmacie 35 59 523 231 610 -172 087 -289.1 % Consultation 5 38 000 0 38 000 100.0 % Maternité 2 6 000 0 6 000 100.0 % Affichage de 1 à 6 sur 6 enregistrements Prévision saisonnière du besoin de financement Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur. MOIS ADMISSIONS INDICE BFR PROJETÉ Mars 7 0.46 2 313 039 Avril 17 1.12 5 617 380 Mai 18 1.19 5 947 814 Juin 10 0.66 3 304 341 Juillet 12 0.79 3 965 209 Août 27 1.78 8 921 721"
+  },
+  "bfrPendant": {
+   "arrete": "2026-10-30",
+   "fenetre": {
+    "debut": "2026-08-01",
+    "fin": "2026-10-30",
+    "jours": 90
+   },
+   "creancesAssureurs": 1733134,
+   "restesACharge": 1121452,
+   "creances": 2854586,
+   "stocks": 5373632,
+   "dettes": 3216634,
+   "bfr": 5011584,
+   "caPeriode": 1479323,
+   "bfrJours": 305,
+   "nbFacturesAssurees": 145,
+   "nbDettes": 5,
+   "incomplet": []
+  },
+  "graphiques": [
+   {
+    "type": "barres",
+    "etiquettes": [
+     "Imagerie médicale",
+     "Laboratoire",
+     "Hospitalisation et soins",
+     "Pharmacie",
+     "Consultation",
+     "Maternité"
+    ],
+    "series": [
+     {
+      "label": "Facturé",
+      "data": [
+       963000,
+       299500,
+       113300,
+       59523,
+       38000,
+       6000
+      ]
+     },
+     {
+      "label": "Consommables",
+      "data": [
+       0,
+       44024.933333333334,
+       476625.6555555556,
+       231610.1666666667,
+       0,
+       0
+      ]
+     }
+    ]
+   }
+  ],
+  "parPeriode": {
+   "aout": {
+    "kpis": [
+     [
+      "Prestations facturées",
+      "1 479 323 FCFA",
+      null
+     ],
+     [
+      "Consommables sortis",
+      "752 261 FCFA",
+      null
+     ],
+     [
+      "Marge sur consommables",
+      "727 062 FCFA",
+      null
+     ],
+     [
+      "Taux de marge",
+      "49.1 %",
+      "hors personnel et charges de structure"
+     ]
+    ],
+    "notes": [
+     "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+     "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+    ],
+    "groupes": [
+     [
+      "Imagerie médicale",
+      "25",
+      "963 000",
+      "0",
+      "963 000",
+      "100.0 %"
+     ],
+     [
+      "Laboratoire",
+      "71",
+      "299 500",
+      "44 025",
+      "255 475",
+      "85.3 %"
+     ],
+     [
+      "Hospitalisation et soins",
+      "13",
+      "113 300",
+      "476 626",
+      "-363 326",
+      "-320.7 %"
+     ],
+     [
+      "Pharmacie",
+      "35",
+      "59 523",
+      "231 610",
+      "-172 087",
+      "-289.1 %"
+     ],
+     [
+      "Consultation",
+      "5",
+      "38 000",
+      "0",
+      "38 000",
+      "100.0 %"
+     ],
+     [
+      "Maternité",
+      "2",
+      "6 000",
+      "0",
+      "6 000",
+      "100.0 %"
+     ]
+    ],
+    "entetes": [
+     "GROUPE DE PRESTATION",
+     "LIGNES FACTURÉES",
+     "FACTURÉ",
+     "CONSOMMABLES",
+     "MARGE",
+     "TAUX"
+    ],
+    "prevision": {
+     "entetes": [
+      "MOIS",
+      "ADMISSIONS",
+      "INDICE",
+      "BFR PROJETÉ"
+     ],
+     "lignes": [
+      [
+       "Mars",
+       "7",
+       "0.46",
+       "2 313 039"
+      ],
+      [
+       "Avril",
+       "17",
+       "1.12",
+       "5 617 380"
+      ],
+      [
+       "Mai",
+       "18",
+       "1.19",
+       "5 947 814"
+      ],
+      [
+       "Juin",
+       "10",
+       "0.66",
+       "3 304 341"
+      ],
+      [
+       "Juillet",
+       "12",
+       "0.79",
+       "3 965 209"
+      ],
+      [
+       "Août",
+       "27",
+       "1.78",
+       "8 921 721"
+      ]
+     ]
+    },
+    "cartes": [
+     "Recette et consommation par groupe",
+     "Prévision saisonnière du besoin de financement"
+    ],
+    "texte": "Du au Imprimer l’analyse Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe. Prestations facturées 1 479 323 FCFA Consommables sortis 752 261 FCFA Marge sur consommables 727 062 FCFA Taux de marge 49.1 % hors personnel et charges de structure Recette et consommation par groupe Marge sur consommables par groupe de prestation Colonnes Exporter GROUPE DE PRESTATION LIGNES FACTURÉES FACTURÉ CONSOMMABLES MARGE TAUX Imagerie médicale 25 963 000 0 963 000 100.0 % Laboratoire 71 299 500 44 025 255 475 85.3 % Hospitalisation et soins 13 113 300 476 626 -363 326 -320.7 % Pharmacie 35 59 523 231 610 -172 087 -289.1 % Consultation 5 38 000 0 38 000 100.0 % Maternité 2 6 000 0 6 000 100.0 % Affichage de 1 à 6 sur 6 enregistrements Prévision saisonnière du besoin de financement Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur. MOIS ADMISSIONS INDICE BFR PROJETÉ Mars 7 0.46 2 313 039 Avril 17 1.12 5 617 380 Mai 18 1.19 5 947 814 Juin 10 0.66 3 304 341 Juillet 12 0.79 3 965 209 Août 27 1.78 8 921 721"
+   },
+   "tout": {
+    "kpis": [
+     [
+      "Prestations facturées",
+      "6 688 044 FCFA",
+      null
+     ],
+     [
+      "Consommables sortis",
+      "6 024 835 FCFA",
+      null
+     ],
+     [
+      "Marge sur consommables",
+      "663 209 FCFA",
+      null
+     ],
+     [
+      "Taux de marge",
+      "9.9 %",
+      "hors personnel et charges de structure"
+     ]
+    ],
+    "notes": [
+     "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+     "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+    ],
+    "groupes": [
+     [
+      "Laboratoire",
+      "484",
+      "2 107 725",
+      "615 432",
+      "1 492 293",
+      "70.8 %"
+     ],
+     [
+      "Hospitalisation et soins",
+      "122",
+      "1 884 200",
+      "3 795 178",
+      "-1 910 978",
+      "-101.4 %"
+     ],
+     [
+      "Imagerie médicale",
+      "40",
+      "1 556 000",
+      "0",
+      "1 556 000",
+      "100.0 %"
+     ],
+     [
+      "Pharmacie",
+      "305",
+      "416 719",
+      "1 614 225",
+      "-1 197 506",
+      "-287.4 %"
+     ],
+     [
+      "Maternité",
+      "39",
+      "363 900",
+      "0",
+      "363 900",
+      "100.0 %"
+     ],
+     [
+      "Consultation",
+      "47",
+      "359 500",
+      "0",
+      "359 500",
+      "100.0 %"
+     ]
+    ],
+    "entetes": [
+     "GROUPE DE PRESTATION",
+     "LIGNES FACTURÉES",
+     "FACTURÉ",
+     "CONSOMMABLES",
+     "MARGE",
+     "TAUX"
+    ],
+    "prevision": {
+     "entetes": [
+      "MOIS",
+      "ADMISSIONS",
+      "INDICE",
+      "BFR PROJETÉ"
+     ],
+     "lignes": [
+      [
+       "Mars",
+       "7",
+       "0.46",
+       "2 313 039"
+      ],
+      [
+       "Avril",
+       "17",
+       "1.12",
+       "5 617 380"
+      ],
+      [
+       "Mai",
+       "18",
+       "1.19",
+       "5 947 814"
+      ],
+      [
+       "Juin",
+       "10",
+       "0.66",
+       "3 304 341"
+      ],
+      [
+       "Juillet",
+       "12",
+       "0.79",
+       "3 965 209"
+      ],
+      [
+       "Août",
+       "27",
+       "1.78",
+       "8 921 721"
+      ]
+     ]
+    },
+    "cartes": [
+     "Recette et consommation par groupe",
+     "Prévision saisonnière du besoin de financement"
+    ],
+    "texte": "Du au Imprimer l’analyse Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe. Prestations facturées 6 688 044 FCFA Consommables sortis 6 024 835 FCFA Marge sur consommables 663 209 FCFA Taux de marge 9.9 % hors personnel et charges de structure Recette et consommation par groupe Marge sur consommables par groupe de prestation Colonnes Exporter GROUPE DE PRESTATION LIGNES FACTURÉES FACTURÉ CONSOMMABLES MARGE TAUX Laboratoire 484 2 107 725 615 432 1 492 293 70.8 % Hospitalisation et soins 122 1 884 200 3 795 178 -1 910 978 -101.4 % Imagerie médicale 40 1 556 000 0 1 556 000 100.0 % Pharmacie 305 416 719 1 614 225 -1 197 506 -287.4 % Maternité 39 363 900 0 363 900 100.0 % Consultation 47 359 500 0 359 500 100.0 % Affichage de 1 à 6 sur 6 enregistrements Prévision saisonnière du besoin de financement Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur. MOIS ADMISSIONS INDICE BFR PROJETÉ Mars 7 0.46 2 313 039 Avril 17 1.12 5 617 380 Mai 18 1.19 5 947 814 Juin 10 0.66 3 304 341 Juillet 12 0.79 3 965 209 Août 27 1.78 8 921 721"
+   },
+   "futur": {
+    "kpis": [
+     [
+      "Prestations facturées",
+      "0 FCFA",
+      null
+     ],
+     [
+      "Consommables sortis",
+      "0 FCFA",
+      null
+     ],
+     [
+      "Marge sur consommables",
+      "0 FCFA",
+      null
+     ],
+     [
+      "Taux de marge",
+      "—",
+      "hors personnel et charges de structure"
+     ]
+    ],
+    "notes": [
+     "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+     "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+    ],
+    "groupes": [
+     [
+      "Mars",
+      "7",
+      "0.46",
+      "2 313 039"
+     ],
+     [
+      "Avril",
+      "17",
+      "1.12",
+      "5 617 380"
+     ],
+     [
+      "Mai",
+      "18",
+      "1.19",
+      "5 947 814"
+     ],
+     [
+      "Juin",
+      "10",
+      "0.66",
+      "3 304 341"
+     ],
+     [
+      "Juillet",
+      "12",
+      "0.79",
+      "3 965 209"
+     ],
+     [
+      "Août",
+      "27",
+      "1.78",
+      "8 921 721"
+     ]
+    ],
+    "entetes": [
+     "MOIS",
+     "ADMISSIONS",
+     "INDICE",
+     "BFR PROJETÉ"
+    ],
+    "prevision": null,
+    "cartes": [
+     "Prévision saisonnière du besoin de financement"
+    ],
+    "texte": "Du au Imprimer l’analyse Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe. Prestations facturées 0 FCFA Consommables sortis 0 FCFA Marge sur consommables 0 FCFA Taux de marge — hors personnel et charges de structure Marge sur consommables par groupe de prestation Colonnes Exporter Aucun enregistrement. Aucun enregistrement Prévision saisonnière du besoin de financement Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur. MOIS ADMISSIONS INDICE BFR PROJETÉ Mars 7 0.46 2 313 039 Avril 17 1.12 5 617 380 Mai 18 1.19 5 947 814 Juin 10 0.66 3 304 341 Juillet 12 0.79 3 965 209 Août 27 1.78 8 921 721"
+   },
+   "sansDebut": {
+    "kpis": [
+     [
+      "Prestations facturées",
+      "6 688 044 FCFA",
+      null
+     ],
+     [
+      "Consommables sortis",
+      "6 024 835 FCFA",
+      null
+     ],
+     [
+      "Marge sur consommables",
+      "663 209 FCFA",
+      null
+     ],
+     [
+      "Taux de marge",
+      "9.9 %",
+      "hors personnel et charges de structure"
+     ]
+    ],
+    "notes": [
+     "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+     "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+    ],
+    "groupes": [
+     [
+      "Laboratoire",
+      "484",
+      "2 107 725",
+      "615 432",
+      "1 492 293",
+      "70.8 %"
+     ],
+     [
+      "Hospitalisation et soins",
+      "122",
+      "1 884 200",
+      "3 795 178",
+      "-1 910 978",
+      "-101.4 %"
+     ],
+     [
+      "Imagerie médicale",
+      "40",
+      "1 556 000",
+      "0",
+      "1 556 000",
+      "100.0 %"
+     ],
+     [
+      "Pharmacie",
+      "305",
+      "416 719",
+      "1 614 225",
+      "-1 197 506",
+      "-287.4 %"
+     ],
+     [
+      "Maternité",
+      "39",
+      "363 900",
+      "0",
+      "363 900",
+      "100.0 %"
+     ],
+     [
+      "Consultation",
+      "47",
+      "359 500",
+      "0",
+      "359 500",
+      "100.0 %"
+     ]
+    ],
+    "entetes": [
+     "GROUPE DE PRESTATION",
+     "LIGNES FACTURÉES",
+     "FACTURÉ",
+     "CONSOMMABLES",
+     "MARGE",
+     "TAUX"
+    ],
+    "prevision": {
+     "entetes": [
+      "MOIS",
+      "ADMISSIONS",
+      "INDICE",
+      "BFR PROJETÉ"
+     ],
+     "lignes": [
+      [
+       "Mars",
+       "7",
+       "0.46",
+       "2 313 039"
+      ],
+      [
+       "Avril",
+       "17",
+       "1.12",
+       "5 617 380"
+      ],
+      [
+       "Mai",
+       "18",
+       "1.19",
+       "5 947 814"
+      ],
+      [
+       "Juin",
+       "10",
+       "0.66",
+       "3 304 341"
+      ],
+      [
+       "Juillet",
+       "12",
+       "0.79",
+       "3 965 209"
+      ],
+      [
+       "Août",
+       "27",
+       "1.78",
+       "8 921 721"
+      ]
+     ]
+    },
+    "cartes": [
+     "Recette et consommation par groupe",
+     "Prévision saisonnière du besoin de financement"
+    ],
+    "texte": "Du au Imprimer l’analyse Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe. Prestations facturées 6 688 044 FCFA Consommables sortis 6 024 835 FCFA Marge sur consommables 663 209 FCFA Taux de marge 9.9 % hors personnel et charges de structure Recette et consommation par groupe Marge sur consommables par groupe de prestation Colonnes Exporter GROUPE DE PRESTATION LIGNES FACTURÉES FACTURÉ CONSOMMABLES MARGE TAUX Laboratoire 484 2 107 725 615 432 1 492 293 70.8 % Hospitalisation et soins 122 1 884 200 3 795 178 -1 910 978 -101.4 % Imagerie médicale 40 1 556 000 0 1 556 000 100.0 % Pharmacie 305 416 719 1 614 225 -1 197 506 -287.4 % Maternité 39 363 900 0 363 900 100.0 % Consultation 47 359 500 0 359 500 100.0 % Affichage de 1 à 6 sur 6 enregistrements Prévision saisonnière du besoin de financement Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur. MOIS ADMISSIONS INDICE BFR PROJETÉ Mars 7 0.46 2 313 039 Avril 17 1.12 5 617 380 Mai 18 1.19 5 947 814 Juin 10 0.66 3 304 341 Juillet 12 0.79 3 965 209 Août 27 1.78 8 921 721"
+   },
+   "sansFin": {
+    "kpis": [
+     [
+      "Prestations facturées",
+      "0 FCFA",
+      null
+     ],
+     [
+      "Consommables sortis",
+      "0 FCFA",
+      null
+     ],
+     [
+      "Marge sur consommables",
+      "0 FCFA",
+      null
+     ],
+     [
+      "Taux de marge",
+      "—",
+      "hors personnel et charges de structure"
+     ]
+    ],
+    "notes": [
+     "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+     "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+    ],
+    "groupes": [
+     [
+      "Mars",
+      "7",
+      "0.46",
+      "2 313 039"
+     ],
+     [
+      "Avril",
+      "17",
+      "1.12",
+      "5 617 380"
+     ],
+     [
+      "Mai",
+      "18",
+      "1.19",
+      "5 947 814"
+     ],
+     [
+      "Juin",
+      "10",
+      "0.66",
+      "3 304 341"
+     ],
+     [
+      "Juillet",
+      "12",
+      "0.79",
+      "3 965 209"
+     ],
+     [
+      "Août",
+      "27",
+      "1.78",
+      "8 921 721"
+     ]
+    ],
+    "entetes": [
+     "MOIS",
+     "ADMISSIONS",
+     "INDICE",
+     "BFR PROJETÉ"
+    ],
+    "prevision": null,
+    "cartes": [
+     "Prévision saisonnière du besoin de financement"
+    ],
+    "texte": "Du au Imprimer l’analyse Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe. Prestations facturées 0 FCFA Consommables sortis 0 FCFA Marge sur consommables 0 FCFA Taux de marge — hors personnel et charges de structure Marge sur consommables par groupe de prestation Colonnes Exporter Aucun enregistrement. Aucun enregistrement Prévision saisonnière du besoin de financement Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur. MOIS ADMISSIONS INDICE BFR PROJETÉ Mars 7 0.46 2 313 039 Avril 17 1.12 5 617 380 Mai 18 1.19 5 947 814 Juin 10 0.66 3 304 341 Juillet 12 0.79 3 965 209 Août 27 1.78 8 921 721"
+   },
+   "juillet": {
+    "kpis": [
+     [
+      "Prestations facturées",
+      "1 087 676 FCFA",
+      null
+     ],
+     [
+      "Consommables sortis",
+      "2 164 672 FCFA",
+      null
+     ],
+     [
+      "Marge sur consommables",
+      "-1 076 996 FCFA",
+      null
+     ],
+     [
+      "Taux de marge",
+      "-99.0 %",
+      "hors personnel et charges de structure"
+     ]
+    ],
+    "notes": [
+     "Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe.",
+     "Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur."
+    ],
+    "groupes": [
+     [
+      "Hospitalisation et soins",
+      "28",
+      "504 500",
+      "1 229 950",
+      "-725 450",
+      "-143.8 %"
+     ],
+     [
+      "Laboratoire",
+      "68",
+      "264 000",
+      "296 407",
+      "-32 407",
+      "-12.3 %"
+     ],
+     [
+      "Maternité",
+      "9",
+      "123 900",
+      "0",
+      "123 900",
+      "100.0 %"
+     ],
+     [
+      "Consultation",
+      "12",
+      "91 000",
+      "0",
+      "91 000",
+      "100.0 %"
+     ],
+     [
+      "Imagerie médicale",
+      "3",
+      "56 000",
+      "0",
+      "56 000",
+      "100.0 %"
+     ],
+     [
+      "Pharmacie",
+      "40",
+      "48 276",
+      "638 315",
+      "-590 039",
+      "-1 222.2 %"
+     ]
+    ],
+    "entetes": [
+     "GROUPE DE PRESTATION",
+     "LIGNES FACTURÉES",
+     "FACTURÉ",
+     "CONSOMMABLES",
+     "MARGE",
+     "TAUX"
+    ],
+    "prevision": {
+     "entetes": [
+      "MOIS",
+      "ADMISSIONS",
+      "INDICE",
+      "BFR PROJETÉ"
+     ],
+     "lignes": [
+      [
+       "Mars",
+       "7",
+       "0.46",
+       "2 313 039"
+      ],
+      [
+       "Avril",
+       "17",
+       "1.12",
+       "5 617 380"
+      ],
+      [
+       "Mai",
+       "18",
+       "1.19",
+       "5 947 814"
+      ],
+      [
+       "Juin",
+       "10",
+       "0.66",
+       "3 304 341"
+      ],
+      [
+       "Juillet",
+       "12",
+       "0.79",
+       "3 965 209"
+      ],
+      [
+       "Août",
+       "27",
+       "1.78",
+       "8 921 721"
+      ]
+     ]
+    },
+    "cartes": [
+     "Recette et consommation par groupe",
+     "Prévision saisonnière du besoin de financement"
+    ],
+    "texte": "Du au Imprimer l’analyse Marge sur consommables, et non coût de revient. Le coût de personnel n’est pas réparti par séjour : aucun document de la clinique ne donne la clé qui le permettrait, et l’inventer donnerait un chiffre qui aurait l’air d’un fait. Le coût employeur se lit agent par agent au Coût global de l’agent, les charges par centre au Recettes & charges par groupe. Prestations facturées 1 087 676 FCFA Consommables sortis 2 164 672 FCFA Marge sur consommables -1 076 996 FCFA Taux de marge -99.0 % hors personnel et charges de structure Recette et consommation par groupe Marge sur consommables par groupe de prestation Colonnes Exporter GROUPE DE PRESTATION LIGNES FACTURÉES FACTURÉ CONSOMMABLES MARGE TAUX Hospitalisation et soins 28 504 500 1 229 950 -725 450 -143.8 % Laboratoire 68 264 000 296 407 -32 407 -12.3 % Maternité 9 123 900 0 123 900 100.0 % Consultation 12 91 000 0 91 000 100.0 % Imagerie médicale 3 56 000 0 56 000 100.0 % Pharmacie 40 48 276 638 315 -590 039 -1 222.2 % Affichage de 1 à 6 sur 6 enregistrements Prévision saisonnière du besoin de financement Une projection, pas une prévision budgétaire. L’indice est le rapport des admissions du mois à la moyenne des mois observés ; le BFR projeté applique cet indice au besoin constaté. Il suppose que le besoin suit l’activité proportionnellement, ce qui est vrai des stocks et des créances, faux des charges fixes. À lire comme un ordre de grandeur. MOIS ADMISSIONS INDICE BFR PROJETÉ Mars 7 0.46 2 313 039 Avril 17 1.12 5 617 380 Mai 18 1.19 5 947 814 Juin 10 0.66 3 304 341 Juillet 12 0.79 3 965 209 Août 27 1.78 8 921 721"
+   }
+  },
+  "piece": {
+   "titre": "Coût à l’activité — marge sur consommables",
+   "sousTitre": "Du 01/08/2026 au 30/10/2026",
+   "cartouche": [
+    [
+     "Prestations facturées",
+     "1 479 323 FCFA"
+    ],
+    [
+     "Consommables sortis",
+     "752 261 FCFA"
+    ],
+    [
+     "Marge sur consommables",
+     "727 062 FCFA"
+    ],
+    [
+     "Coût de personnel",
+     "non imputé — aucune clé de répartition documentée"
+    ]
+   ],
+   "contenu": "Groupe de prestationLignesFacturéConsommablesMargeImagerie médicale25963 0000963 000Laboratoire71299 50044 025255 475Hospitalisation et soins13113 300476 626-363 326Pharmacie3559 523231 610-172 087Consultation538 000038 000Maternité26 00006 000TOTAL1 479 323752 261727 062",
+   "tables": [],
+   "signatures": [
+    {
+     "role": "Le Comptable"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    }
+   ]
+  },
+  "entetes": [
+   "Recettes & charges par groupe",
+   "Coût global de l’agent"
+  ],
+  "sansPrevision": {
+   "texte": "spitalisation et soins 13 113 300 476 626 -363 326 -320.7 % Pharmacie 35 59 523 231 610 -172 087 -289.1 % Consultation 5 38 000 0 38 000 100.0 % Maternité 2 6 000 0 6 000 100.0 % Affichage de 1 à 6 sur 6 enregistrements Prévision saisonnière Moins de trois mois d’admissions renseignés : aucun profil saisonnier ne peut être déduit. Un indice calculé sur deux mois ne serait pas une prévision, ce serait une coïncidence."
+  },
+  "admissionsParMois": [
+   0,
+   0,
+   7,
+   17,
+   18,
+   10,
+   12,
+   27,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "toastsTotal": 0
+}

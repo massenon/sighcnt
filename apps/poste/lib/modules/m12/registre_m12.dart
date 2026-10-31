@@ -9,7 +9,9 @@ import 'cpa_grand_livre.dart';
 import 'cpa_journaux.dart';
 import 'cpa_plan_comptable.dart';
 import 'cpc_baseline.dart';
+import 'cpc_bfr.dart';
 import 'cpc_cloture.dart';
+import 'cpc_cout_activite.dart';
 import 'cpc_echeances.dart';
 import 'cpc_ouverture.dart';
 
@@ -29,4 +31,6 @@ final Map<String, ConstruireEcran> ecransM12 = {
   'm12-ouverture': (c, cfg) => const EcranOuverture(),
   'm12-echeances': (c, cfg) => const EcranEcheances(),
   'm12-baseline-2025': (c, cfg) => const EcranBaseline2025(),
+  'm12-bfr': (c, cfg) => const EcranBfr(),
+  'm12-cout-activite': (c, cfg) => const EcranCoutActivite(),
 };
