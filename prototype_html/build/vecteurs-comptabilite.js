@@ -238,6 +238,20 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
             r.archivage = { toasts: vuToasts(t1), ecart: ecart(avant2, instantane(COL)) };
             fermerDialogues();
           }
+          // modifier un compte ISSU DU DOCUMENT : que devient sa provenance ?
+          {
+            await chercher(root2, '601100');
+            const t2 = toasts.length, avant3 = instantane(COL);
+            const l3 = [...root2.querySelectorAll('table tbody tr')].find((x) => /601100/.test(texte(x)));
+            const bm2 = [...l3.querySelectorAll('button')].find((b) => /Modifier/.test(b.getAttribute('title') || ''));
+            bm2.click(); await dormir(150);
+            const dl = dialogue();
+            r.formulaireEdition = { labels: [...dl.querySelectorAll('label')].map(texte), valeurs: ['num', 'libelle', 'classe', 'journal'].map((k) => { const e = dl.querySelector('#f_' + k); return e ? e.value : null; }) };
+            poser(dl, 'libelle', 'Achats de marchandises (corrigé)');
+            await cliquer(dl, /^Enregistrer$/);
+            r.editionDocument = { toasts: vuToasts(t2), ecart: ecart(avant3, instantane(COL)) };
+            fermerDialogues();
+          }
           root2.remove();
         }
         R['m12-plan-comptable'] = r; root.remove(); fermerDialogues(); poserJeu();

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'cpa_dashboard.dart';
+import 'cpa_journaux.dart';
+import 'cpa_plan_comptable.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -9,4 +11,6 @@ typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste con
 /// `registre.dart` ; on y ajoute une ligne par écran porté.
 final Map<String, ConstruireEcran> ecransM12 = {
   'm12-dashboard': (c, cfg) => const EcranDashboardCompta(),
+  'm12-plan-comptable': (c, cfg) => const EcranPlanComptable(),
+  'm12-journaux': (c, cfg) => const EcranJournaux(),
 };

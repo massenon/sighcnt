@@ -62,6 +62,37 @@ void main() {
     });
   });
 
+  group('m12-plan-comptable', () {
+    final r = carte(ecrans['m12-plan-comptable']);
+    final cr = carte(r['creations']);
+    String? refus(String nom) => carte((carte(cr[nom])['toasts'] as List).first)['message'] as String?;
+
+    test('les refus de numéro sont ceux de la maquette : six chiffres, puis unicité à la création seulement', () {
+      expect(cpaVerifierNumeroCompte('12345', comptes, edition: false), refus('numeroCourt'));
+      expect(cpaVerifierNumeroCompte('60A900', comptes, edition: false), refus('numeroLettres'));
+      expect(cpaVerifierNumeroCompte('601100', comptes, edition: false), refus('doublon'));
+      expect(cpaVerifierNumeroCompte('605900', comptes, edition: false), isNull);
+      // à la modification, un numéro déjà pris n'est pas contrôlé (porté fidèlement) ; six chiffres le restent
+      expect(cpaVerifierNumeroCompte('601100', comptes, edition: true), isNull);
+      expect(cpaVerifierNumeroCompte('1234567', comptes, edition: true), isNotNull);
+    });
+    test('la création écrit un « Complément » de classe numérique, comme la maquette', () {
+      final a = liste(carte(carte(carte(cr['valide'])['ecart'])['inserts'])['comptes']).single;
+      final f = cpaCompteDeSaisie({'num': '605900', 'libelle': 'Petit outillage — essai', 'classe': '6', 'journal': 'ACH'});
+      for (final k in ['num', 'libelle', 'classe', 'journal', 'source']) {
+        expect(f[k], a[k], reason: k);
+      }
+    });
+    test('modifier un compte du DOCUMENT conserve sa provenance (E721 corrigé dans la maquette, vecteur relu)', () {
+      final doc = comptes.firstWhere((c) => c['num'] == '601100');
+      final f = cpaCompteDeSaisie({'num': '601100', 'libelle': 'Achats de marchandises (corrigé)', 'classe': '6', 'journal': 'ACH'}, record: doc);
+      expect(f.containsKey('source'), isFalse, reason: 'le patch ne touche pas la provenance');
+      final p = (carte(carte(r['editionDocument'])['ecart'])['modifs'] as Map)['comptes'] as List;
+      expect(carte(carte(p.single)['patch']).containsKey('source'), isFalse);
+    });
+    test('la balance et le tiroir : 112 comptes au jeu', () => expect(comptes.length, 112));
+  });
+
   group('m12-dashboard', () {
     final r = carte(ecrans['m12-dashboard']);
     final t = cpaTableauDeBord(e26);

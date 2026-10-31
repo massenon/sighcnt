@@ -3017,6 +3017,42 @@
       ]
      }
     }
+   },
+   "formulaireEdition": {
+    "labels": [
+     "Numéro de compte *",
+     "Intitulé *",
+     "Classe *",
+     "Journal usuel *"
+    ],
+    "valeurs": [
+     "601100",
+     "Achats de marchandises",
+     "6",
+     "ACH"
+    ]
+   },
+   "editionDocument": {
+    "toasts": [
+     {
+      "message": "Modifications enregistrées.",
+      "type": "success",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {
+      "comptes": [
+       {
+        "cle": "601100",
+        "patch": {
+         "libelle": "Achats de marchandises (corrigé)"
+        }
+       }
+      ]
+     }
+    }
    }
   },
   "m12-journaux": {
@@ -11532,5 +11568,5 @@
    }
   ]
  },
- "toastsTotal": 24
+ "toastsTotal": 25
 }

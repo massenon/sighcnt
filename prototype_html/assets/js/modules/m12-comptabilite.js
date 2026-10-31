@@ -274,7 +274,9 @@
         { name: 'classe', label: 'Classe', type: 'select', required: true, options: [1, 2, 3, 4, 5, 6, 7, 8].map(function (n) { return { value: n, label: classeLibelle(n) }; }) },
         { name: 'journal', label: 'Journal usuel', type: 'select', required: true, options: D.JOURNAUX.map(function (j) { return { value: j.code, label: j.code + ' — ' + j.libelle }; }) },
       ],
-      transform: function (v) { v.classe = Number(v.classe); if (!v.source) v.source = 'CDCT'; return v; },
+      /* Écart E721 : la provenance était remise à « CDCT » à CHAQUE enregistrement — modifier un compte du document en faisait un
+         « Complément ». Seule la création pose la provenance ; la modification la conserve. */
+      transform: function (v, record) { v.classe = Number(v.classe); if (!v.source && !record) v.source = 'CDCT'; return v; },
       beforeSave: function (v, record) {
         if (!/^\d{6}$/.test(String(v.num))) return 'Le numéro de compte doit comporter 6 chiffres.';
         if (!record && comptes().some(function (c) { return c.num === v.num; })) return 'Ce numéro de compte existe déjà.';

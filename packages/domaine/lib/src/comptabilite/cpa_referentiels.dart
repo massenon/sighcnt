@@ -95,3 +95,19 @@ List<CpaFiche> cpaPlanEnFiches() => [
 
 /// Aide d'affichage : `C.money(v, false)`.
 String cpaMontant(Object? v) => money(v, avecDevise: false);
+
+/// `beforeSave` du plan comptable : un message de refus, ou `null`. Le numéro compte six chiffres ; à la CRÉATION, il ne doit pas déjà exister parmi
+/// les comptes actifs (à la modification, la maquette ne contrôle pas l'unicité — porté fidèlement).
+String? cpaVerifierNumeroCompte(Object? num, Iterable<CpaFiche> comptesActifs, {required bool edition}) {
+  if (!RegExp(r'^\d{6}$').hasMatch('$num')) return 'Le numéro de compte doit comporter 6 chiffres.';
+  if (!edition && comptesActifs.any((c) => c['num'] == '$num')) return 'Ce numéro de compte existe déjà.';
+  return null;
+}
+
+/// `transform` du plan comptable : la classe est un nombre ; un compte CRÉÉ à l'écran est un « Complément » (`source: 'CDCT'`). À la modification
+/// la provenance est CONSERVÉE (E721 : la maquette la remettait à `CDCT`, un compte du document devenait un complément — corrigé d'abord).
+CpaFiche cpaCompteDeSaisie(Map<String, Object?> saisie, {CpaFiche? record}) => {
+      ...saisie,
+      'classe': int.tryParse('${saisie['classe']}') ?? 0,
+      if (record == null && (saisie['source'] == null || saisie['source'] == '')) 'source': 'CDCT',
+    };
