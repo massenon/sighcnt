@@ -23,6 +23,8 @@ import 'parite/extracteur.dart';
 const ecransMesures = [
   'cfg-centres-couts',
   'cfg-regles',
+  'cfg-fiscalite',
+  'cfg-comptabilite',
 ];
 
 void main() {

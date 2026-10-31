@@ -10,6 +10,7 @@ import 'cfa_pieces.dart';
 import 'cfa_rappels.dart';
 import 'cfa_tarifs.dart';
 import 'cfb_centres.dart';
+import 'cfb_fiscal.dart';
 import 'cfb_regles.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
@@ -30,4 +31,6 @@ final Map<String, ConstruireEcran> ecransCFG = {
   // CFG (B)
   'cfg-centres-couts': (c, cfg) => const EcranCentresCouts(),
   'cfg-regles': (c, cfg) => const EcranRegles(),
+  'cfg-fiscalite': (c, cfg) => const EcranFiscalite(),
+  'cfg-comptabilite': (c, cfg) => const EcranComptabilite(),
 };
