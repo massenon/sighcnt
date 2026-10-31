@@ -27,6 +27,7 @@ const ecransMesures = [
   'cfg-comptabilite',
   'cfg-notifications',
   'cfg-compte',
+  'cfg-modules',
   'cfg-poste',
 ];
 

@@ -12,6 +12,7 @@ import 'cfa_tarifs.dart';
 import 'cfb_centres.dart';
 import 'cfb_compte.dart';
 import 'cfb_fiscal.dart';
+import 'cfb_modules.dart';
 import 'cfb_notifications.dart';
 import 'cfb_regles.dart';
 
@@ -37,4 +38,5 @@ final Map<String, ConstruireEcran> ecransCFG = {
   'cfg-comptabilite': (c, cfg) => const EcranComptabilite(),
   'cfg-notifications': (c, cfg) => const EcranNotifications(),
   'cfg-compte': (c, cfg) => const EcranCompte(),
+  'cfg-modules': (c, cfg) => const EcranModules(),
 };
