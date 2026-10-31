@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 173,
+ "ecrans_portes": 205,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -177,6 +177,262 @@
    "mesure": true,
    "attendus": 18,
    "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-conges",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-contrats",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-dashboard",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-employe-profil",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-evaluations",
+   "mesure": true,
+   "attendus": 30,
+   "presents": 30,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-fiches-poste",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-missions",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-personnel",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-planning",
+   "mesure": true,
+   "attendus": 38,
+   "presents": 38,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-presences",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-prestataires",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-primes",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-sanctions",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-stats-gardes",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-stats-permanences",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-stats-presence",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-avances",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-bulletins",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-calcul",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-cotisations",
+   "mesure": true,
+   "attendus": 30,
+   "presents": 30,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-dashboard",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-heures-sup",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-ortb",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-prets-etudes",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-validation",
+   "mesure": true,
+   "attendus": 7,
+   "presents": 7,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-balance",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-dashboard",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-depenses",
+   "mesure": true,
+   "attendus": 29,
+   "presents": 29,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-ecritures",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-grand-livre",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-journaux",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-plan-comptable",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
