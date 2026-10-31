@@ -4,6 +4,7 @@ import '../../core/config_poste.dart';
 import 'tba_infirmier.dart';
 import 'tba_laborantin.dart';
 import 'tba_medecin.dart';
+import 'tba_stock.dart';
 import 'tba_pharmacien.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
@@ -16,4 +17,5 @@ final Map<String, ConstruireEcran> ecransDASH = {
   'dash-infirmier': (c, cfg) => const EcranDashInfirmier(),
   'dash-pharmacien': (c, cfg) => const EcranDashPharmacien(),
   'dash-laborantin': (c, cfg) => const EcranDashLaborantin(),
+  'dash-stock': (c, cfg) => const EcranDashStock(),
 };
