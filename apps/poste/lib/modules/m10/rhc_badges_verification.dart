@@ -69,7 +69,7 @@ class _EtatVerification extends State<EcranBadgesVerification> {
           decoration: BoxDecoration(color: fond, borderRadius: BorderRadius.circular(12), border: Border.all(color: bord)),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             if (photo != null) ...[
-              ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.memory(photo, width: 96, height: 112, fit: BoxFit.cover)),
+              ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.memory(photo, width: 96, height: 112, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink())),
               const SizedBox(width: 16),
             ],
             Expanded(

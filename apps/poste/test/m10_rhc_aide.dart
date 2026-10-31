@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
@@ -41,6 +41,24 @@ Future<void> fermerToasts(WidgetTester t) async {
 List<List<String>> lignesTableau(Object? ecran, [int tableau = 0]) => [
       for (final l in ((obj((obj(ecran)['tableaux'] as List)[tableau]))['lignes'] as List)) [for (final c in (l as List)) '$c']
     ];
+
+/// L'agent connecté des tests (rôle `admin`) : la maquette tournait sous « BASSONGUI Chabi Séko » — les pièces de la maquette qui le nomment (auteur d'un retrait, d'un encaissement,
+/// d'une vérification) se comparent avec ce nom-ci.
+const utilisateurTest = 'Administrateur système';
+const auteurMaquette = 'BASSONGUI Chabi Séko';
+const champsAuteur = {'emisPar', 'retirePar', 'encaissePar', 'annulePar', '_creePar', '_modifiePar'};
+
+int nombreFeuilles(WidgetTester t) => find.byWidgetPredicate((w) => w.key is ValueKey && '${(w.key as ValueKey).value}'.startsWith('rhc:feuille-planche')).evaluate().length;
+
+/// Les indicateurs de la maquette (libellé, valeur, indice) : comme `kpisIdentiques`, mais les ESPACES ne comptent pas — la maquette a relevé son texte avec des espaces ordinaires,
+/// le poste compose en typographie française (espace fine insécable entre les milliers, insécable avant la devise).
+void kpisIdentiquesRhc(WidgetTester t, Object? attendus) {
+  for (final k in liste(attendus)) {
+    final w = t.widget<KpiSigh>(find.byWidgetPredicate((w) => w is KpiSigh && w.libelle == k['libelle']));
+    expect(sansEspaces(w.valeur), sansEspaces(k['valeur']), reason: '${k['libelle']}');
+    expect(sansEspaces(w.indice ?? ''), sansEspaces(k['indice'] ?? ''), reason: 'indice ${k['libelle']}');
+  }
+}
 
 /// Appuie sur un bouton par son libellé visible ou son infobulle.
 Future<void> appuyer(WidgetTester t, String libelle) async {

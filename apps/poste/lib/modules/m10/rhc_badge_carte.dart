@@ -128,7 +128,7 @@ class CarteBadgeSigh extends StatelessWidget {
                   decoration: BoxDecoration(color: JetonsShell.slate100, borderRadius: BorderRadius.circular(4), border: Border.all(color: JetonsShell.slate300)),
                   // Une photo manquante SE DIT : un cadre vide se lirait comme un défaut d'impression, et le badge partirait tel quel.
                   child: photo != null
-                      ? Image.memory(photo, fit: BoxFit.cover, width: double.infinity, height: double.infinity)
+                      ? Image.memory(photo, fit: BoxFit.cover, width: double.infinity, height: double.infinity, errorBuilder: (_, __, ___) => const SizedBox.shrink())
                       : const Center(
                           child: Column(mainAxisSize: MainAxisSize.min, children: [
                           Text('PHOTO', style: TextStyle(fontSize: 6, height: 1.25, color: JetonsShell.slate400)),
@@ -231,10 +231,10 @@ Future<void> afficherApercuPlanche(BuildContext ctx, ContexteEcran c, {required 
                   bottom: a.y > 0 ? BorderSide(color: JetonsShell.slate400, width: mm(0.2)) : BorderSide.none,
                   left: a.x < 0 ? BorderSide(color: JetonsShell.slate400, width: mm(0.2)) : BorderSide.none,
                   right: a.x > 0 ? BorderSide(color: JetonsShell.slate400, width: mm(0.2)) : BorderSide.none))));
-  Widget feuille(List<({Fiche badge, Fiche? agent})> l) {
+  Widget feuille(int i, List<({Fiche badge, Fiche? agent})> l) {
     final ref = PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero());
     return Container(
-      key: const Key('rhc:feuille-planche'),
+      key: ValueKey('rhc:feuille-planche:$i'),
       width: mm(210),
       constraints: BoxConstraints(minHeight: mm(297)),
       padding: EdgeInsets.all(mm(12)),
@@ -284,6 +284,6 @@ Future<void> afficherApercuPlanche(BuildContext ctx, ContexteEcran c, {required 
       corps: Container(
           color: const Color(0xFFE2E8F0),
           padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Column(children: [for (final l in feuilles) feuille(l)]))),
+          child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Column(children: [for (final (i, l) in feuilles.indexed) feuille(i, l)]))),
       pied: (fermer) => [BoutonSigh(libelle: 'Fermer', icone: LucideIcons.x, variante: VarianteBouton.secondaire, onPressed: fermer)]);
 }

@@ -76,6 +76,7 @@ class _EtatBadges extends State<EcranBadges> {
   Widget _tableau(BuildContext ctx, ContexteEcran c, List<Fiche> rows, bool retire) {
     final lignes = trierPar(rows, (b) => b['numero']).reversed.toList();
     return TableauSigh(
+      key: ValueKey('rhc:badges:${retire ? 'retires' : 'en-cours'}'),
       titre: retire ? 'Badges retirés — conservés, jamais effacés' : 'Badges en cours de validité',
       lignes: lignes,
       taillePage: 12,
@@ -143,6 +144,7 @@ class _EtatBadges extends State<EcranBadges> {
   }
 
   Widget _sansBadge(BuildContext ctx, ContexteEcran c, List<Fiche> agents) => TableauSigh(
+        key: const ValueKey('rhc:badges:sans'),
         titre: 'Agents sans badge en cours',
         lignes: agents,
         taillePage: 10,
