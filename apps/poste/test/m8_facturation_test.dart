@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show rangSerieFactures;
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
@@ -110,6 +111,9 @@ void main() {
       (t) async {
     final m = magasin();
     final avant = m.collection('factures').actives.length;
+    // E6 (corrigé le 31/10/2026) : le rang est celui de la SÉRIE de l'année, plus le nombre total de factures.
+    final rang = rangSerieFactures('FN-2026-', m.collection('factures').toutes);
+    expect(rang, isNot(avant + 1), reason: 'le jeu prouve la différence : 409 factures, mais la série FN-2026- s\'arrête plus bas');
     await ouvrir(t, m);
     await ajouterLibre(t, 'Carnet de santé', '500', quantite: '2');
     expect(find.text('Carnet de santé'), findsOneWidget);
@@ -117,7 +121,7 @@ void main() {
     final apres = m.collection('factures').actives;
     expect(apres.length, avant + 1);
     final f = apres.first; // la maquette insère en tête
-    expect(f['numero'], 'FN-2026-${(avant + 1).toString().padLeft(5, '0')}');
+    expect(f['numero'], 'FN-2026-${rang.toString().padLeft(5, '0')}');
     expect(f['statutPaiement'], 'soldee');
     expect(f['montantPaye'], 1000);
     expect(f['baseMecef'], 1000);

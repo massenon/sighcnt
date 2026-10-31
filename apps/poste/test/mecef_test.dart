@@ -7,6 +7,7 @@ import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/impression/apercu.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
+import 'package:sigh_poste/modules/mecef/commun.dart' show pieceFactureNormalisee, paramFiscal;
 
 import 'aide_polices.dart';
 
@@ -139,8 +140,72 @@ void main() {
         find.descendant(of: find.byKey(const Key('kit:champ:montant')), matching: find.byType(TextField)),
         '${n(f['montantTTC']) + 1}');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre l’avoir'));
-    expect(find.text('Le montant de l’avoir ne peut excéder celui de la facture.'), findsWidgets);
+    // B10 : le plafond est le CUMUL des avoirs (moteur unique), plus le seul « montant ≤ facture ».
+    expect(find.textContaining('excéderait la facture'), findsWidgets);
     expect(m.collection('avoirs').actives, isEmpty);
+  });
+
+  /// Saisit la modale d'avoir MECeF sur la plus récente facture validée, avec [montant], et clique « Émettre l'avoir ».
+  Future<void> emettre(WidgetTester t, Magasin m, Fiche f, String montant) async {
+    await ouvrir(t, m, 'mecef-avoirs');
+    await toucher(t, find.text('Émettre un avoir'));
+    await toucher(t, find.descendant(of: find.byKey(const Key('kit:champ:factureId')), matching: find.byType(InkWell)).first);
+    await t.enterText(find.byType(TextField).last, '${f['numero']}');
+    await t.pump(const Duration(milliseconds: 200));
+    await toucher(t, find.textContaining('${f['numero']}').last);
+    await t.enterText(
+        find.descendant(of: find.byKey(const Key('kit:champ:montant')), matching: find.byType(TextField)), montant);
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre l’avoir'));
+  }
+
+  cas('E10 : un avoir MECeF de 0 FCFA est refusé en nommant le défaut, rien n\'est écrit', (t) async {
+    final m = magasin();
+    await emettre(t, m, norm(m, 'valide').first, '0');
+    expect(find.textContaining('strictement supérieur à 0 FCFA'), findsWidgets);
+    expect(m.collection('avoirs').actives, isEmpty);
+  });
+
+  cas('B10 : l\'avoir MECeF passe par le moteur unique : contre-passation en brouillon, facture qui porte son avoir, origine mecef', (t) async {
+    final m = magasin();
+    final f = norm(m, 'valide').first;
+    await emettre(t, m, f, '500');
+    final a = m.collection('avoirs').actives.single;
+    expect(a['origine'], 'mecef');
+    expect(a['lignesAnnulees'], isNotEmpty, reason: 'E2 : une pièce sans lignes est refusée, la ligne est nommée');
+    final ecr = m.collection('ecritures').actives.where((e) => e['pieceId'] == a['id']).toList();
+    expect(ecr.length, 2);
+    expect(ecr.every((e) => e['statut'] == 'brouillon'), isTrue);
+    expect(ecr.fold<num>(0, (x, e) => x + n(e['debit'])), 500);
+    expect(ecr.fold<num>(0, (x, e) => x + n(e['credit'])), 500);
+    expect(n(m.collection('factures').parId(f['id'])!['montantAvoirs']), 500);
+  });
+
+  cas('E15 : le plafond est CUMULÉ entre canaux : un avoir de caisse déjà émis borne l\'avoir MECeF', (t) async {
+    final m = magasin();
+    final f = norm(m, 'valide').first;
+    m.collection('avoirs').inserer({
+      'reference': 'AV-2026-0001', 'factureId': f['id'], 'montant': n(f['montantTTC']) - 100, 'origine': 'caisse', 'statut': 'actif',
+    }, prefixe: 'AVR');
+    await emettre(t, m, f, '101');
+    expect(find.textContaining('cumul des avoirs'), findsWidgets);
+    expect(m.collection('avoirs').actives.length, 1);
+  });
+
+  cas('E14 : la facture normalisée imprime l\'IFU du CLIENT (vide s\'il est inconnu), jamais celui de la clinique', (t) async {
+    final m = magasin();
+    final f = norm(m, 'valide').first;
+    final p = m.collection('patients').parId(f['patientId']);
+    expect(ifuClientDe(f, p), isNot(IdentiteClinique.ifu));
+    expect(ifuClientDe({...f, 'ifuClient': '3201912345678'}, p), '3201912345678');
+    // La pièce imprimée : la ligne « IFU client » du cartouche.
+    String ifuImprime(Fiche x, Fiche? pat) => pieceFactureNormalisee(x, paramFiscal(m),
+            patient: pat, utilisateur: 'TEST', edite: aujourdhui, reference: 'REF')
+        .cartouche
+        .firstWhere((c) => c.$1 == 'IFU client')
+        .$2;
+    expect(ifuImprime(f, p), '');
+    expect(ifuImprime(f, p), isNot(IdentiteClinique.ifu));
+    expect(ifuImprime({...f, 'ifuClient': '3201912345678'}, p), '3201912345678');
   });
 
   cas('avoir MECeF : transmis et validé d\'office, référence en série annuelle, annulable', (t) async {

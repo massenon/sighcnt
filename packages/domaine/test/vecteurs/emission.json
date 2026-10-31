@@ -5,13 +5,13 @@
    "entree": {
     "nom": "non assuré : une seule pièce, règlement total",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -42,7 +42,7 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
+    "date": "2026-10-31",
     "rangDebut": 230,
     "souscripteurs": [],
     "garanties": [],
@@ -58,11 +58,11 @@
      "statut": "actif",
      "numero": "FN-2026-00231",
      "baseMecef": 3000,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -118,7 +118,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.767Z",
+     "_creeLe": "2026-10-31T11:38:26.468Z",
      "mecef": true
     }
    ]
@@ -127,13 +127,13 @@
    "entree": {
     "nom": "non assuré : règlement partiel, reliquat",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -164,7 +164,7 @@
     "reglement": 1200,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
+    "date": "2026-10-31",
     "rangDebut": 231,
     "souscripteurs": [],
     "garanties": [],
@@ -180,11 +180,11 @@
      "statut": "actif",
      "numero": "FN-2026-00232",
      "baseMecef": 1200,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -240,7 +240,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.866Z",
+     "_creeLe": "2026-10-31T11:38:26.567Z",
      "mecef": true
     }
    ]
@@ -249,13 +249,13 @@
    "entree": {
     "nom": "non assuré : règlement supérieur au dû, plafonné",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -274,7 +274,7 @@
     "reglement": 99999,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
+    "date": "2026-10-31",
     "rangDebut": 232,
     "souscripteurs": [],
     "garanties": [],
@@ -290,11 +290,11 @@
      "statut": "actif",
      "numero": "FN-2026-00233",
      "baseMecef": 1000,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -333,7 +333,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.931Z",
+     "_creeLe": "2026-10-31T11:38:26.640Z",
      "mecef": true
     }
    ]
@@ -342,13 +342,13 @@
    "entree": {
     "nom": "non assuré : règlement nul, impayée",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -367,7 +367,7 @@
     "reglement": 0,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
+    "date": "2026-10-31",
     "rangDebut": 233,
     "souscripteurs": [],
     "garanties": [],
@@ -383,11 +383,11 @@
      "statut": "actif",
      "numero": "FN-2026-00234",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -426,7 +426,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.019Z",
+     "_creeLe": "2026-10-31T11:38:26.721Z",
      "mecef": true
     }
    ]
@@ -435,13 +435,13 @@
    "entree": {
     "nom": "non assuré : mode MTN",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -460,7 +460,7 @@
     "reglement": null,
     "mode": "mtn",
     "proforma": false,
-    "date": "2026-10-30",
+    "date": "2026-10-31",
     "rangDebut": 234,
     "souscripteurs": [],
     "garanties": [],
@@ -476,11 +476,11 @@
      "statut": "actif",
      "numero": "FN-2026-00235",
      "baseMecef": 1000,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -519,7 +519,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.249Z",
+     "_creeLe": "2026-10-31T11:38:27.139Z",
      "mecef": true
     }
    ]
@@ -528,13 +528,13 @@
    "entree": {
     "nom": "non assuré : opération dissociée du dossier (vente au comptoir)",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -553,7 +553,7 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
+    "date": "2026-10-31",
     "rangDebut": 235,
     "souscripteurs": [],
     "garanties": [],
@@ -569,11 +569,11 @@
      "statut": "actif",
      "numero": "FN-2026-00236",
      "baseMecef": 500,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": null,
      "operationDissociee": true,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -612,7 +612,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.331Z",
+     "_creeLe": "2026-10-31T11:38:27.241Z",
      "mecef": true
     }
    ]
@@ -621,13 +621,13 @@
    "entree": {
     "nom": "pro-forma : rien d'encaissé, pas de base MECeF",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -646,8 +646,8 @@
     "reglement": 1000,
     "mode": "especes",
     "proforma": true,
-    "date": "2026-10-30",
-    "rangDebut": 236,
+    "date": "2026-10-31",
+    "rangDebut": 0,
     "souscripteurs": [],
     "garanties": [],
     "couvertures": [],
@@ -660,13 +660,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "PRO-2026-00237",
+     "numero": "PRO-2026-00001",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -705,7 +705,7 @@
      "statutMecef": "en_attente",
      "proforma": true,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.421Z",
+     "_creeLe": "2026-10-31T11:38:27.830Z",
      "mecef": false
     }
    ]
@@ -714,18 +714,18 @@
    "entree": {
     "nom": "assuré : lignes couvertes ET non couvertes → deux pièces -A / -B",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -756,48 +756,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 237,
+    "date": "2026-10-31",
+    "rangDebut": 236,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -805,7 +805,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -818,13 +818,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00239-B",
+     "numero": "FN-2026-00238-B",
      "baseMecef": 2000,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "non_couvert",
      "libelleVolet": "Prestations non couvertes — à la charge du patient",
@@ -863,18 +863,18 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.508Z",
+     "_creeLe": "2026-10-31T11:38:28.155Z",
      "mecef": true
     },
     {
      "statut": "actif",
-     "numero": "FN-2026-00238-A",
+     "numero": "FN-2026-00237-A",
      "baseMecef": 1000,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "couvert",
      "libelleVolet": "Prestations couvertes par l’assurance",
@@ -913,7 +913,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.508Z",
+     "_creeLe": "2026-10-31T11:38:28.155Z",
      "mecef": true
     }
    ]
@@ -922,18 +922,18 @@
    "entree": {
     "nom": "assuré, deux pièces : règlement partiel qui ne couvre que la pièce -A",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -964,48 +964,48 @@
     "reglement": 100,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 239,
+    "date": "2026-10-31",
+    "rangDebut": 238,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -1013,7 +1013,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -1026,13 +1026,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00241-B",
+     "numero": "FN-2026-00240-B",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "non_couvert",
      "libelleVolet": "Prestations non couvertes — à la charge du patient",
@@ -1071,18 +1071,18 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.588Z",
+     "_creeLe": "2026-10-31T11:38:28.404Z",
      "mecef": true
     },
     {
      "statut": "actif",
-     "numero": "FN-2026-00240-A",
+     "numero": "FN-2026-00239-A",
      "baseMecef": 100,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "couvert",
      "libelleVolet": "Prestations couvertes par l’assurance",
@@ -1121,7 +1121,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.588Z",
+     "_creeLe": "2026-10-31T11:38:28.403Z",
      "mecef": true
     }
    ]
@@ -1130,18 +1130,18 @@
    "entree": {
     "nom": "assuré, deux pièces : règlement qui déborde sur la pièce -B",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -1172,48 +1172,48 @@
     "reglement": 1500,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 241,
+    "date": "2026-10-31",
+    "rangDebut": 240,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -1221,7 +1221,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -1234,13 +1234,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00243-B",
+     "numero": "FN-2026-00242-B",
      "baseMecef": 500,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "non_couvert",
      "libelleVolet": "Prestations non couvertes — à la charge du patient",
@@ -1279,18 +1279,18 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.695Z",
+     "_creeLe": "2026-10-31T11:38:28.514Z",
      "mecef": true
     },
     {
      "statut": "actif",
-     "numero": "FN-2026-00242-A",
+     "numero": "FN-2026-00241-A",
      "baseMecef": 1000,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "couvert",
      "libelleVolet": "Prestations couvertes par l’assurance",
@@ -1329,7 +1329,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.694Z",
+     "_creeLe": "2026-10-31T11:38:28.514Z",
      "mecef": true
     }
    ]
@@ -1338,18 +1338,18 @@
    "entree": {
     "nom": "assuré, deux pièces : pro-forma",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -1380,48 +1380,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": true,
-    "date": "2026-10-30",
-    "rangDebut": 243,
+    "date": "2026-10-31",
+    "rangDebut": 1,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -1429,7 +1429,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -1442,13 +1442,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "PRO-2026-00245-B",
+     "numero": "PRO-2026-00003-B",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "non_couvert",
      "libelleVolet": "Prestations non couvertes — à la charge du patient",
@@ -1487,18 +1487,18 @@
      "statutMecef": "en_attente",
      "proforma": true,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.786Z",
+     "_creeLe": "2026-10-31T11:38:28.713Z",
      "mecef": false
     },
     {
      "statut": "actif",
-     "numero": "PRO-2026-00244-A",
+     "numero": "PRO-2026-00002-A",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "couvert",
      "libelleVolet": "Prestations couvertes par l’assurance",
@@ -1537,7 +1537,7 @@
      "statutMecef": "en_attente",
      "proforma": true,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.786Z",
+     "_creeLe": "2026-10-31T11:38:28.713Z",
      "mecef": false
     }
    ]
@@ -1546,18 +1546,18 @@
    "entree": {
     "nom": "assuré : tout est couvert → une pièce, base MECeF sur la part patient",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -1588,48 +1588,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 245,
+    "date": "2026-10-31",
+    "rangDebut": 242,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -1637,7 +1637,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -1650,13 +1650,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00246",
+     "numero": "FN-2026-00243",
      "baseMecef": 1000,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -1712,7 +1712,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.878Z",
+     "_creeLe": "2026-10-31T11:38:28.860Z",
      "mecef": true
     }
    ]
@@ -1721,18 +1721,18 @@
    "entree": {
     "nom": "assuré : analyses 100 % → part patient nulle, MECeF en attente",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -1751,48 +1751,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 246,
+    "date": "2026-10-31",
+    "rangDebut": 243,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -1800,7 +1800,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -1813,13 +1813,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00247",
+     "numero": "FN-2026-00244",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -1858,7 +1858,7 @@
      "statutMecef": "en_attente",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:56.965Z",
+     "_creeLe": "2026-10-31T11:38:29.143Z",
      "mecef": false
     }
    ]
@@ -1867,18 +1867,18 @@
    "entree": {
     "nom": "carte expirée (RG-09) : tout au patient, une pièce",
     "patient": {
-     "id": "PATxmvuz312z4ypvw",
+     "id": "PATxmvwbv37yhhtom",
      "statut": "actif",
      "code": "EXP",
      "nom": "EMISSION",
      "prenom": "EXP",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2020-01-01",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -1909,48 +1909,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 247,
+    "date": "2026-10-31",
+    "rangDebut": 244,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -1958,7 +1958,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -1971,13 +1971,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00248",
+     "numero": "FN-2026-00245",
      "baseMecef": 7000,
-     "patientId": "PATxmvuz312z4ypvw",
+     "patientId": "PATxmvwbv37yhhtom",
      "patient": "EMISSION EXP",
      "patientCode": "EXP",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -2033,7 +2033,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:57.087Z",
+     "_creeLe": "2026-10-31T11:38:29.352Z",
      "mecef": true
     }
    ]
@@ -2042,18 +2042,18 @@
    "entree": {
     "nom": "convention non saisie : tout au patient, une pièce",
     "patient": {
-     "id": "PATxmvuz312zadt6g",
+     "id": "PATxmvwbv37y87mf9",
      "statut": "actif",
      "code": "NOG",
      "nom": "EMISSION",
      "prenom": "NOG",
      "assureur": "ASS-NOG",
      "assureurNom": "NOG",
-     "souscripteurId": "SOUxmvuz312za6f8a",
+     "souscripteurId": "SOUxmvwbv37y5ykx7",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2072,17 +2072,17 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 248,
+    "date": "2026-10-31",
+    "rangDebut": 245,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312za6f8a",
+      "id": "SOUxmvwbv37y5ykx7",
       "statut": "actif",
       "nom": "Employeur sans grille",
       "assureur": "ASS-NOG",
       "police": "PN-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "garanties": [],
@@ -2096,13 +2096,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00249",
+     "numero": "FN-2026-00246",
      "baseMecef": 5000,
-     "patientId": "PATxmvuz312zadt6g",
+     "patientId": "PATxmvwbv37y87mf9",
      "patient": "EMISSION NOG",
      "patientCode": "NOG",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -2141,7 +2141,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:57.190Z",
+     "_creeLe": "2026-10-31T11:38:29.495Z",
      "mecef": true
     }
    ]
@@ -2150,13 +2150,13 @@
    "entree": {
     "nom": "remise en % avec motif personnel",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2175,8 +2175,8 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 249,
+    "date": "2026-10-31",
+    "rangDebut": 246,
     "souscripteurs": [],
     "garanties": [],
     "couvertures": [],
@@ -2189,13 +2189,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00250",
+     "numero": "FN-2026-00247",
      "baseMecef": 1800,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -2234,7 +2234,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:57.294Z",
+     "_creeLe": "2026-10-31T11:38:29.664Z",
      "mecef": true
     }
    ]
@@ -2243,13 +2243,13 @@
    "entree": {
     "nom": "remise en FCFA supérieure au prix : plafonnée au prix",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2268,8 +2268,8 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 250,
+    "date": "2026-10-31",
+    "rangDebut": 247,
     "souscripteurs": [],
     "garanties": [],
     "couvertures": [],
@@ -2282,13 +2282,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00251",
+     "numero": "FN-2026-00248",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -2327,7 +2327,7 @@
      "statutMecef": "en_attente",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:57.407Z",
+     "_creeLe": "2026-10-31T11:38:29.992Z",
      "mecef": false
     }
    ]
@@ -2336,18 +2336,18 @@
    "entree": {
     "nom": "remise sur un assuré : elle diminue la base avant la prise en charge",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2366,48 +2366,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 251,
+    "date": "2026-10-31",
+    "rangDebut": 248,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -2415,7 +2415,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -2428,13 +2428,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00252",
+     "numero": "FN-2026-00249",
      "baseMecef": 800,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -2473,7 +2473,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:57.571Z",
+     "_creeLe": "2026-10-31T11:38:30.497Z",
      "mecef": true
     }
    ]
@@ -2482,13 +2482,13 @@
    "entree": {
     "nom": "médicament : sortie de stock RG-03, justificatif = numéro de pièce",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2508,8 +2508,8 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 252,
+    "date": "2026-10-31",
+    "rangDebut": 249,
     "souscripteurs": [],
     "garanties": [],
     "couvertures": [],
@@ -2529,7 +2529,7 @@
      "quantite": 2,
      "type": "sortie",
      "stockType": "detail",
-     "justificatif": "Facture FN-2026-00253"
+     "justificatif": "Facture FN-2026-00250"
     }
    ],
    "stocks": [
@@ -2548,13 +2548,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00253",
+     "numero": "FN-2026-00250",
      "baseMecef": 2000,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -2593,7 +2593,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:57.689Z",
+     "_creeLe": "2026-10-31T11:38:31.614Z",
      "mecef": true
     }
    ]
@@ -2602,13 +2602,13 @@
    "entree": {
     "nom": "RG-03 : quantité supérieure au stock en pharmacie → la ligne n'est pas ajoutée, rien à émettre",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2628,8 +2628,8 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 253,
+    "date": "2026-10-31",
+    "rangDebut": 250,
     "souscripteurs": [],
     "garanties": [],
     "couvertures": [],
@@ -2645,13 +2645,13 @@
    "entree": {
     "nom": "RG-03 : deux ajouts du même médicament dont le cumul dépasse le stock → le second est refusé",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2684,8 +2684,8 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 253,
+    "date": "2026-10-31",
+    "rangDebut": 250,
     "souscripteurs": [],
     "garanties": [],
     "couvertures": [],
@@ -2705,7 +2705,7 @@
      "quantite": 1,
      "type": "sortie",
      "stockType": "detail",
-     "justificatif": "Facture FN-2026-00254"
+     "justificatif": "Facture FN-2026-00251"
     }
    ],
    "stocks": [
@@ -2724,13 +2724,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00254",
+     "numero": "FN-2026-00251",
      "baseMecef": 1000,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -2769,7 +2769,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:58.012Z",
+     "_creeLe": "2026-10-31T11:38:31.971Z",
      "mecef": true
     }
    ]
@@ -2778,18 +2778,18 @@
    "entree": {
     "nom": "catégories : hospitalisation, ligne libre « ambulance », ligne libre « consultation »",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -2832,48 +2832,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 254,
+    "date": "2026-10-31",
+    "rangDebut": 251,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -2881,7 +2881,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -2894,13 +2894,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00256-B",
+     "numero": "FN-2026-00253-B",
      "baseMecef": 25000,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "non_couvert",
      "libelleVolet": "Prestations non couvertes — à la charge du patient",
@@ -2956,18 +2956,18 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:58.136Z",
+     "_creeLe": "2026-10-31T11:38:32.570Z",
      "mecef": true
     },
     {
      "statut": "actif",
-     "numero": "FN-2026-00255-A",
+     "numero": "FN-2026-00252-A",
      "baseMecef": 800,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "couvert",
      "libelleVolet": "Prestations couvertes par l’assurance",
@@ -3006,7 +3006,7 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:58.136Z",
+     "_creeLe": "2026-10-31T11:38:32.570Z",
      "mecef": true
     }
    ]
@@ -3015,13 +3015,13 @@
    "entree": {
     "nom": "médicament, pro-forma : aucune sortie de stock",
     "patient": {
-     "id": "PATxmvuz312z6h3dg",
+     "id": "PATxmvwbv37yhx2pt",
      "statut": "actif",
      "code": "NA",
      "nom": "EMISSION",
      "prenom": "NA",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -3041,8 +3041,8 @@
     "reglement": null,
     "mode": "especes",
     "proforma": true,
-    "date": "2026-10-30",
-    "rangDebut": 256,
+    "date": "2026-10-31",
+    "rangDebut": 3,
     "souscripteurs": [],
     "garanties": [],
     "couvertures": [],
@@ -3055,13 +3055,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "PRO-2026-00257",
+     "numero": "PRO-2026-00004",
      "baseMecef": 0,
-     "patientId": "PATxmvuz312z6h3dg",
+     "patientId": "PATxmvwbv37yhx2pt",
      "patient": "EMISSION NA",
      "patientCode": "NA",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": null,
      "libelleVolet": null,
@@ -3100,7 +3100,7 @@
      "statutMecef": "en_attente",
      "proforma": true,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:58.228Z",
+     "_creeLe": "2026-10-31T11:38:32.881Z",
      "mecef": false
     }
    ]
@@ -3109,18 +3109,18 @@
    "entree": {
     "nom": "assuré + médicament + non couvert : trois lignes, deux pièces, sortie de stock",
     "patient": {
-     "id": "PATxmvuz312z9mnlj",
+     "id": "PATxmvwbv37yyiqp2",
      "statut": "actif",
      "code": "ASS",
      "nom": "EMISSION",
      "prenom": "ASS",
      "assureur": "ASS-EMI",
      "assureurNom": "EMI",
-     "souscripteurId": "SOUxmvuz312z2890s",
+     "souscripteurId": "SOUxmvwbv37xvpr20",
      "carteExpiration": "2099-12-31",
      "tauxPriseEnCharge": 80,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:55.739Z"
+     "_creeLe": "2026-10-31T11:38:26.446Z"
     },
     "saisie": [
      {
@@ -3164,48 +3164,48 @@
     "reglement": null,
     "mode": "especes",
     "proforma": false,
-    "date": "2026-10-30",
-    "rangDebut": 257,
+    "date": "2026-10-31",
+    "rangDebut": 253,
     "souscripteurs": [
      {
-      "id": "SOUxmvuz312z2890s",
+      "id": "SOUxmvwbv37xvpr20",
       "statut": "actif",
       "nom": "Employeur EMI",
       "assureur": "ASS-EMI",
       "police": "PE-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.445Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvuz312zt6tvk",
+      "id": "GARxmvwbv37ytiegq",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zzvxbb",
+      "id": "GARxmvwbv37yarkvo",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      },
      {
-      "id": "GARxmvuz312zlp1ml",
+      "id": "GARxmvwbv37yfbhqy",
       "statut": "actif",
-      "souscripteurId": "SOUxmvuz312z2890s",
+      "souscripteurId": "SOUxmvwbv37xvpr20",
       "assureur": "ASS-EMI",
       "categorie": "consultation",
       "libelle": "Consultation",
@@ -3213,7 +3213,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T12:52:55.739Z"
+      "_creeLe": "2026-10-31T11:38:26.446Z"
      }
     ],
     "couvertures": [],
@@ -3233,7 +3233,7 @@
      "quantite": 1,
      "type": "sortie",
      "stockType": "detail",
-     "justificatif": "Facture FN-2026-00258-A"
+     "justificatif": "Facture FN-2026-00254-A"
     }
    ],
    "stocks": [
@@ -3252,13 +3252,13 @@
    "pieces": [
     {
      "statut": "actif",
-     "numero": "FN-2026-00259-B",
+     "numero": "FN-2026-00255-B",
      "baseMecef": 2000,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "non_couvert",
      "libelleVolet": "Prestations non couvertes — à la charge du patient",
@@ -3297,18 +3297,18 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:58.350Z",
+     "_creeLe": "2026-10-31T11:38:33.487Z",
      "mecef": true
     },
     {
      "statut": "actif",
-     "numero": "FN-2026-00258-A",
+     "numero": "FN-2026-00254-A",
      "baseMecef": 1300,
-     "patientId": "PATxmvuz312z9mnlj",
+     "patientId": "PATxmvwbv37yyiqp2",
      "patient": "EMISSION ASS",
      "patientCode": "ASS",
      "operationDissociee": false,
-     "date": "2026-10-30",
+     "date": "2026-10-31",
      "type": "Consultation généraliste",
      "volet": "couvert",
      "libelleVolet": "Prestations couvertes par l’assurance",
@@ -3364,8 +3364,287 @@
      "statutMecef": "valide",
      "proforma": false,
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T12:52:58.349Z",
+     "_creeLe": "2026-10-31T11:38:33.487Z",
      "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "nouvelle année (4 janvier 2027) : millésime 2027 et série repartie à 00001",
+    "patient": {
+     "id": "PATxmvwbv37yhx2pt",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:38:26.446Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2027-01-04",
+    "rangDebut": 0,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2027-00001",
+     "baseMecef": 1000,
+     "patientId": "PATxmvwbv37yhx2pt",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2027-01-04",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:38:33.805Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "nouvelle année : la 2e pièce de 2027 suit (00002), pro-forma dans SA série PRO-2027-",
+    "patient": {
+     "id": "PATxmvwbv37yhx2pt",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:38:26.446Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": null,
+    "mode": "especes",
+    "proforma": false,
+    "date": "2027-01-04",
+    "rangDebut": 1,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "FN-2027-00002",
+     "baseMecef": 1000,
+     "patientId": "PATxmvwbv37yhx2pt",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2027-01-04",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 1000,
+     "reliquat": 0,
+     "modePaiement": "especes",
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "proforma": false,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:38:35.036Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "nouvelle année : pro-forma, série PRO-2027- indépendante",
+    "patient": {
+     "id": "PATxmvwbv37yhx2pt",
+     "statut": "actif",
+     "code": "NA",
+     "nom": "EMISSION",
+     "prenom": "NA",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:38:26.446Z"
+    },
+    "saisie": [
+     {
+      "nature": "libre",
+      "designation": "Soin",
+      "quantite": 1,
+      "prixUnitaire": 1000,
+      "produitId": null,
+      "secteur": null,
+      "remise": 0,
+      "typeRemise": "pct",
+      "motif": null,
+      "ajoutee": true
+     }
+    ],
+    "reglement": 1000,
+    "mode": "especes",
+    "proforma": true,
+    "date": "2027-01-04",
+    "rangDebut": 0,
+    "souscripteurs": [],
+    "garanties": [],
+    "couvertures": [],
+    "dissocier": false,
+    "type": "Consultation généraliste",
+    "produits": []
+   },
+   "sorties": [],
+   "stocks": [],
+   "pieces": [
+    {
+     "statut": "actif",
+     "numero": "PRO-2027-00001",
+     "baseMecef": 0,
+     "patientId": "PATxmvwbv37yhx2pt",
+     "patient": "EMISSION NA",
+     "patientCode": "NA",
+     "operationDissociee": false,
+     "date": "2027-01-04",
+     "type": "Consultation généraliste",
+     "volet": null,
+     "libelleVolet": null,
+     "lignes": [
+      {
+       "nature": "libre",
+       "designation": "Soin",
+       "quantite": 1,
+       "prixUnitaire": 1000,
+       "produitId": null,
+       "remisePct": 0,
+       "remiseUnitaire": 0,
+       "motifRemise": null,
+       "prixNet": 1000,
+       "categorie": "autre",
+       "montant": 1000,
+       "partAssureur": 0,
+       "partPatient": 1000,
+       "motifCouverture": "Patient non assuré",
+       "taux": 0
+      }
+     ],
+     "montantHT": 1000,
+     "montantTTC": 1000,
+     "montantRemises": 0,
+     "assureur": null,
+     "souscripteur": null,
+     "numeroPolice": null,
+     "tauxPriseEnCharge": 0,
+     "partAssurance": 0,
+     "partPatient": 1000,
+     "montantPaye": 0,
+     "reliquat": 1000,
+     "modePaiement": "especes",
+     "statutPaiement": "impayee",
+     "statutMecef": "en_attente",
+     "proforma": true,
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:38:35.316Z",
+     "mecef": false
     }
    ]
   }

@@ -186,6 +186,71 @@ void main() {
     expect(m.collection('factures').parId(f['id'])!['annulee'], isNull);
   });
 
+  /// Saisit la modale « Nouvelle opération » pour la nature « Facture avoir » et clique « Enregistrer ».
+  Future<void> operationAvoir(WidgetTester t, Magasin m, Fiche f, String montant) async {
+    await ouvrir(t, m, 'm8-remboursements');
+    await toucher(t, find.text('Nouvelle opération'));
+    await choisir(t, 'factureId', '${f['numero']} — ${f['patient']} — ${money0(f['montantTTC'])}');
+    await choisir(t, 'nature', 'Facture avoir');
+    await t.enterText(
+        find.descendant(of: find.byKey(const Key('kit:champ:montant')), matching: find.byType(TextField)), montant);
+    await t.enterText(
+        find.descendant(of: find.byKey(const Key('kit:champ:motif')), matching: find.byType(TextField)),
+        'Tarif mal appliqué');
+    await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+  }
+
+  cas('B10 : la nature « Facture avoir » APPELLE le moteur unique : un avoir dans `avoirs`, aucune pièce négative, annulable', (t) async {
+    final m = magasin();
+    final f = cible(m);
+    final facturesAvant = m.collection('factures').toutes.length;
+    await operationAvoir(t, m, f, '1000');
+    final a = m.collection('avoirs').actives.single;
+    expect(a['origine'], 'caisse');
+    expect(n(a['montant']), 1000);
+    expect(a['factureId'], f['id']);
+    expect(a['statutMecef'], f['statutMecef'] == 'valide' ? 'en_attente' : 'sans_objet');
+    final r = m.collection('remboursements').actives.single;
+    expect(r['nature'], 'Facture avoir');
+    expect(r['avoirId'], a['id']);
+    expect(r['avoirNumero'], a['reference']);
+    expect(m.collection('factures').toutes.length, facturesAvant, reason: 'plus de pièce négative dans les factures');
+    final ecr = m.collection('ecritures').actives.where((e) => e['pieceId'] == a['id']).toList();
+    expect(ecr.length, 2);
+    expect(ecr.every((e) => e['statut'] == 'brouillon'), isTrue);
+    expect(ecr.fold<num>(0, (x, e) => x + n(e['debit'])), ecr.fold<num>(0, (x, e) => x + n(e['credit'])));
+    expect(n(m.collection('factures').parId(f['id'])!['montantAvoirs']), 1000);
+    // L'annulation est visible : l'avoir et ses écritures sont ARCHIVÉS (RG-14), la facture rend le plafond.
+    await toucher(t, find.text('Annuler').last);
+    expect(m.collection('avoirs').actives, isEmpty);
+    expect(m.collection('remboursements').actives, isEmpty);
+    expect(m.collection('ecritures').actives.where((e) => e['pieceId'] == a['id']), isEmpty);
+    expect(n(m.collection('factures').parId(f['id'])!['montantAvoirs']), n(f['montantAvoirs']));
+  });
+
+  cas('E10 : un montant à 0 FCFA est refusé en le nommant, rien n\'est écrit', (t) async {
+    final m = magasin();
+    final f = cible(m);
+    await operationAvoir(t, m, f, '0');
+    expect(find.textContaining('strictement supérieur à 0 FCFA'), findsWidgets);
+    expect(m.collection('avoirs').actives, isEmpty);
+    expect(m.collection('remboursements').actives, isEmpty);
+  });
+
+  cas('plafond CUMULÉ : un avoir déjà émis par un autre canal borne l\'avoir de l\'écran de facturation', (t) async {
+    final m = magasin();
+    final f = cible(m);
+    final ttc = n(f['montantTTC']);
+    // Un avoir MECeF de (TTC - 100) est déjà émis sur la facture : 101 FCFA de plus dépassent le plafond.
+    m.collection('avoirs').inserer({
+      'reference': 'AV-2026-0001', 'factureId': f['id'], 'montant': ttc - 100, 'origine': 'mecef', 'statut': 'actif',
+    }, prefixe: 'AVR');
+    await operationAvoir(t, m, f, '101');
+    expect(find.textContaining('cumul des avoirs'), findsWidgets);
+    expect(m.collection('avoirs').actives.length, 1);
+    expect(m.collection('remboursements').actives, isEmpty);
+  });
+
   cas('remboursements : le motif est obligatoire (RG-12), rien n\'est écrit sans lui', (t) async {
     final m = magasin();
     final f = cible(m);

@@ -13,7 +13,7 @@
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -28,54 +28,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -84,36 +84,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -121,12 +121,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -134,24 +134,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -159,12 +159,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -172,7 +172,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -263,14 +263,14 @@
      "nom": "TEST",
      "prenom": "P-1",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -285,54 +285,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -341,36 +341,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -378,12 +378,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -391,24 +391,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -416,12 +416,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -429,7 +429,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -503,7 +503,7 @@
       "motif": "Garantie Analyses biologiques — 100 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 33500,
@@ -520,14 +520,14 @@
      "nom": "TEST",
      "prenom": "P-2",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-08-16",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -542,54 +542,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -598,36 +598,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -635,12 +635,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -648,24 +648,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -673,12 +673,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -686,7 +686,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -760,7 +760,7 @@
       "motif": "Garantie Analyses biologiques — 100 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 33500,
@@ -777,14 +777,14 @@
      "nom": "TEST",
      "prenom": "P-3",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-08-15",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -799,54 +799,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -855,36 +855,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -892,12 +892,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -905,24 +905,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -930,12 +930,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -943,7 +943,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -1017,7 +1017,7 @@
       "motif": "Carte non valide à la date de facturation (RG-09)"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": false,
     "grilleSaisie": true,
     "total": 33500,
@@ -1034,14 +1034,14 @@
      "nom": "TEST",
      "prenom": "P-4",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": null,
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -1056,54 +1056,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -1112,36 +1112,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -1149,12 +1149,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -1162,24 +1162,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -1187,12 +1187,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -1200,7 +1200,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -1274,7 +1274,7 @@
       "motif": "Carte non valide à la date de facturation (RG-09)"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": false,
     "grilleSaisie": true,
     "total": 33500,
@@ -1296,7 +1296,7 @@
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -1311,54 +1311,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -1367,36 +1367,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -1404,12 +1404,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -1417,24 +1417,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -1442,12 +1442,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -1455,7 +1455,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -1546,14 +1546,14 @@
      "nom": "TEST",
      "prenom": "P-6",
      "assureur": "ASS-C",
-     "souscripteurId": "SOUxmvukixda5zwob",
+     "souscripteurId": "SOUxmvwbtg18xcifu",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -1568,54 +1568,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -1624,36 +1624,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -1661,12 +1661,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -1674,24 +1674,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -1699,12 +1699,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -1712,7 +1712,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -1786,7 +1786,7 @@
       "motif": "Convention non saisie pour Employeur C sans convention"
      }
     ],
-    "souscripteurId": "SOUxmvukixda5zwob",
+    "souscripteurId": "SOUxmvwbtg18xcifu",
     "carteValide": true,
     "grilleSaisie": false,
     "total": 33500,
@@ -1803,14 +1803,14 @@
      "nom": "TEST",
      "prenom": "P-7",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -1825,54 +1825,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -1881,36 +1881,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -1918,12 +1918,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -1931,24 +1931,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -1956,12 +1956,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -1969,7 +1969,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -2029,7 +2029,7 @@
       "motif": "Garantie Consultation généraliste — 80 %, plafonnée à 5 000 par acte"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 42500,
@@ -2046,14 +2046,14 @@
      "nom": "TEST",
      "prenom": "P-8",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -2068,54 +2068,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -2124,36 +2124,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -2161,12 +2161,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -2174,24 +2174,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -2199,12 +2199,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -2212,7 +2212,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -2256,7 +2256,7 @@
       "motif": "Garantie Imagerie médicale — 33 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 160000,
@@ -2273,14 +2273,14 @@
      "nom": "TEST",
      "prenom": "P-9",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -2295,54 +2295,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -2351,36 +2351,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -2388,12 +2388,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -2401,24 +2401,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -2426,12 +2426,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -2439,7 +2439,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -2481,7 +2481,7 @@
       "motif": "Aucune garantie pour la catégorie « autre »"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 151000,
@@ -2498,14 +2498,14 @@
      "nom": "TEST",
      "prenom": "P-10",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -2520,54 +2520,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -2576,36 +2576,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -2613,12 +2613,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -2626,24 +2626,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -2651,12 +2651,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -2664,7 +2664,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -2754,7 +2754,7 @@
       "motif": "Garantie Analyses biologiques — 100 %, plafonnée à 20 000 par personne et par an"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 426009,
@@ -2771,41 +2771,41 @@
      "nom": "TEST",
      "prenom": "P-HIST",
      "assureur": "ASS-B",
-     "souscripteurId": "SOUxmvukixdaccubj",
+     "souscripteurId": "SOUxmvwbtg18drthj",
      "carteExpiration": "2027-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [
      {
-      "id": "COUxmvukixdb0znj5",
+      "id": "COUxmvwbtg19xxucq",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-B",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "carteExpiration": "2027-12-31",
       "debut": "2026-06-01",
       "fin": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "COUxmvukixdbakoac",
+      "id": "COUxmvwbtg19euhgl",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-A",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "carteExpiration": "2026-12-31",
       "debut": null,
       "fin": "2026-05-31",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -2820,54 +2820,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -2876,36 +2876,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -2913,12 +2913,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -2926,24 +2926,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -2951,12 +2951,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -2964,7 +2964,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -3038,7 +3038,7 @@
       "motif": "Garantie Analyses biologiques — 100 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 33500,
@@ -3055,41 +3055,41 @@
      "nom": "TEST",
      "prenom": "P-HIST",
      "assureur": "ASS-B",
-     "souscripteurId": "SOUxmvukixdaccubj",
+     "souscripteurId": "SOUxmvwbtg18drthj",
      "carteExpiration": "2027-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [
      {
-      "id": "COUxmvukixdb0znj5",
+      "id": "COUxmvwbtg19xxucq",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-B",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "carteExpiration": "2027-12-31",
       "debut": "2026-06-01",
       "fin": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "COUxmvukixdbakoac",
+      "id": "COUxmvwbtg19euhgl",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-A",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "carteExpiration": "2026-12-31",
       "debut": null,
       "fin": "2026-05-31",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -3104,54 +3104,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -3160,36 +3160,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -3197,12 +3197,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -3210,24 +3210,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -3235,12 +3235,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -3248,7 +3248,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -3322,7 +3322,7 @@
       "motif": "Aucune garantie pour la catégorie « analyse »"
      }
     ],
-    "souscripteurId": "SOUxmvukixdaccubj",
+    "souscripteurId": "SOUxmvwbtg18drthj",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 33500,
@@ -3339,41 +3339,41 @@
      "nom": "TEST",
      "prenom": "P-HIST",
      "assureur": "ASS-B",
-     "souscripteurId": "SOUxmvukixdaccubj",
+     "souscripteurId": "SOUxmvwbtg18drthj",
      "carteExpiration": "2027-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [
      {
-      "id": "COUxmvukixdb0znj5",
+      "id": "COUxmvwbtg19xxucq",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-B",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "carteExpiration": "2027-12-31",
       "debut": "2026-06-01",
       "fin": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "COUxmvukixdbakoac",
+      "id": "COUxmvwbtg19euhgl",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-A",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "carteExpiration": "2026-12-31",
       "debut": null,
       "fin": "2026-05-31",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -3388,54 +3388,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -3444,36 +3444,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -3481,12 +3481,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -3494,24 +3494,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -3519,12 +3519,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -3532,7 +3532,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -3606,7 +3606,7 @@
       "motif": "Garantie Analyses biologiques — 100 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 33500,
@@ -3623,41 +3623,41 @@
      "nom": "TEST",
      "prenom": "P-HIST",
      "assureur": "ASS-B",
-     "souscripteurId": "SOUxmvukixdaccubj",
+     "souscripteurId": "SOUxmvwbtg18drthj",
      "carteExpiration": "2027-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [
      {
-      "id": "COUxmvukixdb0znj5",
+      "id": "COUxmvwbtg19xxucq",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-B",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "carteExpiration": "2027-12-31",
       "debut": "2026-06-01",
       "fin": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "COUxmvukixdbakoac",
+      "id": "COUxmvwbtg19euhgl",
       "statut": "actif",
       "patientId": "P-HIST",
       "patientCode": "CNT/P-HIST/26",
       "assureur": "ASS-A",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "carteExpiration": "2026-12-31",
       "debut": null,
       "fin": "2026-05-31",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -3672,54 +3672,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -3728,36 +3728,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -3765,12 +3765,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -3778,24 +3778,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -3803,12 +3803,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -3816,7 +3816,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -3890,7 +3890,7 @@
       "motif": "Garantie Analyses biologiques — 100 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 33500,
@@ -3907,14 +3907,14 @@
      "nom": "TEST",
      "prenom": "P-11",
      "assureur": "ASS-D",
-     "souscripteurId": "SOUxmvukixdab389t",
+     "souscripteurId": "SOUxmvwbtg198uizq",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -3929,54 +3929,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -3985,36 +3985,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -4022,12 +4022,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -4035,24 +4035,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -4060,12 +4060,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -4073,7 +4073,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -4115,7 +4115,7 @@
       "motif": "Aucune garantie pour la catégorie « analyse »"
      }
     ],
-    "souscripteurId": "SOUxmvukixdab389t",
+    "souscripteurId": "SOUxmvwbtg198uizq",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 15000,
@@ -4132,14 +4132,14 @@
      "nom": "TEST",
      "prenom": "P-12",
      "assureur": "ASS-B",
-     "souscripteurId": "SOUxmvukixdaccubj",
+     "souscripteurId": "SOUxmvwbtg18drthj",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -4154,54 +4154,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -4210,36 +4210,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -4247,12 +4247,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -4260,24 +4260,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -4285,12 +4285,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -4298,7 +4298,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -4340,7 +4340,7 @@
       "motif": "Garantie Consultation — 100 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdaccubj",
+    "souscripteurId": "SOUxmvwbtg18drthj",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 6000,
@@ -4357,14 +4357,14 @@
      "nom": "TEST",
      "prenom": "P-13",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -4379,54 +4379,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -4435,36 +4435,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -4472,12 +4472,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -4485,24 +4485,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -4510,12 +4510,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -4523,7 +4523,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -4596,7 +4596,7 @@
       "motif": "Aucune garantie pour la catégorie « autre »"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 11000,
@@ -4613,14 +4613,14 @@
      "nom": "TEST",
      "prenom": "P-14",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-12-31",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -4635,54 +4635,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -4691,36 +4691,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -4728,12 +4728,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -4741,24 +4741,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -4766,12 +4766,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -4779,7 +4779,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [],
@@ -4787,7 +4787,7 @@
    },
    "sortie": {
     "lignes": [],
-    "souscripteurId": "SOUxmvukixdauppnf",
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
     "carteValide": true,
     "grilleSaisie": true,
     "total": 0,
@@ -4804,14 +4804,14 @@
      "nom": "TEST",
      "prenom": "P-15",
      "assureur": "ASS-A",
-     "souscripteurId": "SOUxmvukixdauppnf",
+     "souscripteurId": "SOUxmvwbtg18ifvrp",
      "carteExpiration": "2026-08-16",
      "tauxPriseEnCharge": 80
     },
     "couvertures": [],
     "souscripteurs": [
      {
-      "id": "SOUxmvukixdauppnf",
+      "id": "SOUxmvwbtg18ifvrp",
       "statut": "actif",
       "nom": "Employeur A",
       "assureur": "ASS-A",
@@ -4826,54 +4826,54 @@
        "Scanner"
       ],
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdaccubj",
+      "id": "SOUxmvwbtg18drthj",
       "statut": "actif",
       "nom": "Employeur B",
       "assureur": "ASS-B",
       "numeroPolice": "PB-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixda5zwob",
+      "id": "SOUxmvwbtg18xcifu",
       "statut": "actif",
       "nom": "Employeur C sans convention",
       "assureur": "ASS-C",
       "numeroPolice": "PC-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.740Z"
      },
      {
-      "id": "SOUxmvukixdab389t",
+      "id": "SOUxmvwbtg198uizq",
       "statut": "actif",
       "nom": "Employeur D",
       "assureur": "ASS-D",
       "numeroPolice": "PD-1",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "garanties": [
      {
-      "id": "GARxmvukixdbfoa51",
+      "id": "GARxmvwbtg196x2w6",
       "statut": "archive",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "analyse",
       "libelle": "Analyses (archivée)",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z",
+      "_creeLe": "2026-10-31T11:37:09.741Z",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-10-30T06:05:23.183Z",
+      "_archiveLe": "2026-10-31T11:37:09.741Z",
       "_motifArchivage": null
      },
      {
-      "id": "GARxmvukixdbzze9j",
+      "id": "GARxmvwbtg199cure",
       "statut": "actif",
       "assureur": "ASS-D",
       "categorie": "consultation",
@@ -4882,36 +4882,36 @@
       "plafond": 3000,
       "unitePlafond": "jour",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdb4sk46",
+      "id": "GARxmvwbtg1967lb6",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdaccubj",
+      "souscripteurId": "SOUxmvwbtg18drthj",
       "assureur": "ASS-B",
       "categorie": "consultation",
       "libelle": "Consultation",
       "taux": 100,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdbsg7c6",
+      "id": "GARxmvwbtg19eza7y",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "soin",
       "libelle": "Soins infirmiers",
       "taux": 50,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.183Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixda4mqcw",
+      "id": "GARxmvwbtg19ygc0i",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "imagerie",
       "libelle": "Imagerie médicale",
@@ -4919,12 +4919,12 @@
       "plafond": 50000,
       "unitePlafond": "personne_2ans",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdanm8gm",
+      "id": "GARxmvwbtg19rktfz",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "analyse",
       "libelle": "Analyses biologiques",
@@ -4932,24 +4932,24 @@
       "plafond": 20000,
       "unitePlafond": "personne_an",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdah99ib",
+      "id": "GARxmvwbtg19fcsgx",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "medicament",
       "libelle": "Médicaments",
       "taux": 70,
       "plafond": null,
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdats1l3",
+      "id": "GARxmvwbtg19hdaxs",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation spécialiste ou professeur",
@@ -4957,12 +4957,12 @@
       "plafond": 10000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      },
      {
-      "id": "GARxmvukixdamkp63",
+      "id": "GARxmvwbtg19mfnim",
       "statut": "actif",
-      "souscripteurId": "SOUxmvukixdauppnf",
+      "souscripteurId": "SOUxmvwbtg18ifvrp",
       "assureur": "ASS-A",
       "categorie": "consultation",
       "libelle": "Consultation généraliste",
@@ -4970,7 +4970,7 @@
       "plafond": 5000,
       "unitePlafond": "acte",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-10-30T06:05:23.182Z"
+      "_creeLe": "2026-10-31T11:37:09.741Z"
      }
     ],
     "lignes": [
@@ -5003,53 +5003,53 @@
       "libelle": "Consultation généraliste",
       "categorie": "consultation",
       "montant": 10000,
-      "partAssureur": 0,
-      "partPatient": 10000,
-      "taux": 0,
-      "plafond": null,
-      "garantie": null,
-      "motif": "Carte non valide à la date de facturation (RG-09)"
+      "partAssureur": 5000,
+      "partPatient": 5000,
+      "taux": 80,
+      "plafond": 5000,
+      "garantie": "Consultation généraliste",
+      "motif": "Garantie Consultation généraliste — 80 %, plafonnée à 5 000 par acte"
      },
      {
       "libelle": "Consultation spécialiste ou professeur",
       "categorie": "consultation",
       "montant": 20000,
-      "partAssureur": 0,
-      "partPatient": 20000,
-      "taux": 0,
-      "plafond": null,
-      "garantie": null,
-      "motif": "Carte non valide à la date de facturation (RG-09)"
+      "partAssureur": 10000,
+      "partPatient": 10000,
+      "taux": 80,
+      "plafond": 10000,
+      "garantie": "Consultation spécialiste ou professeur",
+      "motif": "Garantie Consultation spécialiste ou professeur — 80 %, plafonnée à 10 000 par acte"
      },
      {
       "libelle": "Paracétamol 500",
       "categorie": "medicament",
       "montant": 1500,
-      "partAssureur": 0,
-      "partPatient": 1500,
-      "taux": 0,
+      "partAssureur": 1050,
+      "partPatient": 450,
+      "taux": 70,
       "plafond": null,
-      "garantie": null,
-      "motif": "Carte non valide à la date de facturation (RG-09)"
+      "garantie": "Médicaments",
+      "motif": "Garantie Médicaments — 70 %"
      },
      {
       "libelle": "Glycémie",
       "categorie": "analyse",
       "montant": 2000,
-      "partAssureur": 0,
-      "partPatient": 2000,
-      "taux": 0,
-      "plafond": null,
-      "garantie": null,
-      "motif": "Carte non valide à la date de facturation (RG-09)"
+      "partAssureur": 2000,
+      "partPatient": 0,
+      "taux": 100,
+      "plafond": 20000,
+      "garantie": "Analyses biologiques",
+      "motif": "Garantie Analyses biologiques — 100 %"
      }
     ],
-    "souscripteurId": "SOUxmvukixdauppnf",
-    "carteValide": false,
+    "souscripteurId": "SOUxmvwbtg18ifvrp",
+    "carteValide": true,
     "grilleSaisie": true,
     "total": 33500,
-    "partAssureur": 0,
-    "partPatient": 33500
+    "partAssureur": 18050,
+    "partPatient": 15450
    }
   },
   {

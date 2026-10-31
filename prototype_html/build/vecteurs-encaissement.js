@@ -50,7 +50,10 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
         ['facture déjà soldée : « deja », rien ne bouge', trois(), [{ lignes: ['L1', 'L2', 'L3'] }, { lignes: ['L1'] }]],
         ['assuré : part assureur 7000 → écriture 571 + 411 / 706 équilibrée', [ligne('A1', 'Consultation', 2000, 8000), ligne('A2', 'Analyse', 1000, 6000, 'analyse')], [{ lignes: ['A1'] }, { lignes: ['A2'] }]],
         ['ligne 100 % assureur (part patient 0) : réglée par un versement nul', [ligne('B1', 'Consultation', 0, 5000), ligne('B2', 'Pansement', 1500)], [{ montant: 1500 }]],
-        ['facture sans lignes (pièce antérieure au modèle) : partiel puis solde par montant', [], [{ montant: 3000 }, { montant: 99999 }], { montantTTC: 8000, partPatient: 8000, reliquat: 8000 }],
+        ['facture sans lignes (pièce antérieure au modèle) : partiel puis solde par montant exact', [], [{ montant: 3000 }, { montant: 5000 }], { montantTTC: 8000, partPatient: 8000, reliquat: 8000 }],
+        ['E2 (corrigé 31/10/2026) : facture sans lignes, un versement au-delà du dû est REFUSÉ en nommant le défaut, puis le solde exact passe', [], [{ montant: 3000 }, { montant: 99999 }, { montant: 5000 }], { montantTTC: 8000, partPatient: 8000, reliquat: 8000 }],
+        ['E2 : facture sans lignes, montant négatif refusé', [], [{ montant: -10 }], { montantTTC: 8000, partPatient: 8000, reliquat: 8000 }],
+        ['E2 : facture sans lignes, montant omis après un partiel = le RESTE dû (non plus le dû total)', [], [{ montant: 3000 }, {}], { montantTTC: 8000, partPatient: 8000, reliquat: 8000 }],
         ['facture sans lignes, sans partPatient : le TTC fait le dû', [], [{}], { montantTTC: 4500, partPatient: null, reliquat: 4500 }],
         ['numéro de facture sans chiffres : la pièce prend le rang suivant de la série annuelle', [ligne('C1', 'Consultation', 1000)], [{ lignes: ['C1'] }], { numero: null }],
       ];
@@ -71,6 +74,7 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
           etapes.push({
             opts: propre(opts),
             deja: !!r.deja,
+            refus: r.refus || null,
             lignesReglees: (r.lignesReglees || []).map((l) => l.id),
             montantRegle: r.montantRegle === undefined ? null : r.montantRegle,
             restantDu: r.restantDu === undefined ? null : r.restantDu,

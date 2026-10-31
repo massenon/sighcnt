@@ -477,20 +477,91 @@ void main() {
       }
     });
 
-    test('règlement : le montant REMPLACE le précédent (non cumulatif) ; réglée seulement si soldée', () {
+    test('règlement (B5, E501 levé) : les règlements S\'ADDITIONNENT, la pièce est soldée à zéro, une écriture 521 / 411 par règlement', () {
       final em = lm(m(m(m(e['emission'])['ecart'])['inserts'])['facturesMere']).single;
+      const cles = ['etat', 'montantRegle', 'reliquat', 'dateReglement', 'referenceReglement'];
       final p = m(lm(m(m(m(e['reglementPartiel'])['ecart'])['modifs'])['facturesMere']).single['patch']);
       final r1 = assReglerMere(em, date: '2026-08-20', montant: 1000, reference: 'VIR-001');
-      for (final k in p.keys) {
-        expect(r1[k], p[k], reason: k);
+      for (final k in cles.where(p.containsKey)) {
+        expect(r1.patch[k], p[k], reason: k);
       }
-      final s = m(lm(m(m(m(e['reglementSolde'])['ecart'])['modifs'])['facturesMere']).single['patch']);
-      final r2 = assReglerMere({...em, ...r1}, date: '2026-08-20', montant: (em['montantReclame'] as num) - 1000, reference: 'VIR-002');
-      for (final k in s.keys) {
-        expect(r2[k], s[k], reason: k);
+      expect(r1.solde, isFalse);
+      final ecr1 = lm(m(m(m(e['reglementPartiel'])['ecart'])['inserts'])['ecritures']);
+      expect(ecr1.length, 2);
+      expect([for (final x in r1.ecritures) '${x['compte']}'].toSet(), {for (final x in ecr1) '${x['compte']}'});
+      // Le second règlement s'AJOUTE au premier : 1 000 + (réclamé - 1 000) solde la pièce.
+      final s2 = m(lm(m(m(m(e['reglementSolde'])['ecart'])['modifs'])['facturesMere']).single['patch']);
+      final mere1 = {...em, ...r1.patch};
+      final r2 = assReglerMere(mere1,
+          date: '2026-08-20',
+          montant: (em['montantReclame'] as num) - 1000,
+          reference: 'VIR-002');
+      for (final k in cles.where(s2.containsKey)) {
+        expect(r2.patch[k], s2[k], reason: k);
       }
-      expect(r2['etat'], 'transmise', reason: 'E501 : la maquette ne solde pas par deux règlements successifs');
-      expect(assReglerMere(em, date: '2026-08-20', montant: em['montantReclame'] as num, reference: 'X')['etat'], 'reglee');
+      expect(r2.patch['etat'], 'reglee', reason: 'E501 levé : 1 000 puis le solde soldent la pièce');
+      expect(r2.patch['reliquat'], 0);
+      expect((r2.patch['reglements'] as List).length, 2);
+      expect(assTotalRegle({...mere1, ...r2.patch}), em['montantReclame']);
+    });
+
+    test('le moteur des règlements cumulatifs rejoue les ${lm(e['moteurReglements']).length} situations de la maquette', () {
+      final seq = lm(e['moteurReglements']);
+      expect(seq.length, greaterThanOrEqualTo(13));
+      // Deux mères de 30 140 posées par le vecteur : la 2e commence à la situation « plafond ».
+      AssFiche mere = {'id': 'M1', 'numero': 'FM-2026-9001', 'compagnie': 'TEST Compagnie', 'montantReclame': 30140, 'etat': 'transmise'};
+      // Le journal du jeu portait déjà des écritures de banque : la série annuelle repart de la première numérotation observée.
+      final premier = '${lm(seq.firstWhere((c) => lm(c['ecritures']).isNotEmpty)['ecritures']).first['numero']}';
+      final rang0 = int.parse(premier.substring(premier.length - 5)) - 1;
+      final ecritures = <AssFiche>[
+        {'numero': 'BQ-${premier.substring(3, 7)}-${rang0.toString().padLeft(5, '0')}'}
+      ];
+      for (final c in seq) {
+        if ('${c['nom']}'.startsWith('plafond : jamais')) {
+          mere = {'id': 'M2', 'numero': 'FM-2026-9002', 'compagnie': 'TEST Compagnie', 'montantReclame': 30140, 'etat': 'transmise'};
+        }
+        final params = m(c['params']);
+        final erreur = c['erreur'];
+        try {
+          final r = assReglerMere(mere,
+              date: '${params['date']}',
+              montant: params['montant'] as num,
+              reference: '${params['reference']}',
+              ecritures: ecritures);
+          expect(erreur, isNull, reason: '${c['nom']} : la maquette a refusé');
+          mere = {...mere, ...r.patch};
+          ecritures.addAll(r.ecritures);
+          final fiche = m(c['fiche']);
+          for (final k in ['etat', 'montantRegle', 'reliquat', 'dateReglement', 'referenceReglement']) {
+            expect(mere[k], fiche[k], reason: '${c['nom']} : $k');
+          }
+          // Les lignes de règlement : date, montant, référence et numéro d'écriture.
+          final att = lm(fiche['reglements']);
+          final obt = assReglementsDe(mere);
+          expect(obt.length, att.length, reason: '${c['nom']} : lignes');
+          for (var i = 0; i < att.length; i++) {
+            for (final k in ['date', 'montant', 'reference', 'numeroEcriture']) {
+              expect(obt[i][k], att[i][k], reason: '${c['nom']} : règlement $i $k');
+            }
+          }
+          // Deux écritures plates, équilibrées (RG-10), mêmes comptes, mêmes numéros et libellés que la maquette.
+          // L'ordre de lecture du magasin (insertion en tête) n'est pas une règle comptable : comparées par compte.
+          final ae = lm(c['ecritures'])..sort((a, b) => '${a['compte']}'.compareTo('${b['compte']}'));
+          final oe = [...r.ecritures]..sort((a, b) => '${a['compte']}'.compareTo('${b['compte']}'));
+          expect(oe.length, ae.length);
+          for (var i = 0; i < ae.length; i++) {
+            for (final k in ['numero', 'date', 'journal', 'journalLibelle', 'libelle', 'pieceNumero', 'origine', 'statut', 'compte', 'compteLibelle', 'debit', 'credit']) {
+              final x = ae[i][k], y = oe[i][k];
+              expect(x is num ? (y as num).toDouble() : y, x is num ? x.toDouble() : x, reason: '${c['nom']} : écriture $i $k');
+            }
+          }
+          expect(r.ecritures.fold<double>(0, (t, x) => t + (x['debit']! as num)),
+              r.ecritures.fold<double>(0, (t, x) => t + (x['credit']! as num)));
+          expect(r.solde, c['solde']);
+        } on RefusReglementMere catch (r) {
+          expect(r.motif, erreur, reason: '${c['nom']} : le refus doit être celui de la maquette');
+        }
+      }
     });
   });
 

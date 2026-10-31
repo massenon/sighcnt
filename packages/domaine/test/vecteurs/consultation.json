@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-consultation.js — registres lus + moteurs dossier / fiche / prescription / soins. Ne pas éditer.",
  "moisCourant": "2026-10",
- "jourCourant": "2026-10-30",
+ "jourCourant": "2026-10-31",
  "ajustements": [
   {
    "col": "consultations",
@@ -42,21 +42,21 @@
    "col": "dossiersConsultation",
    "id": "DOSxmvvgxi60y8mtz",
    "patch": {
-    "dateArrivee": "2026-10-30"
+    "dateArrivee": "2026-10-31"
    }
   },
   {
    "col": "dossiersConsultation",
    "id": "DOSxmvvgxi5zjv2ej",
    "patch": {
-    "dateArrivee": "2026-10-30"
+    "dateArrivee": "2026-10-31"
    }
   },
   {
    "col": "dossiersConsultation",
    "id": "DOSxmvvgxi5zuekfa",
    "patch": {
-    "dateArrivee": "2026-10-30"
+    "dateArrivee": "2026-10-31"
    }
   }
  ],
@@ -430,7 +430,7 @@
     {
      "label": "Venues du jour",
      "valeur": "3",
-     "indice": "30/10/2026"
+     "indice": "31/10/2026"
     }
    ],
    "tables": [
@@ -451,7 +451,7 @@
       {
        "cellules": [
         "DOS-00028",
-        "30/10/2026 13h15",
+        "31/10/2026 13h15",
         "KINNOU A. Ganiou CNT907/25",
         "Contrôle",
         "Hypertension — contrôle",
@@ -467,7 +467,7 @@
       {
        "cellules": [
         "DOS-00027",
-        "30/10/2026 17h56",
+        "31/10/2026 17h56",
         "BAKO Sylvie CNT/67/26",
         "Urgence",
         "Plaie de la jambe",
@@ -483,7 +483,7 @@
       {
        "cellules": [
         "DOS-00026",
-        "30/10/2026 14h58",
+        "31/10/2026 14h58",
         "AHOHOU Zakari CNT/80/26",
         "Première consultation",
         "Brûlures mictionnelles",
@@ -8409,7 +8409,7 @@
      "inserts": {
       "dossiersConsultation": [
        {
-        "id": "DOSxmvvhgk5h3xalu",
+        "id": "DOSxmvwc46ksee7br",
         "statut": "actif",
         "patientCode": "CNT/1001/26",
         "soignant": "BASSONGUI Chabi Séko",
@@ -8467,10 +8467,10 @@
          "spo2": 97,
          "imc": 22.4
         },
-        "dossierSaisiLe": "2026-10-30T21:27:20.069Z",
+        "dossierSaisiLe": "2026-10-31T11:45:30.700Z",
         "reference": "DOS-00001",
         "etat": "consultation",
-        "ouvertLe": "2026-10-30T21:27:20.069Z"
+        "ouvertLe": "2026-10-31T11:45:30.700Z"
        }
       ]
      },
@@ -8543,7 +8543,7 @@
      "inserts": {
       "dossiersConsultation": [
        {
-        "id": "DOSxmvvhgk5ipht7j",
+        "id": "DOSxmvwc46kta2fbd",
         "statut": "actif",
         "patientCode": "CNT/1002/26",
         "soignant": "BASSONGUI Chabi Séko",
@@ -8582,10 +8582,10 @@
         "sexe": "M",
         "assureur": "NSIA",
         "constantesAccueil": null,
-        "dossierSaisiLe": "2026-10-30T21:27:20.070Z",
+        "dossierSaisiLe": "2026-10-31T11:45:30.701Z",
         "reference": "DOS-00002",
         "etat": "consultation",
-        "ouvertLe": "2026-10-30T21:27:20.070Z"
+        "ouvertLe": "2026-10-31T11:45:30.701Z"
        }
       ]
      },
@@ -8655,7 +8655,7 @@
      "inserts": {
       "dossiersConsultation": [
        {
-        "id": "DOSxmvvhgk5l349gf",
+        "id": "DOSxmvwc46r2qhadk",
         "statut": "actif",
         "patientCode": "CNT/1001/26",
         "soignant": "BASSONGUI Chabi Séko",
@@ -8705,10 +8705,10 @@
          "spo2": 97,
          "imc": 22.4
         },
-        "dossierSaisiLe": "2026-10-30T21:27:20.073Z",
+        "dossierSaisiLe": "2026-10-31T11:45:30.926Z",
         "reference": "DOS-00003",
         "etat": "consultation",
-        "ouvertLe": "2026-10-30T21:27:20.073Z"
+        "ouvertLe": "2026-10-31T11:45:30.926Z"
        }
       ]
      },
@@ -8750,7 +8750,7 @@
          "patient": "ALPHA Une",
          "etat": "consultation",
          "motifVenue": "Corrigé",
-         "dossierSaisiLe": "2026-10-30T21:27:20.074Z",
+         "dossierSaisiLe": "2026-10-31T11:45:30.929Z",
          "heureArrivee": "08h30",
          "histoire": "Depuis trois jours",
          "traitementEnCours": "",
@@ -8841,7 +8841,7 @@
         "patch": {
          "patient": "ALPHA Une",
          "motifVenue": "Fièvre et céphalées",
-         "dossierSaisiLe": "2026-10-30T21:27:20.075Z",
+         "dossierSaisiLe": "2026-10-31T11:45:30.930Z",
          "heureArrivee": "08h30",
          "histoire": "Depuis trois jours",
          "traitementEnCours": "",
@@ -9234,7 +9234,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk68gpll3",
+        "id": "CONxmvwc46rsjvpoq",
         "statut": "planifiee",
         "patientCode": "CNT/1001/26",
         "patientId": "PATX1",
@@ -9243,12 +9243,12 @@
         "type": "Contrôle",
         "date": "2026-08-27T10:00",
         "motif": "Contrôle — Paludisme simple",
-        "reference": "C00002",
+        "reference": "C00001",
         "origine": "fiche de consultation",
         "dossierConsultationId": "DOSX-1001consultation"
        },
        {
-        "id": "CONxmvvhgk67qgooa",
+        "id": "CONxmvwc46rscav2g",
         "statut": "terminee",
         "patientCode": "CNT/1001/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -9289,9 +9289,9 @@
         "id": "DOSX-1001consultation",
         "patch": {
          "etat": "cloture",
-         "derniereFicheId": "CONxmvvhgk67qgooa",
+         "derniereFicheId": "CONxmvwc46rscav2g",
          "fichesIds": [
-          "CONxmvvhgk67qgooa"
+          "CONxmvwc46rscav2g"
          ],
          "ordonnanceIds": [],
          "diagnosticRetenu": "Paludisme simple",
@@ -9299,7 +9299,7 @@
           "PAL-S"
          ],
          "orientation": "domicile",
-         "cloturLe": "2026-10-30T21:27:20.095Z"
+         "cloturLe": "2026-10-31T11:45:30.952Z"
         }
        }
       ]
@@ -9367,7 +9367,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk6851gd7",
+        "id": "CONxmvwc46rtmsauc",
         "statut": "terminee",
         "patientCode": "CNT/1001/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -9398,7 +9398,7 @@
         "dossierReference": "DOS-91001",
         "patientId": "PATX1",
         "patient": "ALPHA Une",
-        "reference": "C00003"
+        "reference": "C00001"
        }
       ]
      },
@@ -9408,9 +9408,9 @@
         "id": "DOSX-1001consultation",
         "patch": {
          "etat": "cloture",
-         "derniereFicheId": "CONxmvvhgk6851gd7",
+         "derniereFicheId": "CONxmvwc46rtmsauc",
          "fichesIds": [
-          "CONxmvvhgk6851gd7"
+          "CONxmvwc46rtmsauc"
          ],
          "ordonnanceIds": [],
          "diagnosticRetenu": "Paludisme simple",
@@ -9418,7 +9418,7 @@
           "PAL-S"
          ],
          "orientation": "domicile",
-         "cloturLe": "2026-10-30T21:27:20.096Z"
+         "cloturLe": "2026-10-31T11:45:30.953Z"
         }
        }
       ]
@@ -9480,7 +9480,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk69dy5ju",
+        "id": "CONxmvwc46rton3w0",
         "statut": "terminee",
         "patientCode": "CNT/1001/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -9511,16 +9511,16 @@
         "dossierReference": "DOS-91001",
         "patientId": "PATX1",
         "patient": "ALPHA Une",
-        "reference": "C00004",
-        "ordonnanceId": "ORDxmvvhgk69bbr61",
+        "reference": "C00001",
+        "ordonnanceId": "ORDxmvwc46rtpf0gg",
         "ordonnanceNumero": "ORD-2026-00001",
-        "factureId": "FACxmvvhgk69ceqqp",
+        "factureId": "FACxmvwc46rty0z9d",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk69bbr61",
+        "id": "ORDxmvwc46rtpf0gg",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -9529,7 +9529,7 @@
         "patient": "ALPHA Une",
         "medecin": "BASSONGUI Chabi Séko",
         "diagnostic": "Paludisme simple",
-        "consultationId": "CONxmvvhgk69dy5ju",
+        "consultationId": "CONxmvwc46rton3w0",
         "dossierConsultationId": "DOSX-1001consultation",
         "medicaments": [
          {
@@ -9557,13 +9557,13 @@
         "statutAnalyses": "sans_objet",
         "statutActes": "sans_objet",
         "statutImagerie": "sans_objet",
-        "factureId": "FACxmvvhgk69ceqqp",
+        "factureId": "FACxmvwc46rty0z9d",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk69ceqqp",
+        "id": "FACxmvwc46rty0z9d",
         "statut": "actif",
         "lignes": [
          {
@@ -9613,14 +9613,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk69bbr61",
+        "ordonnanceId": "ORDxmvwc46rtpf0gg",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": "DOSX-1001consultation"
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk69vmn5g",
+        "id": "TCHxmvwc46rtzh421",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -9629,8 +9629,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk69bbr61",
-        "factureId": "FACxmvvhgk69ceqqp",
+        "ordonnanceId": "ORDxmvwc46rtpf0gg",
+        "factureId": "FACxmvwc46rty0z9d",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -9642,7 +9642,7 @@
         "montant": 2000
        },
        {
-        "id": "TCHxmvvhgk69wrqhm",
+        "id": "TCHxmvwc46rta15y4",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -9651,8 +9651,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk69bbr61",
-        "factureId": "FACxmvvhgk69ceqqp",
+        "ordonnanceId": "ORDxmvwc46rtpf0gg",
+        "factureId": "FACxmvwc46rty0z9d",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -9666,7 +9666,7 @@
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk69hypne",
+        "id": "PRSxmvwc46rtcy0qd",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -9680,7 +9680,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk69bbr61",
+        "ordonnanceId": "ORDxmvwc46rtpf0gg",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -9703,19 +9703,19 @@
         "id": "DOSX-1001consultation",
         "patch": {
          "etat": "cloture",
-         "derniereFicheId": "CONxmvvhgk69dy5ju",
+         "derniereFicheId": "CONxmvwc46rton3w0",
          "fichesIds": [
-          "CONxmvvhgk69dy5ju"
+          "CONxmvwc46rton3w0"
          ],
          "ordonnanceIds": [
-          "ORDxmvvhgk69bbr61"
+          "ORDxmvwc46rtpf0gg"
          ],
          "diagnosticRetenu": "Paludisme simple",
          "pathologiesRetenues": [
           "PAL-S"
          ],
          "orientation": "domicile",
-         "cloturLe": "2026-10-30T21:27:20.098Z"
+         "cloturLe": "2026-10-31T11:45:30.953Z"
         }
        }
       ]
@@ -9784,7 +9784,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk6adcr9h",
+        "id": "CONxmvwc46rutgx32",
         "statut": "terminee",
         "patientCode": "CNT/1002/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -9815,16 +9815,16 @@
         "dossierReference": "DOS-91002",
         "patientId": "PATX2",
         "patient": "BETA Deux",
-        "reference": "C00005",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
+        "reference": "C00001",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
         "ordonnanceNumero": "ORD-2026-00001",
-        "factureId": "FACxmvvhgk6bufjaj",
+        "factureId": "FACxmvwc46rucbbtl",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk6bbqihl",
+        "id": "ORDxmvwc46rujd2rl",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -9833,7 +9833,7 @@
         "patient": "BETA Deux",
         "medecin": "BASSONGUI Chabi Séko",
         "diagnostic": "Paludisme simple",
-        "consultationId": "CONxmvvhgk6adcr9h",
+        "consultationId": "CONxmvwc46rutgx32",
         "dossierConsultationId": "DOSX-1002consultation",
         "medicaments": [
          {
@@ -9864,7 +9864,7 @@
           "examen": "Échographie pelvienne",
           "modalite": "echographie",
           "prix": 5000,
-          "demandeImagerieId": "IMExmvvhgk6bvk1kj"
+          "demandeImagerieId": "IMExmvwc46ru47tdm"
          }
         ],
         "montantMedicaments": 1000,
@@ -9878,15 +9878,15 @@
         "statutAnalyses": "en_attente",
         "statutActes": "sans_objet",
         "statutImagerie": "en_attente",
-        "factureId": "FACxmvvhgk6bufjaj",
+        "factureId": "FACxmvwc46rucbbtl",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk6bc7btc",
+        "id": "DEMxmvwc46ru0660b",
         "statut": "actif",
-        "reference": "LAB-00013",
+        "reference": "LAB-00001",
         "codeAnalyse": "00001-2026",
         "patientId": "PATX2",
         "patientCode": "CNT/1002/26",
@@ -9903,7 +9903,7 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": "DOSX-1002consultation",
         "secteurDemandeur": "ADMINISTRATION",
@@ -9912,7 +9912,7 @@
       ],
       "demandesImagerie": [
        {
-        "id": "IMExmvvhgk6bvk1kj",
+        "id": "IMExmvwc46ru47tdm",
         "statut": "demandee",
         "reference": "IME-00001",
         "dateHeure": "2026-08-20T09:00:00.000Z",
@@ -9927,19 +9927,19 @@
         "urgent": false,
         "secteurDemandeur": "ADMINISTRATION",
         "origine": "consultation",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": "DOSX-1002consultation",
         "prix": 5000,
         "motifTarif": null,
         "bloqueParPaiement": true,
-        "factureId": "FACxmvvhgk6bufjaj",
+        "factureId": "FACxmvwc46rucbbtl",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk6bufjaj",
+        "id": "FACxmvwc46rucbbtl",
         "statut": "actif",
         "lignes": [
          {
@@ -9979,7 +9979,7 @@
           "partAssureur": 1600,
           "partPersonnel": 0,
           "partPatient": 400,
-          "demandeId": "DEMxmvvhgk6bc7btc",
+          "demandeId": "DEMxmvwc46ru0660b",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -10005,7 +10005,7 @@
           "demandeId": null,
           "produitId": null,
           "acteCode": null,
-          "demandeImagerieId": "IMExmvvhgk6bvk1kj",
+          "demandeImagerieId": "IMExmvwc46ru47tdm",
           "statutPaiement": "du",
           "montantRegle": 0,
           "payeLe": null,
@@ -10035,14 +10035,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": "DOSX-1002consultation"
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk6bewndy",
+        "id": "TCHxmvwc46rvjh45l",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -10051,8 +10051,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
-        "factureId": "FACxmvvhgk6bufjaj",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
+        "factureId": "FACxmvwc46rucbbtl",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -10064,7 +10064,7 @@
         "montant": 2000
        },
        {
-        "id": "TCHxmvvhgk6bispdm",
+        "id": "TCHxmvwc46rvrky1a",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -10073,8 +10073,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
-        "factureId": "FACxmvvhgk6bufjaj",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
+        "factureId": "FACxmvwc46rucbbtl",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -10086,7 +10086,7 @@
         "montant": 1000
        },
        {
-        "id": "TCHxmvvhgk6blnsto",
+        "id": "TCHxmvwc46ru5dfvl",
         "statut": "bloque",
         "type": "imagerie",
         "role": "echographiste",
@@ -10095,8 +10095,8 @@
         "titre": "Réaliser l’examen d’imagerie",
         "icon": "scan-line",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
-        "factureId": "FACxmvvhgk6bufjaj",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
+        "factureId": "FACxmvwc46rucbbtl",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -10109,7 +10109,7 @@
         "montant": 5000
        },
        {
-        "id": "TCHxmvvhgk6bcz9fr",
+        "id": "TCHxmvwc46rubo1lz",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -10118,8 +10118,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
-        "factureId": "FACxmvvhgk6bufjaj",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
+        "factureId": "FACxmvwc46rucbbtl",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -10133,7 +10133,7 @@
       ],
       "notifications": [
        {
-        "id": "NOTxmvvhgk6ctbwhu",
+        "id": "NOTxmvwc46rvia1a5",
         "statut": "actif",
         "type": "orientation_hospitalisation",
         "poste": "hospitalisation",
@@ -10143,14 +10143,14 @@
         "priorite": "haute",
         "demandeId": null,
         "factureId": null,
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
         "patientId": "PATX2",
         "reference": "DOS-91002",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.100Z"
+        "creeLe": "2026-10-31T11:45:30.955Z"
        },
        {
-        "id": "NOTxmvvhgk6bb0ckn",
+        "id": "NOTxmvwc46rvitx3q",
         "statut": "actif",
         "type": "demande_imagerie",
         "poste": "imagerie",
@@ -10160,16 +10160,16 @@
         "priorite": "normale",
         "demandeId": null,
         "factureId": null,
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
         "patientId": "PATX2",
         "reference": "FP-2026-00001",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.099Z"
+        "creeLe": "2026-10-31T11:45:30.955Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk6bqguo9",
+        "id": "PRSxmvwc46rvc9mt6",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -10183,7 +10183,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk6bbqihl",
+        "ordonnanceId": "ORDxmvwc46rujd2rl",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -10206,12 +10206,12 @@
         "id": "DOSX-1002consultation",
         "patch": {
          "etat": "attente_labo",
-         "derniereFicheId": "CONxmvvhgk6adcr9h",
+         "derniereFicheId": "CONxmvwc46rutgx32",
          "fichesIds": [
-          "CONxmvvhgk6adcr9h"
+          "CONxmvwc46rutgx32"
          ],
          "ordonnanceIds": [
-          "ORDxmvvhgk6bbqihl"
+          "ORDxmvwc46rujd2rl"
          ],
          "diagnosticRetenu": "Paludisme simple",
          "pathologiesRetenues": [
@@ -10295,7 +10295,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk6d8q0a2",
+        "id": "CONxmvwc46rwfxg75",
         "statut": "terminee",
         "patientCode": "CNT/1001/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -10326,12 +10326,12 @@
         "dossierReference": "DOS-91001",
         "patientId": "PATX1",
         "patient": "ALPHA Une",
-        "reference": "C00006"
+        "reference": "C00001"
        }
       ],
       "notifications": [
        {
-        "id": "NOTxmvvhgk6dlklj9",
+        "id": "NOTxmvwc46rwqvog5",
         "statut": "actif",
         "type": "orientation_observation",
         "poste": "observation",
@@ -10345,7 +10345,7 @@
         "patientId": "PATX1",
         "reference": "DOS-91001",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.101Z"
+        "creeLe": "2026-10-31T11:45:30.956Z"
        }
       ]
      },
@@ -10355,9 +10355,9 @@
         "id": "DOSX-1001consultation",
         "patch": {
          "etat": "cloture",
-         "derniereFicheId": "CONxmvvhgk6d8q0a2",
+         "derniereFicheId": "CONxmvwc46rwfxg75",
          "fichesIds": [
-          "CONxmvvhgk6d8q0a2"
+          "CONxmvwc46rwfxg75"
          ],
          "ordonnanceIds": [],
          "diagnosticRetenu": "Paludisme simple",
@@ -10365,7 +10365,7 @@
           "PAL-S"
          ],
          "orientation": "observation",
-         "cloturLe": "2026-10-30T21:27:20.101Z"
+         "cloturLe": "2026-10-31T11:45:30.956Z"
         }
        }
       ]
@@ -10432,7 +10432,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk6df7dxo",
+        "id": "CONxmvwc46rwpi2ph",
         "statut": "terminee",
         "patientCode": "CNT/1001/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -10463,7 +10463,7 @@
         "dossierReference": "DOS-91001",
         "patientId": "PATX1",
         "patient": "ALPHA Une",
-        "reference": "C00007"
+        "reference": "C00001"
        }
       ]
      },
@@ -10473,9 +10473,9 @@
         "id": "DOSX-1001consultation",
         "patch": {
          "etat": "cloture",
-         "derniereFicheId": "CONxmvvhgk6df7dxo",
+         "derniereFicheId": "CONxmvwc46rwpi2ph",
          "fichesIds": [
-          "CONxmvvhgk6df7dxo"
+          "CONxmvwc46rwpi2ph"
          ],
          "ordonnanceIds": [],
          "diagnosticRetenu": "Paludisme simple",
@@ -10483,7 +10483,7 @@
           "PAL-S"
          ],
          "orientation": "reference",
-         "cloturLe": "2026-10-30T21:27:20.101Z"
+         "cloturLe": "2026-10-31T11:45:30.956Z"
         }
        }
       ]
@@ -10544,7 +10544,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk6exl1xq",
+        "id": "CONxmvwc46rwcn0ok",
         "statut": "terminee",
         "patientCode": "CNT/1001/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -10575,7 +10575,7 @@
         "dossierReference": "DOS-91001",
         "patientId": "PATX1",
         "patient": "ALPHA Une",
-        "reference": "C00008"
+        "reference": "C00001"
        }
       ]
      },
@@ -10585,9 +10585,9 @@
         "id": "DOSX-1001consultation",
         "patch": {
          "etat": "cloture",
-         "derniereFicheId": "CONxmvvhgk6exl1xq",
+         "derniereFicheId": "CONxmvwc46rwcn0ok",
          "fichesIds": [
-          "CONxmvvhgk6exl1xq"
+          "CONxmvwc46rwcn0ok"
          ],
          "ordonnanceIds": [],
          "diagnosticRetenu": "Paludisme simple",
@@ -10595,7 +10595,7 @@
           "PAL-S"
          ],
          "orientation": "domicile",
-         "cloturLe": "2026-10-30T21:27:20.102Z"
+         "cloturLe": "2026-10-31T11:45:30.956Z"
         }
        }
       ]
@@ -10657,7 +10657,7 @@
      "inserts": {
       "demandesImagerie": [
        {
-        "id": "IMExmvvhgk6fy0047",
+        "id": "IMExmvwc46rx0fm7x",
         "statut": "archive",
         "reference": "IME-00001",
         "dateHeure": "2026-08-20T09:00:00.000Z",
@@ -10741,7 +10741,7 @@
      "inserts": {
       "consultations": [
        {
-        "id": "CONxmvvhgk6ge773s",
+        "id": "CONxmvwc46ry5dyz4",
         "statut": "terminee",
         "patientCode": "CNT/1001/26",
         "medecin": "BASSONGUI Chabi Séko",
@@ -10772,7 +10772,7 @@
         "dossierReference": "DOS-91001",
         "patientId": "PATX1",
         "patient": "ALPHA Une",
-        "reference": "C00010"
+        "reference": "C00001"
        }
       ]
      },
@@ -10782,9 +10782,9 @@
         "id": "DOSX-1001consultation",
         "patch": {
          "etat": "cloture",
-         "derniereFicheId": "CONxmvvhgk6ge773s",
+         "derniereFicheId": "CONxmvwc46ry5dyz4",
          "fichesIds": [
-          "CONxmvvhgk6ge773s"
+          "CONxmvwc46ry5dyz4"
          ],
          "ordonnanceIds": [],
          "diagnosticRetenu": "Paludisme simple",
@@ -10792,7 +10792,7 @@
           "PAL-S"
          ],
          "orientation": "domicile",
-         "cloturLe": "2026-10-30T21:27:20.104Z"
+         "cloturLe": "2026-10-31T11:45:30.958Z"
         }
        }
       ]
@@ -10890,7 +10890,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk5p8i793",
+        "id": "ORDxmvwc46r80oc6m",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -10956,7 +10956,7 @@
           "examen": "Échographie pelvienne",
           "modalite": "echographie",
           "prix": 9000,
-          "demandeImagerieId": "IMExmvvhgk5pjhl05"
+          "demandeImagerieId": "IMExmvwc46r8y75mt"
          }
         ],
         "montantMedicaments": 2750,
@@ -10970,13 +10970,13 @@
         "statutAnalyses": "en_attente",
         "statutActes": "en_attente",
         "statutImagerie": "en_attente",
-        "factureId": "FACxmvvhgk5qgn0ex",
+        "factureId": "FACxmvwc46r9vsel9",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk5ql05m2",
+        "id": "DEMxmvwc46r945w0v",
         "statut": "actif",
         "reference": "LAB-00002",
         "codeAnalyse": "00002-2026",
@@ -10995,14 +10995,14 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
         "bloqueParPaiement": true
        },
        {
-        "id": "DEMxmvvhgk5q9rne7",
+        "id": "DEMxmvwc46r8rz2cw",
         "statut": "actif",
         "reference": "LAB-00001",
         "codeAnalyse": "00001-2026",
@@ -11021,7 +11021,7 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
@@ -11030,7 +11030,7 @@
       ],
       "demandesImagerie": [
        {
-        "id": "IMExmvvhgk5pjhl05",
+        "id": "IMExmvwc46r8y75mt",
         "statut": "demandee",
         "reference": "IME-00001",
         "dateHeure": "2026-08-20T09:00:00.000Z",
@@ -11045,19 +11045,19 @@
         "urgent": false,
         "secteurDemandeur": "Consultation",
         "origine": "consultation",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "prix": 9000,
         "motifTarif": null,
         "bloqueParPaiement": true,
-        "factureId": "FACxmvvhgk5qgn0ex",
+        "factureId": "FACxmvwc46r9vsel9",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk5qgn0ex",
+        "id": "FACxmvwc46r9vsel9",
         "statut": "actif",
         "lignes": [
          {
@@ -11120,7 +11120,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 2000,
-          "demandeId": "DEMxmvvhgk5q9rne7",
+          "demandeId": "DEMxmvwc46r8rz2cw",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -11143,7 +11143,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 4000,
-          "demandeId": "DEMxmvvhgk5ql05m2",
+          "demandeId": "DEMxmvwc46r945w0v",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -11192,7 +11192,7 @@
           "demandeId": null,
           "produitId": null,
           "acteCode": null,
-          "demandeImagerieId": "IMExmvvhgk5pjhl05",
+          "demandeImagerieId": "IMExmvwc46r8y75mt",
           "statutPaiement": "du",
           "montantRegle": 0,
           "payeLe": null,
@@ -11222,14 +11222,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk5rojoxg",
+        "id": "TCHxmvwc46rakugsr",
         "statut": "bloque",
         "type": "acte",
         "role": "infirmier",
@@ -11238,8 +11238,8 @@
         "titre": "Exécuter les actes prescrits",
         "icon": "stethoscope",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
-        "factureId": "FACxmvvhgk5qgn0ex",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
+        "factureId": "FACxmvwc46r9vsel9",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -11251,7 +11251,7 @@
         "montant": 5000
        },
        {
-        "id": "TCHxmvvhgk5r4ff50",
+        "id": "TCHxmvwc46ra4x8lm",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -11260,8 +11260,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
-        "factureId": "FACxmvvhgk5qgn0ex",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
+        "factureId": "FACxmvwc46r9vsel9",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -11273,7 +11273,7 @@
         "montant": 6000
        },
        {
-        "id": "TCHxmvvhgk5r6wghl",
+        "id": "TCHxmvwc46ra829p0",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -11282,8 +11282,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
-        "factureId": "FACxmvvhgk5qgn0ex",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
+        "factureId": "FACxmvwc46r9vsel9",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -11295,7 +11295,7 @@
         "montant": 2750
        },
        {
-        "id": "TCHxmvvhgk5rc699d",
+        "id": "TCHxmvwc46ra41823",
         "statut": "bloque",
         "type": "imagerie",
         "role": "echographiste",
@@ -11304,8 +11304,8 @@
         "titre": "Réaliser l’examen d’imagerie",
         "icon": "scan-line",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
-        "factureId": "FACxmvvhgk5qgn0ex",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
+        "factureId": "FACxmvwc46r9vsel9",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -11318,7 +11318,7 @@
         "montant": 9000
        },
        {
-        "id": "TCHxmvvhgk5rw9cqz",
+        "id": "TCHxmvwc46rawj2ke",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -11327,8 +11327,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
-        "factureId": "FACxmvvhgk5qgn0ex",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
+        "factureId": "FACxmvwc46r9vsel9",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -11342,7 +11342,7 @@
       ],
       "notifications": [
        {
-        "id": "NOTxmvvhgk5rdm6l2",
+        "id": "NOTxmvwc46raoec8d",
         "statut": "actif",
         "type": "demande_imagerie",
         "poste": "imagerie",
@@ -11352,16 +11352,16 @@
         "priorite": "normale",
         "demandeId": null,
         "factureId": null,
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
         "patientId": "PATX1",
         "reference": "FP-2026-00001",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.079Z"
+        "creeLe": "2026-10-31T11:45:30.934Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk5s312vr",
+        "id": "PRSxmvwc46ravskgp",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -11375,7 +11375,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk5p8i793",
+        "ordonnanceId": "ORDxmvwc46r80oc6m",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -11508,7 +11508,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk5tswcpa",
+        "id": "ORDxmvwc46rcmkv66",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -11564,7 +11564,7 @@
           "code": "MG01",
           "libelle": "Consultation généraliste",
           "secteur": "Médecine générale",
-          "prix": 5000,
+          "prix": 3000,
           "tarifValide": true
          }
         ],
@@ -11574,29 +11574,29 @@
           "examen": "Échographie pelvienne",
           "modalite": "echographie",
           "prix": 5000,
-          "demandeImagerieId": "IMExmvvhgk5t05jy2"
+          "demandeImagerieId": "IMExmvwc46rcqwczm"
          }
         ],
         "montantMedicaments": 2750,
         "montantAnalyses": 6000,
-        "montantActes": 5000,
+        "montantActes": 3000,
         "montantImagerie": 5000,
-        "montant": 18750,
+        "montant": 16750,
         "urgent": false,
         "statutPaiement": "impayee",
         "statutDispensation": "en_attente",
         "statutAnalyses": "en_attente",
         "statutActes": "en_attente",
         "statutImagerie": "en_attente",
-        "factureId": "FACxmvvhgk5txlniv",
+        "factureId": "FACxmvwc46rdds86d",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk5txiotb",
+        "id": "DEMxmvwc46rcl7uub",
         "statut": "actif",
-        "reference": "LAB-00004",
+        "reference": "LAB-00002",
         "codeAnalyse": "00002-2026",
         "patientId": "PATX2",
         "patientCode": "CNT/1002/26",
@@ -11613,16 +11613,16 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
         "bloqueParPaiement": true
        },
        {
-        "id": "DEMxmvvhgk5tevgzu",
+        "id": "DEMxmvwc46rcv8fay",
         "statut": "actif",
-        "reference": "LAB-00003",
+        "reference": "LAB-00001",
         "codeAnalyse": "00001-2026",
         "patientId": "PATX2",
         "patientCode": "CNT/1002/26",
@@ -11639,7 +11639,7 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
@@ -11648,7 +11648,7 @@
       ],
       "demandesImagerie": [
        {
-        "id": "IMExmvvhgk5t05jy2",
+        "id": "IMExmvwc46rcqwczm",
         "statut": "demandee",
         "reference": "IME-00001",
         "dateHeure": "2026-08-20T09:00:00.000Z",
@@ -11663,19 +11663,19 @@
         "urgent": false,
         "secteurDemandeur": "Consultation",
         "origine": "consultation",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "prix": 5000,
         "motifTarif": null,
         "bloqueParPaiement": true,
-        "factureId": "FACxmvvhgk5txlniv",
+        "factureId": "FACxmvwc46rdds86d",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk5txlniv",
+        "id": "FACxmvwc46rdds86d",
         "statut": "actif",
         "lignes": [
          {
@@ -11738,7 +11738,7 @@
           "partAssureur": 1600,
           "partPersonnel": 0,
           "partPatient": 400,
-          "demandeId": "DEMxmvvhgk5tevgzu",
+          "demandeId": "DEMxmvwc46rcv8fay",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -11761,7 +11761,7 @@
           "partAssureur": 3200,
           "partPersonnel": 0,
           "partPatient": 800,
-          "demandeId": "DEMxmvvhgk5txiotb",
+          "demandeId": "DEMxmvwc46rcl7uub",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -11775,15 +11775,15 @@
           "categorie": "acte",
           "designation": "Consultation généraliste",
           "quantite": 1,
-          "prixUnitaire": 5000,
-          "prixUnitaireNet": 5000,
-          "montantBrut": 5000,
+          "prixUnitaire": 3000,
+          "prixUnitaireNet": 3000,
+          "montantBrut": 3000,
           "remise": 0,
           "motifRemise": null,
-          "montant": 5000,
-          "partAssureur": 4000,
+          "montant": 3000,
+          "partAssureur": 2400,
           "partPersonnel": 0,
-          "partPatient": 1000,
+          "partPatient": 600,
           "demandeId": null,
           "produitId": null,
           "acteCode": "MG01",
@@ -11810,7 +11810,7 @@
           "demandeId": null,
           "produitId": null,
           "acteCode": null,
-          "demandeImagerieId": "IMExmvvhgk5t05jy2",
+          "demandeImagerieId": "IMExmvwc46rcqwczm",
           "statutPaiement": "du",
           "montantRegle": 0,
           "payeLe": null,
@@ -11824,30 +11824,30 @@
         "patientCode": "CNT/1002/26",
         "date": "2026-08-20",
         "type": "Prescription",
-        "montantHT": 18750,
-        "montantTTC": 18750,
-        "montantBrut": 18750,
+        "montantHT": 16750,
+        "montantTTC": 16750,
+        "montantBrut": 16750,
         "totalRemise": 0,
         "partPersonnel": 0,
         "priseEnChargePersonnel": false,
         "personnelId": null,
         "assureur": "NSIA",
         "tauxPriseEnCharge": 80,
-        "partAssurance": 15000,
-        "partPatient": 3750,
+        "partAssurance": 13400,
+        "partPatient": 3350,
         "montantPaye": 0,
-        "reliquat": 3750,
+        "reliquat": 3350,
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk5ua2lmu",
+        "id": "TCHxmvwc46rd8h769",
         "statut": "bloque",
         "type": "acte",
         "role": "infirmier",
@@ -11856,8 +11856,8 @@
         "titre": "Exécuter les actes prescrits",
         "icon": "stethoscope",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
-        "factureId": "FACxmvvhgk5txlniv",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
+        "factureId": "FACxmvwc46rdds86d",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -11866,10 +11866,10 @@
         "faitLe": null,
         "faitPar": null,
         "detail": "Consultation généraliste",
-        "montant": 5000
+        "montant": 3000
        },
        {
-        "id": "TCHxmvvhgk5ujjoe6",
+        "id": "TCHxmvwc46rdzig2t",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -11878,8 +11878,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
-        "factureId": "FACxmvvhgk5txlniv",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
+        "factureId": "FACxmvwc46rdds86d",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -11891,7 +11891,7 @@
         "montant": 6000
        },
        {
-        "id": "TCHxmvvhgk5uwl2qr",
+        "id": "TCHxmvwc46rd15xpw",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -11900,8 +11900,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
-        "factureId": "FACxmvvhgk5txlniv",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
+        "factureId": "FACxmvwc46rdds86d",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -11913,7 +11913,7 @@
         "montant": 2750
        },
        {
-        "id": "TCHxmvvhgk5upwv8f",
+        "id": "TCHxmvwc46rdnmb0w",
         "statut": "bloque",
         "type": "imagerie",
         "role": "echographiste",
@@ -11922,8 +11922,8 @@
         "titre": "Réaliser l’examen d’imagerie",
         "icon": "scan-line",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
-        "factureId": "FACxmvvhgk5txlniv",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
+        "factureId": "FACxmvwc46rdds86d",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -11936,7 +11936,7 @@
         "montant": 5000
        },
        {
-        "id": "TCHxmvvhgk5tebx1t",
+        "id": "TCHxmvwc46rd6iw9i",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -11945,8 +11945,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
-        "factureId": "FACxmvvhgk5txlniv",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
+        "factureId": "FACxmvwc46rdds86d",
         "factureNumero": "FP-2026-00001",
         "patient": "BETA Deux",
         "patientCode": "CNT/1002/26",
@@ -11955,12 +11955,12 @@
         "faitLe": null,
         "faitPar": null,
         "detail": "2 médicament(s) · 2 analyse(s) · 1 acte(s) · 1 examen(s) d’imagerie",
-        "montant": 18750
+        "montant": 16750
        }
       ],
       "notifications": [
        {
-        "id": "NOTxmvvhgk5uf16s0",
+        "id": "NOTxmvwc46rdmmrbz",
         "statut": "actif",
         "type": "demande_imagerie",
         "poste": "imagerie",
@@ -11970,16 +11970,16 @@
         "priorite": "normale",
         "demandeId": null,
         "factureId": null,
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
         "patientId": "PATX2",
         "reference": "FP-2026-00001",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.082Z"
+        "creeLe": "2026-10-31T11:45:30.937Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk5ur2loe",
+        "id": "PRSxmvwc46rds7h5k",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -11993,7 +11993,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk5tswcpa",
+        "ordonnanceId": "ORDxmvwc46rcmkv66",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -12126,7 +12126,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk5votbc8",
+        "id": "ORDxmvwc46re55f8v",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -12192,7 +12192,7 @@
           "examen": "Échographie pelvienne",
           "modalite": "echographie",
           "prix": 9000,
-          "demandeImagerieId": "IMExmvvhgk5v8q4i3"
+          "demandeImagerieId": "IMExmvwc46ressuh8"
          }
         ],
         "montantMedicaments": 2750,
@@ -12206,15 +12206,15 @@
         "statutAnalyses": "en_attente",
         "statutActes": "en_attente",
         "statutImagerie": "en_attente",
-        "factureId": "FACxmvvhgk5v3xu70",
+        "factureId": "FACxmvwc46re5vsyd",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk5vgcvmq",
+        "id": "DEMxmvwc46relye0a",
         "statut": "actif",
-        "reference": "LAB-00006",
+        "reference": "LAB-00002",
         "codeAnalyse": "00002-2026",
         "patientId": "PATX3",
         "patientCode": "CNT/1003/26",
@@ -12231,16 +12231,16 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
         "bloqueParPaiement": true
        },
        {
-        "id": "DEMxmvvhgk5v05uj9",
+        "id": "DEMxmvwc46refomu8",
         "statut": "actif",
-        "reference": "LAB-00005",
+        "reference": "LAB-00001",
         "codeAnalyse": "00001-2026",
         "patientId": "PATX3",
         "patientCode": "CNT/1003/26",
@@ -12257,7 +12257,7 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
@@ -12266,7 +12266,7 @@
       ],
       "demandesImagerie": [
        {
-        "id": "IMExmvvhgk5v8q4i3",
+        "id": "IMExmvwc46ressuh8",
         "statut": "demandee",
         "reference": "IME-00001",
         "dateHeure": "2026-08-20T09:00:00.000Z",
@@ -12281,19 +12281,19 @@
         "urgent": false,
         "secteurDemandeur": "Consultation",
         "origine": "consultation",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "prix": 9000,
         "motifTarif": null,
         "bloqueParPaiement": true,
-        "factureId": "FACxmvvhgk5v3xu70",
+        "factureId": "FACxmvwc46re5vsyd",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk5v3xu70",
+        "id": "FACxmvwc46re5vsyd",
         "statut": "actif",
         "lignes": [
          {
@@ -12356,7 +12356,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 2000,
-          "demandeId": "DEMxmvvhgk5v05uj9",
+          "demandeId": "DEMxmvwc46refomu8",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -12379,7 +12379,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 4000,
-          "demandeId": "DEMxmvvhgk5vgcvmq",
+          "demandeId": "DEMxmvwc46relye0a",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -12428,7 +12428,7 @@
           "demandeId": null,
           "produitId": null,
           "acteCode": null,
-          "demandeImagerieId": "IMExmvvhgk5v8q4i3",
+          "demandeImagerieId": "IMExmvwc46ressuh8",
           "statutPaiement": "du",
           "montantRegle": 0,
           "payeLe": null,
@@ -12458,14 +12458,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk5vyx021",
+        "id": "TCHxmvwc46rekndgf",
         "statut": "bloque",
         "type": "acte",
         "role": "infirmier",
@@ -12474,8 +12474,8 @@
         "titre": "Exécuter les actes prescrits",
         "icon": "stethoscope",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
-        "factureId": "FACxmvvhgk5v3xu70",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
+        "factureId": "FACxmvwc46re5vsyd",
         "factureNumero": "FP-2026-00001",
         "patient": "GAMMA Trois",
         "patientCode": "CNT/1003/26",
@@ -12487,7 +12487,7 @@
         "montant": 5000
        },
        {
-        "id": "TCHxmvvhgk5vmn6g2",
+        "id": "TCHxmvwc46reuplj3",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -12496,8 +12496,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
-        "factureId": "FACxmvvhgk5v3xu70",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
+        "factureId": "FACxmvwc46re5vsyd",
         "factureNumero": "FP-2026-00001",
         "patient": "GAMMA Trois",
         "patientCode": "CNT/1003/26",
@@ -12509,7 +12509,7 @@
         "montant": 6000
        },
        {
-        "id": "TCHxmvvhgk5vdlw4d",
+        "id": "TCHxmvwc46re9g4g1",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -12518,8 +12518,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
-        "factureId": "FACxmvvhgk5v3xu70",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
+        "factureId": "FACxmvwc46re5vsyd",
         "factureNumero": "FP-2026-00001",
         "patient": "GAMMA Trois",
         "patientCode": "CNT/1003/26",
@@ -12531,7 +12531,7 @@
         "montant": 2750
        },
        {
-        "id": "TCHxmvvhgk5vqf4ja",
+        "id": "TCHxmvwc46reiiu5d",
         "statut": "bloque",
         "type": "imagerie",
         "role": "echographiste",
@@ -12540,8 +12540,8 @@
         "titre": "Réaliser l’examen d’imagerie",
         "icon": "scan-line",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
-        "factureId": "FACxmvvhgk5v3xu70",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
+        "factureId": "FACxmvwc46re5vsyd",
         "factureNumero": "FP-2026-00001",
         "patient": "GAMMA Trois",
         "patientCode": "CNT/1003/26",
@@ -12554,7 +12554,7 @@
         "montant": 9000
        },
        {
-        "id": "TCHxmvvhgk5vmvpks",
+        "id": "TCHxmvwc46rejoctv",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -12563,8 +12563,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
-        "factureId": "FACxmvvhgk5v3xu70",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
+        "factureId": "FACxmvwc46re5vsyd",
         "factureNumero": "FP-2026-00001",
         "patient": "GAMMA Trois",
         "patientCode": "CNT/1003/26",
@@ -12578,7 +12578,7 @@
       ],
       "notifications": [
        {
-        "id": "NOTxmvvhgk5vq8y36",
+        "id": "NOTxmvwc46rekv5lb",
         "statut": "actif",
         "type": "demande_imagerie",
         "poste": "imagerie",
@@ -12588,16 +12588,16 @@
         "priorite": "normale",
         "demandeId": null,
         "factureId": null,
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
         "patientId": "PATX3",
         "reference": "FP-2026-00001",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.083Z"
+        "creeLe": "2026-10-31T11:45:30.938Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk5v99sxy",
+        "id": "PRSxmvwc46reqipib",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -12611,7 +12611,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk5votbc8",
+        "ordonnanceId": "ORDxmvwc46re55f8v",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -12744,7 +12744,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk5wyez5i",
+        "id": "ORDxmvwc46rffz3qt",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -12810,7 +12810,7 @@
           "examen": "Échographie pelvienne",
           "modalite": "echographie",
           "prix": 9000,
-          "demandeImagerieId": "IMExmvvhgk5wwuz79"
+          "demandeImagerieId": "IMExmvwc46rf04lvd"
          }
         ],
         "montantMedicaments": 2750,
@@ -12824,15 +12824,15 @@
         "statutAnalyses": "en_attente",
         "statutActes": "en_attente",
         "statutImagerie": "en_attente",
-        "factureId": "FACxmvvhgk5x9ol3p",
+        "factureId": "FACxmvwc46rgalj3h",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk5x9awp1",
+        "id": "DEMxmvwc46rfoyr8p",
         "statut": "actif",
-        "reference": "LAB-00008",
+        "reference": "LAB-00002",
         "codeAnalyse": "00002-2026",
         "patientId": "PATX4",
         "patientCode": "CNT/1004/26",
@@ -12849,16 +12849,16 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
         "bloqueParPaiement": true
        },
        {
-        "id": "DEMxmvvhgk5wv73d0",
+        "id": "DEMxmvwc46rf15l4h",
         "statut": "actif",
-        "reference": "LAB-00007",
+        "reference": "LAB-00001",
         "codeAnalyse": "00001-2026",
         "patientId": "PATX4",
         "patientCode": "CNT/1004/26",
@@ -12875,7 +12875,7 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
@@ -12884,7 +12884,7 @@
       ],
       "demandesImagerie": [
        {
-        "id": "IMExmvvhgk5wwuz79",
+        "id": "IMExmvwc46rf04lvd",
         "statut": "demandee",
         "reference": "IME-00001",
         "dateHeure": "2026-08-20T09:00:00.000Z",
@@ -12899,19 +12899,19 @@
         "urgent": false,
         "secteurDemandeur": "Consultation",
         "origine": "consultation",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "prix": 9000,
         "motifTarif": null,
         "bloqueParPaiement": true,
-        "factureId": "FACxmvvhgk5x9ol3p",
+        "factureId": "FACxmvwc46rgalj3h",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk5x9ol3p",
+        "id": "FACxmvwc46rgalj3h",
         "statut": "actif",
         "lignes": [
          {
@@ -12974,7 +12974,7 @@
           "partAssureur": 0,
           "partPersonnel": 2000,
           "partPatient": 0,
-          "demandeId": "DEMxmvvhgk5wv73d0",
+          "demandeId": "DEMxmvwc46rf15l4h",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -12997,7 +12997,7 @@
           "partAssureur": 0,
           "partPersonnel": 4000,
           "partPatient": 0,
-          "demandeId": "DEMxmvvhgk5x9awp1",
+          "demandeId": "DEMxmvwc46rfoyr8p",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -13046,7 +13046,7 @@
           "demandeId": null,
           "produitId": null,
           "acteCode": null,
-          "demandeImagerieId": "IMExmvvhgk5wwuz79",
+          "demandeImagerieId": "IMExmvwc46rf04lvd",
           "statutPaiement": "du",
           "montantRegle": 0,
           "payeLe": null,
@@ -13076,14 +13076,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk5x5b1wf",
+        "id": "TCHxmvwc46rgnafz5",
         "statut": "bloque",
         "type": "acte",
         "role": "infirmier",
@@ -13092,8 +13092,8 @@
         "titre": "Exécuter les actes prescrits",
         "icon": "stethoscope",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
-        "factureId": "FACxmvvhgk5x9ol3p",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
+        "factureId": "FACxmvwc46rgalj3h",
         "factureNumero": "FP-2026-00001",
         "patient": "DELTA Quatre",
         "patientCode": "CNT/1004/26",
@@ -13105,7 +13105,7 @@
         "montant": 5000
        },
        {
-        "id": "TCHxmvvhgk5xyj00f",
+        "id": "TCHxmvwc46rg6yk7g",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -13114,8 +13114,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
-        "factureId": "FACxmvvhgk5x9ol3p",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
+        "factureId": "FACxmvwc46rgalj3h",
         "factureNumero": "FP-2026-00001",
         "patient": "DELTA Quatre",
         "patientCode": "CNT/1004/26",
@@ -13127,7 +13127,7 @@
         "montant": 6000
        },
        {
-        "id": "TCHxmvvhgk5x0xj3t",
+        "id": "TCHxmvwc46rghk465",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -13136,8 +13136,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
-        "factureId": "FACxmvvhgk5x9ol3p",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
+        "factureId": "FACxmvwc46rgalj3h",
         "factureNumero": "FP-2026-00001",
         "patient": "DELTA Quatre",
         "patientCode": "CNT/1004/26",
@@ -13149,7 +13149,7 @@
         "montant": 2750
        },
        {
-        "id": "TCHxmvvhgk5xin9uo",
+        "id": "TCHxmvwc46rgzepeb",
         "statut": "bloque",
         "type": "imagerie",
         "role": "echographiste",
@@ -13158,8 +13158,8 @@
         "titre": "Réaliser l’examen d’imagerie",
         "icon": "scan-line",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
-        "factureId": "FACxmvvhgk5x9ol3p",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
+        "factureId": "FACxmvwc46rgalj3h",
         "factureNumero": "FP-2026-00001",
         "patient": "DELTA Quatre",
         "patientCode": "CNT/1004/26",
@@ -13172,7 +13172,7 @@
         "montant": 9000
        },
        {
-        "id": "TCHxmvvhgk5xlpen4",
+        "id": "TCHxmvwc46rgy5vqk",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -13181,8 +13181,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
-        "factureId": "FACxmvvhgk5x9ol3p",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
+        "factureId": "FACxmvwc46rgalj3h",
         "factureNumero": "FP-2026-00001",
         "patient": "DELTA Quatre",
         "patientCode": "CNT/1004/26",
@@ -13196,7 +13196,7 @@
       ],
       "notifications": [
        {
-        "id": "NOTxmvvhgk5xiev1n",
+        "id": "NOTxmvwc46rgav4kk",
         "statut": "actif",
         "type": "demande_imagerie",
         "poste": "imagerie",
@@ -13206,16 +13206,16 @@
         "priorite": "normale",
         "demandeId": null,
         "factureId": null,
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
         "patientId": "PATX4",
         "reference": "FP-2026-00001",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.085Z"
+        "creeLe": "2026-10-31T11:45:30.940Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk5xlnrbg",
+        "id": "PRSxmvwc46rglg2iy",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -13229,7 +13229,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk5wyez5i",
+        "ordonnanceId": "ORDxmvwc46rffz3qt",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -13362,7 +13362,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk5y9bxou",
+        "id": "ORDxmvwc46rjmk2lc",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -13409,13 +13409,13 @@
         "statutAnalyses": "sans_objet",
         "statutActes": "sans_objet",
         "statutImagerie": "sans_objet",
-        "factureId": "FACxmvvhgk5y4w09o",
+        "factureId": "FACxmvwc46rjrpx33",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk5y4w09o",
+        "id": "FACxmvwc46rjrpx33",
         "statut": "actif",
         "lignes": [
          {
@@ -13488,14 +13488,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk5y9bxou",
+        "ordonnanceId": "ORDxmvwc46rjmk2lc",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk5ys739g",
+        "id": "TCHxmvwc46rjmqbeh",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -13504,8 +13504,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5y9bxou",
-        "factureId": "FACxmvvhgk5y4w09o",
+        "ordonnanceId": "ORDxmvwc46rjmk2lc",
+        "factureId": "FACxmvwc46rjrpx33",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -13517,7 +13517,7 @@
         "montant": 2750
        },
        {
-        "id": "TCHxmvvhgk5yie987",
+        "id": "TCHxmvwc46rjzlghv",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -13526,8 +13526,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5y9bxou",
-        "factureId": "FACxmvvhgk5y4w09o",
+        "ordonnanceId": "ORDxmvwc46rjmk2lc",
+        "factureId": "FACxmvwc46rjrpx33",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -13541,7 +13541,7 @@
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk5y6cpjs",
+        "id": "PRSxmvwc46rkyfxnz",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -13555,7 +13555,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk5y9bxou",
+        "ordonnanceId": "ORDxmvwc46rjmk2lc",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -13682,7 +13682,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk5y3ya36",
+        "id": "ORDxmvwc46rkp4fh7",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -13725,15 +13725,15 @@
         "statutAnalyses": "en_attente",
         "statutActes": "sans_objet",
         "statutImagerie": "sans_objet",
-        "factureId": "FACxmvvhgk5yyx5me",
+        "factureId": "FACxmvwc46rl5si6v",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk5ysyhm9",
+        "id": "DEMxmvwc46rlyx2i3",
         "statut": "actif",
-        "reference": "LAB-00010",
+        "reference": "LAB-00002",
         "codeAnalyse": "00002-2026",
         "patientId": "PATX1",
         "patientCode": "CNT/1001/26",
@@ -13750,16 +13750,16 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5y3ya36",
+        "ordonnanceId": "ORDxmvwc46rkp4fh7",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
         "bloqueParPaiement": true
        },
        {
-        "id": "DEMxmvvhgk5ysq9b7",
+        "id": "DEMxmvwc46rlqr2p5",
         "statut": "actif",
-        "reference": "LAB-00009",
+        "reference": "LAB-00001",
         "codeAnalyse": "00001-2026",
         "patientId": "PATX1",
         "patientCode": "CNT/1001/26",
@@ -13776,7 +13776,7 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk5y3ya36",
+        "ordonnanceId": "ORDxmvwc46rkp4fh7",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
@@ -13785,7 +13785,7 @@
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk5yyx5me",
+        "id": "FACxmvwc46rl5si6v",
         "statut": "actif",
         "lignes": [
          {
@@ -13802,7 +13802,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 2000,
-          "demandeId": "DEMxmvvhgk5ysq9b7",
+          "demandeId": "DEMxmvwc46rlqr2p5",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -13825,7 +13825,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 4000,
-          "demandeId": "DEMxmvvhgk5ysyhm9",
+          "demandeId": "DEMxmvwc46rlyx2i3",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -13858,14 +13858,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk5y3ya36",
+        "ordonnanceId": "ORDxmvwc46rkp4fh7",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk5yb0fn0",
+        "id": "TCHxmvwc46rlulbhr",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -13874,8 +13874,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5y3ya36",
-        "factureId": "FACxmvvhgk5yyx5me",
+        "ordonnanceId": "ORDxmvwc46rkp4fh7",
+        "factureId": "FACxmvwc46rl5si6v",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -13887,7 +13887,7 @@
         "montant": 6000
        },
        {
-        "id": "TCHxmvvhgk5y07fux",
+        "id": "TCHxmvwc46rl9ddoh",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -13896,8 +13896,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5y3ya36",
-        "factureId": "FACxmvvhgk5yyx5me",
+        "ordonnanceId": "ORDxmvwc46rkp4fh7",
+        "factureId": "FACxmvwc46rl5si6v",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -14000,7 +14000,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk5zvhxhm",
+        "id": "ORDxmvwc46rlo34py",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -14037,13 +14037,13 @@
         "statutAnalyses": "sans_objet",
         "statutActes": "sans_objet",
         "statutImagerie": "sans_objet",
-        "factureId": "FACxmvvhgk5zk1dyh",
+        "factureId": "FACxmvwc46rmta7eo",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk5zk1dyh",
+        "id": "FACxmvwc46rmta7eo",
         "statut": "actif",
         "lignes": [
          {
@@ -14093,14 +14093,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk5zvhxhm",
+        "ordonnanceId": "ORDxmvwc46rlo34py",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk5zxe39w",
+        "id": "TCHxmvwc46rmpimlk",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -14109,8 +14109,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5zvhxhm",
-        "factureId": "FACxmvvhgk5zk1dyh",
+        "ordonnanceId": "ORDxmvwc46rlo34py",
+        "factureId": "FACxmvwc46rmta7eo",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -14122,7 +14122,7 @@
         "montant": 250
        },
        {
-        "id": "TCHxmvvhgk5zp33fn",
+        "id": "TCHxmvwc46rmirmts",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -14131,8 +14131,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk5zvhxhm",
-        "factureId": "FACxmvvhgk5zk1dyh",
+        "ordonnanceId": "ORDxmvwc46rlo34py",
+        "factureId": "FACxmvwc46rmta7eo",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -14146,7 +14146,7 @@
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk5z676cp",
+        "id": "PRSxmvwc46rmg70i9",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -14160,7 +14160,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk5zvhxhm",
+        "ordonnanceId": "ORDxmvwc46rlo34py",
         "lignes": [
          {
           "produitId": "PRD0003",
@@ -14277,7 +14277,7 @@
      "inserts": {
       "demandesImagerie": [
        {
-        "id": "IMExmvvhgk5z0fi4m",
+        "id": "IMExmvwc46rm33og0",
         "statut": "archive",
         "reference": "IME-00001",
         "dateHeure": "2026-08-20T09:00:00.000Z",
@@ -14391,7 +14391,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk61mjhpa",
+        "id": "ORDxmvwc46rnvu2wr",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -14417,13 +14417,13 @@
         "statutAnalyses": "sans_objet",
         "statutActes": "sans_objet",
         "statutImagerie": "sans_objet",
-        "factureId": "FACxmvvhgk6149p6m",
+        "factureId": "FACxmvwc46rnf2cao",
         "factureNumero": "FP-2026-00001"
        }
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk6149p6m",
+        "id": "FACxmvwc46rnf2cao",
         "statut": "actif",
         "lignes": [],
         "numero": "FP-2026-00001",
@@ -14449,14 +14449,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk61mjhpa",
+        "ordonnanceId": "ORDxmvwc46rnvu2wr",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk61wjz0r",
+        "id": "TCHxmvwc46rn256vx",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -14465,8 +14465,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk61mjhpa",
-        "factureId": "FACxmvvhgk6149p6m",
+        "ordonnanceId": "ORDxmvwc46rnvu2wr",
+        "factureId": "FACxmvwc46rnf2cao",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -14606,7 +14606,7 @@
       "dossiersConsultation": [],
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk6185ohm",
+        "id": "ORDxmvwc46rou6bo9",
         "statut": "actif",
         "numero": "ORD-2026-00001",
         "date": "2026-08-20T09:00:00.000Z",
@@ -14653,18 +14653,18 @@
         "statutActes": "sans_objet",
         "statutImagerie": "sans_objet",
         "_creePar": "BASSONGUI Chabi Séko",
-        "_creeLe": "2026-10-30T21:27:20.089Z",
-        "factureId": "FACxmvvhgk62r3t9p",
+        "_creeLe": "2026-10-31T11:45:30.948Z",
+        "factureId": "FACxmvwc46rog3ytm",
         "factureNumero": "FP-2026-00001",
         "_modifiePar": "BASSONGUI Chabi Séko",
-        "_modifieLe": "2026-10-30T21:27:20.090Z"
+        "_modifieLe": "2026-10-31T11:45:30.948Z"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk61bku7t",
+        "id": "DEMxmvwc46roxk76i",
         "statut": "actif",
-        "reference": "LAB-00011",
+        "reference": "LAB-00001",
         "codeAnalyse": "00001-2026",
         "patientId": "PATX1",
         "patientCode": "CNT/1001/26",
@@ -14681,19 +14681,19 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk6185ohm",
+        "ordonnanceId": "ORDxmvwc46rou6bo9",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
         "bloqueParPaiement": true,
         "_creePar": "BASSONGUI Chabi Séko",
-        "_creeLe": "2026-10-30T21:27:20.089Z"
+        "_creeLe": "2026-10-31T11:45:30.948Z"
        }
       ],
       "demandesImagerie": [],
       "factures": [
        {
-        "id": "FACxmvvhgk62r3t9p",
+        "id": "FACxmvwc46rog3ytm",
         "statut": "actif",
         "lignes": [
          {
@@ -14733,7 +14733,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 2000,
-          "demandeId": "DEMxmvvhgk61bku7t",
+          "demandeId": "DEMxmvwc46roxk76i",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -14766,16 +14766,16 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk6185ohm",
+        "ordonnanceId": "ORDxmvwc46rou6bo9",
         "ordonnanceNumero": "ORD-2026-00001",
         "dossierConsultationId": null,
         "_creePar": "BASSONGUI Chabi Séko",
-        "_creeLe": "2026-10-30T21:27:20.090Z"
+        "_creeLe": "2026-10-31T11:45:30.948Z"
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk62zz9xl",
+        "id": "TCHxmvwc46rocsjqb",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -14784,8 +14784,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk6185ohm",
-        "factureId": "FACxmvvhgk62r3t9p",
+        "ordonnanceId": "ORDxmvwc46rou6bo9",
+        "factureId": "FACxmvwc46rog3ytm",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -14796,10 +14796,10 @@
         "detail": "1 analyse(s) — AKOP",
         "montant": 2000,
         "_creePar": "BASSONGUI Chabi Séko",
-        "_creeLe": "2026-10-30T21:27:20.090Z"
+        "_creeLe": "2026-10-31T11:45:30.948Z"
        },
        {
-        "id": "TCHxmvvhgk62onmhq",
+        "id": "TCHxmvwc46roakoux",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -14808,8 +14808,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk6185ohm",
-        "factureId": "FACxmvvhgk62r3t9p",
+        "ordonnanceId": "ORDxmvwc46rou6bo9",
+        "factureId": "FACxmvwc46rog3ytm",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -14820,10 +14820,10 @@
         "detail": "1 médicament(s) — 1 000",
         "montant": 1000,
         "_creePar": "BASSONGUI Chabi Séko",
-        "_creeLe": "2026-10-30T21:27:20.090Z"
+        "_creeLe": "2026-10-31T11:45:30.948Z"
        },
        {
-        "id": "TCHxmvvhgk624jmwx",
+        "id": "TCHxmvwc46roel2sb",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -14832,8 +14832,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00001",
-        "ordonnanceId": "ORDxmvvhgk6185ohm",
-        "factureId": "FACxmvvhgk62r3t9p",
+        "ordonnanceId": "ORDxmvwc46rou6bo9",
+        "factureId": "FACxmvwc46rog3ytm",
         "factureNumero": "FP-2026-00001",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -14844,13 +14844,13 @@
         "detail": "1 médicament(s) · 1 analyse(s)",
         "montant": 3000,
         "_creePar": "BASSONGUI Chabi Séko",
-        "_creeLe": "2026-10-30T21:27:20.090Z"
+        "_creeLe": "2026-10-31T11:45:30.948Z"
        }
       ],
       "notifications": [],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk62b8qch",
+        "id": "PRSxmvwc46rosnau6",
         "statut": "en_cours",
         "reference": "ORD-2026-00001",
         "type": "ordonnance",
@@ -14864,7 +14864,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk6185ohm",
+        "ordonnanceId": "ORDxmvwc46rou6bo9",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -14879,7 +14879,7 @@
         "montant": 1000,
         "statutPaiement": "impayee",
         "_creePar": "BASSONGUI Chabi Séko",
-        "_creeLe": "2026-10-30T21:27:20.090Z"
+        "_creeLe": "2026-10-31T11:45:30.948Z"
        }
       ],
       "administrations": []
@@ -14911,7 +14911,7 @@
      "inserts": {
       "ordonnances": [
        {
-        "id": "ORDxmvvhgk62ed7te",
+        "id": "ORDxmvwc46rof6sgu",
         "statut": "actif",
         "numero": "ORD-2026-00002",
         "date": "2026-08-20T09:00:00.000Z",
@@ -14957,15 +14957,15 @@
         "statutAnalyses": "en_attente",
         "statutActes": "sans_objet",
         "statutImagerie": "sans_objet",
-        "factureId": "FACxmvvhgk621wev3",
+        "factureId": "FACxmvwc46rpro4xe",
         "factureNumero": "FP-2026-00002"
        }
       ],
       "demandesAnalyses": [
        {
-        "id": "DEMxmvvhgk623ux9i",
+        "id": "DEMxmvwc46ro53wnx",
         "statut": "actif",
-        "reference": "LAB-00012",
+        "reference": "LAB-00002",
         "codeAnalyse": "00002-2026",
         "patientId": "PATX1",
         "patientCode": "CNT/1001/26",
@@ -14982,7 +14982,7 @@
         "urgent": false,
         "etatAnalyse": "en_attente",
         "origine": "ordonnance",
-        "ordonnanceId": "ORDxmvvhgk62ed7te",
+        "ordonnanceId": "ORDxmvwc46rof6sgu",
         "ordonnanceNumero": "ORD-2026-00002",
         "dossierConsultationId": null,
         "secteurDemandeur": "Consultation",
@@ -14991,7 +14991,7 @@
       ],
       "factures": [
        {
-        "id": "FACxmvvhgk621wev3",
+        "id": "FACxmvwc46rpro4xe",
         "statut": "actif",
         "lignes": [
          {
@@ -15031,7 +15031,7 @@
           "partAssureur": 0,
           "partPersonnel": 0,
           "partPatient": 2000,
-          "demandeId": "DEMxmvvhgk623ux9i",
+          "demandeId": "DEMxmvwc46ro53wnx",
           "produitId": null,
           "acteCode": null,
           "demandeImagerieId": null,
@@ -15064,14 +15064,14 @@
         "modePaiement": null,
         "statutPaiement": "impayee",
         "statutMecef": "en_attente",
-        "ordonnanceId": "ORDxmvvhgk62ed7te",
+        "ordonnanceId": "ORDxmvwc46rof6sgu",
         "ordonnanceNumero": "ORD-2026-00002",
         "dossierConsultationId": null
        }
       ],
       "taches": [
        {
-        "id": "TCHxmvvhgk62e6gqt",
+        "id": "TCHxmvwc46rptby95",
         "statut": "bloque",
         "type": "prelevement",
         "role": "laborantin",
@@ -15080,8 +15080,8 @@
         "titre": "Prélever et analyser",
         "icon": "flask-conical",
         "reference": "ORD-2026-00002",
-        "ordonnanceId": "ORDxmvvhgk62ed7te",
-        "factureId": "FACxmvvhgk621wev3",
+        "ordonnanceId": "ORDxmvwc46rof6sgu",
+        "factureId": "FACxmvwc46rpro4xe",
         "factureNumero": "FP-2026-00002",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -15093,7 +15093,7 @@
         "montant": 2000
        },
        {
-        "id": "TCHxmvvhgk62rc6l8",
+        "id": "TCHxmvwc46rplapyz",
         "statut": "bloque",
         "type": "dispensation",
         "role": "pharmacien",
@@ -15102,8 +15102,8 @@
         "titre": "Délivrer les médicaments",
         "icon": "pill",
         "reference": "ORD-2026-00002",
-        "ordonnanceId": "ORDxmvvhgk62ed7te",
-        "factureId": "FACxmvvhgk621wev3",
+        "ordonnanceId": "ORDxmvwc46rof6sgu",
+        "factureId": "FACxmvwc46rpro4xe",
         "factureNumero": "FP-2026-00002",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -15115,7 +15115,7 @@
         "montant": 1000
        },
        {
-        "id": "TCHxmvvhgk62vnr8l",
+        "id": "TCHxmvwc46rphzgrj",
         "statut": "en_attente",
         "type": "encaissement",
         "role": "caissier",
@@ -15124,8 +15124,8 @@
         "titre": "Encaisser la prescription",
         "icon": "coins",
         "reference": "ORD-2026-00002",
-        "ordonnanceId": "ORDxmvvhgk62ed7te",
-        "factureId": "FACxmvvhgk621wev3",
+        "ordonnanceId": "ORDxmvwc46rof6sgu",
+        "factureId": "FACxmvwc46rpro4xe",
         "factureNumero": "FP-2026-00002",
         "patient": "ALPHA Une",
         "patientCode": "CNT/1001/26",
@@ -15139,7 +15139,7 @@
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk63eoktl",
+        "id": "PRSxmvwc46rp0by44",
         "statut": "en_cours",
         "reference": "ORD-2026-00002",
         "type": "ordonnance",
@@ -15153,7 +15153,7 @@
         "secteurDestinataire": "pharmacie",
         "modalite": "ambulatoire",
         "premierAdministrateur": "salle_soins",
-        "ordonnanceId": "ORDxmvvhgk62ed7te",
+        "ordonnanceId": "ORDxmvwc46rof6sgu",
         "lignes": [
          {
           "produitId": "PRD0002",
@@ -15241,7 +15241,7 @@
      "inserts": {
       "notifications": [
        {
-        "id": "NOTxmvvhgk6hyh5hp",
+        "id": "NOTxmvwc46rz9z93z",
         "statut": "actif",
         "type": "prescription_soins",
         "poste": "salle_soins",
@@ -15255,12 +15255,12 @@
         "patientId": "PATX1",
         "reference": "PRS-00001",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.105Z"
+        "creeLe": "2026-10-31T11:45:30.959Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk6hzdl0b",
+        "id": "PRSxmvwc46rz6th2f",
         "statut": "en_cours",
         "reference": "PRS-00001",
         "type": "soins",
@@ -15398,7 +15398,7 @@
      "inserts": {
       "notifications": [
        {
-        "id": "NOTxmvvhgk6h1a4tp",
+        "id": "NOTxmvwc46rza19k7",
         "statut": "actif",
         "type": "prescription_soins",
         "poste": "hospitalisation",
@@ -15412,12 +15412,12 @@
         "patientId": "PATX2",
         "reference": "PRS-00002",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.105Z"
+        "creeLe": "2026-10-31T11:45:30.959Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk6hnt7sj",
+        "id": "PRSxmvwc46rznv4i6",
         "statut": "en_cours",
         "reference": "PRS-00002",
         "type": "soins",
@@ -15538,7 +15538,7 @@
      "inserts": {
       "notifications": [
        {
-        "id": "NOTxmvvhgk6irlphf",
+        "id": "NOTxmvwc46rzbx41y",
         "statut": "actif",
         "type": "prescription_soins",
         "poste": "salle_soins",
@@ -15552,12 +15552,12 @@
         "patientId": "PATX3",
         "reference": "PRS-00003",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.106Z"
+        "creeLe": "2026-10-31T11:45:30.959Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk6iou9ar",
+        "id": "PRSxmvwc46rzlxxpk",
         "statut": "en_cours",
         "reference": "PRS-00003",
         "type": "soins",
@@ -15755,7 +15755,7 @@
      "inserts": {
       "notifications": [
        {
-        "id": "NOTxmvvhgk6j39f84",
+        "id": "NOTxmvwc46s023ht6",
         "statut": "actif",
         "type": "prescription_soins",
         "poste": "maternite",
@@ -15769,12 +15769,12 @@
         "patientId": "PATX1",
         "reference": "PRS-00004",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.107Z"
+        "creeLe": "2026-10-31T11:45:30.960Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk6jpk9a4",
+        "id": "PRSxmvwc46s09xulz",
         "statut": "en_cours",
         "reference": "PRS-00004",
         "type": "soins",
@@ -15908,7 +15908,7 @@
      "inserts": {
       "notifications": [
        {
-        "id": "NOTxmvvhgk6j9qx3w",
+        "id": "NOTxmvwc46s1nphvx",
         "statut": "actif",
         "type": "prescription_soins",
         "poste": "salle_soins",
@@ -15922,12 +15922,12 @@
         "patientId": "PATX1",
         "reference": "PRS-00005",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.107Z"
+        "creeLe": "2026-10-31T11:45:30.961Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk6jx1ck5",
+        "id": "PRSxmvwc46s0e1fxg",
         "statut": "en_cours",
         "reference": "PRS-00005",
         "type": "soins",
@@ -16118,7 +16118,7 @@
      "inserts": {
       "notifications": [
        {
-        "id": "NOTxmvvhgk6k1wl4g",
+        "id": "NOTxmvwc46s2pzk5u",
         "statut": "actif",
         "type": "prescription_soins",
         "poste": "salle_soins",
@@ -16132,12 +16132,12 @@
         "patientId": "PATX1",
         "reference": "PRS-00006",
         "lue": false,
-        "creeLe": "2026-10-30T21:27:20.108Z"
+        "creeLe": "2026-10-31T11:45:30.962Z"
        }
       ],
       "prescriptions": [
        {
-        "id": "PRSxmvvhgk6kp75m8",
+        "id": "PRSxmvwc46s1iw1hp",
         "statut": "en_cours",
         "reference": "PRS-00006",
         "type": "soins",
@@ -16284,7 +16284,7 @@
      "inserts": {
       "administrations": [
        {
-        "id": "ADMxmvvhgk6ls7hv9",
+        "id": "ADMxmvwc46s2xn4qb",
         "statut": "actif",
         "reference": "ADM-00001",
         "prescriptionId": "PRSX1",
@@ -16294,7 +16294,7 @@
         "patientId": "PATX1",
         "patientCode": "CNT/1001/26",
         "patient": "ALPHA Une",
-        "dateHeure": "2026-10-30T21:27:20.109Z",
+        "dateHeure": "2026-10-31T11:45:30.962Z",
         "rang": 1,
         "total": 2,
         "secteur": "salle_soins",
@@ -16365,9 +16365,9 @@
      "inserts": {
       "administrations": [
        {
-        "id": "ADMxmvvhgk6m7w9n4",
+        "id": "ADMxmvwc46s3jz2z2",
         "statut": "actif",
-        "reference": "ADM-00002",
+        "reference": "ADM-00001",
         "prescriptionId": "PRSX1",
         "prescriptionRef": "PRS-00901",
         "ligneIndex": 0,
@@ -16375,7 +16375,7 @@
         "patientId": "PATX1",
         "patientCode": "CNT/1001/26",
         "patient": "ALPHA Une",
-        "dateHeure": "2026-10-30T21:27:20.110Z",
+        "dateHeure": "2026-10-31T11:45:30.963Z",
         "rang": 1,
         "total": 2,
         "secteur": "salle_soins",
@@ -16526,9 +16526,9 @@
      "inserts": {
       "administrations": [
        {
-        "id": "ADMxmvvhgk6mevk0k",
+        "id": "ADMxmvwc46s41sx0r",
         "statut": "actif",
-        "reference": "ADM-00003",
+        "reference": "ADM-00001",
         "prescriptionId": "PRSX1",
         "prescriptionRef": "PRS-00901",
         "ligneIndex": 0,
@@ -16536,7 +16536,7 @@
         "patientId": "PATX1",
         "patientCode": "CNT/1001/26",
         "patient": "ALPHA Une",
-        "dateHeure": "2026-10-30T21:27:20.110Z",
+        "dateHeure": "2026-10-31T11:45:30.964Z",
         "rang": 2,
         "total": 2,
         "secteur": "hospitalisation",

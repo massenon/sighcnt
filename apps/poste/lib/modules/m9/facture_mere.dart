@@ -148,6 +148,7 @@ class _EtatFactureMere extends State<EcranFactureMere> {
   }
 
   void _regler(BuildContext ctx, ContexteEcran c, Fiche r) {
+    final reste = assResteDuMere(r);
     final ctl = ControleurFormulaire(const [
       ChampDef(
           nom: 'dateReglement',
@@ -160,18 +161,19 @@ class _EtatFactureMere extends State<EcranFactureMere> {
           type: TypeChamp.nombre,
           requis: true,
           aide:
-              'Un règlement partiel se saisit tel quel : le reliquat reste en créance.'),
+              'Un règlement partiel s’ADDITIONNE aux précédents : le reste dû diminue, la pièce est soldée à zéro. Jamais plus que le dû.'),
       ChampDef(
           nom: 'reference',
           libelle: 'Référence du virement ou du chèque',
           requis: true),
     ], {
       'dateReglement': iso(c.aujourdhui),
-      'montantRegle': '${r['montantReclame']}',
+      'montantRegle': '${reste == reste.truncateToDouble() ? reste.toInt() : reste}',
     });
     afficherModale<void>(ctx,
         titre: 'Règlement de ${r['numero']}',
-        sousTitre: '${r['compagnie']} — ${money(r['montantReclame'])} réclamés',
+        sousTitre:
+            '${r['compagnie']} : ${money(r['montantReclame'])} réclamés, ${money(assTotalRegle(r))} déjà réglés, ${money(reste)} restent dus',
         corps: FormulaireSigh(controleur: ctl),
         pied: (fermer) => [
               BoutonSigh(
@@ -189,19 +191,55 @@ class _EtatFactureMere extends State<EcranFactureMere> {
                       return;
                     }
                     final montant = num.tryParse('${v['montantRegle']}'.trim()) ?? 0;
-                    final patch = assReglerMere(r,
-                        date: '${v['dateReglement']}',
-                        montant: montant,
-                        reference: '${v['reference']}');
-                    c.magasin.collection('facturesMere').mettreAJour(r['id'], patch);
+                    final mag = c.magasin;
+                    final ReglementMere res;
+                    try {
+                      res = assReglerMere(r,
+                          date: '${v['dateReglement']}',
+                          montant: montant,
+                          reference: '${v['reference']}',
+                          ecritures: mag.collection('ecritures').toutes,
+                          utilisateur: c.utilisateur,
+                          horodatage: c.aujourdhui.toUtc().toIso8601String());
+                    } on RefusReglementMere catch (e) {
+                      ToastsSigh.afficher(ctx, 'Règlement refusé.',
+                          type: TypeToast.erreur,
+                          detail: e.motif,
+                          duree: const Duration(seconds: 9));
+                      return;
+                    }
+                    // B5 : une écriture PAR règlement (débit 521000, crédit 411110, brouillon, RG-10), puis la ligne de règlement sur la mère.
+                    final ecr = mag.collection('ecritures');
+                    final ids = <String>[];
+                    final annulations = <VoidCallback>[];
+                    for (final e in res.ecritures) {
+                      final x = ecr.inserer({...e, 'statut': 'brouillon'}, prefixe: 'ECR');
+                      ids.add('${x.fiche['id']}');
+                      annulations.add(x.annuler);
+                    }
+                    final reglements = [
+                      for (final x in (res.patch['reglements'] as List))
+                        if ((x as Map)['id'] == res.reglement['id'])
+                          {...x.cast<String, Object?>(), 'ecritureIds': ids}
+                        else
+                          x.cast<String, Object?>()
+                    ];
+                    annulations.add(mag.collection('facturesMere').mettreAJour(
+                        r['id'], {...res.patch, 'reglements': reglements}));
+                    mag.journaliser('Règlement de facture mère', 'M9', 'FactureMere',
+                        '${r['numero']}', null, {
+                      'montant': montant,
+                      'reference': v['reference'],
+                      'reste': res.patch['reliquat'],
+                    });
                     fermer();
-                    final reste = n(patch['reliquat']);
+                    final restant = n(res.patch['reliquat']);
                     ToastsSigh.afficher(
                         ctx,
-                        reste <= 0
+                        res.solde
                             ? 'Facture mère soldée.'
-                            : 'Règlement partiel enregistré — ${money(reste)} restent en créance.',
-                        type: reste <= 0 ? TypeToast.succes : TypeToast.attention,
+                            : 'Règlement partiel enregistré : ${money(restant)} restent en créance.',
+                        type: res.solde ? TypeToast.succes : TypeToast.attention,
                         detail: '${r['numero']}');
                   }),
             ]);
@@ -450,6 +488,16 @@ class _EtatFactureMere extends State<EcranFactureMere> {
             droite: true,
             texte: (r) => money(r['montantReclame'])),
         ColonneTableau(
+            cle: 'regle',
+            libelle: 'Réglé',
+            droite: true,
+            texte: (r) => money(assTotalRegle(r))),
+        ColonneTableau(
+            cle: 'reste',
+            libelle: 'Reste dû',
+            droite: true,
+            texte: (r) => money(assResteDuMere(r))),
+        ColonneTableau(
             cle: 'etat',
             libelle: 'État',
             texte: (r) => r['etat'] == 'reglee' ? 'Réglée' : 'Transmise',
@@ -486,6 +534,8 @@ class _EtatFactureMere extends State<EcranFactureMere> {
                         ('Souscripteurs', nombre(r['nbSouscripteurs'])),
                         ('Pièces filles', nombre(r['nbFactures'])),
                         ('Montant réclamé', money(r['montantReclame'])),
+                        ('Réglé à ce jour', money(assTotalRegle(r))),
+                        ('Reste dû', money(assResteDuMere(r))),
                         (
                           'État',
                           r['etat'] == 'reglee'
@@ -493,6 +543,17 @@ class _EtatFactureMere extends State<EcranFactureMere> {
                               : 'Transmise'
                         ),
                       ]),
+                      const SizedBox(height: 16),
+                      CarteSigh(
+                          titre: 'Règlements enregistrés',
+                          child: MiniTableauSigh(colonnes: [
+                            ColonneMini('Date', (x) => dateDe(x['date'])),
+                            ColonneMini('Référence', (x) {
+                              final ref = '${x['reference'] ?? ''}';
+                              return ref.isEmpty ? 'Non précisée' : ref;
+                            }),
+                            ColonneMini('Montant', (x) => money(x['montant'])),
+                          ], lignes: assReglementsDe(r))),
                       const SizedBox(height: 16),
                       CarteSigh(
                           titre: 'Souscripteurs consolidés',

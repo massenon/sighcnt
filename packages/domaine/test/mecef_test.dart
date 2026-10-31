@@ -70,7 +70,7 @@ void main() {
     });
   });
 
-  group('avoir MECeF', () {
+  group('avoir MECeF (B10 : le moteur unique, plafond cumulé, montant > 0)', () {
     for (final c in liste(j['avoirs'])) {
       final e = (c['entree']! as Map).cast<String, Object?>();
       test('${e['nom']}', () {
@@ -81,26 +81,65 @@ void main() {
           ...(e['saisie']! as Map).cast<String, Object?>()
         };
         final attendus = liste(c['avoirs']);
+        AvoirMecefEmis emettre() => avoirMecef(
+            facture: fac,
+            saisie: saisie,
+            avoirs: liste(e['avoirs']),
+            idAvoir: 'AVR-TEST',
+            utilisateur: 'BASSONGUI Chabi Séko');
         if (attendus.isEmpty) {
-          expect(
-              () => avoirMecef(
-                  facture: fac, saisie: saisie, avoirs: liste(e['avoirs'])),
-              throwsA(isA<RefusAvoirMecef>()
-                  .having((r) => r.motif, 'motif',
-                      'Le montant de l’avoir ne peut excéder celui de la facture.')));
+          expect(emettre, throwsA(isA<RefusAvoirMecef>()));
           return;
         }
-        final r = avoirMecef(
-            facture: fac, saisie: saisie, avoirs: liste(e['avoirs']));
+        final r = emettre();
         final a = attendus.single;
         for (final k in a.keys) {
-          final x = a[k], y = r[k];
+          if (k == 'ecritureIds' || k.startsWith('_')) continue;
+          final x = a[k], y = r.fiche[k];
           if (x is num) {
             expect((y as num).toDouble(), x.toDouble(), reason: k);
           } else {
             expect(y, x, reason: k);
           }
         }
+        expect(r.fiche['origine'], 'mecef');
+        // Le moteur unique a contre-passé : deux lignes plates équilibrées (RG-10).
+        final debit = r.emission.ecritures.fold<double>(0, (t, x) => t + (x['debit']! as num));
+        final credit = r.emission.ecritures.fold<double>(0, (t, x) => t + (x['credit']! as num));
+        expect(debit, credit);
+      });
+    }
+
+    test('E10 : un montant nul est refusé en le nommant', () {
+      final cm = liste(j['avoirs']).firstWhere(
+          (c) => '${(c['entree']! as Map)['nom']}'.startsWith('montant nul'));
+      final e = (cm['entree']! as Map).cast<String, Object?>();
+      expect(
+          () => avoirMecef(
+              facture: (e['facture']! as Map).cast(),
+              saisie: {
+                'factureId': 'x',
+                ...(e['saisie']! as Map).cast<String, Object?>()
+              },
+              avoirs: const []),
+          throwsA(isA<RefusAvoirMecef>().having((r) => r.motif, 'motif',
+              'Le montant doit être strictement supérieur à 0 FCFA.')));
+    });
+  });
+
+  group('IFU client (E14)', () {
+    test('l\'IFU du client, vide si inconnu, jamais celui de la clinique', () {
+      expect(ifuClientDe({'ifuClient': '3201912345678'}), '3201912345678');
+      expect(ifuClientDe({}, {'ifu': '3200000000001'}), '3200000000001');
+      expect(ifuClientDe({}), '');
+      expect(ifuClientDe({}), isNot(IdentiteClinique.ifu));
+    });
+    for (final c in liste(j['impressions']).where((c) => '${c['nom']}'.startsWith('IFU du client'))) {
+      test('${c['regime']} : ${c['nom']}', () {
+        final cartouche = (c['cartouche']! as List).map((x) => (x as List).cast<String>()).toList();
+        final ifu = cartouche.firstWhere((x) => x[0] == 'IFU client')[1];
+        expect(ifu, ifuClientDe((c['facture']! as Map).cast()));
+        expect(ifu, isNot(IdentiteClinique.ifu));
       });
     }
   });

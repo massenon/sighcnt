@@ -89,7 +89,8 @@ ColonneTableau colStatut() => ColonneTableau(
 
 /// La facture normalisée imprimée, d'après la facture SoBAPS n° 26FNA00026 : lignes HT/TTC, taxes, totaux, montant en lettres, bloc de certification.
 PieceA4 pieceFactureNormalisee(Fiche f, ParamFiscal p,
-    {required String utilisateur,
+    {Fiche? patient,
+    required String utilisateur,
     required DateTime edite,
     required String reference}) {
   final fn = factureNormalisee(f, p);
@@ -104,8 +105,8 @@ PieceA4 pieceFactureNormalisee(Fiche f, ParamFiscal p,
       ('Date', dateDe(f['date'])),
       ('Client', '${f['patient'] ?? ''}'),
       ('Dossier client', '${f['patientCode'] ?? ''}'),
-      // Écart E14 porté et signalé : l'« IFU client » imprimé est celui de la clinique.
-      ('IFU client', ifuClientImprime),
+      // E14 (corrigé le 31/10/2026) : l'« IFU client » est celui du CLIENT, vide s'il est inconnu, jamais celui de la clinique.
+      ('IFU client', ifuClientDe(f, patient)),
       ('Nature', '${f['type'] ?? ''}'),
     ],
     blocs: [
@@ -142,6 +143,7 @@ Future<void> imprimerFactureNormalisee(BuildContext ctx, Fiche f) {
   return afficherApercu(
       ctx,
       pieceFactureNormalisee(f, paramFiscal(c.magasin),
+          patient: c.magasin.collection('patients').parId(f['patientId']),
           utilisateur: c.utilisateur,
           edite: c.aujourdhui,
           reference: PieceA4.reference_(
