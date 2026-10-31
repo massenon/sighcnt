@@ -3435,7 +3435,7 @@
                 v.montantParAgent = Number(v.montantParAgent) || D.PARAM_EVENEMENTS.montantStandard;
                 var ben = personnel().filter(function (e) { return e.id === v.beneficiaireId; })[0];
                 v.beneficiaire = ben ? ben.nomComplet : null;
-                v.reference = C.nextRef('EVT-', 4);
+                v.reference = C.referenceSuivante('EVT-', 4, colEvenements().all());
                 var res = colEvenements().insert(v);
                 var n = engendrerParticipations(res.record);
                 S.log('Création d’un événement du personnel', 'M10', 'Événement', res.record.id, null,
@@ -3685,7 +3685,7 @@
               render: function (x) {
                 return el('div.min-w-0', null, [
                   el('p.truncate.text-sm.font-medium.text-slate-800', { text: x.agent }),
-                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + fonctionLabel(x.fonction) }),
+                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + (x.fonction ? fonctionLabel(x.fonction) : '—') }),
                 ]);
               },
             },
@@ -3821,7 +3821,7 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                var recu = C.nextRef('REC-PART-', 4);
+                var recu = C.referenceSuivante('REC-PART-', 4, colParticipations().all().map(function (p) { return { reference: p.recu }; }));
                 var res = colParticipations().update(x.id, {
                   statutPaiement: 'paye', mode: 'comptant',
                   montantVerse: Number(v.montantVerse), datePaiement: v.datePaiement,
@@ -4025,7 +4025,7 @@
         S.collection('demandesAnalyses').active().forEach(function (a) {
           var pat = parPatient[a.patientId];
           if (!pat) return;
-          var d = String(a.date || a.dateDemande || '').slice(0, 10);
+          var d = String(a.date || a.dateDemande || a.dateHeure || '').slice(0, 10);
           if (!d || (min && d < min)) return;
           var analyse = D.ANALYSES.filter(function (x) { return x.code === a.analyse || x.libelle === a.analyse; })[0];
           out.push({
@@ -4034,7 +4034,7 @@
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Analyse', detail: a.analyse || (analyse ? analyse.libelle : 'Analyse'),
             praticien: a.prescripteur || a.demandeur || '—',
-            valeur: Number(a.montant) || (analyse ? Number(analyse.prix) || 0 : 0),
+            valeur: Number(a.montant) || Number(a.prix) || (analyse ? Number(analyse.prix) || 0 : 0),
           });
         });
 
@@ -4447,7 +4447,7 @@
           entite: 'Agent',
           defauts: function () { return { fonction: 'securite', dateEmbauche: C.iso(AUJ), salaireBase: 40000 }; },
           transform: function (v) {
-            if (!v.matricule) v.matricule = C.nextRef('SE-', 3);
+            if (!v.matricule) v.matricule = C.referenceSuivante('SE-', 3, personnel().map(function (e) { return { reference: e.matricule }; }));
             /* Sécurité, entretien et chauffeurs sont rattachés à la Direction :
                un seul intitulé de service, comme partout ailleurs. */
             v.service = 'Direction';

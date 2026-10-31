@@ -71,3 +71,4 @@ export 'src/comptabilite/cpa_referentiels.dart';
 export 'src/comptabilite/cpa_ecritures.dart';
 export 'src/comptabilite/cpa_depenses.dart';
 export 'src/rh/rhb_regles.dart';
+export 'src/rh/rhc_regles.dart';
