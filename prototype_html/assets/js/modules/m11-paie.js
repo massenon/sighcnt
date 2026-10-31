@@ -173,10 +173,12 @@
        On ne retient QUE le mois de retenue choisi : porter la participation
        chaque mois la prélèverait autant de fois qu'il y a de bulletins. Les
        participations déjà réglées au comptant n'y figurent évidemment pas. */
-    var periode = C.pad(annee, 4) + '-' + C.pad(mois + 1, 2);
+    /* E681 : cette variable s'appelait `periode`, comme le libellé « Octobre 2026 » lu plus haut — `var` étant de portée fonction, la période
+       renvoyée valait « 2026-10 » (tiroir « Paie de 2026-10 », bulletins et lots de validation à « 2026-10 », filtre « Période » aveugle). */
+    var moisRetenue = C.pad(annee, 4) + '-' + C.pad(mois + 1, 2);
     var participationsMois = S.collection('participations').active().filter(function (x) {
       return x.employeId === employe.id && x.mode === 'salaire'
-        && x.periodeRetenue === periode;
+        && x.periodeRetenue === moisRetenue;
     });
     var totalParticipations = C.sum(participationsMois, 'montant');
 
@@ -475,7 +477,7 @@
           var crees = [];
           calc.forEach(function (c) {
             crees.push(col.insert({
-              reference: C.nextRef('BP-', 5),
+              reference: C.referenceSuivante('BP-', 5, col.all().concat(col.archived())),   /* E680 : série lue sur le registre, jamais un compteur de page */
               periode: c.periode, annee: c.annee, mois: c.mois,
               employeId: c.employe.id, employe: c.employe.nomComplet,
               matricule: c.employe.matricule, fonction: c.employe.fonction,
@@ -486,6 +488,10 @@
               brut: c.brut, pctSanction: c.pctSanction, sanction: c.sanction,
               cnssOuvriere: c.cnssOuvriere, cnssPatronale: c.cnssPatronale,
               vps: c.vps, its: c.its, ortb: c.ortb, avances: c.avances,
+              /* E682 : le bulletin imprimé affichait « Redevance ORTB : non applicable, 0 » et omettait la participation alors que les deux
+                 figuraient dans le total des retenues — le détail voyage désormais avec la pièce. */
+              detailOrtb: c.detailOrtb, participations: c.participations,
+              participationsDetail: (c.participationsDetail || []).map(function (x) { return { evenementLibelle: x.evenementLibelle, montant: x.montant }; }),
               totalRetenues: c.totalRetenues, net: c.net, coutEmployeur: c.coutEmployeur,
               statutBulletin: 'a_valider',
             }));
@@ -509,6 +515,7 @@
           brut: c.brut, pctSanction: c.pctSanction, sanction: c.sanction,
           cnssOuvriere: c.cnssOuvriere, cnssPatronale: c.cnssPatronale,
           vps: c.vps, its: c.its, ortb: c.ortb, avances: c.avances,
+          detailOrtb: c.detailOrtb, participations: c.participations, participationsDetail: c.participationsDetail,   /* E682 */
           totalRetenues: c.totalRetenues, net: c.net,
         });
       }
@@ -925,14 +932,15 @@
             { name: 'valide', label: 'Déclaration validée', type: 'checkbox' },
           ];
         },
-        transform: function (v) {
+        /* E683 : `transform(v, record)` — sans la fiche, chaque MODIFICATION attribuait un nouveau numéro (HS-0001 devenait HS-0023). */
+        transform: function (v, record) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) {
             v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service;
             v.tauxHoraire = Math.round(e.salaireBase / 173.33 * (1 + (Number(v.majoration) || 25) / 100));
           }
           v.montant = (Number(v.heures) || 0) * (v.tauxHoraire || 0);
-          if (!v.reference) v.reference = C.nextRef('HS-', 4);
+          if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('HS-', 4, col.all().concat(col.archived()));   /* E680 */
           return v;
         },
         onCreate: function () { return { majoration: 25, valide: false, periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' 2026' }; },
@@ -1021,13 +1029,15 @@
             { name: 'statutAvance', label: 'Statut', type: 'select', options: [{ value: 'en_cours', label: 'En cours de remboursement' }, { value: 'solde', label: 'Soldée' }] },
           ];
         },
-        transform: function (v) {
+        /* E683 / E684 : `transform(v, record)` — sans la fiche, modifier une avance lui donnait un nouveau numéro ET remettait « remboursé » à zéro
+           (le formulaire ne porte pas ce champ) : l'agent redevenait redevable de ce qu'il avait déjà rendu. */
+        transform: function (v, record) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service; }
           v.mensualite = Math.round(v.montant / (Number(v.nbMensualites) || 1));
-          if (v.rembourse == null) v.rembourse = 0;
+          if (v.rembourse == null) v.rembourse = record && record.rembourse != null ? record.rembourse : 0;
           if (!v.statutAvance) v.statutAvance = 'en_cours';
-          if (!v.reference) v.reference = C.nextRef('AVS-', 4);
+          if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('AVS-', 4, col.all().concat(col.archived()));   /* E680 */
           return v;
         },
         beforeSave: function (v) {
@@ -1538,7 +1548,7 @@
             transform: function (v) {
               var a = agents().filter(function (x) { return x.id === v.employeId; })[0];
               return Object.assign({}, v, {
-                reference: C.nextRef('PRT-', 4),
+                reference: C.referenceSuivante('PRT-', 4, colPrets().all().concat(colPrets().archived())),   /* E680 */
                 agent: a ? a.nomComplet : '—',
                 matricule: a ? a.matricule : null,
                 retenues: [],

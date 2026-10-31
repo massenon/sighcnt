@@ -35,7 +35,16 @@ class CrudSigh extends StatefulWidget {
     this.sensInitial = 'asc',
     this.taillePage = 12,
     this.largeurTiroir = 672,
+    this.intro,
+    this.readonly = false,
   });
+
+  /// `cfg.readonly` : un registre produit par un moteur (les bulletins de paie) — ni création, ni archivage, ni restauration, et pas de bandeau « lecture
+  /// seule » (la lecture seule n'est pas une restriction du profil, c'est la nature de l'écran).
+  final bool readonly;
+
+  /// `cfg.intro` : l'encadré d'explication posé APRÈS les indicateurs et avant les onglets (un écran en lecture seule dit pourquoi).
+  final Widget Function(BuildContext)? intro;
 
   final CollectionMagasin collection;
   final String entite;
@@ -117,7 +126,7 @@ class _CrudSighState extends State<CrudSigh> {
                     variante: VarianteBouton.secondaire,
                     onPressed: () => widget.etat!(ctx, f)),
               // « Archiver » est AUSSI au pied de la fiche (Bug 10 des Instructions) ; absent sans le droit.
-              if (c.droit.annuler)
+              if (c.droit.annuler && !widget.readonly)
                 BoutonSigh(
                     libelle: 'Archiver',
                     icone: LucideIcons.archive,
@@ -151,7 +160,7 @@ class _CrudSighState extends State<CrudSigh> {
           : 'Utiliser le bouton « Nouveau » pour créer le premier enregistrement.',
       alClicLigne: (f) => _ouvrirDetail(ctx, f),
       actions: [
-        if (!archive && c.droit.editer && widget.creerVers != null)
+        if (!archive && c.droit.editer && !widget.readonly && widget.creerVers != null)
           BoutonSigh(
               libelle: 'Nouveau',
               icone: LucideIcons.plus,
@@ -167,7 +176,7 @@ class _CrudSighState extends State<CrudSigh> {
                     taille: TailleBouton.sm,
                     variante: VarianteBouton.secondaire,
                     onPressed: () {}),
-                if (c.droit.annuler)
+                if (c.droit.annuler && !widget.readonly)
                   BoutonSigh(
                       libelle: 'Archiver',
                       icone: LucideIcons.archive,
@@ -180,7 +189,7 @@ class _CrudSighState extends State<CrudSigh> {
               ],
       actionsLigne: (context, f) => archive
           ? [
-              if (c.droit.annuler)
+              if (c.droit.annuler && !widget.readonly)
                 BoutonIcone(
                     icone: LucideIcons.archiveRestore,
                     libelle: 'Restaurer',
@@ -200,7 +209,7 @@ class _CrudSighState extends State<CrudSigh> {
                     icone: LucideIcons.printer,
                     libelle: 'Imprimer l’état',
                     onPressed: () => widget.etat!(ctx, f)),
-              if (c.droit.annuler)
+              if (c.droit.annuler && !widget.readonly)
                 BoutonIcone(
                     icone: LucideIcons.archive,
                     libelle: 'Archiver',
@@ -214,7 +223,7 @@ class _CrudSighState extends State<CrudSigh> {
     final c = ContexteEcran.of(context);
     final actives = widget.collection.actives;
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (!c.droit.editer && c.droit.voir)
+      if (!widget.readonly && !c.droit.editer && c.droit.voir)
         Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: NoteSigh(
@@ -224,6 +233,8 @@ class _CrudSighState extends State<CrudSigh> {
         Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: KpiGrilleSigh(kpis: widget.kpis!(actives))),
+      if (widget.intro != null)
+        Padding(padding: const EdgeInsets.only(bottom: 16), child: widget.intro!(context)),
       OngletsSigh(onglets: [
         OngletDef(
             id: 'liste',

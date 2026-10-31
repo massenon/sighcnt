@@ -254,6 +254,11 @@ class Magasin {
     'executionsTaches': 'M14',
     'rolesBase': 'M14',
     'modulesManifeste': 'M14',
+    'participations': 'M10',
+    'pretsEtudes': 'M11',
+    'avances': 'M11',
+    'heuresSup': 'M11',
+    'bulletins': 'M11',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
@@ -432,6 +437,11 @@ class Magasin {
     'tachesPlanifiees',
     'executionsTaches',
     'rolesBase',
-    'modulesManifeste'
+    'modulesManifeste',
+    'participations',
+    'pretsEtudes',
+    'avances',
+    'heuresSup',
+    'bulletins'
   ];
 }

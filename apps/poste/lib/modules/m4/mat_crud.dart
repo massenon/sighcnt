@@ -49,7 +49,11 @@ class CrudMat extends StatefulWidget {
     this.source,
     this.filtreBase,
     this.apresTableau,
+    this.intro,
   });
+
+  /// `cfg.intro` : l'encadré d'explication, APRÈS les indicateurs et avant les onglets.
+  final Widget Function(BuildContext)? intro;
 
   final CollectionMagasin collection;
   final String entite;
@@ -446,6 +450,8 @@ class _CrudMatState extends State<CrudMat> {
       Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: KpiGrilleSigh(kpis: widget.kpis(context, actives))),
+      if (widget.intro != null)
+        Padding(padding: const EdgeInsets.only(bottom: 16), child: widget.intro!(context)),
       if (widget.plageChamp != null)
         Padding(
             padding: const EdgeInsets.only(bottom: 16),

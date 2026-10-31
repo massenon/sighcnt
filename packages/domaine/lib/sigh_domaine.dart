@@ -66,3 +66,4 @@ export 'src/qualite/qual_ged.dart';
 export 'src/assurances/ass_regles.dart';
 export 'src/securite/securite.dart';
 export 'src/rh/rha_regles.dart';
+export 'src/paie/pai_moteur.dart';
