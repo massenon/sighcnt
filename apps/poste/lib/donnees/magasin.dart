@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:sigh_domaine/sigh_domaine.dart' show cpcGardeEcritures;
+import 'package:sigh_domaine/sigh_domaine.dart' show cpaDoublonsDuPlan, cpcGardeEcritures;
 
 typedef Fiche = Map<String, Object?>;
 
@@ -279,6 +279,7 @@ class Magasin {
     'assurancesPersonnel': 'M10',
     'grillePrimes': 'M10',
     'historiquePrimes': 'M10',
+    'beneficiairesPrimes': 'M10',
     'regimesTravail': 'M10',
     'baremeNS131': 'M10',
     'historiqueBareme': 'M10',
@@ -333,7 +334,20 @@ class Magasin {
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
-  CollectionMagasin collection(String nom) => _c.putIfAbsent(nom, () {
+  CollectionMagasin collection(String nom) {
+    final neuve = !_c.containsKey(nom);
+    final col = _collection(nom);
+    // E724/E725 : le plan du jeu porte deux fiches au même numéro (244100, 631810). Comme la maquette (`assainirPlan`, une fois au premier accès), on garde la
+    // fiche du document et on ARCHIVE le doublon (RG-14). Fait APRÈS la création de la collection : l'archivage journalise, donc ouvre `audit`.
+    if (neuve && nom == 'comptes') {
+      for (final d in cpaDoublonsDuPlan(col.actives)) {
+        col.archiver(d.$1);
+      }
+    }
+    return col;
+  }
+
+  CollectionMagasin _collection(String nom) => _c.putIfAbsent(nom, () {
         final c = CollectionMagasin(nom, _jeux[nom] ?? const [],
             journal: nom == 'audit' ? null : journaliser,
             module: _modules[nom] ?? '—');

@@ -138,7 +138,8 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         if (!i) throw new Error('recherche introuvable');
         i.value = valeur; i.dispatchEvent(new Event('input', { bubbles: true })); await dormir(250);
       }
-      const combo = (portee, i) => [...portee.querySelectorAll('.combo')][i || 0];
+      /* Le combo du COMPTE de la ligne : le journal, passé à neuf entrées avec BQE, est devenu un combo à son tour (f_journal). */
+      const combo = (portee, i) => [...portee.querySelectorAll('.combo')].filter((x) => x.id !== 'f_journal')[i || 0];
       const vuToasts = (depuis) => toasts.slice(depuis);
 
       const R = {}; // les écrans
@@ -170,6 +171,9 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
       {
         const root = await monter('m12-plan-comptable');
         const r = releve(root);
+        /* E724/E725 : les doublons du plan sont archivés au chargement (la fiche du document est conservée), avec leur motif (RG-14). */
+        r.assainissement = db().comptes.filter((c) => c.statut === 'archive').map((c) => [c.num, c.libelle, c._motifArchivage || null]);
+        r.numerosActifsUniques = (() => { const v = {}; db().comptes.filter((c) => c.statut !== 'archive').forEach((c) => { v[c.num] = (v[c.num] || 0) + 1; }); return Object.values(v).every((n) => n === 1); })();
         r.page1 = lignesDe(root);
         const f = {};
         for (const fl of r.filtres) {
@@ -250,6 +254,26 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
             poser(dl, 'libelle', 'Achats de marchandises (corrigé)');
             await cliquer(dl, /^Enregistrer$/);
             r.editionDocument = { toasts: vuToasts(t2), ecart: ecart(avant3, instantane(COL)) };
+            fermerDialogues();
+          }
+          /* E724 : l'unicité vaut aussi à la MODIFICATION (numéro déjà pris) et vis-à-vis d'un compte ARCHIVÉ. */
+          {
+            await chercher(root2, '601100');
+            const t3 = toasts.length, avant4 = instantane(COL);
+            const l4 = [...root2.querySelectorAll('table tbody tr')].find((x) => /601100/.test(texte(x)));
+            const bm3 = [...l4.querySelectorAll('button')].find((b) => /Modifier/.test(b.getAttribute('title') || ''));
+            bm3.click(); await dormir(150);
+            const dl3 = dialogue();
+            poser(dl3, 'num', '604100');
+            await cliquer(dl3, /^Enregistrer$/);
+            r.editionNumeroPris = { toasts: vuToasts(t3), ecart: ecart(avant4, instantane(COL)), modaleOuverte: !!dialogue() };
+            fermerDialogues();
+            const t4 = toasts.length, avant5 = instantane(COL);
+            await cliquer(root2, /^Nouveau$/);
+            const dl4 = dialogue();
+            poser(dl4, 'num', '605901'); poser(dl4, 'libelle', 'Compte test archivé'); poser(dl4, 'classe', '6'); poser(dl4, 'journal', 'OD');
+            await cliquer(dl4, /^Créer$/);
+            r.creationNumeroArchive = { toasts: vuToasts(t4), ecart: ecart(avant5, instantane(COL)), modaleOuverte: !!dialogue() };
             fermerDialogues();
           }
           root2.remove();
@@ -379,14 +403,29 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         const r = releve(root);
         r.page1 = lignesDe(root);
         r.parClasse = {};
-        for (const [val] of (r.filtres[0] || { options: [] }).options) {
+        const fClasse = r.filtres.find((x) => x.label === 'Classe') || { options: [], label: 'Classe' };
+        for (const [val] of fClasse.options) {
           if (val === '') continue;
-          await filtrer(root, r.filtres[0].label, val);
+          await filtrer(root, fClasse.label, val);
           r.parClasse[val] = lignesDe(root);
         }
-        await filtrer(root, r.filtres[0].label, '');
+        await filtrer(root, fClasse.label, '');
         const pa = pieces.length; await cliquer(root, /Imprimer la balance$/);
         r.piece = pieces.length > pa ? derniere() : null;
+        /* E718 : le filtre explicite « validées / toutes » (défaut : validées), et le bandeau qui dit ce qui est compté. */
+        {
+          const sel = () => root.querySelector('#balance-ecritures');
+          r.modeDefaut = sel().value;
+          r.modes = {};
+          for (const mode of ['toutes', 'validees']) {
+            sel().value = mode; sel().dispatchEvent(new Event('change', { bubbles: true })); await dormir(250);
+            const rel = releve(root);
+            const pm = pieces.length; await cliquer(root, /Imprimer la balance$/);
+            r.modes[mode] = { kpis: rel.kpis, notes: rel.notes, lignes: lignesDe(root), piece: pieces.length > pm ? derniere() : null, valeur: sel().value };
+          }
+          const brouillons = db().ecritures.filter((e) => e.statut === 'brouillon' && e.date.slice(0, 4) === String(SIGH.exercice.choisi())).length;
+          r.brouillonsExercice = brouillons;
+        }
         await onglet(root, /Balance âgée/);
         r.agee = { lignes: lignesDe(root) };
         const pb = pieces.length; await cliquer(root, /Imprimer la balance âgée/);

@@ -22,6 +22,11 @@
     "contrepartie": "521000"
    },
    {
+    "code": "BQE",
+    "libelle": "Journal de banque, dépenses",
+    "contrepartie": "521000"
+   },
+   {
     "code": "SAL",
     "libelle": "Journal des salaires",
     "contrepartie": "422000"
@@ -1270,12 +1275,12 @@
    "kpis": [
     {
      "label": "Comptes paramétrés",
-     "valeur": "112",
+     "valeur": "110",
      "indice": null
     },
     {
      "label": "Issus des documents",
-     "valeur": "93",
+     "valeur": "91",
      "indice": null
     },
     {
@@ -1285,7 +1290,7 @@
     },
     {
      "label": "Comptes mouvementés",
-     "valeur": "28",
+     "valeur": "27",
      "indice": null
     }
    ],
@@ -1522,24 +1527,6 @@
       {
        "cellules": [
         "",
-        "244100",
-        "Matériel de bureau",
-        "Classe 2",
-        "IMM",
-        "Document clinique",
-        "0",
-        "0",
-        ""
-       ],
-       "boutons": [
-        "Consulter",
-        "Modifier",
-        "Archiver"
-       ]
-      },
-      {
-       "cellules": [
-        "",
         "244200",
         "Matériel informatique",
         "Classe 2",
@@ -1662,20 +1649,38 @@
         "Modifier",
         "Archiver"
        ]
+      },
+      {
+       "cellules": [
+        "",
+        "401110",
+        "Fournisseurs HOSPITEC SARL",
+        "Classe 4",
+        "ACH",
+        "Document clinique",
+        "0",
+        "0",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
       }
      ]
     }
    ],
    "onglets": [
-    "Tous les comptes112",
+    "Tous les comptes110",
     "Par classe",
-    "Archivés0"
+    "Archivés2"
    ],
    "cartes": [],
    "boutons": [
-    "Tous les comptes112",
+    "Tous les comptes110",
     "Par classe",
-    "Archivés0",
+    "Archivés2",
     "Colonnes affichées",
     "Exporter",
     "Nouveau",
@@ -1814,6 +1819,10 @@
        "Journal de banque"
       ],
       [
+       "BQE",
+       "Journal de banque, dépenses"
+      ],
+      [
        "SAL",
        "Journal des salaires"
       ],
@@ -1850,6 +1859,19 @@
     }
    ],
    "notes": [],
+   "assainissement": [
+    [
+     "244100",
+     "Matériel de bureau",
+     "Doublon du plan comptable (numéro 244100): la fiche conservée est « Matériel industriel » (CPT008)."
+    ],
+    [
+     "631810",
+     "Frais de demande chequier",
+     "Doublon du plan comptable (numéro 631810): la fiche conservée est « Frais bancaire BOA » (CPT063)."
+    ]
+   ],
+   "numerosActifsUniques": true,
    "page1": [
     [
      "",
@@ -1985,17 +2007,6 @@
     ],
     [
      "",
-     "244100",
-     "Matériel de bureau",
-     "Classe 2",
-     "IMM",
-     "Document clinique",
-     "0",
-     "0",
-     ""
-    ],
-    [
-     "",
      "244200",
      "Matériel informatique",
      "Classe 2",
@@ -2070,6 +2081,17 @@
      "65",
      "-21 217 000",
      ""
+    ],
+    [
+     "",
+     "401110",
+     "Fournisseurs HOSPITEC SARL",
+     "Classe 4",
+     "ACH",
+     "Document clinique",
+     "0",
+     "0",
+     ""
     ]
    ],
    "filtresResultats": {
@@ -2078,7 +2100,7 @@
      "premier": null
     },
     "Classe|2": {
-     "nb": 12,
+     "nb": 11,
      "premier": null
     },
     "Classe|3": {
@@ -2118,7 +2140,11 @@
      "premier": null
     },
     "Journal|BQ": {
-     "nb": 5,
+     "nb": 4,
+     "premier": null
+    },
+    "Journal|BQE": {
+     "nb": 0,
      "premier": null
     },
     "Journal|SAL": {
@@ -2126,7 +2152,7 @@
      "premier": null
     },
     "Journal|IMM": {
-     "nb": 12,
+     "nb": 11,
      "premier": null
     },
     "Journal|OD": {
@@ -2212,12 +2238,6 @@
       [
        "244100",
        "Matériel industriel",
-       "IMM",
-       "0"
-      ],
-      [
-       "244100",
-       "Matériel de bureau",
        "IMM",
        "0"
       ],
@@ -2644,12 +2664,6 @@
        "1 954 000"
       ],
       [
-       "631810",
-       "Frais de demande chequier",
-       "BQ",
-       "1 954 000"
-      ],
-      [
        "631820",
        "Frais bancaire Orabank",
        "BQ",
@@ -2868,7 +2882,7 @@
     "cartouche": [
      [
       "Comptes paramétrés",
-      "112"
+      "110"
      ],
      [
       "Classes",
@@ -2883,7 +2897,7 @@
       "30/10/2026"
      ]
     ],
-    "contenu": "N° de compteIntituléClasseJournal625PRIME D'ASSURANCE6ACH31000Marchand3OD101100Capital souscrit, non appelé1OD104100Apports temporaires1OD162000Emprunt et dette aupres des établissements de crédits1OD211000Frais de développement2IMM213000Logiciels2IMM229000Aménagement de terrain en cours2IMM231100Bâtiments sur sol propre2IMM235100Installations générales2IMM241000Matériel et outillage médical2IMM244100Matériel industriel2IMM244100Matériel de bureau2IMM244200Matériel informatique2IMM245000Matériel de transport2IMM245100Matériel de transport2IMM281000Amortissements des immobilisations2IMM311000Stock de médicaments3OD312000Stock de consommables et réactifs3OD401000Fournisseurs4ACH401110Fournisseurs HOSPITEC SARL4ACH401120Fournisseurs OMEGA4ACH401130Fournisseurs MINAH Sarl4ACH408000fournisseur fact non parvenue4ACH411000Clients — Patients4VTE411110Clients compagnie d'assurance4VTE411200Clients — Compagnies d’assurance4VTE422000Personnel — Rémunérations dues4SAL423000Personnel — Avances et acomptes4SAL428101Personnel locaux congés à payer4SAL428200Charges sociales /congés4SAL431000Caisse de sécurité social4SAL431300Caisse de retraite4SAL441100Etat impôt sur les sociétés4OD442100Etat impôts et taxes4OD443000État — TVA facturée4VTE447000Etat impôts retenu à la source ( IRPP-TS AIB )4OD449200Etat,avances et acomptes versés sur impôts4OD521000Banque5BQ571000Caisse5CAI601100Achats de marchandises6ACH602100Achats de matieres premieres6ACH603201Variation stock de marchandises6ACH603202Variation stock de matieres premieres6ACH604100Matieres consommables6ACH604200Matieres combustibles6ACH604300Produit d'entretien6ACH604410Fournitures d'ateliers et usine (mecanique/plomberie)6ACH604420Fournitures d'ateliers et usine (froid et climatisation)6ACH604430fournitures d'ateliers et d'usine(menuiserie)6ACH604600fournitures de magasin6ACH604700fournitures de bureau6ACH605100Eau6ACH605200Eléctricité6ACH605300Fournitures non stockables et autres energies6ACH605400Fourniture d'entretien non stockables6ACH605600Achats de petit matériel et outillages6ACH605700Achats d'études prestations de services6ACH605800Achats de travaux, matériels et equipements6ACH608100Amballages perdus6ACH612000Transport sur ventes6ACH616000Transport de plis6ACH618100Voyages et déplacements6ACH618300Transports administratifs6ACH622000Location de bâtiments6ACH622300Location boite postale6ACH622800Charges locatives6ACH624100Entretiens & réparations6ACH624200Entretiens et réparations des biens mobiliers6ACH624300Maintenance6ACH625000Primes d’assurance6ACH625100Assurance multirisques/emprunteur6ACH625200Assurances matériel de transport6ACH625400Assurances responsabilité civile6ACH627700Frais de colloques seminaires conf6ACH628100Frais de téléphone6ACH628810Autres frais de téléphone(Canal+/Cooporate/internet)6ACH631810Frais bancaire BOA6BQ631810Frais de demande chequier6BQ631820Frais bancaire Orabank6BQ631830Frais bancaire Coris bank6BQ632400Honoraires comptable6ACH632401Honoraires notaire6ACH632410Honoraires analyste6ACH632700Rémunérations des autres prestations de services6ACH634100Redevances pour brevets, licences, logiciels,6ACH635101Cotisation syndicale patronale6ACH637100Personnel externe6ACH638300Réceptions6ACH638400Missions6ACH638900Prestations diverses6ACH641100Impôts fociers et taxes annexes6ACH641200Patentes, licences et charges annexes6ACH641300Taxe sur appointements salaire(VPS)6ACH645000Impôts et taxes indirects6ACH646100Droits d'enregistrement de contrat6ACH646200TVM6ACH646210Droit de Timbre6ACH646400Vigettes6ACH646800Autres droits cotisation CCIB6ACH647200Pénalité; amendes fiscales6ACH648000Autres impôts et taxes ( redevance mutation de noms)6ACH651100Pertes sur créances clients6ACH658200Dons6ACH658800Autres charges diverses6ACH661100Salaires bruts nationaux6ACH664120Charge sociales sur remunerations du personnel national6ACH671200Emprunt aupres des établissements de crédits6OD701000Ventes de marchandises — Médicaments7VTE706000Prestations de services — Consultations7VTE706100Prestations — Actes et hospitalisation7VTE706200Prestations — Analyses de laboratoire7VTE",
+    "contenu": "N° de compteIntituléClasseJournal625PRIME D'ASSURANCE6ACH31000Marchand3OD101100Capital souscrit, non appelé1OD104100Apports temporaires1OD162000Emprunt et dette aupres des établissements de crédits1OD211000Frais de développement2IMM213000Logiciels2IMM229000Aménagement de terrain en cours2IMM231100Bâtiments sur sol propre2IMM235100Installations générales2IMM241000Matériel et outillage médical2IMM244100Matériel industriel2IMM244200Matériel informatique2IMM245000Matériel de transport2IMM245100Matériel de transport2IMM281000Amortissements des immobilisations2IMM311000Stock de médicaments3OD312000Stock de consommables et réactifs3OD401000Fournisseurs4ACH401110Fournisseurs HOSPITEC SARL4ACH401120Fournisseurs OMEGA4ACH401130Fournisseurs MINAH Sarl4ACH408000fournisseur fact non parvenue4ACH411000Clients — Patients4VTE411110Clients compagnie d'assurance4VTE411200Clients — Compagnies d’assurance4VTE422000Personnel — Rémunérations dues4SAL423000Personnel — Avances et acomptes4SAL428101Personnel locaux congés à payer4SAL428200Charges sociales /congés4SAL431000Caisse de sécurité social4SAL431300Caisse de retraite4SAL441100Etat impôt sur les sociétés4OD442100Etat impôts et taxes4OD443000État — TVA facturée4VTE447000Etat impôts retenu à la source ( IRPP-TS AIB )4OD449200Etat,avances et acomptes versés sur impôts4OD521000Banque5BQ571000Caisse5CAI601100Achats de marchandises6ACH602100Achats de matieres premieres6ACH603201Variation stock de marchandises6ACH603202Variation stock de matieres premieres6ACH604100Matieres consommables6ACH604200Matieres combustibles6ACH604300Produit d'entretien6ACH604410Fournitures d'ateliers et usine (mecanique/plomberie)6ACH604420Fournitures d'ateliers et usine (froid et climatisation)6ACH604430fournitures d'ateliers et d'usine(menuiserie)6ACH604600fournitures de magasin6ACH604700fournitures de bureau6ACH605100Eau6ACH605200Eléctricité6ACH605300Fournitures non stockables et autres energies6ACH605400Fourniture d'entretien non stockables6ACH605600Achats de petit matériel et outillages6ACH605700Achats d'études prestations de services6ACH605800Achats de travaux, matériels et equipements6ACH608100Amballages perdus6ACH612000Transport sur ventes6ACH616000Transport de plis6ACH618100Voyages et déplacements6ACH618300Transports administratifs6ACH622000Location de bâtiments6ACH622300Location boite postale6ACH622800Charges locatives6ACH624100Entretiens & réparations6ACH624200Entretiens et réparations des biens mobiliers6ACH624300Maintenance6ACH625000Primes d’assurance6ACH625100Assurance multirisques/emprunteur6ACH625200Assurances matériel de transport6ACH625400Assurances responsabilité civile6ACH627700Frais de colloques seminaires conf6ACH628100Frais de téléphone6ACH628810Autres frais de téléphone(Canal+/Cooporate/internet)6ACH631810Frais bancaire BOA6BQ631820Frais bancaire Orabank6BQ631830Frais bancaire Coris bank6BQ632400Honoraires comptable6ACH632401Honoraires notaire6ACH632410Honoraires analyste6ACH632700Rémunérations des autres prestations de services6ACH634100Redevances pour brevets, licences, logiciels,6ACH635101Cotisation syndicale patronale6ACH637100Personnel externe6ACH638300Réceptions6ACH638400Missions6ACH638900Prestations diverses6ACH641100Impôts fociers et taxes annexes6ACH641200Patentes, licences et charges annexes6ACH641300Taxe sur appointements salaire(VPS)6ACH645000Impôts et taxes indirects6ACH646100Droits d'enregistrement de contrat6ACH646200TVM6ACH646210Droit de Timbre6ACH646400Vigettes6ACH646800Autres droits cotisation CCIB6ACH647200Pénalité; amendes fiscales6ACH648000Autres impôts et taxes ( redevance mutation de noms)6ACH651100Pertes sur créances clients6ACH658200Dons6ACH658800Autres charges diverses6ACH661100Salaires bruts nationaux6ACH664120Charge sociales sur remunerations du personnel national6ACH671200Emprunt aupres des établissements de crédits6OD701000Ventes de marchandises — Médicaments7VTE706000Prestations de services — Consultations7VTE706100Prestations — Actes et hospitalisation7VTE706200Prestations — Analyses de laboratoire7VTE",
     "tables": [],
     "signatures": [
      {
@@ -3053,13 +3067,41 @@
       ]
      }
     }
+   },
+   "editionNumeroPris": {
+    "toasts": [
+     {
+      "message": "Ce numéro de compte existe déjà.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {}
+    },
+    "modaleOuverte": true
+   },
+   "creationNumeroArchive": {
+    "toasts": [
+     {
+      "message": "Ce numéro de compte existe déjà (compte archivé : le restaurer depuis la corbeille).",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {}
+    },
+    "modaleOuverte": true
    }
   },
   "m12-journaux": {
    "kpis": [
     {
      "label": "Journaux ouverts",
-     "valeur": "8",
+     "valeur": "9",
      "indice": null
     },
     {
@@ -3158,6 +3200,22 @@
       },
       {
        "cellules": [
+        "BQE",
+        "Journal de banque, dépenses",
+        "521000",
+        "0",
+        "0",
+        "0",
+        "Équilibré",
+        ""
+       ],
+       "boutons": [
+        "Consulter le journal",
+        "Imprimer"
+       ]
+      },
+      {
+       "cellules": [
         "SAL",
         "Journal des salaires",
         "422000",
@@ -3244,6 +3302,8 @@
     "Consulter le journal",
     "Imprimer",
     "Consulter le journal",
+    "Imprimer",
+    "Consulter le journal",
     "Imprimer"
    ],
    "filtres": [],
@@ -3286,6 +3346,16 @@
      "26",
      "5 362 000",
      "5 362 000",
+     "Équilibré",
+     ""
+    ],
+    [
+     "BQE",
+     "Journal de banque, dépenses",
+     "521000",
+     "0",
+     "0",
+     "0",
      "Équilibré",
      ""
     ],
@@ -4252,6 +4322,10 @@
        "Journal de banque"
       ],
       [
+       "BQE",
+       "Journal de banque, dépenses"
+      ],
+      [
        "SAL",
        "Journal des salaires"
       ],
@@ -4409,6 +4483,10 @@
      "nb": 20,
      "premier": "BQ-2026-00058"
     },
+    "Journal|BQE": {
+     "nb": 0,
+     "premier": null
+    },
     "Journal|SAL": {
      "nb": 20,
      "premier": "SAL-2026-00102"
@@ -4478,6 +4556,7 @@
      "Crédit"
     ],
     "boutons": [
+     "ACH — Journal des achats",
      "PRIME D'ASSURANCE",
      "Ajouter la ligne",
      "Annuler",
@@ -4485,15 +4564,15 @@
      "Enregistrer en brouillon",
      "Valider l’écriture"
     ],
-    "texte": "Nouvelle écriture comptable Saisie en partie double — contrôle d’équilibre appliqué (RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique. Un centre manquant se crée depuis le bouton ci-dessous, sans quitter la saisie. Référence de la pièce justificative Compte PRIME D'ASSURANCE Débit Crédit Ajouter la ligne Aucune ligne saisie. RG-10 — l’écriture n’est pas équilibrée : écart de 0 FCFA. La validation est impossible tant que débit ≠ crédit. Annuler Nouveau centre de coûts Enregistrer en brouillon Valider l’écriture"
+    "texte": "Nouvelle écriture comptable Saisie en partie double — contrôle d’équilibre appliqué (RG-10) Date de l’opération * Journal * ACH — Journal des achats Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique. Un centre manquant se crée depuis le bouton ci-dessous, sans quitter la saisie. Référence de la pièce justificative Compte PRIME D'ASSURANCE Débit Crédit Ajouter la ligne Aucune ligne saisie. RG-10 — l’écriture n’est pas équilibrée : écart de 0 FCFA. La validation est impossible tant que débit ≠ crédit. Annuler Nouveau centre de coûts Enregistrer en brouillon Valider l’écriture"
    },
-   "_note_ligneZero": "RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
-   "_note_ligneDouble": "RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
-   "_note_validerDesequilibree": "RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
-   "_note_brouillonDesequilibre": "RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
-   "_note_validerEquilibree": "RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
-   "_note_brouillonEquilibre": "RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
-   "_note_exerciceClos": "RG-10) Date de l’opération * Journal * ACH — Journal des achats VTE — Journal des ventes CAI — Journal de caisse-dépenses BQ — Journal de banque SAL — Journal des salaires IMM — Journal des immobilisations OD — Journal des opérations diverses AN — Journal des à-nouveaux Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique."
+   "_note_ligneZero": "RG-10) Date de l’opération * Journal * OD — Journal des opérations diverses Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
+   "_note_ligneDouble": "RG-10) Date de l’opération * Journal * OD — Journal des opérations diverses Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
+   "_note_validerDesequilibree": "RG-10) Date de l’opération * Journal * OD — Journal des opérations diverses Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
+   "_note_brouillonDesequilibre": "RG-10) Date de l’opération * Journal * OD — Journal des opérations diverses Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
+   "_note_validerEquilibree": "RG-10) Date de l’opération * Journal * CAI — Journal de caisse-dépenses Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
+   "_note_brouillonEquilibre": "RG-10) Date de l’opération * Journal * BQ — Journal de banque Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique.",
+   "_note_exerciceClos": "RG-10) Date de l’opération * Journal * OD — Journal des opérations diverses Libellé de l’opération * Centre de coûts — Sélectionner — Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Axe d’imputation analytique."
   },
   "m12-grand-livre": {
    "kpis": [
@@ -8396,12 +8475,12 @@
     },
     {
      "label": "Total débit",
-     "valeur": "52 634 782 FCFA",
+     "valeur": "51 371 544 FCFA",
      "indice": null
     },
     {
      "label": "Total crédit",
-     "valeur": "52 634 782 FCFA",
+     "valeur": "51 371 544 FCFA",
      "indice": null
     },
     {
@@ -8520,11 +8599,11 @@
         "571000",
         "Caisse",
         "C5",
-        "149",
-        "5 388 782",
+        "103",
+        "4 125 544",
         "7 268 000",
         "—",
-        "1 879 218"
+        "3 142 456"
        ],
        "boutons": []
       },
@@ -8741,11 +8820,11 @@
         "706000",
         "Prestations de services — Consultations",
         "C7",
-        "123",
+        "77",
         "0",
-        "2 258 782",
+        "995 544",
         "—",
-        "2 258 782"
+        "995 544"
        ],
        "boutons": []
       }
@@ -8768,6 +8847,19 @@
     "2"
    ],
    "filtres": [
+    {
+     "label": "Écritures retenues",
+     "options": [
+      [
+       "validees",
+       "Validées seulement"
+      ],
+      [
+       "toutes",
+       "Toutes (brouillons compris)"
+      ]
+     ]
+    },
     {
      "label": "Classe",
      "options": [
@@ -8811,6 +8903,7 @@
     }
    ],
    "notes": [
+    "Balance calculée sur les écritures validées de l’exercice 2026. 92 ligne(s) en brouillon sont écartées.",
     "La balance est équilibrée : le total des débits est égal au total des crédits (RG-10)."
    ],
    "page1": [
@@ -8888,11 +8981,11 @@
      "571000",
      "Caisse",
      "C5",
-     "149",
-     "5 388 782",
+     "103",
+     "4 125 544",
      "7 268 000",
      "—",
-     "1 879 218"
+     "3 142 456"
     ],
     [
      "601100",
@@ -9058,11 +9151,11 @@
      "706000",
      "Prestations de services — Consultations",
      "C7",
-     "123",
+     "77",
      "0",
-     "2 258 782",
+     "995 544",
      "—",
-     "2 258 782"
+     "995 544"
     ]
    ],
    "parClasse": {
@@ -9146,11 +9239,11 @@
       "571000",
       "Caisse",
       "C5",
-      "149",
-      "5 388 782",
+      "103",
+      "4 125 544",
       "7 268 000",
       "—",
-      "1 879 218"
+      "3 142 456"
      ]
     ],
     "6": [
@@ -9320,11 +9413,11 @@
       "706000",
       "Prestations de services — Consultations",
       "C7",
-      "123",
+      "77",
       "0",
-      "2 258 782",
+      "995 544",
       "—",
-      "2 258 782"
+      "995 544"
      ],
      [
       "706100",
@@ -9359,11 +9452,11 @@
      ],
      [
       "Total débit",
-      "52 634 782 FCFA"
+      "51 371 544 FCFA"
      ],
      [
       "Total crédit",
-      "52 634 782 FCFA"
+      "51 371 544 FCFA"
      ],
      [
       "Équilibre",
@@ -9374,11 +9467,15 @@
       "2026"
      ],
      [
+      "Écritures retenues",
+      "Validées seulement"
+     ],
+     [
       "Date d’édition",
       "30/10/2026"
      ]
     ],
-    "contenu": "CompteIntituléMvt débitMvt créditSolde débiteurSolde créditeur401000Fournisseurs2 337 00023 554 00021 217 000411000Clients — Patients5 718 000568 0005 150 000411200Clients — Compagnies d’assurance2 247 00002 247 000422000Personnel — Rémunérations dues0272 000272 000431000Caisse de sécurité social01 286 0001 286 000442100Etat impôts et taxes02 610 0002 610 000521000Banque1 071 0004 291 0003 220 000571000Caisse5 388 7827 268 0001 879 218601100Achats de marchandises2 415 00002 415 000604100Matieres consommables6 482 00006 482 000604300Produit d'entretien1 272 00001 272 000604700fournitures de bureau399 0000399 000605100Eau1 167 00001 167 000605200Eléctricité2 674 00002 674 000605600Achats de petit matériel et outillages2 157 00002 157 000624100Entretiens & réparations2 043 00002 043 000624300Maintenance5 945 00005 945 000628100Frais de téléphone2 356 00002 356 000631810Frais bancaire BOA1 954 00001 954 000632400Honoraires comptable2 841 00002 841 000641300Taxe sur appointements salaire(VPS)2 610 00002 610 000661100Salaires bruts nationaux272 0000272 000664120Charge sociales sur remunerations du personnel national1 286 00001 286 000701000Ventes de marchandises — Médicaments0533 000533 000706000Prestations de services — Consultations02 258 7822 258 782706100Prestations — Actes et hospitalisation09 476 0009 476 000706200Prestations — Analyses de laboratoire0518 000518 000TOTAUX52 634 78252 634 78243 270 00043 270 000",
+    "contenu": "CompteIntituléMvt débitMvt créditSolde débiteurSolde créditeur401000Fournisseurs2 337 00023 554 00021 217 000411000Clients — Patients5 718 000568 0005 150 000411200Clients — Compagnies d’assurance2 247 00002 247 000422000Personnel — Rémunérations dues0272 000272 000431000Caisse de sécurité social01 286 0001 286 000442100Etat impôts et taxes02 610 0002 610 000521000Banque1 071 0004 291 0003 220 000571000Caisse4 125 5447 268 0003 142 456601100Achats de marchandises2 415 00002 415 000604100Matieres consommables6 482 00006 482 000604300Produit d'entretien1 272 00001 272 000604700fournitures de bureau399 0000399 000605100Eau1 167 00001 167 000605200Eléctricité2 674 00002 674 000605600Achats de petit matériel et outillages2 157 00002 157 000624100Entretiens & réparations2 043 00002 043 000624300Maintenance5 945 00005 945 000628100Frais de téléphone2 356 00002 356 000631810Frais bancaire BOA1 954 00001 954 000632400Honoraires comptable2 841 00002 841 000641300Taxe sur appointements salaire(VPS)2 610 00002 610 000661100Salaires bruts nationaux272 0000272 000664120Charge sociales sur remunerations du personnel national1 286 00001 286 000701000Ventes de marchandises — Médicaments0533 000533 000706000Prestations de services — Consultations0995 544995 544706100Prestations — Actes et hospitalisation09 476 0009 476 000706200Prestations — Analyses de laboratoire0518 000518 000TOTAUX51 371 54451 371 54443 270 00043 270 000",
     "tables": [],
     "signatures": [
      {
@@ -9391,6 +9488,664 @@
      }
     ]
    },
+   "modeDefaut": "validees",
+   "modes": {
+    "toutes": {
+     "kpis": [
+      {
+       "label": "Comptes mouvementés",
+       "valeur": "27",
+       "indice": null
+      },
+      {
+       "label": "Total débit",
+       "valeur": "52 634 782 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Total crédit",
+       "valeur": "52 634 782 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Équilibre (RG-10)",
+       "valeur": "Équilibrée",
+       "indice": null
+      }
+     ],
+     "notes": [
+      "Balance calculée sur toutes les écritures de l’exercice 2026, brouillons compris (92 ligne(s) en brouillon). Un brouillon n’est pas un fait comptable : choisir « Validées seulement » pour la balance opposable.",
+      "La balance est équilibrée : le total des débits est égal au total des crédits (RG-10)."
+     ],
+     "lignes": [
+      [
+       "401000",
+       "Fournisseurs",
+       "C4",
+       "65",
+       "2 337 000",
+       "23 554 000",
+       "—",
+       "21 217 000"
+      ],
+      [
+       "411000",
+       "Clients — Patients",
+       "C4",
+       "16",
+       "5 718 000",
+       "568 000",
+       "5 150 000",
+       "—"
+      ],
+      [
+       "411200",
+       "Clients — Compagnies d’assurance",
+       "C4",
+       "6",
+       "2 247 000",
+       "0",
+       "2 247 000",
+       "—"
+      ],
+      [
+       "422000",
+       "Personnel — Rémunérations dues",
+       "C4",
+       "2",
+       "0",
+       "272 000",
+       "—",
+       "272 000"
+      ],
+      [
+       "431000",
+       "Caisse de sécurité social",
+       "C4",
+       "4",
+       "0",
+       "1 286 000",
+       "—",
+       "1 286 000"
+      ],
+      [
+       "442100",
+       "Etat impôts et taxes",
+       "C4",
+       "6",
+       "0",
+       "2 610 000",
+       "—",
+       "2 610 000"
+      ],
+      [
+       "521000",
+       "Banque",
+       "C5",
+       "13",
+       "1 071 000",
+       "4 291 000",
+       "—",
+       "3 220 000"
+      ],
+      [
+       "571000",
+       "Caisse",
+       "C5",
+       "149",
+       "5 388 782",
+       "7 268 000",
+       "—",
+       "1 879 218"
+      ],
+      [
+       "601100",
+       "Achats de marchandises",
+       "C6",
+       "6",
+       "2 415 000",
+       "0",
+       "2 415 000",
+       "—"
+      ],
+      [
+       "604100",
+       "Matieres consommables",
+       "C6",
+       "12",
+       "6 482 000",
+       "0",
+       "6 482 000",
+       "—"
+      ],
+      [
+       "604300",
+       "Produit d'entretien",
+       "C6",
+       "4",
+       "1 272 000",
+       "0",
+       "1 272 000",
+       "—"
+      ],
+      [
+       "604700",
+       "fournitures de bureau",
+       "C6",
+       "2",
+       "399 000",
+       "0",
+       "399 000",
+       "—"
+      ],
+      [
+       "605100",
+       "Eau",
+       "C6",
+       "4",
+       "1 167 000",
+       "0",
+       "1 167 000",
+       "—"
+      ],
+      [
+       "605200",
+       "Eléctricité",
+       "C6",
+       "6",
+       "2 674 000",
+       "0",
+       "2 674 000",
+       "—"
+      ],
+      [
+       "605600",
+       "Achats de petit matériel et outillages",
+       "C6",
+       "8",
+       "2 157 000",
+       "0",
+       "2 157 000",
+       "—"
+      ],
+      [
+       "624100",
+       "Entretiens & réparations",
+       "C6",
+       "5",
+       "2 043 000",
+       "0",
+       "2 043 000",
+       "—"
+      ],
+      [
+       "624300",
+       "Maintenance",
+       "C6",
+       "13",
+       "5 945 000",
+       "0",
+       "5 945 000",
+       "—"
+      ],
+      [
+       "628100",
+       "Frais de téléphone",
+       "C6",
+       "7",
+       "2 356 000",
+       "0",
+       "2 356 000",
+       "—"
+      ],
+      [
+       "631810",
+       "Frais bancaire BOA",
+       "C6",
+       "5",
+       "1 954 000",
+       "0",
+       "1 954 000",
+       "—"
+      ],
+      [
+       "632400",
+       "Honoraires comptable",
+       "C6",
+       "10",
+       "2 841 000",
+       "0",
+       "2 841 000",
+       "—"
+      ],
+      [
+       "641300",
+       "Taxe sur appointements salaire(VPS)",
+       "C6",
+       "6",
+       "2 610 000",
+       "0",
+       "2 610 000",
+       "—"
+      ],
+      [
+       "661100",
+       "Salaires bruts nationaux",
+       "C6",
+       "2",
+       "272 000",
+       "0",
+       "272 000",
+       "—"
+      ],
+      [
+       "664120",
+       "Charge sociales sur remunerations du personnel national",
+       "C6",
+       "4",
+       "1 286 000",
+       "0",
+       "1 286 000",
+       "—"
+      ],
+      [
+       "701000",
+       "Ventes de marchandises — Médicaments",
+       "C7",
+       "1",
+       "0",
+       "533 000",
+       "—",
+       "533 000"
+      ],
+      [
+       "706000",
+       "Prestations de services — Consultations",
+       "C7",
+       "123",
+       "0",
+       "2 258 782",
+       "—",
+       "2 258 782"
+      ]
+     ],
+     "piece": {
+      "titre": "Balance générale des comptes",
+      "sousTitre": "Exercice 2026 — situation au 30/10/2026",
+      "cartouche": [
+       [
+        "Comptes mouvementés",
+        "27"
+       ],
+       [
+        "Total débit",
+        "52 634 782 FCFA"
+       ],
+       [
+        "Total crédit",
+        "52 634 782 FCFA"
+       ],
+       [
+        "Équilibre",
+        "Équilibrée"
+       ],
+       [
+        "Exercice",
+        "2026"
+       ],
+       [
+        "Écritures retenues",
+        "Toutes, brouillons compris"
+       ],
+       [
+        "Date d’édition",
+        "30/10/2026"
+       ]
+      ],
+      "contenu": "CompteIntituléMvt débitMvt créditSolde débiteurSolde créditeur401000Fournisseurs2 337 00023 554 00021 217 000411000Clients — Patients5 718 000568 0005 150 000411200Clients — Compagnies d’assurance2 247 00002 247 000422000Personnel — Rémunérations dues0272 000272 000431000Caisse de sécurité social01 286 0001 286 000442100Etat impôts et taxes02 610 0002 610 000521000Banque1 071 0004 291 0003 220 000571000Caisse5 388 7827 268 0001 879 218601100Achats de marchandises2 415 00002 415 000604100Matieres consommables6 482 00006 482 000604300Produit d'entretien1 272 00001 272 000604700fournitures de bureau399 0000399 000605100Eau1 167 00001 167 000605200Eléctricité2 674 00002 674 000605600Achats de petit matériel et outillages2 157 00002 157 000624100Entretiens & réparations2 043 00002 043 000624300Maintenance5 945 00005 945 000628100Frais de téléphone2 356 00002 356 000631810Frais bancaire BOA1 954 00001 954 000632400Honoraires comptable2 841 00002 841 000641300Taxe sur appointements salaire(VPS)2 610 00002 610 000661100Salaires bruts nationaux272 0000272 000664120Charge sociales sur remunerations du personnel national1 286 00001 286 000701000Ventes de marchandises — Médicaments0533 000533 000706000Prestations de services — Consultations02 258 7822 258 782706100Prestations — Actes et hospitalisation09 476 0009 476 000706200Prestations — Analyses de laboratoire0518 000518 000TOTAUX52 634 78252 634 78243 270 00043 270 000",
+      "tables": [],
+      "signatures": [
+       {
+        "role": "Le Comptable",
+        "nom": "KASSA Augustin"
+       },
+       {
+        "role": "La Directrice Administrative",
+        "nom": "TAKI Alimatou"
+       }
+      ]
+     },
+     "valeur": "toutes"
+    },
+    "validees": {
+     "kpis": [
+      {
+       "label": "Comptes mouvementés",
+       "valeur": "27",
+       "indice": null
+      },
+      {
+       "label": "Total débit",
+       "valeur": "51 371 544 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Total crédit",
+       "valeur": "51 371 544 FCFA",
+       "indice": null
+      },
+      {
+       "label": "Équilibre (RG-10)",
+       "valeur": "Équilibrée",
+       "indice": null
+      }
+     ],
+     "notes": [
+      "Balance calculée sur les écritures validées de l’exercice 2026. 92 ligne(s) en brouillon sont écartées.",
+      "La balance est équilibrée : le total des débits est égal au total des crédits (RG-10)."
+     ],
+     "lignes": [
+      [
+       "401000",
+       "Fournisseurs",
+       "C4",
+       "65",
+       "2 337 000",
+       "23 554 000",
+       "—",
+       "21 217 000"
+      ],
+      [
+       "411000",
+       "Clients — Patients",
+       "C4",
+       "16",
+       "5 718 000",
+       "568 000",
+       "5 150 000",
+       "—"
+      ],
+      [
+       "411200",
+       "Clients — Compagnies d’assurance",
+       "C4",
+       "6",
+       "2 247 000",
+       "0",
+       "2 247 000",
+       "—"
+      ],
+      [
+       "422000",
+       "Personnel — Rémunérations dues",
+       "C4",
+       "2",
+       "0",
+       "272 000",
+       "—",
+       "272 000"
+      ],
+      [
+       "431000",
+       "Caisse de sécurité social",
+       "C4",
+       "4",
+       "0",
+       "1 286 000",
+       "—",
+       "1 286 000"
+      ],
+      [
+       "442100",
+       "Etat impôts et taxes",
+       "C4",
+       "6",
+       "0",
+       "2 610 000",
+       "—",
+       "2 610 000"
+      ],
+      [
+       "521000",
+       "Banque",
+       "C5",
+       "13",
+       "1 071 000",
+       "4 291 000",
+       "—",
+       "3 220 000"
+      ],
+      [
+       "571000",
+       "Caisse",
+       "C5",
+       "103",
+       "4 125 544",
+       "7 268 000",
+       "—",
+       "3 142 456"
+      ],
+      [
+       "601100",
+       "Achats de marchandises",
+       "C6",
+       "6",
+       "2 415 000",
+       "0",
+       "2 415 000",
+       "—"
+      ],
+      [
+       "604100",
+       "Matieres consommables",
+       "C6",
+       "12",
+       "6 482 000",
+       "0",
+       "6 482 000",
+       "—"
+      ],
+      [
+       "604300",
+       "Produit d'entretien",
+       "C6",
+       "4",
+       "1 272 000",
+       "0",
+       "1 272 000",
+       "—"
+      ],
+      [
+       "604700",
+       "fournitures de bureau",
+       "C6",
+       "2",
+       "399 000",
+       "0",
+       "399 000",
+       "—"
+      ],
+      [
+       "605100",
+       "Eau",
+       "C6",
+       "4",
+       "1 167 000",
+       "0",
+       "1 167 000",
+       "—"
+      ],
+      [
+       "605200",
+       "Eléctricité",
+       "C6",
+       "6",
+       "2 674 000",
+       "0",
+       "2 674 000",
+       "—"
+      ],
+      [
+       "605600",
+       "Achats de petit matériel et outillages",
+       "C6",
+       "8",
+       "2 157 000",
+       "0",
+       "2 157 000",
+       "—"
+      ],
+      [
+       "624100",
+       "Entretiens & réparations",
+       "C6",
+       "5",
+       "2 043 000",
+       "0",
+       "2 043 000",
+       "—"
+      ],
+      [
+       "624300",
+       "Maintenance",
+       "C6",
+       "13",
+       "5 945 000",
+       "0",
+       "5 945 000",
+       "—"
+      ],
+      [
+       "628100",
+       "Frais de téléphone",
+       "C6",
+       "7",
+       "2 356 000",
+       "0",
+       "2 356 000",
+       "—"
+      ],
+      [
+       "631810",
+       "Frais bancaire BOA",
+       "C6",
+       "5",
+       "1 954 000",
+       "0",
+       "1 954 000",
+       "—"
+      ],
+      [
+       "632400",
+       "Honoraires comptable",
+       "C6",
+       "10",
+       "2 841 000",
+       "0",
+       "2 841 000",
+       "—"
+      ],
+      [
+       "641300",
+       "Taxe sur appointements salaire(VPS)",
+       "C6",
+       "6",
+       "2 610 000",
+       "0",
+       "2 610 000",
+       "—"
+      ],
+      [
+       "661100",
+       "Salaires bruts nationaux",
+       "C6",
+       "2",
+       "272 000",
+       "0",
+       "272 000",
+       "—"
+      ],
+      [
+       "664120",
+       "Charge sociales sur remunerations du personnel national",
+       "C6",
+       "4",
+       "1 286 000",
+       "0",
+       "1 286 000",
+       "—"
+      ],
+      [
+       "701000",
+       "Ventes de marchandises — Médicaments",
+       "C7",
+       "1",
+       "0",
+       "533 000",
+       "—",
+       "533 000"
+      ],
+      [
+       "706000",
+       "Prestations de services — Consultations",
+       "C7",
+       "77",
+       "0",
+       "995 544",
+       "—",
+       "995 544"
+      ]
+     ],
+     "piece": {
+      "titre": "Balance générale des comptes",
+      "sousTitre": "Exercice 2026 — situation au 30/10/2026",
+      "cartouche": [
+       [
+        "Comptes mouvementés",
+        "27"
+       ],
+       [
+        "Total débit",
+        "51 371 544 FCFA"
+       ],
+       [
+        "Total crédit",
+        "51 371 544 FCFA"
+       ],
+       [
+        "Équilibre",
+        "Équilibrée"
+       ],
+       [
+        "Exercice",
+        "2026"
+       ],
+       [
+        "Écritures retenues",
+        "Validées seulement"
+       ],
+       [
+        "Date d’édition",
+        "30/10/2026"
+       ]
+      ],
+      "contenu": "CompteIntituléMvt débitMvt créditSolde débiteurSolde créditeur401000Fournisseurs2 337 00023 554 00021 217 000411000Clients — Patients5 718 000568 0005 150 000411200Clients — Compagnies d’assurance2 247 00002 247 000422000Personnel — Rémunérations dues0272 000272 000431000Caisse de sécurité social01 286 0001 286 000442100Etat impôts et taxes02 610 0002 610 000521000Banque1 071 0004 291 0003 220 000571000Caisse4 125 5447 268 0003 142 456601100Achats de marchandises2 415 00002 415 000604100Matieres consommables6 482 00006 482 000604300Produit d'entretien1 272 00001 272 000604700fournitures de bureau399 0000399 000605100Eau1 167 00001 167 000605200Eléctricité2 674 00002 674 000605600Achats de petit matériel et outillages2 157 00002 157 000624100Entretiens & réparations2 043 00002 043 000624300Maintenance5 945 00005 945 000628100Frais de téléphone2 356 00002 356 000631810Frais bancaire BOA1 954 00001 954 000632400Honoraires comptable2 841 00002 841 000641300Taxe sur appointements salaire(VPS)2 610 00002 610 000661100Salaires bruts nationaux272 0000272 000664120Charge sociales sur remunerations du personnel national1 286 00001 286 000701000Ventes de marchandises — Médicaments0533 000533 000706000Prestations de services — Consultations0995 544995 544706100Prestations — Actes et hospitalisation09 476 0009 476 000706200Prestations — Analyses de laboratoire0518 000518 000TOTAUX51 371 54451 371 54443 270 00043 270 000",
+      "tables": [],
+      "signatures": [
+       {
+        "role": "Le Comptable",
+        "nom": "KASSA Augustin"
+       },
+       {
+        "role": "La Directrice Administrative",
+        "nom": "TAKI Alimatou"
+       }
+      ]
+     },
+     "valeur": "validees"
+    }
+   },
+   "brouillonsExercice": 92,
    "agee": {
     "lignes": [
      [
@@ -11511,5 +12266,5 @@
    }
   ]
  },
- "toastsTotal": 25
+ "toastsTotal": 27
 }

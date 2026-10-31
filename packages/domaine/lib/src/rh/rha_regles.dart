@@ -3,6 +3,7 @@ import '../format/format_fr.dart';
 import '../format/js.dart' show arrondiJs;
 import '../format/recherche.dart' show trierPar;
 import '../referentiels/regles.dart' show joursEntre;
+import 'rhb_regles.dart' show rhbMontantAgent, rhbPrimesALaDate;
 
 /// M10 — RH, premier lot (fiches de poste, tableau de bord, personnel, fiche employé, contrats, congés, ordres de mission, prestataires externes).
 /// Tout est CALCULÉ depuis les fiches du magasin, jamais fourni ; chaque règle est rejouée sur les vecteurs de la maquette
@@ -314,13 +315,18 @@ class RhaLignePrime {
 
 /// L'onglet « Primes (NS 132) » : une ligne par prime prévue pour la fonction ; forfait mensuel × 1, garde et permanence × leur nombre du mois, les
 /// autres × 0 (elles se comptent à l'acte, au bulletin).
-List<RhaLignePrime> rhaPrimesAgent(Iterable<RhaFiche> grille, Object? fonction, int gardes, int permanences) {
+///
+/// Les primes sont celles du barème d'origine PLUS les primes créées à l'écran (E651), une prime retirée n'étant plus lue après sa date de fin, et un
+/// forfait désigné ne revenant qu'à ses bénéficiaires (E654) : [historique] (`historiquePrimes`), [designations] (`beneficiairesPrimes`), [agentId] et [date].
+List<RhaLignePrime> rhaPrimesAgent(Iterable<RhaFiche> grille, Object? fonction, int gardes, int permanences,
+    {Iterable<RhaFiche> historique = const [], Iterable<RhaFiche> designations = const [], Object? agentId, String? date}) {
   final l = <RhaLignePrime>[];
-  for (final p in admPrimesNs132) {
-    final montant = rhaMontantPrime(grille, p.id, fonction);
+  final g = grille.toList(), h = historique.toList(), d = designations.toList();
+  for (final p in rhbPrimesALaDate(g, h)) {
+    final montant = rhbMontantAgent(g, h, d, p.id, agentId, '$fonction', date);
     if (montant == 0) continue;
     final nb = p.mode == 'fixe' ? 1 : (p.id == 'garde' ? gardes : (p.id == 'permanence' ? permanences : 0));
-    l.add(RhaLignePrime(p.libelle, p.mode == 'fixe' ? 'Forfait mensuel' : 'Par occurrence', montant, nb, montant * nb));
+    l.add(RhaLignePrime(p.label, p.mode == 'fixe' ? 'Forfait mensuel' : 'Par occurrence', montant, nb, montant * nb));
   }
   return l;
 }
@@ -504,7 +510,20 @@ List<String> rhaTexteDecisionConge(RhaFiche c) {
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 
 /// La référence d'un ordre : `'OM-2026-' + pad(effectif TOTAL + 1, 4)` (archivés compris ; le millésime est celui de la maquette — écart E624).
-String rhaReferenceMission(int effectifTotal) => 'OM-2026-${(effectifTotal + 1).toString().padLeft(4, '0')}';
+String rhaReferenceMission(Object? dateDepart, Iterable<RhaFiche> toutes) {
+  final d = '$dateDepart';
+  final an = d.length >= 4 ? d.substring(0, 4) : '';
+  final prefixe = 'OM-$an-';
+  var max = 0;
+  for (final f in toutes) {
+    final r = '${f['reference'] ?? ''}';
+    if (r.startsWith(prefixe)) {
+      final n = int.tryParse(RegExp(r'^\s*[+-]?\d+').firstMatch(r.substring(prefixe.length))?.group(0) ?? '') ?? 0;
+      if (n > max) max = n;
+    }
+  }
+  return '$prefixe${(max + 1).toString().padLeft(4, '0')}';
+}
 
 List<RhaKpi> rhaKpisMissions(List<RhaFiche> rows) {
   final aValider = rows.where((m) => m['statutMission'] == 'a_valider').length;
@@ -518,8 +537,8 @@ List<RhaKpi> rhaKpisMissions(List<RhaFiche> rows) {
 }
 
 /// `transform` de la création d'un ordre : l'agent désigné donne son nom et son poste ; la référence suit l'effectif.
-RhaFiche rhaMissionEnregistrable(RhaFiche v, RhaFiche? agent, {required int effectifTotal}) {
-  v['reference'] = rhaReferenceMission(effectifTotal);
+RhaFiche rhaMissionEnregistrable(RhaFiche v, RhaFiche? agent, {required Iterable<RhaFiche> toutes}) {
+  v['reference'] = rhaReferenceMission(v['dateDepart'], toutes);
   v['agent'] = agent != null ? agent['nomComplet'] : '—';
   v['fonction'] = agent != null ? (agent['poste'] ?? '') : '';
   return v;

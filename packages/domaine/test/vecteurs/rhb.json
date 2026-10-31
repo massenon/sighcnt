@@ -2397,10 +2397,10 @@
     "Retirer cette prime",
     "Modifier cette prime",
     "Retirer cette prime",
+    "Bénéficiaires du forfait",
     "Modifier cette prime",
     "Retirer cette prime",
-    "Modifier cette prime",
-    "Retirer cette prime"
+    "Modifier cette prime"
    ],
    "montants": [
     [
@@ -10650,7 +10650,7 @@
      "service": "Direction"
     },
     "nouvelle": {
-     "id": "PRExmsvr6h8cdbwjo",
+     "id": "PRExmsvr6js21wogv",
      "statut": "actif",
      "employeId": "EMP01",
      "date": "2026-08-16",
@@ -11518,90 +11518,7 @@
      45
     ]
    ],
-   "note": {
-    "titre": "Note de service",
-    "sousTitre": "N/Réf. : NS 131/07/DM/DA/CNT/2026",
-    "cartouche": [
-     [
-      "Référence",
-      "NS 131/07/DM/DA/CNT/2026"
-     ],
-     [
-      "Objet",
-      "Évaluation du rendement"
-     ],
-     [
-      "Date de signature",
-      "13/07/2026"
-     ],
-     [
-      "Date d’effet",
-      "13/07/2026"
-     ],
-     [
-      "Version",
-      "v1"
-     ],
-     [
-      "Statut",
-      "ACTIVE"
-     ]
-    ],
-    "contenu": "Le Directeur Médical de la Clinique NASSIERA TOO informe tous ses Agents qu’il est procédé à la modification de l’évaluation du rendement entrant dans le compte de la rémunération salariale. La nouvelle formule d’évaluation est présentée dans le tableau ci-dessous.N°Éléments d’évaluationCritèresBonneMoyenne (1er niveau)Faible à mauvaise (2e niveau)01Ponctualité et assiduitéRetard ; Sortie non autorisée ; Absence au poste ; Assemblée de bavardage ; Dormir aux heures de travail ; Usage de portableAucune1 à 2 — moins 6 % du salaire brut3 et plus — 10 % du salaire brut02Exécution des tâchesTâches non exécutées ; Tâches mal exécutéesAucune1 à 2 — moins 10 % du salaire brut3 et plus — 15 % du salaire brut03Attitude envers les patientsParler mal au malade ; Dispute avec malade ; Insulter ou critiquer le malade ; Renvoi de maladeAucune1 à 2 — moins 6 % du salaire brut3 et plus — 10 % du salaire brut04Respect de la hiérarchieManque de courtoisie ; Indiscrétion ; Manque d’intégritéAucune1 à 2 — moins 6 % du salaire brut3 et plus — 10 % du salaire brutAbroge toute disposition antérieure contraire. Entre en vigueur à compter de sa date de signature.Ampliation : Intéressés 41 — Archive 01",
-    "tables": [
-     {
-      "entetes": [
-       "N°",
-       "Éléments d’évaluation",
-       "Critères",
-       "Bonne",
-       "Moyenne (1er niveau)",
-       "Faible à mauvaise (2e niveau)"
-      ],
-      "lignes": [
-       [
-        "01",
-        "Ponctualité et assiduité",
-        "Retard ; Sortie non autorisée ; Absence au poste ; Assemblée de bavardage ; Dormir aux heures de travail ; Usage de portable",
-        "Aucune",
-        "1 à 2 — moins 6 % du salaire brut",
-        "3 et plus — 10 % du salaire brut"
-       ],
-       [
-        "02",
-        "Exécution des tâches",
-        "Tâches non exécutées ; Tâches mal exécutées",
-        "Aucune",
-        "1 à 2 — moins 10 % du salaire brut",
-        "3 et plus — 15 % du salaire brut"
-       ],
-       [
-        "03",
-        "Attitude envers les patients",
-        "Parler mal au malade ; Dispute avec malade ; Insulter ou critiquer le malade ; Renvoi de malade",
-        "Aucune",
-        "1 à 2 — moins 6 % du salaire brut",
-        "3 et plus — 10 % du salaire brut"
-       ],
-       [
-        "04",
-        "Respect de la hiérarchie",
-        "Manque de courtoisie ; Indiscrétion ; Manque d’intégrité",
-        "Aucune",
-        "1 à 2 — moins 6 % du salaire brut",
-        "3 et plus — 10 % du salaire brut"
-       ]
-      ],
-      "pied": []
-     }
-    ],
-    "signatures": [
-     {
-      "role": "Le Directeur Médical",
-      "nom": "BASSONGUI C. Séko Y., Directeur Médical"
-     }
-    ]
-   },
+   "note": null,
    "fiches": [
     {
      "evaluation": {
@@ -12170,7 +12087,7 @@
      "salaireBase": 350000
     },
     "nouvelle": {
-     "id": "EVAxmsvr6ji0ve30l",
+     "id": "EVAxmsvr6n4kpz6x9",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -12189,6 +12106,7 @@
      "prelevementMontant": 94500,
      "salaireBrut": 350000,
      "observations": "Retards répétés.",
+     "dateBareme": "2026-08-16",
      "reference": "EV-2026-0025",
      "evaluateur": "BASSONGUI Chabi Séko"
     },
@@ -12201,7 +12119,7 @@
    },
    "modification": {
     "fiche": {
-     "id": "EVAxmsvr6ji0ve30l",
+     "id": "EVAxmsvr6n4kpz6x9",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -12220,6 +12138,7 @@
      "prelevementMontant": 0,
      "salaireBrut": 350000,
      "observations": "Retards répétés.",
+     "dateBareme": "2026-08-16",
      "reference": "EV-2026-0025",
      "evaluateur": "BASSONGUI Chabi Séko"
     },
@@ -12941,10 +12860,10 @@
     "Retirer cette prime",
     "Modifier cette prime",
     "Retirer cette prime",
+    "Bénéficiaires du forfait",
     "Modifier cette prime",
     "Retirer cette prime",
-    "Modifier cette prime",
-    "Retirer cette prime"
+    "Modifier cette prime"
    ],
    "montants": [
     [
@@ -14200,7 +14119,7 @@
      },
      "historique": [
       {
-       "id": "HPRxmsvr6lpnyv574",
+       "id": "HPRxmsvr6qk6ell5b",
        "statut": "actif",
        "primeId": "garde",
        "label": "Garde",
@@ -14218,12 +14137,12 @@
        "remplaceePar": "Version du 16/08/2026",
        "archiveePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:24.683Z"
+       "_creeLe": "2026-08-16T12:00:30.966Z"
       }
      ],
      "audit": {
-      "id": "LOGmsvr6lpo",
-      "dateHeure": "2026-08-16T12:00:24.684Z",
+      "id": "LOGmsvr6qk6",
+      "dateHeure": "2026-08-16T12:00:30.966Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -14688,8 +14607,8 @@
      },
      "historique": [],
      "audit": {
-      "id": "LOGmsvr6mr3",
-      "dateHeure": "2026-08-16T12:00:26.031Z",
+      "id": "LOGmsvr6rxl",
+      "dateHeure": "2026-08-16T12:00:32.745Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -15152,7 +15071,7 @@
      },
      "historique": [
       {
-       "id": "HPRxmsvr6nnz77pn9",
+       "id": "HPRxmsvr6thtuvtu7",
        "statut": "actif",
        "primeId": "aide_bloc",
        "label": "Aide bloc",
@@ -15169,12 +15088,12 @@
        "remplaceePar": "Version du 16/08/2026",
        "archiveePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:27.215Z"
+       "_creeLe": "2026-08-16T12:00:34.769Z"
       }
      ],
      "audit": {
-      "id": "LOGmsvr6nnz",
-      "dateHeure": "2026-08-16T12:00:27.215Z",
+      "id": "LOGmsvr6tht",
+      "dateHeure": "2026-08-16T12:00:34.769Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -15922,7 +15841,7 @@
      "detail": "Prime de nuit"
     },
     "fiche": {
-     "id": "GPRxmsvr6of2w85nu",
+     "id": "GPRxmsvr6uyj13bbe",
      "statut": "actif",
      "primeId": "prime-de-nuit",
      "label": "Prime de nuit",
@@ -15946,7 +15865,7 @@
     "toast": {
      "message": "Prime retirée de la grille.",
      "type": "success",
-     "detail": "Archivage logique (RG-14) — restaurable depuis la corbeille."
+     "detail": "Dernier jour : 15/08/2026. Archivage logique (RG-14), restaurable depuis la corbeille."
     },
     "archivee": {
      "id": "GPR07",
@@ -15961,12 +15880,12 @@
      "version": 1,
      "source": "NS n° 132/07/DM/DA/CNT/2026",
      "_archivePar": "BASSONGUI Chabi Séko",
-     "_archiveLe": "2026-08-16T12:00:28.981Z",
+     "_archiveLe": "2026-08-16T12:00:38.928Z",
      "_motifArchivage": "Prime abrogée par note"
     },
     "historique": [
      {
-      "id": "HPRxmsvr6p11ihp5q",
+      "id": "HPRxmsvr6wpcp5luu",
       "statut": "actif",
       "primeId": "caisse",
       "label": "Caisse",
@@ -15976,13 +15895,14 @@
       },
       "dateEffet": "2026-07-13",
       "dateFin": "2026-08-15",
-      "remplaceePar": "Prime retirée — Prime abrogée par note",
+      "retiree": true,
+      "remplaceePar": "Prime retirée : Prime abrogée par note",
       "archiveePar": "BASSONGUI Chabi Séko",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-08-16T12:00:28.981Z"
+      "_creeLe": "2026-08-16T12:00:38.928Z"
      }
     ],
-    "montantCaisse": 10000,
+    "montantCaisse": 0,
     "grilleLignes": 11,
     "acquises": {
      "titre": "Versions antérieures",
@@ -16013,7 +15933,7 @@
        "13/07/2026",
        "15/08/2026",
        "Caissière 10 000",
-       "Prime retirée — Prime abrogée par note"
+       "Prime retirée : Prime abrogée par note"
       ]
      ],
      "pied": [],
@@ -16039,7 +15959,671 @@
      },
      {
       "label": "Total des primes du mois",
-      "valeur": "460 500 FCFA",
+      "valeur": "440 500 FCFA",
+      "indice": null
+     }
+    ],
+    "dateFin": "2026-08-15",
+    "aLaDate": [
+     [
+      "2026-07-12",
+      10000
+     ],
+     [
+      "2026-07-13",
+      10000
+     ],
+     [
+      "2026-08-01",
+      10000
+     ],
+     [
+      "2026-08-15",
+      10000
+     ],
+     [
+      "2026-08-16",
+      0
+     ],
+     [
+      "2026-09-01",
+      0
+     ],
+     [
+      null,
+      0
+     ]
+    ],
+    "primesDuMois": [
+     "permanence",
+     "garde",
+     "aide_bloc",
+     "bloc_fixe",
+     "hydrotubation",
+     "accouchement",
+     "caisse",
+     "urgence",
+     "incineration",
+     "accueil",
+     "circoncision",
+     "prime-de-nuit"
+    ]
+   },
+   "primeFixeCreee": {
+    "fiche": {
+     "id": "GPRxmsvr6xtgmxrig",
+     "statut": "actif",
+     "primeId": "prime-de-sujetion",
+     "label": "Prime de sujétion",
+     "mode": "fixe",
+     "montants": {
+      "infirmier": 4000
+     },
+     "dateEffet": "2026-08-16",
+     "version": 2,
+     "source": "Créée dans l’application le 16/08/2026"
+    },
+    "montantAgent": 4000,
+    "parmiLesFixes": [
+     "bloc_fixe",
+     "caisse",
+     "incineration",
+     "accueil",
+     "prime-de-sujetion"
+    ],
+    "acquises": {
+     "titre": null,
+     "entetes": [
+      "MAT.",
+      "AGENT",
+      "FONCTION",
+      "GARDES",
+      "PRIME DE GARDE",
+      "PERM.",
+      "PRIME DE PERMANENCE",
+      "PRIMES FIXES",
+      "TOTAL"
+     ],
+     "lignes": [
+      [
+       "21",
+       "TEPA Séraphine",
+       "Aide-soignant(e)",
+       "11",
+       "9 900",
+       "0",
+       "0",
+       "15 000",
+       "24 900"
+      ],
+      [
+       "24",
+       "TAKI Bibata",
+       "Aide-soignant(e)",
+       "11",
+       "9 900",
+       "0",
+       "0",
+       "15 000",
+       "24 900"
+      ],
+      [
+       "27",
+       "OURTCHA Marguerite",
+       "Aide-soignant(e)",
+       "11",
+       "9 900",
+       "0",
+       "0",
+       "15 000",
+       "24 900"
+      ],
+      [
+       "19",
+       "BOUKARI Nadège",
+       "Sage-femme",
+       "16",
+       "24 000",
+       "0",
+       "0",
+       "0",
+       "24 000"
+      ],
+      [
+       "22",
+       "DAOUDA Zoukanéri",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "23",
+       "YENI Rachida",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "25",
+       "WOROU Salamatou",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "26",
+       "DAOUDA Justine",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "28",
+       "GBEDJI Zoukanéri",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "35",
+       "AHOHOU Chantal",
+       "Accueil / Secrétaire médical",
+       "10",
+       "9 000",
+       "10",
+       "7 000",
+       "7 000",
+       "23 000"
+      ],
+      [
+       "18",
+       "BADO BANI A. B. Zoulehath",
+       "Sage-femme",
+       "15",
+       "22 500",
+       "0",
+       "0",
+       "0",
+       "22 500"
+      ],
+      [
+       "20",
+       "ADAM Colette",
+       "Sage-femme",
+       "15",
+       "22 500",
+       "0",
+       "0",
+       "0",
+       "22 500"
+      ],
+      [
+       "33",
+       "OROU YO Edmond",
+       "Accueil / Secrétaire médical",
+       "11",
+       "9 900",
+       "8",
+       "5 600",
+       "7 000",
+       "22 500"
+      ],
+      [
+       "36",
+       "SANNI Bibata",
+       "Accueil / Secrétaire médical",
+       "10",
+       "9 000",
+       "8",
+       "5 600",
+       "7 000",
+       "21 600"
+      ],
+      [
+       "34",
+       "SAMBIENI Marguerite",
+       "Caissière",
+       "10",
+       "9 000",
+       "10",
+       "6 000",
+       "0",
+       "15 000"
+      ],
+      [
+       "29",
+       "DIEYABIDI Aïssatou",
+       "Caissière",
+       "11",
+       "9 900",
+       "8",
+       "4 800",
+       "0",
+       "14 700"
+      ],
+      [
+       "10",
+       "GARBA Yahouza",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ],
+      [
+       "11",
+       "IDRISSOU ANIKI Baba-Toundé",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ],
+      [
+       "12",
+       "NKOUÉ Jean",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ],
+      [
+       "13",
+       "BAGRI Elvyre",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ]
+     ],
+     "pied": [],
+     "boutons": [
+      []
+     ]
+    },
+    "kpis": [
+     {
+      "label": "Agents primés",
+      "valeur": "24",
+      "indice": null
+     },
+     {
+      "label": "Primes de garde",
+      "valeur": "190 500 FCFA",
+      "indice": null
+     },
+     {
+      "label": "Primes de permanence",
+      "valeur": "29 000 FCFA",
+      "indice": null
+     },
+     {
+      "label": "Total des primes du mois",
+      "valeur": "472 500 FCFA",
+      "indice": null
+     }
+    ]
+   },
+   "beneficiaires": {
+    "ouverture": "Bénéficiaires : Accueil NS n° 132/07/DM/DA/CNT/2026 Aucun bénéficiaire désigné. Règle d’attente : le forfait est versé à tous les agents dont la fonction figure à la grille. Désigner un premier agent la remplace par la liste. Désigner des bénéficiaires Agents à désigner * — Aucune sélection — Depuis le * Désigner Fermer",
+    "sansAgent": {
+     "toast": null,
+     "designations": 0
+    },
+    "designe": {
+     "toast": {
+      "message": "1 bénéficiaire(s) désigné(s).",
+      "type": "success",
+      "detail": "Accueil"
+     },
+     "fiches": [
+      {
+       "id": "BPRxmsvr6ysz8b89t",
+       "statut": "actif",
+       "primeId": "accueil",
+       "primeLabel": "Accueil",
+       "agentId": "EMP33",
+       "agent": "OROU YO Edmond",
+       "matricule": "33",
+       "debut": "2026-08-16",
+       "fin": null,
+       "designePar": "BASSONGUI Chabi Séko",
+       "_creePar": "BASSONGUI Chabi Séko",
+       "_creeLe": "2026-08-16T12:00:41.651Z"
+      }
+     ],
+     "texte": "Bénéficiaires : Accueil NS n° 132/07/DM/DA/CNT/2026 Seuls les agents désignés, aux dates indiquées, perçoivent ce forfait. AGENT DEPUIS LE JUSQU’AU OROU YO Edmond 16/08/2026 en cours Désigner des bénéficiaires Agents à désigner * — Aucune sélection — Depuis le * Désigner Fermer",
+     "audit": {
+      "id": "LOGmsvr6ysz",
+      "dateHeure": "2026-08-16T12:00:41.651Z",
+      "utilisateur": "BASSONGUI Chabi Séko",
+      "action": "Désignation des bénéficiaires d’une prime fixe",
+      "module": "M10",
+      "entite": "Prime",
+      "reference": "accueil",
+      "ancienneValeur": null,
+      "nouvelleValeur": "{\"agents\":[\"OROU YO Edmond\"],\"debut\":\"2026-08-16\"}",
+      "poste": "POSTE-LOCAL",
+      "succes": true
+     }
+    },
+    "avant": [
+     [
+      "EMP33",
+      7000
+     ],
+     [
+      "EMP35",
+      7000
+     ],
+     [
+      "EMP36",
+      7000
+     ]
+    ],
+    "apres": [
+     [
+      "EMP33",
+      7000
+     ],
+     [
+      "EMP35",
+      0
+     ],
+     [
+      "EMP36",
+      0
+     ]
+    ],
+    "acquises": {
+     "titre": null,
+     "entetes": [
+      "MAT.",
+      "AGENT",
+      "FONCTION",
+      "GARDES",
+      "PRIME DE GARDE",
+      "PERM.",
+      "PRIME DE PERMANENCE",
+      "PRIMES FIXES",
+      "TOTAL"
+     ],
+     "lignes": [
+      [
+       "21",
+       "TEPA Séraphine",
+       "Aide-soignant(e)",
+       "11",
+       "9 900",
+       "0",
+       "0",
+       "15 000",
+       "24 900"
+      ],
+      [
+       "24",
+       "TAKI Bibata",
+       "Aide-soignant(e)",
+       "11",
+       "9 900",
+       "0",
+       "0",
+       "15 000",
+       "24 900"
+      ],
+      [
+       "27",
+       "OURTCHA Marguerite",
+       "Aide-soignant(e)",
+       "11",
+       "9 900",
+       "0",
+       "0",
+       "15 000",
+       "24 900"
+      ],
+      [
+       "19",
+       "BOUKARI Nadège",
+       "Sage-femme",
+       "16",
+       "24 000",
+       "0",
+       "0",
+       "0",
+       "24 000"
+      ],
+      [
+       "22",
+       "DAOUDA Zoukanéri",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "23",
+       "YENI Rachida",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "25",
+       "WOROU Salamatou",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "26",
+       "DAOUDA Justine",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "28",
+       "GBEDJI Zoukanéri",
+       "Aide-soignant(e)",
+       "10",
+       "9 000",
+       "0",
+       "0",
+       "15 000",
+       "24 000"
+      ],
+      [
+       "18",
+       "BADO BANI A. B. Zoulehath",
+       "Sage-femme",
+       "15",
+       "22 500",
+       "0",
+       "0",
+       "0",
+       "22 500"
+      ],
+      [
+       "20",
+       "ADAM Colette",
+       "Sage-femme",
+       "15",
+       "22 500",
+       "0",
+       "0",
+       "0",
+       "22 500"
+      ],
+      [
+       "33",
+       "OROU YO Edmond",
+       "Accueil / Secrétaire médical",
+       "11",
+       "9 900",
+       "8",
+       "5 600",
+       "7 000",
+       "22 500"
+      ],
+      [
+       "35",
+       "AHOHOU Chantal",
+       "Accueil / Secrétaire médical",
+       "10",
+       "9 000",
+       "10",
+       "7 000",
+       "0",
+       "16 000"
+      ],
+      [
+       "34",
+       "SAMBIENI Marguerite",
+       "Caissière",
+       "10",
+       "9 000",
+       "10",
+       "6 000",
+       "0",
+       "15 000"
+      ],
+      [
+       "29",
+       "DIEYABIDI Aïssatou",
+       "Caissière",
+       "11",
+       "9 900",
+       "8",
+       "4 800",
+       "0",
+       "14 700"
+      ],
+      [
+       "36",
+       "SANNI Bibata",
+       "Accueil / Secrétaire médical",
+       "10",
+       "9 000",
+       "8",
+       "5 600",
+       "0",
+       "14 600"
+      ],
+      [
+       "10",
+       "GARBA Yahouza",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ],
+      [
+       "11",
+       "IDRISSOU ANIKI Baba-Toundé",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ],
+      [
+       "12",
+       "NKOUÉ Jean",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ],
+      [
+       "13",
+       "BAGRI Elvyre",
+       "Infirmier(ère)",
+       "0",
+       "0",
+       "0",
+       "0",
+       "14 000",
+       "14 000"
+      ]
+     ],
+     "pied": [],
+     "boutons": [
+      []
+     ]
+    },
+    "kpis": [
+     {
+      "label": "Agents primés",
+      "valeur": "24",
+      "indice": null
+     },
+     {
+      "label": "Primes de garde",
+      "valeur": "190 500 FCFA",
+      "indice": null
+     },
+     {
+      "label": "Primes de permanence",
+      "valeur": "29 000 FCFA",
+      "indice": null
+     },
+     {
+      "label": "Total des primes du mois",
+      "valeur": "458 500 FCFA",
       "indice": null
      }
     ]
@@ -16154,7 +16738,7 @@
      },
      "historique": [
       {
-       "id": "HBAxmsvr6q67sbl4w",
+       "id": "HBAxmsvr71wnay44u",
        "statut": "actif",
        "critereId": "ponctualite",
        "num": "01",
@@ -16177,7 +16761,7 @@
        "remplacePar": "Version du 16/08/2026",
        "archivePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:30.463Z"
+       "_creeLe": "2026-08-16T12:00:45.671Z"
       }
      ],
      "table": {
@@ -16239,8 +16823,8 @@
      },
      "historiqueAffiche": true,
      "audit": {
-      "id": "LOGmsvr6q67",
-      "dateHeure": "2026-08-16T12:00:30.463Z",
+      "id": "LOGmsvr71wo",
+      "dateHeure": "2026-08-16T12:00:45.672Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification du barème NS 131",
       "module": "M10",
@@ -16374,8 +16958,8 @@
      },
      "historiqueAffiche": true,
      "audit": {
-      "id": "LOGmsvr6r30",
-      "dateHeure": "2026-08-16T12:00:31.644Z",
+      "id": "LOGmsvr736c",
+      "dateHeure": "2026-08-16T12:00:47.316Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification du barème NS 131",
       "module": "M10",
@@ -16399,12 +16983,12 @@
    ],
    "optionsCritere": [
     "Bonne (aucune sanction)",
-    "Moyenne (− 6 %)",
-    "Faible à mauvaise (− 10 %)"
+    "Moyenne (− 7 %)",
+    "Faible à mauvaise (− 12 %)"
    ],
    "evaluationApres": {
     "nouvelle": {
-     "id": "EVAxmsvr6s1rrkipa",
+     "id": "EVAxmsvr74u6ki9gp",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -16419,10 +17003,11 @@
       "attitude": "bonne",
       "hierarchie": "bonne"
      },
-     "prelevementPct": 21,
-     "prelevementMontant": 73500,
+     "prelevementPct": 27,
+     "prelevementMontant": 94500,
      "salaireBrut": 350000,
      "observations": "",
+     "dateBareme": "2026-08-16",
      "reference": "EV-2026-0026",
      "evaluateur": "BASSONGUI Chabi Séko"
     },
@@ -16461,6 +17046,218 @@
      }
     ]
    },
+   "moteur": [
+    {
+     "date": "2026-07-12",
+     "prelevement": 21,
+     "criteres": [
+      [
+       "01",
+       "ponctualite",
+       6,
+       10
+      ],
+      [
+       "02",
+       "execution",
+       10,
+       15
+      ],
+      [
+       "03",
+       "attitude",
+       6,
+       10
+      ],
+      [
+       "04",
+       "hierarchie",
+       6,
+       10
+      ]
+     ]
+    },
+    {
+     "date": "2026-07-13",
+     "prelevement": 26,
+     "criteres": [
+      [
+       "01",
+       "ponctualite",
+       6,
+       10
+      ],
+      [
+       "02",
+       "execution",
+       10,
+       20
+      ],
+      [
+       "03",
+       "attitude",
+       6,
+       10
+      ],
+      [
+       "04",
+       "hierarchie",
+       6,
+       10
+      ]
+     ]
+    },
+    {
+     "date": "2026-08-01",
+     "prelevement": 26,
+     "criteres": [
+      [
+       "01",
+       "ponctualite",
+       6,
+       10
+      ],
+      [
+       "02",
+       "execution",
+       10,
+       20
+      ],
+      [
+       "03",
+       "attitude",
+       6,
+       10
+      ],
+      [
+       "04",
+       "hierarchie",
+       6,
+       10
+      ]
+     ]
+    },
+    {
+     "date": "2026-08-15",
+     "prelevement": 26,
+     "criteres": [
+      [
+       "01",
+       "ponctualite",
+       6,
+       10
+      ],
+      [
+       "02",
+       "execution",
+       10,
+       20
+      ],
+      [
+       "03",
+       "attitude",
+       6,
+       10
+      ],
+      [
+       "04",
+       "hierarchie",
+       6,
+       10
+      ]
+     ]
+    },
+    {
+     "date": "2026-08-16",
+     "prelevement": 27,
+     "criteres": [
+      [
+       "01",
+       "ponctualite",
+       7,
+       12
+      ],
+      [
+       "02",
+       "execution",
+       10,
+       20
+      ],
+      [
+       "03",
+       "attitude",
+       6,
+       10
+      ],
+      [
+       "04",
+       "hierarchie",
+       6,
+       10
+      ]
+     ]
+    },
+    {
+     "date": "2026-09-01",
+     "prelevement": 27,
+     "criteres": [
+      [
+       "01",
+       "ponctualite",
+       7,
+       12
+      ],
+      [
+       "02",
+       "execution",
+       10,
+       20
+      ],
+      [
+       "03",
+       "attitude",
+       6,
+       10
+      ],
+      [
+       "04",
+       "hierarchie",
+       6,
+       10
+      ]
+     ]
+    },
+    {
+     "date": null,
+     "prelevement": 27,
+     "criteres": [
+      [
+       "01",
+       "ponctualite",
+       7,
+       12
+      ],
+      [
+       "02",
+       "execution",
+       10,
+       20
+      ],
+      [
+       "03",
+       "attitude",
+       6,
+       10
+      ],
+      [
+       "04",
+       "hierarchie",
+       6,
+       10
+      ]
+     ]
+    }
+   ],
    "formulaireCritere": [
     [
      "num",
@@ -16494,7 +17291,7 @@
      "detail": "Hygiène et tenue"
     },
     "critere": {
-     "id": "BARxmsvr6sjl4h2e9",
+     "id": "BARxmsvr75nq5sm2q",
      "statut": "actif",
      "critereId": "hygi_ne_et_tenue",
      "num": "05",
@@ -16520,7 +17317,7 @@
      "detail": "Archivage logique (RG-14) — restaurable depuis la corbeille."
     },
     "archive": {
-     "id": "BARxmsvr6sjl4h2e9",
+     "id": "BARxmsvr75nq5sm2q",
      "statut": "archive",
      "critereId": "hygi_ne_et_tenue",
      "num": "05",
@@ -16538,12 +17335,12 @@
      "version": 1,
      "source": "Créé dans l’application le 16/08/2026 — à couvrir par un avenant",
      "_archivePar": "BASSONGUI Chabi Séko",
-     "_archiveLe": "2026-08-16T12:00:34.146Z",
+     "_archiveLe": "2026-08-16T12:00:51.572Z",
      "_motifArchivage": "Critère abrogé"
     },
     "historique": [
      {
-      "id": "HBAxmsvr6t0ixi5xx",
+      "id": "HBAxmsvr76gk01vq4",
       "statut": "actif",
       "critereId": "hygi_ne_et_tenue",
       "num": "05",
@@ -16562,7 +17359,7 @@
       "remplacePar": "Critère retiré — Critère abrogé",
       "archivePar": "BASSONGUI Chabi Séko",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-08-16T12:00:34.146Z"
+      "_creeLe": "2026-08-16T12:00:51.572Z"
      }
     ]
    }
@@ -16627,8 +17424,8 @@
       }
      ],
      "audit": {
-      "id": "LOGmsvr6trs",
-      "dateHeure": "2026-08-16T12:00:35.128Z",
+      "id": "LOGmsvr77fb",
+      "dateHeure": "2026-08-16T12:00:52.823Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de régime",
       "module": "M10",
@@ -16696,8 +17493,8 @@
       }
      ],
      "audit": {
-      "id": "LOGmsvr6ueq",
-      "dateHeure": "2026-08-16T12:00:35.954Z",
+      "id": "LOGmsvr78zg",
+      "dateHeure": "2026-08-16T12:00:54.844Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de régime",
       "module": "M10",
@@ -16739,7 +17536,7 @@
       "source": "Planning des agents de sécurité",
       "mention": "Rotation « G » (garde 24 h), « S » (soirée de 18h à 8h) et « R » (repos).",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-08-16T12:00:36.441Z",
+      "_archiveLe": "2026-08-16T12:00:57.333Z",
       "_motifArchivage": null
      }
     }

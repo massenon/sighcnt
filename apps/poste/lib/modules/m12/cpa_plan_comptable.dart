@@ -205,9 +205,8 @@ class EcranPlanComptable extends StatelessWidget with EcranMaquette {
                 requis: true,
                 options: [for (final j in cpaJournaux) OptionChamp(j.$1, '${j.$1} — ${j.$2}')]),
           ],
-          avant: (ctx, saisie, record) => cpaVerifierNumeroCompte(
-              saisie['num'], c.magasin.collection('comptes').actives,
-              edition: record != null),
+          avant: (ctx, saisie, record) => cpaVerifierNumeroCompte(saisie['num'], c.magasin.collection('comptes').actives,
+              edition: record != null, idEnEdition: record?['id'], archives: c.magasin.collection('comptes').archivees),
           transformer: (ctx, saisie, record) => cpaCompteDeSaisie(saisie, record: record),
           detail: (ctx, f) => DescListeSigh([
             ('N° de compte', '${f['num']}'),

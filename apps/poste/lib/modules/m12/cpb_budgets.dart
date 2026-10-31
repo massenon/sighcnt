@@ -47,7 +47,7 @@ class EcranBudgets extends StatelessWidget with EcranMaquette {
           triInitial: 'prevu',
           sensInitial: 'desc',
           taillePage: 15,
-          valeursCreation: const {'exercice': '2026', 'centreCout': 'laboratoire'},
+          valeursCreation: {'exercice': '${c.aujourdhui.year}', 'centreCout': 'laboratoire'},
           colonnes: [
             ColonneTableau(
                 cle: 'reference',
@@ -171,7 +171,7 @@ class EcranBudgets extends StatelessWidget with EcranMaquette {
             'nature': s['nature'],
             'prevu': num.tryParse('${s['prevu']}'.replaceAll(',', '.')) ?? 0,
             'centre': libelleCentre(c, s['centreCout']),
-            if (record == null) 'reference': cpbReferenceSuivante('BG-2026-', 3, col.toutes),
+            if (record == null) 'reference': cpbReferenceSuivante('BG-${num.tryParse('${s['exercice']}')?.toInt() ?? 0}-', 3, col.toutes),
           },
           detail: (ctx, b) {
             final ligne = realise(b);

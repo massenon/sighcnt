@@ -1813,7 +1813,7 @@
    "inserts": {
     "notifications": [
      {
-      "id": "NOTxmvuswncu8dc5i",
+      "id": "NOTxmvuswnpt5rt94",
       "statut": "actif",
       "type": "cloture",
       "poste": "direction",
@@ -1827,7 +1827,7 @@
       "patientId": null,
       "reference": "2026",
       "lue": false,
-      "creeLe": "2026-10-30T10:00:00.318Z"
+      "creeLe": "2026-10-30T10:00:00.785Z"
      }
     ]
    },
@@ -1838,7 +1838,7 @@
       "id": "EXO-2026",
       "patch": {
        "etat": "en_attente_cloture",
-       "demandeLe": "2026-10-30T10:00:00.318Z",
+       "demandeLe": "2026-10-30T10:00:00.785Z",
        "demandePar": "KASSA Augustin",
        "resultatPrevu": -23087218
       }
@@ -1882,7 +1882,7 @@
    "inserts": {
     "ecritures": [
      {
-      "id": "ECRxmvuswnetxsriq",
+      "id": "ECRxmvuswntep8i44",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -1899,7 +1899,7 @@
       "pieceOrigine": "ACH-2026-00049"
      },
      {
-      "id": "ECRxmvuswnes6g97z",
+      "id": "ECRxmvuswntc9trs1",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -1916,7 +1916,7 @@
       "pieceOrigine": "ACH-2026-00029"
      },
      {
-      "id": "ECRxmvuswnes10cbo",
+      "id": "ECRxmvuswntab2pn4",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -1933,7 +1933,7 @@
       "pieceOrigine": "OD-2026-00010"
      },
      {
-      "id": "ECRxmvuswnerddyvz",
+      "id": "ECRxmvuswnt8o7n9d",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -1950,7 +1950,7 @@
       "pieceOrigine": "SAL-2026-00006"
      },
      {
-      "id": "ECRxmvuswnerlzods",
+      "id": "ECRxmvuswnt8g3ges",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -1967,7 +1967,7 @@
       "pieceOrigine": "ACH-2026-00106"
      },
      {
-      "id": "ECRxmvuswnermjt2d",
+      "id": "ECRxmvuswnt7i6und",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -1984,7 +1984,7 @@
       "pieceOrigine": "ACH-2026-00014"
      },
      {
-      "id": "ECRxmvuswnequwxjf",
+      "id": "ECRxmvuswnt60jfzc",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2001,7 +2001,7 @@
       "pieceOrigine": "SAL-2026-00127"
      },
      {
-      "id": "ECRxmvuswneqs6mnv",
+      "id": "ECRxmvuswnt4d8jvf",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2018,7 +2018,7 @@
       "pieceOrigine": "BQ-2026-00015"
      },
      {
-      "id": "ECRxmvuswnep882et",
+      "id": "ECRxmvuswnt3tmzu1",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2035,7 +2035,7 @@
       "pieceOrigine": "VTE-2026-00064"
      },
      {
-      "id": "ECRxmvuswnep4nnck",
+      "id": "ECRxmvuswnt2mrj0f",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2052,7 +2052,7 @@
       "pieceOrigine": "ACH-2026-00129"
      },
      {
-      "id": "ECRxmvuswneoaojlg",
+      "id": "ECRxmvuswnt1l6xcg",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2069,7 +2069,7 @@
       "pieceOrigine": "ACH-2026-00066"
      },
      {
-      "id": "ECRxmvuswneowigsx",
+      "id": "ECRxmvuswnt1ai754",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2086,7 +2086,7 @@
       "pieceOrigine": "VTE-2026-00122"
      },
      {
-      "id": "ECRxmvuswneohi1ss",
+      "id": "ECRxmvuswnt0lv7hz",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2103,7 +2103,7 @@
       "pieceOrigine": "SAL-2026-00026"
      },
      {
-      "id": "ECRxmvuswnenqcs1c",
+      "id": "ECRxmvuswnsxbne5x",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2120,7 +2120,7 @@
       "pieceOrigine": "ACH-2026-00091"
      },
      {
-      "id": "ECRxmvuswnenxmptq",
+      "id": "ECRxmvuswnsw98o0g",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2137,7 +2137,7 @@
       "pieceOrigine": "SAL-2026-00051"
      },
      {
-      "id": "ECRxmvuswnem86slf",
+      "id": "ECRxmvuswnsvf9ewq",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2154,7 +2154,7 @@
       "pieceOrigine": "VTE-2026-00097"
      },
      {
-      "id": "ECRxmvuswnemtxjbh",
+      "id": "ECRxmvuswnsv6freh",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2171,7 +2171,7 @@
       "pieceOrigine": "OD-2026-00067"
      },
      {
-      "id": "ECRxmvuswnemhp0t0",
+      "id": "ECRxmvuswnsuewt44",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2188,7 +2188,7 @@
       "pieceOrigine": "ACH-2026-00036"
      },
      {
-      "id": "ECRxmvuswnelp1o4d",
+      "id": "ECRxmvuswnsur4phk",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2205,7 +2205,7 @@
       "pieceOrigine": "VTE-2026-00068"
      },
      {
-      "id": "ECRxmvuswnelj4xn0",
+      "id": "ECRxmvuswnstm52r6",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2222,7 +2222,7 @@
       "pieceOrigine": "OD-2026-00130"
      },
      {
-      "id": "ECRxmvuswneks5r57",
+      "id": "ECRxmvuswnss6clrg",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2239,7 +2239,7 @@
       "pieceOrigine": "VTE-2026-00059"
      },
      {
-      "id": "ECRxmvuswnekphcxk",
+      "id": "ECRxmvuswnssxltic",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2256,7 +2256,7 @@
       "pieceOrigine": "VTE-2026-00035"
      },
      {
-      "id": "ECRxmvuswneknxs7f",
+      "id": "ECRxmvuswnsrpf79a",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2273,7 +2273,7 @@
       "pieceOrigine": "ACH-2026-00100"
      },
      {
-      "id": "ECRxmvuswnej8c0vh",
+      "id": "ECRxmvuswnsqtbeps",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2290,7 +2290,7 @@
       "pieceOrigine": "OD-2026-00007"
      },
      {
-      "id": "ECRxmvuswnej8w2pt",
+      "id": "ECRxmvuswnspwx8zp",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2307,7 +2307,7 @@
       "pieceOrigine": "OD-2026-00113"
      },
      {
-      "id": "ECRxmvuswneiond6p",
+      "id": "ECRxmvuswnsodqrty",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2324,7 +2324,7 @@
       "pieceOrigine": "CAI-2026-00063"
      },
      {
-      "id": "ECRxmvuswneia4660",
+      "id": "ECRxmvuswnsoh8ny4",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2341,7 +2341,7 @@
       "pieceOrigine": "OD-2026-00011"
      },
      {
-      "id": "ECRxmvuswneivtuwb",
+      "id": "ECRxmvuswnsnoj6d3",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2358,7 +2358,7 @@
       "pieceOrigine": "OD-2026-00071"
      },
      {
-      "id": "ECRxmvuswneh5jrxa",
+      "id": "ECRxmvuswnsmobrtg",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2375,7 +2375,7 @@
       "pieceOrigine": "ACH-2026-00110"
      },
      {
-      "id": "ECRxmvuswneh57fi8",
+      "id": "ECRxmvuswnsmlxmo7",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2392,7 +2392,7 @@
       "pieceOrigine": "VTE-2026-00078"
      },
      {
-      "id": "ECRxmvuswnegcebwq",
+      "id": "ECRxmvuswnslp5dg2",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2409,7 +2409,7 @@
       "pieceOrigine": "OD-2026-00072"
      },
      {
-      "id": "ECRxmvuswneg4rw6y",
+      "id": "ECRxmvuswnsksj58x",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2426,7 +2426,7 @@
       "pieceOrigine": "ACH-2026-00120"
      },
      {
-      "id": "ECRxmvuswnefx8crw",
+      "id": "ECRxmvuswnsj6pvem",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2443,7 +2443,7 @@
       "pieceOrigine": "ACH-2026-00123"
      },
      {
-      "id": "ECRxmvuswnefpoeaf",
+      "id": "ECRxmvuswnsigystk",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2460,7 +2460,7 @@
       "pieceOrigine": "OD-2026-00019"
      },
      {
-      "id": "ECRxmvuswnefvomwx",
+      "id": "ECRxmvuswnsh14upa",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2477,7 +2477,7 @@
       "pieceOrigine": "OD-2026-00060"
      },
      {
-      "id": "ECRxmvuswneeguspb",
+      "id": "ECRxmvuswnsever3u",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2494,7 +2494,7 @@
       "pieceOrigine": "OD-2026-00032"
      },
      {
-      "id": "ECRxmvuswneeneobf",
+      "id": "ECRxmvuswns71dgrk",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2511,7 +2511,7 @@
       "pieceOrigine": "ACH-2026-00096"
      },
      {
-      "id": "ECRxmvuswneb31zv9",
+      "id": "ECRxmvuswns6840a6",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2528,7 +2528,7 @@
       "pieceOrigine": "ACH-2026-00043"
      },
      {
-      "id": "ECRxmvuswneaz7hdj",
+      "id": "ECRxmvuswns5e30ms",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2545,7 +2545,7 @@
       "pieceOrigine": "VTE-2026-00104"
      },
      {
-      "id": "ECRxmvuswneaqezfh",
+      "id": "ECRxmvuswns4lrzjc",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2562,7 +2562,7 @@
       "pieceOrigine": "ACH-2026-00098"
      },
      {
-      "id": "ECRxmvuswne9dvoou",
+      "id": "ECRxmvuswns3mv7xh",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2579,7 +2579,7 @@
       "pieceOrigine": "OD-2026-00105"
      },
      {
-      "id": "ECRxmvuswne8vb8qv",
+      "id": "ECRxmvuswns2wx42m",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2596,7 +2596,7 @@
       "pieceOrigine": "BQ-2026-00116"
      },
      {
-      "id": "ECRxmvuswne8j2153",
+      "id": "ECRxmvuswns1i8ftq",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2613,7 +2613,7 @@
       "pieceOrigine": "SAL-2026-00112"
      },
      {
-      "id": "ECRxmvuswne7kfvsb",
+      "id": "ECRxmvuswns0zgpb2",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2630,7 +2630,7 @@
       "pieceOrigine": "ACH-2026-00080"
      },
      {
-      "id": "ECRxmvuswne7dxgmk",
+      "id": "ECRxmvuswnrzhunwv",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2647,7 +2647,7 @@
       "pieceOrigine": "ACH-2026-00125"
      },
      {
-      "id": "ECRxmvuswne7s5zwk",
+      "id": "ECRxmvuswnrytoojb",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2664,7 +2664,7 @@
       "pieceOrigine": "BQ-2026-00038"
      },
      {
-      "id": "ECRxmvuswne6e51iu",
+      "id": "ECRxmvuswnrxy4g9d",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2681,7 +2681,7 @@
       "pieceOrigine": "SAL-2026-00085"
      },
      {
-      "id": "ECRxmvuswne6frazc",
+      "id": "ECRxmvuswnrw5dfjx",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2698,7 +2698,7 @@
       "pieceOrigine": "ACH-2026-00077"
      },
      {
-      "id": "ECRxmvuswne5vcjdh",
+      "id": "ECRxmvuswnrvasx6e",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2715,7 +2715,7 @@
       "pieceOrigine": "SAL-2026-00057"
      },
      {
-      "id": "ECRxmvuswne5cb24f",
+      "id": "ECRxmvuswnru20m2y",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2732,7 +2732,7 @@
       "pieceOrigine": "CAI-2026-00042"
      },
      {
-      "id": "ECRxmvuswne4gyutp",
+      "id": "ECRxmvuswnrt4zuum",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2749,7 +2749,7 @@
       "pieceOrigine": "VTE-2026-00020"
      },
      {
-      "id": "ECRxmvuswne46h1r2",
+      "id": "ECRxmvuswnrs1jkfl",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2766,7 +2766,7 @@
       "pieceOrigine": "OD-2026-00114"
      },
      {
-      "id": "ECRxmvuswne3cia3k",
+      "id": "ECRxmvuswnrrjpkwx",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2783,7 +2783,7 @@
       "pieceOrigine": "SAL-2026-00075"
      },
      {
-      "id": "ECRxmvuswne3elq1p",
+      "id": "ECRxmvuswnrqeezme",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2800,7 +2800,7 @@
       "pieceOrigine": "OD-2026-00039"
      },
      {
-      "id": "ECRxmvuswne2ts989",
+      "id": "ECRxmvuswnrqhsboq",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2817,7 +2817,7 @@
       "pieceOrigine": "VTE-2026-00061"
      },
      {
-      "id": "ECRxmvuswne2yfpgg",
+      "id": "ECRxmvuswnrpyac3f",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2834,7 +2834,7 @@
       "pieceOrigine": "ACH-2026-00056"
      },
      {
-      "id": "ECRxmvuswne1mo6ls",
+      "id": "ECRxmvuswnrp6y81h",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2851,7 +2851,7 @@
       "pieceOrigine": "BQ-2026-00109"
      },
      {
-      "id": "ECRxmvuswne1kl92o",
+      "id": "ECRxmvuswnro1svlj",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2868,7 +2868,7 @@
       "pieceOrigine": "ACH-2026-00087"
      },
      {
-      "id": "ECRxmvuswne0yght4",
+      "id": "ECRxmvuswnromhe9r",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2885,7 +2885,7 @@
       "pieceOrigine": "OD-2026-00009"
      },
      {
-      "id": "ECRxmvuswne0pi4tf",
+      "id": "ECRxmvuswnrn01v6s",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2902,7 +2902,7 @@
       "pieceOrigine": "ACH-2026-00062"
      },
      {
-      "id": "ECRxmvuswndz3kxje",
+      "id": "ECRxmvuswnrnoys01",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2919,7 +2919,7 @@
       "pieceOrigine": "ACH-2026-00115"
      },
      {
-      "id": "ECRxmvuswndze282v",
+      "id": "ECRxmvuswnrmz436f",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2936,7 +2936,7 @@
       "pieceOrigine": "OD-2026-00082"
      },
      {
-      "id": "ECRxmvuswndzqq222",
+      "id": "ECRxmvuswnrl3p1rh",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2953,7 +2953,7 @@
       "pieceOrigine": "ACH-2026-00046"
      },
      {
-      "id": "ECRxmvuswndycgxvz",
+      "id": "ECRxmvuswnrkkmu7e",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2970,7 +2970,7 @@
       "pieceOrigine": "OD-2026-00101"
      },
      {
-      "id": "ECRxmvuswndywvpzn",
+      "id": "ECRxmvuswnrji6apq",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -2987,7 +2987,7 @@
       "pieceOrigine": "OD-2026-00093"
      },
      {
-      "id": "ECRxmvuswndxe2u0z",
+      "id": "ECRxmvuswnriyfs3p",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3004,7 +3004,7 @@
       "pieceOrigine": "BQ-2026-00065"
      },
      {
-      "id": "ECRxmvuswndxehnyn",
+      "id": "ECRxmvuswnrhvkdxt",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3021,7 +3021,7 @@
       "pieceOrigine": "OD-2026-00012"
      },
      {
-      "id": "ECRxmvuswndwpst4z",
+      "id": "ECRxmvuswnrha6v6p",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3038,7 +3038,7 @@
       "pieceOrigine": "ACH-2026-00081"
      },
      {
-      "id": "ECRxmvuswndwfrr2t",
+      "id": "ECRxmvuswnrg3qf8a",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3055,7 +3055,7 @@
       "pieceOrigine": "ACH-2026-00107"
      },
      {
-      "id": "ECRxmvuswndvbgdd8",
+      "id": "ECRxmvuswnrg32lod",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3072,7 +3072,7 @@
       "pieceOrigine": "SAL-2026-00117"
      },
      {
-      "id": "ECRxmvuswndvo2v0m",
+      "id": "ECRxmvuswnrfyh1ih",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3089,7 +3089,7 @@
       "pieceOrigine": "ACH-2026-00053"
      },
      {
-      "id": "ECRxmvuswndumoiu4",
+      "id": "ECRxmvuswnref8iww",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3106,7 +3106,7 @@
       "pieceOrigine": "ACH-2026-00128"
      },
      {
-      "id": "ECRxmvuswnduibz90",
+      "id": "ECRxmvuswnreqpq1z",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3123,7 +3123,7 @@
       "pieceOrigine": "OD-2026-00030"
      },
      {
-      "id": "ECRxmvuswndtrd0r9",
+      "id": "ECRxmvuswnrdca6me",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3140,7 +3140,7 @@
       "pieceOrigine": "ACH-2026-00027"
      },
      {
-      "id": "ECRxmvuswndt7qxrm",
+      "id": "ECRxmvuswnrdznaqo",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3157,7 +3157,7 @@
       "pieceOrigine": "ACH-2026-00124"
      },
      {
-      "id": "ECRxmvuswndsvbahz",
+      "id": "ECRxmvuswnrbmgg4i",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3174,7 +3174,7 @@
       "pieceOrigine": "VTE-2026-00050"
      },
      {
-      "id": "ECRxmvuswndsm2glz",
+      "id": "ECRxmvuswnrbapcgn",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3191,7 +3191,7 @@
       "pieceOrigine": "VTE-2026-00119"
      },
      {
-      "id": "ECRxmvuswnds9fec5",
+      "id": "ECRxmvuswnra5r7r7",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3208,7 +3208,7 @@
       "pieceOrigine": "SAL-2026-00047"
      },
      {
-      "id": "ECRxmvuswndrd5chy",
+      "id": "ECRxmvuswnraqgx9h",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3225,7 +3225,7 @@
       "pieceOrigine": "OD-2026-00108"
      },
      {
-      "id": "ECRxmvuswndr7ayr9",
+      "id": "ECRxmvuswnr96yvh0",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3242,7 +3242,7 @@
       "pieceOrigine": "VTE-2026-00094"
      },
      {
-      "id": "ECRxmvuswndq4q9gh",
+      "id": "ECRxmvuswnr9crg7f",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3259,7 +3259,7 @@
       "pieceOrigine": "OD-2026-00013"
      },
      {
-      "id": "ECRxmvuswndqgny19",
+      "id": "ECRxmvuswnr82sn51",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3276,7 +3276,7 @@
       "pieceOrigine": "SAL-2026-00070"
      },
      {
-      "id": "ECRxmvuswndpnz22x",
+      "id": "ECRxmvuswnr7gu1ec",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3293,7 +3293,7 @@
       "pieceOrigine": "OD-2026-00111"
      },
      {
-      "id": "ECRxmvuswndpmnx7a",
+      "id": "ECRxmvuswnr7skpj2",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3310,7 +3310,7 @@
       "pieceOrigine": "ACH-2026-00017"
      },
      {
-      "id": "ECRxmvuswndpvt60g",
+      "id": "ECRxmvuswnr6t0c1q",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3327,7 +3327,7 @@
       "pieceOrigine": "OD-2026-00069"
      },
      {
-      "id": "ECRxmvuswndogrfix",
+      "id": "ECRxmvuswnr6w5lad",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3344,7 +3344,7 @@
       "pieceOrigine": "OD-2026-00073"
      },
      {
-      "id": "ECRxmvuswndo8gw2o",
+      "id": "ECRxmvuswnr56qght",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3361,7 +3361,7 @@
       "pieceOrigine": "VTE-2026-00044"
      },
      {
-      "id": "ECRxmvuswndn3662a",
+      "id": "ECRxmvuswnr4nh0rr",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3378,7 +3378,7 @@
       "pieceOrigine": "SAL-2026-00102"
      },
      {
-      "id": "ECRxmvuswndn8l8br",
+      "id": "ECRxmvuswnr4i4pr7",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3395,7 +3395,7 @@
       "pieceOrigine": "VTE-2026-00031"
      },
      {
-      "id": "ECRxmvuswndm7wgz6",
+      "id": "ECRxmvuswnr3sjqbe",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3412,7 +3412,7 @@
       "pieceOrigine": "VTE-2026-00103"
      },
      {
-      "id": "ECRxmvuswndmqwjlw",
+      "id": "ECRxmvuswnr3rdys5",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3429,7 +3429,7 @@
       "pieceOrigine": "OD-2026-00048"
      },
      {
-      "id": "ECRxmvuswndl9yjmn",
+      "id": "ECRxmvuswnr2pfpvv",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3446,7 +3446,7 @@
       "pieceOrigine": "ACH-2026-00003"
      },
      {
-      "id": "ECRxmvuswndla2bfk",
+      "id": "ECRxmvuswnr1s8y65",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3463,7 +3463,7 @@
       "pieceOrigine": "VTE-2026-00089"
      },
      {
-      "id": "ECRxmvuswndkqb5po",
+      "id": "ECRxmvuswnr0styez",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3480,7 +3480,7 @@
       "pieceOrigine": "VTE-2026-00034"
      },
      {
-      "id": "ECRxmvuswndk8axw2",
+      "id": "ECRxmvuswnqzai93t",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3497,7 +3497,7 @@
       "pieceOrigine": "OD-2026-00118"
      },
      {
-      "id": "ECRxmvuswndkhkayw",
+      "id": "ECRxmvuswnqydtaqg",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3514,7 +3514,7 @@
       "pieceOrigine": "VTE-2026-00022"
      },
      {
-      "id": "ECRxmvuswndj8jkye",
+      "id": "ECRxmvuswnqxogako",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3531,7 +3531,7 @@
       "pieceOrigine": "ACH-2026-00005"
      },
      {
-      "id": "ECRxmvuswndjhanyq",
+      "id": "ECRxmvuswnqxekt8u",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3548,7 +3548,7 @@
       "pieceOrigine": "VTE-2026-00023"
      },
      {
-      "id": "ECRxmvuswndipnbow",
+      "id": "ECRxmvuswnqwfmunn",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3565,7 +3565,7 @@
       "pieceOrigine": "OD-2026-00045"
      },
      {
-      "id": "ECRxmvuswndi3gp6l",
+      "id": "ECRxmvuswnqwksoan",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3582,7 +3582,7 @@
       "pieceOrigine": null
      },
      {
-      "id": "ECRxmvuswndhlmt0p",
+      "id": "ECRxmvuswnqugvdn6",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3599,7 +3599,7 @@
       "pieceOrigine": null
      },
      {
-      "id": "ECRxmvuswndh3l41e",
+      "id": "ECRxmvuswnqtm54fx",
       "statut": "validee",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -3616,7 +3616,7 @@
       "pieceOrigine": null
      },
      {
-      "id": "ECRxmvuswndg2fito",
+      "id": "ECRxmvuswnqs6v2ip",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3632,7 +3632,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswndfa0rld",
+      "id": "ECRxmvuswnqrhfw8k",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3648,7 +3648,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswndfw6fyg",
+      "id": "ECRxmvuswnqrkyzhk",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3664,7 +3664,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswndeq4s5r",
+      "id": "ECRxmvuswnqq60sa2",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3680,7 +3680,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswndera45e",
+      "id": "ECRxmvuswnqpe13kc",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3696,7 +3696,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswnddjnk3c",
+      "id": "ECRxmvuswnqol3y09",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3712,7 +3712,7 @@
       "credit": 1286000
      },
      {
-      "id": "ECRxmvuswndderhvo",
+      "id": "ECRxmvuswnqovu70k",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3728,7 +3728,7 @@
       "credit": 272000
      },
      {
-      "id": "ECRxmvuswnddlfwrl",
+      "id": "ECRxmvuswnqndwx2p",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3744,7 +3744,7 @@
       "credit": 2610000
      },
      {
-      "id": "ECRxmvuswndc6gdhg",
+      "id": "ECRxmvuswnqm9qdob",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3760,7 +3760,7 @@
       "credit": 2841000
      },
      {
-      "id": "ECRxmvuswndctoqxj",
+      "id": "ECRxmvuswnqlnmaas",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3776,7 +3776,7 @@
       "credit": 1954000
      },
      {
-      "id": "ECRxmvuswndb1bafy",
+      "id": "ECRxmvuswnqk5bdgp",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3792,7 +3792,7 @@
       "credit": 2356000
      },
      {
-      "id": "ECRxmvuswndb86kj6",
+      "id": "ECRxmvuswnqjegnrv",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3808,7 +3808,7 @@
       "credit": 5945000
      },
      {
-      "id": "ECRxmvuswndbn2f6v",
+      "id": "ECRxmvuswnqjwc5wy",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3824,7 +3824,7 @@
       "credit": 2043000
      },
      {
-      "id": "ECRxmvuswndakrmhh",
+      "id": "ECRxmvuswnqjk9c8v",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3840,7 +3840,7 @@
       "credit": 2157000
      },
      {
-      "id": "ECRxmvuswnda4stco",
+      "id": "ECRxmvuswnqi5lbxd",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3856,7 +3856,7 @@
       "credit": 2674000
      },
      {
-      "id": "ECRxmvuswnd9zwuqm",
+      "id": "ECRxmvuswnqie3ks6",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3872,7 +3872,7 @@
       "credit": 1167000
      },
      {
-      "id": "ECRxmvuswnd9jvi71",
+      "id": "ECRxmvuswnqg7ymfb",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3888,7 +3888,7 @@
       "credit": 399000
      },
      {
-      "id": "ECRxmvuswnd9ejhhd",
+      "id": "ECRxmvuswnqggpeqo",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3904,7 +3904,7 @@
       "credit": 1272000
      },
      {
-      "id": "ECRxmvuswnd858f1r",
+      "id": "ECRxmvuswnqfmdj2k",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3920,7 +3920,7 @@
       "credit": 6482000
      },
      {
-      "id": "ECRxmvuswnd8ogy6i",
+      "id": "ECRxmvuswnqe7av1x",
       "statut": "validee",
       "numero": "OD-2026-RES",
       "date": "2026-12-31",
@@ -3952,7 +3952,7 @@
     ],
     "documents": [
      {
-      "id": "DOCxmvuswnf0vuv72",
+      "id": "DOCxmvuswntwwz2fz",
       "statut": "actif",
       "reference": "DOC-2026-00221",
       "libelle": "Clôture de l’exercice 2026 — balance générale (empreinte 1178de188fd2…)",
@@ -3978,7 +3978,7 @@
     ],
     "notifications": [
      {
-      "id": "NOTxmvuswneycbqn4",
+      "id": "NOTxmvuswntsbxl5g",
       "statut": "actif",
       "type": "cloture",
       "poste": "comptable",
@@ -3992,7 +3992,7 @@
       "patientId": null,
       "reference": "2026",
       "lue": false,
-      "creeLe": "2026-10-30T10:00:00.394Z"
+      "creeLe": "2026-10-30T10:00:00.928Z"
      }
     ]
    },
@@ -4003,7 +4003,7 @@
       "id": "EXO-2026",
       "patch": {
        "etat": "clos",
-       "valideLe": "2026-10-30T10:00:00.393Z",
+       "valideLe": "2026-10-30T10:00:00.926Z",
        "validePar": "BASSONGUI Chabi Séko",
        "motif": "Exercice 2026 conforme",
        "resultat": -23087218,
@@ -4024,12 +4024,12 @@
    "statut": "actif",
    "etat": "clos",
    "source": "journal",
-   "demandeLe": "2026-10-30T10:00:00.318Z",
+   "demandeLe": "2026-10-30T10:00:00.785Z",
    "demandePar": "KASSA Augustin",
    "resultatPrevu": -23087218,
    "_modifiePar": "BASSONGUI Chabi Séko",
-   "_modifieLe": "2026-10-30T10:00:00.393Z",
-   "valideLe": "2026-10-30T10:00:00.393Z",
+   "_modifieLe": "2026-10-30T10:00:00.926Z",
+   "valideLe": "2026-10-30T10:00:00.926Z",
    "validePar": "BASSONGUI Chabi Séko",
    "motif": "Exercice 2026 conforme",
    "resultat": -23087218,
@@ -4130,13 +4130,13 @@
    {
     "action": "Création",
     "entite": "Document",
-    "reference": "DOCxmvuswnf0vuv72",
+    "reference": "DOCxmvuswntwwz2fz",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
     "action": "Création",
     "entite": "notification",
-    "reference": "NOTxmvuswneycbqn4",
+    "reference": "NOTxmvuswntsbxl5g",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
@@ -4154,43 +4154,43 @@
    {
     "action": "Création",
     "entite": "Écriture",
-    "reference": "ECRxmvuswnetxsriq",
+    "reference": "ECRxmvuswntep8i44",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
     "action": "Création",
     "entite": "Écriture",
-    "reference": "ECRxmvuswnes6g97z",
+    "reference": "ECRxmvuswntc9trs1",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
     "action": "Création",
     "entite": "Écriture",
-    "reference": "ECRxmvuswnes10cbo",
+    "reference": "ECRxmvuswntab2pn4",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
     "action": "Création",
     "entite": "Écriture",
-    "reference": "ECRxmvuswnerddyvz",
+    "reference": "ECRxmvuswnt8o7n9d",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
     "action": "Création",
     "entite": "Écriture",
-    "reference": "ECRxmvuswnerlzods",
+    "reference": "ECRxmvuswnt8g3ges",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
     "action": "Création",
     "entite": "Écriture",
-    "reference": "ECRxmvuswnermjt2d",
+    "reference": "ECRxmvuswnt7i6und",
     "utilisateur": "BASSONGUI Chabi Séko"
    },
    {
     "action": "Création",
     "entite": "Écriture",
-    "reference": "ECRxmvuswnequwxjf",
+    "reference": "ECRxmvuswnt60jfzc",
     "utilisateur": "BASSONGUI Chabi Séko"
    }
   ],
@@ -5121,7 +5121,7 @@
    "titre": ""
   },
   "lettrage": {
-   "texte": "Exercice affiché 2026 État En attente Résultat provisoire -23 087 218 FCFA Contrôles bloquants en échec 0 Exercices Périodes de l’exercice Lettrage des tiers Un lettrage rapproche des lignes d’un même compte de tiers dont le total s’annule (une facture et son règlement). À la clôture, seules les lignes non lettrées sont reprises une à une aux à-nouveaux. Compte 401000 — Fournisseurs 411000 — Clients — Patients 411100 — 411100 411200 — Clients — Compagnies d’assurance 422000 — Personnel — Rémunérations dues 431000 — Caisse de sécurité social 442100 — Etat impôts et taxes Lignes du compte 401000 Colonnes Exporter PIÈCE DATE LIBELLÉ DÉBIT CRÉDIT LETTRAGE OD-2026-00045 15/08/2026 Honoraires du comptable 0 523 000 non lettrée ACH-2026-00005 10/08/2026 Produits d’entretien 0 291 000 non lettrée OD-2026-00118 09/08/2026 Maintenance de l’échographe 0 217 000 non lettrée ACH-2026-00003 01/08/2026 Achat de marchandises — Médicaments 0 580 000 non lettrée OD-2026-00048 28/07/2026 Maintenance des automates 0 553 000 non lettrée OD-2026-00073 18/07/2026 Maintenance des automates 0 557 000 non lettrée OD-2026-00069 17/07/2026 Entretien et réparations 0 177 000 non lettrée ACH-2026-00017 16/07/2026 Fournitures de bureau 0 172 000 non lettrée OD-2026-00111 16/07/2026 Entretien et réparations 0 615 000 non lettrée OD-2026-00013 09/07/2026 Entretien et réparations 0 719 000 non lettrée Affichage de 1 à 10 sur 65 enregistrements 1 2 3 4 5 Lettrer la sélection Dé-lettrer un code…",
+   "texte": "Exercice affiché 2026 État En attente Résultat provisoire -23 087 218 FCFA Contrôles bloquants en échec 0 Exercices Périodes de l’exercice Lettrage des tiers Un lettrage rapproche des lignes d’un même compte de tiers dont le total s’annule (une facture et son règlement). À la clôture, seules les lignes non lettrées sont reprises une à une aux à-nouveaux. Compte 401000 — Fournisseurs 411000 — Clients — Patients 411200 — Clients — Compagnies d’assurance 422000 — Personnel — Rémunérations dues 431000 — Caisse de sécurité social 442100 — Etat impôts et taxes Lignes du compte 401000 Colonnes Exporter PIÈCE DATE LIBELLÉ DÉBIT CRÉDIT LETTRAGE OD-2026-00045 15/08/2026 Honoraires du comptable 0 523 000 non lettrée ACH-2026-00005 10/08/2026 Produits d’entretien 0 291 000 non lettrée OD-2026-00118 09/08/2026 Maintenance de l’échographe 0 217 000 non lettrée ACH-2026-00003 01/08/2026 Achat de marchandises — Médicaments 0 580 000 non lettrée OD-2026-00048 28/07/2026 Maintenance des automates 0 553 000 non lettrée OD-2026-00073 18/07/2026 Maintenance des automates 0 557 000 non lettrée OD-2026-00069 17/07/2026 Entretien et réparations 0 177 000 non lettrée ACH-2026-00017 16/07/2026 Fournitures de bureau 0 172 000 non lettrée OD-2026-00111 16/07/2026 Entretien et réparations 0 615 000 non lettrée OD-2026-00013 09/07/2026 Entretien et réparations 0 719 000 non lettrée Affichage de 1 à 10 sur 65 enregistrements 1 2 3 4 5 Lettrer la sélection Dé-lettrer un code…",
    "boutons": [
     "Exercices",
     "Périodes de l’exercice",
@@ -5145,10 +5145,6 @@
     [
      "411000",
      "411000 — Clients — Patients"
-    ],
-    [
-     "411100",
-     "411100 — 411100"
     ],
     [
      "411200",
@@ -5325,7 +5321,7 @@
       },
       {
        "cellules": [
-        "13",
+        "139000",
         "Résultat net de l’exercice 2026",
         "24 350 456",
         ""
@@ -5406,7 +5402,7 @@
     "3 142 456"
    ],
    [
-    "13",
+    "139000",
     "Résultat net de l’exercice 2026",
     "24 350 456",
     ""
@@ -5445,7 +5441,7 @@
      "Plan comptable SYSCOHADA révisé"
     ]
    ],
-   "contenu": "CompteIntituléDébitCrédit401000Fournisseurs21 217 000411000Clients — Patients5 150 000411200Clients — Compagnies d’assurance2 247 000422000Personnel — Rémunérations dues272 000431000Caisse de sécurité social1 286 000442100Etat impôts et taxes2 610 000521000Banque3 220 000571000Caisse3 142 456130000Résultat net de l’exercice 202624 350 456TOTAUX DU REPORT31 747 45631 747 456Seules les classes 1 à 5 sont reportées : un compte de charge ou de produit ne passe jamais à l’exercice suivant, il est soldé par le résultat. Les deux totaux doivent être égaux (RG-10).",
+   "contenu": "CompteIntituléDébitCrédit401000Fournisseurs21 217 000411000Clients — Patients5 150 000411200Clients — Compagnies d’assurance2 247 000422000Personnel — Rémunérations dues272 000431000Caisse de sécurité social1 286 000442100Etat impôts et taxes2 610 000521000Banque3 220 000571000Caisse3 142 456139000Résultat net de l’exercice 202624 350 456TOTAUX DU REPORT31 747 45631 747 456Seules les classes 1 à 5 sont reportées : un compte de charge ou de produit ne passe jamais à l’exercice suivant, il est soldé par le résultat. Les deux totaux doivent être égaux (RG-10).",
    "tables": [
     {
      "entetes": [
@@ -5504,7 +5500,7 @@
        "3 142 456"
       ],
       [
-       "130000",
+       "139000",
        "Résultat net de l’exercice 2026",
        "24 350 456",
        ""
@@ -5540,7 +5536,7 @@
    "inserts": {
     "ecritures": [
      {
-      "id": "ECRxmvuswqaz8a6ma",
+      "id": "ECRxmvuswqsstw2mz",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5549,13 +5545,13 @@
       "libelle": "À-nouveaux au 1er janvier 2027",
       "origine": "Automatique — report d’exercice",
       "centreCout": null,
-      "compte": "130000",
-      "compteLibelle": "Résultat net de l’exercice 2026",
+      "compte": "139000",
+      "compteLibelle": "Résultat net : perte",
       "debit": 24350456,
       "credit": 0
      },
      {
-      "id": "ECRxmvuswqay17dse",
+      "id": "ECRxmvuswqsr23shn",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5570,7 +5566,7 @@
       "credit": 3142456
      },
      {
-      "id": "ECRxmvuswqay29dah",
+      "id": "ECRxmvuswqsrjhd8g",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5585,7 +5581,7 @@
       "credit": 3220000
      },
      {
-      "id": "ECRxmvuswqaxxgyex",
+      "id": "ECRxmvuswqsrutc61",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5600,7 +5596,7 @@
       "credit": 2610000
      },
      {
-      "id": "ECRxmvuswqax934ig",
+      "id": "ECRxmvuswqsqf76lm",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5615,7 +5611,7 @@
       "credit": 1286000
      },
      {
-      "id": "ECRxmvuswqaxbiw5p",
+      "id": "ECRxmvuswqsotsddh",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5630,7 +5626,7 @@
       "credit": 272000
      },
      {
-      "id": "ECRxmvuswqawhzidk",
+      "id": "ECRxmvuswqsn9iyob",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5645,7 +5641,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswqawf34c8",
+      "id": "ECRxmvuswqsncethk",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5660,7 +5656,7 @@
       "credit": 0
      },
      {
-      "id": "ECRxmvuswqavfs5zj",
+      "id": "ECRxmvuswqsm34piv",
       "statut": "brouillon",
       "numero": "AN-2027-00001",
       "date": "2027-01-01",
@@ -5792,7 +5788,7 @@
       },
       {
        "cellules": [
-        "13",
+        "139000",
         "Résultat net de l’exercice 2026",
         "24 350 456",
         ""
@@ -5937,7 +5933,7 @@
       },
       {
        "cellules": [
-        "13",
+        "139000",
         "Résultat net de l’exercice 2026",
         "24 350 456",
         ""

@@ -289,7 +289,7 @@ void main() {
       expect(nt(money(s.totalCrediteurs)), nt(carte(liste(carte(o['initial'])['kpis'])[2])['valeur']));
       expect(nt(money(s.resultat)), nt(carte(liste(carte(o['initial'])['kpis'])[3])['valeur']));
     });
-    test('le report écrit une pièce en BROUILLON, au journal AN, avec le résultat au compte 130000', () {
+    test('le report écrit une pièce en BROUILLON, au journal AN, avec le résultat au compte 131000 (bénéfice) ou 139000 (perte), un seul compte de résultat (E813)', () {
       final s = cpcSoldesDeCloture(actif, 2026);
       final r = cpcReporterANouveaux(s, 2026, dejaEcrits: 0);
       expect(r.ok, true);
@@ -297,6 +297,9 @@ void main() {
       final ins = liste(carte(carte(o['ecart'])['inserts'])['ecritures']);
       expect(r.lignes.map(cle).toList()..sort(), ins.map(cle).toList()..sort());
       expect(r.lignes.every((l) => l['statut'] == 'brouillon' && l['journal'] == 'AN'), true);
+      expect(r.lignes.last['compte'], s.resultat >= 0 ? '131000' : '139000');
+      expect(cpcCompteResultat(-1), '139000');
+      expect(cpcCompteResultat(0), '131000');
     });
     test('REFUSÉ s\'il ne s\'équilibre pas (RG-10), REFUSÉ une seconde fois (double report) — avec les mots de l\'écran', () {
       final deseq = [

@@ -575,10 +575,14 @@ CpcSoldesCloture cpcSoldesDeCloture(Iterable<CpaFiche> actives, int annee) {
   return CpcSoldesCloture(out, resultat);
 }
 
-/// Les lignes du bilan d'ouverture : les comptes reportés, puis le résultat au compte 13 (bénéfice au crédit).
-List<CpaFiche> cpcLignesOuverture(CpcSoldesCloture s, int annee, {String compteResultat = '13'}) => [
+/// UN SEUL compte de résultat (E813 levé) : le report manuel écrit, comme la clôture en deux gestes, au 131000 (bénéfice) ou au 139000 (perte). Le 130000
+/// ne subsiste que dans les reports manuels antérieurs, signalés à l'écran.
+String cpcCompteResultat(num resultat) => resultat >= 0 ? '131000' : '139000';
+
+/// Les lignes du bilan d'ouverture : les comptes reportés, puis le résultat au compte de résultat (bénéfice au crédit).
+List<CpaFiche> cpcLignesOuverture(CpcSoldesCloture s, int annee) => [
       ...s.comptes,
-      {'compte': compteResultat, 'libelle': 'Résultat net de l’exercice $annee', 'solde': -s.resultat},
+      {'compte': cpcCompteResultat(s.resultat), 'libelle': 'Résultat net de l’exercice $annee', 'solde': -s.resultat},
     ];
 
 class CpcReport {
@@ -631,8 +635,8 @@ CpcReport cpcReporterANouveaux(CpcSoldesCloture s, int annee, {required int deja
       },
     {
       ...base,
-      'compte': '130000',
-      'compteLibelle': 'Résultat net de l’exercice $annee',
+      'compte': cpcCompteResultat(s.resultat),
+      'compteLibelle': s.resultat >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
       'debit': s.resultat < 0 ? -s.resultat : 0.0,
       'credit': s.resultat > 0 ? s.resultat : 0.0,
     },

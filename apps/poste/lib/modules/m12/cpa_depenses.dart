@@ -85,6 +85,9 @@ class _EtatDepenses extends State<EcranDepenses> {
     return true;
   }
 
+  /// E715 levé : les comptes de charge proposables viennent de la collection `comptes` (un compte créé à l'écran y figure).
+  List<(String, String)> _comptesCharge(ContexteEcran c) => cpaComptesCharge(comptes: c.magasin.collection('comptes').actives);
+
   Fiche? _tresorerie(ContexteEcran c, Object? id) {
     for (final b in c.magasin.collection('banques').actives) {
       if (b['id'] == id) return b;
@@ -150,7 +153,7 @@ class _EtatDepenses extends State<EcranDepenses> {
       ];
 
   /// Le formulaire d'UNE ligne (libellé, compte de charge SYSCOHADA, montant ≥ 1), à l'ajout comme à la modification.
-  void _formLigne(BuildContext ctx, Fiche? valeurs, void Function(Fiche) surValide) {
+  void _formLigne(BuildContext ctx, Fiche? valeurs, void Function(Fiche) surValide, List<(String, String)> comptesCharge) {
     final f = ControleurFormulaire([
       const ChampDef(nom: 'libelle', libelle: 'Libellé de la ligne', requis: true, col: ColChamp.plein),
       ChampDef(
@@ -158,7 +161,7 @@ class _EtatDepenses extends State<EcranDepenses> {
           libelle: 'Compte de charge (SYSCOHADA)',
           type: TypeChamp.select,
           requis: true,
-          options: [for (final k in cpaComptesCharge()) OptionChamp(k.$1, '${k.$1} — ${k.$2}')]),
+          options: [for (final k in comptesCharge) OptionChamp(k.$1, '${k.$1} — ${k.$2}')]),
       ChampDef(
           nom: 'montant',
           libelle: 'Montant (FCFA)',
@@ -189,7 +192,7 @@ class _EtatDepenses extends State<EcranDepenses> {
   }
 
   /// `editeurLignes` : la table des lignes DANS la modale — ajout, édition, suppression ; le total est la somme.
-  Widget _editeurLignes(BuildContext ctx, List<Fiche> lignes, void Function(VoidCallback) maj) {
+  Widget _editeurLignes(BuildContext ctx, ContexteEcran c, List<Fiche> lignes, void Function(VoidCallback) maj) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(8), border: Border.all(color: JetonsShell.slate200)),
@@ -215,7 +218,7 @@ class _EtatDepenses extends State<EcranDepenses> {
                   BoutonIcone(
                       icone: LucideIcons.pencil,
                       libelle: 'Modifier la ligne',
-                      onPressed: () => _formLigne(ctx, l, (v) => maj(() => lignes[i] = v))),
+                      onPressed: () => _formLigne(ctx, l, (v) => maj(() => lignes[i] = v), _comptesCharge(c))),
                   BoutonIcone(
                       icone: LucideIcons.trash2,
                       libelle: 'Retirer la ligne',
@@ -240,7 +243,7 @@ class _EtatDepenses extends State<EcranDepenses> {
             icone: LucideIcons.plus,
             taille: TailleBouton.sm,
             variante: VarianteBouton.secondaire,
-            onPressed: () => _formLigne(ctx, null, (v) => maj(() => lignes.add(v)))),
+            onPressed: () => _formLigne(ctx, null, (v) => maj(() => lignes.add(v)), _comptesCharge(c))),
       ]),
     );
   }
@@ -280,7 +283,7 @@ class _EtatDepenses extends State<EcranDepenses> {
             builder: (mctx, maj) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   FormulaireSigh(controleur: f),
                   const SizedBox(height: 12),
-                  _editeurLignes(ctx, lignes, maj),
+                  _editeurLignes(ctx, c, lignes, maj),
                   const SizedBox(height: 12),
                   if (edition && r['justificatif'] != null) ...[
                     NoteSigh(
@@ -413,7 +416,7 @@ class _EtatDepenses extends State<EcranDepenses> {
               sansRemplissage: true,
               child: MiniTableauSigh(colonnes: [
                 ColonneMini('Libellé', (l) => '${l['libelle']}'),
-                ColonneMini('Compte de charge', (l) => '${l['compteCharge']} — ${cpaCompteLibelle(l['compteCharge'])}'),
+                ColonneMini('Compte de charge', (l) => '${l['compteCharge']} — ${cpaCompteLibelle(l['compteCharge'], comptes: c.magasin.collection('comptes').toutes)}'),
                 ColonneMini('Montant', (l) => m(l['montant']), droite: true),
               ], lignes: lignes)),
           const SizedBox(height: 16),

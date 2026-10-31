@@ -133,7 +133,29 @@
         courant = st.collection('grillePrimes').active()
           .filter(function (x) { return x.primeId === primeId; })[0];
       } catch (e) { return NS132.montantOrigine(primeId, fonctionId); }
-      if (!courant) return NS132.montantOrigine(primeId, fonctionId);
+      if (!courant) {
+        /* Aucune fiche en vigueur : la prime est soit inconnue du magasin
+           (barème d'origine), soit RETIRÉE (E651). Une prime retirée reçoit une
+           date de fin : jusqu'à elle, la version sortante s'applique ; après,
+           ou sans date, la paie ne la lit plus. */
+        var traces = [];
+        try {
+          traces = st.collection('historiquePrimes').active()
+            .filter(function (x) { return x.primeId === primeId; });
+        } catch (e) { traces = []; }
+        if (!traces.length) return NS132.montantOrigine(primeId, fonctionId);
+        var couvrante = date ? traces.filter(function (v) {
+          return (!v.dateEffet || String(date) >= String(v.dateEffet))
+            && (!v.dateFin || String(date) <= String(v.dateFin));
+        }).sort(function (x, y) { return String(y.dateEffet).localeCompare(String(x.dateEffet)); })[0] : null;
+        if (couvrante) return (couvrante.montants || {})[fonctionId] || 0;
+        var retiree = traces.some(function (v) { return v.retiree; });
+        if (retiree) {
+          var debut = traces.map(function (v) { return String(v.dateEffet || ''); }).sort()[0];
+          if (!date || String(date) >= debut) return 0;
+        }
+        return NS132.montantOrigine(primeId, fonctionId);
+      }
 
       /* Sans date, ou si la version courante était déjà en vigueur : la grille
          du jour s'applique. */
@@ -155,6 +177,59 @@
         .sort(function (a, b) { return String(b.dateEffet).localeCompare(String(a.dateEffet)); })[0];
       if (enVigueur) return (enVigueur.montants || {})[fonctionId] || 0;
       return NS132.montantOrigine(primeId, fonctionId);
+    },
+
+    /**
+     * LES PRIMES À UNE DATE (E651) : le barème d'origine PLUS les primes créées
+     * à l'écran. Une prime créée dans l'application entre ainsi dans les primes
+     * fixes du mois ; la liste statique `primes` ne la connaît pas.
+     */
+    primesALaDate: function () {
+      var st = global.SIGH && global.SIGH.store;
+      var out = NS132.primes.map(function (p) { return { id: p.id, label: p.label, mode: p.mode }; });
+      if (!st) return out;
+      var ids = {};
+      out.forEach(function (p) { ids[p.id] = p; });
+      var actives = [], hist = [];
+      try { actives = st.collection('grillePrimes').active(); } catch (e) { actives = []; }
+      try { hist = st.collection('historiquePrimes').active(); } catch (e) { hist = []; }
+      actives.concat(hist).forEach(function (x) {
+        if (!x.primeId || ids[x.primeId]) return;
+        var p = { id: x.primeId, label: x.label, mode: x.mode };
+        ids[x.primeId] = p; out.push(p);
+      });
+      return out;
+    },
+
+    /**
+     * LES BÉNÉFICIAIRES D'UNE PRIME FIXE (E654). Un forfait se DÉSIGNE : une liste
+     * datée d'agents (`beneficiairesPrimes` : primeId, agentId, debut, fin).
+     * Tant qu'une prime fixe n'a AUCUNE désignation, la règle d'attente demeure
+     * (tous les agents de la fonction) et l'écran le dit ; dès la première,
+     * seuls les agents désignés à la date la perçoivent.
+     * Renvoie null (aucune désignation) ou le tableau des identifiants.
+     */
+    beneficiaires: function (primeId, date) {
+      var st = global.SIGH && global.SIGH.store;
+      if (!st) return null;
+      var l = [];
+      try { l = st.collection('beneficiairesPrimes').active().filter(function (x) { return x.primeId === primeId; }); } catch (e) { return null; }
+      if (!l.length) return null;
+      return l.filter(function (x) {
+        return (!date || !x.debut || String(date) >= String(x.debut)) && (!date || !x.fin || String(date) <= String(x.fin));
+      }).map(function (x) { return x.agentId; });
+    },
+
+    /** Montant d'une prime pour UN agent à une date : désignation comprise pour les forfaits. */
+    montantAgent: function (primeId, agent, date) {
+      var m = NS132.montant(primeId, agent.fonction, date);
+      if (!m) return 0;
+      var def = NS132.primesALaDate().filter(function (p) { return p.id === primeId; })[0];
+      if (def && def.mode === 'fixe') {
+        var liste = NS132.beneficiaires(primeId, date);
+        if (liste && liste.indexOf(agent.id) < 0) return 0;
+      }
+      return m;
     },
 
     /** Le barème d'origine de la note, indépendant du magasin. */
@@ -791,6 +866,9 @@
     { code: 'VTE', libelle: 'Journal des ventes', contrepartie: '411000' },
     { code: 'CAI', libelle: 'Journal de caisse-dépenses', contrepartie: '571000' },
     { code: 'BQ', libelle: 'Journal de banque', contrepartie: '521000' },
+    /* E719 : une dépense réglée par banque s'écrit au journal BQE ; le code
+       manquait au référentiel et la pièce n'apparaissait dans aucun journal. */
+    { code: 'BQE', libelle: 'Journal de banque, dépenses', contrepartie: '521000' },
     { code: 'SAL', libelle: 'Journal des salaires', contrepartie: '422000' },
     { code: 'IMM', libelle: 'Journal des immobilisations', contrepartie: '241000' },
     { code: 'OD', libelle: 'Journal des opérations diverses', contrepartie: null },
