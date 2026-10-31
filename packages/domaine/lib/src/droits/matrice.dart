@@ -1,3 +1,5 @@
+import '../configuration/cfb_regles.dart' show CfbFermetures;
+
 /// Droits d'un rôle sur un écran : voir, éditer, annuler. « Lecture seule » n'est pas un quatrième droit : un écran
 /// visible sans droit d'éditer EST en lecture seule.
 class Droit {
@@ -30,8 +32,27 @@ class Droit {
 /// Règle d'or, inverse de celle de la maquette pour un rôle sans fiche : ici **tout ce qui n'est pas listé est refusé**.
 /// La matrice extraite est déjà résolue (surcharges d'écran, modules, écrans universels) ; ce moteur ne recalcule rien.
 class MatriceDroits {
-  MatriceDroits._(
-      this._parRole, this._archives, this._libelles, this._accueils);
+  MatriceDroits._(this._parRole, this._archives, this._libelles, this._accueils,
+      [this.rolesBruts = const [], this.fermetures]);
+
+  /// Assemblage public pour la SUPERPOSITION à chaud (`superposerDroits`, `a_chaud.dart`) : la matrice y est recalculée, jamais relue du JSON.
+  MatriceDroits.assemblee(
+      {required Map<String, Map<String, Droit>> parRole,
+      required Set<String> archives,
+      required Map<String, String> libelles,
+      required Map<String, String> accueils,
+      required List<Map<String, Object?>> rolesBruts,
+      required CfbFermetures fermetures})
+      : this._(parRole, archives, libelles, accueils, rolesBruts, fermetures);
+
+  /// Les rôles tels que `rbac.json` les porte (libellés d'origine compris) : la base de la superposition.
+  final List<Map<String, Object?>> rolesBruts;
+
+  /// Les activités fermées en vigueur (`modulesActifs`). `null` = matrice engendrée seule : les fermetures sont déjà cuites dans le JSON.
+  final CfbFermetures? fermetures;
+
+  /// L'écran est-il ouvert (aucune activité fermée ne le retire) ? Sans fermetures connues, tout est réputé ouvert.
+  bool ecranActif(String id, String module) => fermetures?.ecranActif(id, module) ?? true;
 
   final Map<String, Map<String, Droit>> _parRole;
   final Set<String> _archives;
@@ -64,6 +85,7 @@ class MatriceDroits {
         for (final r in roles)
           if (r['home'] != null) '${r['id']}': '${r['home']}'
       },
+      [for (final r in roles) r.cast<String, Object?>()],
     );
   }
 

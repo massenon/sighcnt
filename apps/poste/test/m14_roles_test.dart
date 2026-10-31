@@ -89,8 +89,8 @@ void main() {
     expect(find.text('ACTIONS'), findsOneWidget);
     expect(find.text('Imprimer la matrice'), findsOneWidget);
     expect(find.text('Nouveau rôle'), findsOneWidget);
-    // L'articulation avec le moteur de droits du poste est DITE.
-    expect(find.textContaining('Le moteur de droits du poste (MatriceDroits) ne les relit pas encore'), findsOneWidget);
+    // L'articulation avec le moteur de droits du poste est DITE : les décisions sont effectives aussitôt.
+    expect(find.textContaining('Elles sont effectives aussitôt'), findsOneWidget);
   });
 
   casM14('la matrice affichée reprend celle de la matrice engendrée du poste, case par case (réception : M1 plein sauf annuler → partiel)', (t) async {

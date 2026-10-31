@@ -103,7 +103,10 @@ async function extraireRbac() {
           const entree = N.get(e.id);
           let visible = false; try { visible = !!N.can(ro.id, { roles: entree.roles, module: entree.module, id: e.id, universel: entree.universel, servant: entree.servant }); } catch (x) { visible = false; }
           if (!visible) return;
-          const d = N.droitsEcran(ro.id, e.id, e.module);
+          /* Une PAGE DE SAISIE porte les droits du registre qu'elle alimente (`servant`, comme `app.droits` à l'exécution) : lire les siens sur son
+             module donnait au caissier l'écriture de la feuille d'inventaire qu'il lit, et retirait à l'échographiste celle du compte rendu. */
+          const cible = N.ecranDesDroits(entree); const regle = (cible && N.get(cible)) || entree;
+          const d = N.droitsEcran(ro.id, cible, regle.module);
           parRole[ro.id][e.id] = [d.voir ? 1 : 0, d.editer ? 1 : 0, d.annuler ? 1 : 0];
         });
       });

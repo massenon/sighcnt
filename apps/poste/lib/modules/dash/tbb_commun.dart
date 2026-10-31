@@ -147,7 +147,8 @@ class ParcoursSigh extends StatelessWidget {
         final nav = snap.data;
         // Un identifiant inconnu de la matrice est fermé : mieux vaut ne rien promettre. Tant que les données de navigation ne sont pas chargées (une image,
         // au démarrage), rien n'est retiré : la coque refuse de toute façon d'ouvrir un écran fermé au rôle (`aller`).
-        bool ouvert(String? id) => id == null || nav == null || nav.matrice.peutVoir(c.role, id);
+        // La coque tient la matrice À CHAUD (`ouvre`) : une fiche `rbac` ou une activité fermée change aussitôt les étapes cliquables.
+        bool ouvert(String? id) => id == null || (c.ouvre != null ? c.ouvre!(id) : (nav == null || nav.matrice.peutVoir(c.role, id)));
         return LayoutBuilder(builder: (context, k) {
           final deux = k.maxWidth >= 1024;
           final l = deux ? (k.maxWidth - 16) / 2 : k.maxWidth;

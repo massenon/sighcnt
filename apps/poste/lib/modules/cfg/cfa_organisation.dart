@@ -304,7 +304,9 @@ class _OngletRoles extends StatelessWidget {
     final c = ContexteEcran.of(context);
     final plats = c.magasin.collection('postes').actives;
     final memo = <String, List<String>>{};
-    List<String> modules(Object? role) => memo.putIfAbsent('$role', () => cfaModulesDuRole(c.magasin, nav, '$role'));
+    // DROITS À CHAUD (A4) : la matrice en force est l'engendrée superposée aux fiches `rbac` et `modulesActifs`, calculée UNE fois pour les 16 postes.
+    final vive = nav.aChaud(c.magasin);
+    List<String> modules(Object? role) => memo.putIfAbsent('$role', () => cfaModulesDuRole(c.magasin, vive, '$role'));
     final lignes = [
       for (final p in plats) {'poste': p['poste'], 'effectif': p['effectif'], 'titulaire': cfaOuTiret(p['titulaire']), 'role': p['role']}
     ];

@@ -89,9 +89,39 @@ void main() {
     ],
   });
 
-  Future<Parite?> mesurer(WidgetTester t, String id, String role) async {
+  // ACTIVITÉS FERMÉES (modulesActifs, E203) : la coque ne sert pas un écran dont l'activité est fermée, pour aucun rôle (elle affiche « Activité
+  // fermée » avec le motif). Les fiches de la maquette de ces écrans sont extraites ACTIVITÉ ROUVERTE : leur N1 se mesure donc sur le même état,
+  // fiche de fermeture archivée (RG-14) le temps de la mesure, puis restaurée. Paramètres additifs de `mesurer` : `activiteRouverte` (rouvre l'activité
+  // de l'écran) et `fixture` (collections posées le temps de la mesure : la maquette amorce poches et donneurs À L'OUVERTURE de l'écran, le jeu du poste
+  // n'en porte pas, et les en-têtes d'un tableau vide ne se dessinent pas ; ce sont les jeux des vecteurs de la maquette, ceux de `m5_sang_test`).
+  final fermes = <String>{
+    for (final f in magasin.collection('modulesActifs').actives)
+      for (final e in ((f['ecrans'] as List?) ?? const [])) '$e'
+  };
+  final vecteursSang = (jsonDecode(File('../../packages/domaine/test/vecteurs/sang.json').readAsStringSync()) as Map).cast<String, Object?>();
+  List<Map<String, Object?>> lignes(Object? v) => [for (final x in (v as List)) (x as Map).cast<String, Object?>()];
+  final fixtures = <String, Map<String, List<Map<String, Object?>>>>{
+    'm5-banque-sang': {'poches': lignes((vecteursSang['banque'] as Map)['poches'])},
+    'm5-donneurs': {'donneurs': lignes((vecteursSang['donneurs'] as Map)['donneurs'])},
+  };
+  Future<Parite?> mesurer(WidgetTester t, String id, String role,
+      {bool activiteRouverte = false, Map<String, List<Map<String, Object?>>> fixture = const {}}) async {
     final f = fiche(id);
     if (f == null || f['acces'] != 'ouvert') return null;
+    // `remplacerContenu` ne journalise pas : la mesure ne laisse aucune trace dans le journal d'audit que d'autres écrans affichent.
+    final colModules = magasin.collection('modulesActifs');
+    final avant = [for (final fm in colModules.toutes) {...fm}];
+    if (activiteRouverte) {
+      colModules.remplacerContenu([
+        for (final fm in avant)
+          ((fm['ecrans'] as List?) ?? const []).contains(id) ? {...fm, 'statut': 'archive'} : fm
+      ]);
+    }
+    final avantFixture = {
+      for (final k in fixture.keys) k: [for (final fm in magasin.collection(k).toutes) {...fm}]
+    };
+    fixture.forEach((k, v) => magasin.collection(k).remplacerContenu(v));
+
     t.view.physicalSize = const Size(1440, 900);
     t.view.devicePixelRatio = 1;
     addTearDown(t.view.resetPhysicalSize);
@@ -120,7 +150,11 @@ void main() {
     for (var i = 0; i < 4; i++) {
       await t.pump(const Duration(milliseconds: 100));
     }
-    return comparerContenu(id, f, textesVisibles(t));
+    final mesure = comparerContenu(id, f, textesVisibles(t));
+    // L'activité est refermée aussitôt : les écrans mesurés ensuite retrouvent le jeu tel qu'il est.
+    if (activiteRouverte) colModules.remplacerContenu(avant);
+    avantFixture.forEach((k, v) => magasin.collection(k).remplacerContenu(v));
+    return mesure;
   }
 
   final portes = ecransPortes(
@@ -140,7 +174,7 @@ void main() {
       (t) async {
     final rapport = <Map<String, Object?>>[];
     for (final id in portes) {
-      final p = await mesurer(t, id, 'admin');
+      final p = await mesurer(t, id, 'admin', activiteRouverte: fermes.contains(id), fixture: fixtures[id] ?? const {});
       if (p == null) {
         rapport.add({
           'id': id,

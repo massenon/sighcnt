@@ -19,8 +19,8 @@ import 'commun_m14.dart';
 ///  * cet écran part de la MÊME matrice (la collection `rolesBase`, dérivée de ce JSON par `gen-jeu-securite.js`, lue sans jamais être écrite) et y pose les
 ///    décisions de l'administrateur, collection `rbac` (une fiche par rôle, calquée sur la maquette), que `packages/domaine/src/securite/sec_roles.dart`
 ///    applique comme `N.droits()` de la maquette ;
-///  * ces décisions sont consignées et journalisées (RG-12) mais `MatriceDroits` ne les relit pas : fermer un module ici ne retire pas encore l'écran du ruban
-///    du poste. Le pas suivant est de régénérer la matrice engendrée depuis ces fiches. L'écran le dit en pied de page.
+///  * ces décisions sont consignées et journalisées (RG-12) ET EFFECTIVES AUSSITÔT : la coque recalcule sa matrice à chaud (`superposerDroits`, domaine) à
+///    chaque écriture de la collection `rbac` ou de `modulesActifs`. Fermer un module ici retire ses écrans du ruban, des accès rapides et de leurs adresses.
 /// La connexion refusée d'un rôle archivé (et sa tentative journalisée dans `tentativesConnexion`) est celle du serveur d'authentification : le poste n'ouvre
 /// pas de session par compte, il n'écrit donc jamais de tentative — l'onglet lit celles que la collection porte.
 class EcranRoles extends StatelessWidget with EcranMaquette {
@@ -250,9 +250,9 @@ class _VueRolesState extends State<_VueRoles> {
       ),
       const SizedBox(height: 16),
       const NoteSigh(
-          'Articulation avec le moteur de droits du poste : les décisions saisies ici sont consignées dans la collection « rbac » et journalisées (RG-12) ; cette matrice les superpose à la matrice engendrée du poste (rbac.json). Le moteur de droits du poste (MatriceDroits) ne les relit pas encore : le ruban et les accès du poste restent ceux de la matrice engendrée.',
-          ton: TonSigh.attention,
-          icone: LucideIcons.triangleAlert),
+          'Articulation avec le moteur de droits du poste : les décisions saisies ici sont consignées dans la collection « rbac » et journalisées (RG-12). Elles sont effectives aussitôt : le poste recalcule sa matrice à chaud en superposant ces fiches et les activités fermées à la matrice engendrée (rbac.json), de sorte que le ruban, les accès rapides et les adresses des écrans suivent.',
+          ton: TonSigh.info,
+          icone: LucideIcons.info),
     ]);
   }
 }

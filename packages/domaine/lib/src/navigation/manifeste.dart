@@ -13,7 +13,10 @@ class EcranNav {
       required this.moduleLabel,
       required this.domaine,
       required this.hub,
-      required this.standalone});
+      required this.standalone,
+      this.roles,
+      this.universel = false,
+      this.servant});
   final String id;
   final String label;
   final String? icone;
@@ -22,6 +25,15 @@ class EcranNav {
   final String domaine;
   final bool hub;
   final bool standalone;
+
+  /// Rôles que le MANIFESTE ouvre à l'écran (`null` = tous, le `'*'` de la maquette) : l'origine des droits, avant toute surcharge.
+  final List<String>? roles;
+
+  /// Écran universel (`m7-besoins`) : ouvert à tout poste, jamais en annulation ; ne rouvre pas un module fermé.
+  final bool universel;
+
+  /// Page de saisie : ses droits se résolvent sur le registre qu'elle alimente.
+  final String? servant;
 }
 
 class RangeeManifeste {
@@ -109,6 +121,9 @@ class Manifeste {
         domaine: '${e['domaine']}',
         hub: e['hub'] == true,
         standalone: e['standalone'] == true,
+        roles: e['roles'] is List ? [for (final r in (e['roles'] as List)) '$r'] : null,
+        universel: e['universel'] == true,
+        servant: s(e['servant']),
       );
     }
     return Manifeste._(

@@ -15,6 +15,7 @@ import 'contexte_ecran.dart';
 import 'contexte_autonome.dart';
 import '../modules/auth/acc_session.dart';
 import 'acces_rapides.dart';
+import 'activite_fermee.dart';
 import '../donnees/magasin.dart';
 import 'ruban.dart';
 
@@ -68,6 +69,31 @@ class _CoquePosteState extends State<CoquePoste> {
   Timer? _minuteur;
   String _courantAffiche = '';
 
+  /// Les données de navigation EN FORCE : la matrice engendrée (`rbac.json`) superposée, À CHAUD, aux collections `rbac` (surcharges de m14-roles) et
+  /// `modulesActifs` (activités fermées de cfg-modules), comme `N.can()` de la maquette. Recalculées à chaque écriture de l'une ou l'autre.
+  late DonneesNavigation _nav;
+  Listenable? _ecouteDroits;
+
+  DonneesNavigation _calculerNav() {
+    final m = widget.magasin;
+    return m == null ? widget.donnees : widget.donnees.aChaud(m);
+  }
+
+  void _brancherDroits() {
+    _ecouteDroits?.removeListener(_surDroits);
+    _ecouteDroits = null;
+    _nav = _calculerNav();
+    final m = widget.magasin;
+    if (m != null) {
+      _ecouteDroits = Listenable.merge([m.collection('rbac'), m.collection('modulesActifs')])..addListener(_surDroits);
+    }
+  }
+
+  void _surDroits() {
+    if (!mounted) return;
+    setState(() => _nav = _calculerNav());
+  }
+
   SessionPoste? get _session => widget.session;
   String get _role => _session?.role ?? widget.config.role;
 
@@ -77,6 +103,7 @@ class _CoquePosteState extends State<CoquePoste> {
   @override
   void initState() {
     super.initState();
+    _brancherDroits();
     final demande = widget.ecranInitial;
     if (demande != null && _estAutonome(demande)) _autonome = demande;
     final s = _session;
@@ -90,7 +117,14 @@ class _CoquePosteState extends State<CoquePoste> {
   }
 
   @override
+  void didUpdateWidget(CoquePoste ancien) {
+    super.didUpdateWidget(ancien);
+    if (!identical(ancien.magasin, widget.magasin) || !identical(ancien.donnees, widget.donnees)) _brancherDroits();
+  }
+
+  @override
   void dispose() {
+    _ecouteDroits?.removeListener(_surDroits);
     _minuteur?.cancel();
     _session?.removeListener(_surSession);
     if (_session != null) HardwareKeyboard.instance.removeHandler(_surClavier);
@@ -132,13 +166,13 @@ class _CoquePosteState extends State<CoquePoste> {
   }
 
   List<DomaineRuban> get _ruban =>
-      widget.donnees.manifeste.ruban(widget.donnees.matrice, _role,
+      _nav.manifeste.ruban(_nav.matrice, _role,
           estMere: widget.config.estMere);
 
   /// Page d'accueil du rôle (`home` de la maquette) si le rôle la voit, sinon le premier écran de son ruban.
   String? _accueil(List<DomaineRuban> ruban) {
-    final home = widget.donnees.matrice.accueil(_role);
-    if (home != null && widget.donnees.matrice.peutVoir(_role, home)) return home;
+    final home = _nav.matrice.accueil(_role);
+    if (home != null && _nav.matrice.peutVoir(_role, home)) return home;
     return ruban.isEmpty ? null : ruban.first.rangees.first.ecrans.first.id;
   }
 
@@ -147,7 +181,7 @@ class _CoquePosteState extends State<CoquePoste> {
       setState(() => _autonome = id);
       return;
     }
-    final e = widget.donnees.manifeste.ecran(id);
+    final e = _nav.manifeste.ecran(id);
     setState(() {
       _autonome = null;
       _ecran = id;
@@ -161,6 +195,13 @@ class _CoquePosteState extends State<CoquePoste> {
       // Un clic sur une pastille referme le panneau : la page appelée s'ouvre menu replié (comme la maquette).
       _panneauOuvert = false;
     });
+  }
+
+  /// La fiche de `modulesActifs` qui ferme l'écran (`fermeturePour`), `null` s'il est ouvert. Un rôle archivé n'est pas informé : il n'ouvre plus rien.
+  Map<String, Object?>? _fermeturePour(String id) {
+    final e = _nav.manifeste.ecran(id);
+    if (e == null || _nav.matrice.estArchive(_role)) return null;
+    return _nav.matrice.fermetures?.fermeturePour(id, e.module);
   }
 
   /// L'accueil du profil courant : sa page d'accueil si le rôle la voit, sinon le premier écran de son ruban, sinon le plan du site.
@@ -181,12 +222,12 @@ class _CoquePosteState extends State<CoquePoste> {
       _ouvrir('index');
       return;
     }
-    final connu = widget.donnees.manifeste.ecran(id) != null || id.startsWith('hub-');
+    final connu = _nav.manifeste.ecran(id) != null || id.startsWith('hub-');
     if (!connu) {
       if (_estAutonome('error-404')) _ouvrir('error-404');
       return;
     }
-    if (!id.startsWith('hub-') && !widget.donnees.matrice.peutVoir(_role, id)) {
+    if (!id.startsWith('hub-') && !_nav.matrice.peutVoir(_role, id)) {
       widget.magasin?.journaliser('Accès refusé', 'M14', 'Ecran', id, null, {'role': _role});
       if (_estAutonome('error-403')) _ouvrir('error-403');
       return;
@@ -200,7 +241,7 @@ class _CoquePosteState extends State<CoquePoste> {
     final porte = widget.ecrans[id];
     if (porte == null) return const Scaffold(body: Center(child: Text('Écran inconnu.')));
     final publique = accEcransPublics.contains(id);
-    widget.magasin?.utilisateur = _session?.compte?.nom ?? widget.donnees.matrice.libelle(_role) ?? _role;
+    widget.magasin?.utilisateur = _session?.compte?.nom ?? _nav.matrice.libelle(_role) ?? _role;
     if (widget.horloge != null) widget.magasin?.horloge = widget.horloge!;
     return KeyedSubtree(
         key: ValueKey('autonome|$id'),
@@ -209,7 +250,7 @@ class _CoquePosteState extends State<CoquePoste> {
                 ecranId: id,
                 config: widget.config,
                 magasin: widget.magasin ?? _magasinVide,
-                donnees: publique ? null : widget.donnees,
+                donnees: publique ? null : _nav,
                 session: publique ? null : _session,
                 horloge: widget.horloge ?? _session?.horloge,
                 publique: publique,
@@ -254,7 +295,7 @@ class _CoquePosteState extends State<CoquePoste> {
   Widget _coquePrincipale(BuildContext context) {
     final ruban = _ruban;
     final libelleMode = widget.config.estMere ? 'poste mère' : 'poste fileul';
-    final nomRole = widget.donnees.matrice.libelle(_role) ??
+    final nomRole = _nav.matrice.libelle(_role) ??
         _role;
     if (ruban.isEmpty) {
       return Scaffold(
@@ -268,10 +309,12 @@ class _CoquePosteState extends State<CoquePoste> {
     }
     final demande = widget.ecranInitial;
     final visible = demande != null &&
-        widget.donnees.manifeste.ecran(demande) != null &&
-        (widget.donnees.matrice.peutVoir(_role, demande) ||
+        _nav.manifeste.ecran(demande) != null &&
+        (_nav.matrice.peutVoir(_role, demande) ||
             demande.startsWith('hub-'));
-    final courant = _ecran ?? (visible ? demande : _accueil(ruban)!);
+    // Une ACTIVITÉ FERMÉE ouverte par son adresse : la coque le dit (motif de la fiche) au lieu de renvoyer à l'accueil muet.
+    final fermee = demande != null && !visible && _fermeturePour(demande) != null;
+    final courant = _ecran ?? (visible || fermee ? demande : _accueil(ruban)!);
     _courantAffiche = courant;
     final domaine = _domaine ??
         ruban
@@ -289,7 +332,7 @@ class _CoquePosteState extends State<CoquePoste> {
             surAccueil: () => _ouvrir(_accueil(ruban)!)),
         Ruban(
           domaines: ruban,
-          raccourcis: widget.donnees.manifeste.raccourcis(ruban),
+          raccourcis: _nav.manifeste.raccourcis(ruban),
           domaineOuvert: domaine,
           ecranCourant: courant,
           panneauOuvert: _panneauOuvert,
@@ -309,7 +352,7 @@ class _CoquePosteState extends State<CoquePoste> {
   }
 
   Widget _page(String id, List<DomaineRuban> ruban, String libelleMode) {
-    final e = widget.donnees.manifeste.ecran(id);
+    final e = _nav.manifeste.ecran(id);
     final rangee = ruban
         .expand((d) => d.rangees.map((r) => (d, r)))
         .where((x) => x.$2.hub == id || x.$2.ecrans.any((s) => s.id == id))
@@ -321,29 +364,31 @@ class _CoquePosteState extends State<CoquePoste> {
       e?.label ?? id
     ];
     if (e == null) return const Center(child: Text('Écran inconnu.'));
+    final fermeture = _fermeturePour(id);
+    if (fermeture != null) return PageActiviteFermee(ecran: e, fermeture: fermeture, fil: fil);
     final porte = widget.ecrans[id];
     if (porte == null) {
-      return EcranAPorter(ecran: e, donnees: widget.donnees, fil: fil);
+      return EcranAPorter(ecran: e, donnees: _nav, fil: fil);
     }
     widget.magasin?.utilisateur =
-        widget.donnees.matrice.libelle(_role) ??
+        _nav.matrice.libelle(_role) ??
             _role;
     if (widget.horloge != null) widget.magasin?.horloge = widget.horloge!;
     return Builder(builder: (context) {
       // Les droits sont ceux de l'ÉCRAN (une surcharge d'écran l'emporte sur son module) ; un servant hérite du registre qu'il alimente.
-      final droit = widget.donnees.matrice.droit(_role, id);
+      final droit = _nav.matrice.droit(_role, id);
       return ContexteEcran(
         ecranId: id,
         role: _role,
         droit: droit,
         magasin: widget.magasin ?? _magasinVide,
-        utilisateur: widget.donnees.matrice.libelle(_role) ??
+        utilisateur: _nav.matrice.libelle(_role) ??
             _role,
         horloge: widget.horloge,
-        ouvre: (cible) => widget.donnees.matrice.peutVoir(_role, cible),
-        donnees: widget.donnees,
+        ouvre: (cible) => _nav.matrice.peutVoir(_role, cible),
+        donnees: _nav,
         aller: (cible) {
-          if (widget.donnees.matrice.peutVoir(_role, cible))
+          if (_nav.matrice.peutVoir(_role, cible))
             _ouvrir(cible);
         },
         child: Builder(builder: (context) {
