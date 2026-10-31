@@ -3108,10 +3108,10 @@ async function viderMessages(page) {
 
     /* --- La retenue figure au bulletin du mois choisi, une seule fois ------ */
     await ouvrir('m11-calcul.html');
-    const bul = await page.evaluate((employeId) => {
+    const bul = await page.evaluate(({ employeId, evenementId }) => {
       const S = window.SIGH.store;
       const parts = S.collection('participations').active()
-        .filter((x) => x.employeId === employeId && x.mode === 'salaire');
+        .filter((x) => x.employeId === employeId && x.mode === 'salaire' && x.evenementId === evenementId);
       const entetes = [...document.querySelectorAll('#page-content thead th')].map((x) => x.textContent);
       /* Le mois de retenue est unique : la participation ne se prélève pas
          chaque mois de l'année. */
@@ -3121,7 +3121,7 @@ async function viderMessages(page) {
         colonneEvenements: entetes.some((h) => /Événements/.test(h)),
         colonneAvance: entetes.some((h) => /Avance sur salaire/.test(h)),
       };
-    }, evt.premierAgent);
+    }, { employeId: evt.premierAgent, evenementId: evt.evenementId });
     verifier('Le détail du calcul porte une colonne « Avance sur salaire »', bul.colonneAvance);
     verifier('Le détail du calcul porte une colonne « Événements »', bul.colonneEvenements);
     verifier('La participation ne vise qu’un seul mois de retenue',

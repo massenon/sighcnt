@@ -2868,3 +2868,68 @@ CREATE INDEX IF NOT EXISTS "ix_poches_statut" ON "m5"."poches" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_poches_reference" ON "m5"."poches" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_poches_etat" ON "m5"."poches" ("etat");
 
+-- Paie et primes : avances, heures supplémentaires, bénéficiaires de primes
+CREATE SCHEMA IF NOT EXISTS "m10";
+CREATE SCHEMA IF NOT EXISTS "m11";
+CREATE TABLE IF NOT EXISTS "m11"."avances" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "employe_id" text,
+  "employe" text,
+  "matricule" text,
+  "service" text,
+  "date" date,
+  "montant" integer,
+  "nb_mensualites" integer,
+  "mensualite" integer,
+  "rembourse" integer,
+  "motif" text,
+  "statut_avance" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m11"."avances" IS 'Collection « avances » — M11 Paie & primes';
+CREATE INDEX IF NOT EXISTS "ix_avances_statut" ON "m11"."avances" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_avances_reference" ON "m11"."avances" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_avances_employe_id" ON "m11"."avances" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_avances_date" ON "m11"."avances" ("date");
+
+CREATE TABLE IF NOT EXISTS "m10"."beneficiaires_primes" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "prime_id" text,
+  "agent_id" text,
+  "debut" date,
+  "fin" text,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m10"."beneficiaires_primes" IS 'Collection « beneficiairesPrimes » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_beneficiaires_primes_statut" ON "m10"."beneficiaires_primes" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_beneficiaires_primes_prime_id" ON "m10"."beneficiaires_primes" ("prime_id");
+CREATE INDEX IF NOT EXISTS "ix_beneficiaires_primes_agent_id" ON "m10"."beneficiaires_primes" ("agent_id");
+
+CREATE TABLE IF NOT EXISTS "m11"."heures_sup" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "periode" text,
+  "employe_id" text,
+  "employe" text,
+  "matricule" text,
+  "service" text,
+  "heures" integer,
+  "taux_horaire" integer,
+  "majoration" integer,
+  "montant" integer,
+  "motif" text,
+  "valide" boolean,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m11"."heures_sup" IS 'Collection « heuresSup » — M11 Paie & primes';
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_statut" ON "m11"."heures_sup" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_reference" ON "m11"."heures_sup" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_periode" ON "m11"."heures_sup" ("periode");
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_employe_id" ON "m11"."heures_sup" ("employe_id");
+
