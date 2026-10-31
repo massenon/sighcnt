@@ -186,5 +186,13 @@
  "m12-ecritures": "porté",
  "m12-depenses": "porté",
  "m12-grand-livre": "porté",
- "m12-balance": "porté"
+ "m12-balance": "porté",
+ "m10-planning": "porté",
+ "m10-stats-gardes": "porté",
+ "m10-stats-permanences": "porté",
+ "m10-stats-presence": "porté",
+ "m10-presences": "porté",
+ "m10-evaluations": "porté",
+ "m10-sanctions": "porté",
+ "m10-primes": "porté"
 }
