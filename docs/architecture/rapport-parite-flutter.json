@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 205,
+ "ecrans_portes": 229,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -28,6 +28,62 @@
    "manquants": []
   },
   {
+   "id": "cfg-branding",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-catalogue",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-certificats",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-entetes",
+   "mesure": true,
+   "attendus": 7,
+   "presents": 7,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-imagerie-catalogue",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-natures-facture",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-organisation",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "cfg-poste",
    "mesure": true,
    "attendus": 5,
@@ -38,6 +94,30 @@
     "mode de ce poste",
     "service de synchronisation"
    ]
+  },
+  {
+   "id": "cfg-rappels",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-tarifs",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-types-piece",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "enquete-publique",
@@ -381,10 +461,74 @@
    "manquants": []
   },
   {
+   "id": "m12-analytique",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m12-balance",
    "mesure": true,
    "attendus": 19,
    "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-banques",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-baseline-2025",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-bfr",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-budgets",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-cloture",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-compte-resultat",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-cout-activite",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
    "taux": 1.0,
    "manquants": []
   },
@@ -405,10 +549,34 @@
    "manquants": []
   },
   {
+   "id": "m12-echeances",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m12-ecritures",
    "mesure": true,
    "attendus": 21,
    "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-etats-financiers",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-flux-tresorerie",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
    "taux": 1.0,
    "manquants": []
   },
@@ -421,7 +589,23 @@
    "manquants": []
   },
   {
+   "id": "m12-immobilisations",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m12-journaux",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-ouverture",
    "mesure": true,
    "attendus": 15,
    "presents": 15,
@@ -433,6 +617,14 @@
    "mesure": true,
    "attendus": 20,
    "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-seuil-rentabilite",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
    "taux": 1.0,
    "manquants": []
   },
