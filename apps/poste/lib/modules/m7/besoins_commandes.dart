@@ -217,7 +217,7 @@ class EcranCommandes extends StatelessWidget with EcranMaquette {
 void _imprimer(BuildContext ctx, Fiche cm) => imprimerPiece(
     ctx,
     (c) => pieceCommande(cm,
-        utilisateur: c.utilisateur, edite: c.aujourdhui, reference: refEtat(c)));
+        utilisateur: acteur(c).nom, edite: c.aujourdhui, reference: refEtat(c)));
 
 Future<void> _valider(BuildContext ecran, Fiche cm) async {
   final c = ContexteEcran.of(ecran);

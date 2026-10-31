@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
+import '../../kit/acteur.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun.dart';
 
@@ -18,7 +19,7 @@ Future<void> imprimerFacture(BuildContext ctx, Fiche f,
       pieceFacture(f,
           proforma: proforma,
           jumelle: jumelle,
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference: _ref(c)));
 }
@@ -29,7 +30,7 @@ Future<void> imprimerRecu(BuildContext ctx, Fiche f, {Fiche? versement}) {
       ctx,
       pieceRecu(f,
           versement: versement,
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference: _ref(c)));
 }
@@ -39,5 +40,5 @@ Future<void> imprimerEngagement(BuildContext ctx, Fiche f) {
   return afficherApercu(
       ctx,
       pieceEngagement(f,
-          utilisateur: c.utilisateur, edite: c.aujourdhui, reference: _ref(c)));
+          utilisateur: acteur(c).nom, edite: c.aujourdhui, reference: _ref(c)));
 }

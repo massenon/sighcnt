@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:sigh_domaine/sigh_domaine.dart' show cpcGardeEcritures;
+import 'package:sigh_domaine/sigh_domaine.dart' show Agent, cpcGardeEcritures;
 
 typedef Fiche = Map<String, Object?>;
 
@@ -177,6 +177,16 @@ class Magasin {
   /// Agent connecté, posé par la coque : le journal ne connaît jamais d'action anonyme.
   String utilisateur = 'Système';
 
+  /// L'agent NOMINATIF de la session (A1) : quand il est posé, chaque entrée du journal porte aussi son identifiant de compte et son matricule, pas
+  /// seulement un nom. `null` : aucune session nominative (le journal garde alors [utilisateur] seul, comme avant).
+  Agent? acteur;
+
+  /// La coque pose l'acteur de la session : le nom du journal en découle. Un seul geste, pour que le nom et l'identifiant ne divergent jamais.
+  void poserActeur(Agent a) {
+    acteur = a;
+    utilisateur = a.nom;
+  }
+
   /// Horloge du journal (fixable par un test).
   DateTime Function() horloge = DateTime.now;
 
@@ -310,6 +320,7 @@ class Magasin {
     'assureurs': 'M9',
     'relances': 'M9',
     'utilisateurs': 'M14',
+    'identifiants': 'M14',
     'rbac': 'M14',
     'tentativesConnexion': 'M14',
     'fichiersSauvegarde': 'M14',
@@ -335,7 +346,12 @@ class Magasin {
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
   CollectionMagasin collection(String nom) => _c.putIfAbsent(nom, () {
         final c = CollectionMagasin(nom, _jeux[nom] ?? const [],
-            journal: nom == 'audit' ? null : journaliser,
+            // `identifiants` (hachés des mots de passe) : le journal inscrit le GESTE et la référence, JAMAIS les valeurs avant / après.
+            journal: nom == 'audit'
+                ? null
+                : (nom == 'identifiants'
+                    ? (a, m, e, r, avant, apres) => journaliser(a, m, e, r, null, null)
+                    : journaliser),
             module: _modules[nom] ?? '—');
         // `S.garder('ecritures', …)` de la maquette : la lecture seule d'un exercice clos est tenue AU MOTEUR, sur la collection — masquer un bouton ne
         // protège rien. La garde relit les exercices À CHAQUE écriture (une clôture validée ferme aussitôt).
@@ -355,6 +371,7 @@ class Magasin {
       'id': 'LOG${n.toString().padLeft(5, '0')}',
       'dateHeure': horloge().toIso8601String(),
       'utilisateur': utilisateur,
+      if (acteur != null) ...{'utilisateurId': acteur!.utilisateurId, if (acteur!.matricule.isNotEmpty) 'matricule': acteur!.matricule},
       'action': action,
       'module': module,
       'entite': entite,

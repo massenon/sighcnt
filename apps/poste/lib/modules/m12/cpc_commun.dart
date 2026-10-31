@@ -22,8 +22,12 @@ void amorcerExercices(Magasin m, DateTime auj) {
 
 List<Fiche> exercicesActifs(Magasin m) => cpcListeExercices(m.collection('exercices').toutes);
 
-/// Le nom de l'agent porté par chaque geste (RG-12). Le poste ne connaît que le libellé du rôle de la session (écart E800).
-String acteurDe(ContexteEcran c) => c.utilisateur.isEmpty ? 'Utilisateur' : c.utilisateur;
+/// Le nom de l'agent porté par chaque geste (RG-12) : celui de l'agent de la session (A1, E800 levé). L'IDENTIFIANT ([acteurIdDe]) sert aux contrôles
+/// de séparation des tâches ; le nom, à l'affichage et aux pièces.
+String acteurDe(ContexteEcran c) => acteurNom(c);
+
+/// L'identifiant du compte de l'agent : la clé de « demandeur différent du validateur », jamais le libellé du rôle.
+String acteurIdDe(ContexteEcran c) => acteur(c).utilisateurId;
 
 /// L'écran d'un contrôle de pré-clôture, nommé comme au manifeste (« → Écritures comptables »).
 const Map<String, String> libellesEcransM12 = {

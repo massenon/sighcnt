@@ -58,7 +58,7 @@ class EcranDonneurs extends StatelessWidget with EcranMaquette {
             ],
             reference:
                 PieceA4.reference_(auj, ImpressionPoste.prochainNumero()),
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: auj));
   }
 

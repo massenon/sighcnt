@@ -7,6 +7,7 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
+import '../../kit/acteur.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 
@@ -17,33 +18,47 @@ import '../../shell/contexte_ecran.dart';
 /// la fonction est donc DÉDUITE du rôle (`ROLE_VERS_FONCTION`, repli de la maquette) tant que la coque n'expose pas la fonction, le secteur et
 /// l'identifiant de l'agent — les écrans les acceptent en paramètres pour qu'elle les branche sans retoucher les écrans.
 class ProfilLabo {
-  const ProfilLabo(this.session, this.agentId, this.agentNom);
+  const ProfilLabo(this.session, this.agentId, this.agentNom, [this.identifiants = const []]);
   final SessionLabo session;
   final String? agentId;
   final String agentNom;
+
+  /// Tous les identifiants de l'agent (compte, dossier RH, fiche de soignant) : la continuité du prélèvement les compare à `preleveParId` (A1).
+  final List<String> identifiants;
   CapaciteLabo get cap => capacites(session);
 }
 
 ProfilLabo profilLabo(ContexteEcran c,
     {String? fonction, String? secteur, String? agentId}) {
-  var id = agentId;
+  final a = acteur(c);
+  // A1 : l'agent de la session porte sa fonction (dossier RH) et son secteur (code NS 145). Un paramètre explicite d'un écran l'emporte (tests, appels
+  // paramétrés) ; sans agent nominatif, la fonction est DÉDUITE du rôle comme avant (E170, E375 : repli de la maquette).
+  var id = agentId ?? a.personnelId;
   if (id == null) {
     for (final p in c.magasin.collection('personnel').actives) {
-      if (p['nomComplet'] == c.utilisateur) {
+      if (p['nomComplet'] == a.nom) {
         id = '${p['id']}';
         break;
       }
     }
   }
+  final ids = <String>{
+    if (!a.demonstration) a.utilisateurId,
+    if (id != null) id,
+    if (a.personnelId != null)
+      for (final s in c.magasin.collection('soignants').actives)
+        if ('${s['personnelId']}' == a.personnelId) '${s['id']}',
+  };
   return ProfilLabo(
       SessionLabo(
           role: c.role,
-          fonction: fonction,
-          secteur: secteur,
+          fonction: fonction ?? a.fonction,
+          secteur: secteur ?? a.secteur,
           id: id,
-          nom: c.utilisateur),
+          nom: a.nom),
       id,
-      c.utilisateur);
+      a.nom,
+      ids.toList());
 }
 
 /// `D.resultatRendu(etat)` sur un état de type quelconque (le domaine en porte deux écritures : celle des états du résultat, qui accepte tout).
@@ -398,7 +413,7 @@ Future<void> imprimerResultat(BuildContext ctx, Fiche r) {
         titre: 'Résultat d’analyse de laboratoire',
         sousTitre: '${r['reference']}',
         reference: _reference(c),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         cartouche: [
           ('Patient', '${r['patient']}'),
@@ -545,7 +560,7 @@ Future<void> imprimerCompteRendu(
         sousTitre:
             '${pat != null ? '${pat['nom']} ${pat['prenom']}' : ''} — ${nombre(rendus.length)} examen(s)',
         reference: _reference(c),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         filigrane: valides < rendus.length ? 'PROVISOIRE' : null,
         cartouche: [

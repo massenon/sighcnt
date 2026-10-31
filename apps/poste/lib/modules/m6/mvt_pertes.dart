@@ -118,7 +118,7 @@ class EcranPertes extends StatelessWidget with EcranMaquette {
       titre: 'Constat de pertes et casses',
       sousTitre: 'Période cumulée — situation au ${dateFR(c.aujourdhui)}',
       reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-      utilisateur: c.utilisateur,
+      utilisateur: acteur(c).nom,
       edite: c.aujourdhui,
       cartouche: [
         ('Événements', nombre(mvts.length)),
@@ -171,7 +171,7 @@ class EcranPertes extends StatelessWidget with EcranMaquette {
       'date': iso(c.aujourdhui),
       'type': 'casse',
       'quantite': '1',
-      'constatePar': c.utilisateur,
+      'constatePar': acteur(c).nom,
     });
     afficherModale<void>(ctx,
         titre: 'Déclarer une perte',
@@ -207,7 +207,7 @@ class EcranPertes extends StatelessWidget with EcranMaquette {
                           justificatif: '${v['justificatif']}',
                           constatePar: '${v['constatePar']}',
                           observation: '${v['observation'] ?? ''}',
-                          utilisateur: c.utilisateur,
+                          utilisateur: acteur(c).nom,
                           mouvements: mouvements.toutes);
                     } on RefusStock catch (e) {
                       ToastsSigh.afficher(ctx, e.motif, type: TypeToast.erreur, detail: e.detail);

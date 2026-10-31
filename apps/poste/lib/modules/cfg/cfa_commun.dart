@@ -138,7 +138,7 @@ void cfaSaisir(BuildContext ctx,
                   final f = fiche(saisie, existante);
                   fermer();
                   if (existante == null) {
-                    final r = col.inserer({'statut': 'actif', ...f, '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: prefixeId);
+                    final r = col.inserer({'statut': 'actif', ...f, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: prefixeId);
                     ToastsSigh.afficher(ctx, '$entite créé.',
                         type: TypeToast.succes,
                         detail: cfaVrai(r.fiche['libelle']) ? '${r.fiche['libelle']}' : cfaVrai(r.fiche['designation']) ? '${r.fiche['designation']}' : cfaVrai(r.fiche['code']) ? '${r.fiche['code']}' : null,

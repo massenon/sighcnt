@@ -188,7 +188,7 @@ class _CarteApercu extends StatelessWidget {
               Container(
                   padding: const EdgeInsets.only(top: 8),
                   decoration: const BoxDecoration(border: Border(top: BorderSide(color: JetonsShell.slate300))),
-                  child: Text(cfaPiedApercu(c.utilisateur, c.aujourdhui), style: const TextStyle(fontSize: 8, color: JetonsShell.slate500))),
+                  child: Text(cfaPiedApercu(acteur(c).nom, c.aujourdhui), style: const TextStyle(fontSize: 8, color: JetonsShell.slate500))),
             ])));
   }
 }
@@ -334,7 +334,7 @@ class _CarteRessources extends StatelessWidget {
                       'taille': octets.length,
                     };
                     if (remplace != null) col.archiver(remplace['id']);
-                    col.inserer({'statut': 'actif', ...fiche, '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'RES');
+                    col.inserer({'statut': 'actif', ...fiche, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'RES');
                     fermer();
                     ToastsSigh.afficher(ctx, 'Ressource « ${v['libelle']} » enregistrée.', type: TypeToast.succes, detail: 'Elle alimentera les états imprimables.');
                   }),

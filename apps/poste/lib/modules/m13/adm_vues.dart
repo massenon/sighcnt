@@ -497,7 +497,7 @@ class _EcranRepertoireState extends State<EcranRepertoireAmbulances> {
       fiche: (v, e) => e == null ? admSansNuls(admFicheAmbulance(v, c.aujourdhui)) : v);
 
   void _verifier(BuildContext ctx, ContexteEcran c, CollectionMagasin col, Fiche r) {
-    col.mettreAJour(r['id'], {'verifieLe': iso(c.aujourdhui), 'verifiePar': c.utilisateur});
+    col.mettreAJour(r['id'], {'verifieLe': iso(c.aujourdhui), 'verifiePar': acteur(c).nom});
     ToastsSigh.afficher(ctx, 'Numéro confirmé à jour.', type: TypeToast.succes, detail: '${r['libelle']}');
   }
 

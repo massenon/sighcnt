@@ -236,7 +236,7 @@ class _Corps extends StatelessWidget {
           titre: 'Compte rendu de consultation',
           sousTitre: '${r['type']} du ${texteDateCs(r['date'])}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Patient', '${r['patient']}'),

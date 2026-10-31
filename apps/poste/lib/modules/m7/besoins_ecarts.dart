@@ -128,7 +128,7 @@ class EcranEcarts extends StatelessWidget with EcranMaquette {
                       onPressed: () => imprimerPiece(
                           context,
                           (c) => pieceEcarts(rows,
-                              utilisateur: c.utilisateur,
+                              utilisateur: acteur(c).nom,
                               edite: c.aujourdhui,
                               reference: refEtat(c)))),
                 ],

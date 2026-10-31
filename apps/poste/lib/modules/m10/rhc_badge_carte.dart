@@ -205,7 +205,7 @@ Future<void> afficherApercuBadge(BuildContext ctx, ContexteEcran c, {required Fi
             CarteBadgeSigh(badge: badge, modele: modele, agent: agent, verso: true),
             Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text('Réf. $ref — ${c.utilisateur} — ${dateHeure(c.aujourdhui)}', style: const TextStyle(fontSize: 6, color: JetonsShell.slate400))),
+                child: Text('Réf. $ref — ${acteur(c).nom} — ${dateHeure(c.aujourdhui)}', style: const TextStyle(fontSize: 6, color: JetonsShell.slate400))),
           ]),
         )),
       ),
@@ -279,7 +279,7 @@ Future<void> afficherApercuPlanche(BuildContext ctx, ContexteEcran c, {required 
                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.end, children: [
                   Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     const Text('${IdentiteClinique.nom} — ${IdentiteClinique.rccm} — IFU ${IdentiteClinique.ifu}'),
-                    Text('Document généré par ${c.utilisateur} le ${dateHeure(c.aujourdhui)}'),
+                    Text('Document généré par ${acteur(c).nom} le ${dateHeure(c.aujourdhui)}'),
                   ]),
                   Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
                     Text('Réf. document : $ref', style: const TextStyle(fontFamily: 'LiberationMono')),
@@ -306,7 +306,7 @@ Future<void> afficherApercuPlanche(BuildContext ctx, ContexteEcran c, {required 
                 variante: VarianteBouton.secondaire,
                 onPressed: () async {
                   final ref = PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero());
-                  final octets = await pdfPlanche(modele: modele, badges: badges, reference: ref, utilisateur: c.utilisateur, edite: c.aujourdhui, polices: await PolicesPdf.charger());
+                  final octets = await pdfPlanche(modele: modele, badges: badges, reference: ref, utilisateur: acteur(c).nom, edite: c.aujourdhui, polices: await PolicesPdf.charger());
                   final chemin = await ImpressionPoste.enregistrer(octets, ref);
                   if (ctx.mounted) ToastsSigh.afficher(ctx, 'PDF enregistré.', type: TypeToast.succes, detail: chemin);
                 }),

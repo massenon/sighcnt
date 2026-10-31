@@ -6,9 +6,8 @@ enum EtatSession { deconnectee, connectee, verrouillee }
 
 /// La session du poste (équivalent de `S.session()` / `S.setSession()` de la maquette) et le VERROU d'inactivité (CDCT §12.2, vague 22).
 ///
-/// CE QUE CE N'EST PAS : une authentification. La maquette obtient son jeton du serveur, qui vérifie le haché ; le poste n'a pas d'authentification
-/// réelle (tâche A5 du document des limites : hachage Argon2id, sel par compte). [connecter] pose un compte RECONNU dans le jeu, sans preuve — la session
-/// du poste n'est pas une barrière tant que A5 n'est pas faite, et les écrans le disent.
+/// CE QUE CE N'EST PAS : le contrôle du mot de passe. [connecter] pose un compte DÉJÀ vérifié : la preuve (haché Argon2id, verrou après échecs, A5) est
+/// faite avant, par `ServiceIdentifiants.verifier`. Le compte porte l'agent NOMINATIF (A1) : identifiant, matricule, fonction, secteur.
 ///
 /// L'horloge est INJECTÉE : un test avance le temps (`horloge`) sans attendre quinze minutes.
 class SessionPoste extends ChangeNotifier {
@@ -39,6 +38,14 @@ class SessionPoste extends ChangeNotifier {
   EtatSession get etat => _etat;
   AccCompte? get compte => _compte;
   String? get role => _compte?.role;
+
+  /// L'agent NOMINATIF de la session (A1) : celui du compte reconnu ; pour un compte construit à la main (poste de développement, tests), l'agent de
+  /// démonstration de son rôle, nommé comme le compte. `null` tant que personne n'est connecté.
+  Agent? get agent {
+    final c = _compte;
+    if (c == null) return null;
+    return c.agent ?? agentDemonstration(c.role, nom: c.nom);
+  }
 
   /// L'adresse de retour posée au verrouillage (sans la consommer).
   AccRetour? get retour => verrou.retour;

@@ -189,7 +189,7 @@ class EcranRemboursements extends StatelessWidget with EcranMaquette {
     afficherApercu(
         ctx,
         pieceOperation(r,
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui,
             reference: PieceA4.reference_(
                 c.aujourdhui, ImpressionPoste.prochainNumero())));

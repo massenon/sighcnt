@@ -79,7 +79,7 @@ void imprimerM1(BuildContext ctx,
           blocs: blocs,
           signatures: signatures,
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui));
 }
 

@@ -231,7 +231,7 @@ class _Grille extends StatelessWidget {
               'dateEffet': dEffet,
               'dateFin': iso(ajouterJours(c.aujourdhui, -1)),
               'remplaceePar': 'Version du ${dateFR(c.aujourdhui)}',
-              'archiveePar': c.utilisateur,
+              'archiveePar': acteur(c).nom,
             }, prefixe: 'HPR');
           }
           final annuler = c.magasin.collection('grillePrimes').mettreAJour(prime['id'], {
@@ -240,7 +240,7 @@ class _Grille extends StatelessWidget {
             'version': ((prime['version'] as num?) ?? 1).toInt() + 1,
             'portee': portee,
             'modifieeLe': iso(c.aujourdhui),
-            'modifieePar': c.utilisateur,
+            'modifieePar': acteur(c).nom,
           });
           c.magasin.journaliser('Modification de la grille des primes', 'M10', 'Prime', '${prime['primeId']}', {'montants': avantM}, {'montants': apresM, 'portee': portee});
           ToastsSigh.afficher(ctx, 'Grille des primes modifiée.',
@@ -269,7 +269,7 @@ class _Grille extends StatelessWidget {
       'dateEffet': prime['dateEffet'] ?? rhbNs132DateEffet,
       'dateFin': iso(ajouterJours(c.aujourdhui, -1)),
       'remplaceePar': 'Prime retirée — $motif',
-      'archiveePar': c.utilisateur,
+      'archiveePar': acteur(c).nom,
     }, prefixe: 'HPR');
     final annuler = c.magasin.collection('grillePrimes').archiver(prime['id']);
     ToastsSigh.afficher(ctx, 'Prime retirée de la grille.', type: TypeToast.succes, detail: 'Archivage logique (RG-14) — restaurable depuis la corbeille.', annuler: annuler);

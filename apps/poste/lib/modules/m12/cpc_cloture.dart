@@ -104,7 +104,8 @@ class _EtatCloture extends State<EcranCloture> {
             'Les contrôles bloquants sont rejoués. Si tout est conforme, la demande part à la Direction pour validation : tant qu’elle n’est pas validée, rien n’est figé.',
         libelleOk: 'Demander la clôture');
     if (!ok || !ctx.mounted) return;
-    final r = cpcDemanderCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee, acteur: acteurDe(c), maintenant: c.aujourdhui);
+    final r = cpcDemanderCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee,
+        acteur: acteurDe(c), acteurId: acteurIdDe(c), maintenant: c.aujourdhui);
     if (!r.ok) {
       ToastsSigh.afficher(ctx, 'Demande refusée.', type: TypeToast.erreur, detail: r.motif);
       return;
@@ -150,7 +151,7 @@ class _EtatCloture extends State<EcranCloture> {
                   variante: VarianteBouton.danger,
                   onPressed: () {
                     final r = cpcValiderCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee,
-                        motif: '${motif['motif'] ?? ''}', acteur: acteurDe(c), role: c.role, maintenant: c.aujourdhui);
+                        motif: '${motif['motif'] ?? ''}', acteur: acteurDe(c), acteurId: acteurIdDe(c), role: c.role, maintenant: c.aujourdhui);
                     if (!r.ok) {
                       ToastsSigh.afficher(ctx, 'Clôture refusée.', type: TypeToast.erreur, detail: r.motif);
                       return;

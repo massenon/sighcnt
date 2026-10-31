@@ -530,7 +530,10 @@ RhaFiche rhaMissionEnregistrable(RhaFiche v, RhaFiche? agent, {required int effe
     (valider: statut == 'a_valider', terminerReporter: statut == 'validee' || statut == 'en_cours');
 
 /// Ce que la validation écrit : état « Validée », la validatrice et la date (la maquette ne connaît que la Directrice Administrative).
-RhaFiche rhaCorrectifValidationMission(DateTime auj) => {'statutMission': 'validee', 'valideePar': 'TAKI Alimatou', 'valideeLe': iso(auj)};
+/// [par] / [parId] (A1, E625 levé) : l'AGENT qui valide, nom et identifiant de compte. Sans eux (vecteurs de la maquette, qui écrit « TAKI Alimatou » quelle
+/// que soit la personne connectée), la valeur d'origine est conservée.
+RhaFiche rhaCorrectifValidationMission(DateTime auj, {String? par, String? parId}) =>
+    {'statutMission': 'validee', 'valideePar': par ?? 'TAKI Alimatou', if (parId != null) 'valideeParId': parId, 'valideeLe': iso(auj)};
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // Prestataires externes

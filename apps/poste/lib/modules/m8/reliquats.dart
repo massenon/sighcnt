@@ -244,7 +244,7 @@ class EcranReliquats extends StatelessWidget with EcranMaquette {
     ], {
       'dateEngagement': iso(dans30),
       'tranches': '1',
-      'recuPar': c.utilisateur
+      'recuPar': acteur(c).nom
     });
     afficherModale<void>(ctx,
         titre: 'Engagement de paiement',
@@ -316,7 +316,7 @@ class EcranReliquats extends StatelessWidget with EcranMaquette {
       'insolvable': true,
       'motifInsolvabilite': motif,
       'declareLe': iso(c.aujourdhui),
-      'declarePar': c.utilisateur
+      'declarePar': acteur(c).nom
     });
     ToastsSigh.afficher(ctx, '${f['patient']} déclaré(e) client insolvable.',
         type: TypeToast.attention,

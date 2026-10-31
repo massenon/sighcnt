@@ -50,7 +50,7 @@ void rhcJournaliserAcces(ContexteEcran c, {required String action, required Stri
   a.inserer({
     'id': 'LOG${(a.toutes.length + 1).toString().padLeft(5, '0')}',
     'dateHeure': c.aujourdhui.toIso8601String(),
-    'utilisateur': c.utilisateur,
+    'utilisateur': acteur(c).nom,
     'action': action,
     'module': 'M10',
     'entite': entite,

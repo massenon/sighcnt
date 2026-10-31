@@ -346,7 +346,7 @@ class _EtatReactifs extends State<EcranReactifsLabo> {
                     if (creation) {
                       final fiche = catNouveauReactif(saisie,
                           produits: col.toutes,
-                          utilisateur: c.utilisateur,
+                          utilisateur: acteur(c).nom,
                           maintenant: c.aujourdhui);
                       final r = col.inserer({'statut': 'actif', ...fiche}, prefixe: 'PRO');
                       fermer();

@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
+import 'package:sigh_poste/core/identifiants.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
@@ -38,6 +40,8 @@ Magasin poste({List<M> utilisateurs = const [], List<M> rbac = const [], List<M>
       'utilisateurs': [for (final u in utilisateurs.isEmpty ? jeu('utilisateurs') : utilisateurs) {...u}],
       'rbac': [for (final r in rbac.isEmpty ? jeu('rbac') : rbac) {...r}],
       'tentativesConnexion': const <M>[],
+      'personnel': jeu('personnel'),
+      'soignants': jeu('soignants'),
       'rolesBase': jeu('rolesBase'),
       'support': const <M>[],
       'jetonsEnquete': jetons,
@@ -103,8 +107,28 @@ bool sansChrome(WidgetTester t) =>
 
 List<M> audit(Magasin m, String action) => [for (final e in m.collection('audit').toutes) if (e['action'] == action) e];
 
+/// Donne un mot de passe (haché Argon2id aux paramètres RÉDUITS des tests) à un compte du magasin de test. Le calcul est asynchrone : `runAsync`.
+Future<void> mdp(WidgetTester t, Magasin m, String utilisateurId, String secret, {bool doitChanger = false}) async {
+  await t.runAsync(() => ServiceIdentifiants.de(m).definir(utilisateurId, secret, par: 'test', doitChanger: doitChanger, maintenant: auj));
+}
+
+/// Laisse le temps au calcul du haché (asynchrone, hors de l'horloge du test) puis aux animations qui suivent.
+Future<void> calculer(WidgetTester t, {int ms = 500}) async {
+  for (var i = 0; i < 6; i++) {
+    await t.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 40)));
+    await t.pump(const Duration(milliseconds: 50));
+  }
+  await t.pump(Duration(milliseconds: ms));
+}
+
+const secret = 'Clinique#Natitingou26';
+
 void main() {
-  setUpAll(chargerPolices);
+  setUpAll(() async {
+    await chargerPolices();
+    // Paramètres d'Argon2id RÉDUITS pour que la suite reste rapide ; la production garde AccParametresHachage.production.
+    ServiceIdentifiants.parametres = AccParametresHachage.tests;
+  });
   tearDown(ToastsSigh.viderPourTests);
 
   // ============================================================================================================================ LA COQUE
@@ -231,10 +255,12 @@ void main() {
       await fin(t);
     });
 
-    cas('le poste dit ce qu’il ne fait pas : le mot de passe n’est pas vérifié (A5)', (t) async {
+    cas('A5 : la connexion ne dit plus « non vérifié » ; elle annonce le verrou et la journalisation', (t) async {
       await monter(t, poste(), session: SessionPoste(exigeConnexion: true, horloge: () => auj));
-      expect(find.byKey(const Key('acces:simulation')), findsOneWidget);
-      expect(find.textContaining('ne vérifie pas encore le mot de passe'), findsOneWidget);
+      expect(find.byKey(const Key('acces:simulation')), findsNothing);
+      expect(find.textContaining('ne vérifie pas encore le mot de passe'), findsNothing);
+      expect(find.byKey(const Key('acces:securite')), findsOneWidget);
+      expect(find.textContaining('verrouillé 15 minutes'), findsOneWidget);
       await fin(t);
     });
 
@@ -254,6 +280,7 @@ void main() {
       await saisir(t, 'acces:identifiant', 'inconnu.xyz');
       await saisir(t, 'acces:motdepasse', 'faux');
       await bouton(t, 'Se connecter');
+      await calculer(t);
       expect(find.text('Identifiant ou mot de passe incorrect.'), findsOneWidget);
       expect(s.etat, EtatSession.deconnectee);
       final t0 = m.collection('tentativesConnexion').toutes.single;
@@ -263,23 +290,105 @@ void main() {
       await fin(t);
     });
 
-    cas('compte du jeu : la session s’ouvre sous SON rôle, la coque apparaît à l’accueil du profil, la connexion est journalisée sans prétendre vérifier', (t) async {
+    cas('compte du jeu : un mauvais mot de passe est REFUSÉ, le bon ouvre la session sous SON rôle et SON agent, la connexion est journalisée', (t) async {
       final m = poste();
       final s = SessionPoste(exigeConnexion: true, horloge: () => auj);
       final compte = jeu('utilisateurs').firstWhere((u) => u['identifiant'] == 'e.orou');
+      await mdp(t, m, '${compte['id']}', secret);
       await monter(t, m, session: s);
       await saisir(t, 'acces:identifiant', 'e.orou');
       await saisir(t, 'acces:motdepasse', 'nimporte-quoi');
+      await bouton(t, 'Se connecter');
+      await calculer(t);
+      expect(s.etat, EtatSession.deconnectee, reason: 'un mot de passe quelconque ne suffit plus');
+      expect(find.text('Identifiant ou mot de passe incorrect.'), findsOneWidget);
+      expect(m.collection('tentativesConnexion').toutes.single['motif'], 'Mot de passe erroné');
+      await saisir(t, 'acces:motdepasse', secret);
       await bouton(t, 'Se connecter', ms: 600);
+      await calculer(t, ms: 600);
       expect(s.etat, EtatSession.connectee);
       expect(s.role, compte['role']);
       expect(s.compte!.nom, compte['nomComplet']);
+      // L'agent NOMINATIF : identifiant du compte, matricule et fonction du dossier RH, secteur.
+      final a = s.agent!;
+      expect(a.utilisateurId, compte['id']);
+      expect(a.demonstration, isFalse);
+      expect(a.matricule, compte['matricule']);
+      expect(a.fonction, 'accueil');
+      expect(a.secteur, 'ACC');
       expect(find.byType(BarreSuperieure), findsOneWidget, reason: 'la coque prend le relais');
       expect(find.byKey(const Key('acces:identifiant')), findsNothing);
       final e = audit(m, 'Connexion').single;
       expect(e['reference'], 'e.orou');
       expect(e['module'], 'M14');
-      expect(obj(e['apres'])['motDePasseVerifie'], false);
+      expect(obj(e['apres'])['motDePasseVerifie'], true);
+      // RG-12 : le journal porte désormais l'identifiant du compte et le matricule, pas seulement un nom.
+      expect(m.acteur!.utilisateurId, compte['id']);
+      expect(audit(m, 'Connexion').single['utilisateurId'], compte['id']);
+      // Le secret n'est nulle part : ni au journal, ni dans la fiche des identifiants.
+      expect(jsonEncode(m.collection('audit').toutes).contains(secret), isFalse);
+      expect(jsonEncode(m.collection('identifiants').toutes).contains(secret), isFalse);
+      await fin(t);
+    });
+
+    cas('trois échecs : le compte se VERROUILLE (message nommé), même le bon mot de passe est refusé, chaque tentative est écrite', (t) async {
+      final m = poste();
+      final s = SessionPoste(exigeConnexion: true, horloge: () => auj);
+      final compte = jeu('utilisateurs').firstWhere((u) => u['identifiant'] == 'a.kassa');
+      await mdp(t, m, '${compte['id']}', secret);
+      await monter(t, m, session: s);
+      for (var i = 0; i < 3; i++) {
+        await saisir(t, 'acces:identifiant', 'a.kassa');
+        await saisir(t, 'acces:motdepasse', 'faux$i');
+        await bouton(t, 'Se connecter');
+        await calculer(t);
+      }
+      expect(find.textContaining('Compte verrouillé après 3 tentatives infructueuses'), findsOneWidget);
+      final motifs = [for (final x in m.collection('tentativesConnexion').toutes.reversed) x['motif']];
+      expect(motifs, ['Mot de passe erroné', 'Mot de passe erroné', 'Verrou posé après échecs répétés']);
+      // Le bon mot de passe ne passe pas tant que le verrou tient.
+      await saisir(t, 'acces:motdepasse', secret);
+      await bouton(t, 'Se connecter');
+      await calculer(t);
+      expect(s.etat, EtatSession.deconnectee);
+      expect(find.textContaining('Compte verrouillé'), findsOneWidget);
+      expect(m.collection('tentativesConnexion').toutes.first['motif'], 'Compte verrouillé après échecs répétés');
+      await fin(t);
+    });
+
+    cas('mot de passe provisoire : le bon mot de passe n’ouvre pas la session, le changement est OBLIGATOIRE et la politique APPLIQUÉE', (t) async {
+      final m = poste();
+      final s = SessionPoste(exigeConnexion: true, horloge: () => auj);
+      final compte = jeu('utilisateurs').firstWhere((u) => u['identifiant'] == 'e.orou');
+      await mdp(t, m, '${compte['id']}', 'Provisoire#2026ab', doitChanger: true);
+      await monter(t, m, session: s);
+      await saisir(t, 'acces:identifiant', 'e.orou');
+      await saisir(t, 'acces:motdepasse', 'Provisoire#2026ab');
+      await bouton(t, 'Se connecter');
+      await calculer(t);
+      expect(s.etat, EtatSession.deconnectee, reason: 'avant le changement, aucune session');
+      expect(find.text('Choisir un nouveau mot de passe'), findsOneWidget);
+      // Trop court : refusé EN NOMMANT les règles manquantes.
+      await saisir(t, 'acces:nouveau', 'court');
+      await saisir(t, 'acces:confirmation', 'court');
+      await bouton(t, 'Définir le mot de passe et se connecter');
+      expect(find.textContaining('12 caractères minimum'), findsWidgets);
+      expect(find.textContaining('non conforme à la politique'), findsOneWidget);
+      expect(s.etat, EtatSession.deconnectee);
+      // Identique à l'actuel : refusé.
+      await saisir(t, 'acces:nouveau', 'Provisoire#2026ab');
+      await saisir(t, 'acces:confirmation', 'Provisoire#2026ab');
+      await bouton(t, 'Définir le mot de passe et se connecter');
+      expect(find.text('Le nouveau mot de passe doit être différent de l’actuel.'), findsOneWidget);
+      // Conforme : la session s'ouvre, le nouveau mot de passe remplace le provisoire.
+      await saisir(t, 'acces:nouveau', 'Definitif#Natitingou27');
+      await saisir(t, 'acces:confirmation', 'Definitif#Natitingou27');
+      await bouton(t, 'Définir le mot de passe et se connecter');
+      await calculer(t, ms: 600);
+      expect(s.etat, EtatSession.connectee);
+      expect(ServiceIdentifiants.de(m).fiche('${compte['id']}')!['doitChanger'], false);
+      expect(await t.runAsync(() => ServiceIdentifiants.de(m).motDePasseActuel('${compte['id']}', 'Definitif#Natitingou27')), isTrue);
+      expect(await t.runAsync(() => ServiceIdentifiants.de(m).motDePasseActuel('${compte['id']}', 'Provisoire#2026ab')), isFalse);
       await fin(t);
     });
 
@@ -288,10 +397,12 @@ void main() {
         {'id': 'U1', 'statut': 'actif', 'identifiant': 'p.pharma', 'nomComplet': 'Ancien Pharmacien', 'role': 'pharmacien'}
       ]);
       final s = SessionPoste(exigeConnexion: true, horloge: () => auj);
+      await mdp(t, m, 'U1', secret);
       await monter(t, m, session: s);
       await saisir(t, 'acces:identifiant', 'p.pharma');
-      await saisir(t, 'acces:motdepasse', 'x');
+      await saisir(t, 'acces:motdepasse', secret);
       await bouton(t, 'Se connecter', ms: 500);
+      await calculer(t);
       expect(s.etat, EtatSession.deconnectee);
       expect(find.text('Connexion refusée'), findsOneWidget);
       expect(find.textContaining('a été archivé par l’administrateur système'), findsOneWidget);
@@ -308,10 +419,12 @@ void main() {
       final m = poste(utilisateurs: [
         {'id': 'U1', 'statut': 'archive', 'identifiant': 'a.ferme', 'nomComplet': 'Compte fermé', 'role': 'caissier'}
       ]);
+      await mdp(t, m, 'U1', secret);
       await monter(t, m, session: SessionPoste(exigeConnexion: true, horloge: () => auj));
       await saisir(t, 'acces:identifiant', 'a.ferme');
-      await saisir(t, 'acces:motdepasse', 'x');
+      await saisir(t, 'acces:motdepasse', secret);
       await bouton(t, 'Se connecter');
+      await calculer(t);
       expect(find.text('Ce compte a été archivé : il n’ouvre plus de session (RG-14).'), findsOneWidget);
       await fin(t);
     });
@@ -344,29 +457,54 @@ void main() {
       expect(find.text('${toast['titre']}'), findsOneWidget);
       expect(find.text('${toast['detail']}'), findsOneWidget);
       expect(audit(m, 'Demande de réinitialisation du mot de passe').single['reference'], 'a.kassa');
+      // Branché sur le mécanisme : le compte porte la demande, que l'administrateur lit avant de définir un nouveau mot de passe.
+      final kassa = m.collection('utilisateurs').toutes.firstWhere((u) => u['identifiant'] == 'a.kassa');
+      expect(kassa['reinitialisationDemandeeLe'], isNotNull);
       await t.pump(const Duration(milliseconds: 1300));
       expect(find.text('Réinitialiser le mot de passe'), findsWidgets, reason: 'navigation vers auth-reset (${(o['navigation'] as List).single})');
       await fin(t);
     });
 
-    cas('réinitialisation : quatre règles affichées, discordance refusée EN LA NOMMANT, concordance contrôlée sans rien conserver', (t) async {
+    cas('réinitialisation : quatre règles COCHÉES à la frappe, politique appliquée, mot de passe actuel vérifié, haché remplacé, secret jamais journalisé', (t) async {
       final m = poste();
+      final compte = jeu('utilisateurs').firstWhere((u) => u['identifiant'] == 'a.kassa');
+      await mdp(t, m, '${compte['id']}', 'Provisoire#2026ab', doitChanger: true);
       await monter(t, m, ecran: 'auth-reset');
       final r = obj(v['reinit']);
       for (final regle in (r['regles'] as List).cast<String>()) {
         expect(find.text(regle), findsOneWidget);
       }
+      // Sans saisie, 3 règles sur 4 sont en défaut (croix) ; un mot de passe conforme les coche toutes.
+      final croix = find.descendant(of: find.byKey(const Key('acces:politique')), matching: find.byIcon(LucideIcons.x));
+      expect(croix, findsNWidgets(3));
+      await saisir(t, 'acces:identifiant', 'a.kassa');
+      await saisir(t, 'acces:actuel', 'Provisoire#2026ab');
+      await saisir(t, 'acces:nouveau', 'a');
+      await saisir(t, 'acces:confirmation', 'a');
+      await bouton(t, 'Définir le mot de passe');
+      expect(find.textContaining('non conforme à la politique'), findsOneWidget, reason: 'E1076 : « a » / « a » n’est plus accepté');
       await saisir(t, 'acces:nouveau', 'Motdepasse#2026');
+      expect(croix, findsNothing);
       await saisir(t, 'acces:confirmation', 'autre');
       await bouton(t, 'Définir le mot de passe');
       expect(find.text('${fl(r['discordance']).single['titre']}'), findsOneWidget);
-      expect(audit(m, 'Réinitialisation du mot de passe (saisie contrôlée, non conservée)'), isEmpty);
       await saisir(t, 'acces:confirmation', 'Motdepasse#2026');
+      // Mauvais mot de passe actuel : refusé, rien n'est remplacé.
+      await saisir(t, 'acces:actuel', 'pas-le-bon');
       await bouton(t, 'Définir le mot de passe');
-      expect(find.textContaining('aucun mot de passe n’est conservé'), findsOneWidget);
+      await calculer(t, ms: 100);
+      expect(find.text('Identifiant ou mot de passe incorrect.'), findsOneWidget);
+      expect(await t.runAsync(() => ServiceIdentifiants.de(m).motDePasseActuel('${compte['id']}', 'Provisoire#2026ab')), isTrue);
+      // Le bon : le haché est remplacé.
+      await saisir(t, 'acces:actuel', 'Provisoire#2026ab');
+      await bouton(t, 'Définir le mot de passe');
+      await calculer(t, ms: 100);
+      expect(find.text('Mot de passe mis à jour.'), findsOneWidget);
+      expect(await t.runAsync(() => ServiceIdentifiants.de(m).motDePasseActuel('${compte['id']}', 'Motdepasse#2026')), isTrue);
+      expect(await t.runAsync(() => ServiceIdentifiants.de(m).motDePasseActuel('${compte['id']}', 'Provisoire#2026ab')), isFalse);
       // Le secret ne passe JAMAIS au journal.
-      final e = audit(m, 'Réinitialisation du mot de passe (saisie contrôlée, non conservée)').single;
-      expect(jsonEncode(e).contains('Motdepasse'), isFalse);
+      expect(jsonEncode(m.collection('audit').toutes).contains('Motdepasse'), isFalse);
+      expect(jsonEncode(m.collection('audit').toutes).contains('Provisoire'), isFalse);
       await t.pump(const Duration(milliseconds: 1100));
       expect(find.byKey(const Key('acces:motdepasse')), findsOneWidget, reason: 'retour à la connexion');
       await fin(t);

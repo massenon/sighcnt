@@ -271,7 +271,7 @@ class _EcranRecettesState extends State<EcranRecettes> {
           sousTitre: '$lib — ${dateFR(p.debut)} au ${dateFR(p.fin)}',
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Périodicité', lib),

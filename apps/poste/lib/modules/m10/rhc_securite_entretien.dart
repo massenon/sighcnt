@@ -318,7 +318,7 @@ class EcranSecuriteEntretien extends StatelessWidget with EcranMaquette {
                         'matricule': rhbReferenceSuivante('SE-', 3, [for (final e in col.toutes) {'reference': e['matricule']}]),
                         'service': 'Direction',
                         'poste': poste,
-                        '_creePar': c.utilisateur,
+                        '_creePar': acteur(c).nom,
                         '_creeLe': c.aujourdhui.toIso8601String(),
                       }, prefixe: 'PER');
                       ToastsSigh.afficher(ctx, 'Agent créé.', type: TypeToast.succes, annuler: r.annuler);
@@ -396,7 +396,7 @@ class EcranSecuriteEntretien extends StatelessWidget with EcranMaquette {
             cartouche: [
               ('Période', '${dateFR(jours.first)} – ${dateFR(jours.last)}'),
               ('Agents', nombre(agents.length)),
-              ('Établi par', c.utilisateur),
+              ('Établi par', acteur(c).nom),
               ('Date', dateFR(c.aujourdhui)),
             ],
             blocs: [

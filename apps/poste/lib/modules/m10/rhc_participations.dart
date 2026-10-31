@@ -270,7 +270,7 @@ class _EtatParticipations extends State<EcranParticipations> {
                       'montantVerse': verse == verse.roundToDouble() ? verse.toInt() : verse,
                       'datePaiement': v['datePaiement'],
                       'recu': recu,
-                      'encaissePar': c.utilisateur,
+                      'encaissePar': acteur(c).nom,
                       if (obs.isNotEmpty) 'observation': obs,
                     });
                     c.magasin.journaliser('Encaissement d’une participation', 'M10', 'Participation', '${x['id']}', {'statut': 'du'}, {'statut': 'paye', 'recu': recu});
@@ -292,7 +292,7 @@ class _EtatParticipations extends State<EcranParticipations> {
       'statutPaiement': 'paye',
       'datePaiement': iso(c.aujourdhui),
       'recu': 'Retenue sur salaire — ${x['periodeRetenue'] ?? ''}',
-      'encaissePar': c.utilisateur,
+      'encaissePar': acteur(c).nom,
     });
     ToastsSigh.afficher(ctx, 'Retenue confirmée.', type: TypeToast.succes, detail: '${x['agent']} — ${money(x['montant'])}', annuler: annuler);
   }
@@ -312,7 +312,7 @@ class _EtatParticipations extends State<EcranParticipations> {
       'recu': null,
       'montantVerse': null,
       'motifAnnulation': motif,
-      'annulePar': c.utilisateur,
+      'annulePar': acteur(c).nom,
     });
     c.magasin.journaliser('Annulation d’un règlement de participation', 'M10', 'Participation', '${x['id']}', {'statut': 'paye'}, {'statut': 'du', 'motif': motif});
     ToastsSigh.afficher(ctx, 'Règlement annulé.', type: TypeToast.attention, detail: 'La participation redevient due.');
@@ -359,7 +359,7 @@ class _EtatParticipations extends State<EcranParticipations> {
               ('Réglées', nombre(payees.length)),
               ('Montant attendu', money(rhcSomme(rows, 'montant'))),
               ('Montant encaissé', money(rhcSomme(payees, 'montant'))),
-              ('Établi par', c.utilisateur),
+              ('Établi par', acteur(c).nom),
               ('Date d’édition', dateFR(c.aujourdhui)),
             ],
             blocs: [

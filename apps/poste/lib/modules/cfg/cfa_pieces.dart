@@ -340,7 +340,7 @@ class EcranCertificats extends StatelessWidget with EcranMaquette {
                     fiche['patientId'] = p?['id'];
                     fiche['patient'] = p != null ? '${p['nom']} ${p['prenom']}' : '—';
                     fiche['texte'] = cfaComposerCertificat(t.trame, fiche);
-                    final r = col.inserer({'statut': 'actif', ...fiche, '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'CERT');
+                    final r = col.inserer({'statut': 'actif', ...fiche, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'CERT');
                     c.magasin.journaliser('Délivrance de certificat', 'CFG', t.libelle, '${fiche['numero']}', null, {'patient': fiche['patient']});
                     fermer();
                     ToastsSigh.afficher(ctx, 'Certificat ${fiche['numero']} délivré.',

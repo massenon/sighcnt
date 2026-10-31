@@ -172,7 +172,7 @@ class EcranDirection extends StatelessWidget with EcranMaquette {
           titre: 'Rapport d’activité — Direction',
           sousTitre: 'Période : ${moisAnnee(c.aujourdhui)}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Période', moisAnnee(c.aujourdhui)),

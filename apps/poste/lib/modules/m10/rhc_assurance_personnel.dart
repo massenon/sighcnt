@@ -215,7 +215,7 @@ class _EtatAssurance extends State<EcranAssurancePersonnel> {
               ('Agents concernés', nombre(lignes.length)),
               ('Prestations', nombre(rows.length)),
               ('Valeur totale', money(rhcSomme(rows, 'valeur'))),
-              ('Établi par', c.utilisateur),
+              ('Établi par', acteur(c).nom),
               ('Date d’édition', dateFR(c.aujourdhui)),
             ],
             blocs: [

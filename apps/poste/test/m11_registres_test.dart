@@ -136,7 +136,8 @@ void main() {
       final col = m.collection('bulletins');
       final mai = col.actives.where((b) => b['periode'] == 'Mai 2026').toList();
       expect(mai.length, 44);
-      expect(mai.every((b) => b['statutBulletin'] == 'valide' && b['validePar'] == 'BASSONGUI Chabi Séko' && b['dateValidation'] == '2026-10-30'), true);
+      expect(mai.every((b) => b['statutBulletin'] == 'valide' && b['validePar'] == 'Administrateur système' && b['valideParId'] == 'demo:admin' && b['dateValidation'] == '2026-10-30'), true,
+          reason: 'E687 levé : validePar est l\'AGENT qui valide (ici l\'agent de démonstration du rôle), plus un nom écrit en dur');
       expect(col.actives.where((b) => b['periode'] == 'Octobre 2026').every((b) => b['statutBulletin'] == 'a_valider'), true, reason: 'l’autre lot reste à valider');
       expect(find.text('Paie de Mai 2026 validée par la Direction.'), findsOneWidget);
       expect(find.text('44 bulletin(s) autorisé(s) à la diffusion.'), findsOneWidget);

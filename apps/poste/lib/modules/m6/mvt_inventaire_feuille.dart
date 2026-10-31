@@ -90,7 +90,7 @@ class _EtatFeuille extends State<EcranInventaireFeuille> {
     _entete = AdresseFeuille._consommer() ?? const EnteteInventaire();
     _magasin = _entete.magasin == 'detail' ? 'detail' : 'gros';
     _date = _entete.date ?? iso(c.aujourdhui);
-    _operateur = _entete.operateur ?? c.utilisateur;
+    _operateur = _entete.operateur ?? acteur(c).nom;
     _cible = ciblesInventaire(produitsActifs(c), _entete.perimetre);
   }
 

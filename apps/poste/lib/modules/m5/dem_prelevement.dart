@@ -313,7 +313,7 @@ class EcranPrelevement extends StatelessWidget with EcranMaquette {
     final annuler = m.collection('demandesAnalyses').mettreAJour(
         r['id'],
         demPatchTransmission(
-            maintenant: c.aujourdhui, utilisateur: c.utilisateur));
+            maintenant: c.aujourdhui, utilisateur: acteur(c).nom));
     m.journaliser('Échantillon reçu au laboratoire', 'M5', 'DemandeAnalyse',
         '${r['reference']}', null, {});
     ToastsSigh.afficher(ctx, 'Échantillon transmis au laboratoire.',

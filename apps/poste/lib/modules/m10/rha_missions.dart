@@ -158,7 +158,7 @@ class EcranMissions extends StatelessWidget with EcranMaquette {
             'La validation autorise le départ de ${m['agent']} du ${rhaDateFR(m['dateDepart'])} au ${rhaDateFR(m['dateRetour'])}, aux frais de ${m['structurePrise']}. Elle est journalisée au nom de la Directrice Administrative (RG-12).',
         libelleOk: 'Valider l’ordre');
     if (!ok || !ctx.mounted) return;
-    final annuler = col.mettreAJour(m['id'], rhaCorrectifValidationMission(c.aujourdhui));
+    final annuler = col.mettreAJour(m['id'], rhaCorrectifValidationMission(c.aujourdhui, par: acteur(c).nom, parId: acteur(c).utilisateurId));
     ToastsSigh.afficher(ctx, 'Ordre de mission validé.', type: TypeToast.succes, detail: '${m['agent']} — départ le ${rhaDateFR(m['dateDepart'])}', annuler: annuler);
   }
 

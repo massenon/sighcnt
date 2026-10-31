@@ -27,6 +27,7 @@ class CrudM14 extends StatefulWidget {
     required this.transformer,
     this.entiteP,
     this.avant,
+    this.apres,
     this.kpis,
     this.filtres = const [],
     this.detail,
@@ -52,6 +53,10 @@ class CrudM14 extends StatefulWidget {
 
   /// `cfg.beforeSave` : un message de refus, ou `null`. Rien n'est écrit sur un refus.
   final String? Function(BuildContext, Map<String, Object?> saisie, Fiche? record)? avant;
+
+  /// Après l'écriture de la fiche (création ou modification) : un effet qui dépend de la fiche écrite ET de la saisie brute, sans que la saisie entre au
+  /// magasin. `m14-utilisateurs` y pose le mot de passe haché (le secret ne franchit jamais [transformer]). Ne lève pas : un échec s'affiche.
+  final void Function(BuildContext, Fiche fiche, Map<String, Object?> saisie, bool creation)? apres;
 
   /// `cfg.transform` : les valeurs saisies → ce qui est ÉCRIT.
   final Fiche Function(BuildContext, Map<String, Object?> saisie, Fiche? record) transformer;
@@ -144,13 +149,16 @@ class _CrudM14State extends State<CrudM14> {
                     }
                     final valeurs = widget.transformer(ctx, saisie, record);
                     final VoidCallback annuler;
+                    Fiche? ecrite;
                     if (edition) {
                       annuler = widget.collection.mettreAJour(record['id'], valeurs);
+                      ecrite = widget.collection.parId(record['id']);
                     } else {
-                      annuler = widget.collection
-                          .inserer({...valeurs, 'statut': 'actif'}, prefixe: widget.prefixeId)
-                          .annuler;
+                      final ins = widget.collection.inserer({...valeurs, 'statut': 'actif'}, prefixe: widget.prefixeId);
+                      annuler = ins.annuler;
+                      ecrite = ins.fiche;
                     }
+                    if (ecrite != null) widget.apres?.call(ctx, ecrite, saisie, !edition);
                     fermer();
                     ToastsSigh.afficher(
                         ctx,
@@ -242,7 +250,7 @@ class _CrudM14State extends State<CrudM14> {
           titre: 'Sélection — $_p',
           sousTitre: '${sel.length} enregistrement(s)',
           reference: referenceImpression(c),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           tableaux: [
             TableauEtat(colonnes: [

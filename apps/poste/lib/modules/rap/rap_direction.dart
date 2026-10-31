@@ -117,7 +117,7 @@ class _VueDirectionState extends State<_VueDirection> {
           titre: titre,
           sousTitre: '${b.debutFR} au ${b.finFR}',
           reference: rapReference(c),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: rapCartoucheDirection(b, axe,
               pieces: fac.length, cumul: cum.montant),

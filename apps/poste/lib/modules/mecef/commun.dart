@@ -142,7 +142,7 @@ Future<void> imprimerFactureNormalisee(BuildContext ctx, Fiche f) {
   return afficherApercu(
       ctx,
       pieceFactureNormalisee(f, paramFiscal(c.magasin),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero())));

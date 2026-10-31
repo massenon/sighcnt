@@ -199,7 +199,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
         surValider: (v) {
           final valeurs = {...v}..remove('_canal');
           final fiche = qualReponse(enq, valeurs,
-              aujourdhui: c.aujourdhui, canal: '${v['_canal']}', saisiPar: c.utilisateur);
+              aujourdhui: c.aujourdhui, canal: '${v['_canal']}', saisiPar: acteur(c).nom);
           colReponses(c.magasin).inserer(fiche, prefixe: 'REP');
           ToastsSigh.afficher(ecran, 'Réponse recueillie.', type: TypeToast.succes);
           return true;
@@ -433,7 +433,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
                             expireLe: '${v['expireLe']}',
                             note: '${v['note'] ?? ''}',
                             aujourdhui: c.aujourdhui,
-                            ouvertPar: c.utilisateur),
+                            ouvertPar: acteur(c).nom),
                         prefixe: 'JET');
                     fermer();
                     _montrerLien(ecran, res.fiche);
@@ -521,7 +521,7 @@ class EcranEnquetes extends StatelessWidget with EcranMaquette {
         libelleOk: 'Révoquer',
         dangereux: true);
     if (!ok || !ecran.mounted) return;
-    final annuler = colJetons(c.magasin).mettreAJour(j['id'], {'revoqueLe': jourIso(c), 'revoquePar': c.utilisateur});
+    final annuler = colJetons(c.magasin).mettreAJour(j['id'], {'revoqueLe': jourIso(c), 'revoquePar': acteur(c).nom});
     ToastsSigh.afficher(ecran, 'Lien révoqué.',
         type: TypeToast.succes, annuler: annuler, messageAnnulation: 'Révocation annulée.');
   }

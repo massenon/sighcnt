@@ -62,7 +62,7 @@ class EcranLotsStock extends StatelessWidget with EcranMaquette {
                 nombre(sommeChamp(perimes, 'quantiteRestante'))
               ),
               ('Date d’édition', dateFR(auj)),
-              ('Établi par', c.utilisateur),
+              ('Établi par', acteur(c).nom),
             ],
             blocs: [
               BlocTableau(TableauEtat(colonnes: [
@@ -92,7 +92,7 @@ class EcranLotsStock extends StatelessWidget with EcranMaquette {
             ],
             reference:
                 PieceA4.reference_(auj, ImpressionPoste.prochainNumero()),
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: auj));
   }
 
@@ -129,7 +129,7 @@ class EcranLotsStock extends StatelessWidget with EcranMaquette {
             ],
             reference:
                 PieceA4.reference_(auj, ImpressionPoste.prochainNumero()),
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: auj));
   }
 

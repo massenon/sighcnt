@@ -71,6 +71,15 @@ class _CoquePosteState extends State<CoquePoste> {
   SessionPoste? get _session => widget.session;
   String get _role => _session?.role ?? widget.config.role;
 
+  /// L'agent qui agit (A1) : celui de la session si le compte porte son identité nominative, sinon l'agent de démonstration du rôle. Le nom d'un agent de
+  /// démonstration est le libellé du rôle (ou, pour un écran autonome, le nom du compte reconnu), comme avant la session nominative.
+  Agent _agent({bool autonome = false}) {
+    final c = _session?.compte;
+    if (c?.agent != null) return c!.agent!;
+    final libelle = widget.donnees.matrice.libelle(_role) ?? _role;
+    return agentDemonstration(_role, nom: autonome ? (c?.nom ?? libelle) : libelle);
+  }
+
   /// Un écran de la liste des écrans servis sans coque ET porté : sans les deux, la coque l'enveloppe comme avant.
   bool _estAutonome(String id) => accEcransPleinEcran.contains(id) && widget.ecrans.containsKey(id);
 
@@ -200,7 +209,7 @@ class _CoquePosteState extends State<CoquePoste> {
     final porte = widget.ecrans[id];
     if (porte == null) return const Scaffold(body: Center(child: Text('Écran inconnu.')));
     final publique = accEcransPublics.contains(id);
-    widget.magasin?.utilisateur = _session?.compte?.nom ?? widget.donnees.matrice.libelle(_role) ?? _role;
+    widget.magasin?.poserActeur(_agent(autonome: true));
     if (widget.horloge != null) widget.magasin?.horloge = widget.horloge!;
     return KeyedSubtree(
         key: ValueKey('autonome|$id'),
@@ -325,9 +334,7 @@ class _CoquePosteState extends State<CoquePoste> {
     if (porte == null) {
       return EcranAPorter(ecran: e, donnees: widget.donnees, fil: fil);
     }
-    widget.magasin?.utilisateur =
-        widget.donnees.matrice.libelle(_role) ??
-            _role;
+    widget.magasin?.poserActeur(_agent());
     if (widget.horloge != null) widget.magasin?.horloge = widget.horloge!;
     return Builder(builder: (context) {
       // Les droits sont ceux de l'ÉCRAN (une surcharge d'écran l'emporte sur son module) ; un servant hérite du registre qu'il alimente.
@@ -337,8 +344,8 @@ class _CoquePosteState extends State<CoquePoste> {
         role: _role,
         droit: droit,
         magasin: widget.magasin ?? _magasinVide,
-        utilisateur: widget.donnees.matrice.libelle(_role) ??
-            _role,
+        utilisateur: _agent().nom,
+        agentConnecte: _session?.compte?.agent,
         horloge: widget.horloge,
         ouvre: (cible) => widget.donnees.matrice.peutVoir(_role, cible),
         donnees: widget.donnees,

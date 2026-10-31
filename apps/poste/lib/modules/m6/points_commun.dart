@@ -127,7 +127,7 @@ PieceA4 piecePoint(BuildContext ctx, EtatPoint e,
     sousTitre: e.sousTitre,
     reference:
         PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-    utilisateur: c.utilisateur,
+    utilisateur: acteur(c).nom,
     edite: c.aujourdhui,
     cartouche: e.cartouche,
     filtres: filtres,

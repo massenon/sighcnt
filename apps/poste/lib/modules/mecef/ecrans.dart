@@ -785,7 +785,7 @@ class EcranMecefAvoirs extends StatelessWidget with EcranMaquette {
           titre: 'Avoir sur facture normalisée',
           sousTitre: '${a['reference']} — rectifie la facture ${a['factureNumero']}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('N° avoir', '${a['reference']}'),

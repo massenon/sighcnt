@@ -4,6 +4,7 @@ import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
+import '../../kit/acteur.dart';
 import '../../shell/contexte_ecran.dart';
 
 /// Éléments communs aux écrans de paramétrage du laboratoire (`cat_*.dart`) : le catalogue des analyses, les unités, les valeurs de référence et les
@@ -69,7 +70,7 @@ PieceA4 pieceCat(BuildContext ctx,
     blocs: blocs,
     signatures: signatures,
     reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-    utilisateur: c.utilisateur,
+    utilisateur: acteur(c).nom,
     edite: c.aujourdhui,
   );
 }

@@ -67,7 +67,7 @@ class _EtatCalcul extends State<EcranCalculPaie> {
     for (final x in calc) {
       // La série suit le registre (archivés compris), pas un compteur de page — et chaque bulletin voit ceux qu'on vient d'écrire.
       final ref = paiReferenceSuivante('BP-', 5, col.toutes);
-      annulations.add(col.inserer({'statut': 'actif', ...paiBulletinDe(x, ref), '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'BUL').annuler);
+      annulations.add(col.inserer({'statut': 'actif', ...paiBulletinDe(x, ref), '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'BUL').annuler);
     }
     ToastsSigh.afficher(ctx, '${annulations.length} bulletin(s) généré(s).', type: TypeToast.succes, detail: 'En attente de validation par la Direction.', annuler: () {
       for (final u in annulations) {

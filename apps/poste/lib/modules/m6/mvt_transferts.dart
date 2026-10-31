@@ -353,7 +353,7 @@ class _EtatTransferts extends State<EcranTransferts> {
       titre: 'Bon de transfert de stock',
       sousTitre: '${t['reference']}',
       reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-      utilisateur: c.utilisateur,
+      utilisateur: acteur(c).nom,
       edite: c.aujourdhui,
       cartouche: [
         ('Référence', '${t['reference']}'),
@@ -414,7 +414,7 @@ class _EtatTransferts extends State<EcranTransferts> {
       titre: 'Registre des transferts gros → détail',
       sousTitre: 'Détail des articles transférés — ${nombre(bons.length)} bon(s), ${nombre(lg.length)} ligne(s)',
       reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-      utilisateur: c.utilisateur,
+      utilisateur: acteur(c).nom,
       edite: c.aujourdhui,
       cartouche: [
         ('Origine', 'Magasin central (stock gros)'),
@@ -448,7 +448,7 @@ class _EtatTransferts extends State<EcranTransferts> {
       titre: 'État détaillé des articles transférés',
       sousTitre: 'Magasin central → services — ${nombre(lg.length)} ligne(s)',
       reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-      utilisateur: c.utilisateur,
+      utilisateur: acteur(c).nom,
       edite: c.aujourdhui,
       cartouche: [
         ('Origine', 'Magasin central (stock gros)'),
@@ -606,7 +606,7 @@ class _BonEnCours extends ChangeNotifier {
         lignes: lignes,
         produits: _produits,
         bons: col.toutes,
-        utilisateur: c.utilisateur);
+        utilisateur: acteur(c).nom);
     final produits = c.magasin.collection('produits');
     final mouvements = c.magasin.collection('mouvements');
     final annulations = <VoidCallback>[];

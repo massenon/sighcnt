@@ -298,7 +298,7 @@ class _EcranOperationsState extends State<EcranOperations> {
           col: ColChamp.plein),
     ], {
       'compte': '${theorique.round()}',
-      'agent': c.utilisateur
+      'agent': acteur(c).nom
     });
     afficherModale<void>(ctx,
         titre: 'Inventaire de caisse — ${b.label.toLowerCase()}',
@@ -357,7 +357,7 @@ class _EcranOperationsState extends State<EcranOperations> {
                           sousTitre: '${dateFR(b.debut)} au ${dateFR(b.fin)}',
                           reference: PieceA4.reference_(
                               c.aujourdhui, ImpressionPoste.prochainNumero()),
-                          utilisateur: c.utilisateur,
+                          utilisateur: acteur(c).nom,
                           edite: c.aujourdhui,
                           cartouche: [
                             ('Périodicité', b.label),

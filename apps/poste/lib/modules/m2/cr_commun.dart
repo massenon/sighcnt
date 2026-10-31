@@ -187,7 +187,7 @@ Future<void> imprimerCR(BuildContext ctx, Fiche r) {
   return afficherApercu(
       ctx,
       pieceCR(c.magasin, r,
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero())));

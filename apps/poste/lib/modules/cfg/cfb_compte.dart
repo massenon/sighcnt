@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../core/identifiants.dart';
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -34,7 +35,7 @@ class _EtatCompte extends State<EcranCompte> {
     if (_pret) return;
     _pret = true;
     final c = ContexteEcran.of(context);
-    _nom = c.utilisateur;
+    _nom = acteur(c).nom;
     _identite = ControleurFormulaire(const [ChampDef(nom: 'nom', libelle: 'Nom et prénoms', requis: true, col: ColChamp.plein)], {'nom': _nom});
     _contact = ControleurFormulaire(const [
       ChampDef(nom: 'telephone', libelle: 'Téléphone', type: TypeChamp.tel),
@@ -58,6 +59,9 @@ class _EtatCompte extends State<EcranCompte> {
 
   /// L'identifiant de connexion : celui du compte qui porte ce rôle, « admin.systeme » à défaut (la maquette fait de même).
   String _identifiant(ContexteEcran c) {
+    // A1 : l'identifiant du compte de l'AGENT de la session, pas celui du premier compte qui porte son rôle.
+    final propre = acteur(c).identifiant;
+    if (propre.isNotEmpty) return propre;
     final u = c.magasin.collection('utilisateurs').actives.where((x) => x['role'] == c.role && cfaVrai(x['identifiant'])).firstOrNull;
     return u != null ? '${u['identifiant']}' : 'admin.systeme';
   }
@@ -83,10 +87,33 @@ class _EtatCompte extends State<EcranCompte> {
     ToastsSigh.afficher(ctx, 'Informations enregistrées.', type: TypeToast.succes);
   }
 
-  void _modifierMotDePasse(BuildContext ctx, ContexteEcran c) {
+  Future<void> _modifierMotDePasse(BuildContext ctx, ContexteEcran c) async {
     final v = _securite!.valider();
     if (v == null) {
       ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
+      return;
+    }
+    // A5 : un agent qui a un mot de passe défini le change POUR DE VRAI. La politique est appliquée, le mot de passe actuel est vérifié contre le haché, le
+    // nouveau est haché (Argon2id, sel neuf) et remplace l'ancien. Le secret n'entre ni au magasin ni au journal. Sans identifiant (agent de démonstration,
+    // poste de développement), le geste garde son comportement d'origine : saisie contrôlée, rien n'est conservé.
+    final a = acteur(c);
+    final svc = ServiceIdentifiants.de(c.magasin);
+    if (!a.demonstration && svc.possede(a.utilisateurId)) {
+      final refusReel = accControlerNouveauMotDePasse('${v['nouveau']}', '${v['confirmation']}', identifiant: a.identifiant, ancien: '${v['actuel']}');
+      if (refusReel != null) {
+        ToastsSigh.afficher(ctx, refusReel, type: TypeToast.erreur);
+        return;
+      }
+      if (!await svc.motDePasseActuel(a.utilisateurId, '${v['actuel']}')) {
+        c.magasin.journaliser('Changement de mot de passe refusé', 'M14', 'Identifiant', a.utilisateurId, null, {'motif': 'mot de passe actuel incorrect'}, succes: false);
+        if (ctx.mounted) ToastsSigh.afficher(ctx, 'Le mot de passe actuel est incorrect.', type: TypeToast.erreur);
+        return;
+      }
+      await svc.definir(a.utilisateurId, '${v['nouveau']}', par: a.nom, doitChanger: false, maintenant: c.aujourdhui);
+      for (final k in const ['actuel', 'nouveau', 'confirmation']) {
+        _securite!.poser(k, '');
+      }
+      if (ctx.mounted) ToastsSigh.afficher(ctx, 'Mot de passe modifié.', type: TypeToast.succes, detail: 'Il est conservé haché (Argon2id), jamais en clair.');
       return;
     }
     final refus = cfbRefusMotDePasse('${v['nouveau']}', '${v['confirmation']}');

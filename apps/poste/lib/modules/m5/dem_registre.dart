@@ -56,7 +56,7 @@ class EcranDemandesAnalyses extends StatelessWidget with EcranMaquette {
     c.magasin.collection('taches').mettreAJour(tache['id'], {
       'statut': 'fait',
       'faitLe': c.aujourdhui.toUtc().toIso8601String(),
-      'faitPar': c.utilisateur,
+      'faitPar': acteur(c).nom,
     });
     ToastsSigh.afficher(ctx, '${r.annonce} analyse(s) prise(s) en charge.',
         type: TypeToast.succes,
@@ -203,7 +203,7 @@ class EcranDemandesAnalyses extends StatelessWidget with EcranMaquette {
         creerPatient: (dossier) => patients.inserer({
               'statut': 'actif',
               ...dossier,
-              '_creePar': c.utilisateur,
+              '_creePar': acteur(c).nom,
               '_creeLe': c.aujourdhui.toIso8601String(),
             }, prefixe: 'PAT').fiche,
         effectifRepertoire: patients.toutes.length,

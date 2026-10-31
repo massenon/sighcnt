@@ -149,7 +149,7 @@ class _CrudSangState extends State<CrudSang> {
             ],
             reference:
                 PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui));
   }
 
@@ -203,7 +203,7 @@ class _CrudSangState extends State<CrudSang> {
                       final r = widget.collection.inserer({
                         'statut': 'actif',
                         ...fiche,
-                        '_creePar': c.utilisateur,
+                        '_creePar': acteur(c).nom,
                         '_creeLe': c.aujourdhui.toIso8601String(),
                       }, prefixe: widget.prefixeId);
                       ToastsSigh.afficher(ctx, 'Nouveau ${widget.entite} créé.',

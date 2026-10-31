@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import 'dart:async';
+
+import '../../core/identifiants.dart';
 import '../../core/jetons_shell.dart';
 import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
@@ -9,6 +12,7 @@ import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun_m14.dart';
 import 'crud_m14.dart';
+import 'mot_de_passe.dart';
 
 /// `m14-utilisateurs` — « Utilisateurs » : les comptes individuels, leur rôle, leur état et le double facteur.
 ///
@@ -199,7 +203,7 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
                 requis: true,
                 col: ColChamp.demi,
                 aide:
-                    'Huit caractères au minimum. Il n’est pas conservé en clair : l’agent devra le changer à sa première connexion.'),
+                    '12 caractères au minimum, majuscule, minuscule, chiffre et caractère spécial. Il n’est conservé que haché (Argon2id) : l’agent devra le changer à sa première connexion.'),
             ChampDef(
                 nom: 'motDePasseConfirmation',
                 libelle: 'Confirmer le mot de passe',
@@ -212,15 +216,27 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
           ],
         ];
       },
-      avant: (ctx, saisie, record) =>
-          secVerifierCompte(saisie, comptes: m.collection('utilisateurs').toutes, record: record),
+      avant: (ctx, saisie, record) {
+        final refus = secVerifierCompte(saisie, comptes: m.collection('utilisateurs').toutes, record: record);
+        if (refus != null) return refus;
+        // A5 : la politique est APPLIQUÉE (12 caractères, familles de caractères, pas l'identifiant), non plus seulement affichée (E1076, E883).
+        if (record == null) return accRefusPolitique('${saisie['motDePasse'] ?? ''}', identifiant: '${saisie['identifiant'] ?? ''}');
+        return null;
+      },
+      apres: (ctx, fiche, saisie, creation) {
+        // Le mot de passe saisi à la création devient un HACHÉ dans `identifiants` ; la fiche du compte, elle, ne le porte jamais (secTransformerCompte).
+        final mdp = '${saisie['motDePasse'] ?? ''}';
+        if (!creation || mdp.isEmpty) return;
+        unawaited(ServiceIdentifiants.de(m).definir('${fiche['id']}', mdp,
+            par: acteur(c).nom, doitChanger: fiche['doitChangerMotDePasse'] != false, maintenant: c.aujourdhui));
+      },
       transformer: (ctx, saisie, record) {
         final id = '${saisie['employeId'] ?? ''}';
         final agent = id.isEmpty ? null : m.collection('personnel').parId(id);
         return secTransformerCompte(saisie,
             record: record,
             agent: agent,
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             maintenant: c.aujourdhui,
             jour: iso(c.aujourdhui));
       },
@@ -287,10 +303,21 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
                   : const BadgeSigh('Non requis')
             ),
             ('Dernier accès', dateFrOuVide(u['dernierAcces'])),
+            ('Mot de passe', etatIdentifiant(m, '${u['id']}', c.aujourdhui)),
             ('Tentatives infructueuses', '${u['echecs'] ?? 0}'),
             ('Compte créé le', dateFrOuVide(u['creeLe'])),
           ]),
           const SizedBox(height: 16),
+          // Définir le mot de passe d'un compte est un GESTE d'écriture : ABSENT sans le droit d'éditer l'écran (jamais grisé).
+          if (c.droit.editer)
+            Align(
+                alignment: Alignment.centerLeft,
+                child: BoutonSigh(
+                    libelle: 'Définir le mot de passe',
+                    variante: VarianteBouton.secondaire,
+                    icone: LucideIcons.keyRound,
+                    onPressed: () => afficherModaleMotDePasse(ctx, c, u))),
+          if (c.droit.editer) const SizedBox(height: 16),
           CarteSigh(
               titre: 'Périmètre d’accès (RBAC)',
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -314,7 +341,7 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
               titre: 'Fiche de compte utilisateur',
               sousTitre: '${u['identifiant']}',
               reference: reference,
-              utilisateur: c.utilisateur,
+              utilisateur: acteur(c).nom,
               edite: c.aujourdhui,
               cartouche: [
                 ('Identifiant', '${u['identifiant']}'),

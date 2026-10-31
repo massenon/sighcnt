@@ -74,7 +74,7 @@ class EcranChambres extends StatelessWidget with EcranMaquette {
             ],
             signatures: const [Signature('Le Surveillant Général', nom: 'GARBA Yahouza')],
             reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui));
   }
 

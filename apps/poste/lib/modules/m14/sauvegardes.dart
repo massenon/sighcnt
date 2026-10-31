@@ -144,7 +144,7 @@ class _VueSauvegardesState extends State<_VueSauvegardes> {
       'portee': 'Base complète',
       'tables': tables,
       'taille': contenu.length,
-      'genereePar': c.utilisateur,
+      'genereePar': acteur(c).nom,
       'statut': 'actif',
     }, prefixe: 'BKP');
     ToastsSigh.afficher(ctx, 'Sauvegarde $nom générée.',
@@ -237,7 +237,7 @@ class _VueSauvegardesState extends State<_VueSauvegardes> {
           titre: 'Journal des sauvegardes',
           sousTitre: 'Historique glissant — situation au ${dateFR(c.aujourdhui)}',
           reference: referenceImpression(c),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Sauvegardes conservées', nombre(rows.length)),

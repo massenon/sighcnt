@@ -13,8 +13,8 @@ import 'pai_commun.dart';
 /// le lot passe tous ses bulletins « à valider » en « validé » (annulable, journalisé). Signer n'est pas saisir : la commande « Valider le lot » est
 /// derrière le droit d'écrire DE L'ÉCRAN (la Direction l'a par surcharge d'écran, le module M11 lui restant en lecture) — ABSENTE sans lui, jamais grisée.
 ///
-/// Écarts portés : (E685) la maquette offre le bouton à tout profil qui ouvre l'écran ; (E687) elle écrit `validePar` en dur au nom du Directeur Médical,
-/// quel que soit l'agent connecté — le journal d'audit (RG-12) garde, lui, le vrai nom de l'agent.
+/// Écarts portés : (E685) la maquette offre le bouton à tout profil qui ouvre l'écran ; (E687, levé par A1) la maquette écrit `validePar` en dur au nom du Directeur Médical ;
+/// le poste écrit l'agent qui valide (nom et identifiant de compte). Le texte de confirmation reste celui de la maquette.
 class EcranValidationPaie extends StatelessWidget with EcranMaquette {
   const EcranValidationPaie({super.key});
 
@@ -39,7 +39,7 @@ class EcranValidationPaie extends StatelessWidget with EcranMaquette {
     final col = c.magasin.collection('bulletins');
     final annulations = [
       for (final b in col.actives.where((b) => b['periode'] == l.periode && b['statutBulletin'] == 'a_valider'))
-        col.mettreAJour(b['id'], {'statutBulletin': 'valide', 'validePar': paiNomDirection, 'dateValidation': iso(c.aujourdhui)})
+        col.mettreAJour(b['id'], {'statutBulletin': 'valide', 'validePar': acteur(c).nom, 'valideParId': acteur(c).utilisateurId, 'dateValidation': iso(c.aujourdhui)})
     ];
     ToastsSigh.afficher(ctx, 'Paie de ${l.periode} validée par la Direction.', type: TypeToast.succes, detail: '${annulations.length} bulletin(s) autorisé(s) à la diffusion.', annuler: () {
       for (final u in annulations) {

@@ -2,6 +2,7 @@
 /// `test/references/kit/kit.json` (engendré par `prototype_html/build/reference-kit.js`).
 library;
 
+export 'acteur.dart';
 export 'badge.dart';
 export 'bouton.dart';
 export 'carte.dart';

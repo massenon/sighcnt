@@ -309,7 +309,7 @@ class _EtatStatsHospitalisations extends State<EcranStatsHospitalisations> {
           titre: 'Statistiques des hospitalisations',
           sousTitre: 'Période : ${du.isNotEmpty ? dateFR(DateTime.parse(du)) : 'origine'} au ${au.isNotEmpty ? dateFR(DateTime.parse(au)) : dateFR(c.aujourdhui)}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: pilCartoucheHospitalisations(h, du, au),
           blocs: [

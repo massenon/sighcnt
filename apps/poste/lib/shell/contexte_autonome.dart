@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show Agent;
 
 import '../core/config_poste.dart';
 import '../core/donnees_navigation.dart';
@@ -57,6 +58,9 @@ class ContexteAutonome extends InheritedWidget {
 
   /// Le rôle de l'agent connecté, `null` si personne.
   String? get role => publique ? null : (session?.role ?? config.role);
+
+  /// L'agent nominatif de la session (A1), `null` pour une page publique ou quand personne n'est connecté.
+  Agent? get agent => publique ? null : session?.agent;
 
   /// Le libellé du rôle (« Réception / Accueil »).
   String? get libelleRole => role == null ? null : (donnees?.matrice.libelle(role!) ?? role);

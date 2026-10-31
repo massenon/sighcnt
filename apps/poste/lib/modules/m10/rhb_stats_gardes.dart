@@ -127,7 +127,7 @@ class _EtatStatsGardes extends State<EcranStatsGardes> {
               ('Agents concernés', nombre(agents.length)),
               ('Vacations travaillées', nombre(agents.fold<int>(0, (s, a) => s + a.total))),
               ('Dont gardes', nombre(agents.fold<int>(0, (s, a) => s + a.gardes))),
-              ('Établi par', c.utilisateur),
+              ('Établi par', acteur(c).nom),
               ('Date d’édition', dateFR(c.aujourdhui)),
             ],
             filtres: _filtres(),

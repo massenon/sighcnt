@@ -467,8 +467,10 @@ void main() {
       await t.tap(find.widgetWithText(BoutonSigh, 'Valider l’ordre'));
       await t.pump(const Duration(milliseconds: 400));
       final f = col.toutes.firstWhere((x) => x['reference'] == 'OM-2026-0004');
-      fichesEgales(f, obj(obj(obj(o['validation'])['apres'])['fiche']));
-      expect(f['valideePar'], 'TAKI Alimatou');
+      // E625 levé (A1) : la maquette écrit « TAKI Alimatou » quelle que soit la personne connectée ; le poste écrit l'AGENT qui valide.
+      fichesEgales(f, obj(obj(obj(o['validation'])['apres'])['fiche']), ignores: {'valideePar', 'valideeParId'});
+      expect(f['valideePar'], 'Administrateur système', reason: 'agent de démonstration du rôle admin');
+      expect(f['valideeParId'], 'demo:admin');
       expect(f['valideeLe'], '2026-10-30');
       await chercher(t, '');
       kpisIdentiques(t, obj(obj(o['validation'])['ecran'])['kpis']);

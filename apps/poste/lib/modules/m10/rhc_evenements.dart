@@ -240,7 +240,7 @@ class EcranEvenements extends StatelessWidget with EcranMaquette {
                       if (ben != null) 'beneficiaire': ben['nomComplet'],
                       // La série SUIT le registre (E743 — `C.nextRef` repartait de 1 à chaque session : EVT-0001 existait déjà).
                       'reference': rhbReferenceSuivante('EVT-', 4, evts.toutes),
-                      '_creePar': c.utilisateur,
+                      '_creePar': acteur(c).nom,
                       '_creeLe': c.aujourdhui.toIso8601String(),
                     }, prefixe: 'EVT');
                     final engendrees = [

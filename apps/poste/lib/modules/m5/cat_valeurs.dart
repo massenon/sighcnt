@@ -451,7 +451,7 @@ class _EtatValeurs extends State<EcranValeursReference> {
                     final val = catTransformVariable(saisie,
                         existante: v,
                         examensActifs: m.collection('examensLabo').actives,
-                        utilisateur: c.utilisateur,
+                        utilisateur: acteur(c).nom,
                         maintenant: c.aujourdhui);
                     if (creation) {
                       col.inserer({'statut': 'actif', ...val}, prefixe: 'VAR');
@@ -495,7 +495,7 @@ class _EtatValeurs extends State<EcranValeursReference> {
     c.magasin.collection('variablesLabo').mettreAJour(
         v['id'],
         catPatchBascule(v,
-            utilisateur: c.utilisateur, maintenant: c.aujourdhui));
+            utilisateur: acteur(c).nom, maintenant: c.aujourdhui));
     ToastsSigh.afficher(ctx, fermer ? 'Variable fermée.' : 'Variable rouverte.',
         type: TypeToast.succes,
         detail: fermer
@@ -733,7 +733,7 @@ class _EtatValeurs extends State<EcranValeursReference> {
               ('Variables', nombre(rows.length)),
               ('Documentées', nombre(rows.where((v) => v['aValider'] != true).length)),
               ('À valider', nombre(rows.where((v) => v['aValider'] == true).length)),
-              ('Établi par', c.utilisateur),
+              ('Établi par', acteur(c).nom),
               ('Date d’édition', dateFR(c.aujourdhui)),
             ],
             filtres: filtres,

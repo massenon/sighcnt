@@ -200,7 +200,7 @@ class EcranLivraisons extends StatelessWidget with EcranMaquette {
 void _imprimer(BuildContext ctx, Fiche l) => imprimerPiece(
     ctx,
     (c) => pieceLivraison(l,
-        utilisateur: c.utilisateur, edite: c.aujourdhui, reference: refEtat(c)));
+        utilisateur: acteur(c).nom, edite: c.aujourdhui, reference: refEtat(c)));
 
 void _consulter(BuildContext ecran, Fiche l) {
   afficherTiroir<void>(ecran,

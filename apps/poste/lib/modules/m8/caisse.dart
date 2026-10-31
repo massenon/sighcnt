@@ -766,7 +766,7 @@ class _EcranCaisseState extends State<EcranCaisse> {
           sousTitre: 'Journée du ${dateFR(d)}',
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Date', dateFR(d)),
@@ -774,7 +774,7 @@ class _EcranCaisseState extends State<EcranCaisse> {
             ('Chiffre d’affaires', money(som(f, 'montantTTC'))),
             ('Total encaissé', money(som(f, 'montantPaye'))),
             ('Reliquats', money(som(f, 'reliquat'))),
-            ('Caissier', c.utilisateur),
+            ('Caissier', acteur(c).nom),
           ],
           blocs: [
             BlocTableau(
@@ -817,7 +817,7 @@ class _EcranCaisseState extends State<EcranCaisse> {
                 titre: 'Détail des factures'),
           ],
           signatures: [
-            Signature('Le Caissier', nom: c.utilisateur),
+            Signature('Le Caissier', nom: acteur(c).nom),
             const Signature('Le Comptable', nom: 'KASSA Augustin'),
             const Signature('La Directrice Administrative',
                 nom: 'TAKI Alimatou')

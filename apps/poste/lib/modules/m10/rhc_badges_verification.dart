@@ -97,7 +97,7 @@ class _EtatVerification extends State<EcranBadgesVerification> {
               ],
               Padding(
                   padding: const EdgeInsets.only(top: 12),
-                  child: Text('Vérification journalisée le ${dateHeure(c.aujourdhui)} par ${c.utilisateur}.',
+                  child: Text('Vérification journalisée le ${dateHeure(c.aujourdhui)} par ${acteur(c).nom}.',
                       style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12))),
             ])),
           ]),

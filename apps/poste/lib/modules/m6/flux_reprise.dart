@@ -416,7 +416,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
             'Cette validation atteste que le contrôle physique contradictoire a été réalisé et que les ${nombre(articles)} articles repris correspondent au stock effectivement détenu. Elle engage le Gestionnaire de Stock et est journalisée.',
         libelleOk: 'Valider la reprise');
     if (!ok || !ctx.mounted) return;
-    c.magasin.journaliser('Validation', 'M6', 'LotImportStock', reference, null, {'valideePar': c.utilisateur});
+    c.magasin.journaliser('Validation', 'M6', 'LotImportStock', reference, null, {'valideePar': acteur(c).nom});
     ToastsSigh.afficher(ctx, 'Reprise validée.',
         type: TypeToast.succes, detail: 'Le stock initial devient la situation de référence.');
   }
@@ -482,7 +482,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
     return afficherApercu(
         ctx,
         pieceBordereau(ref,
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui,
             reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero())));
   }
@@ -529,7 +529,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
               prixRevient: prix,
               source: '${v['source']}',
               observation: '${v['observation'] ?? ''}',
-              auteur: c.utilisateur,
+              auteur: acteur(c).nom,
               jour: iso(c.aujourdhui));
           if (ancienne != null) {
             col.mettreAJour(ancienne['id'], fiche);

@@ -308,7 +308,7 @@ class CpcDemande {
 
 /// GESTE 1 — la demande (comptable). Les contrôles bloquants refusent EN LES NOMMANT.
 CpcDemande cpcDemanderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche> actives, int annee,
-    {required String acteur, required DateTime maintenant}) {
+    {required String acteur, String? acteurId, required DateTime maintenant}) {
   final x = cpcExercice(exercices, annee);
   if (x == null) return CpcDemande.refus('Exercice $annee inconnu.');
   if (x['etat'] == 'clos') return CpcDemande.refus('Exercice $annee déjà clos.');
@@ -324,6 +324,8 @@ CpcDemande cpcDemanderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche> a
     'etat': 'en_attente_cloture',
     'demandeLe': _iso(maintenant),
     'demandePar': acteur,
+    // A1 : l'IDENTIFIANT de l'agent demandeur. Le contrôle « demandeur différent du validateur » le compare, jamais le libellé.
+    if (acteurId != null) 'demandeParId': acteurId,
     'resultatPrevu': pre.resultat,
   });
 }
@@ -359,7 +361,7 @@ class CpcValidation {
 /// journal ARRÊTÉ, puis état « clos » — en dernier. Refus nommés : demande absente, rôle, motif, signataire identique, contrôles à nouveau en échec,
 /// pièces déséquilibrées (RG-10).
 CpcValidation cpcValiderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche> actives, int annee,
-    {required String motif, required String acteur, required String role, required DateTime maintenant}) {
+    {required String motif, required String acteur, String? acteurId, required String role, required DateTime maintenant}) {
   final x = cpcExercice(exercices, annee);
   if (x == null || x['etat'] != 'en_attente_cloture') {
     return CpcValidation.refus('Aucune demande de clôture en attente pour $annee.');
@@ -368,7 +370,11 @@ CpcValidation cpcValiderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche>
     return const CpcValidation.refus('La clôture est validée par la Direction ou la Directrice Administrative.');
   }
   if (motif.trim().length < 3) return const CpcValidation.refus('Un motif est obligatoire pour valider une clôture.');
-  if (x['demandePar'] == acteur) {
+  // A1 : deux agents de même rôle sont distincts. L'identifiant décide quand les DEUX côtés en portent un ; une demande antérieure (sans
+  // identifiant) retombe sur le nom, faute de mieux.
+  final demandeurId = x['demandeParId'];
+  final memePersonne = (demandeurId != null && acteurId != null) ? demandeurId == acteurId : x['demandePar'] == acteur;
+  if (memePersonne) {
     return CpcValidation.refus(
         'Signer n’est pas saisir : la validation doit venir d’une autre personne que le demandeur (${x['demandePar']}).');
   }
@@ -462,6 +468,7 @@ CpcValidation cpcValiderCloture(Iterable<CpaFiche> exercices, Iterable<CpaFiche>
     'etat': 'clos',
     'valideLe': _iso(maintenant),
     'validePar': acteur,
+    if (acteurId != null) 'valideParId': acteurId,
     'motif': motif.trim(),
     'resultat': res,
     'empreinte': empreinte,

@@ -96,7 +96,7 @@ Future<void> imprimerPv(BuildContext ctx, Fiche r, String nature) {
       ctx,
       piecePv(r,
           nature: nature,
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero())));

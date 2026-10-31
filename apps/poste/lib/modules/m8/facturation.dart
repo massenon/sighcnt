@@ -440,7 +440,7 @@ class _EtatFacturation extends State<EcranFacturation> {
         'quantite': s.quantite,
         'stockType': 'detail',
         'justificatif': s.justificatif,
-        'utilisateur': c.utilisateur,
+        'utilisateur': acteur(c).nom,
         'statut': 'actif',
       }, prefixe: 'MVT');
       annulations.add(ins.annuler);
@@ -492,7 +492,7 @@ class _EtatFacturation extends State<EcranFacturation> {
     afficherApercuTicket(
         context,
         EntreeTicket(
-          operateur: c.utilisateur,
+          operateur: acteur(c).nom,
           numero: 'T-${(nbFactures + 1).toString().padLeft(5, '0')}',
           typeVente: assure ? 'ASSURANCE' : 'COMPTANT',
           assureur: assure ? '${p['assureurNom']}' : null,

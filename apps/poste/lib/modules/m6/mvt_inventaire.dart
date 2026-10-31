@@ -131,7 +131,7 @@ class EcranInventaires extends StatelessWidget with EcranMaquette {
       const ChampDef(nom: 'operateur', libelle: 'Réalisé par', requis: true),
     ], {
       'date': iso(c.aujourdhui),
-      'operateur': c.utilisateur,
+      'operateur': acteur(c).nom,
     });
     afficherModale<void>(ctx,
         titre: 'Lancer un inventaire',
@@ -200,7 +200,7 @@ class EcranInventaires extends StatelessWidget with EcranMaquette {
           titre: 'État d’inventaire',
           sousTitre: '${i['reference']} — ${i['type']}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Référence', '${i['reference']}'),

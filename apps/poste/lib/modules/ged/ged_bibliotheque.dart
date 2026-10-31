@@ -279,7 +279,7 @@ PieceA4 pieceFiche(Fiche d, ContexteEcran c) => PieceA4(
       titre: 'Fiche documentaire',
       sousTitre: '${d['reference']}',
       reference: referenceEtat(c),
-      utilisateur: c.utilisateur,
+      utilisateur: acteur(c).nom,
       edite: c.aujourdhui,
       cartouche: [
         ('Référence', '${d['reference']}'),

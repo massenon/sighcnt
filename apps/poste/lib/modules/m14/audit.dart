@@ -140,7 +140,7 @@ class _VueAuditState extends State<_VueAudit> {
           titre: 'Journal d’audit',
           sousTitre: 'Traçabilité des actions — situation au ${dateFR(c.aujourdhui)}',
           reference: referenceImpression(c),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Actions journalisées', nombre(s.actions)),
