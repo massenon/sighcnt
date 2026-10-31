@@ -23,10 +23,11 @@ List<CpaFiche> cpaLignesDepense(CpaFiche dep) {
   ];
 }
 
+typedef CpaTotauxDepense = ({List<CpaFiche> lignes, double montant, String libelle, String compteCharge});
+
 /// `totauxDepuisLignes` : la pièce exige au moins une ligne ; le montant est la somme des lignes ; l'objet se reprend de la première ligne s'il est
 /// vide (« … (+N autre(s)) »).
-({List<CpaFiche> lignes, double montant, String libelle, String compteCharge}) cpaTotauxDepense(
-    String objet, List<CpaFiche> lignes) {
+CpaTotauxDepense cpaTotauxDepense(String objet, List<CpaFiche> lignes) {
   if (lignes.isEmpty) throw const CpaRefus('La pièce exige au moins une ligne de dépense.');
   final premier = '${lignes.first['libelle']}';
   return (

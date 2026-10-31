@@ -543,4 +543,211 @@ void main() {
       }
     });
   });
+
+  group('m12-depenses', () {
+    /// Saisit dans le champ [champ] DU DERNIER formulaire ouvert (une ligne se saisit dans une modale posée sur celle de la pièce).
+    Future<void> saisirDernier(WidgetTester t, String champ, String texte) async {
+      final f = find.descendant(of: find.byKey(Key('kit:champ:$champ')).last, matching: find.byType(TextField));
+      await t.enterText(f, texte);
+      await t.pump();
+    }
+
+    Future<void> ajouter(WidgetTester t, String libelle, String compte, String montant) async {
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Ajouter une ligne'));
+      await saisirDernier(t, 'libelle', libelle);
+      await choisirM14(t, 'compteCharge', compte);
+      await saisirDernier(t, 'montant', montant);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Ajouter'));
+    }
+
+    Future<void> nouvelle(WidgetTester t, {String tresorerie = 'Caisse de la clinique'}) async {
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouvelle dépense'));
+      await choisirM14(t, 'compteTresorerie', tresorerie);
+    }
+
+    casM14('QUATRE indicateurs (pas cinq), calculés sur les dépenses ; la note compte celles sans justificatif', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      final dep = m.collection('depenses').actives;
+      final i = cpaIndicateursDepenses(dep, '2026-10-30');
+      for (final k in ['Dépensé aujourd’hui', 'Dépensé ce mois', 'Total enregistré', 'Sans justificatif']) {
+        expect(find.text(k), findsOneWidget, reason: k);
+      }
+      expect(find.text('Dépense moyenne'), findsNothing, reason: 'retirée par l\'arbitrage du 31/08/2026');
+      expect(find.text(money(i.total)), findsOneWidget);
+      expect(find.textContaining('${i.nbSansRecu} dépense(s) sans justificatif, pour ${money(i.sansRecu)}', findRichText: true), findsOneWidget);
+    });
+
+    casM14('« Aujourd\'hui » est un FILTRE, pas un tri : la plage restreint les pièces et les indicateurs', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Aujourd’hui'));
+      final jour = [for (final r in m.collection('depenses').actives) if (r['date'] == '2026-10-30') r];
+      final i = cpaIndicateursDepenses(jour, '2026-10-30');
+      expect(find.text(money(i.total)), findsWidgets);
+      expect(find.text('${jour.length} dépense(s)'), findsOneWidget);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Tout l’historique'));
+      expect(find.text('${m.collection('depenses').actives.length} dépense(s)'), findsOneWidget);
+    });
+
+    casM14('une dépense à TROIS lignes : le total est la somme, un débit par ligne, un crédit de trésorerie du total, en BROUILLON, même numéro de pièce', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      final reference = cpaReferenceDepense('2026-10-30', m.collection('depenses').toutes);
+      await nouvelle(t);
+      await ajouter(t, 'Gants d’examen', '601100 — Achats de marchandises', '12000');
+      await ajouter(t, 'Compresses', '604100 — Matieres consommables', '8000');
+      await ajouter(t, 'Sparadrap', '605600 — Achats de petit matériel et outillages', '4500');
+      expect(find.text('TOTAL — 3 ligne(s)'), findsOneWidget);
+      expect(find.text(cpaMontant(24500)), findsWidgets);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final d = m.collection('depenses').actives.first;
+      expect(d['reference'], reference);
+      expect(d['montant'], 24500);
+      expect(d['libelle'], 'Gants d’examen (+2 autre(s))');
+      expect(d['justificatif'], isNull, reason: 'le reçu n\'est pas bloquant');
+      expect((d['lignes'] as List).length, 3);
+      expect(d['saisiPar'], isNotEmpty, reason: 'RG-12 : aucune action anonyme');
+      final e = [for (final x in m.collection('ecritures').actives) if (x['numero'] == reference) x];
+      expect(e.length, 4);
+      expect(e.every((x) => x['statut'] == 'brouillon' && x['origine'] == 'Dépense journalière' && x['pieceId'] == d['id']), isTrue);
+      expect(e.fold<num>(0, (a, x) => a + (x['debit'] as num)), 24500);
+      expect(e.fold<num>(0, (a, x) => a + (x['credit'] as num)), 24500, reason: 'RG-10');
+      expect((d['ecritureIds'] as List).length, 4, reason: 'on retient TOUS les identifiants');
+      expect(e.where((x) => n0(x['credit']) > 0).single['compte'], '571000');
+      expect(find.textContaining('${money(24500)} en 3 ligne(s)'), findsOneWidget);
+      expect(find.textContaining('sans justificatif'), findsWidgets);
+    });
+
+    casM14('une pièce sans ligne est REFUSÉE en le disant, rien n\'est écrit, la saisie reste ouverte', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      final n0 = m.collection('depenses').toutes.length, e0 = m.collection('ecritures').toutes.length;
+      await nouvelle(t);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(find.text('La pièce exige au moins une ligne de dépense.'), findsOneWidget);
+      expect(m.collection('depenses').toutes.length, n0);
+      expect(m.collection('ecritures').toutes.length, e0);
+      expect(find.text('Nouvelle dépense'), findsWidgets);
+    });
+
+    casM14('exercice CLOS : refusé AVANT toute écriture, avec le motif du moteur (E714) — ni la dépense ni son écriture', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses', horloge: DateTime(2025, 11, 12, 10));
+      final n0 = m.collection('depenses').toutes.length, e0 = m.collection('ecritures').toutes.length;
+      await nouvelle(t, tresorerie: 'Compte courant BOA');
+      await ajouter(t, 'Frais bancaires BOA', '631810 — Frais bancaire BOA', '9000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(find.text('Écriture refusée.'), findsOneWidget);
+      expect(find.textContaining('Exercice 2025 clos le 15/05/2026'), findsOneWidget);
+      expect(m.collection('depenses').toutes.length, n0);
+      expect(m.collection('ecritures').toutes.length, e0);
+    });
+
+    casM14('une sortie de BANQUE : crédit sur le compte 5xx de la fiche, journal BQE (E719)', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      await nouvelle(t, tresorerie: 'Compte courant BOA');
+      await ajouter(t, 'Timbres fiscaux', '646210 — Droit de Timbre', '3000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final d = m.collection('depenses').actives.first;
+      final e = [for (final x in m.collection('ecritures').actives) if (x['numero'] == d['reference']) x];
+      expect(e.length, 2);
+      expect(e.every((x) => x['journal'] == 'BQE'), isTrue);
+      expect(e.where((x) => n0(x['credit']) > 0).single['compte'], '521100');
+    });
+
+    casM14('modifier : l\'écriture est REFAITE (toutes les anciennes lignes archivées), le total suit les lignes, elle repart en brouillon', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      await nouvelle(t);
+      await ajouter(t, 'Gants d’examen', '601100 — Achats de marchandises', '12000');
+      await ajouter(t, 'Compresses', '604100 — Matieres consommables', '8000');
+      await ajouter(t, 'Sparadrap', '605600 — Achats de petit matériel et outillages', '4500');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final d = m.collection('depenses').actives.first;
+      final anciennes = (d['ecritureIds'] as List).toList();
+      await t.pump(const Duration(seconds: 6));
+      await t.enterText(find.byType(TextField).first, '${d['reference']}');
+      await t.pump(const Duration(milliseconds: 600));
+      await toucherM14(t, find.byTooltip('Modifier').first);
+      await toucherM14(t, find.byTooltip('Retirer la ligne').at(2));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final r = m.collection('depenses').parId(d['id'])!;
+      expect(r['montant'], 20000);
+      expect((r['lignes'] as List).length, 2);
+      for (final id in anciennes) {
+        expect(m.collection('ecritures').parId(id)!['statut'], 'archive', reason: 'TOUTES les anciennes lignes');
+      }
+      final neuves = [for (final x in m.collection('ecritures').actives) if (x['numero'] == d['reference']) x];
+      expect(neuves.length, 3);
+      expect(neuves.fold<num>(0, (a, x) => a + (x['debit'] as num)), neuves.fold<num>(0, (a, x) => a + (x['credit'] as num)));
+      expect(neuves.every((x) => x['statut'] == 'brouillon'), isTrue);
+      expect(find.text('Dépense modifiée.'), findsOneWidget);
+    });
+
+    casM14('archiver : la dépense ET son écriture entière sont archivées, jamais supprimées (RG-14)', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      await nouvelle(t);
+      await ajouter(t, 'Gants d’examen', '601100 — Achats de marchandises', '12000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final d = m.collection('depenses').actives.first;
+      await t.pump(const Duration(seconds: 6));
+      await t.enterText(find.byType(TextField).first, '${d['reference']}');
+      await t.pump(const Duration(milliseconds: 600));
+      await toucherM14(t, find.byTooltip('Archiver').first);
+      expect(find.textContaining('La dépense et son écriture sont archivées, jamais supprimées (RG-14).'), findsOneWidget);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Archiver').last);
+      expect(m.collection('depenses').parId(d['id'])!['statut'], 'archive');
+      for (final id in d['ecritureIds'] as List) {
+        expect(m.collection('ecritures').parId(id)!['statut'], 'archive');
+      }
+      expect(m.collection('ecritures').toutes.where((x) => x['numero'] == d['reference']).length, 2, reason: 'rien n\'est supprimé');
+    });
+
+    casM14('la fiche d\'une dépense sans reçu dit « AUCUN — charge contestable » et l\'écriture « non posée » ; la pièce imprimée le redit', (t) async {
+      final m = magasinComplet();
+      final sans = m.collection('depenses').actives.firstWhere((r) => r['justificatif'] == null);
+      await ouvrir(t, m, 'm12-depenses');
+      await t.enterText(find.byType(TextField).first, '${sans['reference']}');
+      await t.pump(const Duration(milliseconds: 600));
+      await toucherM14(t, find.byTooltip('Consulter').first);
+      await t.pump(const Duration(milliseconds: 500));
+      expect(find.text('AUCUN — charge contestable'), findsOneWidget);
+      expect(find.text('non posée'), findsOneWidget);
+      await t.tap(find.widgetWithText(BoutonSigh, 'Imprimer la pièce'));
+      await t.pump(const Duration(milliseconds: 500));
+      expect(find.text('Pièce de dépense'), findsWidgets);
+      expect(find.textContaining('Aucun justificatif joint : cette charge est contestable en cas de contrôle.'), findsWidgets);
+    });
+
+    casM14('« État des dépenses » : total refait depuis les lignes imprimées', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-depenses');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'État des dépenses'));
+      expect(find.text('État des dépenses de trésorerie'), findsWidgets);
+      expect(find.text('TOTAL'), findsWidgets);
+    });
+
+    casM14('en lecture seule : « Nouvelle dépense », « Modifier » et « Archiver » sont ABSENTS ; consulter et imprimer restent', (t) async {
+      final m = magasinComplet();
+      await ouvrirM14(t, m, 'm12-depenses', role: 'comptable', donnees: donneesLectureSeule('comptable', 'm12-depenses'));
+      expect(find.widgetWithText(BoutonSigh, 'Nouvelle dépense'), findsNothing);
+      expect(find.byTooltip('Modifier'), findsNothing);
+      expect(find.byTooltip('Archiver'), findsNothing);
+      expect(find.byTooltip('Consulter'), findsWidgets);
+      expect(find.byTooltip('Imprimer la pièce'), findsWidgets);
+      expect(find.textContaining('Votre profil consulte les dépenses sans les saisir.'), findsOneWidget);
+    });
+
+    casM14('le caissier n\'a plus l\'écran (fermé le 02/09) : la coque ne l\'ouvre pas', (t) async {
+      final m = magasinComplet();
+      await ouvrirM14(t, m, 'm12-depenses', role: 'caissier');
+      expect(find.text('Nouvelle dépense'), findsNothing);
+      expect(find.text('Dépensé aujourd’hui'), findsNothing);
+    });
+  });
 }
+
+num n0(Object? v) => v is num ? v : 0;

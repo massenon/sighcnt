@@ -3999,7 +3999,12 @@
                   detail: C.money(rec.montant) + ' en ' + t.lignes.length + ' ligne(s) — écriture '
                     + (ec ? 'en brouillon, à valider' : 'non posée')
                     + (rec.justificatif ? '' : ' · sans justificatif'),
-                  undo: function () { colDepenses().archive(rec.id); afficher(); },
+                  /* Écart E727 : annuler la saisie n'archivait que la dépense — son écriture en brouillon restait au journal, charge sans pièce. */
+                  undo: function () {
+                    colDepenses().archive(rec.id);
+                    (ec ? ec.ids : []).forEach(function (id) { S.collection('ecritures').archive(id); });
+                    afficher();
+                  },
                   undoMessage: 'Dépense annulée.' });
               } }),
           ],

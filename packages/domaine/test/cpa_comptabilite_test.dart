@@ -188,6 +188,16 @@ void main() {
         }
       }
     });
+    test('E725 : le plan porte deux fiches au même numéro (244100, 631810) — la balance ne compte pas deux fois, elle est équilibrée comme le journal', () {
+      final doubles = <String, int>{};
+      for (final c in comptes) {
+        doubles['${c['num']}'] = (doubles['${c['num']}'] ?? 0) + 1;
+      }
+      expect(doubles.values.any((n) => n > 1), isTrue, reason: 'le jeu porte bien des numéros en double');
+      expect(b.map((x) => x.num).toSet().length, b.length, reason: 'une ligne par numéro');
+      expect(b.fold<double>(0, (a, x) => a + x.debit), e26.fold<double>(0, (a, x) => a + (x['debit'] as num)));
+      expect(b.fold<double>(0, (a, x) => a + x.debit), b.fold<double>(0, (a, x) => a + x.credit), reason: 'RG-10');
+    });
     test('la balance âgée des tiers, tranche par tranche', () {
       final tr = cpaBalanceAgee(jeu('factures').where((x) => x['statut'] != 'archive'), auj);
       final att = (carte(r['agee'])['lignes'] as List).map((l) => (l as List).map(nt).toList()).toList();
