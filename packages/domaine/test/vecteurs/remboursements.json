@@ -5,7 +5,7 @@
    "entree": {
     "nom": "remboursement d'un trop-perçu : la facture n'est pas touchée",
     "facture": {
-     "id": "FACxmvuzg6xa8rwgc",
+     "id": "FACxmvwc2v58jyp06",
      "statut": "actif",
      "numero": "FN-2099-00001",
      "patientId": "P1",
@@ -20,7 +20,7 @@
      "statutMecef": "valide",
      "lignes": [],
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:03:09.838Z"
+     "_creeLe": "2026-10-31T11:44:29.228Z"
     },
     "saisie": {
      "nature": "Remboursement",
@@ -31,11 +31,12 @@
     },
     "rangFactures": 231,
     "remboursements": [],
-    "jour": "2026-10-30"
+    "avoirs": [],
+    "jour": "2026-10-31"
    },
    "remboursements": [
     {
-     "factureId": "FACxmvuzg6xa8rwgc",
+     "factureId": "FACxmvwc2v58jyp06",
      "nature": "Remboursement",
      "motifAvoir": "",
      "refacturation": "",
@@ -50,6 +51,12 @@
     }
    ],
    "facturesCreees": [],
+   "avoirsCrees": [],
+   "ecrituresCreees": [],
+   "factureAvoirs": {
+    "avoirIds": 0,
+    "montantAvoirs": null
+   },
    "facturePatch": {
     "statutPaiement": "soldee",
     "statutMecef": "valide",
@@ -60,7 +67,7 @@
    "entree": {
     "nom": "annulation : la facture repasse impayée, MECeF « rejeté », marquée annulée",
     "facture": {
-     "id": "FACxmvuzg701vox1c",
+     "id": "FACxmvwc2v8r53dm4",
      "statut": "actif",
      "numero": "FN-2099-00002",
      "patientId": "P2",
@@ -75,7 +82,7 @@
      "statutMecef": "valide",
      "lignes": [],
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:03:09.938Z"
+     "_creeLe": "2026-10-31T11:44:29.356Z"
     },
     "saisie": {
      "nature": "Annulation",
@@ -90,11 +97,12 @@
       "reference": "RB-00001"
      }
     ],
-    "jour": "2026-10-30"
+    "avoirs": [],
+    "jour": "2026-10-31"
    },
    "remboursements": [
     {
-     "factureId": "FACxmvuzg701vox1c",
+     "factureId": "FACxmvwc2v8r53dm4",
      "nature": "Annulation",
      "motifAvoir": "",
      "refacturation": "",
@@ -109,6 +117,12 @@
     }
    ],
    "facturesCreees": [],
+   "avoirsCrees": [],
+   "ecrituresCreees": [],
+   "factureAvoirs": {
+    "avoirIds": 0,
+    "montantAvoirs": null
+   },
    "facturePatch": {
     "statutPaiement": "impayee",
     "statutMecef": "rejete",
@@ -117,9 +131,9 @@
   },
   {
    "entree": {
-    "nom": "facture avoir : une pièce NÉGATIVE rattachée à la facture, transmise à la MECeF",
+    "nom": "facture avoir (erreur) : un avoir dans la collection `avoirs`, contre-passation en brouillon, aucune pièce négative",
     "facture": {
-     "id": "FACxmvuzg72agz5o7",
+     "id": "FACxmvwc2vbb085ag",
      "statut": "actif",
      "numero": "FN-2099-00003",
      "patientId": "P3",
@@ -134,7 +148,7 @@
      "statutMecef": "valide",
      "lignes": [],
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:03:10.019Z"
+     "_creeLe": "2026-10-31T11:44:29.447Z"
     },
     "saisie": {
      "nature": "Facture avoir",
@@ -154,11 +168,12 @@
       "reference": "RB-00001"
      }
     ],
-    "jour": "2026-10-30"
+    "avoirs": [],
+    "jour": "2026-10-31"
    },
    "remboursements": [
     {
-     "factureId": "FACxmvuzg72agz5o7",
+     "factureId": "FACxmvwc2vbb085ag",
      "nature": "Facture avoir",
      "motifAvoir": "erreur",
      "refacturation": "refaire",
@@ -169,41 +184,70 @@
      "factureNumero": "FN-2099-00003",
      "patient": "TEST Remb",
      "patientCode": "CNT/3/26",
-     "reference": "RB-00003"
+     "reference": "RB-00003",
+     "avoirId": "AVRxmvwc2ve5rtl2x",
+     "avoirNumero": "AV-2026-0001"
     }
    ],
-   "facturesCreees": [
+   "facturesCreees": [],
+   "avoirsCrees": [
     {
-     "numero": "AV-2026-00234",
-     "avoirDe": "FACxmvuzg72agz5o7",
-     "avoirDeNumero": "FN-2099-00003",
-     "motifAvoir": "erreur",
-     "refacturation": "refaire",
+     "reference": "AV-2026-0001",
+     "date": "2026-10-30",
+     "factureId": "FACxmvwc2vbb085ag",
+     "factureNumero": "FN-2099-00003",
      "patientId": "P3",
      "patient": "TEST Remb",
      "patientCode": "CNT/3/26",
-     "date": "2026-10-30",
-     "type": "Avoir",
-     "montantHT": -4000,
-     "montantTTC": -4000,
-     "partAssurance": 0,
-     "partPatient": -4000,
-     "montantPaye": 0,
-     "reliquat": 0,
-     "baseMecef": -4000,
-     "statutPaiement": "soldee",
-     "statutMecef": "valide",
-     "lignes": [
+     "montant": 4000,
+     "motif": "Erreur de facturation",
+     "observations": "Trop-perçu constaté",
+     "lignesAnnulees": [
       {
-       "designation": "Avoir sur facture FN-2099-00003 — Trop-perçu constaté",
-       "quantite": 1,
-       "prixUnitaire": -4000,
-       "montant": -4000
+       "designation": "Avoir sur facture FN-2099-00003 : Trop-perçu constaté",
+       "montant": 4000
       }
      ],
-     "mecef": true
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko"
     }
    ],
+   "ecrituresCreees": [
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0001",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0001",
+     "origine": "Facture d’avoir",
+     "compte": "411000",
+     "compteLibelle": "Clients",
+     "libelle": "Créance réduite — avoir AV-2026-0001",
+     "debit": 0,
+     "credit": 4000
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0001",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0001",
+     "origine": "Facture d’avoir",
+     "compte": "706000",
+     "compteLibelle": "Prestations de services",
+     "libelle": "Contre-passation — FN-2099-00003 (Erreur de facturation)",
+     "debit": 4000,
+     "credit": 0
+    }
+   ],
+   "factureAvoirs": {
+    "avoirIds": 1,
+    "montantAvoirs": 4000
+   },
    "facturePatch": {
     "statutPaiement": "soldee",
     "statutMecef": "valide",
@@ -214,7 +258,7 @@
    "entree": {
     "nom": "facture avoir, service non rendu et non refacturé",
     "facture": {
-     "id": "FACxmvuzg74p0wcu9",
+     "id": "FACxmvwc2vqwvuz6j",
      "statut": "actif",
      "numero": "FN-2099-00004",
      "patientId": "P4",
@@ -229,7 +273,7 @@
      "statutMecef": "valide",
      "lignes": [],
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:03:10.105Z"
+     "_creeLe": "2026-10-31T11:44:30.008Z"
     },
     "saisie": {
      "nature": "Facture avoir",
@@ -240,7 +284,7 @@
      "motif": "Trop-perçu constaté",
      "autorisePar": "TAKI Alimatou"
     },
-    "rangFactures": 235,
+    "rangFactures": 234,
     "remboursements": [
      {
       "reference": "RB-00003"
@@ -252,11 +296,18 @@
       "reference": "RB-00001"
      }
     ],
-    "jour": "2026-10-30"
+    "avoirs": [
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
    },
    "remboursements": [
     {
-     "factureId": "FACxmvuzg74p0wcu9",
+     "factureId": "FACxmvwc2vqwvuz6j",
      "nature": "Facture avoir",
      "motifAvoir": "non_rendu",
      "refacturation": "aucune",
@@ -267,41 +318,70 @@
      "factureNumero": "FN-2099-00004",
      "patient": "TEST Remb",
      "patientCode": "CNT/4/26",
-     "reference": "RB-00004"
+     "reference": "RB-00004",
+     "avoirId": "AVRxmvwc2vs12xnpn",
+     "avoirNumero": "AV-2026-0002"
     }
    ],
-   "facturesCreees": [
+   "facturesCreees": [],
+   "avoirsCrees": [
     {
-     "numero": "AV-2026-00236",
-     "avoirDe": "FACxmvuzg74p0wcu9",
-     "avoirDeNumero": "FN-2099-00004",
-     "motifAvoir": "non_rendu",
-     "refacturation": "aucune",
+     "reference": "AV-2026-0002",
+     "date": "2026-10-30",
+     "factureId": "FACxmvwc2vqwvuz6j",
+     "factureNumero": "FN-2099-00004",
      "patientId": "P4",
      "patient": "TEST Remb",
      "patientCode": "CNT/4/26",
-     "date": "2026-10-30",
-     "type": "Avoir",
-     "montantHT": -2500,
-     "montantTTC": -2500,
-     "partAssurance": 0,
-     "partPatient": -2500,
-     "montantPaye": 0,
-     "reliquat": 0,
-     "baseMecef": -2500,
-     "statutPaiement": "soldee",
-     "statutMecef": "valide",
-     "lignes": [
+     "montant": 2500,
+     "motif": "Prestation non réalisée",
+     "observations": "Trop-perçu constaté",
+     "lignesAnnulees": [
       {
-       "designation": "Avoir sur facture FN-2099-00004 — Trop-perçu constaté",
-       "quantite": 1,
-       "prixUnitaire": -2500,
-       "montant": -2500
+       "designation": "Avoir sur facture FN-2099-00004 : Trop-perçu constaté",
+       "montant": 2500
       }
      ],
-     "mecef": true
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko"
     }
    ],
+   "ecrituresCreees": [
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0002",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0002",
+     "origine": "Facture d’avoir",
+     "compte": "411000",
+     "compteLibelle": "Clients",
+     "libelle": "Créance réduite — avoir AV-2026-0002",
+     "debit": 0,
+     "credit": 2500
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0002",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0002",
+     "origine": "Facture d’avoir",
+     "compte": "706000",
+     "compteLibelle": "Prestations de services",
+     "libelle": "Contre-passation — FN-2099-00004 (Prestation non réalisée)",
+     "debit": 2500,
+     "credit": 0
+    }
+   ],
+   "factureAvoirs": {
+    "avoirIds": 1,
+    "montantAvoirs": 2500
+   },
    "facturePatch": {
     "statutPaiement": "soldee",
     "statutMecef": "valide",
@@ -310,9 +390,9 @@
   },
   {
    "entree": {
-    "nom": "montant nul : ACCEPTÉ tel quel (le champ « min 1 » n'est pas appliqué, écart E10)",
+    "nom": "facture avoir « remboursement au patient » : crédit caisse 571 (espèces rendues)",
     "facture": {
-     "id": "FACxmvuzg7aft6f03",
+     "id": "FACxmvwc2vu3vc92o",
      "statut": "actif",
      "numero": "FN-2099-00005",
      "patientId": "P5",
@@ -327,16 +407,18 @@
      "statutMecef": "valide",
      "lignes": [],
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:03:10.311Z"
+     "_creeLe": "2026-10-31T11:44:30.123Z"
     },
     "saisie": {
-     "nature": "Remboursement",
+     "nature": "Facture avoir",
+     "motifAvoir": "remboursement",
+     "refacturation": "aucune",
      "date": "2026-10-30",
-     "montant": 0,
+     "montant": 1500,
      "motif": "Trop-perçu constaté",
      "autorisePar": "TAKI Alimatou"
     },
-    "rangFactures": 237,
+    "rangFactures": 235,
     "remboursements": [
      {
       "reference": "RB-00004"
@@ -351,25 +433,97 @@
       "reference": "RB-00001"
      }
     ],
-    "jour": "2026-10-30"
+    "avoirs": [
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwc2vqwvuz6j",
+      "montant": 2500
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
    },
    "remboursements": [
     {
-     "factureId": "FACxmvuzg7aft6f03",
-     "nature": "Remboursement",
-     "motifAvoir": "",
-     "refacturation": "",
+     "factureId": "FACxmvwc2vu3vc92o",
+     "nature": "Facture avoir",
+     "motifAvoir": "remboursement",
+     "refacturation": "aucune",
      "date": "2026-10-30",
-     "montant": 0,
+     "montant": 1500,
      "motif": "Trop-perçu constaté",
      "autorisePar": "TAKI Alimatou",
      "factureNumero": "FN-2099-00005",
      "patient": "TEST Remb",
      "patientCode": "CNT/5/26",
-     "reference": "RB-00005"
+     "reference": "RB-00005",
+     "avoirId": "AVRxmvwc2vvrktz3f",
+     "avoirNumero": "AV-2026-0003"
     }
    ],
    "facturesCreees": [],
+   "avoirsCrees": [
+    {
+     "reference": "AV-2026-0003",
+     "date": "2026-10-30",
+     "factureId": "FACxmvwc2vu3vc92o",
+     "factureNumero": "FN-2099-00005",
+     "patientId": "P5",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/5/26",
+     "montant": 1500,
+     "motif": "Autre (préciser en observations)",
+     "observations": "Trop-perçu constaté",
+     "lignesAnnulees": [
+      {
+       "designation": "Avoir sur facture FN-2099-00005 : Trop-perçu constaté",
+       "montant": 1500
+      }
+     ],
+     "remboursement": "especes",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "ecrituresCreees": [
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0003",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0003",
+     "origine": "Facture d’avoir",
+     "compte": "571000",
+     "compteLibelle": "Caisse",
+     "libelle": "Remboursement en espèces — avoir AV-2026-0003",
+     "debit": 0,
+     "credit": 1500
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0003",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0003",
+     "origine": "Facture d’avoir",
+     "compte": "706000",
+     "compteLibelle": "Prestations de services",
+     "libelle": "Contre-passation — FN-2099-00005 (Autre (préciser en observations))",
+     "debit": 1500,
+     "credit": 0
+    }
+   ],
+   "factureAvoirs": {
+    "avoirIds": 1,
+    "montantAvoirs": 1500
+   },
    "facturePatch": {
     "statutPaiement": "soldee",
     "statutMecef": "valide",
@@ -378,9 +532,9 @@
   },
   {
    "entree": {
-    "nom": "motif vide : formulaire en erreur (le motif est obligatoire, RG-12), rien n'est écrit",
+    "nom": "facture avoir au-delà de la facture : REFUSÉ (plafond cumulé), rien n'est écrit, pas même l'opération",
     "facture": {
-     "id": "FACxmvuzg7cwk6gw4",
+     "id": "FACxmvwc2vxezuaxt",
      "statut": "actif",
      "numero": "FN-2099-00006",
      "patientId": "P6",
@@ -395,13 +549,194 @@
      "statutMecef": "valide",
      "lignes": [],
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:03:10.400Z"
+     "_creeLe": "2026-10-31T11:44:30.242Z"
     },
     "saisie": {
-     "nature": "Annulation",
+     "nature": "Facture avoir",
+     "motifAvoir": "erreur",
+     "refacturation": "aucune",
+     "date": "2026-10-30",
+     "montant": 10001,
+     "motif": "Trop-perçu constaté",
+     "autorisePar": "TAKI Alimatou"
+    },
+    "rangFactures": 236,
+    "remboursements": [
+     {
+      "reference": "RB-00005"
+     },
+     {
+      "reference": "RB-00004"
+     },
+     {
+      "reference": "RB-00003"
+     },
+     {
+      "reference": "RB-00002"
+     },
+     {
+      "reference": "RB-00001"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwc2vu3vc92o",
+      "montant": 1500
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwc2vqwvuz6j",
+      "montant": 2500
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
+   },
+   "remboursements": [],
+   "facturesCreees": [],
+   "avoirsCrees": [],
+   "ecrituresCreees": [],
+   "factureAvoirs": {
+    "avoirIds": 0,
+    "montantAvoirs": null
+   },
+   "facturePatch": {
+    "statutPaiement": "soldee",
+    "statutMecef": "valide",
+    "annulee": null
+   }
+  },
+  {
+   "entree": {
+    "nom": "facture avoir : 6 000 déjà émis par un autre canal, 4 001 refusé",
+    "facture": {
+     "id": "FACxmvwc2w67w1e6x",
+     "statut": "actif",
+     "numero": "FN-2099-00007",
+     "patientId": "P7",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/7/26",
+     "date": "2099-01-01",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "montantPaye": 10000,
+     "reliquat": 0,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "lignes": [],
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:44:30.559Z",
+     "avoirIds": [
+      "AVRxmvwc2w68tj6sn"
+     ],
+     "montantAvoirs": 6000,
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:44:30.560Z"
+    },
+    "saisie": {
+     "nature": "Facture avoir",
+     "motifAvoir": "erreur",
+     "refacturation": "aucune",
+     "date": "2026-10-30",
+     "montant": 4001,
+     "motif": "Trop-perçu constaté",
+     "autorisePar": "TAKI Alimatou"
+    },
+    "rangFactures": 237,
+    "remboursements": [
+     {
+      "reference": "RB-00005"
+     },
+     {
+      "reference": "RB-00004"
+     },
+     {
+      "reference": "RB-00003"
+     },
+     {
+      "reference": "RB-00002"
+     },
+     {
+      "reference": "RB-00001"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvwc2w67w1e6x",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwc2vu3vc92o",
+      "montant": 1500
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwc2vqwvuz6j",
+      "montant": 2500
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
+   },
+   "remboursements": [],
+   "facturesCreees": [],
+   "avoirsCrees": [],
+   "ecrituresCreees": [],
+   "factureAvoirs": {
+    "avoirIds": 1,
+    "montantAvoirs": 6000
+   },
+   "facturePatch": {
+    "statutPaiement": "soldee",
+    "statutMecef": "valide",
+    "annulee": null
+   }
+  },
+  {
+   "entree": {
+    "nom": "facture avoir : 6 000 déjà émis, 4 000 soldent exactement",
+    "facture": {
+     "id": "FACxmvwc2wtzlzoe5",
+     "statut": "actif",
+     "numero": "FN-2099-00008",
+     "patientId": "P8",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/8/26",
+     "date": "2099-01-01",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "montantPaye": 10000,
+     "reliquat": 0,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "lignes": [],
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:44:31.415Z",
+     "avoirIds": [
+      "AVRxmvwc2wu0xb29o"
+     ],
+     "montantAvoirs": 6000,
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:44:31.416Z"
+    },
+    "saisie": {
+     "nature": "Facture avoir",
+     "motifAvoir": "erreur",
+     "refacturation": "aucune",
      "date": "2026-10-30",
      "montant": 4000,
-     "motif": "",
+     "motif": "Trop-perçu constaté",
      "autorisePar": "TAKI Alimatou"
     },
     "rangFactures": 238,
@@ -422,10 +757,405 @@
       "reference": "RB-00001"
      }
     ],
-    "jour": "2026-10-30"
+    "avoirs": [
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvwc2wtzlzoe5",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvwc2w67w1e6x",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwc2vu3vc92o",
+      "montant": 1500
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwc2vqwvuz6j",
+      "montant": 2500
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
+   },
+   "remboursements": [
+    {
+     "factureId": "FACxmvwc2wtzlzoe5",
+     "nature": "Facture avoir",
+     "motifAvoir": "erreur",
+     "refacturation": "aucune",
+     "date": "2026-10-30",
+     "montant": 4000,
+     "motif": "Trop-perçu constaté",
+     "autorisePar": "TAKI Alimatou",
+     "factureNumero": "FN-2099-00008",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/8/26",
+     "reference": "RB-00006",
+     "avoirId": "AVRxmvwc2wzgpxs4z",
+     "avoirNumero": "AV-2026-0006"
+    }
+   ],
+   "facturesCreees": [],
+   "avoirsCrees": [
+    {
+     "reference": "AV-2026-0006",
+     "date": "2026-10-30",
+     "factureId": "FACxmvwc2wtzlzoe5",
+     "factureNumero": "FN-2099-00008",
+     "patientId": "P8",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/8/26",
+     "montant": 4000,
+     "motif": "Erreur de facturation",
+     "observations": "Trop-perçu constaté",
+     "lignesAnnulees": [
+      {
+       "designation": "Avoir sur facture FN-2099-00008 : Trop-perçu constaté",
+       "montant": 4000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "caisse",
+     "statutMecef": "en_attente",
+     "emisPar": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "ecrituresCreees": [
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0006",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0006",
+     "origine": "Facture d’avoir",
+     "compte": "411000",
+     "compteLibelle": "Clients",
+     "libelle": "Créance réduite — avoir AV-2026-0006",
+     "debit": 0,
+     "credit": 4000
+    },
+    {
+     "statut": "brouillon",
+     "numero": "AV-2026-0006",
+     "date": "2026-10-30",
+     "journal": "CAI",
+     "journalLibelle": "Journal de caisse-dépenses",
+     "pieceNumero": "AV-2026-0006",
+     "origine": "Facture d’avoir",
+     "compte": "706000",
+     "compteLibelle": "Prestations de services",
+     "libelle": "Contre-passation — FN-2099-00008 (Erreur de facturation)",
+     "debit": 4000,
+     "credit": 0
+    }
+   ],
+   "factureAvoirs": {
+    "avoirIds": 2,
+    "montantAvoirs": 10000
+   },
+   "facturePatch": {
+    "statutPaiement": "soldee",
+    "statutMecef": "valide",
+    "annulee": null
+   }
+  },
+  {
+   "entree": {
+    "nom": "montant nul : REFUSÉ en nommant le défaut (E10 corrigé), rien n'est écrit",
+    "facture": {
+     "id": "FACxmvwc2xpcs88eu",
+     "statut": "actif",
+     "numero": "FN-2099-00009",
+     "patientId": "P9",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/9/26",
+     "date": "2099-01-01",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "montantPaye": 10000,
+     "reliquat": 0,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "lignes": [],
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:44:32.544Z"
+    },
+    "saisie": {
+     "nature": "Remboursement",
+     "date": "2026-10-30",
+     "montant": 0,
+     "motif": "Trop-perçu constaté",
+     "autorisePar": "TAKI Alimatou"
+    },
+    "rangFactures": 239,
+    "remboursements": [
+     {
+      "reference": "RB-00006"
+     },
+     {
+      "reference": "RB-00005"
+     },
+     {
+      "reference": "RB-00004"
+     },
+     {
+      "reference": "RB-00003"
+     },
+     {
+      "reference": "RB-00002"
+     },
+     {
+      "reference": "RB-00001"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvwc2wtzlzoe5",
+      "montant": 4000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvwc2wtzlzoe5",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvwc2w67w1e6x",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwc2vu3vc92o",
+      "montant": 1500
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwc2vqwvuz6j",
+      "montant": 2500
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
    },
    "remboursements": [],
    "facturesCreees": [],
+   "avoirsCrees": [],
+   "ecrituresCreees": [],
+   "factureAvoirs": {
+    "avoirIds": 0,
+    "montantAvoirs": null
+   },
+   "facturePatch": {
+    "statutPaiement": "soldee",
+    "statutMecef": "valide",
+    "annulee": null
+   }
+  },
+  {
+   "entree": {
+    "nom": "facture avoir de montant nul : REFUSÉ aussi",
+    "facture": {
+     "id": "FACxmvwc2xyrrvif1",
+     "statut": "actif",
+     "numero": "FN-2099-00010",
+     "patientId": "P10",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/10/26",
+     "date": "2099-01-01",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "montantPaye": 10000,
+     "reliquat": 0,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "lignes": [],
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:44:32.883Z"
+    },
+    "saisie": {
+     "nature": "Facture avoir",
+     "motifAvoir": "erreur",
+     "refacturation": "aucune",
+     "date": "2026-10-30",
+     "montant": 0,
+     "motif": "Trop-perçu constaté",
+     "autorisePar": "TAKI Alimatou"
+    },
+    "rangFactures": 240,
+    "remboursements": [
+     {
+      "reference": "RB-00006"
+     },
+     {
+      "reference": "RB-00005"
+     },
+     {
+      "reference": "RB-00004"
+     },
+     {
+      "reference": "RB-00003"
+     },
+     {
+      "reference": "RB-00002"
+     },
+     {
+      "reference": "RB-00001"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvwc2wtzlzoe5",
+      "montant": 4000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvwc2wtzlzoe5",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvwc2w67w1e6x",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwc2vu3vc92o",
+      "montant": 1500
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwc2vqwvuz6j",
+      "montant": 2500
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
+   },
+   "remboursements": [],
+   "facturesCreees": [],
+   "avoirsCrees": [],
+   "ecrituresCreees": [],
+   "factureAvoirs": {
+    "avoirIds": 0,
+    "montantAvoirs": null
+   },
+   "facturePatch": {
+    "statutPaiement": "soldee",
+    "statutMecef": "valide",
+    "annulee": null
+   }
+  },
+  {
+   "entree": {
+    "nom": "motif vide : formulaire en erreur (le motif est obligatoire, RG-12), rien n'est écrit",
+    "facture": {
+     "id": "FACxmvwc2y15q7ln8",
+     "statut": "actif",
+     "numero": "FN-2099-00011",
+     "patientId": "P11",
+     "patient": "TEST Remb",
+     "patientCode": "CNT/11/26",
+     "date": "2099-01-01",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "montantPaye": 10000,
+     "reliquat": 0,
+     "statutPaiement": "soldee",
+     "statutMecef": "valide",
+     "lignes": [],
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:44:32.970Z"
+    },
+    "saisie": {
+     "nature": "Annulation",
+     "date": "2026-10-30",
+     "montant": 4000,
+     "motif": "",
+     "autorisePar": "TAKI Alimatou"
+    },
+    "rangFactures": 241,
+    "remboursements": [
+     {
+      "reference": "RB-00006"
+     },
+     {
+      "reference": "RB-00005"
+     },
+     {
+      "reference": "RB-00004"
+     },
+     {
+      "reference": "RB-00003"
+     },
+     {
+      "reference": "RB-00002"
+     },
+     {
+      "reference": "RB-00001"
+     }
+    ],
+    "avoirs": [
+     {
+      "reference": "AV-2026-0006",
+      "factureId": "FACxmvwc2wtzlzoe5",
+      "montant": 4000
+     },
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvwc2wtzlzoe5",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvwc2w67w1e6x",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwc2vu3vc92o",
+      "montant": 1500
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwc2vqwvuz6j",
+      "montant": 2500
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwc2vbb085ag",
+      "montant": 4000
+     }
+    ],
+    "jour": "2026-10-31"
+   },
+   "remboursements": [],
+   "facturesCreees": [],
+   "avoirsCrees": [],
+   "ecrituresCreees": [],
+   "factureAvoirs": {
+    "avoirIds": 0,
+    "montantAvoirs": null
+   },
    "facturePatch": {
     "statutPaiement": "soldee",
     "statutMecef": "valide",

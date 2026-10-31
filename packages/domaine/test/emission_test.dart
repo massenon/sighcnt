@@ -121,4 +121,25 @@ void main() {
       }
     });
   }
+
+  group('E6 : série annuelle des numéros de facture (corrigé le 31/10/2026)', () {
+    test('le préfixe lit le millésime de la DATE de la pièce, pro-forma dans sa propre série', () {
+      expect(prefixeSerieFacture(proforma: false, dateFacture: '2026-12-31'), 'FN-2026-');
+      expect(prefixeSerieFacture(proforma: false, dateFacture: '2027-01-04'), 'FN-2027-');
+      expect(prefixeSerieFacture(proforma: true, dateFacture: '2027-01-04'), 'PRO-2027-');
+    });
+    test('le rang est celui de la série : le plus grand rang du préfixe + 1 (suffixes -A et -B ignorés), la série repart chaque année', () {
+      final fs = [
+        {'numero': 'FN-2026-00237-A'},
+        {'numero': 'FN-2026-00237-B'},
+        {'numero': 'FN-2026-00040'},
+        {'numero': 'FP-2026-00999'},
+        {'numero': 'PRO-2026-00007'},
+      ];
+      expect(rangSerieFactures('FN-2026-', fs), 238);
+      expect(rangSerieFactures('FN-2027-', fs), 1);
+      expect(rangSerieFactures('PRO-2026-', fs), 8);
+      expect(rangSerieFactures('FN-2026-', const []), 1);
+    });
+  });
 }

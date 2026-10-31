@@ -421,6 +421,22 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         } catch (e) { return { erreur: e.message }; }
       })();
       out.assure.prescription = lignesA;
+      /* C3 (31/10/2026) : le tarif ASSURÉ du pansement (6 000, colonnes inversées) s'applique réellement quand la carte est valide à la date ;
+         une carte expirée facture au tarif non assuré (9 000). Patients posés pour l'occasion, carte valide / expirée, sans garantie saisie. */
+      const colP = S.collection('patients');
+      const posePatient = (code, expiration) => colP.insert({ code, nom: 'TEST', prenom: code, sexe: 'F', assureur: 'NSIA', assureurNom: 'NSIA', carteExpiration: expiration, tauxPriseEnCharge: 80, numeroPolice: 'POL-' + code }).record;
+      const casAssure = (nom, expiration, code) => {
+        posePatient(code, expiration);
+        try {
+          const r = PR.prescrire({ patientCode: code, medecin: 'Dr TEST', diagnostic: 'Test', actes: ['SO09', 'SO09'] });
+          return { nom, carteExpiration: expiration, montant: r.ordonnance.montant, actes: r.ordonnance.actes.map((a) => ({ code: a.code, prix: a.prix })), lignes: r.facture.lignes.map((l) => ({ acteCode: l.acteCode, montant: l.montant, partAssureur: l.partAssureur, partPatient: l.partPatient })), partPatient: r.facture.partPatient, partAssurance: r.facture.partAssurance };
+        } catch (e) { return { nom, erreur: e.message }; }
+      };
+      out.tarifAssure = [
+        casAssure('carte valide : 6 000 la séance (grille, colonnes inversées)', '2099-12-31', 'CNT/9001/26'),
+        casAssure('carte expirée : 9 000 la séance (non assuré)', '2000-01-01', 'CNT/9002/26'),
+      ];
+      colP.all().filter((x) => x.nom === 'TEST' && /^CNT\/900/.test(x.code)).forEach((x) => { colP.all().splice(colP.all().indexOf(x), 1); });
       H.remettre(cols, sauve);
       return H.propre(out);
     });

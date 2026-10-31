@@ -789,7 +789,32 @@ void main() {
       expect(find.text('BON DE PANSEMENT'), findsWidgets);
       expect(find.text('Séance 3'), findsOneWidget);
       expect(kpi(t, 'Bons émis'), '1');
-      expect(kpi(t, 'Séances en attente de règlement'), '1');
+      expect(kpi(t, 'Séances en attente de règlement'), '3', reason: 'C4 : l\'indicateur compte les SÉANCES (3 lignes payables), non les bons (1)');
+    });
+
+    cas('C3 : le tarif ASSURÉ du pansement (6 000, colonnes inversées) s\'applique quand la carte est valide ; une carte expirée garde 9 000', (t) async {
+      for (final (expiration, prix) in [('2099-12-31', 6000), ('2000-01-01', 9000)]) {
+        final m = vide();
+        m.collection('patients').mettreAJour('PAT0002', {'carteExpiration': expiration});
+        await ouvrir(t, m, 'm3-bons-pansements');
+        await toucher(t, find.widgetWithText(BoutonSigh, 'Nouveau bon de pansement'));
+        await choisir(t, 'patientCode', 'CNT/2/26 — BAKO Boukari');
+        await choisir(t, 'acteCode', 'Pansement');
+        await saisir(t, 'seances', '2');
+        await saisir(t, 'indication', 'Plaie du pied');
+        await toucher(t, find.widgetWithText(BoutonSigh, 'Émettre le bon'));
+        final fac = m.collection('factures').toutes.single;
+        final lignes = liste(fac['lignes']);
+        expect(lignes.length, 2, reason: 'une ligne payable par séance');
+        for (final l in lignes) {
+          expect(l['montant'], prix, reason: 'carte $expiration');
+        }
+        expect(fac['montantTTC'], 2 * prix);
+        expect((m.collection('ordonnances').toutes.single['actes'] as List).map((a) => (a as Map)['prix']), [prix, prix]);
+        // La garantie s'applique sur CE prix : 70 % à l'assureur quand la carte est valide, rien sinon (RG-09).
+        expect(fac['partAssurance'], prix == 6000 ? 2 * 4200 : 0, reason: 'carte $expiration');
+        await t.pump(const Duration(seconds: 10));
+      }
     });
 
     cas('le nombre de séances est borné à 1–12', (t) async {

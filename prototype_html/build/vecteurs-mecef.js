@@ -30,13 +30,15 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
           ['montant impair (arrondis HT / AIB)', 7777, [{ designation: 'Soin', quantite: 1, prixUnitaire: 7777 }], 'MECEF1000001'],
           ['pièce sans détail par ligne et non transmise', 5000, [], null],
           ['grand montant', 184552, [{ designation: 'Hospitalisation', quantite: 1, prixUnitaire: 184552 }], 'MECEF9999999'],
+          /* E14 (corrigé le 31/10/2026) : « IFU client » = l'IFU du CLIENT, vide si inconnu, jamais celui de la clinique. */
+          ['IFU du client connu : imprimé tel quel', 10000, [{ designation: 'Consultation', quantite: 1, prixUnitaire: 10000 }], 'MECEF1234568', { ifuClient: '3201912345678' }],
         ];
         const out = [];
         let n = 0;
-        for (const [nom, ttc, lignes, mecef] of defs) {
+        for (const [nom, ttc, lignes, mecef, supp] of defs) {
           n++;
-          const f = colF.insert({ numero: 'FN-2099-' + String(n).padStart(5, '0'), patientId: 'P' + n, patient: 'TEST Fiscal', patientCode: 'CNT/' + n + '/26', date: '2026-12-31', type: 'Consultation',
-            montantTTC: ttc, lignes, statutMecef: mecef ? 'valide' : 'en_attente', numeroMecef: mecef || undefined, statutPaiement: 'soldee', montantPaye: ttc }).record;
+          const f = colF.insert(Object.assign({ numero: 'FN-2099-' + String(n).padStart(5, '0'), patientId: 'P' + n, patient: 'TEST Fiscal', patientCode: 'CNT/' + n + '/26', date: '2026-12-31', type: 'Consultation',
+            montantTTC: ttc, lignes, statutMecef: mecef ? 'valide' : 'en_attente', numeroMecef: mecef || undefined, statutPaiement: 'soldee', montantPaye: ttc }, supp || {})).record;
           const root = document.createElement('div'); document.body.appendChild(root);
           SIGH.screens['mecef-factures'].render(root);
           let capte = null;
@@ -87,9 +89,10 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       colF.all().forEach((f) => { if (f.statutMecef === 'en_attente') colF.update(f.id, { statutMecef: 'valide' }); });
       const out = [];
       let n = 0;
-      async function jouer(nom, saisie, extra) {
+      async function jouer(nom, saisie, extra, avant2) {
         n++;
         const f = colF.insert(Object.assign({ numero: 'FN-2097-' + String(n).padStart(5, '0'), patientId: 'R' + n, patient: 'TEST Avoir MECeF', patientCode: 'CNT/' + n + '/26', date: '2026-12-31', type: 'Consultation', montantTTC: 10000, lignes: [], statutMecef: 'valide', statutPaiement: 'soldee' }, extra || {})).record;
+        if (avant2) avant2(f);
         const root = document.createElement('div'); document.body.appendChild(root);
         SIGH.screens['mecef-avoirs'].render(root);
         [...root.querySelectorAll('button')].find((b) => b.textContent.includes('Émettre un avoir')).click();
@@ -98,10 +101,10 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         poser('factureId', f.id);
         Object.entries(saisie).forEach(([k, v]) => poser(k, v));
         const avant = new Set(colA.all().map((a) => a.id));
-        const entree = { nom, facture: propre(colF.get(f.id)), saisie, avoirs: propre(colA.all().map((a) => ({ reference: a.reference }))) };
+        const entree = { nom, facture: propre(colF.get(f.id)), saisie, avoirs: propre(colA.all().map((a) => ({ reference: a.reference, factureId: a.factureId, montant: a.montant }))) };
         [...document.querySelectorAll('button')].filter((b) => b.textContent.trim() === 'Émettre l’avoir').pop().click();
         await dormir(40);
-        const nouveaux = colA.all().filter((a) => !avant.has(a.id)).map((a) => { const c = Object.assign({}, a); ['id', '_creePar', '_creeLe', 'statut'].forEach((k) => delete c[k]); c.mecef = !!c.numeroMecef; delete c.numeroMecef; return c; });
+        const nouveaux = colA.all().filter((a) => !avant.has(a.id)).map((a) => { const c = Object.assign({}, a); ['id', '_creePar', '_creeLe', 'statut', 'horodatage', 'ecritureIds', 'dateTransmission'].forEach((k) => delete c[k]); c.mecef = !!c.numeroMecef; delete c.numeroMecef; return c; });
         document.querySelectorAll('.modal-root, [role=dialog]').forEach((e) => e.remove()); root.remove();
         out.push({ entree, avoirs: propre(nouveaux) });
       }
@@ -110,6 +113,12 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       await jouer('avoir égal à la facture', Object.assign({}, base, { montant: 10000 }));
       await jouer('avoir supérieur à la facture : refusé, rien n\'est écrit', Object.assign({}, base, { montant: 10001 }));
       await jouer('observations portées sur l\'avoir', Object.assign({}, base, { observations: 'Patient évacué' }));
+      /* B10 (31/10/2026) : l'avoir MECeF APPELLE le moteur unique ; le plafond est CUMULÉ (E15) et le montant strictement positif (E10). */
+      await jouer('montant nul : refusé en nommant le défaut (E10), rien n\'est écrit', Object.assign({}, base, { montant: 0 }));
+      await jouer('cumul : 6 000 déjà émis (caisse), 4 001 MECeF refusé (E15)', Object.assign({}, base, { montant: 4001 }), null,
+        (f) => { SIGH.parcours.emettreAvoir(f.id, { lignes: [{ designation: 'Caisse', montant: 6000 }], motif: 'Erreur de facturation', origine: 'caisse' }); });
+      await jouer('cumul : 6 000 déjà émis (caisse), 4 000 MECeF soldent exactement', Object.assign({}, base, { montant: 4000 }), null,
+        (f) => { SIGH.parcours.emettreAvoir(f.id, { lignes: [{ designation: 'Caisse', montant: 6000 }], motif: 'Erreur de facturation', origine: 'caisse' }); });
       return out;
     });
     sortie.avoirs = av;

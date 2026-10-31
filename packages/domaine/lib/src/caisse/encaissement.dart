@@ -9,9 +9,10 @@
 /// Corrigés dans la maquette PUIS portés (docs/architecture/ECARTS-MAQUETTE.md, E1 et E3, décision du 30/10/2026) :
 ///   · la part assureur n'est constatée (411 / 706) qu'au PREMIER versement d'une facture ;
 ///   · le numéro de pièce est une série annuelle : millésime de la date, rang suivant, repris par les versements suivants.
-/// Reste porté fidèlement et signalé : une pièce sans lignes accepte un versement supérieur au dû (E2).
+/// Corrigé dans la maquette PUIS porté (E2, décision du 31/10/2026) : une pièce SANS lignes refuse un versement supérieur au dû, en nommant le défaut.
 library;
 
+import '../format/format_fr.dart';
 import '../format/js.dart';
 
 const compteCaisse = '571000';
@@ -25,7 +26,8 @@ class ResultatEncaissement {
       required this.lignesReglees,
       required this.montantRegle,
       required this.restantDu,
-      required this.ecritures});
+      required this.ecritures,
+      this.refus});
 
   /// La facture APRÈS versement (copie ; l'entrée n'est jamais modifiée).
   final Map<String, Object?> facture;
@@ -36,6 +38,9 @@ class ResultatEncaissement {
   final double? montantRegle;
   final double? restantDu;
   final List<Map<String, Object?>> ecritures;
+
+  /// Versement REFUSÉ (E2) : le motif nomme le défaut, rien n'est écrit ; `facture` est inchangée.
+  final String? refus;
 }
 
 bool _vrai(Object? v) => v != null && v != '' && v != 0 && v != false;
@@ -91,8 +96,25 @@ ResultatEncaissement encaisser(
       }
     }
   } else {
-    // Pièce antérieure au modèle par lignes : on conserve le comportement par montant.
-    paye = montant != null ? montant.toDouble() : duTotal;
+    // Pièce antérieure au modèle par lignes : on conserve le comportement par montant, mais JAMAIS au-delà du dû (E2, corrigé le 31/10/2026).
+    final restantPiece = (duTotal - _n(facture['montantPaye'])) > 0
+        ? duTotal - _n(facture['montantPaye'])
+        : 0.0;
+    final voulu = montant != null ? montant.toDouble() : restantPiece;
+    if (!(voulu >= 0) || voulu > restantPiece) {
+      final ref = _vrai(facture['numero']) ? facture['numero'] : facture['id'];
+      return ResultatEncaissement(
+          facture: facture,
+          deja: false,
+          lignesReglees: const [],
+          montantRegle: 0,
+          restantDu: restantPiece,
+          ecritures: const [],
+          refus:
+              'Versement de ${money(voulu)} refusé : la pièce $ref ne porte aucune ligne et ne doit plus que ${money(restantPiece)}. '
+              'Un versement ne dépasse jamais le dû.');
+    }
+    paye = voulu;
   }
 
   final lignesMaj = toutes.map((l) {

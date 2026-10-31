@@ -36,6 +36,8 @@
   }
 
   function factures() { return S.collection('factures').active(); }
+
+  var rangSerieFactures = function (prefixe) { return PR.rangSerieFactures(prefixe); };   /* le moteur de série vit au socle (parcours.js) */
   function patients() { return S.collection('patients').active(); }
   function produits() { return S.collection('produits').active(); }
 
@@ -858,7 +860,11 @@
         var creees = [], annulations = [];
         /* Le rang part du nombre de factures AVANT l'émission : le relire dans la boucle compterait deux fois la pièce -A
            déjà insérée et laisserait un trou entre -A et -B (écart E6b, corrigé le 30/10/2026). */
-        var rangDebut = factures().length;
+        var datePiece = C.iso(C.aujourdhui());
+        var prefixePiece = (proforma ? 'PRO-' : 'FN-') + datePiece.slice(0, 4) + '-';
+        /* E6 (corrigé le 31/10/2026) : le millésime est lu sur la DATE de la pièce et le rang est celui de la série de
+           l'année (jamais le nombre total de factures : le 1ᵉʳ janvier la série repart à 00001). */
+        var rangDebut = rangSerieFactures(prefixePiece) - 1;
         pieces.forEach(function (piece, rang) {
           var totalPiece = C.sum(piece.lignes, 'montant');
           var assPiece = C.sum(piece.lignes, 'partAssureur');
@@ -871,7 +877,7 @@
 
           var suffixe = piece.volet === 'couvert' ? '-A' : (piece.volet === 'non_couvert' ? '-B' : '');
           var f = {
-            numero: (proforma ? 'PRO-2026-' : 'FN-2026-') + C.pad(rangDebut + 1 + rang, 5) + suffixe,
+            numero: prefixePiece + C.pad(rangDebut + 1 + rang, 5) + suffixe,
             /* Point fiscal : la MECeF ne normalise que la part réglée par le
                patient. Une pièce entièrement à la charge de l'assureur n'y va
                pas, et les remises n'y entrent jamais. */
@@ -882,7 +888,7 @@
             /* Le cahier de charge demande de pouvoir détacher l'opération de
                caisse du numéro de dossier (vente au comptoir). */
             operationDissociee: !!dissocier.checked,
-            date: C.iso(C.aujourdhui()), type: selType.value,
+            date: datePiece, type: selType.value,
             volet: piece.volet,
             libelleVolet: piece.volet === 'couvert' ? 'Prestations couvertes par l’assurance'
               : (piece.volet === 'non_couvert' ? 'Prestations non couvertes — à la charge du patient' : null),
@@ -1388,7 +1394,10 @@
         v.montantPaye = Math.min(Number(v.montantPaye) || 0, v.partPatient);
         v.reliquat = v.partPatient - v.montantPaye;
         v.statutPaiement = v.reliquat <= 0 ? 'soldee' : (v.montantPaye > 0 ? 'partielle' : 'impayee');
-        if (!v.numero) v.numero = 'FN-2026-' + C.pad(factures().length + 1, 5);
+        if (!v.numero) {
+          var prefixeCree = 'FN-' + String(v.date || C.iso(C.aujourdhui())).slice(0, 4) + '-';
+          v.numero = prefixeCree + C.pad(rangSerieFactures(prefixeCree), 5);
+        }
         if (!v.statutMecef) v.statutMecef = 'en_attente';
         return v;
       },
@@ -1933,40 +1942,46 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+                /* E10 (corrigé le 31/10/2026) : un remboursement, un avoir ou une annulation de 0 FCFA ne corrige rien, et le `min: 1` du
+                   champ n'est pas un contrôle (la valeur 0 passait). Le refus est NOMMÉ. */
+                if (!(Number(v.montant) > 0)) {
+                  U.toast('Opération refusée.', { type: 'error', detail: 'Le montant doit être strictement supérieur à 0 FCFA.' });
+                  return;
+                }
                 var fac = factures().filter(function (x) { return x.id === v.factureId; })[0];
                 if (fac) { v.factureNumero = fac.numero; v.patient = fac.patient; v.patientCode = fac.patientCode; }
                 v.reference = referenceSuivante('RB-', 5, col.all()); /* série lue sur les opérations existantes (E8) */
+                var avoirEmis = null;
+                if (v.nature === 'Facture avoir') {
+                  /* B10 (31/10/2026) : UN SEUL canal d'avoir. La nature « Facture avoir » n'écrit plus une pièce négative dans
+                     `factures` : elle APPELLE le moteur `PR.emettreAvoir` (collection `avoirs`, plafond cumulé, ligne nommée,
+                     contre-passation en brouillon, registre MECeF). Une facture ne se réécrit pas ; l'opération garde le lien. */
+                  if (!fac) { U.toast('Choisir la facture concernée.', { type: 'error' }); return; }
+                  var MOTIFS_ENGINE = { erreur: 'Erreur de facturation', non_rendu: 'Prestation non réalisée',
+                    remboursement: 'Autre (préciser en observations)', annulation: 'Prestation non réalisée' };
+                  var motifMoteur = MOTIFS_ENGINE[v.motifAvoir] || 'Autre (préciser en observations)';
+                  var emis = PR.emettreAvoir(fac.id, {
+                    date: v.date,
+                    lignes: [{ designation: 'Avoir sur facture ' + fac.numero + ' : ' + (v.motif || motifMoteur), montant: Number(v.montant) }],
+                    motif: motifMoteur,
+                    observations: v.motif,
+                    remboursement: v.motifAvoir === 'remboursement' ? 'especes' : 'creance',
+                    origine: 'caisse',
+                  });
+                  if (emis.erreur) { U.toast('Avoir refusé.', { type: 'error', detail: emis.erreur, duration: 9000 }); return; }
+                  avoirEmis = emis.record;
+                  v.avoirId = avoirEmis.id;
+                  v.avoirNumero = avoirEmis.reference;
+                }
                 var res = col.insert(v);
                 var majF = null;
-                if (v.nature === 'Facture avoir' && fac) {
-                  /* L'avoir est une pièce à part entière : montant négatif,
-                     rattachée à la facture d'origine, transmise à la MECeF.
-                     Il ne supprime pas la facture — RG-14. */
-                  v.reference = C.nextRef('AV-', 5);
-                  var avoir = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert({
-                    numero: 'AV-2026-' + C.pad(factures().length + 1, 5),
-                    numeroMecef: 'MECEF' + C.between(C.seeded(Date.now() % 90000), 1000000, 9999999),
-                    avoirDe: fac.id, avoirDeNumero: fac.numero,
-                    motifAvoir: v.motifAvoir, refacturation: v.refacturation,
-                    patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
-                    date: v.date, type: 'Avoir',
-                    montantHT: -Math.abs(v.montant), montantTTC: -Math.abs(v.montant),
-                    partAssurance: 0, partPatient: -Math.abs(v.montant),
-                    montantPaye: 0, reliquat: 0,
-                    baseMecef: -Math.abs(v.montant),
-                    statutPaiement: 'soldee', statutMecef: 'valide',
-                    lignes: [{ designation: 'Avoir sur facture ' + fac.numero + ' — ' + (v.motif || ''), quantite: 1, prixUnitaire: -Math.abs(v.montant), montant: -Math.abs(v.montant) }],
-                  });
-                  v.avoirId = avoir.record.id;
-                  v.avoirNumero = avoir.record.numero;
-                  majF = { undo: avoir.undo };
-                } else if (v.nature === 'Annulation' && fac) {
+                if (v.nature === 'Annulation' && fac) {
                   majF = S.collection('factures').update(fac.id, { statutPaiement: 'impayee', statutMecef: 'rejete', annulee: true });
                 }
                 m.close(); table.refresh();
                 U.toast(v.nature + ' de ' + C.money(v.montant) + ' enregistré(e).', {
                   type: 'success',
-                  undo: function () { res.undo(); if (majF) majF.undo(); table.refresh(); },
+                  undo: function () { res.undo(); if (majF) majF.undo(); if (avoirEmis) PR.retirerAvoir(avoirEmis.id); table.refresh(); },
                 });
               },
             }),
@@ -2161,6 +2176,7 @@
                     mode: selMode.value, utilisateur: S.currentUser(),
                   });
                 } catch (e) { U.toast('Encaissement impossible : ' + e.message, { type: 'error' }); return; }
+                if (res.refus) { U.toast('Encaissement refusé.', { type: 'error', detail: res.refus, duration: 9000 }); return; }
                 if (champRef.value) {
                   S.collection('factures').update(fac.id, { referenceTransaction: champRef.value });
                 }
@@ -2493,108 +2509,11 @@
 
   var referenceSuivante = C.referenceSuivante;   /* le moteur de série vit au socle (core.js) : mecef.js s'en sert aussi */
 
-  /** La référence d'un avoir est une SÉRIE ANNUELLE lue sur les avoirs déjà émis (écart E8, corrigé le 30/10/2026) : l'ancien
-      compteur vivait en mémoire de page et repartait à 1 à chaque chargement — deux avoirs de deux journées pouvaient porter
-      le même numéro. Le millésime est celui de la date de l'avoir, plus un « 2026 » écrit en dur. */
-  function referenceAvoir(date) {
-    return referenceSuivante('AV-' + String(date).slice(0, 4) + '-', 4, colAvoirs().all());
-  }
-
-  /** Le moteur d'émission — séparé de la modale pour être SONDABLE.
-      Retourne { record, ecritureIds } ou { erreur } : un refus se lit, il ne
-      se devine pas. */
-  function emettreAvoir(factureId, params) {
-    var fac = factures().filter(function (f) { return f.id === factureId; })[0];
-    if (!fac) return { erreur: 'Facture introuvable.' };
-
-    /* UNE FILLE CONSOLIDÉE EST FIGÉE : la mère émise porte son numéro, et la
-       compagnie détient la pièce. L'avoir est refusé EN NOMMANT la mère. */
-    var mere = S.collection('facturesMere').active().filter(function (m) {
-      return (m.piecesFilles || []).indexOf(fac.numero) !== -1;
-    })[0];
-    if (mere) {
-      return { erreur: 'La facture ' + fac.numero + ' est consolidée dans la facture mère '
-        + mere.numero + ' (' + (mere.compagnie || '') + '), déjà émise : la corriger passerait '
-        + 'derrière le dos de la compagnie. Émettre l\u2019avoir au niveau de la mère, par avenant.' };
-    }
-
-    var lignes = params.lignes || [];
-    if (!lignes.length) return { erreur: 'Un avoir se rapporte à des LIGNES nommées — en cocher au moins une.' };
-    var montant = C.sum(lignes, 'montant');
-    if (!(montant > 0)) return { erreur: 'Le montant de l\u2019avoir doit être positif.' };
-
-    var dejaAvoirs = colAvoirs().active().filter(function (a) { return a.factureId === fac.id; });
-    var dejaMontant = C.sum(dejaAvoirs, 'montant');
-    if (montant + dejaMontant > (fac.montantTTC || 0)) {
-      return { erreur: 'Le cumul des avoirs (' + C.money(montant + dejaMontant)
-        + ') excéderait la facture (' + C.money(fac.montantTTC) + ').' };
-    }
-
-    var rec = colAvoirs().insert({
-      reference: referenceAvoir(params.date || C.iso(AUJ)),
-      date: params.date || C.iso(AUJ),
-      factureId: fac.id, factureNumero: fac.numero,
-      patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
-      montant: montant,
-      motif: params.motif,
-      observations: params.observations || '',
-      lignesAnnulees: lignes,
-      remboursement: params.remboursement || 'creance',
-      origine: 'caisse',
-      /* Le registre fiscal : une facture normalisée validée exige la
-         régularisation MECeF ; une pièce non transmise n'en relève pas. */
-      statutMecef: fac.statutMecef === 'valide' ? 'en_attente' : 'sans_objet',
-      emisPar: S.currentUser(),
-    }).record;
-
-    /* LA CONTRE-PASSATION — écritures PLATES en brouillon, comme partout :
-       débit 706 Prestations (la recette diminue), crédit 571 Caisse si l'on
-       rembourse en espèces, crédit 411 Clients sinon (la créance diminue). */
-    var colEcr = S.collection('ecritures', { module: 'M12', entite: 'écriture' });
-    var base = {
-      numero: rec.reference, date: rec.date,
-      journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
-      pieceId: rec.id, pieceNumero: rec.reference,
-      origine: 'Facture d\u2019avoir',
-      statut: 'brouillon',
-    };
-    var contre = params.remboursement === 'especes'
-      ? { compte: '571000', libelle: 'Remboursement en espèces — avoir ' + rec.reference }
-      : { compte: '411000', libelle: 'Créance réduite — avoir ' + rec.reference };
-    var ecritures = [
-      Object.assign({}, base, {
-        compte: '706000', compteLibelle: 'Prestations de services',
-        libelle: 'Contre-passation — ' + fac.numero + ' (' + params.motif + ')',
-        debit: montant, credit: 0,
-      }),
-      Object.assign({}, base, {
-        compte: contre.compte, compteLibelle: contre.compte === '571000' ? 'Caisse' : 'Clients',
-        libelle: contre.libelle,
-        debit: 0, credit: montant,
-      }),
-    ];
-    var debit = C.sum(ecritures, 'debit'), credit = C.sum(ecritures, 'credit');
-    if (debit !== credit) {
-      colAvoirs().archive(rec.id);
-      return { erreur: 'RG-10 — contre-passation déséquilibrée (débit ' + C.money(debit)
-        + ', crédit ' + C.money(credit) + ') : rien n\u2019est écrit.' };
-    }
-    var ids = ecritures.map(function (l) { return colEcr.insert(l).record.id; });
-    colAvoirs().update(rec.id, { ecritureIds: ids });
-
-    /* La facture PORTE ses avoirs — elle n'est jamais réécrite : la pièce
-       d'origine et sa correction doivent pouvoir se lire côte à côte. */
-    S.collection('factures').update(fac.id, {
-      avoirIds: (fac.avoirIds || []).concat([rec.id]),
-      montantAvoirs: (fac.montantAvoirs || 0) + montant,
-    });
-
-    S.log('Facture d\u2019avoir émise', 'M8', 'Avoir', rec.reference, null,
-      { facture: fac.numero, montant: montant, motif: params.motif });
-    return { record: colAvoirs().get(rec.id), ecritureIds: ids };
-  }
-  /* Exposé pour la sonde fonctionnelle : le scénario appelle le moteur, pas
-     une copie de sa logique. */
+  /** LE MOTEUR D'ÉMISSION VIT AU SOCLE (`PR.emettreAvoir`, parcours.js) depuis le 31/10/2026 : l'écran de facturation (nature
+      « Facture avoir »), l'avoir MECeF et cet écran l'appellent, sur une seule collection `avoirs` (décision B10). */
+  function emettreAvoir(factureId, params) { return PR.emettreAvoir(factureId, params); }
+  function referenceAvoir(date) { return PR.referenceAvoir(date); }
+  /* Exposé pour la sonde fonctionnelle : le scénario appelle le moteur, pas une copie de sa logique. */
   global.SIGH.emettreAvoir = emettreAvoir;
 
   global.SIGH.screen('m8-facture-avoir', {

@@ -36,8 +36,8 @@ void main() {
     fail('vecteurs absents : lancer `node prototype_html/build/vecteurs-avoir.js`');
   }
   final cas = liste((jsonDecode(f.readAsStringSync()) as Map)['cas']);
-  test('au moins 15 situations ont été engendrées',
-      () => expect(cas.length, greaterThanOrEqualTo(15)));
+  test('au moins 25 situations ont été engendrées',
+      () => expect(cas.length, greaterThanOrEqualTo(25)));
 
   for (final c in cas) {
     final e = (c['entree']! as Map).cast<String, Object?>();
@@ -53,6 +53,7 @@ void main() {
             remboursement: p['remboursement'] as String?,
             observations: p['observations'] as String?,
             date: p['date'] as String?,
+            origine: p['origine'] as String?,
             jour: e['jour']! as String,
             utilisateur: e['utilisateur']! as String,
             facturesMere: liste(e['facturesMere']),

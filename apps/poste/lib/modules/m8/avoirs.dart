@@ -417,7 +417,7 @@ class _EtatModaleAvoir extends State<_ModaleAvoir> {
           ];
     final m = c.magasin;
     final avoirs = m.collection('avoirs');
-    final idAvoir = 'AVR${(avoirs.toutes.length + 1).toString().padLeft(5, '0')}';
+    final idAvoir = idAvoirSuivant(m);
     final AvoirEmis r;
     try {
       r = emettreAvoir(
@@ -439,29 +439,10 @@ class _EtatModaleAvoir extends State<_ModaleAvoir> {
           duree: const Duration(seconds: 9));
       return;
     }
-    final annulations = <VoidCallback>[];
-    final ins = avoirs.inserer({...r.avoir, 'id': idAvoir, 'statut': 'actif'},
-        prefixe: 'AVR');
-    annulations.add(ins.annuler);
-    final ecr = m.collection('ecritures');
-    final ids = <String>[];
-    for (final e in r.ecritures) {
-      final x = ecr.inserer({...e, 'statut': 'brouillon'}, prefixe: 'ECR');
-      ids.add('${x.fiche['id']}');
-      annulations.add(x.annuler);
-    }
-    avoirs.mettreAJour(idAvoir, {'ecritureIds': ids});
-    // La facture PORTE ses avoirs — elle n'est jamais réécrite : la pièce d'origine et sa correction se lisent côte à côte.
-    annulations.add(m.collection('factures').mettreAJour(fac['id'], {
-      'avoirIds': [...((fac['avoirIds'] as List?) ?? const []), idAvoir],
-      'montantAvoirs': r.montantAvoirs,
-    }));
-    m.journaliser('Facture d’avoir émise', 'M8', 'Avoir',
-        '${r.avoir['reference']}', null, {
-      'facture': fac['numero'],
-      'montant': r.avoir['montant'],
-      'motif': r.avoir['motif'],
-    });
+    // B10 : le moteur est UNIQUE ; l'écriture (fiche, contre-passation en brouillon, cumul porté par la facture, journal) est partagée.
+    final ecrit = ecrireAvoirEmis(m, fac, r, idAvoir);
+    final ins = ecrit;
+    final annulations = ecrit.annulations;
     fermer();
     ToastsSigh.afficher(widget.ecran, 'Avoir ${r.avoir['reference']} émis.',
         type: TypeToast.succes,

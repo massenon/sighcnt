@@ -222,7 +222,7 @@ class EcranBonsPansements extends StatelessWidget with EcranMaquette {
                 valeur: so09 != null && so09['prix'] != null ? money(so09['prix']) : '—',
                 icone: LucideIcons.receipt,
                 ton: TonSigh.info,
-                indice: 'Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré'),
+                indice: 'Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)'),
           ]),
           TableauSigh(
             titre: 'Registre des bons',

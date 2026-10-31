@@ -103,8 +103,16 @@ bool carteValide(Map<String, Object?>? patient,
   final c = couvertureALaDate(patient, couvertures, date);
   if (c == null || !_vrai(c['assureur']) || !_vrai(c['carteExpiration']))
     return false;
-  return !_dateJs('${c['carteExpiration']}').isBefore(_dateJs(date));
+  // E4 (corrigé dans la maquette le 31/10/2026 puis porté) : une date de pièce est un JOUR ; on compare les jours, non des millisecondes.
+  // La carte qui expire LE JOUR même reste valide, que la date soit « 2026-08-16 » ou l'instant « 2026-08-16T12:00:00Z ».
+  return _jourEcrit('${c['carteExpiration']}').compareTo(_jourEcrit(date)) >= 0;
 }
+
+final _debutDate = RegExp(r'^(\d{4}-\d{2}-\d{2})');
+
+/// Le jour ÉCRIT quand la valeur commence par une date, sinon le jour local de l'instant (`jourDe` de parcours.js).
+String _jourEcrit(String texte) =>
+    _debutDate.firstMatch(texte)?.group(1) ?? _jourLocal(texte);
 
 Map<String, Object?>? souscripteurDe(
     Map<String, Object?>? patient,

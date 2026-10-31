@@ -681,6 +681,13 @@ class _EcranCaisseState extends State<EcranCaisse> {
                           mode: '${form['mode']}',
                           maintenant: c.aujourdhui);
                     } on RefusCaisse catch (e) {
+                      if (e.code == 'VERSEMENT_REFUSE') {
+                        ToastsSigh.afficher(ctx, 'Encaissement refusé.',
+                            type: TypeToast.erreur,
+                            detail: e.motif,
+                            duree: const Duration(seconds: 9));
+                        return;
+                      }
                       ToastsSigh.afficher(
                           ctx, 'Encaissement impossible : ${e.motif}',
                           type: TypeToast.erreur);
