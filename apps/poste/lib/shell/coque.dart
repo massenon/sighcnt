@@ -104,7 +104,8 @@ class _CoquePosteState extends State<CoquePoste> {
 
   void _verifierVerrou() {
     final s = _session;
-    if (s == null || !mounted) return;
+    // La maquette n'arme pas le verrou sur un écran autonome (`armerVerrou` : `entry.standalone`) : on regarde un plan du site, on ne travaille pas.
+    if (s == null || !mounted || _autonome != null) return;
     final avant = s.etat;
     final id = _autonome ?? _courantAffiche;
     if (s.verifier(id) && avant != s.etat) {
