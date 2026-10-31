@@ -309,6 +309,47 @@ void main() {
     });
   });
 
+  group('cfg-entetes et cfg-branding : UNE identité légale', () {
+    final e = obj(v['entetes']);
+    final b = obj(v['branding']);
+    test('indicateurs : un IFU, un RCCM, une autorisation, tous les états', () {
+      kpis(cfaKpisEntetes(), e['kpis']);
+    });
+    test('la grille de l’identité est celle que l’écran affiche, ligne à ligne', () {
+      final texte = s(e['texte']);
+      var pos = 0;
+      for (final p in cfaGrilleIdentite()) {
+        final i = texte.indexOf(s('${p.$1}${p.$2}'), pos);
+        expect(i, greaterThanOrEqualTo(0), reason: '${p.$1} : ${p.$2}');
+        pos = i;
+      }
+      expect(s(e['texte']).contains(s(cfaNoteAnciennesPieces)), isTrue);
+    });
+    test('les valeurs du formulaire d’identité sont celles de C.BRAND de la maquette', () {
+      final champs = obj(b['champs']);
+      final v0 = cfaValeursIdentite();
+      expect(v0.keys.toSet(), champs.keys.toSet());
+      for (final k in champs.keys) {
+        expect(v0[k], champs[k], reason: k);
+      }
+    });
+    test('le pied du papier à en-tête', () {
+      final ap = '${b['apercu']}';
+      // L'heure est celle du tirage du vecteur (l'horloge de la page) : on la relit sur l'aperçu.
+      final h = RegExp(r'le (\d\d)/(\d\d)/(\d{4}) à (\d\d)h(\d\d)').firstMatch(ap)!;
+      final quand = DateTime(int.parse(h.group(3)!), int.parse(h.group(2)!), int.parse(h.group(1)!), int.parse(h.group(4)!), int.parse(h.group(5)!));
+      final pied = cfaPiedApercu('BASSONGUI Chabi Séko', quand);
+      expect(s(ap).contains(s(pied)), isTrue, reason: pied);
+    });
+    test('ressources attendues = celles de l’écran', () {
+      final lus = (b['ressources'] as List).map(s).toList();
+      expect([for (final r in cfaRessourcesAttendues) s('${r.$2}${r.$3}À fournir')], lus);
+      expect(cfaPoids(2048), '2 ko');
+      expect(cfaPoids(3 * 1024 * 1024), '3.0 Mo');
+      expect(cfaFichierTropLourd(1024 * 1024 + 1), isTrue);
+    });
+  });
+
   group('cfg-natures-facture', () {
     final n = obj(v['natures']);
     test('indicateurs', () {

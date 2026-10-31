@@ -1,5 +1,6 @@
 import '../format/format_fr.dart';
 import '../format/recherche.dart' show trierPar;
+import '../impression/identite.dart';
 
 /// RÈGLES DE CFG — dix écrans de configuration : organisation, identité, référentiel tarifaire, catalogue à deux prix, en-têtes, types de pièces, rappels,
 /// certificats, natures de facture, catalogue de l'imagerie. Portées de `prototype_html/assets/js/modules/configuration.js` et rejouées sur les vecteurs
@@ -623,6 +624,57 @@ List<CfaKpi> cfaKpisImagerie({required int examens, required int variables, requ
       CfaKpi('Variables fermées', nombre(fermees), 'eye-off', 'neutral'),
       CfaKpi('Listes de choix', nombre(listes), 'chevrons-up-down', 'neutral', 'La demande du brouillon manuscrit'),
     ];
+
+// =============================================================================================================================================
+// cfg-entetes, cfg-branding : l'identité légale UNIQUE (arbitrage du 31/08/2026)
+// =============================================================================================================================================
+
+/// Les quatre indicateurs de l'écran des en-têtes : UN IFU, UN RCCM, UNE autorisation imprimés, sur tous les états.
+List<CfaKpi> cfaKpisEntetes() => [
+      CfaKpi('IFU imprimé', '1', 'hash', 'success', IdentiteClinique.ifu),
+      CfaKpi('RCCM imprimé', '1', 'scale', 'success', IdentiteClinique.rccm),
+      const CfaKpi('Autorisation d’ouverture', '1', 'stamp', 'success'),
+      const CfaKpi('États alimentés', 'Tous', 'printer', 'navy'),
+    ];
+
+/// La grille « Identité légale imprimée sur chaque état ».
+List<(String, String)> cfaGrilleIdentite() => [
+      ('Dénomination', '${IdentiteClinique.nom} — ${CfaIdentite.forme}'),
+      ('Devise de l’établissement', IdentiteClinique.slogan),
+      ('Adresse', '${CfaIdentite.adresse} · ${IdentiteClinique.bp}'),
+      ('Téléphones', IdentiteClinique.telephones.join(' / ')),
+      ('Ligne rendez-vous', CfaIdentite.telephoneRdv),
+      ('Courriel', IdentiteClinique.email),
+      ('IFU', IdentiteClinique.ifu),
+      ('RCCM', IdentiteClinique.rccm),
+      ('Autorisation d’ouverture', IdentiteClinique.autorisation),
+      ('Autorisation d’exercice', 'Non imprimée — ${CfaIdentite.autorisationExerciceMotif}'),
+    ];
+
+const cfaNoteAnciennesPieces =
+    'Les pièces émises AVANT l’unification portent d’autres identités — trois IFU, trois RCCM et deux autorisations relevés sur les 37 documents collectés (certificats médico-légaux, rapport médical, comptes rendus de laboratoire et d’imagerie). Ces pièces restent valables et documentées par leurs scans dans docs/ ; elles ne sont simplement plus reproduites. Un document ancien qui diverge du présent en-tête n’est donc pas un faux.';
+
+/// Les valeurs initiales du formulaire d'identité : ce que la maquette lit dans `C.BRAND`.
+Map<String, Object?> cfaValeursIdentite() => {
+      'nom': IdentiteClinique.nom,
+      'sigle': IdentiteClinique.sigle,
+      'forme': CfaIdentite.forme,
+      'slogan': IdentiteClinique.slogan,
+      'adresse': CfaIdentite.adresse,
+      'bp': IdentiteClinique.bp,
+      'telephones': IdentiteClinique.telephones.join(' / '),
+      'email': IdentiteClinique.email,
+      'ifu': IdentiteClinique.ifu,
+      'rccm': IdentiteClinique.rccm,
+      'autorisation': IdentiteClinique.autorisation,
+      'doubleLogo': true,
+      'piedPage': true,
+      'filigrane': '',
+    };
+
+/// Le pied du papier à en-tête, tel que l'aperçu le montre.
+String cfaPiedApercu(String utilisateur, DateTime quand) =>
+    '${IdentiteClinique.nom} — ${IdentiteClinique.rccm} — IFU ${IdentiteClinique.ifu} · Document généré par $utilisateur le ${dateHeure(quand)} · Réf. CNT-XXXXXXXX-0001';
 
 /// Le message de la bascule d'une variable : l'état se lit AVANT l'écriture (écart E845, corrigé dans la maquette).
 ({String message, String? detail}) cfaMessageBascule({required bool etaitFermee}) => etaitFermee
