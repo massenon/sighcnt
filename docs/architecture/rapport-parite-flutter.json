@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 270,
+ "ecrans_portes": 292,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -28,6 +28,34 @@
    "manquants": []
   },
   {
+   "id": "aide-apropos",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "auth-2fa",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "auth-forgot",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "auth-lock",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "auth-reset",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
    "id": "cfg-branding",
    "mesure": true,
    "attendus": 22,
@@ -44,10 +72,34 @@
    "manquants": []
   },
   {
+   "id": "cfg-centres-couts",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "cfg-certificats",
    "mesure": true,
    "attendus": 17,
    "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-comptabilite",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-compte",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
    "taux": 1.0,
    "manquants": []
   },
@@ -60,6 +112,14 @@
    "manquants": []
   },
   {
+   "id": "cfg-fiscalite",
+   "mesure": true,
+   "attendus": 27,
+   "presents": 27,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "cfg-imagerie-catalogue",
    "mesure": true,
    "attendus": 17,
@@ -68,10 +128,26 @@
    "manquants": []
   },
   {
+   "id": "cfg-modules",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "cfg-natures-facture",
    "mesure": true,
    "attendus": 14,
    "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-notifications",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
    "taux": 1.0,
    "manquants": []
   },
@@ -87,19 +163,31 @@
    "id": "cfg-poste",
    "mesure": true,
    "attendus": 5,
-   "presents": 2,
-   "taux": 0.4,
-   "manquants": [
-    "mode du poste : fileul ou mère. la mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).",
-    "mode de ce poste",
-    "service de synchronisation"
-   ]
+   "presents": 5,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "cfg-rappels",
    "mesure": true,
    "attendus": 15,
    "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-regles",
+   "mesure": true,
+   "attendus": 35,
+   "presents": 35,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-systeme",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
    "taux": 1.0,
    "manquants": []
   },
@@ -116,6 +204,14 @@
    "mesure": true,
    "attendus": 14,
    "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "contact-editeur",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
    "taux": 1.0,
    "manquants": []
   },
@@ -317,6 +413,16 @@
    "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
   },
   {
+   "id": "error-403",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "error-404",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
    "id": "ged-archives",
    "mesure": true,
    "attendus": 20,
@@ -339,6 +445,11 @@
    "presents": 19,
    "taux": 1.0,
    "manquants": []
+  },
+  {
+   "id": "index",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
   },
   {
    "id": "m1-antecedents",
@@ -2258,6 +2369,43 @@
     "actualiser",
     "contrôles"
    ]
+  },
+  {
+   "id": "plan-du-site",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "rapports-bibliotheque",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rapports-direction",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rapports-generateur",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rapports-historique",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
   }
  ]
 }
