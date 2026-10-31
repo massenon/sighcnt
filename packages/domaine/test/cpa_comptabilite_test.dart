@@ -207,7 +207,7 @@ void main() {
     final r = carte(ecrans['m12-grand-livre']);
     test('les comptes mouvementés sont ceux de la maquette', () {
       final mv = cpaComptesMouvementes(comptes, e26).map((c) => c['num']).toList();
-      expect(mv.toSet().toList(), r['comptesMouvementes']);
+      expect(mv, r['comptesMouvementes'], reason: 'une entrée par numéro (E724)');
     });
     test('pour chaque compte : mouvements, totaux, solde et solde progressif', () {
       final cs = carte(r['comptes']);

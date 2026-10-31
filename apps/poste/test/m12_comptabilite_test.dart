@@ -420,4 +420,127 @@ void main() {
       expect(find.textContaining('Lecture seule'), findsOneWidget);
     });
   });
+
+  group('m12-grand-livre', () {
+    casM14('le premier compte mouvementé est ouvert : mouvements, totaux et solde sont CEUX des écritures', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-grand-livre');
+      final e = cpaEcrituresExercice(m.collection('ecritures').actives, 2026);
+      final premier = cpaComptesMouvementes(m.collection('comptes').actives, e).first['num'] as String;
+      final s = cpaSoldeCompte(e, premier);
+      expect(find.text('$premier — ${cpaCompteLibelle(premier)}'), findsNWidgets(2), reason: 'la liste et le titre du tableau');
+      expect(find.text(money(s.debit)), findsWidgets);
+      expect(find.text(money(s.credit)), findsWidgets);
+      expect(find.text(money(s.solde)), findsWidgets);
+      expect(find.text(s.solde >= 0 ? 'Débiteur' : 'Créditeur'), findsOneWidget);
+      expect(find.text('${cpaGrandLivre(e, premier).length}'), findsWidgets);
+    });
+
+    casM14('changer de compte recompose les mouvements ; le solde progressif suit chaque ligne', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-grand-livre');
+      await choisirM14(t, 'compte', '571000 — Caisse');
+      final e = cpaEcrituresExercice(m.collection('ecritures').actives, 2026);
+      final s = cpaSoldeCompte(e, '571000');
+      expect(find.text('571000 — Caisse'), findsWidgets);
+      expect(find.text(money(s.solde)), findsWidgets);
+      final gl = cpaGrandLivre(e, '571000');
+      expect(find.text(cpaMontant(gl.first['soldeProgressif'])), findsWidgets, reason: 'premier solde progressif');
+    });
+
+    casM14('un compte sans mouvement n\'est pas proposé ; le plan à deux fiches au même numéro n\'en propose qu\'UNE (E724)', (t) async {
+      final m = magasinComplet();
+      final e = cpaEcrituresExercice(m.collection('ecritures').actives, 2026);
+      final l = cpaComptesMouvementes(m.collection('comptes').actives, e).map((x) => x['num']).toList();
+      expect(l.where((x) => x == '631810').length, 1);
+      expect(l.contains('101100'), isFalse, reason: 'capital souscrit : aucun mouvement');
+      await ouvrir(t, m, 'm12-grand-livre');
+      expect(find.text('Grand livre'), findsWidgets);
+    });
+
+    casM14('un exercice sans écriture : « Aucun mouvement sur ce compte. », l\'écran ne casse pas', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-grand-livre', horloge: DateTime(2027, 3, 1, 10));
+      expect(find.text('Aucun mouvement sur ce compte.'), findsOneWidget);
+    });
+
+    casM14('l\'impression : le grand livre d\'un compte (totaux refaits) et le grand livre complet', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-grand-livre');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Imprimer le grand livre'));
+      expect(find.text('Grand livre'), findsWidgets);
+      expect(find.textContaining('Compte 401000 — Fournisseurs'), findsWidgets);
+      expect(find.text('TOTAL'), findsWidgets);
+    });
+
+    casM14('lecture seule : aucune commande d\'écriture n\'existe sur l\'écran', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-grand-livre');
+      for (final k in ['Nouveau', 'Nouvelle écriture', 'Modifier', 'Archiver']) {
+        expect(find.widgetWithText(BoutonSigh, k), findsNothing, reason: k);
+      }
+    });
+  });
+
+  group('m12-balance', () {
+    casM14('RG-10 : sur le jeu, la balance est ÉQUILIBRÉE et ses totaux sont ceux du journal (E725 : le plan à deux fiches 631810 ne double plus rien)', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-balance');
+      final e = cpaEcrituresExercice(m.collection('ecritures').actives, 2026);
+      final b = cpaBalance(m.collection('comptes').actives, e);
+      expect(b.fold<double>(0, (a, x) => a + x.debit), e.fold<double>(0, (a, x) => a + (x['debit'] as num)));
+      expect(find.text('Équilibrée'), findsOneWidget);
+      expect(find.textContaining('La balance est équilibrée', findRichText: true), findsOneWidget);
+    });
+
+    casM14('un déséquilibre est DIT : bandeau danger, écart nommé, régularisation avant clôture', (t) async {
+      final m = magasinComplet();
+      m.collection('ecritures').inserer({
+        'numero': 'OD-2026-99998', 'date': '2026-10-30', 'journal': 'OD', 'compte': '601100', 'debit': 777, 'credit': 0, 'statut': 'validee', 'origine': 'Saisie manuelle'
+      });
+      await ouvrir(t, m, 'm12-balance');
+      expect(find.textContaining('Balance déséquilibrée — écart de ${money(777)}', findRichText: true), findsOneWidget);
+      expect(find.text(money(777)), findsWidgets);
+    });
+
+    casM14('la balance générale : une ligne par compte mouvementé, trois onglets de lecture, filtre par classe', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-balance');
+      final e = cpaEcrituresExercice(m.collection('ecritures').actives, 2026);
+      final b = cpaBalance(m.collection('comptes').actives, e);
+      expect(find.text(nombre(b.length)), findsWidgets);
+      for (final k in ['Compte', 'Intitulé', 'Classe', 'Mvts', 'Mouvement débit', 'Mouvement crédit', 'Solde débiteur', 'Solde créditeur']) {
+        expect(find.text(k.toUpperCase()), findsWidgets, reason: k);
+      }
+    });
+
+    casM14('la balance âgée : quatre tranches, créances patients et assureurs, impression totalisée', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-balance');
+      await toucherM14(t, find.text('Balance âgée (tiers)'));
+      for (final k in ['Moins de 30 jours', '30 à 60 jours', '60 à 90 jours', 'Plus de 90 jours']) {
+        expect(find.text(k), findsOneWidget, reason: k);
+      }
+      final tr = cpaBalanceAgee(m.collection('factures').actives, DateTime(2026, 10, 30, 10));
+      expect(find.text(money(tr.fold<double>(0, (a, x) => a + x.montantPatients), avecDevise: false)), findsNothing, reason: 'le total n\'est pas dans le tableau');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Imprimer la balance âgée'));
+      expect(find.text('TOTAL DES CRÉANCES'), findsWidgets);
+    });
+
+    casM14('l\'impression de la balance : pied TOTAUX refait depuis les lignes', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-balance');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Imprimer la balance'));
+      expect(find.text('Balance générale des comptes'), findsWidgets);
+      expect(find.text('TOTAUX'), findsWidgets);
+    });
+
+    casM14('lecture seule : aucune commande d\'écriture n\'existe sur l\'écran', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-balance');
+      for (final k in ['Nouveau', 'Nouvelle écriture', 'Modifier', 'Archiver']) {
+        expect(find.widgetWithText(BoutonSigh, k), findsNothing, reason: k);
+      }
+    });
+  });
 }

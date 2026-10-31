@@ -741,7 +741,12 @@
     regle: 'Écran en lecture seule. Le grand livre est <strong>reconstitué depuis les écritures</strong> : il ne se modifie pas ici. Toute correction passe par l’écriture d’origine (Écritures comptables), qui doit rester équilibrée (RG-10).',
     render: function (root) {
       var host = el('div.space-y-4');
-      var mouvementes = comptes().filter(function (c) { return soldeCompte(c.num).nb > 0; });
+      /* Écart E724 : le plan porte deux fiches au même numéro (244100, 631810) — la liste proposait le compte deux fois. UNE entrée par numéro. */
+      var numsVus = {};
+      var mouvementes = comptes().filter(function (c) {
+        if (soldeCompte(c.num).nb === 0 || numsVus[c.num]) return false;
+        numsVus[c.num] = true; return true;
+      });
 
       var listeMvt = C.sortBy(mouvementes, 'num');
       var selCompte = U.combo(listeMvt.map(function (c) {
@@ -891,6 +896,10 @@
           nb: s.nb,
         };
       }).filter(function (l) { return l.nb > 0; });
+      /* Écart E725 : deux fiches du plan au même numéro (631810) faisaient compter DEUX fois les mouvements du compte — la balance annonçait un
+         déséquilibre RG-10 de 1 954 000 F qui n'existait pas dans le journal. UNE ligne par numéro de compte. */
+      var numsVus = {};
+      lignes = lignes.filter(function (l) { if (numsVus[l.num]) return false; numsVus[l.num] = true; return true; });
 
       var totalDebit = C.sum(lignes, 'debit');
       var totalCredit = C.sum(lignes, 'credit');

@@ -179,17 +179,23 @@ class CpaLigneBalance {
   double get soldeCrediteur => debit - credit < 0 ? credit - debit : 0;
 }
 
-/// La balance : un compte du plan par ligne, ceux qui n'ont aucun mouvement sont écartés. Calculée sur TOUTES les écritures de l'exercice, brouillons
-/// compris — comme la maquette, dont le bandeau dit pourtant « écritures validées » (écart E718, porté fidèlement et dit).
-List<CpaLigneBalance> cpaBalance(Iterable<CpaFiche> comptes, List<CpaFiche> e) => [
-      for (final c in comptes)
+/// La balance : UNE ligne par numéro de compte du plan, ceux qui n'ont aucun mouvement sont écartés. Calculée sur TOUTES les écritures de l'exercice,
+/// brouillons compris — comme la maquette, dont le bandeau dit pourtant « écritures validées » (écart E718, porté fidèlement et dit).
+/// Écart E725 (corrigé dans la maquette d'abord) : deux fiches du plan au même numéro (631810) faisaient compter deux fois les mouvements du compte, et la
+/// balance annonçait un déséquilibre RG-10 de 1 954 000 F que le journal ne porte pas.
+List<CpaLigneBalance> cpaBalance(Iterable<CpaFiche> comptes, List<CpaFiche> e) {
+  final vus = <String>{};
+  return [
+    for (final c in comptes)
+      if (vus.add('${c['num']}'))
         () {
           final s = cpaSoldeCompte(e, '${c['num']}');
           return s.nb == 0
               ? null
               : CpaLigneBalance('${c['num']}', '${c['libelle']}', _n(c['classe']).toInt(), s.debit, s.credit, s.nb);
         }()
-    ].whereType<CpaLigneBalance>().toList();
+  ].whereType<CpaLigneBalance>().toList();
+}
 
 class CpaTrancheAgee {
   const CpaTrancheAgee(this.libelle, this.nbPatients, this.montantPatients, this.nbAssureurs, this.montantAssureurs);
@@ -245,9 +251,12 @@ List<CpaFiche> cpaGrandLivre(List<CpaFiche> e, String compte) {
   ];
 }
 
-/// Les comptes MOUVEMENTÉS (au moins une écriture dans l'exercice), triés par numéro : la liste du grand livre.
-List<CpaFiche> cpaComptesMouvementes(Iterable<CpaFiche> comptes, List<CpaFiche> e) =>
-    trierPar([for (final c in comptes) if (cpaSoldeCompte(e, '${c['num']}').nb > 0) c], (c) => c['num']);
+/// Les comptes MOUVEMENTÉS (au moins une écriture dans l'exercice), triés par numéro, UNE entrée par numéro : la liste du grand livre (E724, corrigé
+/// dans la maquette d'abord : le plan porte deux fiches au numéro 631810 et la liste proposait le compte deux fois).
+List<CpaFiche> cpaComptesMouvementes(Iterable<CpaFiche> comptes, List<CpaFiche> e) {
+  final vus = <String>{};
+  return trierPar([for (final c in comptes) if (cpaSoldeCompte(e, '${c['num']}').nb > 0 && vus.add('${c['num']}')) c], (c) => c['num']);
+}
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 // SAISIE D'UNE ÉCRITURE EN PARTIE DOUBLE
