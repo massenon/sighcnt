@@ -51,6 +51,14 @@ void main() {
       }
       expect(rhcBadgeQR({}), fab['qrSansChamps']);
     });
+    test('le QR s’arrête à 106 octets (version 6) : un badge ordinaire tient largement, un code trop long est REFUSÉ', () {
+      for (final b in badges) {
+        expect(rhcQrAcceptable(rhcBadgeQR(b)), isTrue, reason: '${b['numero']}');
+      }
+      expect(rhcQrAcceptable(rhcBadgeQR({'matricule': 'M' * 60, 'numero': 'N' * 60})), isFalse);
+      expect(rhcQrAcceptable('é' * 53), isTrue);
+      expect(rhcQrAcceptable('é' * 54), isFalse, reason: 'les octets, pas les caractères');
+    });
     test('la lecture accepte la charge utile du QR ET la saisie à la main', () {
       for (final l in lf2(fab['lecture'])) {
         final r = rhcLireBadgeQR(l[0]);

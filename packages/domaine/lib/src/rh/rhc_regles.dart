@@ -3,6 +3,8 @@
 /// vecteurs : `test/vecteurs/rhc.json` (engendrés par `prototype_html/build/vecteurs-rh-c.js`, écrans montés dans Chrome à l'horloge du 30/10/2026 10 h).
 library;
 
+import 'dart:convert' show utf8;
+
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../format/recherche.dart' show trierPar;
@@ -146,6 +148,11 @@ String rhcNumeroBadge(Iterable<FicheRhc> badges, Object? date, DateTime maintena
 /// `PR.badgeQR(badge)` — LA décision la plus importante du module : le QR ne porte que le MATRICULE et le NUMÉRO DE SÉRIE. Ni nom, ni fonction, ni
 /// téléphone, ni URL : un badge se photographie dans un couloir, le logiciel est hors ligne, et la vérification doit passer par le LOGICIEL.
 String rhcBadgeQR(FicheRhc badge) => 'CNT-BDG|MAT:${_vrai(badge['matricule']) ? badge['matricule'] : ''}|SER:${_vrai(badge['numero']) ? badge['numero'] : ''}';
+
+/// Le QR de la maquette est vendoré et s'arrête à la VERSION 6 (106 octets, correction M) : au-delà, la norme impose des blocs d'information de version, et
+/// refuser explicitement vaut mieux qu'un code que rien ne saurait relire. Le poste applique la même limite.
+const rhcQrOctetsMax = 106;
+bool rhcQrAcceptable(String charge) => utf8.encode(charge).length <= rhcQrOctetsMax;
 
 /// `PR.lireBadgeQR(texte)` — la charge utile complète (badge scanné) ou le seul numéro (saisi à la main : refuser la saisie rendrait le contrôle impossible
 /// le jour où le QR est abîmé). Texte vide → `null`.

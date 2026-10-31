@@ -17,6 +17,14 @@ import 'rhb_sanctions.dart';
 import 'rhb_stats_gardes.dart';
 import 'rhb_stats_permanences.dart';
 import 'rhb_stats_presence.dart';
+import 'rhc_assurance_personnel.dart';
+import 'rhc_badges.dart';
+import 'rhc_badges_impression.dart';
+import 'rhc_badges_modeles.dart';
+import 'rhc_badges_verification.dart';
+import 'rhc_evenements.dart';
+import 'rhc_participations.dart';
+import 'rhc_securite_entretien.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -39,4 +47,12 @@ final Map<String, ConstruireEcran> ecransM10 = {
   'm10-stats-gardes': (c, cfg) => const EcranStatsGardes(),
   'm10-stats-permanences': (c, cfg) => const EcranStatsPermanences(),
   'm10-stats-presence': (c, cfg) => const EcranStatsPresence(),
+  'm10-badges': (c, cfg) => const EcranBadges(),
+  'm10-badges-verification': (c, cfg) => const EcranBadgesVerification(),
+  'm10-badges-modeles': (c, cfg) => const EcranBadgesModeles(),
+  'm10-badges-impression': (c, cfg) => const EcranBadgesImpression(),
+  'm10-evenements': (c, cfg) => const EcranEvenements(),
+  'm10-participations': (c, cfg) => const EcranParticipations(),
+  'm10-assurance-personnel': (c, cfg) => const EcranAssurancePersonnel(),
+  'm10-securite-entretien': (c, cfg) => const EcranSecuriteEntretien(),
 };

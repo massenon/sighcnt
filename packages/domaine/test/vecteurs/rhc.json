@@ -1282,7 +1282,7 @@
      ]
     ],
     "fiche": {
-     "id": "MODxmvuswn40alj8x",
+     "id": "MODxmvuswn40bfw87",
      "statut": "actif",
      "libelle": "Badge visiteur — portrait",
      "format": "CR80 (85,6 × 54 mm)",
@@ -1344,7 +1344,7 @@
      ]
     ],
     "fiche": {
-     "id": "MODxmvuswn40alj8x",
+     "id": "MODxmvuswn40bfw87",
      "statut": "actif",
      "libelle": "Badge visiteur — portrait",
      "format": "CR80 (85,6 × 54 mm)",
@@ -1365,7 +1365,7 @@
      ]
     ],
     "fiche": {
-     "id": "MODxmvuswn40alj8x",
+     "id": "MODxmvuswn40bfw87",
      "statut": "actif",
      "libelle": "Badge visiteur — portrait",
      "format": "CR80 (85,6 × 54 mm)",
@@ -1387,7 +1387,7 @@
   },
   "archivage": {
    "fiche": {
-    "id": "MODxmvuswn40alj8x",
+    "id": "MODxmvuswn40bfw87",
     "statut": "archive",
     "libelle": "Badge visiteur — portrait",
     "format": "CR80 (85,6 × 54 mm)",
@@ -2724,7 +2724,7 @@
      ]
     ],
     "fiche": {
-     "id": "BDGxmvuswn40ahph2",
+     "id": "BDGxmvuswn40d63i8",
      "statut": "actif",
      "numero": "BDG-00011-2026",
      "personnelId": "EMP13",
@@ -2915,7 +2915,7 @@
   },
   "final": [
    {
-    "id": "BDGxmvuswn40ahph2",
+    "id": "BDGxmvuswn40d63i8",
     "statut": "actif",
     "numero": "BDG-00011-2026",
     "personnelId": "EMP13",
@@ -4054,7 +4054,7 @@
      ]
     ],
     "fiche": {
-     "id": "EVTxmvuswn40n0rmk",
+     "id": "EVTxmvuswn40wbaut",
      "statut": "actif",
      "nature": "mariage",
      "libelle": "Mariage de KORA Salifou",
@@ -4071,9 +4071,9 @@
     },
     "nbParticipations": 43,
     "premiere": {
-     "id": "PARxmvuswn40ihlnf",
+     "id": "PARxmvuswn40280yr",
      "statut": "actif",
-     "evenementId": "EVTxmvuswn40n0rmk",
+     "evenementId": "EVTxmvuswn40wbaut",
      "evenementLibelle": "Mariage de KORA Salifou",
      "nature": "mariage",
      "dateEvenement": "2026-10-30",
@@ -4138,7 +4138,7 @@
      "action": "Création d’un événement du personnel",
      "module": "M10",
      "entite": "Événement",
-     "reference": "EVTxmvuswn40n0rmk",
+     "reference": "EVTxmvuswn40wbaut",
      "ancienneValeur": null,
      "nouvelleValeur": "{\"libelle\":\"Mariage de KORA Salifou\",\"participations\":43}",
      "poste": "POSTE-LOCAL",
@@ -4148,7 +4148,7 @@
   },
   "selection": {
    "fiche": {
-    "id": "EVTxmvuswn4035df0",
+    "id": "EVTxmvuswn40kopy1",
     "statut": "actif",
     "nature": "deces",
     "libelle": "Décès du père de TEPA Séraphine",
@@ -4191,7 +4191,7 @@
   "selectionVide": {
    "participants": 43,
    "fiche": {
-    "id": "EVTxmvuswn40vuiu1",
+    "id": "EVTxmvuswn40p5d2g",
     "statut": "actif",
     "nature": "bapteme",
     "libelle": "Baptême test",
@@ -4264,7 +4264,7 @@
      ]
     ],
     "fiche": {
-     "id": "EVTxmvuswn40n0rmk",
+     "id": "EVTxmvuswn40wbaut",
      "statut": "actif",
      "nature": "mariage",
      "libelle": "Mariage de KORA S.",
@@ -4318,7 +4318,7 @@
      ]
     ],
     "evenement": {
-     "id": "EVTxmvuswn40n0rmk",
+     "id": "EVTxmvuswn40wbaut",
      "statut": "archive",
      "nature": "mariage",
      "libelle": "Mariage de KORA S.",
@@ -4550,7 +4550,7 @@
   },
   "final": [
    {
-    "id": "EVExmvuswn40ke9kv",
+    "id": "EVExmvuswn40i644l",
     "statut": "archive",
     "reference": "EVT-9999",
     "nature": "autre",
@@ -4565,7 +4565,7 @@
     "_motifArchivage": "Doublon"
    },
    {
-    "id": "EVTxmvuswn40vuiu1",
+    "id": "EVTxmvuswn40p5d2g",
     "statut": "archive",
     "nature": "bapteme",
     "libelle": "Baptême test",
@@ -4582,7 +4582,7 @@
     "_motifArchivage": "Erreur"
    },
    {
-    "id": "EVTxmvuswn4035df0",
+    "id": "EVTxmvuswn40kopy1",
     "statut": "actif",
     "nature": "deces",
     "libelle": "Décès du père de TEPA Séraphine",
@@ -4602,7 +4602,7 @@
     "reference": "EVT-0011"
    },
    {
-    "id": "EVTxmvuswn40n0rmk",
+    "id": "EVTxmvuswn40wbaut",
     "statut": "archive",
     "nature": "mariage",
     "libelle": "Mariage de KORA S.",
@@ -10381,7 +10381,7 @@
     ]
    ],
    "fiche": {
-    "id": "PLAxmvuswn40ov8k1",
+    "id": "PLAxmvuswn40aam3w",
     "statut": "validee",
     "type": "soiree",
     "observation": "Remplacement.",
@@ -10410,7 +10410,7 @@
      ]
     ],
     "fiche": {
-     "id": "PLAxmvuswn40ov8k1",
+     "id": "PLAxmvuswn40aam3w",
      "statut": "validee",
      "type": "repos24",
      "observation": "Remplacement.",
@@ -10432,7 +10432,7 @@
      ]
     ],
     "fiche": {
-     "id": "PLAxmvuswn40ov8k1",
+     "id": "PLAxmvuswn40aam3w",
      "statut": "archive",
      "type": "repos24",
      "observation": "Remplacement.",
@@ -10509,7 +10509,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40zr9dr",
+     "id": "PERxmvuswn40i9jb4",
      "statut": "actif",
      "nomComplet": "ADAM Ibrahim",
      "fonction": "entretien",
@@ -10520,11 +10520,11 @@
      "matricule": "SE-001",
      "service": "Direction"
     },
-    "lignes": 13
+    "lignes": 14
    },
    "seconde": {
     "fiche": {
-     "id": "PERxmvuswn40v8fjt",
+     "id": "PERxmvuswn40fkozi",
      "statut": "actif",
      "nomComplet": "BIO Mama",
      "fonction": "securite",
@@ -10541,12 +10541,12 @@
    "kpis": [
     {
      "libelle": "Agents de sécurité",
-     "valeur": "3",
+     "valeur": "4",
      "indice": null
     },
     {
      "libelle": "Agents d’entretien",
-     "valeur": "3",
+     "valeur": "4",
      "indice": null
     },
     {
@@ -10556,11 +10556,11 @@
     },
     {
      "libelle": "Masse salariale",
-     "valeur": "295 000 FCFA",
+     "valeur": "380 000 FCFA",
      "indice": null
     }
    ],
-   "grille": 14
+   "grille": 16
   },
   "boutonsAgent": [
    "Modifier",
@@ -10582,7 +10582,7 @@
      ]
     ],
     "fiche": {
-     "id": "PERxmvuswn40zr9dr",
+     "id": "PERxmvuswn40i9jb4",
      "statut": "actif",
      "nomComplet": "ADAM Ibrahim",
      "fonction": "entretien",
@@ -10597,7 +10597,7 @@
   },
   "archivageAgent": {
    "fiche": {
-    "id": "PERxmvuswn40zr9dr",
+    "id": "PERxmvuswn40i9jb4",
     "statut": "archive",
     "nomComplet": "ADAM Ibrahim",
     "fonction": "entretien",
@@ -10612,7 +10612,7 @@
    "kpis": [
     {
      "libelle": "Agents de sécurité",
-     "valeur": "3",
+     "valeur": "4",
      "indice": null
     },
     {
@@ -10627,7 +10627,7 @@
     },
     {
      "libelle": "Masse salariale",
-     "valeur": "295 000 FCFA",
+     "valeur": "335 000 FCFA",
      "indice": null
     }
    ]
@@ -10642,7 +10642,7 @@
     ],
     [
      "Agents",
-     "6"
+     "7"
     ],
     [
      "Établi par",
@@ -10663,7 +10663,7 @@
      "nom": "TAKI Alimatou"
     }
    ],
-   "texte": "AgentFonctionma 27me 28je 29ve 30sa 31di 1lu 2ma 3me 4je 5ve 6sa 7di 8lu 9OURTCHA TereyamaAgent de sécuritéGarde 24hSoiréeSOULE EdmondAgent de sécuritéYARO OrouAgent de sécuritéISSA RabiatouAgent d’entretienBAKO ChantalAgent d’entretienOROU YO BertineAgent d’entretien",
+   "texte": "AgentFonctionma 27me 28je 29ve 30sa 31di 1lu 2ma 3me 4je 5ve 6sa 7di 8lu 9BIO MamaAgent de sécuritéOURTCHA TereyamaAgent de sécuritéGarde 24hSoiréeSOULE EdmondAgent de sécuritéYARO OrouAgent de sécuritéISSA RabiatouAgent d’entretienBAKO ChantalAgent d’entretienOROU YO BertineAgent d’entretien",
    "tableaux": [
     {
      "entetes": [
@@ -10685,6 +10685,24 @@
       "lu 9"
      ],
      "lignes": [
+      [
+       "BIO Mama",
+       "Agent de sécurité",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       "",
+       ""
+      ],
       [
        "OURTCHA Tereyama",
        "Agent de sécurité",
