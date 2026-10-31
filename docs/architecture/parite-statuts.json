@@ -236,5 +236,18 @@
  "dash-anesthesiste": "porté",
  "dash-aide-comptable": "porté",
  "dash-maternite": "porté",
- "dash-patient": "porté"
+ "dash-patient": "porté",
+ "dash-direction": "porté",
+ "dash-da": "porté",
+ "dash-croise": "porté",
+ "dash-admin": "porté",
+ "m4-stats-maternite": "porté",
+ "m2-stats-echographie": "porté",
+ "m5-stats-examens": "porté",
+ "m2-stats-consultations": "porté",
+ "m3-stats-bloc": "porté",
+ "m3-stats-hospitalisations": "porté",
+ "m10-cout-agent": "porté",
+ "m12-rentabilite-groupes": "porté",
+ "m12-tableau-decisionnel": "porté"
 }
