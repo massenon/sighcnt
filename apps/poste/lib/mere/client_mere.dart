@@ -53,7 +53,9 @@ class Conflit {
       required this.champ,
       required this.a,
       required this.b,
-      required this.etat});
+      required this.etat,
+      this.appareil,
+      this.decision});
   final int id;
   final String collection;
   final String fiche;
@@ -61,6 +63,10 @@ class Conflit {
   final Object? a;
   final Object? b;
   final String etat;
+
+  /// Appareil à l'origine de la version B, et décision prise (`a` ou `b`) une fois tranché : lus tels que le moteur les écrit.
+  final String? appareil;
+  final String? decision;
 
   /// Un « doublon possible » n'a pas de champ en conflit : c'est une fiche créée qui ressemble à une autre.
   bool get estDoublon => champ == 'doublon_possible';
@@ -73,6 +79,8 @@ class Conflit {
         a: j['a'] == null ? null : jsonDecode(j['a']! as String),
         b: j['b'] == null ? null : jsonDecode(j['b']! as String),
         etat: (j['etat'] ?? 'ouvert') as String,
+        appareil: j['appareil'] as String?,
+        decision: j['decision'] as String?,
       );
 }
 
@@ -87,7 +95,9 @@ class EtatMere {
       required this.derives,
       required this.bloques,
       required this.reinitOuverte,
-      required this.restauration});
+      required this.restauration,
+      this.marqueResync,
+      this.acksResync = const []});
   final int epoch;
   final int seqMax;
   final int repSeq;
@@ -98,6 +108,10 @@ class EtatMere {
   final List<String> bloques;
   final bool reinitOuverte;
   final String? restauration;
+
+  /// Dernier « Renvoyer vers tous » (marque posée par la mère) et les appareils qui l'ont acquitté. `null` : aucun renvoi en cours.
+  final String? marqueResync;
+  final List<String> acksResync;
 
   /// Opérations de la mère pas encore répliquées (chiffrées) vers le relais.
   int get retardRelais => seqMax - repSeq;
@@ -117,6 +131,10 @@ class EtatMere {
         bloques: ((j['bloques'] ?? const []) as List).cast<String>(),
         reinitOuverte: j['reinit_ouverte'] == true,
         restauration: j['restauration'] as String?,
+        marqueResync: ((j['resync'] as Map?)?['marque']) as String?,
+        acksResync: (((j['resync'] as Map?)?['acks'] ?? const []) as List)
+            .map((x) => '$x')
+            .toList(),
       );
 }
 
@@ -198,6 +216,14 @@ class ClientMere {
         .toList();
   }
 
+  /// Tous les conflits, tranchés compris (l'historique des décisions).
+  Future<List<Conflit>> tousLesConflits() async {
+    final r = await _appel('GET', '/admin/conflits');
+    return ((r['liste'] ?? const []) as List)
+        .map((x) => Conflit.depuis((x as Map).cast<String, Object?>()))
+        .toList();
+  }
+
   Future<void> trancher(int id, String decision) =>
       _appel('POST', '/admin/trancher', {'id': id, 'decision': decision});
 
@@ -248,6 +274,22 @@ class ClientMere {
     return ((r['liste'] ?? const []) as List)
         .map((x) => EvenementJournal.depuis((x as Map).cast<String, Object?>()))
         .toList();
+  }
+
+  /// Dépose un lot de tournée pour un mobile (`POST /admin/lot`) : la mère chiffre la charge pour l'appareil. Rend le nombre de
+  /// fiches réellement retenues (une fiche inconnue de la mère est écartée par le moteur, sans erreur).
+  Future<int> composerLot(
+      {required String uuid,
+      required List<({String collection, String id})> fiches,
+      int? dureeMs}) async {
+    final r = await _appel('POST', '/admin/lot', {
+      'uuid': uuid,
+      'fiches': [
+        for (final f in fiches) {'collection': f.collection, 'id': f.id}
+      ],
+      if (dureeMs != null) 'ttl_ms': dureeMs,
+    });
+    return ((r['fiches'] ?? 0) as num).toInt();
   }
 
   Future<void> sauvegarderMaintenant() => _appel('POST', '/admin/sauvegarder');

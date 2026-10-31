@@ -297,5 +297,12 @@
  "rls-parametres": "porté",
  "rls-hebergement": "porté",
  "rls-sauvegarde": "porté",
- "rls-opacite": "porté"
+ "rls-opacite": "porté",
+ "mere-supervision": "porté",
+ "mere-appareils": "porté",
+ "mere-conflits": "porté",
+ "mere-a-traiter": "porté",
+ "mere-journal-operations": "porté",
+ "mere-plages-baux": "porté",
+ "mere-lots-tournee": "porté"
 }
