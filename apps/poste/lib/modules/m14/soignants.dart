@@ -205,7 +205,6 @@ class _VueSoignantsState extends State<_VueSoignants> {
         : const BadgeSigh('Non');
     return TableauSigh(
       lignes: tries,
-      recherche: false,
       messageVide: 'Aucun soignant enregistré.',
       nomExport: 'soignants',
       actions: [
