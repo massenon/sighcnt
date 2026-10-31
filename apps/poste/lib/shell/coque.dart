@@ -165,6 +165,7 @@ class _CoquePosteState extends State<CoquePoste> {
         utilisateur: widget.donnees.matrice.libelle(widget.config.role) ??
             widget.config.role,
         horloge: widget.horloge,
+        ouvre: (cible) => widget.donnees.matrice.peutVoir(widget.config.role, cible),
         aller: (cible) {
           if (widget.donnees.matrice.peutVoir(widget.config.role, cible))
             _ouvrir(cible);

@@ -249,5 +249,15 @@
  "m3-stats-hospitalisations": "porté",
  "m10-cout-agent": "porté",
  "m12-rentabilite-groupes": "porté",
- "m12-tableau-decisionnel": "porté"
+ "m12-tableau-decisionnel": "porté",
+ "dash-medecin": "porté",
+ "dash-infirmier": "porté",
+ "dash-pharmacien": "porté",
+ "dash-laborantin": "porté",
+ "dash-stock": "porté",
+ "dash-caissier": "porté",
+ "dash-comptable": "porté",
+ "dash-rh": "porté",
+ "dash-receptionniste": "porté",
+ "dash-admin-agent": "porté"
 }
