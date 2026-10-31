@@ -8,6 +8,7 @@ import 'cpa_ecritures.dart';
 import 'cpa_grand_livre.dart';
 import 'cpa_journaux.dart';
 import 'cpa_plan_comptable.dart';
+import 'cpb_feuillets.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -21,4 +22,6 @@ final Map<String, ConstruireEcran> ecransM12 = {
   'm12-depenses': (c, cfg) => const EcranDepenses(),
   'm12-grand-livre': (c, cfg) => const EcranGrandLivre(),
   'm12-balance': (c, cfg) => const EcranBalance(),
+  'm12-compte-resultat': (c, cfg) => const EcranCompteResultat(),
+  'm12-flux-tresorerie': (c, cfg) => const EcranFluxTresorerie(),
 };

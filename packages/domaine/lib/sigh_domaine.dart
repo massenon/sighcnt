@@ -70,4 +70,8 @@ export 'src/paie/pai_moteur.dart';
 export 'src/comptabilite/cpa_referentiels.dart';
 export 'src/comptabilite/cpa_ecritures.dart';
 export 'src/comptabilite/cpa_depenses.dart';
+export 'src/comptabilite/cpb_liasse.dart';
+export 'src/comptabilite/cpb_donnees.dart';
+export 'src/comptabilite/cpb_feuillets.dart';
+export 'src/comptabilite/cpb_seuil.dart';
 export 'src/rh/rhb_regles.dart';
