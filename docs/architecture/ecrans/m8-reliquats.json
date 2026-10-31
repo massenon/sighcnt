@@ -1,0 +1,59 @@
+{
+ "id": "m8-reliquats",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Reliquats",
+ "acces": "ouvert",
+ "titre": "Reliquats",
+ "description": "Suivi des règlements différés et des écarts à régulariser, y compris par Mobile Money.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Reliquats"
+ ],
+ "actions": [
+  "Tableau de bord facturation",
+  "Nouvelle facture",
+  "Facturation & Caisse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Factures avec reliquat",
+  "Montant total des reliquats",
+  "Reliquat moyen",
+  "Patients concernés"
+ ],
+ "cartes": [
+  "Reliquats en cours",
+  "Reliquats par ancienneté",
+  "Reliquats par nature de prestation"
+ ],
+ "tableaux": [
+  [
+   "N° facture",
+   "Date",
+   "Patient",
+   "Nature",
+   "Montant",
+   "Réglé",
+   "Reste dû",
+   "Ancienneté",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Encaisser un reliquat",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,56 @@
+{
+ "id": "mecef-factures",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "Factures normalisées",
+ "acces": "ouvert",
+ "titre": "Factures normalisées",
+ "description": "Registre fiscal des factures normalisées, avec identifiant MECeF, montant déclaré et TVA collectée.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée",
+  "Factures normalisées"
+ ],
+ "actions": [
+  "Tableau de bord fiscal",
+  "Transmission & réponses",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Factures normalisées",
+  "Montant déclaré",
+  "TVA collectée",
+  "Validées par l’administration"
+ ],
+ "cartes": [
+  "Registre des factures normalisées"
+ ],
+ "tableaux": [
+  [
+   "N° facture",
+   "Date",
+   "Client",
+   "Nature",
+   "Montant HT",
+   "TVA",
+   "Montant TTC",
+   "Statut fiscal",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

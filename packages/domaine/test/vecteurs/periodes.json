@@ -1,0 +1,537 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "periode": "jour",
+    "fin": [
+     2026,
+     7,
+     16,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-08-16T12:00",
+    "fin": "2026-08-16T12:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 16/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "jour",
+    "fin": [
+     2026,
+     0,
+     3,
+     8,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-01-03T08:00",
+    "fin": "2026-01-03T08:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 03/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "jour",
+    "fin": [
+     2024,
+     2,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2024-03-01T00:00",
+    "fin": "2024-03-01T00:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 01/03/2024"
+   }
+  },
+  {
+   "entree": {
+    "periode": "jour",
+    "fin": [
+     2025,
+     11,
+     31,
+     23,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-12-31T23:00",
+    "fin": "2025-12-31T23:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 31/12/2025"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semaine",
+    "fin": [
+     2026,
+     7,
+     16,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-08-10T12:00",
+    "fin": "2026-08-16T12:00",
+    "label": "Hebdomadaire",
+    "jours": 7,
+    "libelle": "Du 10/08/2026 au 16/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semaine",
+    "fin": [
+     2026,
+     0,
+     3,
+     8,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-12-28T08:00",
+    "fin": "2026-01-03T08:00",
+    "label": "Hebdomadaire",
+    "jours": 7,
+    "libelle": "Du 28/12/2025 au 03/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semaine",
+    "fin": [
+     2024,
+     2,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2024-02-24T00:00",
+    "fin": "2024-03-01T00:00",
+    "label": "Hebdomadaire",
+    "jours": 7,
+    "libelle": "Du 24/02/2024 au 01/03/2024"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semaine",
+    "fin": [
+     2025,
+     11,
+     31,
+     23,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-12-25T23:00",
+    "fin": "2025-12-31T23:00",
+    "label": "Hebdomadaire",
+    "jours": 7,
+    "libelle": "Du 25/12/2025 au 31/12/2025"
+   }
+  },
+  {
+   "entree": {
+    "periode": "mois",
+    "fin": [
+     2026,
+     7,
+     16,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-07-18T12:00",
+    "fin": "2026-08-16T12:00",
+    "label": "Mensuelle",
+    "jours": 30,
+    "libelle": "Du 18/07/2026 au 16/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "mois",
+    "fin": [
+     2026,
+     0,
+     3,
+     8,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-12-05T08:00",
+    "fin": "2026-01-03T08:00",
+    "label": "Mensuelle",
+    "jours": 30,
+    "libelle": "Du 05/12/2025 au 03/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "mois",
+    "fin": [
+     2024,
+     2,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2024-02-01T00:00",
+    "fin": "2024-03-01T00:00",
+    "label": "Mensuelle",
+    "jours": 30,
+    "libelle": "Du 01/02/2024 au 01/03/2024"
+   }
+  },
+  {
+   "entree": {
+    "periode": "mois",
+    "fin": [
+     2025,
+     11,
+     31,
+     23,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-12-02T23:00",
+    "fin": "2025-12-31T23:00",
+    "label": "Mensuelle",
+    "jours": 30,
+    "libelle": "Du 02/12/2025 au 31/12/2025"
+   }
+  },
+  {
+   "entree": {
+    "periode": "trimestre",
+    "fin": [
+     2026,
+     7,
+     16,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-05-18T12:00",
+    "fin": "2026-08-16T12:00",
+    "label": "Trimestrielle",
+    "jours": 91,
+    "libelle": "Du 18/05/2026 au 16/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "trimestre",
+    "fin": [
+     2026,
+     0,
+     3,
+     8,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-10-05T08:00",
+    "fin": "2026-01-03T08:00",
+    "label": "Trimestrielle",
+    "jours": 91,
+    "libelle": "Du 05/10/2025 au 03/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "trimestre",
+    "fin": [
+     2024,
+     2,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2023-12-02T00:00",
+    "fin": "2024-03-01T00:00",
+    "label": "Trimestrielle",
+    "jours": 91,
+    "libelle": "Du 02/12/2023 au 01/03/2024"
+   }
+  },
+  {
+   "entree": {
+    "periode": "trimestre",
+    "fin": [
+     2025,
+     11,
+     31,
+     23,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-10-02T23:00",
+    "fin": "2025-12-31T23:00",
+    "label": "Trimestrielle",
+    "jours": 91,
+    "libelle": "Du 02/10/2025 au 31/12/2025"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semestre",
+    "fin": [
+     2026,
+     7,
+     16,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-02-16T12:00",
+    "fin": "2026-08-16T12:00",
+    "label": "Semestrielle",
+    "jours": 182,
+    "libelle": "Du 16/02/2026 au 16/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semestre",
+    "fin": [
+     2026,
+     0,
+     3,
+     8,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-07-06T08:00",
+    "fin": "2026-01-03T08:00",
+    "label": "Semestrielle",
+    "jours": 182,
+    "libelle": "Du 06/07/2025 au 03/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semestre",
+    "fin": [
+     2024,
+     2,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2023-09-02T00:00",
+    "fin": "2024-03-01T00:00",
+    "label": "Semestrielle",
+    "jours": 182,
+    "libelle": "Du 02/09/2023 au 01/03/2024"
+   }
+  },
+  {
+   "entree": {
+    "periode": "semestre",
+    "fin": [
+     2025,
+     11,
+     31,
+     23,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-07-03T23:00",
+    "fin": "2025-12-31T23:00",
+    "label": "Semestrielle",
+    "jours": 182,
+    "libelle": "Du 03/07/2025 au 31/12/2025"
+   }
+  },
+  {
+   "entree": {
+    "periode": "annee",
+    "fin": [
+     2026,
+     7,
+     16,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-08-17T12:00",
+    "fin": "2026-08-16T12:00",
+    "label": "Annuelle",
+    "jours": 365,
+    "libelle": "Du 17/08/2025 au 16/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "annee",
+    "fin": [
+     2026,
+     0,
+     3,
+     8,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-01-04T08:00",
+    "fin": "2026-01-03T08:00",
+    "label": "Annuelle",
+    "jours": 365,
+    "libelle": "Du 04/01/2025 au 03/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "annee",
+    "fin": [
+     2024,
+     2,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2023-03-03T00:00",
+    "fin": "2024-03-01T00:00",
+    "label": "Annuelle",
+    "jours": 365,
+    "libelle": "Du 03/03/2023 au 01/03/2024"
+   }
+  },
+  {
+   "entree": {
+    "periode": "annee",
+    "fin": [
+     2025,
+     11,
+     31,
+     23,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-01-01T23:00",
+    "fin": "2025-12-31T23:00",
+    "label": "Annuelle",
+    "jours": 365,
+    "libelle": "Du 01/01/2025 au 31/12/2025"
+   }
+  },
+  {
+   "entree": {
+    "periode": "inconnue",
+    "fin": [
+     2026,
+     7,
+     16,
+     12,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-08-16T12:00",
+    "fin": "2026-08-16T12:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 16/08/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "inconnue",
+    "fin": [
+     2026,
+     0,
+     3,
+     8,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2026-01-03T08:00",
+    "fin": "2026-01-03T08:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 03/01/2026"
+   }
+  },
+  {
+   "entree": {
+    "periode": "inconnue",
+    "fin": [
+     2024,
+     2,
+     1,
+     0,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2024-03-01T00:00",
+    "fin": "2024-03-01T00:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 01/03/2024"
+   }
+  },
+  {
+   "entree": {
+    "periode": "inconnue",
+    "fin": [
+     2025,
+     11,
+     31,
+     23,
+     0
+    ]
+   },
+   "sortie": {
+    "debut": "2025-12-31T23:00",
+    "fin": "2025-12-31T23:00",
+    "label": "Journalière",
+    "jours": 1,
+    "libelle": "Journée du 31/12/2025"
+   }
+  }
+ ]
+}

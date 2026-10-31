@@ -1,0 +1,63 @@
+{
+ "id": "ged-bibliotheque",
+ "module": "GED",
+ "domaine": "Administration",
+ "libelleManifeste": "Bibliothèque documentaire",
+ "acces": "ouvert",
+ "titre": "Bibliothèque documentaire",
+ "description": "Ensemble des documents numérisés, indexés et rattachés à leur dossier patient, fournisseur ou employé.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Gestion documentaire",
+  "Bibliothèque documentaire"
+ ],
+ "actions": [
+  "Workflow de validation",
+  "Archivage & conservation",
+  "Gestion documentaire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Documents numérisés",
+  "Validés",
+  "En attente de validation",
+  "Rejetés",
+  "Documents signés",
+  "Archivés",
+  "Volume de stockage",
+  "Consultations cumulées"
+ ],
+ "cartes": [
+  "Explorateur par nature de rattachement",
+  "Documents"
+ ],
+ "tableaux": [
+  [
+   "Référence",
+   "Document",
+   "Rattaché à",
+   "Code",
+   "Date",
+   "Format",
+   "Taille",
+   "Version",
+   "Validation",
+   "Signature",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 8
+}

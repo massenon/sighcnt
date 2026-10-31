@@ -1,0 +1,57 @@
+{
+ "id": "m3-bloc-checklist",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Check-listes du bloc",
+ "acces": "ouvert",
+ "titre": "Check-listes du bloc",
+ "description": "Vérifications avant l’incision (entrée) et avant la sortie de salle (sortie).",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Check-listes du bloc"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Check-listes arrêtées par les praticiens du bloc le 01/09/2026 (validation écrite). Proposées à l’origine faute de document remis — la provenance reste dite."
+ ],
+ "onglets": [
+  "Check-liste d’entrée",
+  "Check-liste de sortie"
+ ],
+ "kpis": [
+  "Check-listes remplies",
+  "Entrée",
+  "Sortie",
+  "Incomplètes"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date et heure",
+   "Patient",
+   "Responsable",
+   "Vérifié",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Check-liste d’entrée26",
+  "Check-liste de sortie26",
+  "Colonnes",
+  "Exporter",
+  "Remplir la check-liste",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,47 @@
+{
+ "id": "mere-service",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Service et démarrage",
+ "acces": "ouvert",
+ "titre": "Service et démarrage",
+ "description": "Activation du mode mère sur ce serveur, démarrage automatique, ports, arrêt propre.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Plateforme locale",
+  "Service et démarrage"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Mode de ce poste",
+  "Service",
+  "Démarrage automatique",
+  "Port"
+ ],
+ "cartes": [
+  "Configuration"
+ ],
+ "tableaux": [
+  [
+   "Paramètre",
+   "Valeur"
+  ]
+ ],
+ "commandes": [
+  "Arrêter proprement",
+  "Redémarrer",
+  "Désactiver le mode mère"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

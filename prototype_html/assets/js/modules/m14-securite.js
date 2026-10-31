@@ -11,7 +11,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       N = global.SIGH.nav, P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   var NIVEAUX = ['Consultation', 'Création', 'Modification', 'Validation', 'Suppression', 'Impression'];
 
@@ -55,7 +55,7 @@
       var role = mapping[e.nomComplet];
       if (!role) {
         role = { medecin: 'medecin', infirmier: 'infirmier', sage_femme: 'infirmier',
-          aide_soignant: 'infirmier', tsl: 'laborantin', biomedical: 'biomedical', dispensatrice: 'caissier',
+          aide_soignant: 'infirmier', tsl: 'laborantin', biomedical: 'laborantin', dispensatrice: 'caissier',
           caissiere: 'caissier', accueil: 'reception', comptable: 'comptable',
           stock: 'stock', securite: 'agentadmin', entretien: 'agentadmin',
           chauffeur: 'ambulancier', direction: 'direction' }[e.fonction] || 'reception';
@@ -225,7 +225,7 @@
             },
           ].filter(Boolean);
         },
-        transform: function (v) {
+        transform: function (v, record) {
           /* Le secret ne franchit pas cette ligne : on note qu'il a été posé,
              par qui et quand — c'est ce que le journal doit pouvoir montrer —
              et l'on efface la saisie avant l'écriture. */
@@ -238,8 +238,12 @@
           delete v.motDePasseConfirmation;
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.nomComplet = e.nomComplet; v.matricule = e.matricule; v.poste = e.poste; v.service = v.service || e.service; }
-          if (!v.dernierAcces) v.dernierAcces = C.iso(AUJ);
-          if (v.echecs == null) v.echecs = 0;
+          /* E591 — ces deux valeurs sont celles d’un compte NEUF. À la modification, le formulaire ne les porte pas : les poser ici remettait le « dernier
+             accès » à aujourd’hui et les échecs de connexion à zéro à chaque correction d’une fiche — la trace même que cet écran existe pour montrer. */
+          if (!record) {
+            if (!v.dernierAcces) v.dernierAcces = C.iso(AUJ);
+            if (v.echecs == null) v.echecs = 0;
+          }
           if (['dm', 'da', 'direction', 'admin'].indexOf(v.role) !== -1) v.mfa = true;
           return v;
         },
@@ -406,6 +410,8 @@
 
       root.appendChild(host);
       host.appendChild(vue);
+      /* E590 — l’affectation vivait APRÈS le return (code mort) : le bouton « Nouveau rôle » ne faisait rien. Elle se pose avant le premier rendu. */
+      creerRoleRef.fn = creerRole;
       afficher();
       return null;
 
@@ -1011,7 +1017,6 @@
        * rien ouvert. C'est le comportement sûr — l'inverse donnerait tous les
        * droits à un rôle qu'on vient d'inventer.
        * ------------------------------------------------------------------ */
-      creerRoleRef.fn = creerRole;
       function creerRole() {
         var f = U.form([
           { name: 'libelle', label: 'Intitulé du rôle', type: 'text', required: true, col: 'full' },
@@ -1071,6 +1076,14 @@
                 tousModules().forEach(function (x) {
                   ferme[x.code] = { voir: false, editer: false, annuler: false };
                 });
+                /* Un écran UNIVERSEL ne cède que devant une surcharge d'ÉCRAN (nav.js, 29/10/2026) : fermer les
+                   modules ne suffit plus à garder un rôle neuf à zéro écran. On les ferme donc nommément — l'administrateur
+                   rouvre ensuite, un par un, ce qu'il veut. */
+                var fermesEcrans = {};
+                N.ids().forEach(function (idEcran) {
+                  var e = N.get(idEcran);
+                  if (e && e.universel) fermesEcrans[idEcran] = { voir: false, editer: false, annuler: false };
+                });
                 /* Upsert : si une fiche existe déjà pour cet identifiant —
                    un rôle archivé qu'on recrée, par exemple — on la reprend
                    plutôt que d'en poser une seconde. */
@@ -1080,7 +1093,7 @@
                     nouveau: true, statut: 'actif', libelle: v.libelle,
                     libelleCourt: v.libelleCourt || v.libelle, libelleOrigine: v.libelle,
                     couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                    droits: ferme, droitsEcrans: {},
+                    droits: ferme, droitsEcrans: fermesEcrans,
                   });
                   N.invaliderRbac();
                   m.close(); afficher();
@@ -1092,7 +1105,7 @@
                   libelle: v.libelle, libelleCourt: v.libelleCourt || v.libelle,
                   libelleOrigine: v.libelle,
                   couleur: v.couleur, accueil: v.accueil, motif: v.motif,
-                  droits: ferme, droitsEcrans: {},
+                  droits: ferme, droitsEcrans: fermesEcrans,
                   definiLe: C.iso(AUJ), definiPar: S.currentUser(),
                 });
                 N.invaliderRbac();
@@ -1538,7 +1551,7 @@
         return o > 1024 * 1024 ? (o / 1024 / 1024).toFixed(1) + ' Mo' : Math.round(o / 1024) + ' Ko';
       }
 
-      if (!colFichiers.all().length) {
+      if (!colFichiers.all().length && S.amorcable('fichiersSauvegarde')) {
         var rndB = C.seeded(88);
         for (var fb = 0; fb < 6; fb++) {
           var dB = C.addDays(AUJ, -fb * 7);
@@ -1932,6 +1945,85 @@
           }),
         });
       }
+    },
+  });
+
+
+  /* ==========================================================================
+   * TÂCHES PLANIFIÉES (vague 69)
+   * --------------------------------------------------------------------------
+   * L'écran ne calcule rien : il LIT le registre que tient le planificateur du
+   * serveur (api/cron.php) et rend visible ce qui, sans lui, tournerait dans
+   * le noir — quand la dernière exécution a eu lieu, si elle a réussi, combien
+   * d'alertes elle a produites. Une tâche qui n'a pas tourné depuis longtemps
+   * se DIT en rouge : un planificateur arrêté ne prévient personne de lui-même.
+   * ======================================================================== */
+  global.SIGH.screen('m14-taches', {
+    title: 'Tâches planifiées',
+    description: 'Ce que le serveur évalue à heure fixe — échéances, péremptions, seuils de stock, rendez-vous du lendemain, créances âgées, sauvegarde — et ce qu’il a trouvé.',
+    regle: 'Le planificateur (<code>api/cron.php</code>) tourne <strong>sans écran ouvert</strong>. Il lit les registres, n’en écrit aucun, '
+      + 'et applique les seuils que la clinique a fixés. Une alerte <strong>disparaît quand sa cause cesse</strong> ; elle n’est jamais supprimée (RG-14). '
+      + 'Installer la tâche du système toutes les 5 minutes ; à défaut, le serveur se déclenche lui-même quand un poste est ouvert.',
+    render: function (root) {
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      var droits = K.droits('M14');
+      function jeton() { return S.jetonServeur ? S.jetonServeur() : null; }
+      function racine() { return (document.documentElement.getAttribute('data-root')) || ''; }
+      function appeler(opts) {
+        return global.fetch(racine() + 'api/notifications.php' + (opts.query || ''), {
+          method: opts.method || 'GET',
+          headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton() || '' },
+          body: opts.corps ? JSON.stringify(opts.corps) : undefined,
+        }).then(function (r) { return r.json().then(function (o) { if (!r.ok) throw new Error(o.detail || o.erreur || String(r.status)); return o; }); });
+      }
+      function peindre() {
+        C.clear(host);
+        host.appendChild(U.loading ? U.loading(3) : el('p.text-sm.text-slate-500', { text: 'Lecture du registre…' }));
+        appeler({ query: '?action=taches' }).then(function (o) {
+          C.clear(host);
+          var taches = o.taches || [];
+          var vieilles = taches.filter(function (t) {
+            return !t.derniere_le || (Date.now() - new Date(String(t.derniere_le).replace(' ', 'T') + 'Z').getTime()) > (Number(t.frequence_min) * 3 * 60000);
+          });
+          var enErreur = taches.filter(function (t) { return t.dernier_statut === 'erreur'; });
+          host.appendChild(U.kpiGrid([
+            { label: 'Tâches actives', value: C.num(taches.length), icon: 'timer', tone: 'navy' },
+            { label: 'En erreur', value: C.num(enErreur.length), icon: 'alert-triangle', tone: enErreur.length ? 'danger' : 'success' },
+            { label: 'En retard sur leur fréquence', value: C.num(vieilles.length), icon: 'clock-alert', tone: vieilles.length ? 'warning' : 'success', hint: 'Plus de trois périodes sans exécution' },
+            { label: 'Alertes ouvertes (dernière passe)', value: C.num(C.sum(taches, 'alertes')), icon: 'bell-ring', tone: 'neutral' },
+          ]));
+          if (vieilles.length) {
+            host.appendChild(K.note('<strong>' + vieilles.length + ' tâche(s) n’ont pas tourné à leur fréquence.</strong> Vérifier que la tâche du système '
+              + '(cron Linux ou Planificateur de tâches Windows) est installée et active.', { tone: 'warning', icon: 'clock-alert' }));
+          }
+          var lignes = taches.map(function (t) {
+            return [
+              t.libelle, 'toutes les ' + t.frequence_min + ' min',
+              t.derniere_le ? C.dateFR(String(t.derniere_le).slice(0, 10)) + ' ' + String(t.derniere_le).slice(11, 16) + ' UTC' : 'jamais',
+              t.dernier_statut === 'erreur' ? 'Erreur — ' + (t.dernier_message || '') : (t.dernier_statut ? 'Réussie' : '—'),
+              t.duree_ms != null ? t.duree_ms + ' ms' : '—', C.num(t.alertes || 0),
+              K.commande('Exécuter', { type: 'button', onclick: function () {
+                appeler({ method: 'POST', corps: { action: 'executer', code: t.code } }).then(function () {
+                  U.toast('Tâche exécutée : ' + t.libelle, { type: 'success' }); peindre();
+                }, function (e) { U.toast('Exécution refusée : ' + e.message, { type: 'error' }); });
+              }, droit: 'editer' }),
+            ];
+          });
+          host.appendChild(U.card('Registre des tâches', K.miniTable(['Tâche', 'Fréquence', 'Dernière exécution', 'Résultat', 'Durée', 'Alertes', ''], lignes)));
+          var histo = (o.executions || []).map(function (e) {
+            return [String(e.debut).slice(0, 16).replace('T', ' '), e.code, e.statut === 'ok' ? 'Réussie' : 'Erreur', e.origine || '—', String(e.duree_ms) + ' ms', C.num(e.alertes)];
+          });
+          host.appendChild(U.card('Dernières exécutions', histo.length
+            ? K.miniTable(['Début (UTC)', 'Tâche', 'Résultat', 'Déclenchée par', 'Durée', 'Alertes'], histo)
+            : U.empty('Aucune exécution enregistrée.', { icon: 'timer' })));
+        }, function (e) {
+          C.clear(host);
+          host.appendChild(U.errorState('Le registre du planificateur est inaccessible : ' + e.message + '. Sans serveur (ouverture locale), aucune tâche planifiée ne tourne.', peindre));
+        });
+      }
+      peindre();
+      return null;
     },
   });
 

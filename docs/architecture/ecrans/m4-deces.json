@@ -1,0 +1,56 @@
+{
+ "id": "m4-deces",
+ "module": "M4",
+ "domaine": "Soins",
+ "libelleManifeste": "Registre des décès",
+ "acces": "ouvert",
+ "titre": "Registre des décès",
+ "description": "Enregistrement des décès survenus dans l’établissement : date, heure, cause et déclaration.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Maternité, Naissances & Décès",
+  "Registre des décès"
+ ],
+ "actions": [
+  "Dossier obstétrical",
+  "Suivi maternité",
+  "Maternité, Naissances & Décès"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les décès",
+  "Archivés"
+ ],
+ "kpis": [
+  "Décès enregistrés",
+  "Sur l’année 2026",
+  "À déclarer",
+  "Causes distinctes"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date et heure",
+   "Patient",
+   "Cause du décès",
+   "Lieu",
+   "Médecin constatant",
+   "Déclaration",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les décès14",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

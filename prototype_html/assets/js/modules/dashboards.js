@@ -10,7 +10,7 @@
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
 
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* --- Accès mémorisés aux collections ------------------------------------- */
   function col(n) { return S.collection(n); }
@@ -3332,7 +3332,7 @@
         var adm = S.collection('admissions').active().filter(function (a) { return !a.dateSortie; });
         var rel = S.collection('releves', { module: 'M3', entite: 'FeuilleTemperature' }).active()
           .filter(function (r) { return r.date === C.iso(AUJ); });
-        var visites = S.collection('visitesPatients').active().filter(function (v) {
+        var visites = S.collection('visitesHospi').active().filter(function (v) {
           return String(v.date || '').slice(0, 10) === C.iso(AUJ);
         });
         return [
@@ -3406,7 +3406,7 @@
           question: 'restent à terminer et à rendre',
           vide: 'Aucun compte rendu en attente.',
           ton: 'warning', icone: 'scan-line',
-          ecran: 'm2-imagerie', lienLabel: 'Échographie & imagerie',
+          ecran: 'm2-imagerie', lienLabel: 'Imagerie médicale',
           note: 'La conclusion est obligatoire avant de rendre : c’est elle que le prescripteur lit.',
         };
       },
@@ -3420,7 +3420,7 @@
           { label: 'Comptes rendus au total', value: C.num(tous.length), icon: 'scan-line', tone: 'navy' },
           { label: 'Rendus au prescripteur', value: C.num(rendus.length), icon: 'send', tone: 'success' },
           { label: 'Ce mois-ci', value: C.num(mois.length), icon: 'calendar', tone: 'info' },
-          { label: 'Examens au catalogue', value: C.num((D.IMAGERIE && D.IMAGERIE.EXAMENS || []).length),
+          { label: 'Examens au catalogue', value: C.num(S.collection('examensImagerie').active().length),
             icon: 'list', tone: 'neutral' },
         ];
       },
@@ -3453,7 +3453,7 @@
           title: 'Accès rapides',
           render: function () {
             return K.shortcuts([
-              { id: 'm2-imagerie', icon: 'scan-line', label: 'Échographie & imagerie', detail: 'Saisie des comptes rendus' },
+              { id: 'm2-imagerie', icon: 'scan-line', label: 'Imagerie médicale', detail: 'Saisie des comptes rendus' },
               { id: 'm1-patients', icon: 'users', label: 'Répertoire des patients', detail: 'Lecture seule' },
               { id: 'm2-prescriptions', icon: 'clipboard-plus', label: 'Prescriptions', detail: 'Lecture seule' },
             ]);
@@ -3490,7 +3490,7 @@
         var pres = S.collection('presences').active().filter(function (x) {
           return String(x.date || '').slice(0, 10) === C.iso(AUJ);
         });
-        var retards = pres.filter(function (x) { return x.retard || x.statut === 'retard'; });
+        var retards = pres.filter(function (x) { return x.etat === 'retard'; });
         return {
           valeur: retards.length, unite: 'retard(s)',
           question: 'constatés aujourd’hui',
@@ -3509,8 +3509,8 @@
           return String(x.date || '').slice(0, 10) === C.iso(AUJ);
         });
         var conges = S.collection('conges').active().filter(function (x) {
-          return x.statut !== 'archive' && String(x.debut || '') <= C.iso(AUJ)
-            && String(x.fin || '') >= C.iso(AUJ);
+          return x.statutConge === 'valide' && String(x.dateDebut || '') <= C.iso(AUJ)
+            && String(x.dateFin || '') >= C.iso(AUJ);
         });
         return [
           { label: 'Présences pointées aujourd’hui', value: C.num(pres.length), icon: 'user-check', tone: 'success' },
@@ -3678,119 +3678,6 @@
               { id: 'm8-caisse', icon: 'banknote', label: 'Point de caisse', detail: 'Activité 25 — lecture seule' },
               { id: 'm12-ecritures', icon: 'book-open', label: 'Écritures comptables', detail: 'Livres de compte — activité 1' },
             ]);
-          },
-        },
-      ],
-    }),
-  });
-
-  /* ==========================================================================
-   * INGÉNIEUR BIOMÉDICAL
-   * --------------------------------------------------------------------------
-   * Poste rectifié par la Direction le 25/08/2026. Il entretient les automates
-   * et le parc technique ; il ne rend AUCUN résultat — la validation biologique
-   * engage la responsabilité du biologiste, pas celle du technicien qui a
-   * étalonné la machine.
-   * ======================================================================== */
-  global.SIGH.screen('dash-biomedical', {
-    title: 'Tableau de bord — Ingénieur biomédical',
-    description: 'Maintenance du parc technique, réactifs et consommables de laboratoire.',
-    render: K.dash({
-      premierRegard: function () {
-        var mat = S.collection('materiel').active().filter(function (m) {
-          return m.etat === 'panne' || m.statutMaintenance === 'en_panne';
-        });
-        return {
-          valeur: mat.length, unite: 'matériel(s)',
-          question: 'sont signalés en panne',
-          vide: 'Aucune panne signalée sur le parc technique.',
-          ton: 'danger', icone: 'wrench',
-          ecran: 'm13-maintenance', lienLabel: 'Maintenance',
-          note: 'Un automate en panne arrête le laboratoire : c’est la première chose à voir. '
-            + 'Votre profil n’accède pas aux résultats — la validation biologique engage le biologiste.',
-        };
-      },
-      kpis: function () {
-        var reactifs = S.collection('produits').active().filter(function (x) {
-          return /reactif|réactif|consommable/i.test(x.famille || '');
-        });
-        var sous = reactifs.filter(function (x) { return x.seuilAlerte != null && x.stock <= x.seuilAlerte; });
-        var sansSeuil = reactifs.filter(function (x) { return x.seuilAlerte == null; });
-        return [
-          { label: 'Réactifs et consommables', value: C.num(reactifs.length), icon: 'flask-conical', tone: 'navy' },
-          { label: 'Sous leur seuil', value: C.num(sous.length), icon: 'package-x',
-            tone: sous.length ? 'danger' : 'success' },
-          { label: 'Sans seuil fixé', value: C.num(sansSeuil.length), icon: 'circle-help',
-            tone: sansSeuil.length ? 'warning' : 'success',
-            hint: 'sans seuil, aucune alerte n’est possible' },
-          { label: 'Analyses au catalogue', value: C.num(S.collection('examensLabo').active().length),
-            icon: 'list', tone: 'neutral' },
-        ];
-      },
-      sections: [
-        {
-          title: 'Ce que vous faites ici — vos parcours',
-          /* Remonté avant les indicateurs : c'est par là qu'on commence sa
-             journée. Un mode d'emploi placé sous les tableaux ne se lit pas. */
-          rapide: true,
-          render: function () {
-            return K.parcours([
-              {
-                titre: 'Tenir les réactifs des automates', icone: 'flask-conical', action: 'Réactifs',
-                detail: 'Ce qui fait tourner le laboratoire au quotidien.',
-                etapes: [
-                  { label: 'Contrôler les seuils et les péremptions', ecran: 'm5-reactifs',
-                    detail: 'Une référence sans seuil ne peut déclencher aucune alerte : elle est comptée à part.' },
-                  { label: 'Fixer le seuil des références qui n’en ont pas', ecran: 'm5-reactifs',
-                    detail: 'Le document SAGE ne renseigne pas cette colonne — c’est à la clinique de la fixer.' },
-                  { label: 'Exprimer le besoin', ecran: 'm7-besoins' },
-                  { label: 'La Direction accorde', poste: 'DAF', detail: 'RG-04.' },
-                ],
-              },
-              {
-                titre: 'Traiter une panne', icone: 'triangle-alert', action: 'Voir le parc',
-                detail: 'Un automate ne répond plus.',
-                etapes: [
-                  { label: 'Passer l’équipement en panne', ecran: 'm13-maintenance',
-                    detail: 'Un automate en panne arrête le laboratoire : l’état de marche est la première colonne.' },
-                  { label: 'Prévenir le service concerné par note', ecran: 'm13-notes-service' },
-                  { label: 'Faire appel au réparateur', poste: 'DAF' },
-                  { label: 'Remettre en service et dater l’entretien', ecran: 'm13-maintenance' },
-                ],
-              },
-              {
-                titre: 'Tenir le parc à jour', icone: 'wrench', action: 'Compléter les fiches',
-                detail: 'Entretiens périodiques et fiches incomplètes.',
-                etapes: [
-                  { label: 'Relever les entretiens échus', ecran: 'm13-maintenance',
-                    detail: 'La périodicité vaut six mois sur les automates et l’énergie, douze ailleurs.' },
-                  { label: 'Compléter marque, n° de série et mise en service', ecran: 'm13-maintenance',
-                    detail: 'Le parc amorcé est une proposition : aucun document ne l’inventorie.' },
-                  { label: 'Le registre comptable suit', ecran: 'm12-immobilisations',
-                    poste: 'Comptabilité', detail: 'Les amortissements se calculent là, pas ici.' },
-                ],
-              },
-            ]);
-          },
-        },
-        {
-          title: 'Accès rapides',
-          render: function () {
-            return K.shortcuts([
-              { id: 'm5-reactifs', icon: 'flask-conical', label: 'Réactifs & consommables', detail: 'Seuils et alertes' },
-              { id: 'm13-maintenance', icon: 'wrench', label: 'Maintenance', detail: 'Parc technique' },
-              { id: 'm6-produits', icon: 'package', label: 'Référentiel produits', detail: 'Lecture' },
-              { id: 'm7-commandes', icon: 'shopping-cart', label: 'Commandes', detail: 'Lecture' },
-            ]);
-          },
-        },
-        {
-          title: 'Ce que votre profil ne voit pas',
-          render: function () {
-            return K.note('Vous entretenez les automates ; vous ne rendez <strong>aucun résultat</strong>. '
-              + 'La validation biologique engage la responsabilité du biologiste, pas celle du technicien qui '
-              + 'a étalonné la machine — l’écran des résultats vous est donc fermé.',
-            { tone: 'info', icon: 'shield' });
           },
         },
       ],

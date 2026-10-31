@@ -1,0 +1,30 @@
+{
+ "id": "hub-pil",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Pilotage & analyse",
+ "acces": "ouvert",
+ "titre": "Pilotage & analyse",
+ "description": "Tous les écrans du module PIL — Pilotage & analyse.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [
+  "Tableaux de bord par poste"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

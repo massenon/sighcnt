@@ -1,0 +1,51 @@
+{
+ "id": "m3-glasgow",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Score de Glasgow",
+ "acces": "ouvert",
+ "titre": "Score de Glasgow",
+ "description": "Évaluation de la conscience, adulte et enfant : ouverture des yeux, réponse verbale, réponse motrice.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Score de Glasgow"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Le logiciel calcule et signale ; il ne diagnostique pas. Un score de 8 ou moins est classiquement le seuil du coma, mais l’appréciation clinique revient au médecin — et un score isolé ne vaut rien sans son évolution."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Évaluations",
+  "Score ≤ 8 — coma",
+  "Score 9 à 12",
+  "Patients évalués"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Date et heure",
+   "Patient",
+   "Score",
+   "Évalué par",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle évaluation",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

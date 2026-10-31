@@ -1,0 +1,72 @@
+{
+ "id": "m6-point-ventes",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Suivi des ventes",
+ "acces": "ouvert",
+ "titre": "Suivi des ventes",
+ "description": "Ventes de la caisse par période, par client, par article et par groupe de prestation, avec impression détaillée ou globale.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Suivi des ventes"
+ ],
+ "actions": [
+  "Point du stock",
+  "Pharmacie interne — urgences",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Du 01/10/2026 au 30/10/2026 — 0 pièce(s), 0 ligne(s) de vente."
+ ],
+ "onglets": [
+  "Journal des ventes",
+  "Par client",
+  "Par patient",
+  "Par article",
+  "Par groupe et famille",
+  "Évolution"
+ ],
+ "kpis": [
+  "Facturé brut",
+  "Remises accordées",
+  "Facturé net",
+  "Part assureur",
+  "Prise en charge du personnel",
+  "Encaissé",
+  "Reste dû par les patients",
+  "Articles vendus"
+ ],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "Tous les clients",
+  "Tous les groupes",
+  "Tous les articles et prestations",
+  "Point détaillé",
+  "Point global",
+  "Point par patient",
+  "Réinitialiser les filtres",
+  "Journal des ventes0",
+  "Par client",
+  "Par patient",
+  "Par article",
+  "Par groupe et famille",
+  "Évolution",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Périodicité",
+  "Arrêté au",
+  "Plage libre",
+  "Du",
+  "Au",
+  "Client (un ou plusieurs)",
+  "Groupe de prestation",
+  "Article / prestation"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 8
+}

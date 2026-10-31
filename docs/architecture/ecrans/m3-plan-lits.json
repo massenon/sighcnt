@@ -1,0 +1,65 @@
+{
+ "id": "m3-plan-lits",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Plan des lits",
+ "acces": "ouvert",
+ "titre": "Plan des lits",
+ "description": "Visualisation graphique de l’occupation par aile, chambre et lit — nomenclature A1 LIT1, chambres VIP et VVIP.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Plan des lits"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "Légende :LibreOccupéSortie prévue (séjour > 5 jours)",
+  "A1 LIT1SAMBIENI Bibata84 j",
+  "A1 LIT2WOROU Boukari80 j"
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lits installés",
+  "Lits occupés",
+  "Lits libres",
+  "Taux d’occupation"
+ ],
+ "cartes": [
+  "Aile A — Médecine",
+  "Aile B — Maternité",
+  "Aile C — VIP",
+  "Aile D — VVIP",
+  "Occupation par type de chambre",
+  "Durée moyenne de séjour (12 mois)"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "A1 LIT1SAMBIENI Bibata84 j",
+  "A1 LIT2WOROU Boukari80 j",
+  "A2 LIT1N’TCHA Hervé83 j",
+  "A2 LIT2YENI M’PO Florent84 j",
+  "A3 LIT1TCHANE Colette84 j",
+  "A3 LIT2HOUNKPATIN Salifou78 j",
+  "A4 LIT1KASSA Florent78 j",
+  "A4 LIT2TIGRI Kassim80 j",
+  "B1 LIT1OROU YO Ganiou80 j",
+  "B1 LIT2SOULE Nadège79 j",
+  "B2 LIT1BASSONGUI Bio82 j",
+  "B2 LIT2TAKI Alimatou80 j",
+  "B3 LIT1SANNI Nadège80 j",
+  "B3 LIT2AHOHOU Zakari81 j",
+  "C1 LIT1Disponible",
+  "C2 LIT1Disponible",
+  "C3 LIT1Disponible",
+  "D1 LIT1Disponible",
+  "D2 LIT1Disponible"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

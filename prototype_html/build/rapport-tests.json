@@ -23,7 +23,7 @@
         "detail": null
       },
       {
-        "libelle": "Le code patient est pré-attribué au format CNT[n°]/[année]",
+        "libelle": "Le code patient est pré-attribué au format CNT/[n°]/[année] (E300 : le format en vigueur depuis la vague 26)",
         "ok": true,
         "detail": null
       },
@@ -3293,11 +3293,6 @@
         "detail": null
       },
       {
-        "libelle": "Le rôle « biomedical » ouvre SON tableau de bord, pas celui d’un autre profil",
-        "ok": true,
-        "detail": null
-      },
-      {
         "libelle": "Le compteur des ruptures ne retient que les articles AYANT un seuil",
         "ok": true,
         "detail": null
@@ -3707,22 +3702,37 @@
     "nom": "Rôles, RBAC par écran, circuit du prélèvement et moteur de notification",
     "etapes": [
       {
-        "libelle": "« Laborantin » est devenu « Biologiste médical » jusqu’à la connexion",
+        "libelle": "« Laborantin » est devenu « Biologiste médical » au manifeste des rôles",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le poste d’ingénieur biomédical a disparu des écrans",
+        "libelle": "Le rôle d’ingénieur biomédical est supprimé : ni annuaire, ni manifeste, ni tableau de bord",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le caissier est « Dispensaire (Pharmacie) »",
+        "libelle": "Le caissier est « Dispensaire (Pharmacie) » à l’annuaire",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les trois profils créés ouvrent une session",
+        "libelle": "Les trois profils créés ouvrent une session (annuaire)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La page de connexion ne porte plus de sélecteur de profil de démonstration",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le pied « comptes ouverts par l’administrateur — 2 étapes — plan du site » est retiré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Identifiant et mot de passe ne sont plus pré-remplis",
         "ok": true,
         "detail": null
       },
@@ -4019,12 +4029,17 @@
         "detail": null
       },
       {
-        "libelle": "Aucune option du sélecteur ne répète le rôle après le nom (Bug 0)",
+        "libelle": "La connexion ne propose plus de sélecteur de profil",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Les trois nouveaux profils ouvrent une session",
+        "libelle": "Les trois nouveaux rôles figurent au manifeste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les trois nouveaux rôles ont un compte à l’annuaire",
         "ok": true,
         "detail": null
       },
@@ -5859,6 +5874,489 @@
       },
       {
         "libelle": "La nouvelle demande d’imagerie accepte un PRESCRIPTEUR EXTÉRIEUR : l’entrée existe et son champ libre n’apparaît que pour elle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 68 — agenda sur l’horloge réelle, vidage des jeux de test qui tient",
+    "etapes": [
+      {
+        "libelle": "L’horloge du banc a été avancée : le scénario mesure autre chose que la date du jeu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La fenêtre par défaut de l’agenda contient la date du jour de l’HORLOGE",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le formulaire « Nouveau rendez-vous » part de la date du jour, à l’heure locale",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le rendez-vous est enregistré — une consultation planifiée de plus, au bon dossier",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Il porte la date saisie, à l’heure locale — aucune dérive UTC",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Pris HORS de la fenêtre affichée, l’agenda étend sa fenêtre jusqu’à lui",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Et il est VISIBLE dans la grille, sans rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Réinitialiser le jeu de données » ouvre une confirmation qui EXIGE un motif et dit ce qui est conservé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le vidage retire les tables d’activité et pose le drapeau",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Après rechargement depuis la base, le vidage TIENT : plus de patient, de consultation, de facture ni d’écriture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’essentiel est conservé : droits, modules actifs, catalogues labo et imagerie, personnel, actes, grille des primes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal neuf commence par le vidage lui-même (RG-12)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Neuf écrans qui amorçaient leur collection ne régénèrent plus le jeu de démonstration",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucun de ces écrans ne tombe sur un répertoire vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le calendrier fiscal reconstruit ne porte AUCUN règlement inventé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un référentiel DÉRIVÉ d’un document — le calendrier fiscal — se reconstruit, lui",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Régénérer » rend le jeu COMPLET (parcours peuplé, maternité, GED, imagerie) et lève le drapeau de vidage",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Ce qui était né après le vidage ne survit pas à la régénération (clés absentes de la semence envoyées vides)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — exercice : pré-clôture, deux gestes, résultat, à-nouveaux et lecture seule",
+    "etapes": [
+      {
+        "libelle": "Le sélecteur d’exercice est dans l’en-tête de l’écran comptable, avec l’état de chaque exercice",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un lettrage qui ne s’annule pas est REFUSÉ en le disant ; un lettrage équilibré passe ; un dé-lettrage exige un motif",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "N+1 porte des à-nouveaux PROVISOIRES tant que N n’est pas clos : équilibrés, marqués, jamais stockés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La pré-clôture REFUSE en nommant le contrôle bloquant (brouillons restants)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La demande de clôture est refusée tant qu’un contrôle bloquant échoue",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une fois les brouillons validés et le journal équilibré, la demande de clôture est ACCEPTÉE (état « en attente »)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Signer n’est pas saisir : le demandeur ne valide pas sa propre clôture",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Seule la Direction ou la DAF valide ; une validation sans motif est refusée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La clôture validée fige l’exercice : état « clos », validateur et empreinte SHA-256 portés",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La clôture validée dépose SEULE son archive dans la GED (une fiche, avec l’empreinte de l’exercice figé)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les comptes de gestion (classes 6, 7, 8) sont SOLDÉS vers le résultat par une pièce équilibrée (RG-10)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les à-nouveaux de N+1 sont équilibrés et reprennent au franc les soldes de clôture des comptes non lettrables",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un compte de tiers est repris LIGNE À LIGNE : la facture due y est, le couple lettré n’y est pas",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un exercice clos est en LECTURE SEULE AU MOTEUR : création, modification et archivage refusés, aucune écriture ajoutée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Après la clôture, 2027 est ouvert et n’a plus d’à-nouveaux provisoires (les définitifs sont écrits)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’écran DIT que l’exercice affiché est clos et en lecture seule",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — Suivi des ventes : détail par patient et par secteur, Imagerie médicale",
+    "etapes": [
+      {
+        "libelle": "« Imagerie médicale » remplace « Échographie » comme secteur : groupes, normalisation (IRM, scanner, mammographie comprises) et ligne d’imagerie",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le jeu porte au moins deux patients vendus sur la période (matière de la sonde)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’onglet « Par patient » affiche une carte par patient sélectionné",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Chaque carte porte les SIX secteurs dans l’ordre arrêté, « Imagerie médicale » compris, et dit « aucune vente » pour un secteur vide",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le détail recoupe le magasin : autant de lignes affichées que de lignes facturées sur la période",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Point par patient » imprime une page par patient, secteurs en clair",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "« Point global » avec des clients retenus : le récapitulatif par groupe d’abord, puis une page par patient, les pourcentages en toutes lettres",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans client retenu, le point global reste ce qu’il était (aucune page patient)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — navigation sans rechargement du document",
+    "etapes": [
+      {
+        "libelle": "go() change d’écran SANS recharger le document (marqueur de fenêtre conservé)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’adresse suit l’écran (pushState)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une seule coquille après navigation (pas de barre ni de contenu en double)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un module jamais chargé sur ce document (M12) se charge à la demande et peint",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un lien du ruban ou du bandeau navigue aussi sans recharger",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le retour arrière du navigateur restaure l’écran précédent sans rechargement",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Quatre navigations enchaînées : toujours un seul document, une seule barre, aucune modale résiduelle",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’ancre d’onglet est portée par l’adresse",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un écran autonome (verrou) recharge le document, comme avant",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript durant la navigation",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse",
+    "etapes": [
+      {
+        "libelle": "L’écran « Tâches planifiées » lit le registre du serveur : six tâches, dont la sauvegarde et les échéances fiscales",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste lit les alertes ouvertes par le planificateur (échéances, stock, péremptions)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La cloche ne double jamais une alerte calculée par le poste ET par le serveur (clé unique)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le routage se fait AU SERVEUR : la réception ne reçoit ni échéance fiscale ni alerte de stock (RG-13)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Quand la cause cesse (échéances réglées), l’exécution résout l’alerte — elle disparaît de la cloche sans être supprimée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans session, le registre des tâches est refusé (401)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles",
+    "etapes": [
+      {
+        "libelle": "Les tables existent pour tous les modules : au moins quinze schémas de module",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Parité magasin ↔ tables : zéro écart sur toutes les collections",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Plus de cent collections projetées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur de projection récente",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une modification est suivie, et un champ inconnu du schéma est CONSERVÉ dans « extra » au lieu d’être perdu",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les lignes d’une facture ont leur table fille et la parité des lignes est vérifiée avec le reste",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "RG-14 : archiver ne supprime pas — la ligne reste en table avec son statut",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Après ces écritures, la parité reste à zéro écart",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sans session, le contrôle est refusé (401)",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état",
+    "etapes": [
+      {
+        "libelle": "La pastille d’état de la synchronisation est présente et dit « Synchronisé » sur un poste relié",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste A voit la fiche créée par le poste B sans geste ni rechargement, en moins de 8 secondes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Et sans que le document ait été rechargé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre affiché par le poste A montre la nouvelle fiche (recherche sur son nom)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une saisie en cours n’est pas repeinte : le champ garde sa valeur et un bandeau propose d’actualiser",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Serveur injoignable : la pastille passe à « Hors ligne » puis revient à « Synchronisé » au retour",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un poste ne relit pas ses propres écritures (aucun écho)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript côté poste A",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 70 — exercice : colonne N-1 du journal, archive de clôture dans la GED, MECeF et M9 qui suivent l’exercice",
+    "etapes": [
+      {
+        "libelle": "L’archive de clôture est déposée dans la GED : conservée dix ans, signée, empreinte SHA-256 et balance en CSV",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’archiver une seconde fois ne crée pas de seconde archive (une seule vérité à conserver)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bilan porte la colonne « Exercice 2027 (journal) » (actif ET passif) quand le journal tient l’exercice précédent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre fiscal MECeF porte le sélecteur d’exercice et ne montre que les factures de l’exercice choisi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture mensuelle assureur suit l’exercice : les mois sont ceux de 2025, plus « 2026 » écrit en dur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due",
         "ok": true,
         "detail": null
       },

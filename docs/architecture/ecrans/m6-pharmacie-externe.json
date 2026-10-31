@@ -1,0 +1,56 @@
+{
+ "id": "m6-pharmacie-externe",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Pharmacie externe — voie orale",
+ "acces": "ouvert",
+ "titre": "Pharmacie externe — voie orale",
+ "description": "Traitements par voie orale que le patient emporte : délivrance au comptoir sur ordonnance réglée.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Pharmacie externe — voie orale"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Tableau de bord stock",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Cette pharmacie sert les traitements par voie orale que le patient emporte. La distinction avec la pharmacie interne n’est pas administrative : les deux circuits n’ont ni le même justificatif de sortie, ni le même destinataire."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Lignes de cette pharmacie",
+  "À délivrer",
+  "Bloquées faute de règlement",
+  "Non couvertes par le stock"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Ordonnance",
+   "Date",
+   "Patient",
+   "Produit",
+   "Quantité",
+   "Posologie",
+   "Stock",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

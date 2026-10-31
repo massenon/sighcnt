@@ -1,0 +1,55 @@
+name: sigh_poste
+description: SIGH-CNT — poste de travail (fileul) et poste mère, Flutter desktop.
+publish_to: none
+version: 0.1.0+1
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+# Les versions sont volontairement non figées : `flutter pub get` les résout, puis on les fige.
+dependencies:
+  flutter:
+    sdk: flutter
+  sigh_sync:
+    path: ../../packages/sync_dart
+  sigh_domaine:
+    path: ../../packages/domaine
+  drift: any
+  sqlcipher_flutter_libs: any   # base locale chiffrée (SQLCipher)
+  http: any
+  lucide_icons_flutter: any   # les icônes Lucide de la maquette, mêmes noms
+  cryptography: any             # enveloppes chiffrées de bout en bout vers le relais
+  shelf: any                    # mode mère : serveur HTTP local
+  shelf_router: any
+  postgres: any                 # mode mère : PostgreSQL local
+  pdf: ^3.13.1
+  qr: any                       # le QR du lien de partage d'une enquête (encodeur local, aucune requête réseau)
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/donnees/
+    - assets/donnees/jeu/
+    - assets/img/
+    - assets/polices/pdf/
+  fonts:
+    # Chasse fixe du rouleau de caisse (la maquette demande ui-monospace/Consolas, absents hors Windows). Licence SIL OFL.
+    - family: LiberationMono
+      fonts:
+        - asset: assets/polices/pdf/LiberationMono-Regular.ttf
+        - asset: assets/polices/pdf/LiberationMono-Bold.ttf
+          weight: 700
+    # Inter, la police de la maquette (jetons : Inter, Segoe UI, system-ui). Licence SIL OFL 1.1.
+    - family: Inter
+      fonts:
+        - asset: assets/polices/Inter-Regular.otf
+        - asset: assets/polices/Inter-Medium.otf
+          weight: 500
+        - asset: assets/polices/Inter-SemiBold.otf
+          weight: 600
+        - asset: assets/polices/Inter-Bold.otf
+          weight: 700
+        - asset: assets/polices/Inter-Italic.otf
+          style: italic

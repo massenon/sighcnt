@@ -1,0 +1,59 @@
+{
+ "id": "m1-patients",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Répertoire des patients",
+ "acces": "ouvert",
+ "titre": "Répertoire des patients",
+ "description": "Dossier patient unique et centralisé : identification, coordonnées, couverture assurance, historique médical et financier.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Répertoire des patients"
+ ],
+ "actions": [
+  "Plan de numérisation",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les patients",
+  "Archivés"
+ ],
+ "kpis": [
+  "Dossiers actifs",
+  "Créés en 2026",
+  "Patients assurés",
+  "Cartes expirées"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Code dossier",
+   "Patient",
+   "Téléphone",
+   "Quartier",
+   "Groupe",
+   "Assurance",
+   "Créé le",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les patients210",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

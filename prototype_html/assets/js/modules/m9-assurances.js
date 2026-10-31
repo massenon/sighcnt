@@ -11,7 +11,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function assureurs() { return S.collection('assureurs').active(); }
   function patients() { return S.collection('patients').active(); }
@@ -1223,7 +1223,9 @@
         searchPlaceholder: 'Nom de la compagnie…', placeholder: 'Choisir une compagnie',
       });
       var selMois = el('select.select');
-      for (var m = 0; m < 12; m++) selMois.appendChild(el('option', { value: String(m) }, C.MOIS[m] + ' 2026'));
+      /* L'année suit l'EXERCICE choisi (sélecteur de l'en-tête) : la facture mensuelle de juillet 2025 n'est pas celle de juillet 2026. */
+      var ANNEE = global.SIGH.exercice ? global.SIGH.exercice.choisi() : AUJ.getFullYear();
+      for (var m = 0; m < 12; m++) selMois.appendChild(el('option', { value: String(m) }, C.MOIS[m] + ' ' + ANNEE));
       selMois.value = String(AUJ.getMonth());
 
       var barre = el('div.card');
@@ -1248,7 +1250,7 @@
         var code = selAssureur.value, mois = Number(selMois.value);
         return facturesAssurance().filter(function (f) {
           var d = C.toDate(f.date);
-          return f.assureur === code && d.getMonth() === mois && d.getFullYear() === 2026;
+          return f.assureur === code && d.getMonth() === mois && d.getFullYear() === ANNEE;
         });
       }
 
@@ -1396,7 +1398,7 @@
               + 'La pièce peut être transmise.', { tone: 'success', icon: 'check-circle-2' }));
 
           box.appendChild(U.dataTable({
-            title: 'Facture mensuelle — ' + assureurNom(selAssureur.value) + ', ' + C.MOIS[Number(selMois.value)] + ' 2026',
+            title: 'Facture mensuelle — ' + assureurNom(selAssureur.value) + ', ' + C.MOIS[Number(selMois.value)] + ' ' + ANNEE,
             rows: groupes, exportName: 'facture-mensuelle', pageSize: 20,
             columns: [
               {
@@ -1459,9 +1461,9 @@
         });
         P.etat({
           titre: 'Relevé des prestations de la clinique',
-          sousTitre: assureurNom(selAssureur.value) + ' — ' + C.MOIS[Number(selMois.value)] + ' 2026',
+          sousTitre: assureurNom(selAssureur.value) + ' — ' + C.MOIS[Number(selMois.value)] + ' ' + ANNEE,
           cartouche: [['Compagnie', assureurNom(selAssureur.value)],
-            ['Période', C.MOIS[Number(selMois.value)] + ' 2026'],
+            ['Période', C.MOIS[Number(selMois.value)] + ' ' + ANNEE],
             ['Souscripteurs', C.num(groupes.length)],
             ['Assurés', C.num(C.sum(groupes, function (g) { return g.patients.length; }))],
             ['Total facturé', C.money(C.sum(groupes, 'total'))],
@@ -1476,14 +1478,14 @@
         var groupes = parSouscripteur();
         if (!groupes.length) { U.toast('Aucune prestation à facturer sur ce mois.', { type: 'warning' }); return; }
         var mois = Number(selMois.value);
-        var numero = 'FA ' + C.pad(groupes.length + 140, 3) + '/' + C.pad(mois + 1, 2) + '/CNT/2026';
+        var numero = 'FA ' + C.pad(groupes.length + 140, 3) + '/' + C.pad(mois + 1, 2) + '/CNT/' + ANNEE;
         var totalAssureur = C.sum(groupes, 'assureur');
         P.etat({
           titre: 'Facture — prestations de santé',
           sousTitre: numero + ' — ' + assureurNom(selAssureur.value),
           cartouche: [['Facture n°', numero],
             ['Compagnie', assureurNom(selAssureur.value)],
-            ['Période', C.MOIS[mois] + ' 2026'],
+            ['Période', C.MOIS[mois] + ' ' + ANNEE],
             ['Souscripteurs', C.num(groupes.length)],
             ['Assurés concernés', C.num(C.sum(groupes, function (g) { return g.patients.length; }))],
             ['RCCM', C.BRAND.rccm]],
@@ -1538,8 +1540,11 @@
       var selAssureur = U.combo([{ value: '', label: 'Toutes les compagnies' }].concat(
         D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom, detail: a.code }; })
       ), { value: '', placeholder: 'Toutes les compagnies' });
-      var debut = el('input.input', { type: 'date', value: C.iso(C.addDays(AUJ, -180)) });
-      var fin = el('input.input', { type: 'date', value: C.iso(AUJ) });
+      /* Un exercice AUTRE que l'année en cours ouvre l'historique sur cet exercice entier. */
+      var fx = global.SIGH.exercice ? global.SIGH.exercice.fenetre() : null;
+      var horsCourant = fx && fx.annee !== AUJ.getFullYear();
+      var debut = el('input.input', { type: 'date', value: horsCourant ? fx.debut : C.iso(C.addDays(AUJ, -180)) });
+      var fin = el('input.input', { type: 'date', value: horsCourant ? fx.fin : C.iso(AUJ) });
       var vue = el('div.space-y-4');
 
       var barre = el('div.card');
@@ -1844,13 +1849,21 @@
       var col = S.collection('relances', { module: 'M9', entite: 'Relance' });
       var host = el('div.space-y-4');
       var table;
-
-      host.appendChild(U.kpiGrid([
+      /* LES INDICATEURS SUIVENT LE REGISTRE (30/10/2026) : ils étaient construits UNE fois à l'ouverture — une relance créée, corrigée ou
+         archivée rafraîchissait le tableau et laissait les quatre compteurs à leur valeur d'origine (constaté en pilotant l'écran). */
+      var kpiHost = el('div');
+      host.appendChild(kpiHost);
+      function peindreKpis() {
+        C.clear(kpiHost);
+        kpiHost.appendChild(U.kpiGrid([
         { label: 'Relances émises', value: C.num(col.active().length), icon: 'send', tone: 'navy' },
         { label: 'En attente de réponse', value: C.num(col.active().filter(function (r) { return r.statutRelance === 'en_attente'; }).length), icon: 'clock', tone: 'warning' },
         { label: 'Régularisées', value: C.num(col.active().filter(function (r) { return r.statutRelance === 'regularisee'; }).length), icon: 'check-circle-2', tone: 'success' },
         { label: 'Montant relancé', value: C.money(C.sum(col.active(), 'montant')), icon: 'hand-coins', tone: 'info' },
       ]));
+        U.icons(kpiHost);
+      }
+      peindreKpis();
 
       table = U.dataTable({
         title: 'Registre des relances',
@@ -1893,12 +1906,12 @@
             /* Une relance se corrige : montant réévalué, niveau qui monte,
                suite donnée par la compagnie. */
             K.iconBtn('pencil', 'Modifier la relance', function () {
-              K.modifier(col, champsRelance(), r, function () { table.refresh(); });
+              K.modifier(col, champsRelance(), r, function () { table.refresh(); peindreKpis(); });
             }),
             K.iconBtn('archive', 'Archiver', function () {
               var res = col.archive(r.id);
-              table.refresh();
-              U.toast('Relance archivée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+              table.refresh(); peindreKpis();
+              U.toast('Relance archivée.', { type: 'success', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
             }, 'ghost'),
           ];
         },
@@ -1961,8 +1974,8 @@
                 v.reference = C.nextRef('REL-', 4);
                 v.statutRelance = 'en_attente';
                 var res = col.insert(v);
-                m.close(); table.refresh();
-                U.toast('Relance ' + v.reference + ' enregistrée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                m.close(); table.refresh(); peindreKpis();
+                U.toast('Relance ' + v.reference + ' enregistrée.', { type: 'success', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
                 etat(res.record);
               },
             }),
@@ -2030,6 +2043,95 @@
   function colFactureMere() {
     return S.collection('facturesMere', { module: 'M9', entite: 'facture mère', prefix: 'FM' });
   }
+
+  /* ==========================================================================
+   * LES RÈGLEMENTS D'UNE FACTURE MÈRE SONT CUMULATIFS ET DATÉS (décision de la Direction du 31/10/2026, B5 ; écart E501)
+   * --------------------------------------------------------------------------
+   * Le règlement REMPLAÇAIT le précédent : 1 000 puis 29 140 sur 30 140 laissait un reliquat de 1 000 et la pièce « Transmise ».
+   * Un règlement partiel s'ADDITIONNE (lettrage). La pièce porte désormais ses LIGNES DE RÈGLEMENT (date, montant, référence du
+   * virement ou du chèque, écritures) ; le solde est la facture moins la SOMME des règlements ; la pièce est soldée à zéro ; un
+   * règlement ne dépasse jamais le dû ; chaque règlement pose sa propre écriture : débit 521000 Banque, crédit 411110 Clients
+   * compagnie d'assurance, en brouillon (RG-10 contrôlé avant écriture). La pièce émise n'est pas réécrite : on lui AJOUTE une ligne.
+   * ======================================================================== */
+  /** Les règlements d'une mère. Les pièces de l'ancienne génération (un seul `montantRegle`) se lisent comme un règlement. */
+  function reglementsDe(m) {
+    if (m.reglements) return m.reglements;
+    return m.montantRegle ? [{ date: m.dateReglement, montant: m.montantRegle, reference: m.referenceReglement || '', ancien: true }] : [];
+  }
+  function totalRegle(m) { return C.sum(reglementsDe(m), 'montant'); }
+  function resteDuMere(m) { return Math.max(0, (m.montantReclame || 0) - totalRegle(m)); }
+
+  /** Enregistre UN règlement. Retourne { record, reglement, ecritureIds, solde } ou { erreur } (un refus se nomme). */
+  function reglerFactureMere(mereId, params) {
+    params = params || {};
+    var col = colFactureMere();
+    var m = col.get(mereId);
+    if (!m) return { erreur: 'Facture mère introuvable.' };
+    var reste = resteDuMere(m);
+    if (m.etat === 'reglee' || reste <= 0) {
+      return { erreur: 'La facture mère ' + m.numero + ' est déjà soldée : aucun règlement de plus.' };
+    }
+    var montant = Number(params.montant);
+    if (!(montant > 0)) return { erreur: 'Le montant d\u2019un règlement doit être strictement supérieur à 0 FCFA.' };
+    if (montant > reste) {
+      return { erreur: 'Règlement refusé : ' + C.money(montant) + ' dépasseraient le dû de ' + m.numero
+        + ' (' + C.money(reste) + ' restent à régler sur ' + C.money(m.montantReclame) + ').' };
+    }
+    var date = params.date ? String(params.date).slice(0, 10) : '';
+    if (!date) return { erreur: 'La date du règlement est obligatoire.' };
+    var reference = String(params.reference || '').trim();
+    if (!reference) return { erreur: 'La référence du virement ou du chèque est obligatoire.' };
+
+    /* L'écriture : débit banque, crédit créance sur la compagnie (qui diminue du montant réglé). */
+    var colEcr = S.collection('ecritures', { module: 'M12', entite: 'écriture' });
+    var annee = date.slice(0, 4);
+    var prefixe = 'BQ-' + annee + '-';
+    var max = 0;
+    colEcr.all().forEach(function (e) {
+      if (typeof e.numero === 'string' && e.numero.indexOf(prefixe) === 0) {
+        max = Math.max(max, parseInt(e.numero.slice(prefixe.length), 10) || 0);
+      }
+    });
+    var base = {
+      numero: prefixe + C.pad(max + 1, 5), date: date,
+      journal: 'BQ', journalLibelle: 'Journal de banque',
+      libelle: 'Règlement facture mère ' + m.numero + ', ' + (m.compagnie || '') + ' (réf. ' + reference + ')',
+      pieceId: m.id, pieceNumero: m.numero,
+      origine: 'Règlement de facture mère',
+      statut: 'brouillon',
+    };
+    var lignes = [
+      Object.assign({}, base, { compte: '521000', compteLibelle: 'Banque', debit: montant, credit: 0 }),
+      Object.assign({}, base, { compte: '411110', compteLibelle: 'Clients compagnie d\u2019assurance', debit: 0, credit: montant }),
+    ];
+    if (C.sum(lignes, 'debit') !== C.sum(lignes, 'credit')) {
+      return { erreur: 'RG-10 : écriture de règlement déséquilibrée, rien n\u2019est écrit.' };
+    }
+    var ids = lignes.map(function (l) { return colEcr.insert(l).record.id; });
+
+    var deja = reglementsDe(m);
+    var reglement = {
+      id: 'RGL' + C.pad(deja.length + 1, 3), date: date, montant: montant, reference: reference,
+      ecritureIds: ids, numeroEcriture: base.numero, saisiPar: S.currentUser(),
+      horodatage: new Date().toISOString(),
+    };
+    var tous = deja.concat([reglement]);
+    var regle = C.sum(tous, 'montant');
+    var nouveauReste = Math.max(0, m.montantReclame - regle);
+    col.update(m.id, {
+      reglements: tous,
+      montantRegle: regle,
+      reliquat: nouveauReste,
+      dateReglement: date,
+      referenceReglement: reference,
+      etat: nouveauReste <= 0 ? 'reglee' : 'transmise',
+    });
+    S.log('Règlement de facture mère', 'M9', 'FactureMere', m.numero, null,
+      { montant: montant, reference: reference, reste: nouveauReste });
+    return { record: col.get(m.id), reglement: reglement, ecritureIds: ids, solde: nouveauReste <= 0 };
+  }
+  /* Exposé pour la sonde fonctionnelle : le scénario appelle le moteur, pas une copie de sa logique. */
+  global.SIGH.reglerFactureMere = reglerFactureMere;
 
   var PERIODES_MERE = [
     { code: 'mois', label: 'Mensuelle', jours: 30 },
@@ -2338,6 +2440,10 @@
             { key: 'nbFactures', label: 'Pièces filles', align: 'right' },
             { key: 'montantReclame', label: 'Réclamé', align: 'right',
               render: function (r) { return C.money(r.montantReclame); } },
+            { key: 'regle', label: 'Réglé', align: 'right',
+              render: function (r) { return C.money(totalRegle(r)); } },
+            { key: 'reste', label: 'Reste dû', align: 'right',
+              render: function (r) { return C.money(resteDuMere(r)); } },
             { key: 'etat', label: 'État', render: function (r) {
               return r.etat === 'reglee' ? U.badge('Réglée', 'success')
                 : U.badge('Transmise', 'warning');
@@ -2361,8 +2467,15 @@
                     ['Souscripteurs', C.num(r.nbSouscripteurs)],
                     ['Pièces filles', C.num(r.nbFactures)],
                     ['Montant réclamé', C.money(r.montantReclame)],
+                    ['Réglé à ce jour', C.money(totalRegle(r))],
+                    ['Reste dû', C.money(resteDuMere(r))],
                     ['État', r.etat === 'reglee' ? 'Réglée le ' + C.dateFR(r.dateReglement) : 'Transmise'],
                   ]),
+                  K.section('Règlements enregistrés',
+                    K.miniTable(['Date', 'Référence', 'Montant'],
+                      reglementsDe(r).map(function (x) {
+                        return [C.dateFR(x.date), x.reference || 'Non précisée', C.money(x.montant)];
+                      }))),
                   K.section('Souscripteurs consolidés',
                     K.miniTable(['Souscripteur', 'Pièces', 'Part réclamée'],
                       (r.souscripteurs || []).map(function (x) {
@@ -2434,16 +2547,18 @@
       }
 
       function regler(r) {
+        var reste = resteDuMere(r);
         var f = U.form([
           { name: 'dateReglement', label: 'Date du règlement', type: 'date', required: true },
           { name: 'montantRegle', label: 'Montant réglé (FCFA)', type: 'money', required: true,
-            value: r.montantReclame,
-            hint: 'Un règlement partiel se saisit tel quel : le reliquat reste en créance.' },
+            value: reste,
+            hint: 'Un règlement partiel s\u2019ADDITIONNE aux précédents : le reste dû diminue, la pièce est soldée à zéro. Jamais plus que le dû.' },
           { name: 'reference', label: 'Référence du virement ou du chèque', type: 'text', required: true },
         ], { dateReglement: C.iso(AUJ) });
         var m = U.modal({
           title: 'Règlement de ' + r.numero,
-          subtitle: r.compagnie + ' — ' + C.money(r.montantReclame) + ' réclamés',
+          subtitle: r.compagnie + ' : ' + C.money(r.montantReclame) + ' réclamés, ' + C.money(totalRegle(r)) + ' déjà réglés, '
+            + C.money(reste) + ' restent dus',
           body: f,
           footer: [
             K.btn('Annuler', { onclick: function () { m.close(); } }),
@@ -2451,19 +2566,13 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-                var reste = r.montantReclame - v.montantRegle;
-                colFactureMere().update(r.id, {
-                  dateReglement: v.dateReglement, montantRegle: v.montantRegle,
-                  referenceReglement: v.reference,
-                  reliquat: reste,
-                  /* Une pièce n'est « réglée » que si elle l'est entièrement :
-                     un règlement partiel laisse la créance ouverte. */
-                  etat: reste <= 0 ? 'reglee' : 'transmise',
-                });
+                var res = reglerFactureMere(r.id, { date: v.dateReglement, montant: v.montantRegle, reference: v.reference });
+                if (res.erreur) { U.toast('Règlement refusé.', { type: 'error', detail: res.erreur, duration: 9000 }); return; }
+                var restant = res.record.reliquat;
                 m.close(); afficher();
-                U.toast(reste <= 0 ? 'Facture mère soldée.'
-                  : 'Règlement partiel enregistré — ' + C.money(reste) + ' restent en créance.',
-                { type: reste <= 0 ? 'success' : 'warning', detail: r.numero });
+                U.toast(res.solde ? 'Facture mère soldée.'
+                  : 'Règlement partiel enregistré : ' + C.money(restant) + ' restent en créance.',
+                { type: res.solde ? 'success' : 'warning', detail: r.numero });
               } }),
           ],
         });

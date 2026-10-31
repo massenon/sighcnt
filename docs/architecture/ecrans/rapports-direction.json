@@ -1,0 +1,47 @@
+{
+ "id": "rapports-direction",
+ "module": "RAP",
+ "domaine": "Administration",
+ "libelleManifeste": "États de la Direction",
+ "acces": "ouvert",
+ "titre": "États de la Direction",
+ "description": "Points de vente et de caisse par période et par axe d’analyse, avec cumuls et impression.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Rapports & Impression",
+  "États de la Direction"
+ ],
+ "actions": [
+  "Bibliothèque des états",
+  "Générateur de rapports",
+  "Rapports & Impression"
+ ],
+ "regle": [
+  "Cumul global : 0 FCFA sur 0 unité(s) vendue(s), 0 poste(s) d’analyse."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Point mensuel",
+  "Encaissé",
+  "Pièces émises",
+  "Postes — client"
+ ],
+ "cartes": [
+  "Point mensuel — par client"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Éditer l’état",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Périodicité",
+  "Arrêté au",
+  "Axe d’analyse",
+  "Cumul détaillé"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

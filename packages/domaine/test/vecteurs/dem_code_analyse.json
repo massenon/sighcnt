@@ -1,0 +1,84 @@
+{
+ "_doc": "PR.codeAnalyse(date) : série annuelle NNNNN-AAAA",
+ "anneeCourante": 2026,
+ "cas": [
+  {
+   "nom": "registre vide",
+   "codes": [],
+   "date": "2026-10-30",
+   "attendu": "00001-2026"
+  },
+  {
+   "nom": "série 2026 : le plus grand rang + 1 (pas le nombre de fiches)",
+   "codes": [
+    "00003-2026",
+    "00012-2026",
+    "00007-2026"
+   ],
+   "date": "2026-10-30T10:00:00",
+   "attendu": "00013-2026"
+  },
+  {
+   "nom": "une autre année repart à 1",
+   "codes": [
+    "00003-2026",
+    "00012-2026"
+   ],
+   "date": "2027-01-05",
+   "attendu": "00001-2027"
+  },
+  {
+   "nom": "les rangs de l'année demandée seuls comptent",
+   "codes": [
+    "00099-2025",
+    "00004-2026",
+    "00050-2027"
+   ],
+   "date": "2026-03-01",
+   "attendu": "00005-2026"
+  },
+  {
+   "nom": "format invalide ignoré (4 chiffres, suffixe)",
+   "codes": [
+    "0012-2026",
+    "00020-2026X",
+    "LAB-00030",
+    "00005-2026"
+   ],
+   "date": "2026-06-01",
+   "attendu": "00006-2026"
+  },
+  {
+   "nom": "fiche sans code ignorée",
+   "codes": [
+    ""
+   ],
+   "date": "2026-06-01",
+   "attendu": "00001-2026"
+  },
+  {
+   "nom": "date invalide : l'année en cours",
+   "codes": [
+    "00001-2026"
+   ],
+   "date": "pas une date",
+   "attendu": "00002-2026"
+  },
+  {
+   "nom": "rang à 5 chiffres complété de zéros",
+   "codes": [
+    "00099-2026"
+   ],
+   "date": "2026-12-31",
+   "attendu": "00100-2026"
+  },
+  {
+   "nom": "au-delà de 99999 : six chiffres (padStart ne tronque pas)",
+   "codes": [
+    "99999-2026"
+   ],
+   "date": "2026-12-31",
+   "attendu": "100000-2026"
+  }
+ ]
+}

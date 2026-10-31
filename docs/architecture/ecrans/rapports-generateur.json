@@ -1,0 +1,59 @@
+{
+ "id": "rapports-generateur",
+ "module": "RAP",
+ "domaine": "Administration",
+ "libelleManifeste": "Générateur de rapports",
+ "acces": "ouvert",
+ "titre": "Générateur de rapports",
+ "description": "Composition d’un rapport personnalisé : périmètre, période, indicateurs et mise en forme.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Rapports & Impression",
+  "Générateur de rapports"
+ ],
+ "actions": [
+  "Bibliothèque des états",
+  "États de la Direction",
+  "Rapports & Impression"
+ ],
+ "regle": [
+  "Activité — patients, consultations, hospitalisations",
+  "Financier — chiffre d’affaires, encaissements, créances",
+  "Stock — valeur, alertes, péremptions"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Paramètres du rapport",
+  "Sections à inclure",
+  "Génération",
+  "Modèles enregistrés"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Prévisualiser et imprimer",
+  "Rapport d’activité mensuelDirection",
+  "Situation des stocksGestion des stocks",
+  "Rapport financier trimestrielDirection",
+  "Bilan socialRessources humaines"
+ ],
+ "champs": [
+  "Titre du rapport *",
+  "Sous-titre",
+  "Destinataire",
+  "Période *",
+  "Du",
+  "Au",
+  "Filigrane",
+  "Activité — patients, consultations, hospitalisations",
+  "Financier — chiffre d’affaires, encaissements, créances",
+  "Stock — valeur, alertes, péremptions",
+  "Laboratoire — analyses réalisées, réactifs",
+  "Ressources humaines — effectif, masse salariale, présences",
+  "Comptabilité — journaux, balance, résultat",
+  "Assurances — prises en charge et créances"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

@@ -1,0 +1,30 @@
+{
+ "id": "hub-cfg",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Configuration Clinique",
+ "acces": "ouvert",
+ "titre": "Configuration Clinique",
+ "description": "Tous les écrans du module CFG — Configuration Clinique.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Sécurité & Utilisateurs"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

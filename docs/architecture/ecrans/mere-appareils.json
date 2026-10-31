@@ -1,0 +1,52 @@
+{
+ "id": "mere-appareils",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Appareils et appairage",
+ "acces": "ouvert",
+ "titre": "Appareils et appairage",
+ "description": "Postes fileuls et mobiles de la clinique : contact, retard, horloge, version ; appairer, révoquer, débloquer.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation",
+  "Appareils et appairage"
+ ],
+ "actions": [
+  "Supervision",
+  "Conflits et doublons",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Appareils actifs",
+  "Postes fileuls",
+  "Mobiles",
+  "Horloge à vérifier"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Appareil",
+   "Type",
+   "Agent",
+   "Dernier contact",
+   "Retard",
+   "Horloge",
+   "Version",
+   "État"
+  ]
+ ],
+ "commandes": [
+  "Appairer un poste",
+  "Appairer un mobile",
+  "Renvoyer vers tous",
+  "Révoquer"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

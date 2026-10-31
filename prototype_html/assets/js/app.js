@@ -39,8 +39,191 @@
      la préférence durable de l'utilisateur n'est jamais écrasée. */
   function go(id, opts) {
     try { S.storage.set(RUBAN_TRANSIT, '1'); } catch (e) { /* stockage indisponible */ }
+    if (naviguerSansRecharger(id, opts)) return;
     global.location.href = href(id, opts);
   }
+
+  /* ==========================================================================
+   * NAVIGATION SANS RECHARGEMENT (vague 69)
+   * --------------------------------------------------------------------------
+   * Le document reste le même d'un écran à l'autre : le magasin n'est pas
+   * re-téléchargé, les scripts ne sont pas ré-évalués. Quatre garanties :
+   *  - le module de l'écran visé se charge À LA DEMANDE, une seule fois ;
+   *  - tout ce que l'écran précédent a posé (écouteurs du document, minuteries,
+   *    tiroirs, modales, messages) est DÉMONTÉ avant de peindre le suivant ;
+   *  - l'adresse change (pushState) : le retour arrière et les liens profonds
+   *    gardent leur sens ;
+   *  - au moindre doute — pas de session, écran autonome, module introuvable,
+   *    fichier ouvert en local — on RECHARGE comme avant. Le repli est la règle.
+   * ======================================================================== */
+  var NETTOYAGES = [];
+  var _spaOccupe = false;
+  var _spaChargés = {};
+  /** Pose un écouteur que le démontage retirera. */
+  function ecoute(cible, ev, fn, opts) {
+    cible.addEventListener(ev, fn, opts);
+    NETTOYAGES.push(function () { cible.removeEventListener(ev, fn, opts); });
+  }
+  function enDernier(fn) { NETTOYAGES.push(fn); }
+  function demonter() {
+    var racine = document.getElementById('page-content');
+    if (racine) { try { racine.dispatchEvent(new Event('sigh:unmount')); } catch (e) { /* sans importance */ } }
+    if (U && U.fermerCouches) { try { U.fermerCouches(); } catch (e) { /* sans importance */ } }
+    var nets = NETTOYAGES; NETTOYAGES = [];
+    nets.forEach(function (n) { try { n(); } catch (e) { /* un nettoyage ne bloque pas les autres */ } });
+    Array.prototype.slice.call(document.body.children).forEach(function (n) {
+      if (n.tagName !== 'SCRIPT') document.body.removeChild(n);
+    });
+  }
+  function spaPermise() {
+    if (global.__SIGH_SANS_SPA || _spaOccupe) return false;
+    if (global.location.protocol === 'file:') return false;
+    try { if (S.storage.get('sigh-cnt:spa') === 'off') return false; } catch (e) { /* stockage indisponible */ }
+    return !!(PAGE && !PAGE.standalone && S.session() && global.fetch && global.history && global.history.pushState);
+  }
+  function chargerScript(src) {
+    if (_spaChargés[src]) return _spaChargés[src];
+    _spaChargés[src] = new Promise(function (ok, ko) {
+      var deja = Array.prototype.some.call(document.scripts, function (x) { return x.src && x.src.replace(/\?.*$/, '').slice(-src.length) === src; });
+      if (deja) return ok();
+      var sc = document.createElement('script');
+      sc.src = base() + src; sc.async = false;
+      sc.onload = function () { ok(); };
+      sc.onerror = function () { delete _spaChargés[src]; ko(new Error('module introuvable : ' + src)); };
+      document.body.appendChild(sc);
+    });
+    return _spaChargés[src];
+  }
+  /** Le fichier de module d'un écran se lit dans SA page engendrée : une seule source (gen-pages). */
+  var _fichiersParEcran = {};
+  function fichiersDeModule(id) {
+    if (_fichiersParEcran[id]) return global.Promise.resolve(_fichiersParEcran[id]);
+    return global.fetch(href(id), { credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error('page ' + id + ' : ' + r.status);
+      return r.text();
+    }).then(function (html) {
+      var out = [], re = /assets\/js\/(modules\/[\w-]+\.js)/g, m;
+      while ((m = re.exec(html))) out.push(m[1]);
+      _fichiersParEcran[id] = out;
+      return out;
+    });
+  }
+  function ecranEntier(id, opts, pousser, garderDefilement) {
+    var entry = N.get(id);
+    return fichiersDeModule(id).then(function (fichiers) {
+      return fichiers.reduce(function (p, f) { return p.then(function () { return chargerScript('assets/js/' + f); }); }, Promise.resolve());
+    }).then(function () {
+      var def = SCREENS[id];
+      if (def && def.standalone) throw new Error('écran autonome');
+      if (!N.can(S.session().role, entry)) throw new Error('accès refusé');
+      demonter();
+      PAGE = null; _boote = false;
+      if (pousser) global.history.pushState({ sigh: id }, '', href(id, opts));
+      var y = garderDefilement ? (global.scrollY || 0) : 0;
+      if (!garderDefilement) global.scrollTo(0, 0);
+      monterVraiment(id);
+      boot();
+      if (garderDefilement) global.scrollTo(0, y);
+      return true;
+    });
+  }
+  function naviguerSansRecharger(id, opts) {
+    var entry = N.get(id);
+    if (!entry || id === 'index' || !spaPermise()) return false;
+    if (/^(auth-|error-|enquete-publique)/.test(id)) return false;
+    _spaOccupe = true;
+    ecranEntier(id, opts, true).then(function () { _spaOccupe = false; }, function (e) {
+      _spaOccupe = false;
+      if (global.console && global.console.warn) global.console.warn('[SIGH] Navigation sans rechargement impossible, rechargement :', e);
+      global.location.href = href(id, opts);
+    });
+    return true;
+  }
+  /* ==========================================================================
+   * DONNÉES VENUES D'UN AUTRE POSTE (vague 70)
+   * --------------------------------------------------------------------------
+   * Le magasin vient de relire des collections qu'un autre poste a modifiées.
+   * L'écran ouvert les montre-t-il ? On le repeint SEULEMENT si cela ne coûte
+   * rien à l'agent : pas de boîte de dialogue ouverte, pas de champ en cours de
+   * saisie, pas deux repeints à moins de quatre secondes. Sinon un bandeau
+   * discret le dit et laisse l'agent actualiser quand il le décide — repeindre
+   * sous les doigts de quelqu'un qui tape est le plus sûr moyen de perdre sa saisie.
+   * ======================================================================== */
+  var _derniereRelecture = 0;
+  function rafraichirEcran() {
+    if (!PAGE || PAGE.standalone || !spaPermise()) return false;
+    _spaOccupe = true;
+    ecranEntier(PAGE.id, optsDeLien(global.location), false, true).then(function () { _spaOccupe = false; }, function () {
+      _spaOccupe = false; global.location.reload();
+    });
+    _derniereRelecture = Date.now();
+    return true;
+  }
+  function surDonneesDistantes(noms) {
+    if (!PAGE || PAGE.standalone) return;
+    var racine = document.getElementById('page-content');
+    var a = document.activeElement;
+    var saisie = !!(a && racine && racine.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+    var dialogue = !!document.querySelector('[role="dialog"]');
+    if (!dialogue && !saisie && Date.now() - _derniereRelecture > 4000 && rafraichirEcran()) return;
+    if (document.getElementById('bandeau-donnees-distantes')) return;
+    var b = el('div#bandeau-donnees-distantes.no-print', { role: 'status',
+      style: 'position:fixed;right:16px;bottom:16px;z-index:60;max-width:320px;padding:10px 14px;border-radius:10px;background:#0b2a4a;color:#fff;font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.25);display:flex;gap:10px;align-items:center' },
+    [el('span', { text: 'Des données ont été modifiées sur un autre poste.' }),
+      el('button', { type: 'button', text: 'Actualiser', style: 'background:#fff;color:#0b2a4a;border-radius:6px;padding:4px 10px;font-weight:600;white-space:nowrap',
+        onclick: function () { if (b.parentNode) b.parentNode.removeChild(b); rafraichirEcran(); } })]);
+    document.body.appendChild(b);
+  }
+  /** La pastille d'état de la synchronisation : toujours là, jamais muette. */
+  function pastilleSync() {
+    var p = el('span#pastille-sync', { role: 'status',
+      style: 'display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:11px;font-weight:600;white-space:nowrap;background:rgba(255,255,255,.12);color:#fff' });
+    var point = el('span', { style: 'width:8px;height:8px;border-radius:50%;background:#94a3b8' });
+    var texte = el('span', { text: 'Mode local' });
+    p.appendChild(point); p.appendChild(texte);
+    function peindre() {
+      var e = S.etatSync ? S.etatSync() : null;
+      var couleur = '#94a3b8', libelle = 'Mode local', titre = 'Les données restent dans ce navigateur : aucun serveur joint.';
+      if (e && e.actif) {
+        var age = e.dernierSucces ? Math.round((Date.now() - e.dernierSucces) / 1000) : null;
+        if (e.ok === false) {
+          var min = e.depuisKO ? Math.max(1, Math.round((Date.now() - e.depuisKO) / 60000)) : 1;
+          couleur = '#ef4444'; libelle = 'Hors ligne depuis ' + min + ' min' + (e.enAttente ? ' — ' + e.enAttente + ' geste(s) en attente' : '');
+          titre = 'Le serveur de la clinique ne répond pas. Vos saisies sont gardées et partiront au retour du serveur.';
+        } else if (age !== null && age > 20) {
+          couleur = '#f59e0b'; libelle = 'Synchronisé il y a ' + age + ' s'; titre = 'Dernier échange avec le serveur il y a ' + age + ' secondes.';
+        } else {
+          couleur = '#22c55e'; libelle = e.enAttente ? 'Envoi en cours…' : 'Synchronisé';
+          titre = 'Les données de ce poste suivent celles des autres postes (échange toutes les 3 secondes).';
+        }
+      }
+      point.style.background = couleur; texte.textContent = libelle; p.setAttribute('title', titre);
+      /* Sur téléphone, le point seul : la barre du haut ne doit pas déborder (le libellé reste dans l'infobulle). */
+      texte.style.display = global.innerWidth < 640 ? 'none' : '';
+    }
+    peindre();
+    var t = global.setInterval(peindre, 2000);
+    enDernier(function () { global.clearInterval(t); });
+    return p;
+  }
+
+  function idDeLien(a) {
+    var m = /\/pages\/([\w-]+)\.[a-z]+(?:[?#].*)?$/i.exec(a.pathname + (a.hash || ''));
+    return m && N.get(m[1]) ? m[1] : null;
+  }
+  function optsDeLien(a) {
+    var h = (a.hash || '').replace(/^#/, ''), o = {};
+    h.split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) o[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ''); });
+    return o;
+  }
+  /* Retour / avance du navigateur : l'écran de l'adresse revient, sans rechargement. */
+  global.addEventListener('popstate', function (ev) {
+    if (!(ev.state && ev.state.sigh) || !spaPermise()) return;
+    _spaOccupe = true;
+    ecranEntier(ev.state.sigh, optsDeLien(global.location), false).then(function () { _spaOccupe = false; }, function () {
+      _spaOccupe = false; global.location.reload();
+    });
+  });
 
   /* --- Session ------------------------------------------------------------ */
   function requireSession() {
@@ -111,8 +294,9 @@
       minuteur = global.setTimeout(verrouiller, delaiVerrou());
     }
     ['mousedown', 'keydown', 'touchstart', 'scroll', 'focus'].forEach(function (ev) {
-      global.addEventListener(ev, relancer, { passive: true, capture: true });
+      ecoute(global, ev, relancer, { passive: true, capture: true });
     });
+    enDernier(function () { if (minuteur) global.clearTimeout(minuteur); });
     relancer();
   }
 
@@ -279,7 +463,7 @@
        page, le panneau se replie de lui-même et rend toute la hauteur au
        contenu. Ce repli automatique ne modifie pas la préférence enregistrée. */
     var dernierY = 0;
-    global.addEventListener('scroll', function () {
+    ecoute(global, 'scroll', function () {
       var y = global.scrollY || document.documentElement.scrollTop || 0;
       if (y > 120 && y > dernierY && !panneau.hidden) basculer(false, false);
       dernierY = y;
@@ -287,7 +471,7 @@
 
     /* Échap referme le panneau — sauf si une boîte de dialogue est ouverte,
        auquel cas la touche lui revient. */
-    document.addEventListener('keydown', function (e) {
+    ecoute(document, 'keydown', function (e) {
       if (e.key !== 'Escape' || panneau.hidden) return;
       if (document.querySelector('[role="dialog"]')) return;
       basculer(false);
@@ -374,9 +558,10 @@
       peindreBadge(NT.enAttente());
       /* La cloche suit le moteur en continu : elle ne se met pas à jour au
          seul rechargement de la page. */
-      NT.abonner(peindreBadge);
+      enDernier(NT.abonner(peindreBadge));
       NT.demarrer();
     }
+    bar.appendChild(pastilleSync());
     bar.appendChild(notifBtn);
 
     /* Profil */
@@ -426,7 +611,7 @@
       } catch (e) { U.toast('Plein écran indisponible sur ce poste.', { type: 'error' }); }
     });
 
-    document.addEventListener('fullscreenchange', peindre);
+    ecoute(document, 'fullscreenchange', peindre);
     peindre();
     return b;
   }
@@ -738,19 +923,6 @@
     ]));
     body.appendChild(head);
 
-    /* Changement de rôle — permet de parcourir tous les tableaux de bord. */
-    var sel = el('select.select');
-    Object.keys(N.ROLES).forEach(function (r) {
-      var o = el('option', { value: r }, N.ROLES[r].label);
-      if (r === s.role) o.selected = true;
-      sel.appendChild(o);
-    });
-    body.appendChild(el('div', null, [
-      el('label.label', { text: 'Profil de connexion (démonstration)' }),
-      sel,
-      el('p.mt-1.text-xs.text-slate-400', { text: 'Change le périmètre RBAC : le méga-menu et les tableaux de bord sont filtrés en conséquence.' }),
-    ]));
-
     var links = el('div.grid.grid-cols-2.gap-2');
     [['Mon compte', 'cfg-compte', 'user-cog'], ['Notifications', 'cfg-notifications', 'bell'],
      ['Aide & À propos', 'aide-apropos', 'life-buoy'], ['Contactez l’éditeur', 'contact-editeur', 'mail'],
@@ -766,16 +938,6 @@
         el('button.btn.btn-secondary', {
           type: 'button', onclick: function () { S.setSession(null); global.location.href = base() + 'index' + N.EXT; },
         }, [C.icon('log-out', 'h-4 w-4'), 'Se déconnecter']),
-        el('button.btn.btn-primary', {
-          type: 'button',
-          onclick: function () {
-            var r = sel.value;
-            var role = N.ROLES[r];
-            S.setSession({ role: r, nom: s.nom, poste: role.label });
-            m.close();
-            go(role.home);
-          },
-        }, 'Appliquer'),
       ],
     });
   }
@@ -899,8 +1061,10 @@
       return (b && (b.textContent || b.getAttribute && b.getAttribute('title'))) || '';
     });
     var deduites = accesRapides(entry, liste.length, libellesDeclares);
-    if (liste.length || deduites.length) {
+    var selExo = selecteurExercice(entry);
+    if (liste.length || deduites.length || selExo) {
       var acts = el('div#page-actions.flex.flex-wrap.items-center.gap-2');
+      if (selExo) acts.appendChild(selExo);
       C.append(acts, liste);
       C.append(acts, deduites);
       row.appendChild(acts);
@@ -940,6 +1104,31 @@
       }
     }
 
+    /* Un exercice CLOS est en lecture seule : l'écran le DIT, il n'attend pas qu'une écriture soit refusée. */
+    if (selExo && global.SIGH.exercice) {
+      var xc = global.SIGH.exercice.de(global.SIGH.exercice.choisi());
+      if (xc && xc.etat === 'clos') {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+          el('span.shrink-0.text-warning-600', null, C.icon('lock', 'h-4 w-4')),
+          el('p.text-xs.text-warning-900', { html: '<strong>Exercice ' + xc.annee + ' clos</strong>'
+            + (xc.valideLe ? ' le ' + C.dateFR(xc.valideLe) : '') + (xc.validePar ? ' — ' + U.texteEnrichi(xc.validePar) : '')
+            + ' — <strong>lecture seule</strong>. Les corrections passent par une écriture de l’exercice en cours, jamais par la réouverture.' }),
+        ]));
+      } else if (xc && xc.etat === 'en_attente_cloture') {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
+          el('span.shrink-0.text-info-600', null, C.icon('hourglass', 'h-4 w-4')),
+          el('p.text-xs.text-info-900', { html: '<strong>Exercice ' + xc.annee + ' en attente de clôture</strong> — la Direction doit valider la demande de '
+            + U.texteEnrichi(xc.demandePar || 'le comptable') + '.' }),
+        ]));
+      } else if (xc && global.SIGH.exercice.provisoires(xc.annee).length) {
+        head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-slate-200.bg-slate-50.px-3.py-2', null, [
+          el('span.shrink-0.text-slate-500', null, C.icon('info', 'h-4 w-4')),
+          el('p.text-xs.text-slate-700', { html: '<strong>À-nouveaux provisoires</strong> — l’exercice ' + (xc.annee - 1)
+            + ' n’est pas encore clos : le report est recalculé à chaque consultation et sera figé à la clôture.' }),
+        ]));
+      }
+    }
+
     /* Rappel de règle métier, le cas échéant */
     if (def.regle) {
       head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
@@ -948,6 +1137,30 @@
       ]));
     }
     return head;
+  }
+
+  /**
+   * SÉLECTEUR D'EXERCICE — dans la coquille de tout écran comptable (M12).
+   * Un exercice par poste (mémorisé), l'exercice courant par défaut. Les
+   * exercices clos sont marqués : le choix dit déjà ce qu'on pourra y faire.
+   */
+  var SUIT_EXERCICE = ['mecef-factures', 'mecef-avoirs', 'mecef-transmission', 'mecef-journal', 'm9-factures-assureur', 'm9-historique'];
+  function selecteurExercice(entry) {
+    /* L'exercice se choisit sur tout écran comptable (M12) et sur les écrans qui suivent l'exercice :
+       le registre fiscal MECeF et les deux états de flux de M9. Les ENCOURS (créances) ne le suivent pas :
+       une créance non réglée d'un exercice précédent reste due. */
+    if (!global.SIGH.exercice || !entry || !(entry.module === 'M12' || SUIT_EXERCICE.indexOf(entry.id) >= 0)) return null;
+    var X = global.SIGH.exercice, liste = X.liste(), courant = X.choisi();
+    if (!liste.length) return null;
+    var sel = el('select.select.w-auto', { id: 'selecteur-exercice', 'aria-label': 'Exercice comptable', title: 'Exercice comptable' });
+    liste.forEach(function (x) {
+      var et = { ouvert: 'ouvert', en_attente_cloture: 'en attente de clôture', clos: 'clos' }[x.etat] || x.etat;
+      var o = el('option', { value: String(x.annee) }, 'Exercice ' + x.annee + ' — ' + et);
+      if (x.annee === courant) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', function () { X.choisir(sel.value); global.location.reload(); });
+    return el('label.flex.items-center.gap-2.text-xs.text-slate-600', null, [C.icon('calendar', 'h-4 w-4'), sel]);
   }
 
   /**
@@ -1143,7 +1356,7 @@
          conteneur et lui échappaient, ce qui laissait le menu déployé sur
          Patients, Consultations, Pharmacie et Facturation.
          Les boutons, eux, sont couverts par go() — voir plus haut. */
-      document.addEventListener('click', function (ev) {
+      ecoute(document, 'click', function (ev) {
         var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
         if (!a) return;
         var href_ = a.getAttribute('href') || '';
@@ -1153,6 +1366,10 @@
         if (/^(https?:|mailto:|tel:|data:|blob:)/i.test(href_)) return;
         if (a.target && a.target !== '_self') return;
         replierApresNavigation();
+        /* Un lien vers un écran du manifeste ne recharge pas le document. */
+        if (ev.defaultPrevented || ev.button || ev.ctrlKey || ev.metaKey || ev.shiftKey || ev.altKey) return;
+        var cible = idDeLien(a);
+        if (cible && spaPermise() && naviguerSansRecharger(cible, optsDeLien(a))) ev.preventDefault();
       });
 
       main.appendChild(container);
@@ -1191,7 +1408,7 @@
       U.consommerMessageDiffere();
 
       /* Raccourcis clavier — postes à forte saisie (CDCT §10.3). */
-      document.addEventListener('keydown', function (e) {
+      ecoute(document, 'keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p' && PAGE.print) { e.preventDefault(); PAGE.print(); }
       });
@@ -1202,6 +1419,10 @@
     }
   }
 
+  try { if (global.history && global.history.replaceState && !(global.history.state && global.history.state.sigh)) {
+    var _m = /\/pages\/([\w-]+)\.[a-z]+$/i.exec(global.location.pathname);
+    if (_m) global.history.replaceState({ sigh: _m[1] }, '', global.location.href);
+  } } catch (e) { /* historique indisponible */ }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else setTimeout(boot, 0);
 
@@ -1235,5 +1456,7 @@
     VERROU_RETOUR: VERROU_RETOUR, VERROU_DELAI: VERROU_DELAI,
     delaiVerrou: delaiVerrou,
     replierRuban: replierApresNavigation,
+    ecoute: ecoute, enDernier: enDernier, sansRecharger: naviguerSansRecharger,
+    surDonneesDistantes: surDonneesDistantes, rafraichir: rafraichirEcran,
   };
 })(window);

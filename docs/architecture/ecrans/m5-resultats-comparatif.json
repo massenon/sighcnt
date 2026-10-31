@@ -1,0 +1,36 @@
+{
+ "id": "m5-resultats-comparatif",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Comparatif des résultats",
+ "acces": "ouvert",
+ "titre": "Comparatif des résultats",
+ "description": "Deux mesures du même examen côte à côte, variable par variable — la colonne « Antériorités » de la fiche de résultats, à l’écran.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Comparatif des résultats"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [
+  "74 résultat(s) rendus sont hors de votre périmètre et n’apparaissent pas ici — restriction du RBAC métier, pas donnée manquante."
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "— Choisir un patient —"
+ ],
+ "champs": [
+  "Patient",
+  "Examen"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

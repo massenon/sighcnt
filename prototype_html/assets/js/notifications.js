@@ -155,7 +155,7 @@
       /* Le calendrier fiscal est un référentiel : le moteur ne recalcule
          aucune date, il lit ce qui est déjà dépassé. */
       lire: function () {
-        var auj = C.iso(new Date(2026, 7, 16));
+        var auj = C.iso(C.aujourdhui());   /* la cloche et l'écran comptent à la même date (vague 68) */
         return S.collection('echeancesFiscales').active()
           .filter(function (e) { return !e.paye && String(e.echeance) < auj; })
           .map(function (e) {
@@ -420,6 +420,9 @@
       try { lues = src.lire() || []; } catch (e) { lues = []; }
       lues.forEach(function (n) {
         if (!opts.tousPostes && !pourMoi(n, poste)) return;
+        /* Le serveur et le poste calculent parfois la MÊME alerte (même clé) :
+           celle du poste, fraîche, l'emporte ; l'autre ne double pas la cloche. */
+        if (out.some(function (x) { return x.cle === n.cle; })) return;
         out.push(Object.assign({}, n, {
           source: src.code,
           categorie: src.categorie,
@@ -585,6 +588,47 @@
     return liste;
   }
 
+  /* ==========================================================================
+   * LES ALERTES DU SERVEUR
+   * --------------------------------------------------------------------------
+   * Le planificateur du serveur (api/cron.php) évalue des règles à heure fixe,
+   * poste ouvert ou non, et les écrit dans sa propre table. Le poste les LIT :
+   * il les compte comme n'importe quelle source (cloche, badge, regroupement,
+   * acquittement, son), sans rien recalculer. Hors ligne ou sans serveur, la
+   * liste reste celle du dernier sondage — et vide au premier : le poste ne
+   * perd rien de ce qu'il calcule lui-même.
+   * ======================================================================== */
+  var _serveur = [];
+  var _serveurLe = null;
+  var _sondageEnVol = false;
+  function urlServeur() {
+    var racine = '';
+    try { racine = (document.documentElement.getAttribute('data-root')) || ''; } catch (e) { racine = ''; }
+    return racine + 'api/notifications.php';
+  }
+  function sonderServeur() {
+    if (_sondageEnVol || !global.fetch) return global.Promise.resolve(false);
+    var jeton = S.jetonServeur ? S.jetonServeur() : null;
+    if (!jeton || global.location.protocol === 'file:') return global.Promise.resolve(false);
+    _sondageEnVol = true;
+    return global.fetch(urlServeur(), { headers: { 'X-Sigh-Jeton': jeton, Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(String(r.status)); return r.json(); })
+      .then(function (o) {
+        _serveur = (o && o.notifications) || [];
+        _serveurLe = (o && o.serveur_le) || null;
+        _sondageEnVol = false;
+        return true;
+      }, function () { _sondageEnVol = false; return false; });
+  }
+  SOURCES.push({
+    code: 'serveur', categorie: 'metier', domaine: 'Planificateur',
+    lire: function () {
+      return _serveur.map(function (n) {
+        return { cle: n.cle, priorite: n.priorite, titre: n.titre, detail: n.detail, lien: n.lien || null, postes: n.postes };
+      });
+    },
+  });
+
   var INTERVALLE = 45000;   /* 45 s : assez pour être vivant, assez peu pour ne pas peser */
 
   function demarrer() {
@@ -592,8 +636,10 @@
     /* Le premier tour est différé : la page doit finir de se monter, et le
        magasin d'être amorcé. Sonner pendant l'amorçage donnerait une alerte
        sur un état transitoire. */
-    global.setTimeout(function () { tour(true); }, 1500);
-    _timer = global.setInterval(function () { tour(false); }, INTERVALLE);
+    /* Le sondage du serveur précède le premier tour : au premier regard, la
+       cloche porte déjà ce que le planificateur a vu pendant la nuit. */
+    global.setTimeout(function () { sonderServeur().then(function () { tour(true); }); }, 1500);
+    _timer = global.setInterval(function () { sonderServeur().then(function () { tour(false); }); }, INTERVALLE);
   }
   function arreter() {
     if (_timer) { global.clearInterval(_timer); _timer = null; }
@@ -601,6 +647,7 @@
 
   global.SIGH.notifications = {
     /* Lecture */
+    sonderServeur: sonderServeur, etatServeur: function () { return { alertes: _serveur.slice(), le: _serveurLe }; },
     collecter: collecter, enAttente: enAttente, priorite: priorite, PRIORITES: PRIORITES,
     SOURCES: SOURCES,
     /* Acquittement */

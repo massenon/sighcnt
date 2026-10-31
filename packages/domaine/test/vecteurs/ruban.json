@@ -1,0 +1,4065 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-ruban.js — N.tree(rôle) de la maquette. Ne pas éditer.",
+ "cas": [
+  {
+   "role": "admin",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-agenda-medecin",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-repertoire-ambulances"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Tarification & information patient",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-certificats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Consultations & prescriptions",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dossiers-consultation",
+        "m2-consultation-fiche",
+        "m2-pathologies",
+        "m2-ordonnances",
+        "m2-prescriptions",
+        "m2-salle-soins"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-imagerie",
+        "m2-imagerie-radiographie",
+        "m2-imagerie-mammographie",
+        "m2-imagerie-scanner",
+        "m2-imagerie-irm",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      },
+      {
+       "code": "M4",
+       "label": "Maternité, Naissances & Décès",
+       "hub": "hub-m4",
+       "ecrans": [
+        "m4-dossier-obstetrical",
+        "m4-maternite",
+        "m4-cpn",
+        "m4-partogramme",
+        "m4-accouchements",
+        "m4-dossier-bebe",
+        "m4-cpon",
+        "m4-planification",
+        "m4-sonu",
+        "m4-ptme",
+        "m4-soins-curatifs",
+        "m4-comptes-rendus",
+        "m4-naissances",
+        "m4-deces"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-unites",
+        "m5-valeurs-reference",
+        "m5-prelevement",
+        "m5-stats",
+        "m5-reactifs",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-pharmacie-interne",
+        "m6-pharmacie-externe",
+        "m6-dashboard",
+        "m6-produits",
+        "m6-stock-gros",
+        "m6-stock-detail",
+        "m6-transferts",
+        "m6-mouvements",
+        "m6-lots",
+        "m6-alertes",
+        "m6-inventaire",
+        "m6-pertes",
+        "m6-dispensation",
+        "m6-etiquetage",
+        "m6-reprise",
+        "m6-point-ventes",
+        "m6-point-stock"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins",
+        "m7-commandes",
+        "m7-livraisons",
+        "m7-receptions",
+        "m7-ecarts",
+        "m7-pv-reception-consommables",
+        "m7-pv-reception-reactifs",
+        "m7-fournisseurs",
+        "m7-factures-fournisseurs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-facturation",
+        "m8-factures",
+        "m8-proforma",
+        "m8-paiements",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      },
+      {
+       "code": "M9",
+       "label": "Assurances & Créances",
+       "hub": "hub-m9",
+       "ecrans": [
+        "m9-dashboard",
+        "m9-compagnies",
+        "m9-assures",
+        "m9-conventions",
+        "m9-prises-en-charge",
+        "m9-factures-assureur",
+        "m9-facture-mere",
+        "m9-historique",
+        "m9-creances",
+        "m9-relances"
+       ]
+      },
+      {
+       "code": "MECEF",
+       "label": "MECeF — Facture normalisée",
+       "hub": "hub-mecef",
+       "ecrans": [
+        "mecef-dashboard",
+        "mecef-factures",
+        "mecef-transmission",
+        "mecef-avoirs",
+        "mecef-journal",
+        "mecef-config"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Comptabilité SYSCOHADA",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-dashboard",
+        "m12-plan-comptable",
+        "m12-journaux",
+        "m12-ecritures",
+        "m12-depenses",
+        "m12-grand-livre",
+        "m12-balance",
+        "m12-analytique",
+        "m12-budgets",
+        "m12-immobilisations",
+        "m12-banques",
+        "m12-compte-resultat",
+        "m12-flux-tresorerie",
+        "m12-seuil-rentabilite",
+        "m12-etats-financiers",
+        "m12-baseline-2025",
+        "m12-echeances",
+        "m12-cloture",
+        "m12-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-fiches-poste",
+        "m10-dashboard",
+        "m10-personnel",
+        "m10-employe-profil",
+        "m10-contrats",
+        "m10-badges",
+        "m10-badges-verification",
+        "m10-badges-modeles",
+        "m10-badges-impression",
+        "m10-planning",
+        "m10-stats-gardes",
+        "m10-stats-permanences",
+        "m10-stats-presence",
+        "m10-presences",
+        "m10-conges",
+        "m10-missions",
+        "m10-evaluations",
+        "m10-sanctions",
+        "m10-primes",
+        "m10-evenements",
+        "m10-participations",
+        "m10-assurance-personnel",
+        "m10-prestataires",
+        "m10-securite-entretien"
+       ]
+      },
+      {
+       "code": "M11",
+       "label": "Paie & Primes",
+       "hub": "hub-m11",
+       "ecrans": [
+        "m11-prets-etudes",
+        "m11-dashboard",
+        "m11-calcul",
+        "m11-bulletins",
+        "m11-cotisations",
+        "m11-heures-sup",
+        "m11-avances",
+        "m11-ortb",
+        "m11-validation"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-reunions",
+        "m13-evenements",
+        "m13-plan-annuel",
+        "m13-notes-service",
+        "m13-ambulance",
+        "m13-repertoire-ambulances",
+        "m13-maintenance",
+        "adm-validations",
+        "adm-enquetes",
+        "adm-satisfaction"
+       ]
+      },
+      {
+       "code": "GED",
+       "label": "Gestion documentaire",
+       "hub": "hub-ged",
+       "ecrans": [
+        "ged-bibliotheque",
+        "ged-workflow",
+        "ged-archives"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "M14",
+       "label": "Sécurité & Utilisateurs",
+       "hub": "hub-m14",
+       "ecrans": [
+        "m14-utilisateurs",
+        "m14-roles",
+        "m14-soignants",
+        "m14-sessions",
+        "m14-audit",
+        "m14-sauvegardes",
+        "m14-taches"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Configuration Clinique",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-organisation",
+        "cfg-branding",
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-imagerie-catalogue",
+        "cfg-entetes",
+        "cfg-types-piece",
+        "cfg-rappels",
+        "cfg-certificats",
+        "cfg-natures-facture",
+        "cfg-centres-couts",
+        "cfg-regles",
+        "cfg-fiscalite",
+        "cfg-comptabilite",
+        "cfg-notifications",
+        "cfg-compte",
+        "cfg-modules",
+        "cfg-systeme",
+        "cfg-poste"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Poste mère",
+     "rangees": [
+      {
+       "code": "MERE",
+       "label": "Exploitation de la synchronisation",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-supervision",
+        "mere-appareils",
+        "mere-conflits",
+        "mere-a-traiter",
+        "mere-journal-operations",
+        "mere-plages-baux",
+        "mere-lots-tournee"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Sécurité et continuité",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-journal-technique",
+        "mere-sauvegardes",
+        "mere-cle-clinique",
+        "mere-integrite",
+        "mere-reinit"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Liaison avec le relais",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-relais",
+        "mere-indicateurs"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Plateforme locale",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-service",
+        "mere-base",
+        "mere-reseau",
+        "mere-planificateur",
+        "mere-notifications"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Cycle de vie",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-mise-en-service",
+        "mere-mises-a-jour",
+        "mere-import"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Relais en ligne",
+     "rangees": [
+      {
+       "code": "RLS",
+       "label": "Relais en ligne (apps/web)",
+       "hub": "hub-rls",
+       "ecrans": [
+        "rls-tableau",
+        "rls-appareils",
+        "rls-boites",
+        "rls-codes",
+        "rls-indicateurs",
+        "rls-alertes",
+        "rls-journal",
+        "rls-superadmin",
+        "rls-parametres",
+        "rls-hebergement",
+        "rls-sauvegarde",
+        "rls-opacite"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "dash-direction",
+        "dash-da",
+        "dash-croise",
+        "dash-admin",
+        "m4-stats-maternite",
+        "m2-stats-echographie",
+        "m5-stats-examens",
+        "m2-stats-consultations",
+        "m3-stats-bloc",
+        "m3-stats-hospitalisations",
+        "m10-cout-agent",
+        "m12-rentabilite-groupes",
+        "m12-tableau-decisionnel"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Gestion & trésorerie",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-bfr",
+        "m12-cout-activite"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-medecin",
+        "dash-infirmier",
+        "dash-pharmacien",
+        "dash-laborantin",
+        "dash-stock",
+        "dash-caissier",
+        "dash-comptable",
+        "dash-rh",
+        "dash-receptionniste",
+        "dash-admin-agent",
+        "dash-ambulancier",
+        "dash-aide-soignant",
+        "dash-echographiste",
+        "dash-surveillant",
+        "dash-assistant-comptable",
+        "dash-chirurgien",
+        "dash-anesthesiste",
+        "dash-aide-comptable",
+        "dash-maternite",
+        "dash-patient"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "direction",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-agenda-medecin",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-repertoire-ambulances"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Tarification & information patient",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-certificats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Consultations & prescriptions",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dossiers-consultation",
+        "m2-consultation-fiche",
+        "m2-pathologies",
+        "m2-ordonnances",
+        "m2-prescriptions",
+        "m2-salle-soins"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-imagerie",
+        "m2-imagerie-radiographie",
+        "m2-imagerie-mammographie",
+        "m2-imagerie-scanner",
+        "m2-imagerie-irm",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      },
+      {
+       "code": "M4",
+       "label": "Maternité, Naissances & Décès",
+       "hub": "hub-m4",
+       "ecrans": [
+        "m4-dossier-obstetrical",
+        "m4-maternite",
+        "m4-cpn",
+        "m4-partogramme",
+        "m4-accouchements",
+        "m4-dossier-bebe",
+        "m4-cpon",
+        "m4-planification",
+        "m4-sonu",
+        "m4-ptme",
+        "m4-soins-curatifs",
+        "m4-comptes-rendus",
+        "m4-naissances",
+        "m4-deces"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-unites",
+        "m5-valeurs-reference",
+        "m5-prelevement",
+        "m5-stats",
+        "m5-reactifs",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-pharmacie-interne",
+        "m6-pharmacie-externe",
+        "m6-dashboard",
+        "m6-produits",
+        "m6-stock-gros",
+        "m6-stock-detail",
+        "m6-transferts",
+        "m6-mouvements",
+        "m6-lots",
+        "m6-alertes",
+        "m6-inventaire",
+        "m6-pertes",
+        "m6-dispensation",
+        "m6-etiquetage",
+        "m6-reprise",
+        "m6-point-ventes",
+        "m6-point-stock"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins",
+        "m7-commandes",
+        "m7-livraisons",
+        "m7-receptions",
+        "m7-ecarts",
+        "m7-pv-reception-consommables",
+        "m7-pv-reception-reactifs",
+        "m7-fournisseurs",
+        "m7-factures-fournisseurs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-facturation",
+        "m8-factures",
+        "m8-proforma",
+        "m8-paiements",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      },
+      {
+       "code": "M9",
+       "label": "Assurances & Créances",
+       "hub": "hub-m9",
+       "ecrans": [
+        "m9-dashboard",
+        "m9-compagnies",
+        "m9-assures",
+        "m9-conventions",
+        "m9-prises-en-charge",
+        "m9-factures-assureur",
+        "m9-facture-mere",
+        "m9-historique",
+        "m9-creances",
+        "m9-relances"
+       ]
+      },
+      {
+       "code": "MECEF",
+       "label": "MECeF — Facture normalisée",
+       "hub": "hub-mecef",
+       "ecrans": [
+        "mecef-dashboard",
+        "mecef-factures",
+        "mecef-transmission",
+        "mecef-avoirs",
+        "mecef-journal",
+        "mecef-config"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Comptabilité SYSCOHADA",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-dashboard",
+        "m12-plan-comptable",
+        "m12-journaux",
+        "m12-ecritures",
+        "m12-depenses",
+        "m12-grand-livre",
+        "m12-balance",
+        "m12-analytique",
+        "m12-budgets",
+        "m12-immobilisations",
+        "m12-banques",
+        "m12-compte-resultat",
+        "m12-flux-tresorerie",
+        "m12-seuil-rentabilite",
+        "m12-etats-financiers",
+        "m12-baseline-2025",
+        "m12-echeances",
+        "m12-cloture",
+        "m12-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-fiches-poste",
+        "m10-dashboard",
+        "m10-personnel",
+        "m10-employe-profil",
+        "m10-contrats",
+        "m10-badges",
+        "m10-badges-verification",
+        "m10-badges-modeles",
+        "m10-badges-impression",
+        "m10-planning",
+        "m10-stats-gardes",
+        "m10-stats-permanences",
+        "m10-stats-presence",
+        "m10-presences",
+        "m10-conges",
+        "m10-missions",
+        "m10-evaluations",
+        "m10-sanctions",
+        "m10-primes",
+        "m10-evenements",
+        "m10-participations",
+        "m10-assurance-personnel",
+        "m10-prestataires",
+        "m10-securite-entretien"
+       ]
+      },
+      {
+       "code": "M11",
+       "label": "Paie & Primes",
+       "hub": "hub-m11",
+       "ecrans": [
+        "m11-prets-etudes",
+        "m11-dashboard",
+        "m11-calcul",
+        "m11-bulletins",
+        "m11-cotisations",
+        "m11-heures-sup",
+        "m11-avances",
+        "m11-ortb",
+        "m11-validation"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-reunions",
+        "m13-evenements",
+        "m13-plan-annuel",
+        "m13-notes-service",
+        "m13-ambulance",
+        "m13-repertoire-ambulances",
+        "m13-maintenance",
+        "adm-validations",
+        "adm-enquetes",
+        "adm-satisfaction"
+       ]
+      },
+      {
+       "code": "GED",
+       "label": "Gestion documentaire",
+       "hub": "hub-ged",
+       "ecrans": [
+        "ged-bibliotheque",
+        "ged-workflow",
+        "ged-archives"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "M14",
+       "label": "Sécurité & Utilisateurs",
+       "hub": "hub-m14",
+       "ecrans": [
+        "m14-utilisateurs",
+        "m14-roles",
+        "m14-soignants",
+        "m14-sessions",
+        "m14-audit",
+        "m14-sauvegardes",
+        "m14-taches"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Configuration Clinique",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-organisation",
+        "cfg-branding",
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-imagerie-catalogue",
+        "cfg-entetes",
+        "cfg-types-piece",
+        "cfg-rappels",
+        "cfg-certificats",
+        "cfg-natures-facture",
+        "cfg-centres-couts",
+        "cfg-regles",
+        "cfg-fiscalite",
+        "cfg-comptabilite",
+        "cfg-notifications",
+        "cfg-compte",
+        "cfg-modules",
+        "cfg-systeme"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "dash-direction",
+        "dash-da",
+        "dash-croise",
+        "m4-stats-maternite",
+        "m2-stats-echographie",
+        "m5-stats-examens",
+        "m2-stats-consultations",
+        "m3-stats-bloc",
+        "m3-stats-hospitalisations",
+        "m10-cout-agent",
+        "m12-rentabilite-groupes",
+        "m12-tableau-decisionnel"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Gestion & trésorerie",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-bfr",
+        "m12-cout-activite"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-pharmacien",
+        "dash-chirurgien",
+        "dash-anesthesiste",
+        "dash-aide-comptable",
+        "dash-maternite"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "dm",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-agenda-medecin",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-repertoire-ambulances"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Consultations & prescriptions",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dossiers-consultation",
+        "m2-consultation-fiche",
+        "m2-pathologies",
+        "m2-ordonnances",
+        "m2-prescriptions",
+        "m2-salle-soins"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-imagerie",
+        "m2-imagerie-radiographie",
+        "m2-imagerie-mammographie",
+        "m2-imagerie-scanner",
+        "m2-imagerie-irm",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      },
+      {
+       "code": "M4",
+       "label": "Maternité, Naissances & Décès",
+       "hub": "hub-m4",
+       "ecrans": [
+        "m4-dossier-obstetrical",
+        "m4-maternite",
+        "m4-cpn",
+        "m4-partogramme",
+        "m4-accouchements",
+        "m4-dossier-bebe",
+        "m4-cpon",
+        "m4-planification",
+        "m4-sonu",
+        "m4-ptme",
+        "m4-soins-curatifs",
+        "m4-comptes-rendus",
+        "m4-naissances",
+        "m4-deces"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-unites",
+        "m5-valeurs-reference",
+        "m5-prelevement",
+        "m5-stats",
+        "m5-reactifs",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-point-ventes",
+        "m6-point-stock"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-facturation",
+        "m8-factures",
+        "m8-proforma",
+        "m8-paiements",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-repertoire-ambulances",
+        "adm-validations",
+        "adm-satisfaction"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "dash-direction",
+        "dash-da",
+        "dash-croise",
+        "m4-stats-maternite",
+        "m2-stats-echographie",
+        "m5-stats-examens",
+        "m2-stats-consultations",
+        "m3-stats-bloc",
+        "m3-stats-hospitalisations",
+        "m12-rentabilite-groupes"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-medecin",
+        "dash-infirmier",
+        "dash-aide-soignant",
+        "dash-echographiste",
+        "dash-surveillant",
+        "dash-chirurgien",
+        "dash-anesthesiste",
+        "dash-maternite"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "da",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-repertoire-ambulances"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Tarification & information patient",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-certificats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-pharmacie-interne",
+        "m6-pharmacie-externe",
+        "m6-dashboard",
+        "m6-produits",
+        "m6-stock-gros",
+        "m6-stock-detail",
+        "m6-transferts",
+        "m6-mouvements",
+        "m6-lots",
+        "m6-alertes",
+        "m6-inventaire",
+        "m6-pertes",
+        "m6-dispensation",
+        "m6-etiquetage",
+        "m6-reprise",
+        "m6-point-ventes",
+        "m6-point-stock"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins",
+        "m7-commandes",
+        "m7-livraisons",
+        "m7-receptions",
+        "m7-ecarts",
+        "m7-pv-reception-consommables",
+        "m7-pv-reception-reactifs",
+        "m7-fournisseurs",
+        "m7-factures-fournisseurs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-facturation",
+        "m8-factures",
+        "m8-proforma",
+        "m8-paiements",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      },
+      {
+       "code": "M9",
+       "label": "Assurances & Créances",
+       "hub": "hub-m9",
+       "ecrans": [
+        "m9-dashboard",
+        "m9-compagnies",
+        "m9-assures",
+        "m9-conventions",
+        "m9-prises-en-charge",
+        "m9-factures-assureur",
+        "m9-facture-mere",
+        "m9-historique",
+        "m9-creances",
+        "m9-relances"
+       ]
+      },
+      {
+       "code": "MECEF",
+       "label": "MECeF — Facture normalisée",
+       "hub": "hub-mecef",
+       "ecrans": [
+        "mecef-dashboard",
+        "mecef-factures",
+        "mecef-transmission",
+        "mecef-avoirs",
+        "mecef-journal",
+        "mecef-config"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Comptabilité SYSCOHADA",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-dashboard",
+        "m12-plan-comptable",
+        "m12-journaux",
+        "m12-ecritures",
+        "m12-depenses",
+        "m12-grand-livre",
+        "m12-balance",
+        "m12-analytique",
+        "m12-budgets",
+        "m12-immobilisations",
+        "m12-banques",
+        "m12-compte-resultat",
+        "m12-flux-tresorerie",
+        "m12-seuil-rentabilite",
+        "m12-etats-financiers",
+        "m12-baseline-2025",
+        "m12-echeances",
+        "m12-cloture",
+        "m12-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-fiches-poste",
+        "m10-dashboard",
+        "m10-personnel",
+        "m10-employe-profil",
+        "m10-contrats",
+        "m10-badges",
+        "m10-badges-verification",
+        "m10-badges-modeles",
+        "m10-badges-impression",
+        "m10-planning",
+        "m10-stats-gardes",
+        "m10-stats-permanences",
+        "m10-stats-presence",
+        "m10-presences",
+        "m10-conges",
+        "m10-missions",
+        "m10-evaluations",
+        "m10-sanctions",
+        "m10-primes",
+        "m10-evenements",
+        "m10-participations",
+        "m10-assurance-personnel",
+        "m10-prestataires",
+        "m10-securite-entretien"
+       ]
+      },
+      {
+       "code": "M11",
+       "label": "Paie & Primes",
+       "hub": "hub-m11",
+       "ecrans": [
+        "m11-prets-etudes",
+        "m11-dashboard",
+        "m11-calcul",
+        "m11-bulletins",
+        "m11-cotisations",
+        "m11-heures-sup",
+        "m11-avances",
+        "m11-ortb",
+        "m11-validation"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-reunions",
+        "m13-evenements",
+        "m13-plan-annuel",
+        "m13-notes-service",
+        "m13-ambulance",
+        "m13-repertoire-ambulances",
+        "m13-maintenance",
+        "adm-validations",
+        "adm-enquetes",
+        "adm-satisfaction"
+       ]
+      },
+      {
+       "code": "GED",
+       "label": "Gestion documentaire",
+       "hub": "hub-ged",
+       "ecrans": [
+        "ged-bibliotheque",
+        "ged-workflow",
+        "ged-archives"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "M14",
+       "label": "Sécurité & Utilisateurs",
+       "hub": "hub-m14",
+       "ecrans": [
+        "m14-utilisateurs",
+        "m14-roles",
+        "m14-soignants",
+        "m14-sessions",
+        "m14-audit",
+        "m14-sauvegardes",
+        "m14-taches"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Configuration Clinique",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-organisation",
+        "cfg-branding",
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-imagerie-catalogue",
+        "cfg-entetes",
+        "cfg-types-piece",
+        "cfg-rappels",
+        "cfg-certificats",
+        "cfg-natures-facture",
+        "cfg-centres-couts",
+        "cfg-regles",
+        "cfg-fiscalite",
+        "cfg-comptabilite",
+        "cfg-notifications",
+        "cfg-compte",
+        "cfg-modules",
+        "cfg-systeme",
+        "cfg-poste"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Poste mère",
+     "rangees": [
+      {
+       "code": "MERE",
+       "label": "Exploitation de la synchronisation",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-supervision",
+        "mere-appareils",
+        "mere-conflits",
+        "mere-a-traiter",
+        "mere-journal-operations",
+        "mere-plages-baux",
+        "mere-lots-tournee"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Sécurité et continuité",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-journal-technique",
+        "mere-sauvegardes",
+        "mere-cle-clinique",
+        "mere-integrite",
+        "mere-reinit"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Liaison avec le relais",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-relais",
+        "mere-indicateurs"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Plateforme locale",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-service",
+        "mere-base",
+        "mere-reseau",
+        "mere-planificateur",
+        "mere-notifications"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Cycle de vie",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-mise-en-service",
+        "mere-mises-a-jour",
+        "mere-import"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "dash-direction",
+        "dash-da",
+        "dash-croise",
+        "m4-stats-maternite",
+        "m2-stats-echographie",
+        "m5-stats-examens",
+        "m2-stats-consultations",
+        "m3-stats-bloc",
+        "m3-stats-hospitalisations",
+        "m10-cout-agent",
+        "m12-rentabilite-groupes",
+        "m12-tableau-decisionnel"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Gestion & trésorerie",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-bfr",
+        "m12-cout-activite"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-pharmacien",
+        "dash-stock",
+        "dash-comptable",
+        "dash-rh",
+        "dash-surveillant",
+        "dash-assistant-comptable",
+        "dash-aide-comptable"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "medecin",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-agenda-medecin",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Consultations & prescriptions",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dossiers-consultation",
+        "m2-consultation-fiche",
+        "m2-pathologies",
+        "m2-ordonnances",
+        "m2-prescriptions",
+        "m2-salle-soins"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-imagerie",
+        "m2-imagerie-radiographie",
+        "m2-imagerie-mammographie",
+        "m2-imagerie-scanner",
+        "m2-imagerie-irm",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      },
+      {
+       "code": "M4",
+       "label": "Maternité, Naissances & Décès",
+       "hub": "hub-m4",
+       "ecrans": [
+        "m4-dossier-obstetrical",
+        "m4-maternite",
+        "m4-cpn",
+        "m4-partogramme",
+        "m4-accouchements",
+        "m4-dossier-bebe",
+        "m4-cpon",
+        "m4-planification",
+        "m4-sonu",
+        "m4-ptme",
+        "m4-soins-curatifs",
+        "m4-comptes-rendus",
+        "m4-naissances",
+        "m4-deces"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-valeurs-reference",
+        "m5-stats",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-pharmacie-interne",
+        "m6-pharmacie-externe",
+        "m6-dashboard",
+        "m6-produits",
+        "m6-mouvements",
+        "m6-lots",
+        "m6-alertes",
+        "m6-pertes",
+        "m6-dispensation",
+        "m6-etiquetage"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "m4-stats-maternite",
+        "m2-stats-echographie",
+        "m5-stats-examens",
+        "m2-stats-consultations",
+        "m3-stats-bloc",
+        "m3-stats-hospitalisations"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-medecin",
+        "dash-maternite",
+        "dash-patient"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "infirmier",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-repertoire-ambulances"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Consultations & prescriptions",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dossiers-consultation",
+        "m2-consultation-fiche",
+        "m2-pathologies",
+        "m2-ordonnances",
+        "m2-prescriptions",
+        "m2-salle-soins"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-imagerie",
+        "m2-imagerie-radiographie",
+        "m2-imagerie-mammographie",
+        "m2-imagerie-scanner",
+        "m2-imagerie-irm",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      },
+      {
+       "code": "M4",
+       "label": "Maternité, Naissances & Décès",
+       "hub": "hub-m4",
+       "ecrans": [
+        "m4-dossier-obstetrical",
+        "m4-maternite",
+        "m4-cpn",
+        "m4-partogramme",
+        "m4-accouchements",
+        "m4-dossier-bebe",
+        "m4-cpon",
+        "m4-planification",
+        "m4-sonu",
+        "m4-ptme",
+        "m4-soins-curatifs",
+        "m4-comptes-rendus",
+        "m4-naissances",
+        "m4-deces"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-prelevement"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-repertoire-ambulances"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "m4-stats-maternite",
+        "m3-stats-hospitalisations"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-infirmier",
+        "dash-maternite"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "pharmacien",
+   "archive": true,
+   "domaines": []
+  },
+  {
+   "role": "laborantin",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-externe"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-unites",
+        "m5-valeurs-reference",
+        "m5-prelevement",
+        "m5-stats",
+        "m5-reactifs",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins",
+        "m7-commandes",
+        "m7-receptions",
+        "m7-ecarts",
+        "m7-pv-reception-reactifs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "m5-stats-examens"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-laborantin"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "stock",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-pharmacie-interne",
+        "m6-pharmacie-externe",
+        "m6-dashboard",
+        "m6-produits",
+        "m6-stock-gros",
+        "m6-stock-detail",
+        "m6-transferts",
+        "m6-mouvements",
+        "m6-lots",
+        "m6-alertes",
+        "m6-inventaire",
+        "m6-pertes",
+        "m6-dispensation",
+        "m6-etiquetage",
+        "m6-reprise",
+        "m6-point-ventes",
+        "m6-point-stock"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins",
+        "m7-commandes",
+        "m7-livraisons",
+        "m7-receptions",
+        "m7-ecarts",
+        "m7-pv-reception-consommables",
+        "m7-pv-reception-reactifs",
+        "m7-fournisseurs",
+        "m7-factures-fournisseurs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-factures",
+        "m8-proforma",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-pharmacien",
+        "dash-stock"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "caissier",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-pharmacie-interne",
+        "m6-pharmacie-externe",
+        "m6-produits",
+        "m6-stock-detail",
+        "m6-alertes",
+        "m6-inventaire",
+        "m6-pertes",
+        "m6-dispensation",
+        "m6-etiquetage",
+        "m6-point-ventes",
+        "m6-point-stock"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-facturation",
+        "m8-factures",
+        "m8-proforma",
+        "m8-paiements",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      },
+      {
+       "code": "M9",
+       "label": "Assurances & Créances",
+       "hub": "hub-m9",
+       "ecrans": [
+        "m9-dashboard",
+        "m9-compagnies",
+        "m9-assures",
+        "m9-conventions",
+        "m9-prises-en-charge",
+        "m9-factures-assureur",
+        "m9-facture-mere",
+        "m9-historique",
+        "m9-creances",
+        "m9-relances"
+       ]
+      },
+      {
+       "code": "MECEF",
+       "label": "MECeF — Facture normalisée",
+       "hub": "hub-mecef",
+       "ecrans": [
+        "mecef-dashboard",
+        "mecef-factures",
+        "mecef-transmission",
+        "mecef-avoirs",
+        "mecef-journal"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-pharmacien",
+        "dash-caissier"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "comptable",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M6",
+       "label": "Pharmacie & Stocks",
+       "hub": "hub-m6",
+       "ecrans": [
+        "m6-pharmacie-interne",
+        "m6-pharmacie-externe",
+        "m6-dashboard",
+        "m6-produits",
+        "m6-stock-gros",
+        "m6-stock-detail",
+        "m6-transferts",
+        "m6-mouvements",
+        "m6-lots",
+        "m6-alertes",
+        "m6-inventaire",
+        "m6-pertes",
+        "m6-dispensation",
+        "m6-etiquetage",
+        "m6-reprise",
+        "m6-point-ventes",
+        "m6-point-stock"
+       ]
+      },
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins",
+        "m7-commandes",
+        "m7-livraisons",
+        "m7-receptions",
+        "m7-ecarts",
+        "m7-pv-reception-consommables",
+        "m7-pv-reception-reactifs",
+        "m7-fournisseurs",
+        "m7-factures-fournisseurs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-facturation",
+        "m8-factures",
+        "m8-proforma",
+        "m8-paiements",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      },
+      {
+       "code": "M9",
+       "label": "Assurances & Créances",
+       "hub": "hub-m9",
+       "ecrans": [
+        "m9-dashboard",
+        "m9-compagnies",
+        "m9-assures",
+        "m9-conventions",
+        "m9-prises-en-charge",
+        "m9-factures-assureur",
+        "m9-facture-mere",
+        "m9-historique",
+        "m9-creances",
+        "m9-relances"
+       ]
+      },
+      {
+       "code": "MECEF",
+       "label": "MECeF — Facture normalisée",
+       "hub": "hub-mecef",
+       "ecrans": [
+        "mecef-dashboard",
+        "mecef-factures",
+        "mecef-transmission",
+        "mecef-avoirs",
+        "mecef-journal",
+        "mecef-config"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Comptabilité SYSCOHADA",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-dashboard",
+        "m12-plan-comptable",
+        "m12-journaux",
+        "m12-ecritures",
+        "m12-depenses",
+        "m12-grand-livre",
+        "m12-balance",
+        "m12-analytique",
+        "m12-budgets",
+        "m12-immobilisations",
+        "m12-banques",
+        "m12-compte-resultat",
+        "m12-flux-tresorerie",
+        "m12-seuil-rentabilite",
+        "m12-etats-financiers",
+        "m12-baseline-2025",
+        "m12-echeances",
+        "m12-cloture",
+        "m12-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M11",
+       "label": "Paie & Primes",
+       "hub": "hub-m11",
+       "ecrans": [
+        "m11-prets-etudes",
+        "m11-dashboard",
+        "m11-calcul",
+        "m11-bulletins",
+        "m11-cotisations",
+        "m11-heures-sup",
+        "m11-avances",
+        "m11-ortb",
+        "m11-validation"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "adm-validations"
+       ]
+      },
+      {
+       "code": "GED",
+       "label": "Gestion documentaire",
+       "hub": "hub-ged",
+       "ecrans": [
+        "ged-bibliotheque",
+        "ged-workflow",
+        "ged-archives"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "dash-da",
+        "dash-croise",
+        "m10-cout-agent",
+        "m12-rentabilite-groupes",
+        "m12-tableau-decisionnel"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Gestion & trésorerie",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-bfr",
+        "m12-cout-activite"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-comptable"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "rh",
+   "archive": true,
+   "domaines": []
+  },
+  {
+   "role": "reception",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-agenda-medecin",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-repertoire-ambulances"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Tarification & information patient",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-certificats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-repertoire-ambulances",
+        "adm-enquetes"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "CFG",
+       "label": "Configuration Clinique",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-certificats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-receptionniste",
+        "dash-patient"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "agentadmin",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-reunions",
+        "m13-evenements",
+        "m13-plan-annuel",
+        "m13-notes-service",
+        "m13-ambulance",
+        "m13-maintenance",
+        "adm-validations",
+        "adm-enquetes",
+        "adm-satisfaction"
+       ]
+      },
+      {
+       "code": "GED",
+       "label": "Gestion documentaire",
+       "hub": "hub-ged",
+       "ecrans": [
+        "ged-bibliotheque",
+        "ged-workflow",
+        "ged-archives"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-admin-agent"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "ambulancier",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients"
+       ]
+      },
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-repertoire-ambulances"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-ambulance",
+        "m13-repertoire-ambulances"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-ambulancier"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "aide_soignant",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-constantes"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-constantes"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-aide-soignant"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "echographiste",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-agenda-medecin",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-externe"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Consultations & prescriptions",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-consultation-fiche",
+        "m2-prescriptions"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-imagerie",
+        "m2-imagerie-radiographie",
+        "m2-imagerie-mammographie",
+        "m2-imagerie-scanner",
+        "m2-imagerie-irm",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-unites",
+        "m5-valeurs-reference",
+        "m5-prelevement",
+        "m5-stats",
+        "m5-reactifs",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "m2-stats-echographie"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-echographiste"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "surveillant",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-badges",
+        "m10-badges-verification",
+        "m10-planning",
+        "m10-stats-gardes",
+        "m10-stats-permanences",
+        "m10-stats-presence",
+        "m10-presences"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "m4-stats-maternite",
+        "m3-stats-hospitalisations"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-surveillant"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "assistant_comptable",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Courriers & orientation",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-repertoire-ambulances"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-reactifs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "RH",
+     "rangees": [
+      {
+       "code": "M10",
+       "label": "Ressources humaines",
+       "hub": "hub-m10",
+       "ecrans": [
+        "m10-badges",
+        "m10-badges-verification"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "M13",
+       "label": "Administration & Ambulance",
+       "hub": "hub-m13",
+       "ecrans": [
+        "m13-courriers",
+        "m13-reunions",
+        "m13-evenements",
+        "m13-plan-annuel",
+        "m13-notes-service",
+        "m13-ambulance",
+        "m13-repertoire-ambulances",
+        "adm-validations"
+       ]
+      },
+      {
+       "code": "GED",
+       "label": "Gestion documentaire",
+       "hub": "hub-ged",
+       "ecrans": [
+        "ged-bibliotheque",
+        "ged-workflow",
+        "ged-archives"
+       ]
+      },
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-assistant-comptable"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "chirurgien",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M2",
+       "label": "RDV, Visites & Consultations",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-agenda",
+        "m2-rendezvous",
+        "m2-file-attente",
+        "m2-file-cabinet",
+        "m2-agenda-medecin",
+        "m2-affichage",
+        "m2-domicile",
+        "m2-registre-appels",
+        "m2-consultations"
+       ]
+      },
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Consultations & prescriptions",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dossiers-consultation",
+        "m2-consultation-fiche",
+        "m2-pathologies",
+        "m2-ordonnances",
+        "m2-prescriptions",
+        "m2-salle-soins"
+       ]
+      },
+      {
+       "code": "M2",
+       "label": "Imagerie médicale",
+       "hub": "hub-m2",
+       "ecrans": [
+        "m2-dashboard-imagerie",
+        "m2-imagerie-demandes",
+        "m2-imagerie",
+        "m2-imagerie-radiographie",
+        "m2-imagerie-mammographie",
+        "m2-imagerie-scanner",
+        "m2-imagerie-irm",
+        "m2-echographie-galerie"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-valeurs-reference",
+        "m5-prelevement",
+        "m5-stats",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "m3-stats-bloc",
+        "m3-stats-hospitalisations"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-chirurgien"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "anesthesiste",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Accueil",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & constantes",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-constantes",
+        "m1-externe"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Soins",
+     "rangees": [
+      {
+       "code": "M1",
+       "label": "Patients & Dossier médical",
+       "hub": "hub-m1",
+       "ecrans": [
+        "m1-patients",
+        "m1-patient-profil",
+        "m1-externe",
+        "m1-antecedents",
+        "m1-pieces",
+        "m1-constantes",
+        "m1-reference",
+        "m1-contre-reference",
+        "m1-documents",
+        "m1-numerisation"
+       ]
+      },
+      {
+       "code": "M3",
+       "label": "Hospitalisation",
+       "hub": "hub-m3",
+       "ecrans": [
+        "m3-admissions",
+        "m3-observation",
+        "m3-plan-lits",
+        "m3-chambres",
+        "m3-feuille-temperature",
+        "m3-soins",
+        "m3-administrations",
+        "m3-cpa",
+        "m3-bloc-cro",
+        "m3-cr-anesthesie",
+        "m3-bloc-checklist",
+        "m3-demande-examen",
+        "m3-bons-pansements",
+        "m3-surveillance",
+        "m3-transfusion",
+        "m3-glasgow",
+        "m3-rapport",
+        "m3-visites-patients",
+        "m3-sorties",
+        "m3-sortie-avis-medical"
+       ]
+      },
+      {
+       "code": "M5",
+       "label": "Laboratoire",
+       "hub": "hub-m5",
+       "ecrans": [
+        "m5-demandes",
+        "m5-demandes-maternite",
+        "m5-demandes-hospitalisation",
+        "m5-resultats",
+        "m5-resultats-comparatif",
+        "m5-impression-resultats",
+        "m5-catalogue",
+        "m5-valeurs-reference",
+        "m5-prelevement",
+        "m5-stats",
+        "m5-reactifs-stats"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "m3-stats-bloc"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-anesthesiste"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "role": "aide_comptable",
+   "archive": false,
+   "domaines": [
+    {
+     "domaine": "Logistique",
+     "rangees": [
+      {
+       "code": "M7",
+       "label": "Achats & Fournisseurs",
+       "hub": "hub-m7",
+       "ecrans": [
+        "m7-besoins",
+        "m7-commandes",
+        "m7-livraisons",
+        "m7-receptions",
+        "m7-ecarts",
+        "m7-pv-reception-consommables",
+        "m7-pv-reception-reactifs",
+        "m7-fournisseurs",
+        "m7-factures-fournisseurs"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Financier",
+     "rangees": [
+      {
+       "code": "M8",
+       "label": "Facturation & Caisse",
+       "hub": "hub-m8",
+       "ecrans": [
+        "m8-dashboard",
+        "m8-facturation",
+        "m8-factures",
+        "m8-proforma",
+        "m8-paiements",
+        "m8-reliquats",
+        "m8-remboursements",
+        "m8-facture-avoir",
+        "m8-caisse",
+        "m8-operations",
+        "m8-recettes"
+       ]
+      },
+      {
+       "code": "M9",
+       "label": "Assurances & Créances",
+       "hub": "hub-m9",
+       "ecrans": [
+        "m9-dashboard",
+        "m9-compagnies",
+        "m9-assures",
+        "m9-conventions",
+        "m9-prises-en-charge",
+        "m9-factures-assureur",
+        "m9-facture-mere",
+        "m9-historique",
+        "m9-creances",
+        "m9-relances"
+       ]
+      },
+      {
+       "code": "MECEF",
+       "label": "MECeF — Facture normalisée",
+       "hub": "hub-mecef",
+       "ecrans": [
+        "mecef-dashboard",
+        "mecef-factures",
+        "mecef-transmission",
+        "mecef-avoirs",
+        "mecef-journal",
+        "mecef-config"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Comptabilité SYSCOHADA",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-dashboard",
+        "m12-plan-comptable",
+        "m12-journaux",
+        "m12-ecritures",
+        "m12-depenses",
+        "m12-grand-livre",
+        "m12-balance",
+        "m12-analytique",
+        "m12-budgets",
+        "m12-immobilisations",
+        "m12-banques",
+        "m12-compte-resultat",
+        "m12-flux-tresorerie",
+        "m12-seuil-rentabilite",
+        "m12-etats-financiers",
+        "m12-baseline-2025",
+        "m12-echeances",
+        "m12-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Administration",
+     "rangees": [
+      {
+       "code": "RAP",
+       "label": "Rapports & Impression",
+       "hub": "hub-rap",
+       "ecrans": [
+        "rapports-bibliotheque",
+        "rapports-direction",
+        "rapports-generateur",
+        "rapports-historique"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "M12",
+       "label": "Gestion & trésorerie",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-bfr",
+        "m12-cout-activite"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-aide-comptable"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

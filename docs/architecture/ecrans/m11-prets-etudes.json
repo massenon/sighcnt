@@ -1,0 +1,51 @@
+{
+ "id": "m11-prets-etudes",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Prêts-études et avances",
+ "acces": "ouvert",
+ "titre": "Prêts-études et avances",
+ "description": "Décaissements consentis au personnel et recouvrement par retenue sur salaire.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Prêts-études et avances"
+ ],
+ "actions": [
+  "Tableau de bord paie",
+  "Calcul de la paie",
+  "Paie & Primes"
+ ],
+ "regle": [
+  "Ces sommes transitent : un prêt n’est ni une charge ni une recette, c’est une créance sur l’agent. Elle se solde par des retenues, chacune portée au bulletin du seul mois de son échéance."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Prêts et avances",
+  "En cours de remboursement",
+  "Total accordé",
+  "Reste à recouvrer"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Agent",
+   "Nature",
+   "Objet",
+   "Accordé",
+   "Reste dû",
+   "Échéances",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau prêt ou avance"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

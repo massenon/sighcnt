@@ -1,0 +1,106 @@
+/* Design system du mobile SIGH-CNT — les JETONS de la maquette (docs/design/design-tokens.json), pas une charte à part :
+   bleu institutionnel (navy), vert / orange / rouge sémantiques, police Inter, texte jamais sous 11 pt. */
+@font-face { font-family: Inter; font-weight: 100 900; font-display: swap; src: url(../fonts/inter-latin.woff2) format("woff2"); }
+@font-face { font-family: Inter; font-weight: 100 900; font-display: swap; src: url(../fonts/inter-latin-ext.woff2) format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+:root {
+  --navy-50: #f1f5fb; --navy-100: #e0eaf6; --navy-200: #c7daf0; --navy-500: #4a7fc1; --navy-600: #3765a6; --navy-700: #2e5187; --navy-900: #12315e; --navy-950: #0b1e3d;
+  --ok-100: #d6f5e3; --ok-600: #15825a; --ok-700: #12684a;
+  --warn-100: #ffedc6; --warn-600: #dd5f02; --warn-700: #b74106;
+  --err-100: #fee2e2; --err-600: #dc2626; --err-700: #b91c1c;
+  --ink: #0f172a; --ink-2: #475569; --ink-3: #94a3b8; --line: #e2e8f0; --bg: #f1f5fb; --card: #fff;
+  --haut-statut: 47px; --bas-geste: 34px;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; font-family: Inter, "Segoe UI", system-ui, sans-serif; font-size: 15px; color: var(--ink); background: var(--bg); overscroll-behavior: none; }
+body.android { --haut-statut: 36px; --bas-geste: 24px; }
+#app { position: relative; display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+/* barre d'état simulée */
+.statut { position: absolute; inset: 0 0 auto 0; height: var(--haut-statut); display: flex; align-items: flex-end; justify-content: space-between; padding: 0 28px 6px; font-weight: 600; font-size: 14px; color: #fff; z-index: 30; pointer-events: none; }
+body.android .statut { padding: 0 20px 8px; align-items: center; font-weight: 500; font-size: 13px; }
+.statut .droite { display: flex; gap: 6px; align-items: center; }
+.statut svg, .statut i { width: 16px; height: 16px; }
+/* barre d'application */
+.barre { background: var(--navy-900); color: #fff; padding: calc(var(--haut-statut) + 8px) 16px 12px; flex: none; }
+.barre h1 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+.barre .sous { margin-top: 2px; font-size: 12px; color: var(--navy-200); }
+.barre .ligne { display: flex; align-items: center; gap: 10px; }
+.barre .retour { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; margin-left: -8px; color: #fff; border: 0; background: none; text-decoration: none; }
+.barre .retour i, .barre .retour svg { width: 22px; height: 22px; }
+.bandeau { flex: none; padding: 6px 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.bandeau i, .bandeau svg { width: 14px; height: 14px; }
+.bandeau.hors { background: var(--warn-100); color: var(--warn-700); }
+.bandeau.en-ligne { background: var(--ok-100); color: var(--ok-700); }
+.bandeau.suspendu { background: var(--err-100); color: var(--err-700); }
+/* contenu */
+.contenu { flex: 1 1 auto; overflow-y: auto; padding: 14px 14px 18px; -webkit-overflow-scrolling: touch; }
+.contenu > * + * { margin-top: 12px; }
+.carte { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 2px rgba(15, 23, 42, .05); padding: 14px; }
+.carte h2 { margin: 0 0 8px; font-size: 13px; font-weight: 700; color: var(--navy-900); text-transform: uppercase; letter-spacing: .04em; }
+.carte.liste { padding: 0; overflow: hidden; }
+.item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: inherit; text-decoration: none; border-top: 1px solid var(--line); background: none; border-left: 0; border-right: 0; border-bottom: 0; width: 100%; text-align: left; font: inherit; cursor: pointer; }
+.item:first-child { border-top: 0; }
+.item:active { background: var(--navy-50); }
+.item .pastille { width: 38px; height: 38px; border-radius: 10px; background: var(--navy-100); color: var(--navy-700); display: flex; align-items: center; justify-content: center; flex: none; }
+.item .pastille i, .item .pastille svg { width: 20px; height: 20px; }
+.item .texte { flex: 1; min-width: 0; }
+.item .titre { font-weight: 600; font-size: 15px; }
+.item .detail { color: var(--ink-2); font-size: 12.5px; margin-top: 1px; }
+.item .fin { color: var(--ink-3); }
+.item .fin i, .item .fin svg { width: 18px; height: 18px; }
+.kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.kpi .v { font-size: 24px; font-weight: 700; color: var(--navy-900); }
+.kpi .l { font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; background: var(--navy-100); color: var(--navy-700); white-space: nowrap; }
+.badge.ok { background: var(--ok-100); color: var(--ok-700); } .badge.warn { background: var(--warn-100); color: var(--warn-700); } .badge.err { background: var(--err-100); color: var(--err-700); }
+.note { display: flex; gap: 10px; padding: 12px; border-radius: 12px; font-size: 13px; background: var(--navy-100); color: var(--navy-900); }
+.note.warn { background: var(--warn-100); color: var(--warn-700); } .note.err { background: var(--err-100); color: var(--err-700); } .note.ok { background: var(--ok-100); color: var(--ok-700); }
+.note i, .note svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+/* formulaires */
+.champ { display: block; } .champ + .champ { margin-top: 12px; }
+.champ > span { display: block; font-size: 12px; font-weight: 600; color: var(--ink-2); margin-bottom: 4px; }
+.champ > span em { color: var(--err-600); font-style: normal; }
+.champ input, .champ select, .champ textarea { width: 100%; font: inherit; font-size: 16px; padding: 11px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: var(--ink); appearance: none; }
+.champ textarea { min-height: 84px; resize: vertical; }
+.champ input:focus, .champ select:focus, .champ textarea:focus { outline: 2px solid var(--navy-500); outline-offset: 0; border-color: var(--navy-500); }
+.champ .erreur { color: var(--err-700); font-size: 12px; margin-top: 4px; }
+.champ.invalide input, .champ.invalide select { border-color: var(--err-600); }
+.deux { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; } .trois { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.segments { display: flex; background: var(--navy-100); border-radius: 10px; padding: 3px; gap: 3px; }
+.segments button { flex: 1; border: 0; background: none; padding: 8px 4px; border-radius: 8px; font: inherit; font-size: 13px; font-weight: 600; color: var(--navy-700); }
+.segments button.actif { background: #fff; color: var(--navy-900); box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 48px; border: 0; border-radius: 12px; font: inherit; font-size: 16px; font-weight: 700; background: var(--navy-900); color: #fff; cursor: pointer; text-decoration: none; }
+.btn:active { background: var(--navy-950); } .btn.sec { background: #fff; color: var(--navy-900); border: 1px solid #cbd5e1; } .btn.danger { background: var(--err-700); } .btn.petit { min-height: 38px; font-size: 14px; width: auto; padding: 0 14px; }
+.btn[disabled] { opacity: .5; }
+.btn i, .btn svg { width: 20px; height: 20px; }
+.actions { display: grid; gap: 10px; }
+.vide { text-align: center; color: var(--ink-2); padding: 28px 12px; font-size: 14px; }
+.vide i, .vide svg { width: 36px; height: 36px; color: var(--ink-3); display: block; margin: 0 auto 8px; }
+.cle { font: 600 12px Consolas, monospace; color: var(--ink-2); }
+/* barre d'onglets */
+.onglets { flex: none; display: flex; background: #fff; border-top: 1px solid var(--line); padding: 6px 4px calc(var(--bas-geste) - 8px); }
+.onglets a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; font-size: 11px; font-weight: 600; color: var(--ink-3); text-decoration: none; }
+.onglets a.actif { color: var(--navy-900); }
+.onglets a i, .onglets a svg { width: 22px; height: 22px; }
+body:not(.android) .geste { position: absolute; bottom: 8px; left: 50%; width: 134px; height: 5px; margin-left: -67px; border-radius: 3px; background: #0f172a; opacity: .85; z-index: 30; pointer-events: none; }
+body.android .geste { position: absolute; bottom: 8px; left: 50%; width: 108px; height: 4px; margin-left: -54px; border-radius: 2px; background: #0f172a; opacity: .6; z-index: 30; pointer-events: none; }
+.toast { position: absolute; left: 14px; right: 14px; bottom: calc(var(--bas-geste) + 70px); background: var(--ink); color: #fff; padding: 12px 14px; border-radius: 12px; font-size: 14px; z-index: 40; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.pin { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 24px; } .pin button { height: 62px; border-radius: 31px; border: 1px solid var(--line); background: #fff; font: inherit; font-size: 24px; font-weight: 600; color: var(--navy-900); }
+.points { display: flex; gap: 14px; justify-content: center; margin: 16px 0 22px; } .points span { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--navy-900); } .points span.plein { background: var(--navy-900); }
+.qr { display: flex; justify-content: center; padding: 12px; background: #fff; border-radius: 12px; } .qr svg { width: 140px; height: 140px; }
+.logo { width: 76px; height: 76px; border-radius: 18px; margin: 0 auto; display: block; object-fit: cover; box-shadow: 0 4px 14px rgba(11, 30, 61, .25); }
+/* simulateur (index.php) */
+.sim { display: grid; grid-template-columns: 300px 1fr; min-height: 100vh; font-family: Inter, sans-serif; }
+.sim aside { background: #fff; border-right: 1px solid var(--line); padding: 16px; overflow-y: auto; max-height: 100vh; position: sticky; top: 0; }
+.sim aside h1 { font-size: 16px; margin: 0 0 4px; color: var(--navy-900); } .sim aside h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); margin: 16px 0 6px; }
+.sim aside .seg { display: flex; flex-wrap: wrap; gap: 6px; } .sim aside .seg button { padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font: inherit; font-size: 12.5px; cursor: pointer; } .sim aside .seg button.actif { background: var(--navy-900); color: #fff; border-color: var(--navy-900); }
+.sim aside .ecran { display: flex; gap: 8px; align-items: center; width: 100%; padding: 7px 8px; border: 0; background: none; border-radius: 8px; font: inherit; font-size: 13px; text-align: left; cursor: pointer; color: var(--ink); } .sim aside .ecran:hover { background: var(--navy-50); } .sim aside .ecran.actif { background: var(--navy-100); font-weight: 600; } .sim aside .ecran.ferme { color: var(--ink-3); cursor: not-allowed; } .sim aside .ecran i, .sim aside .ecran svg { width: 16px; height: 16px; flex: none; }
+.sim main { display: flex; gap: 48px; align-items: flex-start; justify-content: center; padding: 28px; flex-wrap: wrap; background: linear-gradient(180deg, #e8eef8, #dbe5f3); }
+.appareil { text-align: center; } .appareil .legende { margin-top: 10px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+.coque { position: relative; background: #0b1020; padding: 12px; box-shadow: 0 20px 50px rgba(11, 30, 61, .35), inset 0 0 0 2px #2a3350; }
+.coque.iphone { border-radius: 62px; } .coque.pixel { border-radius: 46px; padding: 10px; background: #14181f; }
+.coque .ecran-vitre { position: relative; overflow: hidden; background: #fff; } .coque.iphone .ecran-vitre { border-radius: 50px; } .coque.pixel .ecran-vitre { border-radius: 36px; }
+.coque iframe { border: 0; display: block; background: var(--bg); }
+.ile { position: absolute; top: 11px; left: 50%; width: 120px; height: 34px; margin-left: -60px; border-radius: 18px; background: #000; z-index: 50; }
+.trou { position: absolute; top: 12px; left: 50%; width: 22px; height: 22px; margin-left: -11px; border-radius: 50%; background: #000; z-index: 50; }
+@media (max-width: 900px) { .sim { grid-template-columns: 1fr; } .sim aside { position: static; max-height: none; } }

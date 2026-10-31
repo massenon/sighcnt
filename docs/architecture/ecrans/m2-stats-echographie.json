@@ -1,0 +1,38 @@
+{
+ "id": "m2-stats-echographie",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Statistiques de l’imagerie médicale",
+ "acces": "ouvert",
+ "titre": "Statistiques de l’imagerie médicale",
+ "description": "Activité d’imagerie calculée depuis les registres : examens par type, par mois, délais et part obstétricale.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Statistiques de l’imagerie médicale"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Comptes rendus émis",
+  "Rendus au prescripteur",
+  "Part obstétricale",
+  "Délai moyen demande → rendu"
+ ],
+ "cartes": [
+  "Examens par type",
+  "Évolution mensuelle",
+  "Par réalisateur — le pied des pièces réelles porte « Réalisé par »"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

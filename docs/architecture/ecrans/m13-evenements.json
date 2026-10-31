@@ -1,0 +1,60 @@
+{
+ "id": "m13-evenements",
+ "module": "M13",
+ "domaine": "Administration",
+ "libelleManifeste": "Événements & notifications",
+ "acces": "ouvert",
+ "titre": "Événements & notifications",
+ "description": "Événements de la clinique et paramétrage des notifications adressées au personnel.",
+ "fil": [
+  "Accueil",
+  "Administration",
+  "Administration & Ambulance",
+  "Événements & notifications"
+ ],
+ "actions": [
+  "Réunions",
+  "Plan annuel",
+  "Courriers (départ / arrivée)"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Événements planifiés",
+  "À venir",
+  "Avec notification",
+  "Catégories"
+ ],
+ "cartes": [
+  "Prochains événements",
+  "Tous les événements",
+  "Paramétrage des notifications système"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Événement",
+   "Catégorie",
+   "Date",
+   "Heure",
+   "Lieu",
+   "Responsable",
+   "Notification",
+   "Actions"
+  ],
+  [
+   "Événement déclencheur",
+   "Description",
+   "Canaux actifs"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "Modifier le paramétrage"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

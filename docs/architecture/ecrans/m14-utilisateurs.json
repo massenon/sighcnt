@@ -1,0 +1,58 @@
+{
+ "id": "m14-utilisateurs",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Utilisateurs",
+ "acces": "ouvert",
+ "titre": "Utilisateurs",
+ "description": "Comptes individuels, rôles attribués, état d’activation et double facteur.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Utilisateurs"
+ ],
+ "actions": [
+  "Rôles & permissions (RBAC)",
+  "Prescripteurs & exécutants de soins",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [],
+ "onglets": [
+  "Tous les comptes",
+  "Archivés"
+ ],
+ "kpis": [
+  "Comptes utilisateurs",
+  "Comptes actifs",
+  "Désactivés",
+  "Avec double facteur"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Identifiant",
+   "Utilisateur",
+   "Rôle",
+   "Service",
+   "État",
+   "Double facteur",
+   "Dernier accès",
+   "Échecs",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les comptes48",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,64 @@
+{
+ "id": "m12-flux-tresorerie",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Tableau des flux de trésorerie",
+ "acces": "ouvert",
+ "titre": "Tableau des flux de trésorerie",
+ "description": "Le tableau des flux au format du feuillet 8/51 de la liasse DGI : déposé ou calculé depuis le journal, contrôle compris.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Tableau des flux de trésorerie"
+ ],
+ "actions": [
+  "Compte de résultat",
+  "Bilan d’ouverture",
+  "Tableau de bord comptable"
+ ],
+ "regle": [
+  "Exercice 2026 : calculé — arrêté au 30/10/2026 (410 ligne(s) d’écriture validée(s) retenue(s)) · Exercice au 31/12/2025 : déposé — liasse BK505416. 90 brouillon(s) écarté(s) : un brouillon n’est pas un fait comptable, et le compter donnerait un résultat qui change quand le comptable rectifie une saisie.",
+  "Exercice 2026 (calculé) — contrôle du formulaire : trésorerie des comptes de classe 5 au 30/10/2026 = -6 362 456 FCFA, trésorerie par les flux (ZH) = -6 362 456 FCFA. Les deux concordent : chaque mouvement de trésorerie est expliqué par une ligne du tableau.",
+  "La trésorerie au 1er janvier 2026 se lit dans le journal : sans à-nouveaux (bilan d’ouverture), elle vaut zéro. La liasse déposée porte 6 300 639 FCFA au 31/12/2025 — reporter les soldes par le bilan d’ouverture pour les faire coïncider."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Trésorerie au 1er janvier (ZA)",
+  "Flux opérationnels (ZB)",
+  "Variation de la trésorerie (ZG)",
+  "Trésorerie au 31 décembre (ZH)"
+ ],
+ "cartes": [
+  "Tableau des flux de trésorerie — feuillet 8/51",
+  "Tableau des flux de trésorerie",
+  "Contrôles",
+  "Écarts internes du document déposé — conservés, non arbitrés",
+  "Composantes de la variation de trésorerie — Exercice 2026"
+ ],
+ "tableaux": [
+  [
+   "RÉF",
+   "LIBELLÉS",
+   "NOTE",
+   "EXERCICE 2026 (N)",
+   "EXERCICE AU 31/12/2025 (N-1)",
+   "calculé — arrêté au 30/10/2026",
+   "déposé — liasse BK505416"
+  ],
+  [
+   "Ligne",
+   "Constat",
+   "Lecture"
+  ]
+ ],
+ "commandes": [
+  "Imprimer le tableau des flux"
+ ],
+ "champs": [
+  "Exercice",
+  "Arrêté au"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

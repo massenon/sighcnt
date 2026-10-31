@@ -1,0 +1,57 @@
+{
+ "id": "m7-commandes",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Bons de commande",
+ "acces": "ouvert",
+ "titre": "Bons de commande",
+ "description": "Commandes fournisseurs, validation par la Directrice Administrative et transmission.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs",
+  "Bons de commande"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de livraison",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [
+  "2 commande(s) en attente de validation par la Directrice Administrative. Aucune transmission au fournisseur n’est possible avant cette validation (RG-04)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Commandes enregistrées",
+  "En attente de validation",
+  "Montant commandé",
+  "Livrées"
+ ],
+ "cartes": [
+  "Bons de commande"
+ ],
+ "tableaux": [
+  [
+   "N° commande",
+   "Date",
+   "Fournisseur",
+   "Articles",
+   "Montant",
+   "Délai",
+   "Statut",
+   "Validée par (RG-04)",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle commande",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

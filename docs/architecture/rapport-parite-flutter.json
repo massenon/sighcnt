@@ -1,0 +1,2411 @@
+{
+ "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
+ "ecrans_du_manifeste": 321,
+ "ecrans_portes": 292,
+ "ecrans": [
+  {
+   "id": "adm-enquetes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "adm-satisfaction",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "adm-validations",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "aide-apropos",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "auth-2fa",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "auth-forgot",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "auth-lock",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "auth-reset",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "cfg-branding",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-catalogue",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-centres-couts",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-certificats",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-comptabilite",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-compte",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-entetes",
+   "mesure": true,
+   "attendus": 7,
+   "presents": 7,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-fiscalite",
+   "mesure": true,
+   "attendus": 27,
+   "presents": 27,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-imagerie-catalogue",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-modules",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-natures-facture",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-notifications",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-organisation",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-poste",
+   "mesure": true,
+   "attendus": 5,
+   "presents": 5,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-rappels",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-regles",
+   "mesure": true,
+   "attendus": 35,
+   "presents": 35,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-systeme",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-tarifs",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "cfg-types-piece",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "contact-editeur",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-admin",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-admin-agent",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-aide-comptable",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-aide-soignant",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-ambulancier",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-anesthesiste",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-assistant-comptable",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-caissier",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-chirurgien",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-comptable",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-croise",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-da",
+   "mesure": true,
+   "attendus": 29,
+   "presents": 29,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-direction",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-echographiste",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-infirmier",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-laborantin",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-maternite",
+   "mesure": true,
+   "attendus": 35,
+   "presents": 35,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-medecin",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-patient",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-pharmacien",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-receptionniste",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-rh",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-stock",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-surveillant",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "enquete-publique",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "error-403",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "error-404",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "ged-archives",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "ged-bibliotheque",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "ged-workflow",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "index",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "m1-antecedents",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-certificats-externes",
+   "mesure": true,
+   "attendus": 3,
+   "presents": 3,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-constantes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-contre-reference",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-documents",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-dossier-etendu",
+   "mesure": true,
+   "attendus": 3,
+   "presents": 3,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-dossier-medical",
+   "mesure": true,
+   "attendus": 4,
+   "presents": 4,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-externe",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-numerisation",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-patient-nouveau",
+   "mesure": true,
+   "attendus": 27,
+   "presents": 27,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-patient-profil",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-patients",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-pieces",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m1-reference",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-assurance-personnel",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges-impression",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges-modeles",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges-verification",
+   "mesure": true,
+   "attendus": 6,
+   "presents": 6,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-conges",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-contrats",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-cout-agent",
+   "mesure": true,
+   "attendus": 6,
+   "presents": 6,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-dashboard",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-employe-profil",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-evaluations",
+   "mesure": true,
+   "attendus": 30,
+   "presents": 30,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-evenements",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-fiches-poste",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-missions",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-participations",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-personnel",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-planning",
+   "mesure": true,
+   "attendus": 38,
+   "presents": 38,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-presences",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-prestataires",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-primes",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-sanctions",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-securite-entretien",
+   "mesure": true,
+   "attendus": 39,
+   "presents": 39,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-stats-gardes",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-stats-permanences",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-stats-presence",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-avances",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-bulletins",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-calcul",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-cotisations",
+   "mesure": true,
+   "attendus": 30,
+   "presents": 30,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-dashboard",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-heures-sup",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-ortb",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-prets-etudes",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m11-validation",
+   "mesure": true,
+   "attendus": 7,
+   "presents": 7,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-analytique",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-balance",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-banques",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-baseline-2025",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-bfr",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-budgets",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-cloture",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-compte-resultat",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-cout-activite",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-dashboard",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-depenses",
+   "mesure": true,
+   "attendus": 29,
+   "presents": 29,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-echeances",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-ecritures",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-etats-financiers",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-flux-tresorerie",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-grand-livre",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-immobilisations",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-journaux",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-ouverture",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-plan-comptable",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-rentabilite-groupes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-seuil-rentabilite",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-tableau-decisionnel",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-ambulance",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-courriers",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-evenements",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-maintenance",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-notes-service",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-plan-annuel",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-repertoire-ambulances",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-reunions",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-audit",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-roles",
+   "mesure": true,
+   "attendus": 35,
+   "presents": 35,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-sauvegardes",
+   "mesure": true,
+   "attendus": 29,
+   "presents": 29,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-sessions",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-soignants",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-taches",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-utilisateurs",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-affichage",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-agenda",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-agenda-medecin",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-consultation-fiche",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-consultations",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-dashboard-imagerie",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-domicile",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-dossier-consultation-nouveau",
+   "mesure": true,
+   "attendus": 76,
+   "presents": 76,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-dossiers-consultation",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-echographie-galerie",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-file-attente",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-file-cabinet",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-cr",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-demandes",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-irm",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-mammographie",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-radiographie",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-imagerie-scanner",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-ordonnance-nouvelle",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-ordonnances",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-pathologies",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-prescriptions",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-registre-appels",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-rendezvous",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-salle-soins",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-stats-consultations",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-stats-echographie",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-visites",
+   "mesure": true,
+   "attendus": 4,
+   "presents": 4,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-administrations",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-admissions",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-bloc-checklist",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-bloc-cro",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-bons-pansements",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-chambres",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-cpa",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-cr-anesthesie",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-demande-examen",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-feuille-temperature",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-glasgow",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-observation",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-plan-lits",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-rapport",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-soins",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-sortie-avis-medical",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-sorties",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-stats-bloc",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-stats-hospitalisations",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-surveillance",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-transfusion",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-visites-patients",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-accouchements",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-comptes-rendus",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-cpn",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-cpon",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-deces",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-dossier-bebe",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-dossier-obstetrical",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-dossier-obstetrical-nouveau",
+   "mesure": true,
+   "attendus": 47,
+   "presents": 47,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-maternite",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-naissances",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-partogramme",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-planification",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-ptme",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-soins-curatifs",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-sonu",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m4-stats-maternite",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-banque-sang",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 4,
+   "taux": 0.2,
+   "manquants": [
+    "banque de sang",
+    "gestion des poches de sang par groupe, dates de péremption et demandes de transfusion.",
+    "poches en stock",
+    "disponibles",
+    "péremption sous 7 jours",
+    "périmées à détruire",
+    "n° poche",
+    "volume",
+    "péremption",
+    "donneur",
+    "réservée",
+    "bon de demande de sang",
+    "colonnes",
+    "exporter",
+    "disponibilité par groupe sanguin",
+    "poches de sang"
+   ]
+  },
+  {
+   "id": "m5-catalogue",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-demandes",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-demandes-hospitalisation",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-demandes-maternite",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-donneurs",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 2,
+   "taux": 0.1,
+   "manquants": [
+    "donneurs & transfusions",
+    "registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément.",
+    "donneurs enregistrés",
+    "éligibles",
+    "dons cumulés",
+    "donneurs bénévoles",
+    "tous les donneurs",
+    "archivés",
+    "n°",
+    "donneur",
+    "téléphone",
+    "type de don",
+    "dons",
+    "dernier don",
+    "éligibilité",
+    "colonnes",
+    "exporter",
+    "nouveau"
+   ]
+  },
+  {
+   "id": "m5-impression-resultats",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-prelevement",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-reactifs",
+   "mesure": true,
+   "attendus": 27,
+   "presents": 27,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-reactifs-stats",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-resultats",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-resultats-comparatif",
+   "mesure": true,
+   "attendus": 5,
+   "presents": 5,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-stats",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-stats-examens",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-unites",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-valeurs-reference",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-alertes",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-dashboard",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-dispensation",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-etiquetage",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-inventaire",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-inventaire-feuille",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-lots",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-mouvements",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-pertes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-pharmacie-externe",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-pharmacie-interne",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-point-stock",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-point-ventes",
+   "mesure": true,
+   "attendus": 33,
+   "presents": 33,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-produits",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-reprise",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-stock-detail",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-stock-gros",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m6-transferts",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-besoins",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-commandes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-ecarts",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-factures-fournisseurs",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-fournisseurs",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-livraisons",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-pv-reception-consommables",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-pv-reception-reactifs",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m7-receptions",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-caisse",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-dashboard",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-facturation",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-facture-avoir",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-factures",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-operations",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-paiements",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-proforma",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-recettes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-reliquats",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m8-remboursements",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-assures",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-compagnies",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-conventions",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-creances",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-dashboard",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-facture-mere",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-factures-assureur",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-historique",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-prises-en-charge",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-relances",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-avoirs",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-config",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-dashboard",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-factures",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-journal",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mecef-transmission",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-appareils",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 3,
+   "taux": 0.167,
+   "manquants": [
+    "postes fileuls et mobiles de la clinique : contact, retard, horloge, version ; appairer, révoquer, débloquer.",
+    "appareils actifs",
+    "postes fileuls",
+    "horloge à vérifier",
+    "type",
+    "agent",
+    "dernier contact",
+    "retard",
+    "horloge",
+    "version",
+    "état",
+    "appairer un poste",
+    "appairer un mobile",
+    "renvoyer vers tous",
+    "révoquer"
+   ]
+  },
+  {
+   "id": "mere-conflits",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 2,
+   "taux": 0.118,
+   "manquants": [
+    "ce que la mère ne peut pas trancher seule : même champ modifié sur deux postes, homonymes créés hors ligne.",
+    "ouverts",
+    "doublons possibles",
+    "tranchés (30 j)",
+    "n°",
+    "champ",
+    "version a",
+    "version b",
+    "origine",
+    "décision",
+    "garder a",
+    "garder b",
+    "fusionner à la main",
+    "ce n’est pas un doublon",
+    "à arbitrer"
+   ]
+  },
+  {
+   "id": "mere-journal-technique",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 1,
+   "taux": 0.083,
+   "manquants": [
+    "évènements du service de la mère : démarrages, erreurs, alertes, sauvegardes, liaison avec le relais.",
+    "évènements (24 h)",
+    "alertes",
+    "erreurs",
+    "quand",
+    "niveau",
+    "source",
+    "message",
+    "colonnes",
+    "exporter",
+    "évènements"
+   ]
+  },
+  {
+   "id": "mere-reinit",
+   "mesure": true,
+   "attendus": 5,
+   "presents": 1,
+   "taux": 0.2,
+   "manquants": [
+    "vider l’activité (tests de mise en service) en gardant les essentiels : tarifs, secteurs, comptes, droits, catalogues.",
+    "ouvrir la fenêtre (30 min)",
+    "fenêtre de réinitialisation",
+    "ce qui est conservé"
+   ]
+  },
+  {
+   "id": "mere-supervision",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 3,
+   "taux": 0.25,
+   "manquants": [
+    "santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité.",
+    "santé de la mère",
+    "époque",
+    "retard vers le relais",
+    "contrôle",
+    "état",
+    "sauvegarder maintenant",
+    "actualiser",
+    "contrôles"
+   ]
+  },
+  {
+   "id": "plan-du-site",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "rapports-bibliotheque",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rapports-direction",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rapports-generateur",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rapports-historique",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  }
+ ]
+}

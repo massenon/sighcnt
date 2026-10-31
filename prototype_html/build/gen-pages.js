@@ -23,7 +23,7 @@ const MODULE_FILES = {
   M4: 'm4-maternite', M5: 'm5-laboratoire', M6: 'm6-stock', M7: 'm7-achats',
   M8: 'm8-facturation', M9: 'm9-assurances', MECEF: 'mecef', M12: 'm12-comptabilite',
   M10: 'm10-rh', M11: 'm11-paie', M13: 'm13-administration', GED: 'ged',
-  RAP: 'rapports', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
+  RAP: 'rapports', MERE: 'mere', RLS: 'relais', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
 };
 
 const SCRIPTS = [
@@ -72,6 +72,13 @@ fs.mkdirSync(pagesDir, { recursive: true });
 
 let created = 0, kept = 0;
 const written = new Set();
+
+/* GARDE : un écran désigné comme `servant` doit exister. `m6-inventaires` (pluriel) n'a jamais existé ; la feuille
+   d'inventaire héritait donc des droits du MODULE au lieu de ceux du registre qu'elle alimente, sans que rien ne le dise. */
+Object.keys(NAV.INDEX).forEach((id) => {
+  const s = NAV.INDEX[id].servant;
+  if (s && !NAV.INDEX[s]) throw new Error('Manifeste : « ' + id + ' » déclare servant « ' + s + ' », qui n\'existe pas.');
+});
 
 Object.keys(NAV.INDEX).forEach((id) => {
   const entry = NAV.INDEX[id];

@@ -13,7 +13,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       N = global.SIGH.nav, P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   /* ==========================================================================
    * ORGANISATION & ORGANIGRAMME
@@ -1354,7 +1354,8 @@
         }).then(function (ok) {
           if (!ok) return;
           var avant = methodeCourante();
-          S.storage.set(CLE_VALO, o.id);
+          /* E880 : une ancienne ligne `S.storage.set(CLE_VALO, …)` lisait une constante que personne ne déclare — ReferenceError dans la
+             promesse, donc ni bascule, ni journal, ni message : le paramètre de valorisation ne s'appliquait JAMAIS. La bascule vit au socle. */
           S.setValorisationSortie(o.id);
           S.log('Paramétrage', 'M6', 'Valorisation des sorties', o.id, { methode: avant }, { methode: o.id });
           dessinerValorisation();
@@ -2312,6 +2313,8 @@
           danger: fermer, requireMotif: fermer,
         }).then(function (rep) {
           if (!rep) return;
+          /* E881 : `update` modifie la fiche EN PLACE — le journal lisait `f.actif` APRÈS l'écriture et portait la même valeur avant et après. */
+          var actifAvant = f.actif;
           col().update(f.id, {
             actif: !fermer,
             motif: fermer ? (rep.motif || f.motif) : f.motif,
@@ -2322,7 +2325,7 @@
           });
           N.invaliderModules();
           S.log(fermer ? 'Fermeture d’une activité' : 'Réouverture d’une activité',
-            'CFG', 'Activité', f.code, { actif: f.actif }, { actif: !fermer });
+            'CFG', 'Activité', f.code, { actif: actifAvant }, { actif: !fermer });
           afficher();
           U.toast(fermer ? 'Activité fermée.' : 'Activité rouverte.', {
             type: 'success',
@@ -2496,16 +2499,27 @@
         K.btn('Réinitialiser le jeu de données', {
           variant: 'danger', icon: 'rotate-ccw',
           onclick: function () {
+            /* RÉINITIALISER = RETIRER LES DONNÉES DE TEST, GARDER L'ESSENTIEL
+               (demande du 20/10/2026). Le bouton RÉGÉNÉRAIT le jeu de
+               démonstration complet : on cliquait, et tout revenait à
+               l'identique — « ça n'a pas marché ». Il vide désormais les
+               données d'activité et conserve paramétrage, référentiels,
+               comptes, droits et catalogues ; le vidage est journalisé et
+               tient au rechargement (drapeau `_jeuVide` du socle). */
             U.confirm({
               title: 'Réinitialiser toutes les données de démonstration ?',
-              message: 'Toutes les créations, modifications et archivages réalisés dans le prototype seront perdus '
-                + 'et le jeu de démonstration initial sera rétabli. Cette action est irréversible.',
-              confirmLabel: 'Réinitialiser', danger: true,
-            }).then(function (ok) {
-              if (!ok) return;
-              S.reset();
-              U.toast('Jeu de données réinitialisé.', { type: 'success' });
-              setTimeout(function () { global.location.reload(); }, 900);
+              message: 'Les données de test — patients, consultations, factures, mouvements, écritures — '
+                + 'seront retirées. Le paramétrage, les référentiels, les comptes, la matrice des droits '
+                + 'et les catalogues sont conservés. L’opération est journalisée et irréversible : '
+                + 'générer une sauvegarde d’abord.',
+              confirmLabel: 'Réinitialiser', danger: true, requireMotif: true,
+            }).then(function (r) {
+              if (!r) return;
+              var bilan = S.viderActivite(r.motif);
+              U.toast(bilan.tables + ' table(s) vidée(s) — ' + C.num(bilan.enregistrements) + ' enregistrements retirés.', {
+                type: 'success', detail: 'Paramétrage, référentiels, comptes et droits conservés.',
+              });
+              recharger();
             });
           },
         }),
@@ -2549,16 +2563,22 @@
    * --------------------------------------------------------------------- */
   var CLE_REINIT = 'sigh-cnt:reinit-autorisee';
 
-  /* Collections de PARAMÉTRAGE — jamais touchées par une réinitialisation. */
-  var COLLECTIONS_PARAMETRAGE = [
-    'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes',
-    'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel',
-    'utilisateurs', 'ressources', 'banques', 'souscripteurs', 'garanties',
-    /* Les objectifs du pilotage sont un PARAMÉTRAGE de la Direction, pas des
-       données d'exploitation : une réinitialisation du jeu de test ne doit
-       pas effacer des cibles qu'elle a arrêtées. */
-    'certificats', 'objectifsPilotage',
-  ];
+  /* CE QUI EST CONSERVÉ VIT AU SOCLE (vague 68) : la liste est lue par le
+     magasin lui-même, qui bloque les ré-amorçages d'écran après un vidage.
+     Deux listes auraient divergé au premier référentiel ajouté. */
+  var COLLECTIONS_PARAMETRAGE = S.COLLECTIONS_ESSENTIELLES;
+
+  /* ON ATTEND QUE LE SERVEUR AIT REÇU le vidage avant de recharger : un
+     rechargement lancé pendant l'envoi relisait la base d'AVANT, et l'on
+     croyait que rien ne s'était passé. */
+  function recharger() {
+    S.pousserMaintenant();
+    var debut = Date.now();
+    (function attendre() {
+      if (S.fileEnAttente() === 0 || Date.now() - debut > 8000) { global.location.reload(); return; }
+      setTimeout(attendre, 150);
+    })();
+  }
 
   function ongletReinitialisation(panneau) {
     dessiner();
@@ -2666,7 +2686,7 @@
                 if (!ok) return;
                 S.reset();
                 U.toast('Jeu de démonstration régénéré.', { type: 'success' });
-                setTimeout(function () { global.location.reload(); }, 900);
+                recharger();
               });
             },
           }),
@@ -2690,20 +2710,13 @@
         confirmLabel: 'Vider les jeux de test', danger: true, requireMotif: true,
       }).then(function (r) {
         if (!r) return;
-        var db = S.raw();
-        var vidées = 0, lignes = 0;
-        activite.forEach(function (k) {
-          lignes += db[k].length;
-          db[k] = [];
-          vidées++;
+        /* Le vidage est un geste du SOCLE : la même fabrique sert ici et au
+           bouton de maintenance — deux vidages auraient divergé. */
+        var bilan = S.viderActivite(r.motif);
+        U.toast(bilan.tables + ' table(s) vidée(s) — ' + C.num(bilan.enregistrements) + ' enregistrements retirés.', {
+          type: 'success', detail: 'Paramétrage, référentiels, comptes et droits conservés.',
         });
-        S.save();
-        S.log('Réinitialisation des jeux de test', 'CFG', 'Base', C.iso(AUJ), null,
-          { tables: vidées, enregistrements: lignes, motif: r.motif });
-        U.toast(vidées + ' table(s) vidée(s) — ' + C.num(lignes) + ' enregistrements retirés.', {
-          type: 'success', detail: 'Paramétrage et référentiels conservés.',
-        });
-        setTimeout(function () { global.location.reload(); }, 1400);
+        recharger();
       });
     }
   }
@@ -4050,11 +4063,14 @@
                     actes.push(K.iconBtn(v.actif === false ? 'eye' : 'eye-off',
                       v.actif === false ? 'Rouvrir la variable' : 'Fermer la variable',
                       function () {
-                        colVariablesIm().update(v.id, { actif: v.actif === false });
+                        /* E845 : l'état se lit AVANT l'écriture — `update` modifie la fiche en place, et le message
+                           disait « rouverte » au moment même de FERMER la variable. */
+                        var etaitFermee = v.actif === false;
+                        colVariablesIm().update(v.id, { actif: etaitFermee });
                         afficher();
-                        U.toast(v.actif === false ? 'Variable rouverte.' : 'Variable ferm\u00e9e.', {
+                        U.toast(etaitFermee ? 'Variable rouverte.' : 'Variable ferm\u00e9e.', {
                           type: 'success',
-                          detail: v.actif === false ? null : 'Les comptes rendus d\u00e9j\u00e0 rendus la conservent.',
+                          detail: etaitFermee ? null : 'Les comptes rendus d\u00e9j\u00e0 rendus la conservent.',
                         });
                       }));
                   }
@@ -4066,6 +4082,41 @@
         ]));
         U.icons(vue);
       }
+    },
+  });
+
+
+  /* ============================================================================
+   * CE POSTE — où se décide qu un poste est la MÈRE (30/10/2026)
+   * Un seul exécutable ; le mode est un réglage du poste, activé sur le serveur local.
+   * Prototype : aucune activation réelle (données de démonstration).
+   * ========================================================================== */
+  global.SIGH.screen('cfg-poste', {
+    title: 'Ce poste',
+    description: 'Mode du poste : fileul ou mère. La mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).',
+    regle: 'Il ne peut y avoir <strong>qu’un seul poste mère par clinique</strong> : le relais refuse une seconde déclaration <strong>en nommant la première</strong>. L’activation est <strong>atomique</strong> : si le service ne démarre pas, le poste reste fileul.',
+    render: function (root) {
+      var el = C.el, hote = el('div.space-y-4');
+      var mere = false;
+      function peindre() {
+        C.clear(hote);
+        hote.appendChild(U.kpiGrid([
+          { label: 'Mode de ce poste', value: mere ? 'Mère' : 'Fileul', icon: mere ? 'server' : 'monitor', tone: mere ? 'success' : 'navy' },
+          { label: 'Service de synchronisation', value: mere ? 'En marche' : 'Arrêté', icon: 'power', tone: mere ? 'success' : 'neutral' },
+        ]));
+        if (!mere) {
+          hote.appendChild(K.note('À faire sur le <strong>serveur local</strong> uniquement. Exige l’adresse du relais, le <strong>secret de la mère</strong> et la <strong>clé de clinique</strong>.', { tone: 'info', icon: 'info' }));
+          var b = el('button.btn.btn-primary.btn-sm', { type: 'button', text: 'Activer le mode mère' });
+          b.addEventListener('click', function () { U.toast('Simulation — déclaration au relais, démarrage du service, mode mère enregistré.', { type: 'info' }); mere = true; peindre(); });
+          hote.appendChild(b);
+        } else {
+          hote.appendChild(K.note('Les modules du groupe <strong>Poste mère</strong> sont maintenant disponibles pour l’administrateur et la DAF.', { tone: 'success', icon: 'check' }));
+          var d = el('button.btn.btn-secondary.btn-sm', { type: 'button', text: 'Désactiver le mode mère' });
+          d.addEventListener('click', function () { mere = false; peindre(); });
+          hote.appendChild(d);
+        }
+      }
+      root.appendChild(hote); peindre(); return null;
     },
   });
 

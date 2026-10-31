@@ -1,0 +1,47 @@
+{
+ "id": "mecef-dashboard",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "Tableau de bord fiscal",
+ "acces": "ouvert",
+ "titre": "Tableau de bord fiscal — MECeF",
+ "description": "Supervision de l’émission et de la transmission des factures normalisées à l’administration fiscale.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée",
+  "Tableau de bord fiscal"
+ ],
+ "actions": [
+  "Factures normalisées",
+  "Transmission & réponses",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [
+  "15 facture(s) rejetée(s) par le dispositif fiscal — correction et réémission requises.",
+  "72 facture(s) en attente de transmission."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Factures émises aujourd’hui",
+  "Factures validées",
+  "En attente de transmission",
+  "Factures rejetées",
+  "Montant total déclaré",
+  "AIB collecté",
+  "Taux de validation",
+  "Dernière synchronisation"
+ ],
+ "cartes": [
+  "Accès rapides",
+  "Évolution des factures normalisées (12 mois)",
+  "Statut des transmissions",
+  "Recettes déclarées et TVA (12 mois)",
+  "Répartition par nature de facture"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 8
+}

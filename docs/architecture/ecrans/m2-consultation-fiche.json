@@ -1,0 +1,65 @@
+{
+ "id": "m2-consultation-fiche",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Fiche de consultation",
+ "acces": "ouvert",
+ "titre": "Fiche de consultation",
+ "description": "Synthèse du dossier de consultation : diagnostic, conduite à tenir, et SEULE étape de prescription — médicaments, analyses, imagerie médicale.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Consultations & prescriptions",
+  "Fiche de consultation"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [
+  "Fiche impossible sans dossier. Aucun dossier de consultation enregistré pour ce patient. La fiche fait le RÉCAPITULATIF du dossier : ouvrir d’abord « Soins › Consultations & prescriptions › Dossiers de consultation », y enregistrer l’anamnèse et l’examen clinique, puis revenir à la fiche.",
+  "Aucun relevé de constantes de l’accueil pour ce patient. Les constantes se relèvent à l’accueil (« Constantes à l’arrivée ») — elles ne se saisissent pas ici.",
+  "Total de la prescription (avant répartition assureur / patient)0 FCFA (médicaments 0 · analyses 0 · imagerie 0)"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [
+  "Dossier de consultation — récapitulatif",
+  "Zone 1 — constantes de l’accueil",
+  "Synthèse, diagnostic et conduite à tenir",
+  "Prescription — la seule étape où l’on prescrit",
+  "Orientation",
+  "Enchaînement du parcours",
+  "Rappels de facturation"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "CNT/1/25 — TCHANE Bertine",
+  "Ouvrir les dossiers de consultation",
+  "— Aucune sélection —",
+  "— Médicament —",
+  "Ajouter un médicament",
+  "Enregistrer et prescrire",
+  "Éditer l’ordonnance",
+  "Éditer le bulletin d’analyses"
+ ],
+ "champs": [
+  "Dossier patient *",
+  "Praticien *",
+  "Date et heure *",
+  "Résumé syndromique",
+  "Hypothèses diagnostiques",
+  "Pathologie(s) retenue(s) *",
+  "Diagnostic retenu *",
+  "Traitement d’emblée",
+  "Conduite à tenir",
+  "Analyses de laboratoire prescrites",
+  "Imagerie médicale prescrite",
+  "Orientation *",
+  "Prochain rendez-vous (retour à domicile)",
+  "Tarif de la consultation (FCFA)"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

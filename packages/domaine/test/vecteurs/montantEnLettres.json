@@ -1,0 +1,59 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "valeur": 0
+   },
+   "sortie": "zéro francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 1
+   },
+   "sortie": "un francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 1500
+   },
+   "sortie": "mille cinq cents francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 5000
+   },
+   "sortie": "cinq mille francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 21000
+   },
+   "sortie": "vingt et un mille francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 80000
+   },
+   "sortie": "quatre-vingts mille francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 123456
+   },
+   "sortie": "cent vingt-trois mille quatre cent cinquante-six francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 1000000
+   },
+   "sortie": "un million francs CFA"
+  },
+  {
+   "entree": {
+    "valeur": 190830994
+   },
+   "sortie": "cent quatre-vingt-dix millions huit cent trente mille neuf cent quatre-vingt-quatorze francs CFA"
+  }
+ ]
+}

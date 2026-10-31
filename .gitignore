@@ -1,0 +1,48 @@
+# ---- dépendances et sorties de build ----
+node_modules/
+vendor/
+.phpunit.cache/
+.dart_tool/
+apps/poste/build/
+apps/mobile/build/
+dist/
+coverage/
+*.tsbuildinfo
+apps/poste/src-tauri/target/
+target/
+
+# ---- secrets et configuration locale (jamais versionnés) ----
+.env
+.env.*
+!.env.exemple
+*.local.php
+!*.local.exemple.php
+prototype_html/api/config.local.php
+
+# ---- données : un export de base est une donnée, pas du code ----
+*.sql
+!packages/schema/**/*.sql
+!infra/**/*.sql
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+
+# ---- Flutter / Laravel ----
+.flutter-plugins*
+.packages
+pubspec.lock.bak
+apps/web/storage/*.key
+apps/web/public/hot
+apps/web/public/storage
+
+# ---- outillage ----
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+
+prototype_html/api/sauvegardes/
+packages/sync_dart/build/
+.claude/worktrees/

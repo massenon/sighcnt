@@ -1,0 +1,60 @@
+{
+ "id": "mere-journal-operations",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Journal des opérations",
+ "acces": "ouvert",
+ "titre": "Journal des opérations",
+ "description": "Explorateur du journal : chaque geste d’écriture, dans l’ordre posé par la mère (séquence), jamais par l’horloge d’un poste.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation",
+  "Journal des opérations"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Séquence courante",
+  "Époque",
+  "Appareils à jour"
+ ],
+ "cartes": [
+  "Opérations récentes",
+  "Curseurs par appareil"
+ ],
+ "tableaux": [
+  [
+   "Séq.",
+   "Date",
+   "Appareil",
+   "Type",
+   "Collection",
+   "Fiche"
+  ],
+  [
+   "Appareil",
+   "Curseur (dernière séq. reçue)",
+   "Retard"
+  ]
+ ],
+ "commandes": [
+  "Renvoyer vers tous",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 3
+}

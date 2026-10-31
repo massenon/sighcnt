@@ -1,0 +1,16 @@
+name: sigh_sync
+description: Moteur de synchronisation SIGH-CNT en Dart — poste mère (service), poste fileul (client), mobile, enveloppes chiffrées. Rejoue les scénarios de packages/sync/banc.
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+dependencies:
+  sigh_domaine:
+    path: ../domaine
+  sqlite3: any
+  crypto: any
+  cryptography: any
+  postgres: any
+dev_dependencies:
+  test: any
+  lints: any

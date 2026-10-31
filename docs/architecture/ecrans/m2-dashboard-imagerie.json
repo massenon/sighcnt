@@ -1,0 +1,67 @@
+{
+ "id": "m2-dashboard-imagerie",
+ "module": "M2",
+ "domaine": "Soins",
+ "libelleManifeste": "Poste d’imagerie médicale",
+ "acces": "ouvert",
+ "titre": "Poste d’imagerie médicale",
+ "description": "Le premier regard du poste : les examens payés à exécuter, les comptes rendus en rédaction, la file d’attente.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Imagerie médicale",
+  "Poste d’imagerie médicale"
+ ],
+ "actions": [
+  "Agenda",
+  "Rendez-vous & visites",
+  "RDV, Visites & Consultations"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Payés — à exécuter",
+  "En attente de caisse",
+  "CR en rédaction",
+  "Rendus ce mois-ci"
+ ],
+ "cartes": [
+  "À exécuter — examens réglés",
+  "Activité par modalité",
+  "File d’attente du poste — 7 à traiter, 7 en attente de caisse"
+ ],
+ "tableaux": [
+  [
+   "N°",
+   "Patient",
+   "Examen",
+   "Priorité",
+   "Actions"
+  ],
+  [
+   "Modalité",
+   "Attente caisse",
+   "À exécuter",
+   "CR en rédaction",
+   "Rendus ce mois"
+  ],
+  [
+   "Origine",
+   "Patient",
+   "À faire",
+   "Montant",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Saisir le CR",
+  "1",
+  "2"
+ ],
+ "champs": [],
+ "nbTableaux": 3,
+ "nbKpis": 4
+}

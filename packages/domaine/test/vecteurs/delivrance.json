@@ -1,0 +1,4121 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-delivrance.js — PR.delivrer et les pharmacies de m6-stock.js pilotés. Ne pas éditer.",
+ "moteur": [
+  {
+   "nom": "une ligne : stock de détail et stock total décomptés, justificatif = n° d'ordonnance, valorisée au prix de vente",
+   "entree": {
+    "nom": "une ligne : stock de détail et stock total décomptés, justificatif = n° d'ordonnance, valorisée au prix de vente",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000400",
+    "produits": [
+     {
+      "id": "V1A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV1",
+     "numero": "ORD-V1",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/1/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V1A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 18,
+      "stockDetail": 6,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000401",
+      "produitId": "V1A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 2,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V1",
+      "ordonnanceId": "OV1",
+      "valorisation": "prixVente",
+      "valeur": 1000,
+      "valeurPrixVente": 1000,
+      "valeurCump": 960,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "deux produits sur la même ordonnance : une sortie par ligne",
+   "entree": {
+    "nom": "deux produits sur la même ordonnance : une sortie par ligne",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000401",
+    "produits": [
+     {
+      "id": "V2A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     },
+     {
+      "id": "V2B",
+      "code": "CB",
+      "designation": "PRODUIT B INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 700,
+      "cump": 650,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV2",
+     "numero": "ORD-V2",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/2/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V2A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      },
+      {
+       "produitId": "V2B",
+       "produit": "PRODUIT B INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 18,
+      "stockDetail": 6,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     },
+     {
+      "code": "CB",
+      "designation": "PRODUIT B INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 17,
+      "stockDetail": 5,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 700,
+      "cump": 650,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000402",
+      "produitId": "V2A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 2,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V2",
+      "ordonnanceId": "OV2",
+      "valorisation": "prixVente",
+      "valeur": 1000,
+      "valeurPrixVente": 1000,
+      "valeurCump": 960,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "reference": "M000403",
+      "produitId": "V2B",
+      "produit": "PRODUIT B INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V2",
+      "ordonnanceId": "OV2",
+      "valorisation": "prixVente",
+      "valeur": 2100,
+      "valeurPrixVente": 2100,
+      "valeurCump": 1950,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT B INJ",
+      "produitId": "V2B",
+      "produitCode": "CB",
+      "stockRestant": 5,
+      "seuil": 5,
+      "justificatif": "ORD-V2",
+      "priorite": "normale",
+      "id": "<nouvelle>"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V2B",
+      "niveau": "alerte",
+      "dispo": 5,
+      "seuil": 5
+     }
+    ]
+   }
+  },
+  {
+   "nom": "produit sans stock de détail : le stock total sert de disponible",
+   "entree": {
+    "nom": "produit sans stock de détail : le stock total sert de disponible",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000403",
+    "produits": [
+     {
+      "id": "V3A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 10,
+      "stockDetail": null,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV3",
+     "numero": "ORD-V3",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/3/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V3A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 7,
+      "stockDetail": null,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000404",
+      "produitId": "V3A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V3",
+      "ordonnanceId": "OV3",
+      "valorisation": "prixVente",
+      "valeur": 1500,
+      "valeurPrixVente": 1500,
+      "valeurCump": 1440,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "ordonnance non réglée : la délivrance est bloquée",
+   "entree": {
+    "nom": "ordonnance non réglée : la délivrance est bloquée",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000404",
+    "produits": [
+     {
+      "id": "V4A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV4",
+     "numero": "ORD-V4",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/4/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "impayee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V4A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": "Facture non réglée — la délivrance est bloquée.",
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "en_attente",
+     "dispensePar": null,
+     "aDispenseLe": false
+    },
+    "mouvements": [],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "ordonnance déjà servie : rien n'est refait",
+   "entree": {
+    "nom": "ordonnance déjà servie : rien n'est refait",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000404",
+    "produits": [
+     {
+      "id": "V5A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV5",
+     "numero": "ORD-V5",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/5/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "servie",
+     "medicaments": [
+      {
+       "produitId": "V5A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": true,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": null,
+     "aDispenseLe": false
+    },
+    "mouvements": [],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "stock de détail insuffisant : refus NOMMÉ, rien n'est écrit",
+   "entree": {
+    "nom": "stock de détail insuffisant : refus NOMMÉ, rien n'est écrit",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000404",
+    "produits": [
+     {
+      "id": "V6A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 3,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV6",
+     "numero": "ORD-V6",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/6/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V6A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 5,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": "Stock insuffisant : PRODUIT A INJ (3 pour 5 demandés)",
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 3,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "en_attente",
+     "dispensePar": null,
+     "aDispenseLe": false
+    },
+    "mouvements": [],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "une ligne couverte et une non couverte : tout est refusé (jamais de service à moitié)",
+   "entree": {
+    "nom": "une ligne couverte et une non couverte : tout est refusé (jamais de service à moitié)",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000404",
+    "produits": [
+     {
+      "id": "V7A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     },
+     {
+      "id": "V7B",
+      "code": "CB",
+      "designation": "PRODUIT B INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 1,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV7",
+     "numero": "ORD-V7",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/7/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V7A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      },
+      {
+       "produitId": "V7B",
+       "produit": "PRODUIT B INJ",
+       "quantite": 4,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": "Stock insuffisant : PRODUIT B INJ (1 pour 4 demandés)",
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     },
+     {
+      "code": "CB",
+      "designation": "PRODUIT B INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 1,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "en_attente",
+     "dispensePar": null,
+     "aDispenseLe": false
+    },
+    "mouvements": [],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "produit introuvable : refus nommé (0 disponible)",
+   "entree": {
+    "nom": "produit introuvable : refus nommé (0 disponible)",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000404",
+    "produits": [
+     {
+      "id": "V8A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV8",
+     "numero": "ORD-V8",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/8/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "INCONNU-8",
+       "produit": "PRODUIT ? INJ",
+       "quantite": 1,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": "Stock insuffisant : PRODUIT ? INJ (0 pour 1 demandés)",
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "en_attente",
+     "dispensePar": null,
+     "aDispenseLe": false
+    },
+    "mouvements": [],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "RG-03 — deux lignes du MÊME produit : le cumul dépasse le stock, refusé (écart E42 corrigé)",
+   "entree": {
+    "nom": "RG-03 — deux lignes du MÊME produit : le cumul dépasse le stock, refusé (écart E42 corrigé)",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000404",
+    "produits": [
+     {
+      "id": "V9A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV9",
+     "numero": "ORD-V9",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/9/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V9A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 5,
+       "posologie": "1/j"
+      },
+      {
+       "produitId": "V9A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 5,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": "Stock insuffisant : PRODUIT A INJ (3 pour 5 demandés)",
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "en_attente",
+     "dispensePar": null,
+     "aDispenseLe": false
+    },
+    "mouvements": [],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "deux lignes du même produit dont le cumul tient : servies",
+   "entree": {
+    "nom": "deux lignes du même produit dont le cumul tient : servies",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000404",
+    "produits": [
+     {
+      "id": "V10A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV10",
+     "numero": "ORD-V10",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/10/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V10A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      },
+      {
+       "produitId": "V10A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 5,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 12,
+      "stockDetail": 0,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000405",
+      "produitId": "V10A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V10",
+      "ordonnanceId": "OV10",
+      "valorisation": "prixVente",
+      "valeur": 1500,
+      "valeurPrixVente": 1500,
+      "valeurCump": 1440,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "reference": "M000406",
+      "produitId": "V10A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 5,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V10",
+      "ordonnanceId": "OV10",
+      "valorisation": "prixVente",
+      "valeur": 2500,
+      "valeurPrixVente": 2500,
+      "valeurCump": 2400,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "RUPTURE — PRODUIT A INJ",
+      "produitId": "V10A",
+      "produitCode": "CA",
+      "stockRestant": 0,
+      "seuil": 5,
+      "justificatif": "ORD-V10",
+      "priorite": "haute",
+      "id": "<nouvelle>"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V10A",
+      "niveau": "rupture",
+      "dispo": 0,
+      "seuil": 5
+     },
+     {
+      "produitId": "V10A",
+      "niveau": "rupture",
+      "dispo": 0,
+      "seuil": 5
+     }
+    ]
+   }
+  },
+  {
+   "nom": "valorisation au CUMP (paramètre de la Direction) : les DEUX valeurs sont portées",
+   "entree": {
+    "nom": "valorisation au CUMP (paramètre de la Direction) : les DEUX valeurs sont portées",
+    "methode": "cump",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000406",
+    "produits": [
+     {
+      "id": "V11A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480.4,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV11",
+     "numero": "ORD-V11",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/11/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V11A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 17,
+      "stockDetail": 5,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480.4,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000407",
+      "produitId": "V11A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V11",
+      "ordonnanceId": "OV11",
+      "valorisation": "cump",
+      "valeur": 1441,
+      "valeurPrixVente": 1500,
+      "valeurCump": 1441,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT A INJ",
+      "produitId": "V11A",
+      "produitCode": "CA",
+      "stockRestant": 5,
+      "seuil": 5,
+      "justificatif": "ORD-V11",
+      "priorite": "normale",
+      "id": "<nouvelle>"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V11A",
+      "niveau": "alerte",
+      "dispo": 5,
+      "seuil": 5
+     }
+    ]
+   }
+  },
+  {
+   "nom": "produit sans prix de vente : le prix d'achat sert",
+   "entree": {
+    "nom": "produit sans prix de vente : le prix d'achat sert",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000407",
+    "produits": [
+     {
+      "id": "V12A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 250,
+      "prixVente": null,
+      "cump": null,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV12",
+     "numero": "ORD-V12",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/12/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V12A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 4,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 16,
+      "stockDetail": 4,
+      "stockGros": 12,
+      "prixAchat": 250,
+      "prixVente": null,
+      "cump": null,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000408",
+      "produitId": "V12A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 4,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V12",
+      "ordonnanceId": "OV12",
+      "valorisation": "prixVente",
+      "valeur": 1000,
+      "valeurPrixVente": 1000,
+      "valeurCump": 1000,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT A INJ",
+      "produitId": "V12A",
+      "produitCode": "CA",
+      "stockRestant": 4,
+      "seuil": 5,
+      "justificatif": "ORD-V12",
+      "priorite": "normale",
+      "id": "<nouvelle>"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V12A",
+      "niveau": "alerte",
+      "dispo": 4,
+      "seuil": 5
+     }
+    ]
+   }
+  },
+  {
+   "nom": "la sortie fait passer SOUS le seuil : une tâche de réapprovisionnement naît",
+   "entree": {
+    "nom": "la sortie fait passer SOUS le seuil : une tâche de réapprovisionnement naît",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000408",
+    "produits": [
+     {
+      "id": "V13A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 8,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 6
+     }
+    ],
+    "ordonnance": {
+     "id": "OV13",
+     "numero": "ORD-V13",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/13/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V13A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 5,
+      "stockDetail": 5,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 6
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000409",
+      "produitId": "V13A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V13",
+      "ordonnanceId": "OV13",
+      "valorisation": "prixVente",
+      "valeur": 1500,
+      "valeurPrixVente": 1500,
+      "valeurCump": 1440,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT A INJ",
+      "produitId": "V13A",
+      "produitCode": "CA",
+      "stockRestant": 5,
+      "seuil": 6,
+      "justificatif": "ORD-V13",
+      "priorite": "normale",
+      "id": "<nouvelle>"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V13A",
+      "niveau": "alerte",
+      "dispo": 5,
+      "seuil": 6
+     }
+    ]
+   }
+  },
+  {
+   "nom": "la sortie vide le rayon : RUPTURE, priorité haute",
+   "entree": {
+    "nom": "la sortie vide le rayon : RUPTURE, priorité haute",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000409",
+    "produits": [
+     {
+      "id": "V14A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 3,
+      "stockDetail": 3,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV14",
+     "numero": "ORD-V14",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/14/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V14A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 0,
+      "stockDetail": 0,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000410",
+      "produitId": "V14A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V14",
+      "ordonnanceId": "OV14",
+      "valorisation": "prixVente",
+      "valeur": 1500,
+      "valeurPrixVente": 1500,
+      "valeurCump": 1440,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "RUPTURE — PRODUIT A INJ",
+      "produitId": "V14A",
+      "produitCode": "CA",
+      "stockRestant": 0,
+      "seuil": 5,
+      "justificatif": "ORD-V14",
+      "priorite": "haute",
+      "id": "<nouvelle>"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V14A",
+      "niveau": "rupture",
+      "dispo": 0,
+      "seuil": 5
+     }
+    ]
+   }
+  },
+  {
+   "nom": "une tâche de réapprovisionnement déjà ouverte : mise à jour, jamais de doublon",
+   "entree": {
+    "nom": "une tâche de réapprovisionnement déjà ouverte : mise à jour, jamais de doublon",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000410",
+    "produits": [
+     {
+      "id": "V15A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 8,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 6
+     }
+    ],
+    "ordonnance": {
+     "id": "OV15",
+     "numero": "ORD-V15",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/15/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V15A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": [
+     {
+      "id": "TV15R",
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT A INJ",
+      "produitId": "V15A",
+      "priorite": "normale",
+      "stockRestant": 7,
+      "seuil": 6
+     }
+    ]
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 5,
+      "stockDetail": 5,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 6
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000411",
+      "produitId": "V15A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V15",
+      "ordonnanceId": "OV15",
+      "valorisation": "prixVente",
+      "valeur": 1500,
+      "valeurPrixVente": 1500,
+      "valeurCump": 1440,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "en_attente",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT A INJ",
+      "produitId": "V15A",
+      "priorite": "normale",
+      "stockRestant": 5,
+      "seuil": 6,
+      "id": "TV15R"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V15A",
+      "niveau": "alerte",
+      "dispo": 5,
+      "seuil": 6
+     }
+    ]
+   }
+  },
+  {
+   "nom": "une tâche de réapprovisionnement déjà TERMINÉE (statut « fait ») : mise à jour aussi, aucune nouvelle (écart E43 porté tel quel)",
+   "entree": {
+    "nom": "une tâche de réapprovisionnement déjà TERMINÉE (statut « fait ») : mise à jour aussi, aucune nouvelle (écart E43 porté tel quel)",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000411",
+    "produits": [
+     {
+      "id": "V16A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 8,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 6
+     }
+    ],
+    "ordonnance": {
+     "id": "OV16",
+     "numero": "ORD-V16",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/16/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V16A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 3,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": [
+     {
+      "id": "TV16R",
+      "statut": "fait",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT A INJ",
+      "produitId": "V16A",
+      "priorite": "normale",
+      "stockRestant": 7,
+      "seuil": 6
+     }
+    ]
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 5,
+      "stockDetail": 5,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 6
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000412",
+      "produitId": "V16A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 3,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V16",
+      "ordonnanceId": "OV16",
+      "valorisation": "prixVente",
+      "valeur": 1500,
+      "valeurPrixVente": 1500,
+      "valeurCump": 1440,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "fait",
+      "type": "reapprovisionnement",
+      "poste": "stock",
+      "libelle": "Sous le seuil — PRODUIT A INJ",
+      "produitId": "V16A",
+      "priorite": "normale",
+      "stockRestant": 5,
+      "seuil": 6,
+      "id": "TV16R"
+     }
+    ],
+    "alertes": [
+     {
+      "produitId": "V16A",
+      "niveau": "alerte",
+      "dispo": 5,
+      "seuil": 6
+     }
+    ]
+   }
+  },
+  {
+   "nom": "au-dessus du seuil : aucune alerte",
+   "entree": {
+    "nom": "au-dessus du seuil : aucune alerte",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000412",
+    "produits": [
+     {
+      "id": "V17A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 30,
+      "stockDetail": 30,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV17",
+     "numero": "ORD-V17",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/17/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V17A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 28,
+      "stockDetail": 28,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000413",
+      "produitId": "V17A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 2,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V17",
+      "ordonnanceId": "OV17",
+      "valorisation": "prixVente",
+      "valeur": 1000,
+      "valeurPrixVente": 1000,
+      "valeurCump": 960,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [],
+    "alertes": []
+   }
+  },
+  {
+   "nom": "seuil non fixé : signalé « sans seuil », aucune tâche",
+   "entree": {
+    "nom": "seuil non fixé : signalé « sans seuil », aucune tâche",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000413",
+    "produits": [
+     {
+      "id": "V18A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": null
+     }
+    ],
+    "ordonnance": {
+     "id": "OV18",
+     "numero": "ORD-V18",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/18/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V18A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": []
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 18,
+      "stockDetail": 6,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": null
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000414",
+      "produitId": "V18A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 2,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V18",
+      "ordonnanceId": "OV18",
+      "valorisation": "prixVente",
+      "valeur": 1000,
+      "valeurPrixVente": 1000,
+      "valeurCump": 960,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [],
+    "alertes": [
+     {
+      "produitId": "V18A",
+      "niveau": "sansSeuil",
+      "dispo": 6,
+      "seuil": null
+     }
+    ]
+   }
+  },
+  {
+   "nom": "la tâche de dispensation de l'ordonnance est refermée",
+   "entree": {
+    "nom": "la tâche de dispensation de l'ordonnance est refermée",
+    "methode": "prixVente",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "refMouvementMax": "M000414",
+    "produits": [
+     {
+      "id": "V19A",
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 20,
+      "stockDetail": 8,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "id": "OV19",
+     "numero": "ORD-V19",
+     "date": "2026-10-01",
+     "patient": "TEST Delivrance",
+     "patientCode": "CNT/19/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "V19A",
+       "produit": "PRODUIT A INJ",
+       "quantite": 2,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    "taches": [
+     {
+      "id": "TV19D",
+      "statut": "en_attente",
+      "type": "dispensation",
+      "poste": "pharmacie",
+      "ordonnanceId": "OV19",
+      "reference": "ORD-V19",
+      "patient": "TEST",
+      "patientCode": "CNT/1/26",
+      "detail": "Délivrer",
+      "montant": 1000
+     }
+    ]
+   },
+   "sortie": {
+    "erreur": null,
+    "deja": false,
+    "produits": [
+     {
+      "code": "CA",
+      "designation": "PRODUIT A INJ",
+      "unite": "Ampoule",
+      "categorie": "medicament",
+      "stock": 18,
+      "stockDetail": 6,
+      "stockGros": 12,
+      "prixAchat": 500,
+      "prixVente": 500,
+      "cump": 480,
+      "seuilAlerte": 5
+     }
+    ],
+    "ordonnance": {
+     "statutDispensation": "servie",
+     "dispensePar": "BASSONGUI Chabi Séko",
+     "aDispenseLe": true
+    },
+    "mouvements": [
+     {
+      "reference": "M000415",
+      "produitId": "V19A",
+      "produit": "PRODUIT A INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 2,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-V19",
+      "ordonnanceId": "OV19",
+      "valorisation": "prixVente",
+      "valeur": 1000,
+      "valeurPrixVente": 1000,
+      "valeurCump": 960,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "taches": [
+     {
+      "statut": "fait",
+      "type": "dispensation",
+      "poste": "pharmacie",
+      "ordonnanceId": "OV19",
+      "reference": "ORD-V19",
+      "patient": "TEST",
+      "patientCode": "CNT/1/26",
+      "detail": "Délivrer",
+      "montant": 1000,
+      "faitPar": "BASSONGUI Chabi Séko",
+      "id": "TV19D"
+     }
+    ],
+    "alertes": []
+   }
+  }
+ ],
+ "pharmacie": [
+  {
+   "ecran": "m6-pharmacie-interne",
+   "voie": "parenterale",
+   "ids": {
+    "inj": "PH201",
+    "serum": "PH202",
+    "cp": "PH203",
+    "gel": "PH204"
+   },
+   "entree": {
+    "produits": [
+     {
+      "id": "PH204",
+      "code": "PH4",
+      "designation": "AMOXICILLINE 500 MG GELULE",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 1,
+      "stockDetail": 1,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "PH203",
+      "code": "PH3",
+      "designation": "PARACETAMOL 500 MG CP",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 50,
+      "stockDetail": 20,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "PH202",
+      "code": "PH2",
+      "designation": "SERUM SALE 0,9 % 500 ML INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 2,
+      "stockDetail": 2,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "PH201",
+      "code": "PH1",
+      "designation": "ADRENALINE 1 MG INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 10,
+      "stockDetail": 4,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     }
+    ],
+    "ordonnances": [
+     {
+      "id": "PO20E",
+      "numero": "ORD-PE",
+      "date": "2026-10-05",
+      "patient": "TEST PatientE",
+      "patientCode": "CNT/E/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH203",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 2,
+        "posologie": "Posologie PARACETAMOL",
+        "voie": "parenterale"
+       },
+       {
+        "produitId": "INCONNU",
+        "produit": "PRODUIT INCONNU",
+        "quantite": 1,
+        "posologie": "Posologie PRODUIT"
+       }
+      ]
+     },
+     {
+      "id": "PO20D",
+      "numero": "ORD-PD",
+      "date": "2026-10-04",
+      "patient": "TEST PatientD",
+      "patientCode": "CNT/D/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH202",
+        "produit": "SERUM SALE 0,9 % 500 ML INJ",
+        "quantite": 5,
+        "posologie": "Posologie SERUM"
+       },
+       {
+        "produitId": "PH204",
+        "produit": "AMOXICILLINE 500 MG GELULE",
+        "quantite": 1,
+        "posologie": "Posologie AMOXICILLINE"
+       }
+      ]
+     },
+     {
+      "id": "PO20C",
+      "numero": "ORD-PC",
+      "date": "2026-10-03",
+      "patient": "TEST PatientC",
+      "patientCode": "CNT/C/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "servie",
+      "medicaments": [
+       {
+        "produitId": "PH203",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 5,
+        "posologie": "Posologie PARACETAMOL"
+       }
+      ]
+     },
+     {
+      "id": "PO20B",
+      "numero": "ORD-PB",
+      "date": "2026-10-02",
+      "patient": "TEST PatientB",
+      "patientCode": "CNT/B/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "impayee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH202",
+        "produit": "SERUM SALE 0,9 % 500 ML INJ",
+        "quantite": 1,
+        "posologie": "Posologie SERUM"
+       },
+       {
+        "produitId": "PH203",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 3,
+        "posologie": "Posologie PARACETAMOL"
+       }
+      ]
+     },
+     {
+      "id": "PO20A",
+      "numero": "ORD-PA",
+      "date": "2026-10-01",
+      "patient": "TEST PatientA",
+      "patientCode": "CNT/A/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH201",
+        "produit": "ADRENALINE 1 MG INJ",
+        "quantite": 2,
+        "posologie": "Posologie ADRENALINE"
+       },
+       {
+        "produitId": "PH203",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 10,
+        "posologie": "Posologie PARACETAMOL"
+       }
+      ]
+     }
+    ],
+    "refMvtMax": null
+   },
+   "lu": {
+    "kpi": [
+     "4",
+     "4",
+     "1",
+     "1"
+    ],
+    "lignes": [
+     {
+      "cellules": [
+       "ORD-PE",
+       "05/10/2026",
+       "TEST PatientE — CNT/E/26",
+       "PARACETAMOL 500 MG CP",
+       "2",
+       "Posologie PARACETAMOL",
+       "50",
+       "Délivrable"
+      ],
+      "actions": [
+       "|Délivrer"
+      ]
+     },
+     {
+      "cellules": [
+       "ORD-PD",
+       "04/10/2026",
+       "TEST PatientD — CNT/D/26",
+       "SERUM SALE 0,9 % 500 ML INJ",
+       "5",
+       "Posologie SERUM",
+       "2",
+       "Stock insuffisant"
+      ],
+      "actions": [
+       "|Délivrer"
+      ]
+     },
+     {
+      "cellules": [
+       "ORD-PB",
+       "02/10/2026",
+       "TEST PatientB — CNT/B/26",
+       "SERUM SALE 0,9 % 500 ML INJ",
+       "1",
+       "Posologie SERUM",
+       "2",
+       "Non réglée"
+      ],
+      "actions": [
+       "Bloquée : l’ordonnance n’est pas réglée|"
+      ]
+     },
+     {
+      "cellules": [
+       "ORD-PA",
+       "01/10/2026",
+       "TEST PatientA — CNT/A/26",
+       "ADRENALINE 1 MG INJ",
+       "2",
+       "Posologie ADRENALINE",
+       "10",
+       "Délivrable"
+      ],
+      "actions": [
+       "|Délivrer"
+      ]
+     }
+    ],
+    "vide": []
+   },
+   "actions": [
+    {
+     "ordonnance": "ORD-PB",
+     "bouton": "Bloquée",
+     "modale": null,
+     "toasts": [
+      [
+       "Délivrance bloquée — l’ordonnance ORD-PB n’est pas réglée."
+      ]
+     ],
+     "produits": [
+      {
+       "id": "PH204",
+       "code": "PH4",
+       "designation": "AMOXICILLINE 500 MG GELULE",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 1,
+       "stockDetail": 1,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH203",
+       "code": "PH3",
+       "designation": "PARACETAMOL 500 MG CP",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 50,
+       "stockDetail": 20,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH202",
+       "code": "PH2",
+       "designation": "SERUM SALE 0,9 % 500 ML INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 2,
+       "stockDetail": 2,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH201",
+       "code": "PH1",
+       "designation": "ADRENALINE 1 MG INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 10,
+       "stockDetail": 4,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      }
+     ],
+     "mouvements": [],
+     "ordonnance_apres": {
+      "statutDispensation": "en_attente"
+     },
+     "lu_apres": {
+      "kpi": [
+       "4",
+       "4",
+       "1",
+       "1"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "ORD-PE",
+         "05/10/2026",
+         "TEST PatientE — CNT/E/26",
+         "PARACETAMOL 500 MG CP",
+         "2",
+         "Posologie PARACETAMOL",
+         "50",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PD",
+         "04/10/2026",
+         "TEST PatientD — CNT/D/26",
+         "SERUM SALE 0,9 % 500 ML INJ",
+         "5",
+         "Posologie SERUM",
+         "2",
+         "Stock insuffisant"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PB",
+         "02/10/2026",
+         "TEST PatientB — CNT/B/26",
+         "SERUM SALE 0,9 % 500 ML INJ",
+         "1",
+         "Posologie SERUM",
+         "2",
+         "Non réglée"
+        ],
+        "actions": [
+         "Bloquée : l’ordonnance n’est pas réglée|"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PA",
+         "01/10/2026",
+         "TEST PatientA — CNT/A/26",
+         "ADRENALINE 1 MG INJ",
+         "2",
+         "Posologie ADRENALINE",
+         "10",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       }
+      ],
+      "vide": []
+     },
+     "changements": false
+    },
+    {
+     "ordonnance": "ORD-PD",
+     "bouton": "Délivrer",
+     "modale": null,
+     "toasts": [
+      [
+       "Délivrance refusée — stock insuffisant sur « SERUM SALE 0,9 % 500 ML INJ » : 2 en rayon pour 5 demandé(s)."
+      ]
+     ],
+     "produits": [
+      {
+       "id": "PH204",
+       "code": "PH4",
+       "designation": "AMOXICILLINE 500 MG GELULE",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 1,
+       "stockDetail": 1,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH203",
+       "code": "PH3",
+       "designation": "PARACETAMOL 500 MG CP",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 50,
+       "stockDetail": 20,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH202",
+       "code": "PH2",
+       "designation": "SERUM SALE 0,9 % 500 ML INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 2,
+       "stockDetail": 2,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH201",
+       "code": "PH1",
+       "designation": "ADRENALINE 1 MG INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 10,
+       "stockDetail": 4,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      }
+     ],
+     "mouvements": [],
+     "ordonnance_apres": {
+      "statutDispensation": "en_attente"
+     },
+     "lu_apres": {
+      "kpi": [
+       "4",
+       "4",
+       "1",
+       "1"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "ORD-PE",
+         "05/10/2026",
+         "TEST PatientE — CNT/E/26",
+         "PARACETAMOL 500 MG CP",
+         "2",
+         "Posologie PARACETAMOL",
+         "50",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PD",
+         "04/10/2026",
+         "TEST PatientD — CNT/D/26",
+         "SERUM SALE 0,9 % 500 ML INJ",
+         "5",
+         "Posologie SERUM",
+         "2",
+         "Stock insuffisant"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PB",
+         "02/10/2026",
+         "TEST PatientB — CNT/B/26",
+         "SERUM SALE 0,9 % 500 ML INJ",
+         "1",
+         "Posologie SERUM",
+         "2",
+         "Non réglée"
+        ],
+        "actions": [
+         "Bloquée : l’ordonnance n’est pas réglée|"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PA",
+         "01/10/2026",
+         "TEST PatientA — CNT/A/26",
+         "ADRENALINE 1 MG INJ",
+         "2",
+         "Posologie ADRENALINE",
+         "10",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       }
+      ],
+      "vide": []
+     },
+     "changements": false
+    },
+    {
+     "ordonnance": "ORD-PA",
+     "bouton": "Délivrer",
+     "modale": "Délivrer ADRENALINE 1 MG INJ ? 2 unité(s) sortiront du stock au titre de l’ordonnance ORD-PA, à destination de la salle de soins qui les administrera. Annuler Délivrer",
+     "toasts": [
+      [
+       "Délivré — stock ramené à 8.",
+       "ADRENALINE 1 MG INJ — TEST PatientA"
+      ]
+     ],
+     "produits": [
+      {
+       "id": "PH204",
+       "code": "PH4",
+       "designation": "AMOXICILLINE 500 MG GELULE",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 1,
+       "stockDetail": 1,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH203",
+       "code": "PH3",
+       "designation": "PARACETAMOL 500 MG CP",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 50,
+       "stockDetail": 20,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH202",
+       "code": "PH2",
+       "designation": "SERUM SALE 0,9 % 500 ML INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 2,
+       "stockDetail": 2,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH201",
+       "code": "PH1",
+       "designation": "ADRENALINE 1 MG INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 8,
+       "stockDetail": 4,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      }
+     ],
+     "mouvements": [
+      {
+       "reference": "MVT-00001",
+       "type": "delivrance_interne",
+       "produitId": "PH201",
+       "produit": "ADRENALINE 1 MG INJ",
+       "quantite": 2,
+       "sens": "sortie",
+       "valeur": 200,
+       "justificatif": "Ordonnance ORD-PA",
+       "destination": "Salle de soins"
+      }
+     ],
+     "ordonnance_apres": {
+      "statutDispensation": "servie"
+     },
+     "lu_apres": {
+      "kpi": [
+       "4",
+       "3",
+       "1",
+       "1"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "ORD-PE",
+         "05/10/2026",
+         "TEST PatientE — CNT/E/26",
+         "PARACETAMOL 500 MG CP",
+         "2",
+         "Posologie PARACETAMOL",
+         "50",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PD",
+         "04/10/2026",
+         "TEST PatientD — CNT/D/26",
+         "SERUM SALE 0,9 % 500 ML INJ",
+         "5",
+         "Posologie SERUM",
+         "2",
+         "Stock insuffisant"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PB",
+         "02/10/2026",
+         "TEST PatientB — CNT/B/26",
+         "SERUM SALE 0,9 % 500 ML INJ",
+         "1",
+         "Posologie SERUM",
+         "2",
+         "Non réglée"
+        ],
+        "actions": [
+         "Bloquée : l’ordonnance n’est pas réglée|"
+        ]
+       }
+      ],
+      "vide": []
+     },
+     "changements": true
+    }
+   ]
+  },
+  {
+   "ecran": "m6-pharmacie-externe",
+   "voie": "orale",
+   "ids": {
+    "inj": "PH211",
+    "serum": "PH212",
+    "cp": "PH213",
+    "gel": "PH214"
+   },
+   "entree": {
+    "produits": [
+     {
+      "id": "PH214",
+      "code": "PH4",
+      "designation": "AMOXICILLINE 500 MG GELULE",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 1,
+      "stockDetail": 1,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "PH213",
+      "code": "PH3",
+      "designation": "PARACETAMOL 500 MG CP",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 50,
+      "stockDetail": 20,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "PH212",
+      "code": "PH2",
+      "designation": "SERUM SALE 0,9 % 500 ML INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 2,
+      "stockDetail": 2,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "PH211",
+      "code": "PH1",
+      "designation": "ADRENALINE 1 MG INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 10,
+      "stockDetail": 4,
+      "stockGros": 10,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     }
+    ],
+    "ordonnances": [
+     {
+      "id": "PO21E",
+      "numero": "ORD-PE",
+      "date": "2026-10-05",
+      "patient": "TEST PatientE",
+      "patientCode": "CNT/E/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH213",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 2,
+        "posologie": "Posologie PARACETAMOL",
+        "voie": "parenterale"
+       },
+       {
+        "produitId": "INCONNU",
+        "produit": "PRODUIT INCONNU",
+        "quantite": 1,
+        "posologie": "Posologie PRODUIT"
+       }
+      ]
+     },
+     {
+      "id": "PO21D",
+      "numero": "ORD-PD",
+      "date": "2026-10-04",
+      "patient": "TEST PatientD",
+      "patientCode": "CNT/D/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH212",
+        "produit": "SERUM SALE 0,9 % 500 ML INJ",
+        "quantite": 5,
+        "posologie": "Posologie SERUM"
+       },
+       {
+        "produitId": "PH214",
+        "produit": "AMOXICILLINE 500 MG GELULE",
+        "quantite": 1,
+        "posologie": "Posologie AMOXICILLINE"
+       }
+      ]
+     },
+     {
+      "id": "PO21C",
+      "numero": "ORD-PC",
+      "date": "2026-10-03",
+      "patient": "TEST PatientC",
+      "patientCode": "CNT/C/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "servie",
+      "medicaments": [
+       {
+        "produitId": "PH213",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 5,
+        "posologie": "Posologie PARACETAMOL"
+       }
+      ]
+     },
+     {
+      "id": "PO21B",
+      "numero": "ORD-PB",
+      "date": "2026-10-02",
+      "patient": "TEST PatientB",
+      "patientCode": "CNT/B/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "impayee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH212",
+        "produit": "SERUM SALE 0,9 % 500 ML INJ",
+        "quantite": 1,
+        "posologie": "Posologie SERUM"
+       },
+       {
+        "produitId": "PH213",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 3,
+        "posologie": "Posologie PARACETAMOL"
+       }
+      ]
+     },
+     {
+      "id": "PO21A",
+      "numero": "ORD-PA",
+      "date": "2026-10-01",
+      "patient": "TEST PatientA",
+      "patientCode": "CNT/A/26",
+      "medecin": "Dr TEST",
+      "statutPaiement": "soldee",
+      "statutDispensation": "en_attente",
+      "medicaments": [
+       {
+        "produitId": "PH211",
+        "produit": "ADRENALINE 1 MG INJ",
+        "quantite": 2,
+        "posologie": "Posologie ADRENALINE"
+       },
+       {
+        "produitId": "PH213",
+        "produit": "PARACETAMOL 500 MG CP",
+        "quantite": 10,
+        "posologie": "Posologie PARACETAMOL"
+       }
+      ]
+     }
+    ],
+    "refMvtMax": "MVT-00001"
+   },
+   "lu": {
+    "kpi": [
+     "5",
+     "4",
+     "1",
+     "1"
+    ],
+    "lignes": [
+     {
+      "cellules": [
+       "ORD-PE",
+       "05/10/2026",
+       "TEST PatientE — CNT/E/26",
+       "PRODUIT INCONNU",
+       "1",
+       "Posologie PRODUIT",
+       "produit inconnu",
+       "Stock insuffisant"
+      ],
+      "actions": [
+       "|Délivrer"
+      ]
+     },
+     {
+      "cellules": [
+       "ORD-PD",
+       "04/10/2026",
+       "TEST PatientD — CNT/D/26",
+       "AMOXICILLINE 500 MG GELULE",
+       "1",
+       "Posologie AMOXICILLINE",
+       "1",
+       "Délivrable"
+      ],
+      "actions": [
+       "|Délivrer"
+      ]
+     },
+     {
+      "cellules": [
+       "ORD-PB",
+       "02/10/2026",
+       "TEST PatientB — CNT/B/26",
+       "PARACETAMOL 500 MG CP",
+       "3",
+       "Posologie PARACETAMOL",
+       "50",
+       "Non réglée"
+      ],
+      "actions": [
+       "Bloquée : l’ordonnance n’est pas réglée|"
+      ]
+     },
+     {
+      "cellules": [
+       "ORD-PA",
+       "01/10/2026",
+       "TEST PatientA — CNT/A/26",
+       "PARACETAMOL 500 MG CP",
+       "10",
+       "Posologie PARACETAMOL",
+       "50",
+       "Délivrable"
+      ],
+      "actions": [
+       "|Délivrer"
+      ]
+     }
+    ],
+    "vide": []
+   },
+   "actions": [
+    {
+     "ordonnance": "ORD-PB",
+     "bouton": "Bloquée",
+     "modale": null,
+     "toasts": [
+      [
+       "Délivrance bloquée — l’ordonnance ORD-PB n’est pas réglée."
+      ]
+     ],
+     "produits": [
+      {
+       "id": "PH214",
+       "code": "PH4",
+       "designation": "AMOXICILLINE 500 MG GELULE",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 1,
+       "stockDetail": 1,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH213",
+       "code": "PH3",
+       "designation": "PARACETAMOL 500 MG CP",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 50,
+       "stockDetail": 20,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH212",
+       "code": "PH2",
+       "designation": "SERUM SALE 0,9 % 500 ML INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 2,
+       "stockDetail": 2,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH211",
+       "code": "PH1",
+       "designation": "ADRENALINE 1 MG INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 10,
+       "stockDetail": 4,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      }
+     ],
+     "mouvements": [],
+     "ordonnance_apres": {
+      "statutDispensation": "en_attente"
+     },
+     "lu_apres": {
+      "kpi": [
+       "5",
+       "4",
+       "1",
+       "1"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "ORD-PE",
+         "05/10/2026",
+         "TEST PatientE — CNT/E/26",
+         "PRODUIT INCONNU",
+         "1",
+         "Posologie PRODUIT",
+         "produit inconnu",
+         "Stock insuffisant"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PD",
+         "04/10/2026",
+         "TEST PatientD — CNT/D/26",
+         "AMOXICILLINE 500 MG GELULE",
+         "1",
+         "Posologie AMOXICILLINE",
+         "1",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PB",
+         "02/10/2026",
+         "TEST PatientB — CNT/B/26",
+         "PARACETAMOL 500 MG CP",
+         "3",
+         "Posologie PARACETAMOL",
+         "50",
+         "Non réglée"
+        ],
+        "actions": [
+         "Bloquée : l’ordonnance n’est pas réglée|"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PA",
+         "01/10/2026",
+         "TEST PatientA — CNT/A/26",
+         "PARACETAMOL 500 MG CP",
+         "10",
+         "Posologie PARACETAMOL",
+         "50",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       }
+      ],
+      "vide": []
+     },
+     "changements": false
+    },
+    {
+     "ordonnance": "ORD-PD",
+     "bouton": "Délivrer",
+     "modale": "Délivrer AMOXICILLINE 500 MG GELULE ? 1 unité(s) sortiront du stock au titre de l’ordonnance ORD-PD, remises au patient au comptoir. Annuler Délivrer",
+     "toasts": [
+      [
+       "Délivré — stock ramené à 0.",
+       "AMOXICILLINE 500 MG GELULE — TEST PatientD"
+      ]
+     ],
+     "produits": [
+      {
+       "id": "PH214",
+       "code": "PH4",
+       "designation": "AMOXICILLINE 500 MG GELULE",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 0,
+       "stockDetail": 1,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH213",
+       "code": "PH3",
+       "designation": "PARACETAMOL 500 MG CP",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 50,
+       "stockDetail": 20,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH212",
+       "code": "PH2",
+       "designation": "SERUM SALE 0,9 % 500 ML INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 2,
+       "stockDetail": 2,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH211",
+       "code": "PH1",
+       "designation": "ADRENALINE 1 MG INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 10,
+       "stockDetail": 4,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      }
+     ],
+     "mouvements": [
+      {
+       "reference": "MVT-00002",
+       "type": "delivrance_externe",
+       "produitId": "PH214",
+       "produit": "AMOXICILLINE 500 MG GELULE",
+       "quantite": 1,
+       "sens": "sortie",
+       "valeur": 100,
+       "justificatif": "Ordonnance ORD-PD",
+       "destination": "Patient"
+      }
+     ],
+     "ordonnance_apres": {
+      "statutDispensation": "servie"
+     },
+     "lu_apres": {
+      "kpi": [
+       "5",
+       "3",
+       "1",
+       "1"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "ORD-PE",
+         "05/10/2026",
+         "TEST PatientE — CNT/E/26",
+         "PRODUIT INCONNU",
+         "1",
+         "Posologie PRODUIT",
+         "produit inconnu",
+         "Stock insuffisant"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PB",
+         "02/10/2026",
+         "TEST PatientB — CNT/B/26",
+         "PARACETAMOL 500 MG CP",
+         "3",
+         "Posologie PARACETAMOL",
+         "50",
+         "Non réglée"
+        ],
+        "actions": [
+         "Bloquée : l’ordonnance n’est pas réglée|"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PA",
+         "01/10/2026",
+         "TEST PatientA — CNT/A/26",
+         "PARACETAMOL 500 MG CP",
+         "10",
+         "Posologie PARACETAMOL",
+         "50",
+         "Délivrable"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       }
+      ],
+      "vide": []
+     },
+     "changements": true
+    },
+    {
+     "ordonnance": "ORD-PA",
+     "bouton": "Délivrer",
+     "modale": "Délivrer PARACETAMOL 500 MG CP ? 10 unité(s) sortiront du stock au titre de l’ordonnance ORD-PA, remises au patient au comptoir. Annuler Délivrer",
+     "toasts": [
+      [
+       "Délivré — stock ramené à 40.",
+       "PARACETAMOL 500 MG CP — TEST PatientA"
+      ]
+     ],
+     "produits": [
+      {
+       "id": "PH214",
+       "code": "PH4",
+       "designation": "AMOXICILLINE 500 MG GELULE",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 0,
+       "stockDetail": 1,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH213",
+       "code": "PH3",
+       "designation": "PARACETAMOL 500 MG CP",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 40,
+       "stockDetail": 20,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH212",
+       "code": "PH2",
+       "designation": "SERUM SALE 0,9 % 500 ML INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 2,
+       "stockDetail": 2,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      },
+      {
+       "id": "PH211",
+       "code": "PH1",
+       "designation": "ADRENALINE 1 MG INJ",
+       "unite": "Unité",
+       "categorie": "medicament",
+       "stock": 10,
+       "stockDetail": 4,
+       "stockGros": 10,
+       "prixAchat": 100,
+       "prixVente": 100,
+       "cump": 100,
+       "seuilAlerte": 3
+      }
+     ],
+     "mouvements": [
+      {
+       "reference": "MVT-00003",
+       "type": "delivrance_externe",
+       "produitId": "PH213",
+       "produit": "PARACETAMOL 500 MG CP",
+       "quantite": 10,
+       "sens": "sortie",
+       "valeur": 1000,
+       "justificatif": "Ordonnance ORD-PA",
+       "destination": "Patient"
+      }
+     ],
+     "ordonnance_apres": {
+      "statutDispensation": "servie"
+     },
+     "lu_apres": {
+      "kpi": [
+       "5",
+       "2",
+       "1",
+       "1"
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "ORD-PE",
+         "05/10/2026",
+         "TEST PatientE — CNT/E/26",
+         "PRODUIT INCONNU",
+         "1",
+         "Posologie PRODUIT",
+         "produit inconnu",
+         "Stock insuffisant"
+        ],
+        "actions": [
+         "|Délivrer"
+        ]
+       },
+       {
+        "cellules": [
+         "ORD-PB",
+         "02/10/2026",
+         "TEST PatientB — CNT/B/26",
+         "PARACETAMOL 500 MG CP",
+         "3",
+         "Posologie PARACETAMOL",
+         "40",
+         "Non réglée"
+        ],
+        "actions": [
+         "Bloquée : l’ordonnance n’est pas réglée|"
+        ]
+       }
+      ],
+      "vide": []
+     },
+     "changements": true
+    }
+   ]
+  }
+ ],
+ "dispensation": {
+  "entree": {
+   "produits": [
+    {
+     "id": "DS221",
+     "code": "DS1",
+     "designation": "ARTESUNATE 60 MG INJ",
+     "unite": "Unité",
+     "categorie": "medicament",
+     "stock": 12,
+     "stockDetail": 12,
+     "stockGros": 0,
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 3
+    },
+    {
+     "id": "DS222",
+     "code": "DS2",
+     "designation": "COTON HYDROPHILE 500 G",
+     "unite": "Unité",
+     "categorie": "medicament",
+     "stock": 0,
+     "stockDetail": 0,
+     "stockGros": 0,
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 3
+    },
+    {
+     "id": "DS223",
+     "code": "DS3",
+     "designation": "GANT STERILE",
+     "unite": "Unité",
+     "categorie": "medicament",
+     "stock": 5,
+     "stockDetail": 5,
+     "stockGros": 0,
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 3
+    },
+    {
+     "id": "DS224",
+     "code": "DS4",
+     "designation": "SERUM SALE 0,9 % 500 ML INJ",
+     "unite": "Unité",
+     "categorie": "medicament",
+     "stock": 2,
+     "stockDetail": 2,
+     "stockGros": 0,
+     "prixAchat": 100,
+     "prixVente": 100,
+     "cump": 100,
+     "seuilAlerte": 3
+    }
+   ],
+   "dispensations": [
+    {
+     "id": "DISxmvv9s9ak93lrt",
+     "reference": "DISP-00003",
+     "date": "2026-10-02",
+     "patientId": "P2",
+     "patient": "TEST Durand",
+     "patientCode": "CNT/3/26",
+     "lignes": [],
+     "montant": 0,
+     "dispensePar": "DIEYABIDI Aïssatou"
+    },
+    {
+     "id": "DISxmvv9s9aksvkzz",
+     "reference": "DISP-00002",
+     "date": "2026-09-25",
+     "patientId": "P1",
+     "patient": "TEST Martin",
+     "patientCode": "CNT/2/26",
+     "lignes": [
+      {
+       "produit": "SERUM SALE 0,9 % 500 ML INJ",
+       "quantite": 3,
+       "unite": "Poche",
+       "prix": 600
+      }
+     ],
+     "montant": 1800,
+     "dispensePar": "DIEYABIDI Aïssatou"
+    },
+    {
+     "id": "DISxmvv9s9aka3zvr",
+     "reference": "DISP-00001",
+     "date": "2026-09-20",
+     "patientId": "P0",
+     "patient": "TEST Dupont",
+     "patientCode": "CNT/1/26",
+     "lignes": [
+      {
+       "produit": "ARTESUNATE 60 MG INJ",
+       "quantite": 2,
+       "unite": "Unité",
+       "prix": 1500
+      },
+      {
+       "produit": "GANT STERILE",
+       "quantite": 1,
+       "unite": "Boîte",
+       "prix": 750
+      }
+     ],
+     "montant": 3750,
+     "dispensePar": "DIEYABIDI Aïssatou"
+    }
+   ],
+   "ordonnances": [
+    {
+     "id": "DO221",
+     "numero": "ORD-D1",
+     "date": "2026-10-10",
+     "patient": "TEST Dispensation1",
+     "patientCode": "CNT/1/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "DS221",
+       "produit": "ARTESUNATE 60 MG INJ",
+       "quantite": 2,
+       "posologie": "1 inj/j"
+      },
+      {
+       "produitId": "DS223",
+       "produit": "GANT STERILE",
+       "quantite": 1,
+       "posologie": ""
+      }
+     ]
+    },
+    {
+     "id": "DO222",
+     "numero": "ORD-D2",
+     "date": "2026-10-11",
+     "patient": "TEST Dispensation2",
+     "patientCode": "CNT/2/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "soldee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "DS223",
+       "produit": "GANT STERILE",
+       "quantite": 4,
+       "posologie": "2/j"
+      },
+      {
+       "produitId": "DS224",
+       "produit": "SERUM SALE 0,9 % 500 ML INJ",
+       "quantite": 6,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    {
+     "id": "DO223",
+     "numero": "ORD-D3",
+     "date": "2026-10-12",
+     "patient": "TEST Dispensation3",
+     "patientCode": "CNT/3/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "impayee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "DS221",
+       "produit": "ARTESUNATE 60 MG INJ",
+       "quantite": 1,
+       "posologie": "1/j"
+      }
+     ]
+    },
+    {
+     "id": "DO224",
+     "numero": "ORD-D4",
+     "date": "2026-10-13",
+     "patient": "TEST Dispensation4",
+     "patientCode": "CNT/4/26",
+     "medecin": "Dr TEST",
+     "statutPaiement": "impayee",
+     "statutDispensation": "en_attente",
+     "medicaments": [
+      {
+       "produitId": "DS221",
+       "produit": "ARTESUNATE 60 MG INJ",
+       "quantite": 1,
+       "posologie": "1/j"
+      }
+     ]
+    }
+   ],
+   "taches": [
+    {
+     "id": "TD22DO224",
+     "statut": "bloque",
+     "type": "dispensation",
+     "poste": "pharmacie",
+     "ordonnanceId": "DO224",
+     "reference": "ORD-D4",
+     "patient": "TEST Dispensation4",
+     "patientCode": "CNT/4/26",
+     "detail": "Délivrer 1 ligne(s)",
+     "montant": 1000,
+     "urgent": false
+    },
+    {
+     "id": "TD22DO223",
+     "statut": "en_attente",
+     "type": "dispensation",
+     "poste": "pharmacie",
+     "ordonnanceId": "DO223",
+     "reference": "ORD-D3",
+     "patient": "TEST Dispensation3",
+     "patientCode": "CNT/3/26",
+     "detail": "Délivrer 1 ligne(s)",
+     "montant": 1000,
+     "urgent": false
+    },
+    {
+     "id": "TD22DO222",
+     "statut": "en_attente",
+     "type": "dispensation",
+     "poste": "pharmacie",
+     "ordonnanceId": "DO222",
+     "reference": "ORD-D2",
+     "patient": "TEST Dispensation2",
+     "patientCode": "CNT/2/26",
+     "detail": "Délivrer 2 ligne(s)",
+     "montant": 1000,
+     "urgent": true
+    },
+    {
+     "id": "TD22DO221",
+     "statut": "en_attente",
+     "type": "dispensation",
+     "poste": "pharmacie",
+     "ordonnanceId": "DO221",
+     "reference": "ORD-D1",
+     "patient": "TEST Dispensation1",
+     "patientCode": "CNT/1/26",
+     "detail": "Délivrer 2 ligne(s)",
+     "montant": 1000,
+     "urgent": false
+    }
+   ]
+  },
+  "lu": {
+   "kpi": [
+    "3",
+    "5 550 FCFA",
+    "3",
+    "1"
+   ],
+   "titreFile": "Ordonnances à délivrer — 3 à traiter, 1 en attente de caisse",
+   "tables": [
+    {
+     "entetes": [
+      "ORIGINE",
+      "PATIENT",
+      "À FAIRE",
+      "MONTANT",
+      "ÉTAT",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "ORD-D1",
+        "TEST Dispensation1 CNT/1/26",
+        "Délivrer 2 ligne(s)",
+        "1 000",
+        "À traiter",
+        ""
+       ],
+       "actions": [
+        "Délivrer|"
+       ]
+      },
+      {
+       "cellules": [
+        "ORD-D2Urgent",
+        "TEST Dispensation2 CNT/2/26",
+        "Délivrer 2 ligne(s)",
+        "1 000",
+        "À traiter",
+        ""
+       ],
+       "actions": [
+        "Délivrer|"
+       ]
+      },
+      {
+       "cellules": [
+        "ORD-D3",
+        "TEST Dispensation3 CNT/3/26",
+        "Délivrer 1 ligne(s)",
+        "1 000",
+        "À traiter",
+        ""
+       ],
+       "actions": [
+        "Délivrer|"
+       ]
+      },
+      {
+       "cellules": [
+        "ORD-D4",
+        "TEST Dispensation4 CNT/4/26",
+        "Délivrer 1 ligne(s)",
+        "1 000",
+        "Attente encaissement",
+        ""
+       ],
+       "actions": [
+        "Bloquée jusqu’à l’encaissement|"
+       ]
+      }
+     ]
+    },
+    {
+     "entetes": [
+      "N°",
+      "DATE",
+      "PATIENT",
+      "PRODUITS",
+      "MONTANT",
+      "DISPENSÉ PAR",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "DISP-00003",
+        "02/10/2026",
+        "TEST Durand",
+        "0",
+        "0",
+        "DIEYABIDI Aïssatou",
+        ""
+       ],
+       "actions": [
+        "Imprimer|"
+       ]
+      },
+      {
+       "cellules": [
+        "DISP-00002",
+        "25/09/2026",
+        "TEST Martin",
+        "1",
+        "1 800",
+        "DIEYABIDI Aïssatou",
+        ""
+       ],
+       "actions": [
+        "Imprimer|"
+       ]
+      },
+      {
+       "cellules": [
+        "DISP-00001",
+        "20/09/2026",
+        "TEST Dupont",
+        "2",
+        "3 750",
+        "DIEYABIDI Aïssatou",
+        ""
+       ],
+       "actions": [
+        "Imprimer|"
+       ]
+      }
+     ]
+    }
+   ],
+   "vide": []
+  },
+  "actions": [
+   {
+    "ordonnance": "ORD-D1",
+    "bouton": "Délivrer",
+    "absent": false,
+    "modale": "Délivrer ORD-D1 TEST Dispensation1 Patient TEST Dispensation1 Dossier CNT/1/26 Prescripteur Dr TEST Ordonnance ORD-D1 Règlement Encaissé Lignes à servir PRODUIT POSOLOGIE DEMANDÉ EN PHARMACIE SERVABLE ARTESUNATE 60 MG INJ 1 inj/j 2 12 Oui GANT STERILE — 1 5 Oui La sortie portera le numéro d’ordonnance comme justificatif (RG-03) et sera valorisée au prix d’achat (RG-02). Fermer Confirmer la délivrance",
+    "boutonsModale": [
+     "Fermer",
+     "Confirmer la délivrance"
+    ],
+    "toastsOuverture": [],
+    "toasts": [
+     [
+      "Médicaments délivrés — 2 sortie(s) de stock.",
+      "Justificatif : ORD-D1"
+     ]
+    ],
+    "mouvements": [
+     {
+      "reference": "M000417",
+      "produitId": "DS223",
+      "produit": "GANT STERILE",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 1,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-D1",
+      "ordonnanceId": "DO221",
+      "valorisation": "prixVente",
+      "valeur": 100,
+      "valeurPrixVente": 100,
+      "valeurCump": 100,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     },
+     {
+      "reference": "M000416",
+      "produitId": "DS221",
+      "produit": "ARTESUNATE 60 MG INJ",
+      "type": "sortie",
+      "typeLabel": "Sortie",
+      "quantite": 2,
+      "stockType": "detail",
+      "justificatif": "Ordonnance ORD-D1",
+      "ordonnanceId": "DO221",
+      "valorisation": "prixVente",
+      "valeur": 200,
+      "valeurPrixVente": 200,
+      "valeurCump": 200,
+      "utilisateur": "BASSONGUI Chabi Séko"
+     }
+    ],
+    "produits": [
+     {
+      "id": "DS221",
+      "code": "DS1",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 10,
+      "stockDetail": 10,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "DS222",
+      "code": "DS2",
+      "designation": "COTON HYDROPHILE 500 G",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 0,
+      "stockDetail": 0,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "DS223",
+      "code": "DS3",
+      "designation": "GANT STERILE",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 4,
+      "stockDetail": 4,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "DS224",
+      "code": "DS4",
+      "designation": "SERUM SALE 0,9 % 500 ML INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 2,
+      "stockDetail": 2,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     }
+    ],
+    "ordonnance_apres": {
+     "statutDispensation": "servie"
+    },
+    "lu_apres": {
+     "kpi": [
+      "3",
+      "5 550 FCFA",
+      "3",
+      "1"
+     ],
+     "titreFile": "Ordonnances à délivrer — 2 à traiter, 1 en attente de caisse",
+     "tables": [
+      {
+       "entetes": [
+        "ORIGINE",
+        "PATIENT",
+        "À FAIRE",
+        "MONTANT",
+        "ÉTAT",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "ORD-D2Urgent",
+          "TEST Dispensation2 CNT/2/26",
+          "Délivrer 2 ligne(s)",
+          "1 000",
+          "À traiter",
+          ""
+         ],
+         "actions": [
+          "Délivrer|"
+         ]
+        },
+        {
+         "cellules": [
+          "ORD-D3",
+          "TEST Dispensation3 CNT/3/26",
+          "Délivrer 1 ligne(s)",
+          "1 000",
+          "À traiter",
+          ""
+         ],
+         "actions": [
+          "Délivrer|"
+         ]
+        },
+        {
+         "cellules": [
+          "ORD-D4",
+          "TEST Dispensation4 CNT/4/26",
+          "Délivrer 1 ligne(s)",
+          "1 000",
+          "Attente encaissement",
+          ""
+         ],
+         "actions": [
+          "Bloquée jusqu’à l’encaissement|"
+         ]
+        }
+       ]
+      },
+      {
+       "entetes": [
+        "N°",
+        "DATE",
+        "PATIENT",
+        "PRODUITS",
+        "MONTANT",
+        "DISPENSÉ PAR",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "DISP-00003",
+          "02/10/2026",
+          "TEST Durand",
+          "0",
+          "0",
+          "DIEYABIDI Aïssatou",
+          ""
+         ],
+         "actions": [
+          "Imprimer|"
+         ]
+        },
+        {
+         "cellules": [
+          "DISP-00002",
+          "25/09/2026",
+          "TEST Martin",
+          "1",
+          "1 800",
+          "DIEYABIDI Aïssatou",
+          ""
+         ],
+         "actions": [
+          "Imprimer|"
+         ]
+        },
+        {
+         "cellules": [
+          "DISP-00001",
+          "20/09/2026",
+          "TEST Dupont",
+          "2",
+          "3 750",
+          "DIEYABIDI Aïssatou",
+          ""
+         ],
+         "actions": [
+          "Imprimer|"
+         ]
+        }
+       ]
+      }
+     ],
+     "vide": []
+    }
+   },
+   {
+    "ordonnance": "ORD-D2",
+    "bouton": "Délivrer",
+    "absent": false,
+    "modale": "Délivrer ORD-D2 TEST Dispensation2 Patient TEST Dispensation2 Dossier CNT/2/26 Prescripteur Dr TEST Ordonnance ORD-D2 Règlement Encaissé Lignes à servir PRODUIT POSOLOGIE DEMANDÉ EN PHARMACIE SERVABLE GANT STERILE 2/j 4 4 Oui SERUM SALE 0,9 % 500 ML INJ 1/j 6 2 Stock insuffisant RG-03 — le stock ne peut pas devenir négatif. La délivrance est refusée tant qu’une ligne n’est pas couverte : approvisionner la pharmacie par un transfert depuis le magasin, puis revenir ici. Fermer Aller aux transferts",
+    "boutonsModale": [
+     "Fermer",
+     "Aller aux transferts"
+    ],
+    "toastsOuverture": []
+   },
+   {
+    "ordonnance": "ORD-D3",
+    "bouton": "Délivrer",
+    "absent": false,
+    "modale": "Délivrer ORD-D3 TEST Dispensation3 Patient TEST Dispensation3 Dossier CNT/3/26 Prescripteur Dr TEST Ordonnance ORD-D3 Règlement NON ENCAISSÉ Lignes à servir PRODUIT POSOLOGIE DEMANDÉ EN PHARMACIE SERVABLE ARTESUNATE 60 MG INJ 1/j 1 10 Oui La sortie portera le numéro d’ordonnance comme justificatif (RG-03) et sera valorisée au prix d’achat (RG-02). Fermer Confirmer la délivrance",
+    "boutonsModale": [
+     "Fermer",
+     "Confirmer la délivrance"
+    ],
+    "toastsOuverture": [],
+    "toasts": [
+     [
+      "Délivrance impossible : Facture non réglée — la délivrance est bloquée."
+     ]
+    ],
+    "mouvements": [],
+    "produits": [
+     {
+      "id": "DS221",
+      "code": "DS1",
+      "designation": "ARTESUNATE 60 MG INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 10,
+      "stockDetail": 10,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "DS222",
+      "code": "DS2",
+      "designation": "COTON HYDROPHILE 500 G",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 0,
+      "stockDetail": 0,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "DS223",
+      "code": "DS3",
+      "designation": "GANT STERILE",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 4,
+      "stockDetail": 4,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     },
+     {
+      "id": "DS224",
+      "code": "DS4",
+      "designation": "SERUM SALE 0,9 % 500 ML INJ",
+      "unite": "Unité",
+      "categorie": "medicament",
+      "stock": 2,
+      "stockDetail": 2,
+      "stockGros": 0,
+      "prixAchat": 100,
+      "prixVente": 100,
+      "cump": 100,
+      "seuilAlerte": 3
+     }
+    ],
+    "ordonnance_apres": {
+     "statutDispensation": "en_attente"
+    },
+    "lu_apres": {
+     "kpi": [
+      "3",
+      "5 550 FCFA",
+      "3",
+      "1"
+     ],
+     "titreFile": "Ordonnances à délivrer — 2 à traiter, 1 en attente de caisse",
+     "tables": [
+      {
+       "entetes": [
+        "ORIGINE",
+        "PATIENT",
+        "À FAIRE",
+        "MONTANT",
+        "ÉTAT",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "ORD-D2Urgent",
+          "TEST Dispensation2 CNT/2/26",
+          "Délivrer 2 ligne(s)",
+          "1 000",
+          "À traiter",
+          ""
+         ],
+         "actions": [
+          "Délivrer|"
+         ]
+        },
+        {
+         "cellules": [
+          "ORD-D3",
+          "TEST Dispensation3 CNT/3/26",
+          "Délivrer 1 ligne(s)",
+          "1 000",
+          "À traiter",
+          ""
+         ],
+         "actions": [
+          "Délivrer|"
+         ]
+        },
+        {
+         "cellules": [
+          "ORD-D4",
+          "TEST Dispensation4 CNT/4/26",
+          "Délivrer 1 ligne(s)",
+          "1 000",
+          "Attente encaissement",
+          ""
+         ],
+         "actions": [
+          "Bloquée jusqu’à l’encaissement|"
+         ]
+        }
+       ]
+      },
+      {
+       "entetes": [
+        "N°",
+        "DATE",
+        "PATIENT",
+        "PRODUITS",
+        "MONTANT",
+        "DISPENSÉ PAR",
+        "ACTIONS"
+       ],
+       "lignes": [
+        {
+         "cellules": [
+          "DISP-00003",
+          "02/10/2026",
+          "TEST Durand",
+          "0",
+          "0",
+          "DIEYABIDI Aïssatou",
+          ""
+         ],
+         "actions": [
+          "Imprimer|"
+         ]
+        },
+        {
+         "cellules": [
+          "DISP-00002",
+          "25/09/2026",
+          "TEST Martin",
+          "1",
+          "1 800",
+          "DIEYABIDI Aïssatou",
+          ""
+         ],
+         "actions": [
+          "Imprimer|"
+         ]
+        },
+        {
+         "cellules": [
+          "DISP-00001",
+          "20/09/2026",
+          "TEST Dupont",
+          "2",
+          "3 750",
+          "DIEYABIDI Aïssatou",
+          ""
+         ],
+         "actions": [
+          "Imprimer|"
+         ]
+        }
+       ]
+      }
+     ],
+     "vide": []
+    }
+   },
+   {
+    "ordonnance": "ORD-D4",
+    "bouton": "Bloquée",
+    "absent": false,
+    "modale": null,
+    "boutonsModale": [],
+    "toastsOuverture": [
+     [
+      "Cette opération attend le passage en caisse."
+     ]
+    ]
+   }
+  ],
+  "tiroir": "Dispensation DISP-00003 TEST Durand — 02/10/2026 Référence DISP-00003 Patient TEST Durand Dossier CNT/3/26 Date 02/10/2026 Dispensé par DIEYABIDI Aïssatou Montant 0 FCFA Produits délivrés Aucune donnée. Imprimer le bon",
+  "tiroirRef": "DISP-00003"
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "id": "cfg-entetes",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Papier à en-tête officiel",
+ "acces": "ouvert",
+ "titre": "Papier à en-tête officiel",
+ "description": "L’unique identité légale imprimée sur tous les états de la clinique.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Papier à en-tête officiel"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "Les pièces émises AVANT l’unification portent d’autres identités — trois IFU, trois RCCM et deux autorisations relevés sur les 37 documents collectés (certificats médico-légaux, rapport médical, comptes rendus de laboratoire et d’imagerie). Ces pièces restent valables et documentées par leurs scans dans docs/ ; elles ne sont simplement plus reproduites. Un document ancien qui diverge du présent en-tête n’est donc pas un faux."
+ ],
+ "onglets": [],
+ "kpis": [
+  "IFU imprimé",
+  "RCCM imprimé",
+  "Autorisation d’ouverture",
+  "États alimentés"
+ ],
+ "cartes": [
+  "Identité légale imprimée sur chaque état"
+ ],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

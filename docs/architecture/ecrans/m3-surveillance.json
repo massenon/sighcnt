@@ -1,0 +1,58 @@
+{
+ "id": "m3-surveillance",
+ "module": "M3",
+ "domaine": "Soins",
+ "libelleManifeste": "Fiche de surveillance",
+ "acces": "ouvert",
+ "titre": "Fiche de surveillance",
+ "description": "Relevé horodaté des constantes et courbe de surveillance à cinq échelles.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Hospitalisation",
+  "Fiche de surveillance"
+ ],
+ "actions": [
+  "Admissions",
+  "Mise en observation",
+  "Hospitalisation"
+ ],
+ "regle": [
+  "CNT/1109/26 — SOUMANOU AwaouCNT/5/26 — TAKI GaniouCNT/11/26 — TIGRI SéraphineCNT/13/26 — GARBA AïssatouCNT/14/25 — BANI AlassaneCNT/20/26 — SAMBIENI BibataCNT/23/26 — N’TCHA AlimatouCNT/27/26 — SOULE BertineCNT/32/26 — BOUKARI MoussaCNT/34/26 — SAMBIENI GaniouCNT/41/26 — BANI SalamatouCNT/43/26 — BOUKARI JustineCNT/50/26 — TCHOUKOUROU ChantalCNT/54/26 — TCHANE ColetteCNT/57/26 — KASSA FlorentCNT/59/26 — ADAM EdmondCNT/63/26 — HOUNKPATIN TamouCNT/64/26 — HOUNKPATIN EdmondCNT/67/26 — BAKO SylvieCNT/68/26 — MAMAN YahouzaCNT/71/26 — TEPA AïssatouCNT/74/26 — HOUNKPATIN SalifouCNT/75/26 — N’TCHA HervéCNT/77/26 — SAMBIENI JustineCNT/80/26 — AHOHOU ZakariCNT/86/26 — BOUKARI NourouCNT/88/26 — OROU YO GaniouCNT/90/26 — N’TCHA SalifouCNT/92/25 — YARO RamatouCNT/95/25 — KORA RamatouCNT/97/26 — SOULE NadègeCNT/100/25 — BAKO ChantalCNT/101/26 — ZIME AbdoulCNT/109/26 — PARAISO ColetteCNT/115/26 — KASSA AdissaCNT/116/25 — BOUKARI FlorentCNT/119/26 — WOROU BoukariCNT/121/25 — YARO BioCNT/126/25 — BASSONGUI HervéCNT/128/25 — ISSA AwaouCNT/131/26 — PARAISO BertineCNT/138/26 — YARO EdmondCNT/141/25 — KORA MargueriteCNT/143/26 — SOULE AdissaCNT/144/26 — GARBA TamouCNT/158/26 — TCHOUKOUROU OrouCNT/167/26 — BASSONGUI BioCNT/174/26 — SANNI NadègeCNT/177/25 — PARAISO RabiatouCNT/180/25 — TIGRI KassimCNT900/25 — BASSONGUI Chabi SékoCNT901/25 — TAKI AlimatouCNT904/25 — YENI M’PO FlorentCNT907/25 — KINNOU A. GaniouCNT909/25 — GARBA YahouzaCNT913/25 — PARAISO Abdoul"
+ ],
+ "onglets": [],
+ "kpis": [
+  "Patients suivis",
+  "Relevés enregistrés",
+  "Relevés du jour",
+  "Échelles suivies"
+ ],
+ "cartes": [
+  "Patient suivi",
+  "Feuille de température — SOUMANOU Awaou",
+  "Relevés horodatés"
+ ],
+ "tableaux": [
+  [
+   "Date",
+   "Heure",
+   "Moment",
+   "Température",
+   "TA",
+   "FR",
+   "Pouls",
+   "Diurèse",
+   "Relevé par",
+   "Source"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [
+  "Sélectionner un patient"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

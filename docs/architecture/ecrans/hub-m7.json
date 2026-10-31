@@ -1,0 +1,28 @@
+{
+ "id": "hub-m7",
+ "module": "M7",
+ "domaine": "Logistique",
+ "libelleManifeste": "Achats & Fournisseurs",
+ "acces": "ouvert",
+ "titre": "Achats & Fournisseurs",
+ "description": "Tous les écrans du module M7 — Achats & Fournisseurs.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Achats & Fournisseurs"
+ ],
+ "actions": [
+  "Bons d’expression de besoins",
+  "Bons de commande",
+  "Achats & Fournisseurs"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

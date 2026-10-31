@@ -1,0 +1,6626 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/parite.js — ne pas éditer.",
+ "ecrans": [
+  {
+   "id": "m2-agenda",
+   "label": "Agenda",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    22,
+    44,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-rendezvous",
+   "label": "Rendez-vous & visites",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    22,
+    43,
+    44,
+    57,
+    61
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-file-attente",
+   "label": "File d’attente",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    43
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-file-cabinet",
+   "label": "File par cabinet",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-agenda-medecin",
+   "label": "Agenda du médecin",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-affichage",
+   "label": "Écran d’appel des patients",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    43
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-domicile",
+   "label": "Consultations & soins à domicile",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-registre-appels",
+   "label": "Registre des appels",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    43
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-consultations",
+   "label": "Consultations",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    31,
+    42,
+    54
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-patients",
+   "label": "Répertoire des patients",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    1,
+    9,
+    14,
+    20,
+    22,
+    26,
+    31,
+    42,
+    45,
+    54,
+    63,
+    70,
+    73
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-patient-profil",
+   "label": "Fiche patient",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    13,
+    22,
+    31,
+    39,
+    63
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-externe",
+   "label": "Patient externe",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "reception",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    29,
+    31,
+    43,
+    59
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-antecedents",
+   "label": "Antécédents & allergies",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    31,
+    39,
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-pieces",
+   "label": "Certificats & attestations",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    40,
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-constantes",
+   "label": "Constantes à l’accueil",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "reception",
+    "aide_soignant",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    33,
+    40,
+    43
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-reference",
+   "label": "Fiches de référence",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-contre-reference",
+   "label": "Fiches de contre-référence",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-documents",
+   "label": "Documents numérisés",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    22,
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-numerisation",
+   "label": "Plan de numérisation",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-dossiers-consultation",
+   "label": "Dossiers de consultation",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "chirurgien"
+   ],
+   "scenarios": [
+    45,
+    63
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-consultation-fiche",
+   "label": "Fiche de consultation",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    20,
+    28,
+    45,
+    63
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-pathologies",
+   "label": "Pathologies & morbidité",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "chirurgien"
+   ],
+   "scenarios": [
+    28
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-ordonnances",
+   "label": "Ordonnances",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "chirurgien"
+   ],
+   "scenarios": [
+    15,
+    28,
+    33,
+    38,
+    57
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-prescriptions",
+   "label": "Prescriptions",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-salle-soins",
+   "label": "Salle de soins",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "chirurgien"
+   ],
+   "scenarios": [
+    33,
+    38
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-dashboard-imagerie",
+   "label": "Poste d’imagerie médicale",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-imagerie-demandes",
+   "label": "Demandes d’imagerie médicale",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    50,
+    57,
+    62,
+    66
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-imagerie",
+   "label": "Tableau Échographie",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    33,
+    38,
+    42,
+    57,
+    64
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-imagerie-radiographie",
+   "label": "Tableau Radiographie",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    62,
+    66
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-imagerie-mammographie",
+   "label": "Tableau Mammographie",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    62
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-imagerie-scanner",
+   "label": "Tableau Scanner",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    62,
+    66
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-imagerie-irm",
+   "label": "Tableau IRM",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    62
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-echographie-galerie",
+   "label": "Galerie des clichés",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    50
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-admissions",
+   "label": "Admissions",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-observation",
+   "label": "Mise en observation",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    21,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-plan-lits",
+   "label": "Plan des lits",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "aide_soignant",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-chambres",
+   "label": "Chambres & lits",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "aide_soignant",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-feuille-temperature",
+   "label": "Feuille de température",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "aide_soignant",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-soins",
+   "label": "Feuille de soins",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    20
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-administrations",
+   "label": "Administration des traitements",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-cpa",
+   "label": "Consultation pré-anesthésique",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    49
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-bloc-cro",
+   "label": "Comptes rendus opératoires",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    33,
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-cr-anesthesie",
+   "label": "Comptes rendus d’anesthésie",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    49
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-bloc-checklist",
+   "label": "Check-listes du bloc",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    33,
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-demande-examen",
+   "label": "Demande d’examen",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    49
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-bons-pansements",
+   "label": "Bons de pansement",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    49
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-surveillance",
+   "label": "Fiche de surveillance",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-transfusion",
+   "label": "Surveillance transfusionnelle",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-glasgow",
+   "label": "Score de Glasgow",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-rapport",
+   "label": "Rapport médical",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-visites-patients",
+   "label": "Visites aux hospitalisés",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-sorties",
+   "label": "Sorties d’hospitalisation",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    5
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-sortie-avis-medical",
+   "label": "Sortie contre avis médical",
+   "module": "M3",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-dossier-obstetrical",
+   "label": "Dossier obstétrical",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    60
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-maternite",
+   "label": "Suivi maternité",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-cpn",
+   "label": "CPN & carte maternelle",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-partogramme",
+   "label": "Partogramme",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-accouchements",
+   "label": "Accouchements",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-dossier-bebe",
+   "label": "Dossier bébé & soins du nouveau-né",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-cpon",
+   "label": "Consultations post-natales (CPoN)",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-planification",
+   "label": "Planification familiale",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-sonu",
+   "label": "Registre SONUB / SONUC",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-ptme",
+   "label": "Registre PTME",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-soins-curatifs",
+   "label": "Soins curatifs & urgences maternité",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-comptes-rendus",
+   "label": "Comptes rendus de maternité",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    33,
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-naissances",
+   "label": "Registre des naissances",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-deces",
+   "label": "Registre des décès",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-demandes",
+   "label": "Demandes d’analyses",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    15,
+    31,
+    48,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-demandes-maternite",
+   "label": "Demandes — maternité",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    48
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-demandes-hospitalisation",
+   "label": "Demandes — hospitalisation",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    48
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-resultats",
+   "label": "Saisie des résultats",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    20,
+    27,
+    30,
+    39,
+    42,
+    57
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-resultats-comparatif",
+   "label": "Comparatif des résultats",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    48
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-impression-resultats",
+   "label": "Impression des résultats",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    48
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-catalogue",
+   "label": "Catalogue des analyses",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    2
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-unites",
+   "label": "Unités de mesure",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "laborantin",
+    "echographiste"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-valeurs-reference",
+   "label": "Valeurs de référence",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    27
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-prelevement",
+   "label": "Salle de prélèvement",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "infirmier",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    27,
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-stats",
+   "label": "Statistiques du laboratoire",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    27
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-reactifs",
+   "label": "Réactifs & consommables",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "laborantin",
+    "echographiste",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    27,
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-reactifs-stats",
+   "label": "Statistiques des réactifs",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "laborantin",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    48
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-banque-sang",
+   "label": "Banque de sang",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [],
+   "scenarios": [
+    27
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-donneurs",
+   "label": "Donneurs & transfusions",
+   "module": "M5",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": false,
+   "universel": false,
+   "roles": [],
+   "scenarios": [
+    27
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-pharmacie-interne",
+   "label": "Pharmacie interne — urgences",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-pharmacie-externe",
+   "label": "Pharmacie externe — voie orale",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-dashboard",
+   "label": "Tableau de bord stock",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-produits",
+   "label": "Référentiel produits",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    3,
+    11,
+    54
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-stock-gros",
+   "label": "Stock gros (magasin)",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [
+    40,
+    54
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-stock-detail",
+   "label": "Stock détail (pharmacie)",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-transferts",
+   "label": "Transferts gros → détail",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [
+    4,
+    40,
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-mouvements",
+   "label": "Mouvements de stock",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [
+    31,
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-lots",
+   "label": "Lots & péremptions (FEFO)",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [
+    11,
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-alertes",
+   "label": "Alertes & seuils",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-inventaire",
+   "label": "Inventaires",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    65
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-pertes",
+   "label": "Pertes, casses & rebuts",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    32
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-dispensation",
+   "label": "Dispensation",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    15,
+    24
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-etiquetage",
+   "label": "Étiquetage & emplacements",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "medecin",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    32
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-reprise",
+   "label": "Reprise SAGE 100",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-point-ventes",
+   "label": "Suivi des ventes",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    38,
+    57,
+    69,
+    70
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-point-stock",
+   "label": "Point du stock valorisé",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [
+    38
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-besoins",
+   "label": "Bons d’expression de besoins",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": true,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    31,
+    52,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-commandes",
+   "label": "Bons de commande",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-livraisons",
+   "label": "Bons de livraison",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-receptions",
+   "label": "Réceptions & contrôles",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-ecarts",
+   "label": "Écarts de livraison",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-pv-reception-consommables",
+   "label": "PV de réception — consommables",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-pv-reception-reactifs",
+   "label": "PV de réception — réactifs",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    47
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-fournisseurs",
+   "label": "Fournisseurs",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m7-factures-fournisseurs",
+   "label": "Factures fournisseurs",
+   "module": "M7",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    31
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m8-dashboard",
+   "label": "Tableau de bord facturation",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "m8-facturation",
+   "label": "Nouvelle facture",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    10,
+    12,
+    16,
+    18,
+    31,
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m8-factures",
+   "label": "Factures",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    11,
+    29,
+    47
+   ],
+   "statut": "porté"
+  },
+  {
+   "id": "m8-proforma",
+   "label": "Factures pro-forma",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "m8-paiements",
+   "label": "Paiements",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "m8-reliquats",
+   "label": "Reliquats",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    19
+   ],
+   "statut": "porté"
+  },
+  {
+   "id": "m8-remboursements",
+   "label": "Remboursements & annulations",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m8-facture-avoir",
+   "label": "Factures d’avoir",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    47
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m8-caisse",
+   "label": "État de caisse journalier",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    15,
+    29,
+    34,
+    38,
+    39,
+    42,
+    70
+   ],
+   "statut": "porté"
+  },
+  {
+   "id": "m8-operations",
+   "label": "Opérations de caisse",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    19
+   ],
+   "statut": "porté"
+  },
+  {
+   "id": "m8-recettes",
+   "label": "Recettes par période",
+   "module": "M8",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "stock",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    19
+   ],
+   "statut": "porté"
+  },
+  {
+   "id": "m9-dashboard",
+   "label": "Tableau de bord assurances",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-compagnies",
+   "label": "Compagnies partenaires",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    8,
+    61
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-assures",
+   "label": "Assurés & cartes",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    17,
+    31,
+    61
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-conventions",
+   "label": "Conventions & garanties",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    17,
+    19
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-prises-en-charge",
+   "label": "Prises en charge",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-factures-assureur",
+   "label": "Factures mensuelles assureur",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    19,
+    74
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-facture-mere",
+   "label": "Facture mère assurance",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    35
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-historique",
+   "label": "Historique par assureur",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    19
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-creances",
+   "label": "Créances",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    61,
+    74
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m9-relances",
+   "label": "Relances",
+   "module": "M9",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mecef-dashboard",
+   "label": "Tableau de bord fiscal",
+   "module": "MECEF",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mecef-factures",
+   "label": "Factures normalisées",
+   "module": "MECEF",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    74
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mecef-transmission",
+   "label": "Transmission & réponses",
+   "module": "MECEF",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mecef-avoirs",
+   "label": "Avoirs & annulations",
+   "module": "MECEF",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mecef-journal",
+   "label": "Journal des transactions",
+   "module": "MECEF",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "caissier",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mecef-config",
+   "label": "Configuration fiscale",
+   "module": "MECEF",
+   "domaine": "Financier",
+   "tranche": 1,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-dashboard",
+   "label": "Tableau de bord comptable",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-plan-comptable",
+   "label": "Plan comptable OHADA",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-journaux",
+   "label": "Journaux comptables",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-ecritures",
+   "label": "Écritures comptables",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    6,
+    12,
+    42,
+    52
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-depenses",
+   "label": "Dépenses journalières",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    39,
+    47,
+    52,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-grand-livre",
+   "label": "Grand livre",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-balance",
+   "label": "Balance générale & âgée",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-analytique",
+   "label": "Comptabilité analytique",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-budgets",
+   "label": "Budgets",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-immobilisations",
+   "label": "Immobilisations & amortissements",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    58
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-banques",
+   "label": "Banques & rapprochements",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-compte-resultat",
+   "label": "Compte de résultat",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    39,
+    62
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-flux-tresorerie",
+   "label": "Tableau des flux de trésorerie",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    62
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-seuil-rentabilite",
+   "label": "Seuil de rentabilité",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    39
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-etats-financiers",
+   "label": "États financiers",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    58,
+    74
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-baseline-2025",
+   "label": "Baseline 2025",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-echeances",
+   "label": "Échéances fiscales & paiements",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    25,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-cloture",
+   "label": "Exercices & clôtures",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    42,
+    68,
+    70,
+    74
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-ouverture",
+   "label": "Bilan d’ouverture & à-nouveaux",
+   "module": "M12",
+   "domaine": "Financier",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    58
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-fiches-poste",
+   "label": "Fiches de poste",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-dashboard",
+   "label": "Tableau de bord RH",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-personnel",
+   "label": "Personnel",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    23,
+    39,
+    54
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-employe-profil",
+   "label": "Fiche employé",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-contrats",
+   "label": "Contrats",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    33,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-badges",
+   "label": "Badges du personnel",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "surveillant",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    55,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-badges-verification",
+   "label": "Vérifier un badge",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "surveillant",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    55
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-badges-modeles",
+   "label": "Modèles de badge",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    55
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-badges-impression",
+   "label": "Planche d’impression des badges",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    55
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-planning",
+   "label": "Planning & gardes",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "surveillant"
+   ],
+   "scenarios": [
+    26,
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-stats-gardes",
+   "label": "Statistiques de garde",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "surveillant"
+   ],
+   "scenarios": [
+    26
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-stats-permanences",
+   "label": "Statistiques des permanences",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "surveillant"
+   ],
+   "scenarios": [
+    39
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-stats-presence",
+   "label": "Taux de présence par service",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "surveillant"
+   ],
+   "scenarios": [
+    39
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-presences",
+   "label": "Présences & absences",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "surveillant"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-conges",
+   "label": "Congés",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-missions",
+   "label": "Ordres de mission",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    23,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-evaluations",
+   "label": "Évaluations (NS 131)",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    13,
+    32,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-sanctions",
+   "label": "Sanctions",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-primes",
+   "label": "Primes (NS 132)",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    7,
+    26
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-evenements",
+   "label": "Événements du personnel",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    26,
+    32
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-participations",
+   "label": "Frais de participation",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    26
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-assurance-personnel",
+   "label": "Assurance du personnel",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    26
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-prestataires",
+   "label": "Prestataires externes",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-securite-entretien",
+   "label": "Sécurité & entretien",
+   "module": "M10",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-prets-etudes",
+   "label": "Prêts-études et avances",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-dashboard",
+   "label": "Tableau de bord paie",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-calcul",
+   "label": "Calcul de la paie",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    23,
+    26,
+    32
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-bulletins",
+   "label": "Bulletins de paie",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    9,
+    23,
+    54
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-cotisations",
+   "label": "Cotisations CNSS / ITS / VPS",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    23
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-heures-sup",
+   "label": "Heures supplémentaires",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-avances",
+   "label": "Avances sur salaire",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-ortb",
+   "label": "Redevance ORTB",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    23
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m11-validation",
+   "label": "Validation Direction",
+   "module": "M11",
+   "domaine": "RH",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-courriers",
+   "label": "Courriers (départ / arrivée)",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "reception",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    43,
+    52
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-reunions",
+   "label": "Réunions",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-evenements",
+   "label": "Événements & notifications",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    13,
+    22
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-plan-annuel",
+   "label": "Plan annuel de travail",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-notes-service",
+   "label": "Notes de service",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-ambulance",
+   "label": "Interventions ambulance",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin",
+    "ambulancier",
+    "assistant_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-repertoire-ambulances",
+   "label": "Répertoire des ambulances",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "infirmier",
+    "reception",
+    "ambulancier",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    35,
+    43
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m13-maintenance",
+   "label": "Parc technique & maintenance",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "agentadmin"
+   ],
+   "scenarios": [
+    37,
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "adm-validations",
+   "label": "Validations en attente",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "comptable",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    53
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "adm-enquetes",
+   "label": "Enquêtes & questionnaires",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "reception",
+    "agentadmin"
+   ],
+   "scenarios": [
+    52,
+    56
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "adm-satisfaction",
+   "label": "Satisfaction des patients",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "agentadmin"
+   ],
+   "scenarios": [
+    52,
+    53
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "ged-bibliotheque",
+   "label": "Bibliothèque documentaire",
+   "module": "GED",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    52
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "ged-workflow",
+   "label": "Workflow de validation",
+   "module": "GED",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "ged-archives",
+   "label": "Archivage & conservation",
+   "module": "GED",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "agentadmin",
+    "assistant_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rapports-bibliotheque",
+   "label": "Bibliothèque des états",
+   "module": "RAP",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rapports-direction",
+   "label": "États de la Direction",
+   "module": "RAP",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    24
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rapports-generateur",
+   "label": "Générateur de rapports",
+   "module": "RAP",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "comptable",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rapports-historique",
+   "label": "Historique des éditions",
+   "module": "RAP",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "comptable",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m14-utilisateurs",
+   "label": "Utilisateurs",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m14-roles",
+   "label": "Rôles & permissions (RBAC)",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    20,
+    31,
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m14-soignants",
+   "label": "Prescripteurs & exécutants de soins",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m14-sessions",
+   "label": "Sessions actives",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m14-audit",
+   "label": "Journal d’audit",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m14-sauvegardes",
+   "label": "Sauvegardes & restauration",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    23
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m14-taches",
+   "label": "Tâches planifiées",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    71,
+    72
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-organisation",
+   "label": "Organisation & organigramme",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    16
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-branding",
+   "label": "Identité & papier à en-tête",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-tarifs",
+   "label": "Référentiel tarifaire",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "reception"
+   ],
+   "scenarios": [
+    9,
+    43
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-catalogue",
+   "label": "Catalogue tarifaire (deux prix)",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "reception"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-imagerie-catalogue",
+   "label": "Catalogue de l’imagerie",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    50
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-entetes",
+   "label": "Papier à en-tête officiel",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-types-piece",
+   "label": "Types de pièces certifiantes",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    33
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-rappels",
+   "label": "Rappels & messages",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-certificats",
+   "label": "Certificats médicaux",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "reception"
+   ],
+   "scenarios": [
+    23
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-natures-facture",
+   "label": "Natures de facture",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    16
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-centres-couts",
+   "label": "Centres de coûts",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    16,
+    57
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-regles",
+   "label": "Règles métier versionnées",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    24
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-fiscalite",
+   "label": "Paramètres fiscaux (IFU / RCCM)",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    23
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-comptabilite",
+   "label": "Paramètres comptables & obligations",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    25
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-notifications",
+   "label": "Notifications",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-compte",
+   "label": "Mon compte",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-modules",
+   "label": "Activité des modules",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    27,
+    54
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-systeme",
+   "label": "Paramètres système",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [
+    16,
+    23,
+    67
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "cfg-poste",
+   "label": "Ce poste (mode fileul / mère)",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-supervision",
+   "label": "Supervision",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-appareils",
+   "label": "Appareils et appairage",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-conflits",
+   "label": "Conflits et doublons",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-a-traiter",
+   "label": "« À traiter » consolidé",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-journal-operations",
+   "label": "Journal des opérations",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-plages-baux",
+   "label": "Plages de numéros et baux de stock",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-lots-tournee",
+   "label": "Lots de tournée (mobiles)",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-journal-technique",
+   "label": "Journal technique",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-sauvegardes",
+   "label": "Sauvegardes et restauration",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-cle-clinique",
+   "label": "Clé de clinique",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-integrite",
+   "label": "Intégrité et altérations",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-reinit",
+   "label": "Réinitialisation de production",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-relais",
+   "label": "Relais en ligne",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-indicateurs",
+   "label": "Indicateurs publiés",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-service",
+   "label": "Service et démarrage",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-base",
+   "label": "Base de données locale",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-reseau",
+   "label": "Réseau local",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-planificateur",
+   "label": "Planificateur",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-notifications",
+   "label": "Notifications serveur",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-mise-en-service",
+   "label": "Assistant de première mise en service",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-mises-a-jour",
+   "label": "Mises à jour et compatibilité",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "mere-import",
+   "label": "Import de migration",
+   "module": "MERE",
+   "domaine": "Poste mère",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-tableau",
+   "label": "Tableau de bord du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-appareils",
+   "label": "Appareils",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-boites",
+   "label": "Boîtes aux lettres",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-codes",
+   "label": "Codes d’appairage",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-indicateurs",
+   "label": "Indicateurs reçus",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-alertes",
+   "label": "Alertes et notifications",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-journal",
+   "label": "Journal d’audit du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-superadmin",
+   "label": "Comptes superadmin",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-parametres",
+   "label": "Paramètres du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-hebergement",
+   "label": "Hébergement (cPanel)",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-sauvegarde",
+   "label": "Sauvegarde du relais",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "rls-opacite",
+   "label": "Preuve d’opacité",
+   "module": "RLS",
+   "domaine": "Relais en ligne",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-direction",
+   "label": "Direction",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da"
+   ],
+   "scenarios": [
+    9,
+    11,
+    14,
+    36
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-da",
+   "label": "Statistiques de la Direction",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    36,
+    61
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-croise",
+   "label": "Tableau de bord dynamique croisé",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    36,
+    39,
+    57
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-admin",
+   "label": "Administrateur",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [
+    31,
+    36,
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-stats-maternite",
+   "label": "Statistiques maternité & naissances",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "surveillant"
+   ],
+   "scenarios": [
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-stats-echographie",
+   "label": "Statistiques de l’imagerie médicale",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "echographiste"
+   ],
+   "scenarios": [
+    50,
+    57
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m5-stats-examens",
+   "label": "Statistiques des examens",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "laborantin"
+   ],
+   "scenarios": [
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-stats-consultations",
+   "label": "Statistiques des consultations",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin"
+   ],
+   "scenarios": [
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-stats-bloc",
+   "label": "Statistiques du bloc & anesthésie",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m3-stats-hospitalisations",
+   "label": "Statistiques des hospitalisations",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "surveillant",
+    "chirurgien"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m10-cout-agent",
+   "label": "Coût global de l’agent",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-rentabilite-groupes",
+   "label": "Recettes & charges par groupe",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    51,
+    57
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-tableau-decisionnel",
+   "label": "Tableau de bord décisionnel",
+   "module": "PIL",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    65
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-bfr",
+   "label": "Besoin en fonds de roulement",
+   "module": "M12",
+   "domaine": "Pilotage",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    65
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m12-cout-activite",
+   "label": "Coût à l’activité",
+   "module": "M12",
+   "domaine": "Pilotage",
+   "tranche": 5,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "comptable",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-medecin",
+   "label": "Médecin",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "dm",
+    "medecin"
+   ],
+   "scenarios": [
+    36,
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-infirmier",
+   "label": "Infirmier / Sage-femme",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "dm",
+    "infirmier"
+   ],
+   "scenarios": [
+    36,
+    37,
+    46
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-pharmacien",
+   "label": "Pharmacie",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "caissier"
+   ],
+   "scenarios": [
+    36,
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-laborantin",
+   "label": "Biologiste médical",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "laborantin"
+   ],
+   "scenarios": [
+    36,
+    37,
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-stock",
+   "label": "Gestionnaire de stock",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "stock"
+   ],
+   "scenarios": [
+    36,
+    37,
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-caissier",
+   "label": "Caisse",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "caissier"
+   ],
+   "scenarios": [
+    9,
+    36,
+    37,
+    40
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-comptable",
+   "label": "Comptabilité",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [
+    36,
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-rh",
+   "label": "Ressources humaines",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-receptionniste",
+   "label": "Accueil",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "reception"
+   ],
+   "scenarios": [
+    36,
+    37,
+    43
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-admin-agent",
+   "label": "Agent administratif",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "agentadmin"
+   ],
+   "scenarios": [
+    36,
+    41
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-ambulancier",
+   "label": "Ambulance",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "ambulancier"
+   ],
+   "scenarios": [
+    36,
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-aide-soignant",
+   "label": "Aide-soignante",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "dm",
+    "aide_soignant"
+   ],
+   "scenarios": [
+    36,
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-echographiste",
+   "label": "Échographie",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "dm",
+    "echographiste"
+   ],
+   "scenarios": [
+    36,
+    37,
+    38
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-surveillant",
+   "label": "Surveillant",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "dm",
+    "da",
+    "surveillant"
+   ],
+   "scenarios": [
+    36,
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-assistant-comptable",
+   "label": "Assistant de Direction",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "assistant_comptable"
+   ],
+   "scenarios": [
+    36,
+    37
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-chirurgien",
+   "label": "Chirurgien",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "chirurgien"
+   ],
+   "scenarios": [
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-anesthesiste",
+   "label": "Anesthésiste",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-aide-comptable",
+   "label": "Assistant Comptable",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    42
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-maternite",
+   "label": "Maternité",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [
+    60
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "dash-patient",
+   "label": "Espace patient",
+   "module": "DASH",
+   "domaine": "Pilotage",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "medecin",
+    "reception"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "index",
+   "label": "Connexion",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "auth-forgot",
+   "label": "Mot de passe oublié",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "auth-reset",
+   "label": "Réinitialisation du mot de passe",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "auth-2fa",
+   "label": "Vérification en 2 étapes",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "auth-lock",
+   "label": "Écran verrouillé",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    26,
+    70
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "error-404",
+   "label": "Page introuvable",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "error-403",
+   "label": "Accès refusé",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    9
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "plan-du-site",
+   "label": "Plan du site",
+   "module": "AUTH",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "aide-apropos",
+   "label": "Aide & À propos",
+   "module": "SUP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    14
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "contact-editeur",
+   "label": "Contactez l’éditeur",
+   "module": "SUP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "stock",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "aide_soignant",
+    "echographiste",
+    "surveillant",
+    "assistant_comptable",
+    "chirurgien",
+    "anesthesiste",
+    "aide_comptable"
+   ],
+   "scenarios": [
+    14
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-dossier-medical",
+   "label": "Dossier médical informatisé",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    31,
+    33,
+    40,
+    45
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-dossier-etendu",
+   "label": "Dossier de consultation étendu",
+   "module": "M1",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    20,
+    35,
+    40,
+    45
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-dossier-consultation-nouveau",
+   "label": "Dossier de consultation — saisie",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "chirurgien"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-ordonnance-nouvelle",
+   "label": "Nouvelle ordonnance — saisie",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "chirurgien"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-imagerie-cr",
+   "label": "Compte rendu d’imagerie — saisie",
+   "module": "M2",
+   "domaine": "Soins",
+   "tranche": 3,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m6-inventaire-feuille",
+   "label": "Feuille d’inventaire — comptage",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "caissier",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-patient-nouveau",
+   "label": "Ouvrir un dossier patient",
+   "module": "M1",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "caissier",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    1
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m4-dossier-obstetrical-nouveau",
+   "label": "Ouvrir un dossier obstétrical",
+   "module": "M4",
+   "domaine": "Soins",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m2-visites",
+   "label": "Registre des visites de suivi clinique",
+   "module": "M2",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "medecin",
+    "infirmier",
+    "reception",
+    "echographiste",
+    "chirurgien"
+   ],
+   "scenarios": [
+    22
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "m1-certificats-externes",
+   "label": "Certificats — patients externes",
+   "module": "M1",
+   "domaine": "Accueil",
+   "tranche": 4,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "medecin",
+    "infirmier",
+    "laborantin",
+    "caissier",
+    "comptable",
+    "reception",
+    "echographiste",
+    "chirurgien",
+    "anesthesiste"
+   ],
+   "scenarios": [
+    51
+   ],
+   "statut": "non commencé"
+  },
+  {
+   "id": "enquete-publique",
+   "label": "Fiche d’enquête (lien partagé)",
+   "module": "M13",
+   "domaine": "Administration",
+   "tranche": 6,
+   "standalone": true,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "dm",
+    "da",
+    "infirmier",
+    "laborantin",
+    "comptable",
+    "reception",
+    "agentadmin",
+    "ambulancier",
+    "assistant_comptable"
+   ],
+   "scenarios": [],
+   "statut": "non commencé"
+  }
+ ]
+}

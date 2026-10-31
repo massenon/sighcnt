@@ -1,0 +1,3017 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-maternite.js — ne pas éditer.",
+ "contexte": {
+  "femme": "CNT/1/25",
+  "femme2": "CNT/6/25",
+  "sageFemme": "BASSONGUI Chabi Séko",
+  "femmeSansNaissance": "CNT/6/25"
+ },
+ "saisies": [
+  {
+   "nom": "suivi : admission complète",
+   "ecran": "m4-maternite",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "termeSA": 30,
+    "poids": 62.5,
+    "dpa": "2026-10-05",
+    "cpn": 4,
+    "risque": "Élevé",
+    "sageFemme": "BASSONGUI Chabi Séko",
+    "observations": "RAS"
+   },
+   "titre": "Nouveau suivi de grossesse",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "termeSA",
+     ""
+    ],
+    [
+     "poids",
+     ""
+    ],
+    [
+     "dpa",
+     ""
+    ],
+    [
+     "cpn",
+     ""
+    ],
+    [
+     "groupeSanguin",
+     ""
+    ],
+    [
+     "risque",
+     "Standard"
+    ],
+    [
+     "sageFemme",
+     ""
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "SUIxmvvhms4bm7ht8",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "termeSA": 30,
+     "poids": 62.5,
+     "dpa": "2026-10-05",
+     "cpn": 4,
+     "groupeSanguin": "",
+     "risque": "Élevé",
+     "sageFemme": "BASSONGUI Chabi Séko",
+     "observations": "RAS",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine"
+    }
+   ],
+   "nbAvant": 32,
+   "nbApres": 33,
+   "toasts": [
+    [
+     "Nouveau suivi de grossesse créé."
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "suivi : dossier sans date de naissance (verrou nommant où corriger)",
+   "ecran": "m4-maternite",
+   "saisie": {
+    "patientCode": "CNT/6/25",
+    "termeSA": 20,
+    "poids": 55,
+    "dpa": "2026-12-01"
+   },
+   "titre": "Nouveau suivi de grossesse",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "termeSA",
+     ""
+    ],
+    [
+     "poids",
+     ""
+    ],
+    [
+     "dpa",
+     ""
+    ],
+    [
+     "cpn",
+     ""
+    ],
+    [
+     "groupeSanguin",
+     ""
+    ],
+    [
+     "risque",
+     "Standard"
+    ],
+    [
+     "sageFemme",
+     ""
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "nouvelles": [],
+   "nbAvant": 33,
+   "nbApres": 33,
+   "toasts": [
+    [
+     "La date de naissance manque au dossier CNT/6/25 : l’admission maternité exige l’âge (rapport du 27/08/2026). Compléter le dossier patient avant d’admettre."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "nom": "accouchement : césarienne avec actes",
+   "ecran": "m4-accouchements",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "dateHeure": "2026-08-15T22:10",
+    "type": "Césarienne",
+    "actes": [
+     "Épisiotomie",
+     "GATPA"
+    ],
+    "duree": "8 h",
+    "sageFemme": "BASSONGUI Chabi Séko",
+    "complications": "Aucune",
+    "issue": "Favorable"
+   },
+   "titre": "Nouveau accouchement",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "type",
+     "Eutocique"
+    ],
+    [
+     "actes",
+     []
+    ],
+    [
+     "duree",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "complications",
+     "Aucune"
+    ],
+    [
+     "issue",
+     "Favorable"
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "ACCxmvvhmsupqxye9",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "dateHeure": "2026-08-15T22:10",
+     "type": "Césarienne",
+     "actes": [
+      "Épisiotomie",
+      "GATPA"
+     ],
+     "duree": "8 h",
+     "sageFemme": "BASSONGUI Chabi Séko",
+     "complications": "Aucune",
+     "issue": "Favorable",
+     "observations": "",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "ACC-0049",
+     "voie": "Césarienne"
+    }
+   ],
+   "nbAvant": 48,
+   "nbApres": 49,
+   "toasts": [
+    [
+     "Nouveau accouchement créé.",
+     "ACC-0049"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "accouchement : eutocique (voie basse)",
+   "ecran": "m4-accouchements",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "dateHeure": "2026-08-14T03:00",
+    "type": "Eutocique",
+    "sageFemme": "BASSONGUI Chabi Séko",
+    "issue": "Défavorable",
+    "complications": "Souffrance fœtale"
+   },
+   "titre": "Nouveau accouchement",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "type",
+     "Eutocique"
+    ],
+    [
+     "actes",
+     []
+    ],
+    [
+     "duree",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "complications",
+     "Aucune"
+    ],
+    [
+     "issue",
+     "Favorable"
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "ACCxmvvhmt8lo3v4o",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "dateHeure": "2026-08-14T03:00",
+     "type": "Eutocique",
+     "actes": [],
+     "duree": "",
+     "sageFemme": "BASSONGUI Chabi Séko",
+     "complications": "Souffrance fœtale",
+     "issue": "Défavorable",
+     "observations": "",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "ACC-0050",
+     "voie": "Voie basse"
+    }
+   ],
+   "nbAvant": 49,
+   "nbApres": 50,
+   "toasts": [
+    [
+     "Nouveau accouchement créé.",
+     "ACC-0050"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "accouchement : date manquante (refus)",
+   "ecran": "m4-accouchements",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "sageFemme": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau accouchement",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "type",
+     "Eutocique"
+    ],
+    [
+     "actes",
+     []
+    ],
+    [
+     "duree",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "complications",
+     "Aucune"
+    ],
+    [
+     "issue",
+     "Favorable"
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "nouvelles": [],
+   "nbAvant": 50,
+   "nbApres": 50,
+   "toasts": [
+    [
+     "Le formulaire comporte des erreurs."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "nom": "naissance : complète (alerte Apgar 5 min < 7)",
+   "ecran": "m4-naissances",
+   "saisie": {
+    "mereCode": "CNT/1/25",
+    "dateHeure": "2026-08-15T22:30",
+    "sexe": "F",
+    "vivant": true,
+    "poids": 2.8,
+    "taille": 48,
+    "pc": 31,
+    "pt": 33,
+    "apgar1": 4,
+    "apgar5": 6,
+    "apgar10": 8,
+    "reanimation": true,
+    "vitK1": true,
+    "bcg": true,
+    "declare": false
+   },
+   "titre": "Nouveau naissance",
+   "initial": [
+    [
+     "mereCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "sexe",
+     "M"
+    ],
+    [
+     "vivant",
+     true
+    ],
+    [
+     "poids",
+     ""
+    ],
+    [
+     "taille",
+     ""
+    ],
+    [
+     "pc",
+     ""
+    ],
+    [
+     "pt",
+     ""
+    ],
+    [
+     "apgar1",
+     "8"
+    ],
+    [
+     "apgar5",
+     "9"
+    ],
+    [
+     "apgar10",
+     "10"
+    ],
+    [
+     "reanimation",
+     false
+    ],
+    [
+     "vitK1",
+     true
+    ],
+    [
+     "collyre",
+     true
+    ],
+    [
+     "vpo0",
+     false
+    ],
+    [
+     "bcg",
+     false
+    ],
+    [
+     "hepB0",
+     false
+    ],
+    [
+     "declare",
+     false
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "NAIxmvvhmtzgvgd6r",
+     "statut": "actif",
+     "mereCode": "CNT/1/25",
+     "dateHeure": "2026-08-15T22:30",
+     "sexe": "F",
+     "vivant": true,
+     "poids": 2.8,
+     "taille": 48,
+     "pc": 31,
+     "pt": 33,
+     "apgar1": 4,
+     "apgar5": 6,
+     "apgar10": 8,
+     "reanimation": true,
+     "vitK1": true,
+     "collyre": true,
+     "vpo0": false,
+     "bcg": true,
+     "hepB0": false,
+     "declare": false,
+     "mere": "TCHANE Bertine",
+     "mereId": "PAT0001",
+     "reference": "NAI-0049"
+    }
+   ],
+   "nbAvant": 48,
+   "nbApres": 49,
+   "toasts": [
+    [
+     "Nouveau naissance créé.",
+     "NAI-0049"
+    ],
+    [
+     "Une mesure néonatale sort des bornes de surveillance — ouvrir le dossier du nouveau-né."
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "naissance : PC manquant (refus, obligatoire)",
+   "ecran": "m4-naissances",
+   "saisie": {
+    "mereCode": "CNT/1/25",
+    "dateHeure": "2026-08-15T22:30",
+    "sexe": "M",
+    "poids": 3.2,
+    "pt": 33,
+    "apgar1": 8,
+    "apgar5": 9
+   },
+   "titre": "Nouveau naissance",
+   "initial": [
+    [
+     "mereCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "sexe",
+     "M"
+    ],
+    [
+     "vivant",
+     true
+    ],
+    [
+     "poids",
+     ""
+    ],
+    [
+     "taille",
+     ""
+    ],
+    [
+     "pc",
+     ""
+    ],
+    [
+     "pt",
+     ""
+    ],
+    [
+     "apgar1",
+     "8"
+    ],
+    [
+     "apgar5",
+     "9"
+    ],
+    [
+     "apgar10",
+     "10"
+    ],
+    [
+     "reanimation",
+     false
+    ],
+    [
+     "vitK1",
+     true
+    ],
+    [
+     "collyre",
+     true
+    ],
+    [
+     "vpo0",
+     false
+    ],
+    [
+     "bcg",
+     false
+    ],
+    [
+     "hepB0",
+     false
+    ],
+    [
+     "declare",
+     false
+    ]
+   ],
+   "nouvelles": [],
+   "nbAvant": 49,
+   "nbApres": 49,
+   "toasts": [
+    [
+     "Le formulaire comporte des erreurs."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "nom": "dossier bébé : même formulaire, même fiche",
+   "ecran": "m4-dossier-bebe",
+   "saisie": {
+    "mereCode": "CNT/6/25",
+    "dateHeure": "2026-08-13T10:00",
+    "sexe": "M",
+    "poids": 3.4,
+    "pc": 34,
+    "pt": 33,
+    "apgar1": 8,
+    "apgar5": 9,
+    "vitK1": true,
+    "vpo0": true
+   },
+   "titre": "Nouveau dossier bébé",
+   "initial": [
+    [
+     "mereCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "sexe",
+     "M"
+    ],
+    [
+     "vivant",
+     true
+    ],
+    [
+     "poids",
+     ""
+    ],
+    [
+     "taille",
+     ""
+    ],
+    [
+     "pc",
+     ""
+    ],
+    [
+     "pt",
+     ""
+    ],
+    [
+     "apgar1",
+     ""
+    ],
+    [
+     "apgar5",
+     ""
+    ],
+    [
+     "apgar10",
+     ""
+    ],
+    [
+     "reanimation",
+     false
+    ],
+    [
+     "vitK1",
+     true
+    ],
+    [
+     "collyre",
+     true
+    ],
+    [
+     "vpo0",
+     false
+    ],
+    [
+     "bcg",
+     false
+    ],
+    [
+     "hepB0",
+     false
+    ],
+    [
+     "declare",
+     false
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "NAIxmvvhmupi35ab2",
+     "statut": "actif",
+     "mereCode": "CNT/6/25",
+     "dateHeure": "2026-08-13T10:00",
+     "sexe": "M",
+     "vivant": true,
+     "poids": 3.4,
+     "taille": null,
+     "pc": 34,
+     "pt": 33,
+     "apgar1": 8,
+     "apgar5": 9,
+     "apgar10": null,
+     "reanimation": false,
+     "vitK1": true,
+     "collyre": true,
+     "vpo0": true,
+     "bcg": false,
+     "hepB0": false,
+     "declare": false,
+     "mere": "DIEYABIDI Bibata",
+     "mereId": "PAT0006",
+     "reference": "NAI-0050"
+    }
+   ],
+   "nbAvant": 49,
+   "nbApres": 50,
+   "toasts": [
+    [
+     "Nouveau dossier bébé créé.",
+     "NAI-0050"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "décès",
+   "ecran": "m4-deces",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "dateHeure": "2026-08-12T05:45",
+    "cause": "Choc hémorragique",
+    "lieu": "Maternité",
+    "medecin": "BASSONGUI Chabi Séko",
+    "declare": false
+   },
+   "titre": "Nouveau décès",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "cause",
+     ""
+    ],
+    [
+     "lieu",
+     ""
+    ],
+    [
+     "medecin",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "declare",
+     false
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "DECxmvvhmv2p8kpkf",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "dateHeure": "2026-08-12T05:45",
+     "cause": "Choc hémorragique",
+     "lieu": "Maternité",
+     "medecin": "BASSONGUI Chabi Séko",
+     "declare": false,
+     "observations": "",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "DEC-0015"
+    }
+   ],
+   "nbAvant": 14,
+   "nbApres": 15,
+   "toasts": [
+    [
+     "Nouveau décès créé.",
+     "DEC-0015"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "CPN : grossesse suivie (alerte âge hors fenêtre si le dossier le porte)",
+   "ecran": "m4-cpn",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "ddr": "2026-02-01",
+    "dpa": "2026-11-08",
+    "termeSA": 28,
+    "groupeSanguin": "O+",
+    "sageFemme": "BASSONGUI Chabi Séko",
+    "sp": [
+     "SP1",
+     "SP2",
+     "SP3"
+    ],
+    "milda": true,
+    "gar": false,
+    "mebendazole": true,
+    "vat": "VAT2",
+    "fer": true,
+    "folates": true
+   },
+   "titre": "Nouveau grossesse suivie",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "ddr",
+     ""
+    ],
+    [
+     "dpa",
+     ""
+    ],
+    [
+     "termeSA",
+     ""
+    ],
+    [
+     "groupeSanguin",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ],
+    [
+     "sp",
+     []
+    ],
+    [
+     "milda",
+     false
+    ],
+    [
+     "gar",
+     false
+    ],
+    [
+     "mebendazole",
+     false
+    ],
+    [
+     "vat",
+     ""
+    ],
+    [
+     "fer",
+     false
+    ],
+    [
+     "folates",
+     false
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "GROxmvvhmvg2mmvt8",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "ddr": "2026-02-01",
+     "dpa": "2026-11-08",
+     "termeSA": 28,
+     "groupeSanguin": "O+",
+     "sageFemme": "BASSONGUI Chabi Séko",
+     "sp": [
+      "SP1",
+      "SP2",
+      "SP3"
+     ],
+     "milda": true,
+     "gar": false,
+     "mebendazole": true,
+     "vat": "VAT2",
+     "fer": true,
+     "folates": true,
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "CPN-0019"
+    }
+   ],
+   "nbAvant": 18,
+   "nbApres": 19,
+   "toasts": [
+    [
+     "Nouveau grossesse suivie créé.",
+     "CPN-0019"
+    ],
+    [
+     "Âge maternel hors de la fenêtre 18–35 ans : facteur de risque CPN à évaluer (rapport du 27/08/2026)."
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "CPoN : hémorragie ante-partum SANS étiologie (refus)",
+   "ecran": "m4-cpon",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "date": "2026-08-10",
+    "type": "cpon1",
+    "hemorragieAntePartum": true,
+    "sageFemme": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau consultation post-natale",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "date",
+     ""
+    ],
+    [
+     "type",
+     "cpon1"
+    ],
+    [
+     "hemorragieAntePartum",
+     false
+    ],
+    [
+     "etiologieAnte",
+     ""
+    ],
+    [
+     "hpp",
+     false
+    ],
+    [
+     "examen",
+     ""
+    ],
+    [
+     "supplementation",
+     ""
+    ],
+    [
+     "conseilPF",
+     false
+    ],
+    [
+     "etatNouveauNe",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [],
+   "nbAvant": 20,
+   "nbApres": 20,
+   "toasts": [
+    [
+     "Une hémorragie ante-partum se précise : l’étiologie est ce que le rapport demande de corréler."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "nom": "CPoN : hémorragie ante-partum avec étiologie",
+   "ecran": "m4-cpon",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "date": "2026-08-10",
+    "type": "cpon2",
+    "hemorragieAntePartum": true,
+    "etiologieAnte": "Placenta praevia",
+    "hpp": true,
+    "examen": "TA 12/8",
+    "conseilPF": true,
+    "sageFemme": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau consultation post-natale",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "date",
+     ""
+    ],
+    [
+     "type",
+     "cpon1"
+    ],
+    [
+     "hemorragieAntePartum",
+     false
+    ],
+    [
+     "etiologieAnte",
+     ""
+    ],
+    [
+     "hpp",
+     false
+    ],
+    [
+     "examen",
+     ""
+    ],
+    [
+     "supplementation",
+     ""
+    ],
+    [
+     "conseilPF",
+     false
+    ],
+    [
+     "etatNouveauNe",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "CPOxmvvhmw6a4yncv",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "date": "2026-08-10",
+     "type": "cpon2",
+     "hemorragieAntePartum": true,
+     "etiologieAnte": "Placenta praevia",
+     "hpp": true,
+     "examen": "TA 12/8",
+     "supplementation": "",
+     "conseilPF": true,
+     "etatNouveauNe": "",
+     "sageFemme": "BASSONGUI Chabi Séko",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "CPO-0021"
+    }
+   ],
+   "nbAvant": 20,
+   "nbApres": 21,
+   "toasts": [
+    [
+     "Nouveau consultation post-natale créé.",
+     "CPO-0021"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "CPoN : étiologie sans hémorragie (effacée)",
+   "ecran": "m4-cpon",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "date": "2026-08-10",
+    "type": "cpon3",
+    "hemorragieAntePartum": false,
+    "etiologieAnte": "Rupture utérine",
+    "sageFemme": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau consultation post-natale",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "date",
+     ""
+    ],
+    [
+     "type",
+     "cpon1"
+    ],
+    [
+     "hemorragieAntePartum",
+     false
+    ],
+    [
+     "etiologieAnte",
+     ""
+    ],
+    [
+     "hpp",
+     false
+    ],
+    [
+     "examen",
+     ""
+    ],
+    [
+     "supplementation",
+     ""
+    ],
+    [
+     "conseilPF",
+     false
+    ],
+    [
+     "etatNouveauNe",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "CPOxmvvhmwjkrlag6",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "date": "2026-08-10",
+     "type": "cpon3",
+     "hemorragieAntePartum": false,
+     "etiologieAnte": null,
+     "hpp": false,
+     "examen": "",
+     "supplementation": "",
+     "conseilPF": false,
+     "etatNouveauNe": "",
+     "sageFemme": "BASSONGUI Chabi Séko",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "CPO-0022"
+    }
+   ],
+   "nbAvant": 21,
+   "nbApres": 22,
+   "toasts": [
+    [
+     "Nouveau consultation post-natale créé.",
+     "CPO-0022"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "PF : nouvelle acceptante, implant",
+   "ecran": "m4-planification",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "date": "2026-08-12",
+    "acceptante": "A",
+    "methode": "jadelle",
+    "rdv": "2026-09-12",
+    "sageFemme": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau consultation PF",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "date",
+     ""
+    ],
+    [
+     "acceptante",
+     "A"
+    ],
+    [
+     "methode",
+     "diu"
+    ],
+    [
+     "methodeAnterieure",
+     ""
+    ],
+    [
+     "ddr",
+     ""
+    ],
+    [
+     "constantes",
+     ""
+    ],
+    [
+     "rdv",
+     ""
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "PLAxmvvhmwx0zhyr2",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "date": "2026-08-12",
+     "acceptante": "A",
+     "methode": "jadelle",
+     "methodeAnterieure": "",
+     "ddr": "",
+     "constantes": "",
+     "rdv": "2026-09-12",
+     "sageFemme": "BASSONGUI Chabi Séko",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "PF-0025",
+     "methodeLabel": "Jadelle (2 bâtonnets)"
+    }
+   ],
+   "nbAvant": 24,
+   "nbApres": 25,
+   "toasts": [
+    [
+     "Nouveau consultation PF créé.",
+     "PF-0025"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "SONU : fonctions triées, numériques",
+   "ecran": "m4-sonu",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "dateHeure": "2026-08-15T01:20",
+    "gestite": 3,
+    "parite": 2,
+    "evacuation": true,
+    "provenance": "CS Kouandé",
+    "fonctions": [
+     "10",
+     "3",
+     "1"
+    ],
+    "evolution": "Favorable",
+    "agent": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau urgence obstétricale",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "gestite",
+     ""
+    ],
+    [
+     "parite",
+     ""
+    ],
+    [
+     "evacuation",
+     false
+    ],
+    [
+     "provenance",
+     ""
+    ],
+    [
+     "diagnosticEvacuation",
+     ""
+    ],
+    [
+     "heureAbordVeineux",
+     ""
+    ],
+    [
+     "fonctions",
+     []
+    ],
+    [
+     "autreGeste",
+     ""
+    ],
+    [
+     "heureFinGestes",
+     ""
+    ],
+    [
+     "evolution",
+     "Favorable"
+    ],
+    [
+     "agent",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "REGxmvvhmxa98qspr",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "dateHeure": "2026-08-15T01:20",
+     "gestite": 3,
+     "parite": 2,
+     "evacuation": true,
+     "provenance": "CS Kouandé",
+     "diagnosticEvacuation": "",
+     "heureAbordVeineux": "",
+     "fonctions": [
+      1,
+      3,
+      10
+     ],
+     "autreGeste": "",
+     "heureFinGestes": "",
+     "evolution": "Favorable",
+     "agent": "BASSONGUI Chabi Séko",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "SONU-0011"
+    }
+   ],
+   "nbAvant": 10,
+   "nbApres": 11,
+   "toasts": [
+    [
+     "Nouveau urgence obstétricale créé.",
+     "SONU-0011"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "SONU : aucune fonction (refus)",
+   "ecran": "m4-sonu",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "dateHeure": "2026-08-15T01:20",
+    "evolution": "Favorable",
+    "agent": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau urgence obstétricale",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "dateHeure",
+     ""
+    ],
+    [
+     "gestite",
+     ""
+    ],
+    [
+     "parite",
+     ""
+    ],
+    [
+     "evacuation",
+     false
+    ],
+    [
+     "provenance",
+     ""
+    ],
+    [
+     "diagnosticEvacuation",
+     ""
+    ],
+    [
+     "heureAbordVeineux",
+     ""
+    ],
+    [
+     "fonctions",
+     []
+    ],
+    [
+     "autreGeste",
+     ""
+    ],
+    [
+     "heureFinGestes",
+     ""
+    ],
+    [
+     "evolution",
+     "Favorable"
+    ],
+    [
+     "agent",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [],
+   "nbAvant": 11,
+   "nbApres": 11,
+   "toasts": [
+    [
+     "Le formulaire comporte des erreurs."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "nom": "PTME",
+   "ecran": "m4-ptme",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "vihTrimestre": "2",
+    "vihType": "VIH-1",
+    "agHbs": "Négatif",
+    "syphilis": "Négatif",
+    "chargeVirale": "Indétectable",
+    "allaitement": "Exclusif",
+    "pcrNaissance": "En attente",
+    "ctm": true
+   },
+   "titre": "Nouveau fiche PTME",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "vihTrimestre",
+     ""
+    ],
+    [
+     "vihType",
+     ""
+    ],
+    [
+     "agHbs",
+     ""
+    ],
+    [
+     "syphilis",
+     ""
+    ],
+    [
+     "chargeVirale",
+     ""
+    ],
+    [
+     "protocoleARV",
+     ""
+    ],
+    [
+     "dureeARV",
+     ""
+    ],
+    [
+     "allaitement",
+     "Exclusif"
+    ],
+    [
+     "prophylaxieNN",
+     ""
+    ],
+    [
+     "pcrNaissance",
+     ""
+    ],
+    [
+     "pcr1",
+     ""
+    ],
+    [
+     "pcr2",
+     ""
+    ],
+    [
+     "serologie18m",
+     ""
+    ],
+    [
+     "ctm",
+     false
+    ],
+    [
+     "hepBJ0",
+     false
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "PTMxmvvhmy0czdfp9",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "vihTrimestre": "2",
+     "vihType": "VIH-1",
+     "agHbs": "Négatif",
+     "syphilis": "Négatif",
+     "chargeVirale": "Indétectable",
+     "protocoleARV": "",
+     "dureeARV": "",
+     "allaitement": "Exclusif",
+     "prophylaxieNN": "",
+     "pcrNaissance": "En attente",
+     "pcr1": "",
+     "pcr2": "",
+     "serologie18m": "",
+     "ctm": true,
+     "hepBJ0": false,
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "PTME-0007"
+    }
+   ],
+   "nbAvant": 6,
+   "nbApres": 7,
+   "toasts": [
+    [
+     "Nouveau fiche PTME créé.",
+     "PTME-0007"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "Case 27 : hospitalisée sans jours (refus)",
+   "ecran": "m4-soins-curatifs",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "date": "2026-08-12",
+    "diagnostic": "Paludisme",
+    "femmeHospitalisee": true,
+    "agent": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau soin curatif",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "date",
+     ""
+    ],
+    [
+     "trancheAge",
+     ""
+    ],
+    [
+     "symptomes",
+     ""
+    ],
+    [
+     "diagnostic",
+     ""
+    ],
+    [
+     "traitement",
+     ""
+    ],
+    [
+     "mildaDelivree",
+     false
+    ],
+    [
+     "urgenceMaternite",
+     ""
+    ],
+    [
+     "femmeObservee",
+     false
+    ],
+    [
+     "femmeHospitalisee",
+     false
+    ],
+    [
+     "joursHospitalisation",
+     ""
+    ],
+    [
+     "agent",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [],
+   "nbAvant": 16,
+   "nbApres": 16,
+   "toasts": [
+    [
+     "La Case 27 exige le nombre de jours quand la femme est hospitalisée."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "nom": "Case 27 : jours sans hospitalisation (refus)",
+   "ecran": "m4-soins-curatifs",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "date": "2026-08-12",
+    "diagnostic": "Paludisme",
+    "femmeHospitalisee": false,
+    "joursHospitalisation": 3,
+    "agent": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau soin curatif",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "date",
+     ""
+    ],
+    [
+     "trancheAge",
+     ""
+    ],
+    [
+     "symptomes",
+     ""
+    ],
+    [
+     "diagnostic",
+     ""
+    ],
+    [
+     "traitement",
+     ""
+    ],
+    [
+     "mildaDelivree",
+     false
+    ],
+    [
+     "urgenceMaternite",
+     ""
+    ],
+    [
+     "femmeObservee",
+     false
+    ],
+    [
+     "femmeHospitalisee",
+     false
+    ],
+    [
+     "joursHospitalisation",
+     ""
+    ],
+    [
+     "agent",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [],
+   "nbAvant": 16,
+   "nbApres": 16,
+   "toasts": [
+    [
+     "Un nombre de jours sans hospitalisation cochée n’a pas de sens (Case 27)."
+    ]
+   ],
+   "modaleOuverte": true
+  },
+  {
+   "nom": "Case 27 : hospitalisée 3 jours",
+   "ecran": "m4-soins-curatifs",
+   "saisie": {
+    "patientCode": "CNT/1/25",
+    "date": "2026-08-12",
+    "diagnostic": "Paludisme",
+    "femmeObservee": true,
+    "femmeHospitalisee": true,
+    "joursHospitalisation": 3,
+    "urgenceMaternite": "referee",
+    "mildaDelivree": true,
+    "agent": "BASSONGUI Chabi Séko"
+   },
+   "titre": "Nouveau soin curatif",
+   "initial": [
+    [
+     "patientCode",
+     "CNT/1/25"
+    ],
+    [
+     "date",
+     ""
+    ],
+    [
+     "trancheAge",
+     ""
+    ],
+    [
+     "symptomes",
+     ""
+    ],
+    [
+     "diagnostic",
+     ""
+    ],
+    [
+     "traitement",
+     ""
+    ],
+    [
+     "mildaDelivree",
+     false
+    ],
+    [
+     "urgenceMaternite",
+     ""
+    ],
+    [
+     "femmeObservee",
+     false
+    ],
+    [
+     "femmeHospitalisee",
+     false
+    ],
+    [
+     "joursHospitalisation",
+     ""
+    ],
+    [
+     "agent",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "nouvelles": [
+    {
+     "id": "SOIxmvvhmz3fzc0v7",
+     "statut": "actif",
+     "patientCode": "CNT/1/25",
+     "date": "2026-08-12",
+     "trancheAge": "",
+     "symptomes": "",
+     "diagnostic": "Paludisme",
+     "traitement": "",
+     "mildaDelivree": true,
+     "urgenceMaternite": "referee",
+     "femmeObservee": true,
+     "femmeHospitalisee": true,
+     "joursHospitalisation": 3,
+     "agent": "BASSONGUI Chabi Séko",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "reference": "SCM-0017"
+    }
+   ],
+   "nbAvant": 16,
+   "nbApres": 17,
+   "toasts": [
+    [
+     "Nouveau soin curatif créé.",
+     "SCM-0017"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "accouchement : type corrigé",
+   "ecran": "m4-accouchements",
+   "modification": true,
+   "ref": "ACC-0002",
+   "saisie": {
+    "type": "Dystocique"
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/177/25"
+    ],
+    [
+     "dateHeure",
+     "2026-01-09T02:21"
+    ],
+    [
+     "type",
+     "Césarienne"
+    ],
+    [
+     "actes",
+     []
+    ],
+    [
+     "duree",
+     "12 h"
+    ],
+    [
+     "sageFemme",
+     "BOUKARI Nadège"
+    ],
+    [
+     "complications",
+     "Aucune"
+    ],
+    [
+     "issue",
+     "Favorable"
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "avant": {
+    "id": "ACC0002",
+    "statut": "actif",
+    "reference": "ACC-0002",
+    "patientId": "PAT0177",
+    "patient": "PARAISO Rabiatou",
+    "patientCode": "CNT/177/25",
+    "dateHeure": "2026-01-09T02:21:00.000Z",
+    "type": "Césarienne",
+    "voie": "Césarienne",
+    "actes": [],
+    "sageFemme": "BOUKARI Nadège",
+    "duree": "12 h",
+    "complications": "Aucune",
+    "issue": "Favorable",
+    "modeDelivrance": "Naturelle",
+    "gestesDelivrance": [
+     "Traction contrôlée du cordon",
+     "Massage utérin"
+    ],
+    "hemorragie": true,
+    "quantiteSang": 1291,
+    "placenta": {
+     "cotyledons": true,
+     "cupule": false,
+     "insertionCordon": "Centrale",
+     "grandCote": 23,
+     "petitCote": 16,
+     "longueurCordon": 45,
+     "poidsPlacenta": 613,
+     "faceMaternelle": "Cotylédons complets, pas de rétention",
+     "faceFoetale": "Membranes complètes, insertion appréciée"
+    },
+    "femmeReferee": false,
+    "femmeDecedee": false,
+    "nnReference": false,
+    "nnDecede": false,
+    "degreMortNe": null,
+    "surveillance": null
+   },
+   "patch": {
+    "dateHeure": "2026-01-09T02:21",
+    "type": "Dystocique",
+    "voie": "Voie basse",
+    "observations": ""
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "ACC-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "naissance : déclarée à l'état civil",
+   "ecran": "m4-naissances",
+   "modification": true,
+   "ref": "NAI-0002",
+   "saisie": {
+    "declare": true
+   },
+   "prerempli": [
+    [
+     "mereCode",
+     "CNT/177/25"
+    ],
+    [
+     "dateHeure",
+     "2026-01-09T02:21"
+    ],
+    [
+     "sexe",
+     "M"
+    ],
+    [
+     "vivant",
+     true
+    ],
+    [
+     "poids",
+     "3.09"
+    ],
+    [
+     "taille",
+     "54"
+    ],
+    [
+     "pc",
+     "37.9"
+    ],
+    [
+     "pt",
+     "33.7"
+    ],
+    [
+     "apgar1",
+     "10"
+    ],
+    [
+     "apgar5",
+     "10"
+    ],
+    [
+     "apgar10",
+     "10"
+    ],
+    [
+     "reanimation",
+     false
+    ],
+    [
+     "vitK1",
+     true
+    ],
+    [
+     "collyre",
+     true
+    ],
+    [
+     "vpo0",
+     true
+    ],
+    [
+     "bcg",
+     false
+    ],
+    [
+     "hepB0",
+     true
+    ],
+    [
+     "declare",
+     true
+    ]
+   ],
+   "avant": {
+    "id": "NAI0002",
+    "statut": "actif",
+    "reference": "NAI-0002",
+    "accouchementId": "ACC0002",
+    "dateHeure": "2026-01-09T02:21:00.000Z",
+    "mere": "PARAISO Rabiatou",
+    "mereCode": "CNT/177/25",
+    "mereId": "PAT0177",
+    "sexe": "M",
+    "poids": "3.09",
+    "taille": 54,
+    "pc": 37.9,
+    "pt": 33.7,
+    "apgar1": 10,
+    "apgar5": 10,
+    "apgar10": 10,
+    "reanimation": false,
+    "vitK1": true,
+    "collyre": true,
+    "vpo0": true,
+    "bcg": false,
+    "hepB0": true,
+    "vivant": true,
+    "declare": true,
+    "apgarDetail": {
+     "1ʳᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "5ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     },
+     "10ᵉ minute": {
+      "coeur": "> 100",
+      "respiration": "Normal",
+      "tonus": "Normal",
+      "couleur": "Rosé",
+      "reflexe": "Normal"
+     }
+    },
+    "soinsFiche": {
+     "seinPrecoce": true,
+     "collyre": true,
+     "vitK1": true,
+     "examenSystematique": true,
+     "arv": false,
+     "carteInfantile": false
+    },
+    "elements24h": []
+   },
+   "patch": {
+    "dateHeure": "2026-01-09T02:21",
+    "poids": 3.09
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "NAI-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "décès : déclaré",
+   "ecran": "m4-deces",
+   "modification": true,
+   "ref": "DEC-0002",
+   "saisie": {
+    "declare": true
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/143/26"
+    ],
+    [
+     "dateHeure",
+     "2026-08-16T05:46"
+    ],
+    [
+     "cause",
+     "Cause naturelle — grand âge"
+    ],
+    [
+     "lieu",
+     "Hospitalisation"
+    ],
+    [
+     "medecin",
+     "BOUKARI Nadège"
+    ],
+    [
+     "declare",
+     true
+    ],
+    [
+     "observations",
+     ""
+    ]
+   ],
+   "avant": {
+    "id": "DEC0002",
+    "statut": "actif",
+    "reference": "DEC-0002",
+    "patientId": "PAT0143",
+    "patient": "SOULE Adissa",
+    "patientCode": "CNT/143/26",
+    "dateHeure": "2026-08-16T05:46:00.000Z",
+    "cause": "Cause naturelle — grand âge",
+    "lieu": "Hospitalisation",
+    "medecin": "BOUKARI Nadège",
+    "declare": true
+   },
+   "patch": {
+    "dateHeure": "2026-08-16T05:46",
+    "observations": ""
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "DEC-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "CPN : GAR coché",
+   "ecran": "m4-cpn",
+   "modification": true,
+   "ref": "CPN-0002",
+   "saisie": {
+    "gar": true
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/141/25"
+    ],
+    [
+     "ddr",
+     "2026-03-11"
+    ],
+    [
+     "dpa",
+     "2026-12-16"
+    ],
+    [
+     "termeSA",
+     "24"
+    ],
+    [
+     "groupeSanguin",
+     "A+"
+    ],
+    [
+     "sageFemme",
+     "ADAM Colette"
+    ],
+    [
+     "sp",
+     [
+      "SP1",
+      "SP2",
+      "SP3"
+     ]
+    ],
+    [
+     "milda",
+     true
+    ],
+    [
+     "gar",
+     true
+    ],
+    [
+     "mebendazole",
+     true
+    ],
+    [
+     "vat",
+     "VAT3"
+    ],
+    [
+     "fer",
+     true
+    ],
+    [
+     "folates",
+     true
+    ]
+   ],
+   "avant": {
+    "id": "GRO0002",
+    "statut": "actif",
+    "reference": "CPN-0002",
+    "patientId": "PAT0141",
+    "patient": "KORA Marguerite",
+    "patientCode": "CNT/141/25",
+    "ddr": "2026-03-11",
+    "dpa": "2026-12-16",
+    "termeSA": 24,
+    "groupeSanguin": "A+",
+    "sageFemme": "ADAM Colette",
+    "gar": true,
+    "milda": true,
+    "mebendazole": true,
+    "vat": "VAT3",
+    "fer": true,
+    "folates": true,
+    "sp": [
+     "SP1",
+     "SP2",
+     "SP3"
+    ],
+    "visites": [
+     {
+      "n": 1,
+      "date": "2026-05-06",
+      "arrivee": "11h08",
+      "heureCpnr": "11h49",
+      "prestataire": "BADO BANI A. B. Zoulehath — sage-femme d’État",
+      "terme": "6 SA",
+      "echographie": "Grossesse mono-fœtale évolutive",
+      "plaintes": "Aucune",
+      "ta": "14/5",
+      "pouls": 70,
+      "temperature": "36.7",
+      "muqueuses": "Légèrement pâles",
+      "omi": "Absents",
+      "pb": "27 cm",
+      "conscience": "Bonne",
+      "poids": 52,
+      "imc": 17.4,
+      "urines": "A+ / N− / S− / L+",
+      "albumine": "—",
+      "sucre": "—",
+      "seins": "Souples, mamelons ombiliqués perméables",
+      "inspection": "Sans particularité",
+      "hu": 18,
+      "presentation": "Non fixée",
+      "pointsUreteraux": "Libres",
+      "bdcf": 120,
+      "vulve": "Saine",
+      "speculum": "Col sain, glaire limpide",
+      "toucherVaginal": "Col long postérieur fermé",
+      "bassin": "À surveiller",
+      "sp": "Non due",
+      "deparasitage": false,
+      "fer": true,
+      "foldine": true,
+      "milda": true,
+      "conseilsNutrition": false,
+      "signesDanger": true,
+      "counselingPF": false,
+      "methodePF": "",
+      "diagnostic": "Grossesse de 6 SA évolutive",
+      "conduite": "Bilan à refaire à la prochaine venue",
+      "rdvCpn": "2026-07-01",
+      "rdvClasse": "Accouchée récente",
+      "rechercheActive": ""
+     },
+     {
+      "n": 2,
+      "date": "2026-07-01",
+      "arrivee": "11h29",
+      "heureCpnr": "10h02",
+      "prestataire": "BASSONGUI Chabi Séko — sage-femme d’État",
+      "terme": "8 SA",
+      "echographie": "Non refaite",
+      "plaintes": "Brûlures gastriques",
+      "ta": "9/5",
+      "pouls": 84,
+      "temperature": "37.3",
+      "muqueuses": "Colorées",
+      "omi": "Présents (godet +)",
+      "pb": "23 cm",
+      "conscience": "Bonne",
+      "poids": 80,
+      "imc": 34.6,
+      "urines": "A− / N− / S− / L−",
+      "albumine": "—",
+      "sucre": "—",
+      "seins": "Sans particularité",
+      "inspection": "Cicatrice de césarienne",
+      "hu": 24,
+      "presentation": "Non fixée",
+      "pointsUreteraux": "Libres",
+      "bdcf": 140,
+      "vulve": "Saine",
+      "speculum": "Non fait",
+      "toucherVaginal": "Non fait",
+      "bassin": "Non refait",
+      "sp": "SP2 — 3 cp supervisés",
+      "deparasitage": true,
+      "fer": true,
+      "foldine": true,
+      "milda": true,
+      "conseilsNutrition": true,
+      "signesDanger": true,
+      "counselingPF": false,
+      "methodePF": "",
+      "diagnostic": "Grossesse de 8 SA évolutive — anémie modérée",
+      "conduite": "Bilan à refaire à la prochaine venue",
+      "rdvCpn": "2026-08-26",
+      "rdvClasse": "1er trimestre",
+      "rechercheActive": ""
+     },
+     {
+      "n": 3,
+      "date": "2026-08-26",
+      "arrivee": "10h09",
+      "heureCpnr": "12h38",
+      "prestataire": "BADO BANI A. B. Zoulehath — sage-femme d’État",
+      "terme": "16 SA",
+      "echographie": "Croissance harmonieuse",
+      "plaintes": "Nausées matinales",
+      "ta": "12/7",
+      "pouls": 74,
+      "temperature": "36.9",
+      "muqueuses": "Colorées",
+      "omi": "Absents",
+      "pb": "27 cm",
+      "conscience": "Bonne",
+      "poids": 74,
+      "imc": 32,
+      "urines": "A− / N− / S− / L−",
+      "albumine": "—",
+      "sucre": "—",
+      "seins": "Souples, mamelons ombiliqués perméables",
+      "inspection": "Cicatrice de césarienne",
+      "hu": 30,
+      "presentation": "Non fixée",
+      "pointsUreteraux": "Libres",
+      "bdcf": 146,
+      "vulve": "Saine",
+      "speculum": "Non fait",
+      "toucherVaginal": "Non fait",
+      "bassin": "Non refait",
+      "sp": "SP3 — 3 cp supervisés",
+      "deparasitage": false,
+      "fer": true,
+      "foldine": true,
+      "milda": true,
+      "conseilsNutrition": false,
+      "signesDanger": true,
+      "counselingPF": true,
+      "methodePF": "Implant",
+      "diagnostic": "Grossesse de 16 SA évolutive",
+      "conduite": "Poursuite du suivi",
+      "rdvCpn": "2026-10-21",
+      "rdvClasse": "1er trimestre",
+      "rechercheActive": ""
+     }
+    ]
+   },
+   "patch": {},
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "CPN-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "CPoN : séance corrigée",
+   "ecran": "m4-cpon",
+   "modification": true,
+   "ref": "CPO-0002",
+   "saisie": {
+    "type": "cpon3"
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/163/25"
+    ],
+    [
+     "date",
+     "2026-09-14"
+    ],
+    [
+     "type",
+     "cpon3"
+    ],
+    [
+     "hemorragieAntePartum",
+     false
+    ],
+    [
+     "etiologieAnte",
+     ""
+    ],
+    [
+     "hpp",
+     true
+    ],
+    [
+     "examen",
+     "TA, T°, utérus, lochies, seins — à surveiller"
+    ],
+    [
+     "supplementation",
+     "Vit A + Fer/Folates"
+    ],
+    [
+     "conseilPF",
+     false
+    ],
+    [
+     "etatNouveauNe",
+     "Bon état, allaitement établi"
+    ],
+    [
+     "sageFemme",
+     "BASSONGUI Chabi Séko"
+    ]
+   ],
+   "avant": {
+    "id": "CPO0002",
+    "statut": "actif",
+    "reference": "CPO-0002",
+    "patientId": "PAT0163",
+    "patient": "ZIME Ramatou",
+    "patientCode": "CNT/163/25",
+    "accouchementRef": "ACC-0018",
+    "date": "2026-09-14",
+    "type": "cpon3",
+    "hemorragieAntePartum": false,
+    "etiologieAnte": null,
+    "hpp": true,
+    "examen": "TA, T°, utérus, lochies, seins — à surveiller",
+    "supplementation": "Vit A + Fer/Folates",
+    "conseilPF": false,
+    "etatNouveauNe": "Bon état, allaitement établi",
+    "sageFemme": "BASSONGUI Chabi Séko"
+   },
+   "patch": {},
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "CPO-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "PF : méthode corrigée (libellé relu)",
+   "ecran": "m4-planification",
+   "modification": true,
+   "ref": "PF-0002",
+   "saisie": {
+    "methode": "co"
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/146/26"
+    ],
+    [
+     "date",
+     "2025-12-15"
+    ],
+    [
+     "acceptante",
+     "A"
+    ],
+    [
+     "methode",
+     "ligature"
+    ],
+    [
+     "methodeAnterieure",
+     ""
+    ],
+    [
+     "ddr",
+     "2026-07-20"
+    ],
+    [
+     "constantes",
+     "79 kg · 10/8"
+    ],
+    [
+     "rdv",
+     "2026-11-05"
+    ],
+    [
+     "sageFemme",
+     "AHOHOU Rodrigue"
+    ]
+   ],
+   "avant": {
+    "id": "PF0002",
+    "statut": "actif",
+    "reference": "PF-0002",
+    "date": "2025-12-15",
+    "patientId": "PAT0146",
+    "patient": "BOUKARI Ramatou",
+    "patientCode": "CNT/146/26",
+    "acceptante": "A",
+    "methode": "ligature",
+    "methodeLabel": "Ligature des trompes",
+    "methodeAnterieure": null,
+    "ddr": "2026-07-20",
+    "constantes": "79 kg · 10/8",
+    "rdv": "2026-11-05",
+    "sageFemme": "AHOHOU Rodrigue"
+   },
+   "patch": {
+    "methode": "co",
+    "methodeLabel": "CO (Contraceptifs Oraux)",
+    "methodeAnterieure": ""
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "PF-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "SONU : évolution",
+   "ecran": "m4-sonu",
+   "modification": true,
+   "ref": "SONU-0002",
+   "saisie": {
+    "evolution": "Référée"
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/98/26"
+    ],
+    [
+     "dateHeure",
+     "2026-01-19T03:50"
+    ],
+    [
+     "gestite",
+     "5"
+    ],
+    [
+     "parite",
+     "3"
+    ],
+    [
+     "evacuation",
+     false
+    ],
+    [
+     "provenance",
+     "Venue d’elle-même"
+    ],
+    [
+     "diagnosticEvacuation",
+     "Pré-éclampsie"
+    ],
+    [
+     "heureAbordVeineux",
+     "03h02"
+    ],
+    [
+     "fonctions",
+     [
+      "1",
+      "7",
+      "10"
+     ]
+    ],
+    [
+     "autreGeste",
+     ""
+    ],
+    [
+     "heureFinGestes",
+     "05h50"
+    ],
+    [
+     "evolution",
+     "Favorable"
+    ],
+    [
+     "agent",
+     "ADAM Colette"
+    ]
+   ],
+   "avant": {
+    "id": "SNU0002",
+    "statut": "actif",
+    "reference": "SONU-0002",
+    "dateHeure": "2026-01-19T03:50:00.000Z",
+    "patientId": "PAT0098",
+    "patient": "YENI Chantal",
+    "patientCode": "CNT/98/26",
+    "gestite": 5,
+    "parite": 3,
+    "evacuation": false,
+    "provenance": "Venue d’elle-même",
+    "diagnosticEvacuation": "Pré-éclampsie",
+    "heureAbordVeineux": "03h02",
+    "fonctions": [
+     1,
+     7,
+     10
+    ],
+    "autreGeste": null,
+    "heureFinGestes": "05h50",
+    "evolution": "Favorable",
+    "agent": "ADAM Colette"
+   },
+   "patch": {
+    "dateHeure": "2026-01-19T03:50",
+    "autreGeste": "",
+    "evolution": "Référée"
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "SONU-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "PTME : charge virale",
+   "ecran": "m4-ptme",
+   "modification": true,
+   "ref": "PTME-0002",
+   "saisie": {
+    "chargeVirale": "Indétectable"
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/70/26"
+    ],
+    [
+     "vihTrimestre",
+     "3"
+    ],
+    [
+     "vihType",
+     "VIH-2"
+    ],
+    [
+     "agHbs",
+     "Négatif"
+    ],
+    [
+     "syphilis",
+     "Négatif"
+    ],
+    [
+     "chargeVirale",
+     "Indétectable"
+    ],
+    [
+     "protocoleARV",
+     "TDF + 3TC + DTG"
+    ],
+    [
+     "dureeARV",
+     "≥ 8 semaines"
+    ],
+    [
+     "allaitement",
+     "Artificiel"
+    ],
+    [
+     "prophylaxieNN",
+     "4"
+    ],
+    [
+     "pcrNaissance",
+     "En attente"
+    ],
+    [
+     "pcr1",
+     "Négatif"
+    ],
+    [
+     "pcr2",
+     ""
+    ],
+    [
+     "serologie18m",
+     ""
+    ],
+    [
+     "ctm",
+     true
+    ],
+    [
+     "hepBJ0",
+     true
+    ]
+   ],
+   "avant": {
+    "id": "PTM0002",
+    "statut": "actif",
+    "reference": "PTME-0002",
+    "patientId": "PAT0070",
+    "patient": "YARO Zoukanéri",
+    "patientCode": "CNT/70/26",
+    "vihTrimestre": 3,
+    "vihType": "VIH-2",
+    "agHbs": "Négatif",
+    "syphilis": "Négatif",
+    "chargeVirale": "Indétectable",
+    "protocoleARV": "TDF + 3TC + DTG",
+    "dureeARV": "≥ 8 semaines",
+    "allaitement": "Artificiel",
+    "prophylaxieNN": 4,
+    "pcrNaissance": "En attente",
+    "pcr1": "Négatif",
+    "pcr2": null,
+    "serologie18m": null,
+    "ctm": true,
+    "hepBJ0": true,
+    "dispensations": [
+     {
+      "mois": "2026-08",
+      "servie": true
+     },
+     {
+      "mois": "2026-07",
+      "servie": true
+     }
+    ]
+   },
+   "patch": {
+    "vihTrimestre": "3",
+    "prophylaxieNN": "4",
+    "pcr2": "",
+    "serologie18m": ""
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "PTME-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  },
+  {
+   "nom": "Case 27 : hospitalisée → jours conservés",
+   "ecran": "m4-soins-curatifs",
+   "modification": true,
+   "ref": "SCM-0002",
+   "saisie": {
+    "femmeHospitalisee": false,
+    "femmeObservee": true
+   },
+   "prerempli": [
+    [
+     "patientCode",
+     "CNT/172/26"
+    ],
+    [
+     "date",
+     "2026-03-24"
+    ],
+    [
+     "trancheAge",
+     "15–19 ans"
+    ],
+    [
+     "symptomes",
+     "Fièvre et céphalées"
+    ],
+    [
+     "diagnostic",
+     "Infection urinaire"
+    ],
+    [
+     "traitement",
+     "Antibiothérapie"
+    ],
+    [
+     "mildaDelivree",
+     true
+    ],
+    [
+     "urgenceMaternite",
+     ""
+    ],
+    [
+     "femmeObservee",
+     true
+    ],
+    [
+     "femmeHospitalisee",
+     false
+    ],
+    [
+     "joursHospitalisation",
+     ""
+    ],
+    [
+     "agent",
+     "ADAM Colette"
+    ]
+   ],
+   "avant": {
+    "id": "SCM0002",
+    "statut": "actif",
+    "reference": "SCM-0002",
+    "date": "2026-03-24",
+    "patientId": "PAT0172",
+    "patient": "BOUKARI Rachida",
+    "patientCode": "CNT/172/26",
+    "trancheAge": "15–19 ans",
+    "symptomes": "Fièvre et céphalées",
+    "diagnostic": "Infection urinaire",
+    "traitement": "Antibiothérapie",
+    "mildaDelivree": true,
+    "urgenceMaternite": null,
+    "femmeObservee": true,
+    "femmeHospitalisee": false,
+    "joursHospitalisation": null,
+    "agent": "ADAM Colette"
+   },
+   "patch": {
+    "urgenceMaternite": ""
+   },
+   "toasts": [
+    [
+     "Modifications enregistrées.",
+     "SCM-0002"
+    ]
+   ],
+   "modaleOuverte": false
+  }
+ ],
+ "cpnVisite": {
+  "ref": "CPN-0007",
+  "avant": {
+   "texte": "RÉFÉRENCE CPN-0007 PATIENTE N’TCHA Alimatou — CNT/23/26 DDR 10/12/2025 DPA 16/09/2026 TERME 37 SA GROUPE SANGUIN O- DOSES SP SP1, SP2, SP3, SP4, SP5 MILDA Remise MÉBENDAZOLE Administré VAT VAT3 FER / FOLATES Fer / folates SAGE-FEMME TAKI Orou Visites CPN — la grille du formulaire national CPN DATE TA POIDS (KG) HU (CM) BDCF ALBUMINE SUCRE CPN 1 04/02/2026 12/7 70 18 153 — — CPN 2 01/04/2026 12/6 59 22 136 — — CPN 3 27/05/2026 9/9 72 29 158 — — CPN 4 22/07/2026 9/6 79 34 143 — — Ajouter une visite CPN",
+   "nbVisites": 4,
+   "gar": false
+  },
+  "titre": "Visite CPN 5 — N’TCHA Alimatou",
+  "visites": [
+   {
+    "n": 1,
+    "date": "2026-02-04",
+    "arrivee": "09h44",
+    "heureCpnr": "09h52",
+    "prestataire": "ADAM Colette — sage-femme d’État",
+    "terme": "13 SA",
+    "echographie": "Grossesse mono-fœtale évolutive",
+    "plaintes": "Nausées matinales",
+    "ta": "12/7",
+    "pouls": 76,
+    "temperature": "37.2",
+    "muqueuses": "Légèrement pâles",
+    "omi": "Absents",
+    "pb": "23 cm",
+    "conscience": "Bonne",
+    "poids": 70,
+    "imc": 26.3,
+    "urines": "A− / N− / S− / L−",
+    "albumine": "—",
+    "sucre": "—",
+    "seins": "Souples, mamelons ombiliqués perméables",
+    "inspection": "Cicatrice de césarienne",
+    "hu": 18,
+    "presentation": "Non fixée",
+    "pointsUreteraux": "Libres",
+    "bdcf": 153,
+    "vulve": "Saine",
+    "speculum": "Col sain, glaire limpide",
+    "toucherVaginal": "Col long postérieur fermé",
+    "bassin": "Cliniquement normal",
+    "sp": "Non due",
+    "deparasitage": false,
+    "fer": true,
+    "foldine": true,
+    "milda": true,
+    "conseilsNutrition": true,
+    "signesDanger": true,
+    "counselingPF": false,
+    "methodePF": "",
+    "diagnostic": "Grossesse de 13 SA évolutive",
+    "conduite": "Bilan à refaire à la prochaine venue",
+    "rdvCpn": "2026-04-01",
+    "rdvClasse": "2ème trimestre",
+    "rechercheActive": ""
+   },
+   {
+    "n": 2,
+    "date": "2026-04-01",
+    "arrivee": "10h40",
+    "heureCpnr": "08h29",
+    "prestataire": "BOUKARI Nadège — sage-femme d’État",
+    "terme": "21 SA",
+    "echographie": "Non refaite",
+    "plaintes": "Aucune",
+    "ta": "12/6",
+    "pouls": 88,
+    "temperature": "37.3",
+    "muqueuses": "Colorées",
+    "omi": "Absents",
+    "pb": "23 cm",
+    "conscience": "Bonne",
+    "poids": 59,
+    "imc": 23.9,
+    "urines": "A− / N− / S− / L−",
+    "albumine": "—",
+    "sucre": "—",
+    "seins": "Sans particularité",
+    "inspection": "Cicatrice de césarienne",
+    "hu": 22,
+    "presentation": "Non fixée",
+    "pointsUreteraux": "Libres",
+    "bdcf": 136,
+    "vulve": "Saine",
+    "speculum": "Non fait",
+    "toucherVaginal": "Non fait",
+    "bassin": "Non refait",
+    "sp": "SP2 — 3 cp supervisés",
+    "deparasitage": false,
+    "fer": true,
+    "foldine": true,
+    "milda": true,
+    "conseilsNutrition": true,
+    "signesDanger": true,
+    "counselingPF": false,
+    "methodePF": "",
+    "diagnostic": "Grossesse de 21 SA évolutive",
+    "conduite": "Fer/Folates renforcés",
+    "rdvCpn": "2026-05-27",
+    "rdvClasse": "2ème trimestre",
+    "rechercheActive": ""
+   },
+   {
+    "n": 3,
+    "date": "2026-05-27",
+    "arrivee": "08h04",
+    "heureCpnr": "09h28",
+    "prestataire": "TAKI Orou — sage-femme d’État",
+    "terme": "29 SA",
+    "echographie": "Non refaite",
+    "plaintes": "Aucune",
+    "ta": "9/9",
+    "pouls": 69,
+    "temperature": "36.8",
+    "muqueuses": "Légèrement pâles",
+    "omi": "Absents",
+    "pb": "23 cm",
+    "conscience": "Bonne",
+    "poids": 72,
+    "imc": 24.6,
+    "urines": "A− / N− / S− / L−",
+    "albumine": "—",
+    "sucre": "—",
+    "seins": "Sans particularité",
+    "inspection": "Abdomen distendu, vergetures",
+    "hu": 29,
+    "presentation": "Siège",
+    "pointsUreteraux": "Libres",
+    "bdcf": 158,
+    "vulve": "Saine",
+    "speculum": "Non fait",
+    "toucherVaginal": "Non fait",
+    "bassin": "Non refait",
+    "sp": "SP3 — 3 cp supervisés",
+    "deparasitage": true,
+    "fer": true,
+    "foldine": true,
+    "milda": false,
+    "conseilsNutrition": true,
+    "signesDanger": true,
+    "counselingPF": false,
+    "methodePF": "Implant",
+    "diagnostic": "Grossesse de 29 SA évolutive",
+    "conduite": "Bilan à refaire à la prochaine venue",
+    "rdvCpn": "2026-07-22",
+    "rdvClasse": "Accouchée récente",
+    "rechercheActive": ""
+   },
+   {
+    "n": 4,
+    "date": "2026-07-22",
+    "arrivee": "09h53",
+    "heureCpnr": "09h29",
+    "prestataire": "AHOHOU Rodrigue — sage-femme d’État",
+    "terme": "37 SA",
+    "echographie": "Présentation céphalique, LA normal",
+    "plaintes": "Aucune",
+    "ta": "9/6",
+    "pouls": 77,
+    "temperature": "36.4",
+    "muqueuses": "Colorées",
+    "omi": "Absents",
+    "pb": "27 cm",
+    "conscience": "Bonne",
+    "poids": 79,
+    "imc": 29.4,
+    "urines": "A− / N− / S− / L−",
+    "albumine": "—",
+    "sucre": "—",
+    "seins": "Sans particularité",
+    "inspection": "Sans particularité",
+    "hu": 34,
+    "presentation": "Céphalique",
+    "pointsUreteraux": "Libres",
+    "bdcf": 143,
+    "vulve": "Saine",
+    "speculum": "Non fait",
+    "toucherVaginal": "Non fait",
+    "bassin": "Non refait",
+    "sp": "SP4 — 3 cp supervisés",
+    "deparasitage": true,
+    "fer": true,
+    "foldine": true,
+    "milda": true,
+    "conseilsNutrition": true,
+    "signesDanger": true,
+    "counselingPF": true,
+    "methodePF": "DIU",
+    "diagnostic": "Grossesse de 37 SA évolutive",
+    "conduite": "Fer/Folates renforcés",
+    "rdvCpn": "2026-09-16",
+    "rdvClasse": "1er trimestre",
+    "rechercheActive": ""
+   },
+   {
+    "n": 5,
+    "date": "2026-08-14",
+    "ta": "12/8",
+    "poids": 64.5,
+    "hu": 28,
+    "bdcf": 140,
+    "albumine": "+",
+    "sucre": "—"
+   }
+  ],
+  "nbApres": 5,
+  "toasts": [
+   [
+    "Visite CPN enregistrée."
+   ]
+  ]
+ },
+ "cpnVisiteRefus": {
+  "nb0": 5,
+  "nb1": 5,
+  "modaleOuverte": true
+ },
+ "cpnGar": "CPN-0001"
+}

@@ -1,0 +1,67 @@
+{
+ "id": "m1-pieces",
+ "module": "M1",
+ "domaine": "Soins",
+ "libelleManifeste": "Certificats & attestations",
+ "acces": "ouvert",
+ "titre": "Certificats & attestations",
+ "description": "Délivrance, numérotation et impression des quatorze pièces certifiantes de la clinique.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Patients & Dossier médical",
+  "Certificats & attestations"
+ ],
+ "actions": [
+  "Répertoire des patients",
+  "Fiche patient",
+  "Patients & Dossier médical"
+ ],
+ "regle": [
+  "L’assurance ne couvre pas les certificats, à l’exception de SOS. La mention figure en toutes lettres sur la grille tarifaire de la clinique. Un assuré d’une autre compagnie règle donc intégralement, et la pièce de caisse en porte le motif.",
+  "36 pièce(s) sans pièce de caisse liée — délivrées avant que la caisse n’entre dans le circuit. Elles ne sont ni réglées ni impayées : on ne sait pas. Les compter comme encaissées gonflerait la recette d’autant."
+ ],
+ "onglets": [
+  "Toutes les pièces",
+  "Patients de la clinique",
+  "Patients externes",
+  "Archives"
+ ],
+ "kpis": [
+  "Pièces délivrées",
+  "Sur l’exercice 2026",
+  "Encaissé",
+  "À encaisser"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Référence",
+   "Pièce",
+   "Patient",
+   "Origine",
+   "Délivrée le",
+   "Signataire",
+   "Montant",
+   "Règlement",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Toutes les pièces90",
+  "Patients de la clinique83",
+  "Patients externes7",
+  "Archives0",
+  "Colonnes",
+  "Exporter",
+  "Délivrer une pièce",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

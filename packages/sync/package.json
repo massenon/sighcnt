@@ -1,0 +1,18 @@
+{
+  "name": "@sigh/sync",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Journal d'opérations et banc de synchronisation à plusieurs processus (mère / fileuls)",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "banc": "node --no-warnings banc/run.js",
+    "test": "node --no-warnings banc/run.js",
+    "banc:dart": "SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js",
+    "banc:laravel": "SIGH_RELAIS=laravel node --no-warnings banc/run.js",
+    "banc:cible": "SIGH_RELAIS=laravel SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js",
+    "banc:pg": "SIGH_MERE_DB=pg SIGH_RELAIS=laravel SIGH_MERE=dart SIGH_FILEUL=dart SIGH_MOBILE=dart node --no-warnings banc/run.js"
+  }
+}

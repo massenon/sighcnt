@@ -1,0 +1,67 @@
+{
+ "id": "cfg-tarifs",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Référentiel tarifaire",
+ "acces": "ouvert",
+ "titre": "Référentiel tarifaire",
+ "description": "Tarif unique consommé par la pharmacie, la facturation, les assurances, les rapports et la comptabilité.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Référentiel tarifaire"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "RG-02 — pour les médicaments, le prix de vente est strictement égal au prix d’achat : aucune marge n’est appliquée."
+ ],
+ "onglets": [
+  "Produits & médicaments",
+  "Analyses de laboratoire",
+  "Actes & hospitalisation",
+  "Certificats et Attestations"
+ ],
+ "kpis": [
+  "Produits tarifés",
+  "Analyses tarifées",
+  "Actes et prestations",
+  "Tarifs à confirmer"
+ ],
+ "cartes": [
+  "Propagation du tarif"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Désignation",
+   "Catégorie",
+   "Unité",
+   "Prix d’achat",
+   "Prix de vente",
+   "Marge",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Produits & médicaments184",
+  "Analyses de laboratoire48",
+  "Actes & hospitalisation73",
+  "Certificats et Attestations6",
+  "Colonnes",
+  "Exporter",
+  "Nouveau",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

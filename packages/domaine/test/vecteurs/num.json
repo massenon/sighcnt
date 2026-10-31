@@ -1,0 +1,390 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs.js — sorties de la MAQUETTE, telles quelles. Ne pas éditer.",
+ "cas": [
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": 0
+   },
+   "sortie": "0"
+  },
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": 1
+   },
+   "sortie": "0.0"
+  },
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": 2
+   },
+   "sortie": "0.00"
+  },
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": 3
+   },
+   "sortie": "0.000"
+  },
+  {
+   "entree": {
+    "valeur": 0,
+    "decimales": null
+   },
+   "sortie": "0"
+  },
+  {
+   "entree": {
+    "valeur": 1,
+    "decimales": 0
+   },
+   "sortie": "1"
+  },
+  {
+   "entree": {
+    "valeur": 1,
+    "decimales": 1
+   },
+   "sortie": "1.0"
+  },
+  {
+   "entree": {
+    "valeur": 1,
+    "decimales": 2
+   },
+   "sortie": "1.00"
+  },
+  {
+   "entree": {
+    "valeur": 1,
+    "decimales": 3
+   },
+   "sortie": "1.000"
+  },
+  {
+   "entree": {
+    "valeur": 1,
+    "decimales": null
+   },
+   "sortie": "1"
+  },
+  {
+   "entree": {
+    "valeur": 1234.5678,
+    "decimales": 0
+   },
+   "sortie": "1 235"
+  },
+  {
+   "entree": {
+    "valeur": 1234.5678,
+    "decimales": 1
+   },
+   "sortie": "1 234.6"
+  },
+  {
+   "entree": {
+    "valeur": 1234.5678,
+    "decimales": 2
+   },
+   "sortie": "1 234.57"
+  },
+  {
+   "entree": {
+    "valeur": 1234.5678,
+    "decimales": 3
+   },
+   "sortie": "1 234.568"
+  },
+  {
+   "entree": {
+    "valeur": 1234.5678,
+    "decimales": null
+   },
+   "sortie": "1 235"
+  },
+  {
+   "entree": {
+    "valeur": 1234567.891,
+    "decimales": 0
+   },
+   "sortie": "1 234 568"
+  },
+  {
+   "entree": {
+    "valeur": 1234567.891,
+    "decimales": 1
+   },
+   "sortie": "1 234 567.9"
+  },
+  {
+   "entree": {
+    "valeur": 1234567.891,
+    "decimales": 2
+   },
+   "sortie": "1 234 567.89"
+  },
+  {
+   "entree": {
+    "valeur": 1234567.891,
+    "decimales": 3
+   },
+   "sortie": "1 234 567.891"
+  },
+  {
+   "entree": {
+    "valeur": 1234567.891,
+    "decimales": null
+   },
+   "sortie": "1 234 568"
+  },
+  {
+   "entree": {
+    "valeur": -2.5,
+    "decimales": 0
+   },
+   "sortie": "-3"
+  },
+  {
+   "entree": {
+    "valeur": -2.5,
+    "decimales": 1
+   },
+   "sortie": "-2.5"
+  },
+  {
+   "entree": {
+    "valeur": -2.5,
+    "decimales": 2
+   },
+   "sortie": "-2.50"
+  },
+  {
+   "entree": {
+    "valeur": -2.5,
+    "decimales": 3
+   },
+   "sortie": "-2.500"
+  },
+  {
+   "entree": {
+    "valeur": -2.5,
+    "decimales": null
+   },
+   "sortie": "-3"
+  },
+  {
+   "entree": {
+    "valeur": 0.005,
+    "decimales": 0
+   },
+   "sortie": "0"
+  },
+  {
+   "entree": {
+    "valeur": 0.005,
+    "decimales": 1
+   },
+   "sortie": "0.0"
+  },
+  {
+   "entree": {
+    "valeur": 0.005,
+    "decimales": 2
+   },
+   "sortie": "0.01"
+  },
+  {
+   "entree": {
+    "valeur": 0.005,
+    "decimales": 3
+   },
+   "sortie": "0.005"
+  },
+  {
+   "entree": {
+    "valeur": 0.005,
+    "decimales": null
+   },
+   "sortie": "0"
+  },
+  {
+   "entree": {
+    "valeur": 1.005,
+    "decimales": 0
+   },
+   "sortie": "1"
+  },
+  {
+   "entree": {
+    "valeur": 1.005,
+    "decimales": 1
+   },
+   "sortie": "1.0"
+  },
+  {
+   "entree": {
+    "valeur": 1.005,
+    "decimales": 2
+   },
+   "sortie": "1.00"
+  },
+  {
+   "entree": {
+    "valeur": 1.005,
+    "decimales": 3
+   },
+   "sortie": "1.005"
+  },
+  {
+   "entree": {
+    "valeur": 1.005,
+    "decimales": null
+   },
+   "sortie": "1"
+  },
+  {
+   "entree": {
+    "valeur": 2.675,
+    "decimales": 0
+   },
+   "sortie": "3"
+  },
+  {
+   "entree": {
+    "valeur": 2.675,
+    "decimales": 1
+   },
+   "sortie": "2.7"
+  },
+  {
+   "entree": {
+    "valeur": 2.675,
+    "decimales": 2
+   },
+   "sortie": "2.67"
+  },
+  {
+   "entree": {
+    "valeur": 2.675,
+    "decimales": 3
+   },
+   "sortie": "2.675"
+  },
+  {
+   "entree": {
+    "valeur": 2.675,
+    "decimales": null
+   },
+   "sortie": "3"
+  },
+  {
+   "entree": {
+    "valeur": 1000000,
+    "decimales": 0
+   },
+   "sortie": "1 000 000"
+  },
+  {
+   "entree": {
+    "valeur": 1000000,
+    "decimales": 1
+   },
+   "sortie": "1 000 000.0"
+  },
+  {
+   "entree": {
+    "valeur": 1000000,
+    "decimales": 2
+   },
+   "sortie": "1 000 000.00"
+  },
+  {
+   "entree": {
+    "valeur": 1000000,
+    "decimales": 3
+   },
+   "sortie": "1 000 000.000"
+  },
+  {
+   "entree": {
+    "valeur": 1000000,
+    "decimales": null
+   },
+   "sortie": "1 000 000"
+  },
+  {
+   "entree": {
+    "valeur": null,
+    "decimales": 0
+   },
+   "sortie": "0"
+  },
+  {
+   "entree": {
+    "valeur": null,
+    "decimales": 1
+   },
+   "sortie": "0.0"
+  },
+  {
+   "entree": {
+    "valeur": null,
+    "decimales": 2
+   },
+   "sortie": "0.00"
+  },
+  {
+   "entree": {
+    "valeur": null,
+    "decimales": 3
+   },
+   "sortie": "0.000"
+  },
+  {
+   "entree": {
+    "valeur": null,
+    "decimales": null
+   },
+   "sortie": "0"
+  },
+  {
+   "entree": {
+    "valeur": "3.14159",
+    "decimales": 0
+   },
+   "sortie": "3"
+  },
+  {
+   "entree": {
+    "valeur": "3.14159",
+    "decimales": 1
+   },
+   "sortie": "3.1"
+  },
+  {
+   "entree": {
+    "valeur": "3.14159",
+    "decimales": 2
+   },
+   "sortie": "3.14"
+  },
+  {
+   "entree": {
+    "valeur": "3.14159",
+    "decimales": 3
+   },
+   "sortie": "3.142"
+  },
+  {
+   "entree": {
+    "valeur": "3.14159",
+    "decimales": null
+   },
+   "sortie": "3"
+  }
+ ]
+}

@@ -568,7 +568,8 @@
    * ======================================================================== */
   function amorcer(nom, seed) {
     var db = S.raw();
-    if (seed && (!db[nom] || !db[nom].length)) {
+    /* Un magasin volontairement vidé ne se ré-amorce pas écran par écran. */
+    if (seed && (!db[nom] || !db[nom].length) && S.amorcable(nom)) {
       db[nom] = seed() || [];
       S.save();
     }
@@ -727,7 +728,7 @@
             /* Le contrôle métier de l'appelant : il refuse EN LE DISANT
                (son propre toast) et retourne false — rien n'est écrit. */
             if (typeof avant === 'function' && avant(v, record) === false) return;
-            if (typeof transform === 'function') v = transform(v);
+            if (typeof transform === 'function') v = transform(v, record);   /* E364 : la fiche corrigée est transmise */
             var res = col.update(record.id, v);
             m.close();
             if (apres) apres();

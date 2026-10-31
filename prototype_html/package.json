@@ -4,7 +4,8 @@
   "private": true,
   "description": "Prototype HTML du Systeme Integre de Gestion Hospitaliere — Clinique NASSIERA TOO SARL",
   "scripts": {
-    "pages": "node build/gen-pages.js",
+    "pages": "node build/gen-pages.js && node build/gen-mobile.js",
+    "mobile:check": "node build/check-mobile.js",
     "safelist": "node build/gen-safelist.js",
     "compta": "node build/gen-compta.js",
     "css": "tailwindcss -i src/input.css -o assets/css/tailwind.css --minify",
@@ -16,7 +17,12 @@
     "verify": "npm run lint && npm run build && npm run check && npm run test",
     "audit-rbac": "node build/audit-rbac.js",
     "inventaire-rbac": "node build/inventaire-rbac.js",
-    "serveur": "node build/serveur.js"
+    "serveur": "node build/serveur.js",
+    "extraire": "node build/extraire.js",
+    "vecteurs": "node build/vecteurs.js && node build/vecteurs-prise-en-charge.js && node build/vecteurs-encaissement.js",
+    "parite": "node build/parite.js",
+    "referentiels": "node build/extraire.js && node build/vecteurs.js && node build/parite.js && node build/gen-erd.js",
+    "erd": "node build/gen-erd.js"
   },
   "devDependencies": {
     "puppeteer": "^25.7.0",

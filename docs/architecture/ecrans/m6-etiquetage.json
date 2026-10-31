@@ -1,0 +1,69 @@
+{
+ "id": "m6-etiquetage",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Étiquetage & emplacements",
+ "acces": "ouvert",
+ "titre": "Étiquetage & emplacements",
+ "description": "Organisation des rayons et casiers, classement par date de péremption et édition des étiquettes produits.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks",
+  "Étiquetage & emplacements"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Le rangement suit le principe FEFO : à l’intérieur de chaque casier, les lots sont classés par date de péremption croissante. Les sérums sont rangés par planches avec identification du type par emplacement."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Emplacements définis",
+  "Articles rangés",
+  "Articles sans emplacement",
+  "Lots classés FEFO"
+ ],
+ "cartes": [
+  "Référentiel des emplacements",
+  "Plan des rayons et casiers",
+  "Articles par emplacement"
+ ],
+ "tableaux": [
+  [
+   "Casier",
+   "Intitulé",
+   "Zone",
+   "Conservation",
+   "Articles rangés",
+   "Actions"
+  ],
+  [
+   "Emplacement",
+   "Code",
+   "Désignation",
+   "Unité",
+   "Stock",
+   "État",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvel emplacement",
+  "1",
+  "2",
+  "Étiquettes",
+  "Éditer toutes les étiquettes",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

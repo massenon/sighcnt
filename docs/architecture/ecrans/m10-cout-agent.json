@@ -1,0 +1,35 @@
+{
+ "id": "m10-cout-agent",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Coût global de l’agent",
+ "acces": "ouvert",
+ "titre": "Coût global de l’agent",
+ "description": "Ce que coûte un agent à l’établissement — salaire et charges patronales — et l’historique de ses paies.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Coût global de l’agent"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [
+  "— Choisir un agent —"
+ ],
+ "champs": [
+  "Agent",
+  "Paies du",
+  "au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

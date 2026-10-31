@@ -1,0 +1,56 @@
+{
+ "id": "cfg-imagerie-catalogue",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Catalogue de l’imagerie",
+ "acces": "ouvert",
+ "titre": "Catalogue de l’imagerie",
+ "description": "Examens d’imagerie et variables de leurs comptes rendus : listes de choix, mesures, rubriques.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Catalogue de l’imagerie"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [],
+ "onglets": [
+  "Examens",
+  "Variables"
+ ],
+ "kpis": [
+  "Examens au catalogue",
+  "Variables de compte rendu",
+  "Variables fermées",
+  "Listes de choix"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "Code",
+   "Intitulé",
+   "Modalité",
+   "Origine",
+   "Voie d’abord",
+   "Variables",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Examens24",
+  "Variables280",
+  "Colonnes",
+  "Exporter",
+  "Nouvel examen",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

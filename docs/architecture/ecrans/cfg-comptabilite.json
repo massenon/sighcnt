@@ -1,0 +1,65 @@
+{
+ "id": "cfg-comptabilite",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Paramètres comptables & obligations",
+ "acces": "ouvert",
+ "titre": "Paramètres comptables & obligations",
+ "description": "Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Paramètres comptables & obligations"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [
+  "ITS, AIB, VPS et CNSS se paient le 10 de chaque mois, pour le mois d’exercice précédent. Une déclaration précède le paiement. Si le 10 tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi.",
+  "AssiettesCNSS — part patronale 16.4 %, part ouvrière 3.6 %. VPS — 4 % du salaire brut. ITS — barème progressif par tranches. AIB — acompte assis sur les bénéfices.",
+  "L’impôt se paie par anticipation : l’impôt de l’exercice précédent est divisé en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable — un impôt de 2 000 000 FCFA en 2025 donne quatre acomptes de 500 000 FCFA en 2026."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Obligations suivies",
+  "Mensuelles",
+  "Annuelles",
+  "Réglées en tranches"
+ ],
+ "cartes": [
+  "Obligations mensuelles — le 10 du mois suivant",
+  "Impôt sur les sociétés — quatre acomptes et une liquidation",
+  "Patente, CCIB et TVM — une fois par an",
+  "Redevances ORTB — prélevées sur les salaires",
+  "Principes de tenue"
+ ],
+ "tableaux": [
+  [
+   "Code",
+   "Obligation",
+   "Échéance",
+   "Déclaration préalable"
+  ],
+  [
+   "Acompte",
+   "Échéance",
+   "Part"
+  ],
+  [
+   "Redevance",
+   "Catégorie",
+   "Assiette",
+   "Montant",
+   "Mois de prélèvement"
+  ]
+ ],
+ "commandes": [
+  "Suivi nominatif"
+ ],
+ "champs": [],
+ "nbTableaux": 3,
+ "nbKpis": 4
+}

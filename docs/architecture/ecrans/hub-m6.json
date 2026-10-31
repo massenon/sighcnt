@@ -1,0 +1,30 @@
+{
+ "id": "hub-m6",
+ "module": "M6",
+ "domaine": "Logistique",
+ "libelleManifeste": "Pharmacie & Stocks",
+ "acces": "ouvert",
+ "titre": "Pharmacie & Stocks",
+ "description": "Tous les écrans du module M6 — Pharmacie & Stocks.",
+ "fil": [
+  "Accueil",
+  "Logistique",
+  "Pharmacie & Stocks"
+ ],
+ "actions": [
+  "Pharmacie interne — urgences",
+  "Pharmacie externe — voie orale",
+  "Pharmacie & Stocks"
+ ],
+ "regle": [
+  "Achats & Fournisseurs"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

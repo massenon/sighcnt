@@ -1,0 +1,55 @@
+{
+ "id": "mecef-journal",
+ "module": "MECEF",
+ "domaine": "Financier",
+ "libelleManifeste": "Journal des transactions",
+ "acces": "ouvert",
+ "titre": "Journal des transactions fiscales",
+ "description": "Historique horodaté des transmissions, réponses du dispositif et codes de retour.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "MECeF — Facture normalisée",
+  "Journal des transactions"
+ ],
+ "actions": [
+  "Tableau de bord fiscal",
+  "Factures normalisées",
+  "MECeF — Facture normalisée"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Transactions enregistrées",
+  "Réussies",
+  "Échouées",
+  "Réémissions"
+ ],
+ "cartes": [
+  "Journal fiscal"
+ ],
+ "tableaux": [
+  [
+   "Horodatage",
+   "Facture",
+   "Identifiant MECeF",
+   "Client",
+   "Montant",
+   "Opération",
+   "Code de retour",
+   "Statut"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

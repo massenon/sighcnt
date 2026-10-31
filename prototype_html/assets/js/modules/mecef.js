@@ -11,9 +11,17 @@
 (function (global) {
   'use strict';
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
-      P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
+      P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit, PR = global.SIGH.parcours;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
+
+  /** L'IFU du CLIENT (E14, corrigé le 31/10/2026). La pièce nommait l'IFU de la clinique en « IFU client » pour tous les clients :
+      une pièce fiscale qui désigne le mauvais identifiant est un défaut réel. Le dossier du patient (ou la pièce) porte l'IFU
+      quand il est connu ; sinon la case reste VIDE. Jamais celui de la clinique. */
+  function ifuClientDe(f) {
+    var p = f && f.patientId ? S.collection('patients').get(f.patientId) : null;
+    return String((f && f.ifuClient) || (p && p.ifu) || '');
+  }
 
   var F = D.PARAM_FISCAL;
   /* Régime en vigueur : exonéré sur la facture de référence. Le taux normal
@@ -44,7 +52,11 @@
   }
 
   function factures() { return S.collection('factures').active(); }
-  function normalisees() { return factures().filter(function (f) { return !f.proforma; }); }
+  /* Le registre fiscal suit l'EXERCICE choisi (sélecteur de l'en-tête) : une déclaration à la DGI porte sur une année. */
+  function normalisees() {
+    var X = global.SIGH.exercice;
+    return factures().filter(function (f) { return !f.proforma && (!X || X.dansExercice(f.date)); });
+  }
 
   var STATUTS = {
     valide: ['Validée', 'success'],
@@ -361,7 +373,7 @@
           cartouche: [
             ['Facture n°', f.numero], ['Date', C.dateFR(f.date)],
             ['Client', f.patient], ['Dossier client', f.patientCode],
-            ['IFU client', C.BRAND.ifu], ['Nature', f.type],
+            ['IFU client', ifuClientDe(f)], ['Nature', f.type],
           ],
           contenu: contenu,
           signatures: [
@@ -545,17 +557,21 @@
       var col = S.collection('avoirs', { module: 'MECEF', entite: 'Avoir' });
       var host = el('div.space-y-4');
       var table;
+      function avoirsExercice() {
+        var X = global.SIGH.exercice;
+        return col.active().filter(function (a) { return !X || X.dansExercice(a.date); });
+      }
 
       host.appendChild(U.kpiGrid([
-        { label: 'Avoirs émis', value: C.num(col.active().length), icon: 'undo-2', tone: 'navy' },
-        { label: 'Montant des avoirs', value: C.money(C.sum(col.active(), 'montant')), icon: 'wallet', tone: 'warning' },
-        { label: 'TVA régularisée', value: C.money(C.sum(col.active(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
+        { label: 'Avoirs émis', value: C.num(avoirsExercice().length), icon: 'undo-2', tone: 'navy' },
+        { label: 'Montant des avoirs', value: C.money(C.sum(avoirsExercice(), 'montant')), icon: 'wallet', tone: 'warning' },
+        { label: 'TVA régularisée', value: C.money(C.sum(avoirsExercice(), function (a) { return Math.round(a.montant * TAUX_TVA / (100 + TAUX_TVA)); })), icon: 'landmark', tone: 'info' },
         { label: 'Factures annulées', value: C.num(factures().filter(function (f) { return f.annulee; }).length), icon: 'file-x', tone: 'danger' },
       ]));
 
       table = U.dataTable({
         title: 'Registre des avoirs',
-        rows: function () { return col.active(); },
+        rows: function () { return avoirsExercice(); },
         exportName: 'avoirs-mecef', pageSize: 12,
         defaultSort: 'date', defaultDir: 'desc',
         emptyMessage: 'Aucun avoir émis.',
@@ -602,15 +618,27 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-                var fac = normalisees().filter(function (x) { return x.id === v.factureId; })[0];
-                if (fac) {
-                  v.factureNumero = fac.numero; v.patient = fac.patient; v.patientCode = fac.patientCode;
-                  if (v.montant > fac.montantTTC) { U.toast('Le montant de l’avoir ne peut excéder celui de la facture.', { type: 'error' }); return; }
+                /* B10 (31/10/2026) : l'avoir MECeF n'est PAS un canal à part. Il APPELLE le moteur unique `PR.emettreAvoir`
+                   (collection `avoirs`) : plafond CUMULÉ sur la facture (E15), montant strictement positif (E10), ligne nommée,
+                   contre-passation en brouillon. La transmission au dispositif est la SUITE de l'émission : le moteur écrit la
+                   pièce, ce geste lui pose l'identifiant MECeF et le statut transmis. */
+                if (!(Number(v.montant) > 0)) {
+                  U.toast('Avoir refusé.', { type: 'error', detail: 'Le montant doit être strictement supérieur à 0 FCFA.' });
+                  return;
                 }
-                v.reference = C.nextRef('AV-2026-', 4);
-                v.numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
-                v.statutMecef = 'valide';
-                var res = col.insert(v);
+                var fac = normalisees().filter(function (x) { return x.id === v.factureId; })[0];
+                if (!fac) { U.toast('Choisir la facture à rectifier.', { type: 'error' }); return; }
+                var emis = PR.emettreAvoir(fac.id, {
+                  date: v.date,
+                  lignes: [{ designation: 'Rectification de la facture ' + fac.numero + ' : ' + v.motif, montant: Number(v.montant) }],
+                  motif: v.motif, observations: v.observations,
+                  remboursement: 'creance', origine: 'mecef',
+                });
+                if (emis.erreur) { U.toast('Avoir refusé.', { type: 'error', detail: emis.erreur, duration: 9000 }); return; }
+                var numeroMecef = 'MECEF' + C.between(C.seeded(Date.now() % 77777), 1000000, 9999999);
+                col.update(emis.record.id, { numeroMecef: numeroMecef, statutMecef: 'valide', dateTransmission: new Date().toISOString() });
+                v.reference = emis.record.reference;
+                var res = { record: col.get(emis.record.id), undo: function () { PR.retirerAvoir(emis.record.id); } };
                 m.close(); table.refresh();
                 U.toast('Avoir ' + v.reference + ' émis et transmis.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
                 etat(res.record);

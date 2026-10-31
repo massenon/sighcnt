@@ -2,6 +2,32 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Monorepo (initialisé le 17/10/2026)
+
+**Règle de rédaction (31/10/2026)** : ne pas employer de tiret cadratin (—), de demi-cadratin (–) ni de trait d'union comme ponctuation dans le code, les commentaires, les textes d'interface et les paragraphes `text-xs text-info-900` (règles d'écran) ; utiliser la virgule, les deux-points, les parenthèses ou le point. Les identifiants (ids, noms de fichiers, intervalles, dates) restent de la syntaxe. L'existant n'est repris qu'à la pièce, quand on retouche un texte (la parité N1 compare les libellés).
+
+
+Le dépôt `sighcnt` est un **monorepo npm** (ADR-0002) : `apps/` (poste, hub, vitrine), `packages/`
+(domaine, schema, rbac, sync, referentiels, impression), `infra/`, `docs/` et la maquette gelée
+`prototype_html/` — hors workspaces, avec son outillage propre (`npm run prototype:*` depuis la
+racine). **La cible est hors ligne d'abord** : postes autonomes (SQLite chiffré), hub de clinique
+en étoile (PostgreSQL), synchronisation par **journal d'opérations** — lire
+`docs/architecture/ARCHITECTURE-CIBLE.md` et `docs/architecture/adr/` avant toute décision de
+structure. Les skills SDLC du dépôt (`.claude/skills/` : `/prd`, `/adr`, `/spec`, `/plan`,
+`/test-plan`, `/review`, `/release`) écrivent dans `docs/` et portent la doctrine ci-dessous.
+
+**Cible en cours de lancement (29/10/2026, ADR-0005 *proposé*)** : `apps/poste` (Flutter desktop, modes **fileul** et **mère**), `apps/mobile` (Flutter, profils soignant / réception de secours, **uniquement par le relais**), `apps/web` (Laravel 12 sur cPanel : **relais opaque** + panneau superadmin), `packages/domaine` (règles en Dart). `apps/hub` est supprimé du plan. L'exécutable de référence du protocole est `packages/sync/banc/` (`npm run banc:sync`) ; la spec est `docs/specs/SPEC-protocole-synchronisation.md`. Les squelettes Dart ne sont pas compilés dans l'environnement de rédaction.
+
+**Portage Flutter (30/10/2026)** : la **tranche 1 (caisse, 17 écrans M8 + MECeF) est portée** à N1 = 100 % mesuré (`docs/architecture/parite-statuts.json` ; un statut « porté » est refusé par `apps/poste/test/parite_ecrans_test.dart` si N1 < 100 %). Méthode qui a fait ses preuves : **les vecteurs se tirent de l'écran réel de la maquette, piloté dans Chrome** (`prototype_html/build/vecteurs-emission.js`, `-avoir.js`, `-remboursements.js`, `-mecef.js`, `-tri.js`), pas de la lecture du code — ils ont révélé des défauts que la lecture n'aurait pas montrés (trou de numérotation entre `-A` et `-B`, références d'avoir issues d'un compteur de page, ordre d'insertion). Chaque écart est consigné dans `docs/architecture/ECARTS-MAQUETTE.md` : corrigé dans la maquette D'ABORD puis porté, ou porté fidèlement et signalé. Outils : `/tmp` est volatil, le SDK Flutter se réinstalle (voir `.claude/skills/sigh-flutter`) ; `service postgresql start` avant tout banc.
+
+**Jamais versionnés** : `node_modules`, `vendor/`, `*.local.php`, `.env`, exports `*.sql` (voir `.gitignore`).
+Le mot de passe PostgreSQL commis le 17/10/2026 dans `prototype_html/api/config.local.php` est à
+**changer** sur le poste : il reste dans l'historique du commit initial.
+
+Le reste de ce fichier décrit la **maquette** (`prototype_html/`) : sa doctrine, ses règles de
+gestion et ses pièges s'appliquent tels quels au portage vers `apps/poste`.
+
+
 ## État du dépôt
 
 Trois ensembles : la documentation de cadrage (`docs/`, plus les notes d'exigences `draf1.txt` / `draft2.txt`), le prototype applicatif **`prototype_html/`** — 305 pages couvrant les 14 modules — et le site vitrine public **`frontend_html/`** — 25 pages engendrées depuis `build/site.js`.
@@ -33,7 +59,7 @@ npm run build     # génère les pages, la safelist, puis compile Tailwind
 npm run compta    # régénère data-compta.js depuis les classeurs Excel de docs/
 npm run lint      # node --check sur toutes les sources JS
 npm run check     # ouvre les 306 pages dans Chrome : erreurs JS, liens, ressources
-npm run test      # 66 parcours fonctionnels de bout en bout (1091 vérifications)
+npm run test      # 74 parcours fonctionnels de bout en bout (1185 vérifications)
 npm run serveur   # sert le prototype AVEC sa base (PHP intégré, port 8080)
 npm run audit-rbac # chaque écran sous chaque profil : commandes offertes vs droits réels
 npm run inventaire-rbac # ce que chaque rôle voit RÉELLEMENT → newdocs/INVENTAIRE-RBAC.md
@@ -47,7 +73,7 @@ et l'extraction de texte ne donne rien. Les rendre en images via Chrome puis les
 lire visuellement : `node build/_pdf2png.js "../docs/fichier.pdf" build/pdf-pages 2`.
 Les classeurs Excel s'inspectent avec `node build/_xlsx.js "../docs/fichier.xlsx"`.
 
-`check` et `test` pilotent le Chrome installé sur le poste (`CHROME_PATH` pour surcharger). Attendu : **0 erreur JS, 0 lien cassé, 62/62 scénarios**, et **0 promesse** à l’audit RBAC (1091 sondages écran × profil).
+`check` et `test` pilotent le Chrome installé sur le poste (`CHROME_PATH` pour surcharger). Attendu : **0 erreur JS, 0 lien cassé, 74/74 scénarios**, et **0 promesse** à l’audit RBAC (842 sondages écran × profil).
 
 Pour ne contrôler qu'un sous-ensemble : `node build/check.js --pages=m6-,m8-`.
 Captures d'écran : `node build/shot.js <page>.html 1600 sortie.png`.
@@ -1529,6 +1555,197 @@ pas d'un pouce** ; et le **mot de passe à la création d'un compte** (`m14-util
   Déposé dans `sessionStorage` et non dans l'adresse : l'en-tête porte huit champs, dont un nom de
   prescripteur extérieur en toutes lettres, qu'une adresse afficherait dans l'historique du
   navigateur. Les **cinq modalités** passent par la même fabrique.
+
+**Vague 68 (20/10/2026) — L'HORLOGE RÉELLE, LA CONNEXION ÉPURÉE, LE VIDAGE QUI TIENT — et trois
+PRD pour la suite.** Trois défauts signalés par la Direction le même jour, un fil commun : ce que
+l'écran montre doit être ce que le magasin porte.
+
+- **« AUJOURD'HUI » VALAIT LE 16 AOÛT DANS DIX-NEUF MODULES.** Chaque module portait
+  `var AUJ = new Date(2026, 7, 16)` — la date du jeu de démonstration, figée pour que les tableaux de
+  bord aient quelque chose à montrer. Le formulaire de rendez-vous, lui, partait de l'horloge réelle :
+  un rendez-vous pris le 20 octobre tombait hors de la fenêtre de l'agenda (du 14 au 20 août) et ne se
+  retrouvait nulle part — « enregistré, mais introuvable ». **La date du jour vit désormais en UN
+  endroit, `C.aujourdhui()`, et c'est l'horloge réelle** ; le jeu de démonstration reste daté
+  (`data-seed.js`, `store.js` : c'est un fait sur le jeu, pas sur l'horloge). Conséquence
+  assumée : sur le jeu, les indicateurs « aujourd'hui » des tableaux de bord sont vides tant que
+  le jeu n'est pas ré-ancré — c'est le comportement JUSTE d'un logiciel qui lit l'heure.
+  **C'est le BANC qui décale l'horloge sur la date du jeu** (`HORLOGE_BANC` dans `build/_banc.js`,
+  posée par `poserSession` dans les quatre bancs) : le temps continue de s'écouler — identifiants,
+  minuteries, journal — seul le point de départ change, et un scénario peut la déplacer
+  (`window.__SIGH_HORLOGE.decaler`). Les 1 091 vérifications écrites « au 16 août » restent
+  vraies sans en réécrire une. Au passage : `C.isoLocal()` pour les champs `datetime-local` —
+  `toISOString()` rend l'heure UTC, le Bénin est à UTC+1, l'heure proposée était fausse d'une heure.
+  Et **l'agenda étend sa fenêtre jusqu'au rendez-vous qu'on vient de prendre** : pris hors de la
+  fenêtre affichée, il disparaissait à l'enregistrement.
+- **LA PAGE DE CONNEXION NE LISTE PLUS LES COMPTES.** Le sélecteur « Profil de connexion
+  (démonstration) », le mot de passe pré-rempli et le pied (« comptes ouverts par
+  l'administrateur », double facteur, plan du site) sont retirés : l'agent saisit SES identifiants,
+  le serveur vérifie le haché. Le scénario 40 mesurait le renommage des rôles sur le TEXTE de cette
+  page ; il le mesure désormais là où il vit — le manifeste `N.ROLES` et l'annuaire
+  `api/auth.php?action=comptes`.
+- **« RÉINITIALISER » RÉGÉNÉRAIT LE JEU AU LIEU DE LE RETIRER** — on cliquait, tout revenait à
+  l'identique : « ça n'a pas marché ». Et le vidage des jeux de test, derrière sa bascule, avait
+  DEUX défauts de fond. (1) **La liste de ce qui est conservé était incomplète** : la matrice RBAC,
+  les modules actifs, les catalogues du laboratoire et de l'imagerie, le barème et la grille des
+  primes n'y figuraient pas — vider rouvrait la banque de sang, rendait TOUS les droits à TOUS les
+  rôles (un rôle sans fiche a tout, vague 36) et privait le laboratoire de ses examens. (2) **Le
+  vidage ne tenait pas** : une quinzaine d'écrans ré-amorcent leur collection dès qu'ils la trouvent
+  vide (contrats, congés, budgets, avances, poches, achats…) — ouvrir l'écran suffisait à faire
+  renaître le jeu, écran par écran. **Les deux vivent désormais AU SOCLE** :
+  `S.COLLECTIONS_ESSENTIELLES` (paramétrage, référentiels, comptes, droits, modules, catalogues,
+  règles datées, modèles), `S.viderActivite(motif)` — la MÊME fabrique sert le bouton de
+  maintenance et l'onglet « Jeux de test » — et le drapeau de méta `_jeuVide`, lu par
+  `S.amorcable(nom)` : `K.amorcer`, `semerAchats` et les treize sites `if (!col.all().length)`
+  le consultent ; un référentiel DÉRIVÉ d'un document (le calendrier fiscal) reste libre de se
+  reconstruire. `S.reset()` abaisse le drapeau — et l'ENVOIE (une clé de méta absente du nouveau
+  magasin ne partirait pas, et la base garderait l'ancien). Le rechargement **attend que le serveur
+  ait reçu** le vidage (`recharger()`) : lancé pendant l'envoi, il relisait la base d'avant.
+  Un vidage est journalisé, et c'est la première entrée du journal neuf (RG-12).
+- **Trois PRD** (`docs/prd/`) pour ce que la Direction a demandé le même jour et qui ne se
+  corrige pas en une vague : la **clôture d'exercice** (résultat, à-nouveaux au solde et ligne à
+  ligne, sélecteur d'exercice, exercices clos en lecture seule AU MOTEUR, exercices ouverts
+  simultanés avec à-nouveaux provisoires, N / N-1, archive), le **suivi des ventes par patient et
+  par secteur** (le Point global détaille ce qui a été vendu à chaque patient sélectionné, secteur
+  par secteur ; **« Imagerie médicale » remplace « Échographie » comme secteur de recette** —
+  l'IRM, le scanner et la mammographie se comptaient sous « Échographie » ; identifiants techniques
+  inchangés), et **l'application sans rechargement** (routeur en document unique, modules
+  paresseux, hydratation unique puis deltas, flux d'événements entre postes, notifications qui
+  CONSOMMENT, planificateur de tâches serveur) — la condition de la phase P2 de l'architecture cible.
+- **LE BANC MENTAIT PAR OMISSION, ET LE RELAIS HTTP ÉTAIT EN CAUSE.** Le premier passage complet a rendu
+  seize échecs épars — « bouton absent », « 16/17 tableaux de bord », « 0/0 demandes » — avec 0 erreur
+  JS. Reproduit sur l'arbre d'AVANT la vague : le défaut était préexistant. Le relais Node des bancs
+  (`relayer` dans `build/_banc.js`) recopiait les en-têtes du serveur intégré de PHP — « Connection:
+  close », sans Content-Length — et recodait le corps de 5 Mo en morceaux ; environ une fois sur
+  quarante, le navigateur ne voyait jamais la fin du corps, l'hydratation restait PENDANTE, la page
+  restait BLANCHE, et `attendrePeinture` rendait la main en silence après 150 s : chaque assertion
+  suivante mesurait une page vide. La réponse est désormais mise en TAMPON et renvoyée avec sa
+  longueur, et `ouvrir()` DIT quand une page ne s'est pas peinte. Doctrine confirmée une fois de plus :
+  un rendu qui échoue doit le dire — et un banc qui attend doit dire ce qu'il attendait. Diagnostic
+  établi par un agent de reproduction isolé (cinq rejeux sur base neuve, ports et base distincts).
+- **UNE LIGNE SE CHERCHE PAR SA RÉFÉRENCE, JAMAIS PAR SON RANG.** Deux scénarios (phase 8, patient externe)
+  cliquaient le PREMIER « Saisir le CR », le premier « Rendre », ou cherchaient leur ligne sur la première page
+  d'un tableau paginé par douze et trié par date — en supposant que la pièce qu'ils venaient de créer était la
+  plus récente. Sous l'horloge décalée du banc, elle ne l'est plus : le compte rendu naissait sur la demande
+  d'un AUTRE patient, et aucune assertion ne le disait — la sonde mesurait son rang, pas son geste. Les deux
+  tapent désormais la référence dans la recherche du tableau et agissent sur la ligne qui la porte. Une sonde
+  qui dépend de l'ordre d'un tableau verrouille l'ordre du jeu, pas le comportement de l'écran.
+- **La relecture adversariale a été CONTRE-EXPERTISÉE** : chaque défaut relevé sur le vidage (amorçages non
+  gardés de M5 et M3, `reset()` qui n'envoyait pas les clés absentes, amorçages M10 ressuscités) a été rejoué
+  par deux réfutateurs indépendants sur l'arbre d'AVANT correction (harnais, ports et bases distincts) puis sur
+  l'arbre corrigé : tous confirmés, tous soldés. `attendrePeinture` reconnaît les redirections (403,
+  authentification, page publique d'enquête) : les attendre 150 s criait à une hydratation pendante là où le
+  scénario mesure une adresse.
+- Scénario **67** (dernier : agenda sur l'horloge réelle, puis il VIDE le magasin, ouvre neuf écrans sur le jeu
+  vide et le régénère en sortant). État au 20/10/2026 : **67/67 scénarios (1 117 vérifications)**, 306 pages conformes (0 erreur JS, 0 lien cassé), audit RBAC à 0 promesse et 0 lecture non dite.
+- **LE RÔLE « INGÉNIEUR BIOMÉDICAL » EST SUPPRIMÉ** (décision de la Direction, 20/10/2026) : il n'était qu'archivé, le poste étant tenu par le Biologiste médical. Retirés : `N.ROLES.biomedical`, la fiche RBAC11, la fermeture d'activité `ACT-BIOMED`, le tableau `dash-biomedical` et sa page. La fonction « biomedical » du personnel retombe sur le rôle laborantin. C'est une exception explicite à RG-14 (un rôle s'archive), à ne pas généraliser. `VERSION` passe à **65**. L'audit RBAC tolère désormais le rebond d'une page fermée au profil (contexte détruit en plein relevé).
+
+**Vague 69 (20/10/2026) — LA CLÔTURE D'EXERCICE, LE SUIVI DES VENTES PAR PATIENT ET PAR SECTEUR, L'APPLICATION SANS
+RECHARGEMENT ET LE PLANIFICATEUR.** Les trois PRD de la vague 68 (`docs/prd/`) sont mis en œuvre.
+
+- **Exercices (M12)** — moteur exposé `SIGH.exercice` dans `parcours.js`, sélecteur `#selecteur-exercice` dans l'en-tête de
+  tout écran M12 (choix mémorisé dans `sigh-cnt:exercice`). La collection `exercices` est DÉRIVÉE des écritures, de l'année en
+  cours et des deux exercices de la liasse déposée (`clos`, source « liasse »). Trois états : `ouvert`, `en_attente_cloture`, `clos`.
+  **La clôture se fait en deux gestes** : le comptable DEMANDE (avec motif), la Direction/DAF/administrateur VALIDE — jamais le
+  demandeur lui-même. Pré-clôture à six contrôles (brouillons et à-nouveaux existants BLOQUENT ; équilibre, pièces, compte 47,
+  écritures informent). La validation solde les classes 6/7/8 vers 131000/139000 (pièce `OD-AAAA-RES`) et engendre les à-nouveaux
+  DÉFINITIFS `AN-(N+1)-NNNNN` au 01/01 : comptes non lettrables au solde, comptes de tiers (40/41/42/43/44/47) ligne à ligne,
+  seulement les lignes non lettrées. **Exercices ouverts simultanés** : les à-nouveaux PROVISOIRES sont CALCULÉS, jamais stockés.
+  **La lecture seule d'un exercice clos est tenue AU MOTEUR** : `S.garder('ecritures', fn)` (store.js) refuse insert/update/archive
+  avec un toast nommé et une entrée de journal — masquer les boutons ne protégerait rien. Lettrage des tiers (champ `lettrage`),
+  empreinte SHA-256 synchrone du procès-verbal, export CSV. Non fait (P1 du PRD) : colonnes N-1 tirées du journal sur les états,
+  export d'archive vers la GED, sélecteur sur M9/MECeF.
+- **Suivi des ventes (M6)** — `m6-point-ventes` gagne l'onglet « Par patient » et le bouton « Point par patient » : une carte par
+  patient retenu, les SIX secteurs dans l'ordre arrêté, un secteur sans vente le DIT. Le « Point global » avec des clients retenus
+  imprime le récapitulatif par groupe PUIS une page par patient. **« Imagerie médicale » remplace « Échographie » comme secteur**
+  (groupes, centres de coûts, files, libellés) — IRM, scanner, mammographie et radiographie s'y comptent désormais ; les
+  identifiants techniques sont inchangés. `VERSION` passe à **66**.
+- **Navigation sans rechargement** — `app.go()` et les liens vers un écran du manifeste ne rechargent plus le document
+  (`naviguerSansRecharger` dans `app.js`) : le module de l'écran se charge à la demande (le fichier se lit dans SA page
+  engendrée — une seule source, `gen-pages`), `demonter()` retire tout ce que l'écran précédent a posé (écouteurs inscrits par
+  `ecoute()`, minuteries via `enDernier()`, abonnement de la cloche, nœuds du `body`, événement `sigh:unmount`), `pushState` +
+  `popstate` gardent retour arrière et liens profonds. **Le repli est la règle** : écran autonome (`auth-*`, `error-*`, enquête
+  publique), pas de session, `file:`, module introuvable, accès refusé → rechargement comme avant. Interrupteur :
+  `sigh-cnt:spa = 'off'` ou `window.__SIGH_SANS_SPA`. **Règle pour les écrans** : tout écouteur posé sur `document`/`window` passe
+  par `SIGH.app.ecoute()`, toute minuterie se libère sur `sigh:unmount`.
+- **Planificateur serveur** — `api/cron.php` (CLI : `php api/cron.php [--force]`, à lancer toutes les 5 min par cron Linux ou le
+  Planificateur de tâches Windows) tient un registre (`taches_planifiees`, `executions_taches`, bornées à 500) et six tâches :
+  échéances fiscales, seuils de stock, péremptions FEFO, rendez-vous du lendemain, créances assureurs âgées (même définition que
+  `alertesRecouvrement`), sauvegarde compressée (`api/sauvegardes/`, 7 derniers jours, ignorée par git). **Une tâche LIT les
+  collections et n'en écrit aucune** — les postes réécrivent leurs collections entières, une écriture serveur serait écrasée au
+  geste suivant : les alertes ont leur table `notifications_serveur`. Ce que la tâche ne produit plus est marqué RÉSOLU (jamais
+  supprimé, RG-14). `api/notifications.php` sert les alertes ouvertes, **filtrées par rôle AU SERVEUR** (RG-13), lance un
+  pseudo-cron si rien n'a tourné depuis 5 min, et porte le registre (`?action=taches`) et l'exécution manuelle (admin seul). Côté
+  poste, `notifications.js` gagne la source `serveur` (sondage avant chaque tour, clé unique : l'alerte calculée par le poste ET par
+  le serveur n'apparaît qu'une fois). Écran d'administration `m14-taches` (« Tâches planifiées »). Ce qui N'EST PAS fait :
+  flux d'événements entre postes (SSE), deltas par séquence et journal `evenements` (EF-SOC-05 à 07 du PRD).
+- **Leçons de la vague** : (1) `node_modules` a été installé sous Windows — `npx tailwindcss` échoue sous Linux, la CSS se compile
+  par `node node_modules/tailwindcss/lib/cli.js -i src/input.css -o assets/css/tailwind.css --minify`. (2) PostgreSQL s'arrête à
+  chaque redémarrage du conteneur : `service postgresql start` avant tout banc (sinon 503 « base indisponible » et sondes sans
+  objet). (3) Un script de génération qui boucle sur un motif jamais trouvé fige le shell : borner les boucles de recherche.
+  (4) Le banc ouvre UNE session serveur de rôle `admin` : pour sonder un routage par rôle, se connecter réellement
+  (`BANC.connecter(identifiant)`) et appeler l'API avec ce jeton. (5) Le nombre de sondages de l'audit RBAC (841) diffère des
+  1 091 de l'ancien texte : l'écart vient des écrans retirés avec le rôle biomédical et de la mesure faite sur le jeu courant —
+  c'est le chiffre MESURÉ qui fait foi. (6) « Page `m6-inventaires` non peinte » n'était PAS une course : la page n'a jamais existé (voir vague 70).
+- Scénarios **68** (exercice : pré-clôture, deux gestes, résultat, à-nouveaux, lecture seule), **69** (ventes par patient et
+  par secteur), **70** (navigation sans rechargement) et **71** (planificateur : tâches, routage par poste, alerte résolue).
+
+**Vague 70 (21/10/2026) — LES DONNÉES EN TABLES, LES POSTES QUI SE VOIENT, LA PILE RÉÉVALUÉE.**
+
+- **Ce que PostgreSQL contenait vraiment.** Vérifié : les données du prototype sont bien en base, mais en
+  **blocs JSON** — une ligne par collection dans `collections` (124 collections, ~10 600 fiches, 18 Mo), plus
+  `meta`, `sessions_poste`, `utilisateurs`. Aucune table par module : on ne pouvait ni requêter, ni
+  rapprocher, ni exporter sans passer par du JSON.
+- **Tables de tous les modules** — `build/gen-schema-pg.js` déduit des collections réelles **139 tables dans 18
+  schémas de module** (`m1.patients`, `m8.factures`, `m12.ecritures`…, `socle` pour la seule file `taches`) :
+  colonnes TYPÉES pour chaque champ scalaire, **16 tables filles** pour les tableaux d'objets (lignes de facture,
+  items de check-list…), une colonne `extra` (jsonb) qui reçoit tout champ non prévu, **55 clés étrangères
+  seulement là où le jeu n'a aucun orphelin** (une clé que les données violent déjà ne protège rien, elle bloque).
+  Le module de chaque collection est LU dans les sources (`collection('x', { module: 'Mn' })`) ; 14 collections que
+  le socle sème sans la déclarer sont rangées par `MODULE_PAR_DEFAUT`. Sorties : `api/schema/`
+  (exécution), `packages/schema/postgres/0001_modules.sql` (le projet cible), `docs/architecture/DICTIONNAIRE-DONNEES.md`.
+  **Ajouter une collection = régénérer** : `psql -At -c "select json_object_agg(nom, donnees) from collections" > magasin.json`
+  puis `node build/gen-schema-pg.js magasin.json` ; sinon la projection la NOMME dans `projection_erreurs` et le
+  magasin continue de fonctionner.
+- **La projection** (`api/projection.php`) tient une COPIE relationnelle à jour sur **les deux chemins d'écriture** :
+  `magasin.php` (delta par collection) et `crud.php` (une fiche, réécrite seule). **Le magasin JSON reste l'autorité
+  du prototype** — c'est lui que lisent les écrans, de façon synchrone. Trois garanties : elle s'exécute dans un
+  **SAVEPOINT** et ne fait JAMAIS échouer l'écriture (les clés étrangères sont vérifiées DANS le savepoint par
+  `SET CONSTRAINTS ALL IMMEDIATE`, car au COMMIT une violation ferait échouer aussi le magasin) ; rien n'est perdu
+  (champ inconnu ou type changé → `extra`) ; une collection inconnue est nommée. `php api/projection.php` reconstruit
+  tout, `--verifier` contrôle la **parité** (123 collections, 10 558 fiches, 0 écart) ; `api/parite.php` la sert à
+  l'administration. Piège payé : `crud.php` est un SECOND chemin d'écriture — la première version ne branchait que
+  `magasin.php` et une fiche créée à l'écran n'apparaissait pas en table.
+- **Les postes se voient** — journal `evenements` (collection, identifiant, jeton d'auteur ; **jamais de contenu**),
+  `api/evenements.php?depuis=N` (les événements d'AUTRES postes), `magasin.php?collections=a,b` (relecture ciblée).
+  Le store sonde **toutes les 3 s** : s'il y a du neuf il relit ces collections seules, **diffère tant qu'un geste
+  local part** (file, minuterie, envoi), aligne `SRV.envoye` pour ne pas les renvoyer, puis prévient l'écran, qui se
+  repeint SEULEMENT si rien n'est en cours de saisie (pas de dialogue, pas de champ actif) — sinon un bandeau propose
+  d'actualiser. Pastille d'état permanente (Synchronisé / il y a N s / Hors ligne depuis N min, gestes en attente).
+  **Sondage court et non SSE, volontairement** : le serveur PHP traite une requête par processus, quinze flux tenus
+  ouverts le saturent ; le flux poussé est pour le hub cible (ADR-0003). Délai mesuré poste à poste < 8 s.
+- **Planificateur** : `api/planificateur/installer-linux.sh` et `installer-windows.ps1` (rejouables), `LISEZ-MOI.md`.
+- **M12** : le bilan gagne la colonne « Exercice N-1 (journal) » quand le journal tient l'exercice précédent ; **l'archive
+  de clôture naît dans la GED avec la clôture** (`SIGH.exercice.archiver`, appelée par `validerCloture` : balance en CSV,
+  empreinte SHA-256, conservation 10 ans, UNE par exercice) ; le sélecteur d'exercice suit sur le **registre fiscal MECeF**
+  (factures, avoirs, transmission, journal) et sur `m9-factures-assureur` / `m9-historique`. Les **créances ne suivent PAS
+  l'exercice** : un encours non réglé d'un exercice précédent reste dû. `m9-factures-assureur` écrivait « 2026 » en dur
+  (mois, filtre, numéro de pièce) : corrigé.
+- **PILE TECHNIQUE RÉÉVALUÉE — ADR-0003 (proposé)** : la Direction a demandé de repartir de zéro (Windows + Linux, interface
+  partagée poste/smartphone, continuité hors ligne, équipe Flutter/Dart). Recommandation : **Flutter + hub en Dart + domaine
+  Dart partagé**, parce qu'un hub en C# ou Java imposerait deux exemplaires de RG-03/RG-09/RG-10 — la divergence que ce dépôt
+  a payée à chaque règle écrite deux fois. Coût dominant dit sans détour : **réécrire l'interface** (84 000 lignes de JS,
+  305 écrans, 333 impressions, 71 scénarios) ; le prototype devient l'exécutable de référence, portage par tranches
+  verticales. Banc de validation à sept critères avant acceptation, repli nommé (hub .NET).
+- **MECeF : LE BOÎTIER PHYSIQUE, PAS e-MECeF.** `ARCHITECTURE-CIBLE.md` §8 supposait une certification en ligne différée ; la
+  clinique utilise la machine physique. La certification devient locale, le boîtier est l'autorité du numéro fiscal, il se
+  branche à la CAISSE (pas au hub : hub arrêté ≠ certification arrêtée), aucune émission depuis un smartphone. **Le modèle,
+  l'interface et le protocole du boîtier ne sont dans AUCUN document du dépôt** : dix questions au fournisseur et à la DGI sont
+  posées dans l'ADR avant tout code d'intégration. Le prototype (`mecef-*`) simule toujours la file en ligne.
+- **« PAGE NON PEINTE : m6-inventaires » ÉLUCIDÉ : une coquille de test, pas une course.** L'écran s'appelle `m6-inventaire` (singulier) ; le banc ouvrait `m6-inventaires`, une adresse qui répond **404**, puis attendait 150 s une peinture impossible — à CHAQUE passage complet — et concluait « hydratation jamais aboutie ». Trois ouvertures isolées de la vraie page réussissaient, et la trace réseau de la fausse donnait `404 → chrome-error://`. **Le même identifiant mort vivait dans le code produit** : `servant: 'm6-inventaires'` sur la feuille d'inventaire (elle héritait des droits du MODULE au lieu de ceux du registre qu'elle alimente) et le retour par défaut de la feuille (une navigation vers une page 404). Le scan des sources (`go('…')`, `ecran:`, `servant:`, `retour ||`, `lien:`, `creerVers:`) a levé un SECOND lien mort, `m1-dossier` (assurance du personnel). Corrigés ; `gen-pages` REFUSE désormais un `servant` inexistant, et `ouvrir()` du banc dit « PAGE INTROUVABLE (404) » aussitôt au lieu d'attendre. **Leçon** : un message qui accuse l'infrastructure (« hydratation ») avant d'avoir regardé le statut HTTP envoie chercher au mauvais endroit — j'avais d'abord attribué le cas à mes propres modifications de `api/` en cours de banc, hypothèse que la reproduction a réfutée.
+- Scénarios **72** (tables : parité, écriture suivie, `extra`, archivage RG-14), **73** (deux postes, pastille, saisie protégée,
+  aucun écho) et **74** (N-1 du journal, archive GED, MECeF et M9 qui suivent l'exercice).
+
+**Documentation (26/10/2026)** — `docs/README.md` indexe tous les documents Markdown. `docs/guides/GUIDE-DEMARRAGE.md` : cloner, tester, mettre à jour, repartir d'une base propre. `api/restaurer.php` (CLI, simulation par défaut, `--oui` pour appliquer) est le chemin inverse de la sauvegarde nocturne : il conserve d'abord l'état précédent, ne touche ni comptes ni sessions, reconstruit la projection. Synchronisation bidirectionnelle : `docs/prd/PRD-SOCLE-synchronisation-bidirectionnelle.md` et `docs/plans/PLAN-synchronisation-bidirectionnelle.md` — le prototype reste en « dernier geste gagne » jusqu'aux étapes S0→S2 du plan ; aucune suppression ne se propage (RG-14, c'est l'archivage) et aucune donnée métier ne se synchronise par un outil de fichiers. ADR-0001 et ADR-0003 sont **proposées**, pas acceptées.
 
 **Repli du ruban sur accès rapide (vague 16)** — un lien du panneau du ruban posait le drapeau
 transitoire, les boutons du bandeau non : la page appelée s’ouvrait menu déployé alors que l’utilisateur

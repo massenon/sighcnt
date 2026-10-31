@@ -1,0 +1,61 @@
+{
+ "id": "m3-stats-hospitalisations",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Statistiques des hospitalisations",
+ "acces": "ouvert",
+ "titre": "Statistiques des hospitalisations",
+ "description": "Séjours, durée moyenne, occupation des lits et motifs d’admission — calculés depuis le registre.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Statistiques des hospitalisations"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Séjours de la période",
+  "Séjours terminés",
+  "Journées d’hospitalisation",
+  "Durée moyenne de séjour",
+  "Séjours en cours",
+  "Taux d’occupation"
+ ],
+ "cartes": [
+  "Par type de chambre",
+  "Diagnostics d’entrée les plus fréquents",
+  "Séjours par mois",
+  "Durée moyenne par diagnostic — sur les séjours terminés"
+ ],
+ "tableaux": [
+  [
+   "Type",
+   "Prix de journée",
+   "Séjours",
+   "Journées",
+   "Durée moyenne",
+   "Produit théorique"
+  ],
+  [
+   "Diagnostic d’entrée",
+   "Séjours",
+   "Durée moyenne"
+  ]
+ ],
+ "commandes": [
+  "Toute la période",
+  "Éditer l’état"
+ ],
+ "champs": [
+  "Du",
+  "au"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 6
+}

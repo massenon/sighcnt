@@ -1,0 +1,88 @@
+{
+ "id": "m14-roles",
+ "module": "M14",
+ "domaine": "Système",
+ "libelleManifeste": "Rôles & permissions (RBAC)",
+ "acces": "ouvert",
+ "titre": "Rôles & permissions (RBAC)",
+ "description": "Matrice des droits d’accès par rôle et par module : voir, éditer, annuler. Renommage et archivage des rôles.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Sécurité & Utilisateurs",
+  "Rôles & permissions (RBAC)"
+ ],
+ "actions": [
+  "Nouveau rôle",
+  "Utilisateurs",
+  "Sécurité & Utilisateurs"
+ ],
+ "regle": [
+  "Chaque case résume les trois droits du rôle sur le module : vert plein accès, bleu lecture seule, gris module fermé. Le détail se règle case par case avec le bouton « Modifier les droits »."
+ ],
+ "onglets": [
+  "Matrice des droits",
+  "Détail par rôle",
+  "Habilitations métier",
+  "Tentatives refusées",
+  "Rôles archivés"
+ ],
+ "kpis": [
+  "Rôles actifs",
+  "Rôles archivés",
+  "Modules protégés",
+  "Tentatives refusées"
+ ],
+ "cartes": [
+  "Matrice des droits d’accès"
+ ],
+ "tableaux": [
+  [
+   "Rôle",
+   "M2",
+   "M1",
+   "M13",
+   "CFG",
+   "M1",
+   "M2",
+   "M2",
+   "M3",
+   "M4",
+   "M5",
+   "M6",
+   "M7",
+   "M8",
+   "M9",
+   "MECEF",
+   "M12",
+   "M10",
+   "M11",
+   "M13",
+   "GED",
+   "RAP",
+   "M14",
+   "CFG",
+   "MERE",
+   "MERE",
+   "MERE",
+   "MERE",
+   "MERE",
+   "RLS",
+   "PIL",
+   "M12",
+   "DASH",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Matrice des droits20",
+  "Détail par rôle",
+  "Habilitations métier",
+  "Tentatives refusées0",
+  "Rôles archivés2",
+  "Imprimer la matrice"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

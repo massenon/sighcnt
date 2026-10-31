@@ -1,0 +1,59 @@
+{
+ "id": "m12-grand-livre",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Grand livre",
+ "acces": "ouvert",
+ "titre": "Grand livre",
+ "description": "Détail chronologique des mouvements par compte, avec solde progressif.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA",
+  "Grand livre"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Mouvements",
+  "Total débit",
+  "Total crédit",
+  "Solde"
+ ],
+ "cartes": [
+  "401000 — Fournisseurs"
+ ],
+ "tableaux": [
+  [
+   "N° pièce",
+   "Date",
+   "Journal",
+   "Libellé",
+   "Pièce",
+   "Débit",
+   "Crédit",
+   "Solde"
+  ]
+ ],
+ "commandes": [
+  "Fournisseurs",
+  "Imprimer le grand livre",
+  "Grand livre complet",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4"
+ ],
+ "champs": [
+  "Compte"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

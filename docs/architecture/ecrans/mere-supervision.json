@@ -1,0 +1,47 @@
+{
+ "id": "mere-supervision",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Supervision",
+ "acces": "ouvert",
+ "titre": "Supervision",
+ "description": "Santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Exploitation de la synchronisation",
+  "Supervision"
+ ],
+ "actions": [
+  "Appareils et appairage",
+  "Conflits et doublons",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Santé de la mère",
+  "Époque",
+  "Opérations",
+  "Retard vers le relais"
+ ],
+ "cartes": [
+  "Contrôles"
+ ],
+ "tableaux": [
+  [
+   "Contrôle",
+   "État",
+   "Détail"
+  ]
+ ],
+ "commandes": [
+  "Sauvegarder maintenant",
+  "Actualiser"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

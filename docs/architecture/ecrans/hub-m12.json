@@ -1,0 +1,31 @@
+{
+ "id": "hub-m12",
+ "module": "M12",
+ "domaine": "Financier",
+ "libelleManifeste": "Comptabilité SYSCOHADA",
+ "acces": "ouvert",
+ "titre": "Comptabilité SYSCOHADA",
+ "description": "Tous les écrans du module M12 — Comptabilité SYSCOHADA.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Comptabilité SYSCOHADA"
+ ],
+ "actions": [
+  "Tableau de bord comptable",
+  "Plan comptable OHADA",
+  "Comptabilité SYSCOHADA"
+ ],
+ "regle": [
+  "Assurances & Créances",
+  "MECeF — Facture normalisée"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}

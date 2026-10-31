@@ -16,7 +16,7 @@
   var C = global.SIGH.core, U = global.SIGH.ui, S = global.SIGH.store, D = global.SIGH.data,
       P = global.SIGH.print, G = global.SIGH.charts, K = global.SIGH.kit;
   var el = C.el;
-  var AUJ = new Date(2026, 7, 16);
+  var AUJ = C.aujourdhui();   /* l’horloge réelle — vague 68 */
 
   function personnel() { return S.collection('personnel').active(); }
   function planning() { return S.collection('planning').active(); }
@@ -248,10 +248,11 @@
             : U.empty('Aucun relevé de présence.', { icon: 'calendar-check' })));
           box.appendChild(U.card('Congés', cong.length
             ? K.miniTable([
-              { label: 'Type', render: function (x) { return x.type || x.typeConge || '—'; } },
+              /* E621 : les congés portent `nature` et `duree` — l’onglet lisait `type` et `jours`, donc « — » partout. */
+              { label: 'Type', render: function (x) { return x.nature || x.type || x.typeConge || '—'; } },
               { label: 'Du', render: function (x) { return C.dateFR(x.dateDebut); } },
               { label: 'Au', render: function (x) { return C.dateFR(x.dateFin); } },
-              { label: 'Jours', align: 'right', render: function (x) { return String(x.jours || '—'); } },
+              { label: 'Jours', align: 'right', render: function (x) { return String(x.duree || x.jours || '—'); } },
               { label: 'État', render: function (x) { return U.statut(x.statutConge || 'valide'); } },
             ], C.sortBy(cong, 'dateDebut', 'desc'))
             : U.empty('Aucun congé enregistré.', { icon: 'palmtree' })));
@@ -499,7 +500,7 @@
     description: 'Contrats de travail des agents : nature, durée, période d’essai et échéances.',
     render: function (root) {
       var col = S.collection('contrats', { module: 'M10', entite: 'Contrat' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('contrats')) {
         var rnd = C.seeded(1217);
         personnel().forEach(function (e, i) {
           var cdd = rnd() > 0.7;
@@ -553,10 +554,11 @@
             { name: 'salaire', label: 'Salaire mensuel (FCFA)', type: 'money', required: true, min: 0 },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.poste = e.poste; v.fonction = e.fonction; }
-          if (!v.reference) v.reference = C.nextRef('CT-', 4);
+          /* E620 : la référence venait de C.nextRef (compteur de page → CT-0001 déjà pris) ET était réécrite à chaque modification. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CT-', 4, col.all());
           v.statutContrat = 'en_vigueur';
           return v;
         },
@@ -1604,7 +1606,7 @@
     regle: 'Le régime observé prévoit <strong>2 jours de repos hebdomadaire</strong> et <strong>10 jours de congés annuels</strong>.',
     render: function (root) {
       var col = S.collection('conges', { module: 'M10', entite: 'Conge' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('conges')) {
         var rnd = C.seeded(1423);
         personnel().slice(0, 22).forEach(function (e, i) {
           var debut = C.addDays(AUJ, C.between(rnd, -120, 60));
@@ -1705,11 +1707,12 @@
             { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service; }
           v.duree = Math.max(1, C.daysBetween(v.dateDebut, v.dateFin));
-          if (!v.reference) v.reference = C.nextRef('CG-', 4);
+          /* E620 (suite) : même défaut que les contrats. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CG-', 4, col.all());
           return v;
         },
         beforeSave: function (v) {
@@ -2086,10 +2089,10 @@
          été saisie. */
       (function amorcer() {
         var db = S.raw();
-        if (db.evaluations && db.evaluations.length) return;
+        if ((db.evaluations && db.evaluations.length) || !S.amorcable('evaluations')) return;
         var rnd = C.seeded(1131), n = 0;
         var mois = C.MOIS[AUJ.getMonth() - 1 < 0 ? 11 : AUJ.getMonth() - 1];
-        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' 2026';
+        var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' ' + AUJ.getFullYear();
         db.evaluations = personnel().slice(0, 24).map(function (e) {
           var criteres = {};
           D.NS131.criteres.forEach(function (c) {
@@ -2098,7 +2101,7 @@
           var pct = D.NS131.prelevement(criteres);
           return {
             id: 'EVAL' + C.pad(++n, 4),
-            reference: 'EV-2026-' + C.pad(n, 4),
+            reference: 'EV-' + AUJ.getFullYear() + '-' + C.pad(n, 4),
             employeId: e.id, employe: e.nomComplet, matricule: e.matricule,
             service: e.service, fonction: e.fonction, categorie: e.categorie,
             periode: periode, criteres: criteres,
@@ -2269,7 +2272,7 @@
                   prelevementMontant: emp ? Math.round(emp.salaireBase * pct / 100) : 0,
                   salaireBrut: emp ? emp.salaireBase : 0,
                   observations: v.observations,
-                  reference: (record && record.reference) || C.nextRef('EV-', 4),
+                  reference: (record && record.reference) || C.referenceSuivante('EV-' + AUJ.getFullYear() + '-', 4, col.all().concat(col.archived())),
                   evaluateur: S.currentUser(),
                 };
                 var res = record ? col.update(record.id, enr) : col.insert(enr);
@@ -3005,7 +3008,7 @@
     description: 'Intervenants extérieurs rémunérés à l’acte : circoncision, hydrotubation, accouchement, analyses, hospitalisation.',
     render: function (root) {
       var col = S.collection('prestataires', { module: 'M10', entite: 'PrestataireExterne' });
-      if (!col.all().length) {
+      if (!col.all().length && S.amorcable('prestataires')) {
         var rnd = C.seeded(1531);
         var ACTES = ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'];
         for (var i = 0; i < 14; i++) {
@@ -3103,7 +3106,8 @@
           { name: 'ifu', label: 'IFU du prestataire' },
           { name: 'factureNormalisee', label: 'Facture normalisée fournie', type: 'checkbox', col: 'full' },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('PE-', 4); return v; },
+        /* E620 (suite) : même défaut que les contrats. */
+        transform: function (v, rec) { v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('PE-', 4, col.all()); return v; },
         onCreate: function () { return { actesRealises: 0, factureNormalisee: false }; },
         filters: [{ name: 'specialite', label: 'Spécialité', options: ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'] }],
         apresTableau: graphiquesPrestataires,
@@ -3431,7 +3435,7 @@
                 v.montantParAgent = Number(v.montantParAgent) || D.PARAM_EVENEMENTS.montantStandard;
                 var ben = personnel().filter(function (e) { return e.id === v.beneficiaireId; })[0];
                 v.beneficiaire = ben ? ben.nomComplet : null;
-                v.reference = C.nextRef('EVT-', 4);
+                v.reference = C.referenceSuivante('EVT-', 4, colEvenements().all());
                 var res = colEvenements().insert(v);
                 var n = engendrerParticipations(res.record);
                 S.log('Création d’un événement du personnel', 'M10', 'Événement', res.record.id, null,
@@ -3527,17 +3531,19 @@
           danger: b.regles > 0, requireMotif: true,
         }).then(function (rep) {
           if (!rep) return;
-          var archivees = 0;
+          var archivees = 0; var annulations = [];
           participationsDe(evt.id).forEach(function (x) {
             if (x.statutPaiement === 'paye') return;
-            colParticipations().archive(x.id, rep.motif); archivees++;
+            annulations.push(colParticipations().archive(x.id, rep.motif).undo); archivees++;
           });
           var res = colEvenements().archive(evt.id, rep.motif);
           afficher();
           U.toast('Événement annulé.', {
             type: 'success',
             detail: C.num(archivees) + ' participation(s) non réglée(s) archivée(s).',
-            undo: function () { res.undo(); afficher(); },
+            /* L'annulation restitue l'événement ET ses participations : ne restaurer que l'événement laissait ses participations archivées,
+               donc un événement vivant dont le montant attendu avait fondu (E741). */
+            undo: function () { res.undo(); annulations.forEach(function (u) { u(); }); afficher(); },
           });
         });
       }
@@ -3681,7 +3687,7 @@
               render: function (x) {
                 return el('div.min-w-0', null, [
                   el('p.truncate.text-sm.font-medium.text-slate-800', { text: x.agent }),
-                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + fonctionLabel(x.fonction) }),
+                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + (x.fonction ? fonctionLabel(x.fonction) : '—') }),
                 ]);
               },
             },
@@ -3817,7 +3823,7 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                var recu = C.nextRef('REC-PART-', 4);
+                var recu = C.referenceSuivante('REC-PART-', 4, colParticipations().all().map(function (p) { return { reference: p.recu }; }));
                 var res = colParticipations().update(x.id, {
                   statutPaiement: 'paye', mode: 'comptant',
                   montantVerse: Number(v.montantVerse), datePaiement: v.datePaiement,
@@ -4021,7 +4027,7 @@
         S.collection('demandesAnalyses').active().forEach(function (a) {
           var pat = parPatient[a.patientId];
           if (!pat) return;
-          var d = String(a.date || a.dateDemande || '').slice(0, 10);
+          var d = String(a.date || a.dateDemande || a.dateHeure || '').slice(0, 10);
           if (!d || (min && d < min)) return;
           var analyse = D.ANALYSES.filter(function (x) { return x.code === a.analyse || x.libelle === a.analyse; })[0];
           out.push({
@@ -4030,7 +4036,7 @@
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Analyse', detail: a.analyse || (analyse ? analyse.libelle : 'Analyse'),
             praticien: a.prescripteur || a.demandeur || '—',
-            valeur: Number(a.montant) || (analyse ? Number(analyse.prix) || 0 : 0),
+            valeur: Number(a.montant) || Number(a.prix) || (analyse ? Number(analyse.prix) || 0 : 0),
           });
         });
 
@@ -4128,7 +4134,8 @@
           ],
           rowActions: function (r) {
             return [K.iconBtn('folder-open', 'Ouvrir le dossier du patient', function () {
-              global.SIGH.app.go('m1-dossier', { patient: r.patientId });
+              /* Le dossier s'ouvre depuis le répertoire des patients (fusion du 31/08/2026) : « m1-dossier » n'a jamais existé. */
+              global.SIGH.app.go('m1-patients');
             })];
           },
         }));
@@ -4227,15 +4234,23 @@
       + 'Les vacations restent celles du <strong>planning validé</strong> — même collection que « Planning & gardes », '
       + 'donc toute modification y est immédiatement visible. Le repos de 24 h qui suit une garde reste opposable.',
     render: function (root) {
-      var agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; });
+      /* E749 : `agents` était lu UNE fois au rendu — un agent créé ou archivé ici ne paraissait ni dans la grille de rotation ni aux indicateurs avant le
+         rechargement de la page (« enregistré mais introuvable »). La liste est relue à chaque rafraîchissement. */
+      var agents = [];
+      function relireAgents() { agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; }); }
       var host = el('div.space-y-4');
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
-        { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
-        { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
-        { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
-      ]));
+      var blocKpi = el('div');
+      host.appendChild(blocKpi);
+      function rendreKpi() {
+        C.clear(blocKpi);
+        blocKpi.appendChild(U.kpiGrid([
+          { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
+          { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
+          { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
+          { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
+        ]));
+        U.icons(blocKpi);
+      }
 
       /* Légendes reprises telles quelles des plannings de la clinique */
       var legendes = el('div.grid.gap-3.sm\\:grid-cols-2');
@@ -4272,7 +4287,7 @@
       root.appendChild(host);
       return null;
 
-      function rendreTout() { rendreGrille(); rendreAgents(); rendreGraphes(); }
+      function rendreTout() { relireAgents(); rendreKpi(); rendreGrille(); rendreAgents(); rendreGraphes(); }
 
       function rendreGrille() {
       C.clear(blocGrille);
@@ -4442,7 +4457,7 @@
           entite: 'Agent',
           defauts: function () { return { fonction: 'securite', dateEmbauche: C.iso(AUJ), salaireBase: 40000 }; },
           transform: function (v) {
-            if (!v.matricule) v.matricule = C.nextRef('SE-', 3);
+            if (!v.matricule) v.matricule = C.referenceSuivante('SE-', 3, S.collection('personnel').all().map(function (e) { return { reference: e.matricule }; }));
             /* Sécurité, entretien et chauffeurs sont rattachés à la Direction :
                un seul intitulé de service, comme partout ailleurs. */
             v.service = 'Direction';
@@ -4554,7 +4569,7 @@
 
   function amorcerMissions() {
     var db = S.raw();
-    if (db.missions && db.missions.length) return;
+    if ((db.missions && db.missions.length) || !S.amorcable('missions')) return;
     var agents = S.collection('personnel').active();
     var rnd = C.seeded(1042);
     var OBJETS = [
@@ -4747,12 +4762,14 @@
           onRowClick: fiche,
           rowActions: function (m) {
             var actions = [];
+            /* E623 : valider, terminer et reporter ÉCRIVENT — commandes déclarées comme telles (absentes sans le droit d'édition). */
+            var ecrit = function (c) { if (c) actions.push(c); };
             if (m.statutMission === 'a_valider') {
-              actions.push(K.iconBtn('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
+              ecrit(K.commandeIcone('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
             }
             if (m.statutMission === 'validee' || m.statutMission === 'en_cours') {
-              actions.push(K.iconBtn('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
-              actions.push(K.iconBtn('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
+              ecrit(K.commandeIcone('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
+              ecrit(K.commandeIcone('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
             }
             actions.push(K.iconBtn('printer', 'Imprimer l’ordre', function () { imprimer(m); }));
             return actions.concat(K.actionsLigne(colMissions(), champsMission, { entite: 'ordre de mission' })(m));
@@ -5785,7 +5802,7 @@
     }
 
     var col = colBadges();
-    if (col.all().length) return;
+    if (col.all().length || !S.amorcable('badges')) return;
     var rnd = C.seeded(2609);
     var agents = C.sortBy(personnel(), 'matricule').slice(0, 14);
     var n = 0;
@@ -6087,7 +6104,7 @@
           confirmLabel: 'Remis',
         }).then(function (rep) {
           if (!rep) return;
-          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(AUJ) });
+          var res = colBadges().update(b.id, { etat: 'remis', remisLe: C.iso(C.aujourdhui()) });
           afficher();
           U.toast('Badge remis.', { type: 'success',
             undo: function () { res.undo(); afficher(); } });

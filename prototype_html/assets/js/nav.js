@@ -76,7 +76,6 @@
        ARCHIVÉ : il n'ouvre plus de session et disparaît des écrans.
        Le parc technique, lui, reste : c'est un besoin réel, tenu par
        l'administration. */
-    biomedical: { id: 'biomedical', label: 'Ingénieur biomédical', short: 'Biomédical', color: 'navy', home: 'dash-biomedical', retire: true },
   };
 
   var ALL = '*';
@@ -574,7 +573,7 @@
                Ouvert au biomédical et au laboratoire — c'est le laboratoire
                qui constate qu'un automate ne répond plus. */
             { id: 'm13-maintenance', label: 'Parc technique & maintenance', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
+              roles: ['admin', 'direction', 'da', 'laborantin', 'agentadmin'] },
             /* Phase 10 — le questionnaire est une donnée : le formulaire naît
                du modèle (principe KoboCollect, hors ligne). L'accueil
                recueille, la direction lit. */
@@ -639,6 +638,7 @@
             { id: 'm14-sessions', label: 'Sessions actives', icon: 'monitor' },
             { id: 'm14-audit', label: 'Journal d’audit', icon: 'scroll-text' },
             { id: 'm14-sauvegardes', label: 'Sauvegardes & restauration', icon: 'database-backup' },
+            { id: 'm14-taches', label: 'Tâches planifiées', icon: 'timer' },
           ],
         },
         {
@@ -663,6 +663,96 @@
             { id: 'cfg-compte', label: 'Mon compte', icon: 'circle-user' },
             { id: 'cfg-modules', label: 'Activité des modules', icon: 'toggle-right' },
             { id: 'cfg-systeme', label: 'Paramètres système', icon: 'settings' },
+            { id: 'cfg-poste', label: 'Ce poste (mode fileul / mère)', icon: 'server-cog', roles: ['admin', 'da'] },
+          ],
+        },
+      ],
+    },
+    /* ======================================================================
+     * POSTE MÈRE (30/10/2026) — les 22 modules complémentaires du mode mère.
+     * Un seul module (MERE), cinq rangées : la première est canonique, les
+     * autres sont secondaires (même code, aucun second hub). Réservé à
+     * l administrateur et à la DAF : c est le serveur de la clinique.
+     * Source : docs/architecture/MODULES-COMPLEMENTAIRES-MERE.md
+     * ==================================================================== */
+    {
+      domain: 'Poste mère',
+      icon: 'server',
+      modules: [
+        {
+          code: 'MERE', label: 'Exploitation de la synchronisation', icon: 'refresh-cw', roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-supervision', label: 'Supervision', icon: 'heart-pulse' },
+            { id: 'mere-appareils', label: 'Appareils et appairage', icon: 'monitor-smartphone' },
+            { id: 'mere-conflits', label: 'Conflits et doublons', icon: 'git-compare' },
+            { id: 'mere-a-traiter', label: '« À traiter » consolidé', icon: 'octagon-alert' },
+            { id: 'mere-journal-operations', label: 'Journal des opérations', icon: 'list-ordered' },
+            { id: 'mere-plages-baux', label: 'Plages de numéros et baux de stock', icon: 'hash' },
+            { id: 'mere-lots-tournee', label: 'Lots de tournée (mobiles)', icon: 'package' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Sécurité et continuité', icon: 'shield-check', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-journal-technique', label: 'Journal technique', icon: 'scroll-text' },
+            { id: 'mere-sauvegardes', label: 'Sauvegardes et restauration', icon: 'database-backup' },
+            { id: 'mere-cle-clinique', label: 'Clé de clinique', icon: 'key-round' },
+            { id: 'mere-integrite', label: 'Intégrité et altérations', icon: 'shield-alert' },
+            { id: 'mere-reinit', label: 'Réinitialisation de production', icon: 'trash-2' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Liaison avec le relais', icon: 'cloud', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-relais', label: 'Relais en ligne', icon: 'cloud' },
+            { id: 'mere-indicateurs', label: 'Indicateurs publiés', icon: 'eye-off' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Plateforme locale', icon: 'server-cog', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-service', label: 'Service et démarrage', icon: 'power' },
+            { id: 'mere-base', label: 'Base de données locale', icon: 'database' },
+            { id: 'mere-reseau', label: 'Réseau local', icon: 'network' },
+            { id: 'mere-planificateur', label: 'Planificateur', icon: 'timer' },
+            { id: 'mere-notifications', label: 'Notifications serveur', icon: 'bell-ring' },
+          ],
+        },
+        {
+          code: 'MERE', label: 'Cycle de vie', icon: 'rocket', secondaire: true, roles: ['admin', 'da'],
+          items: [
+            { id: 'mere-mise-en-service', label: 'Assistant de première mise en service', icon: 'wand-sparkles' },
+            { id: 'mere-mises-a-jour', label: 'Mises à jour et compatibilité', icon: 'package-check' },
+            { id: 'mere-import', label: 'Import de migration', icon: 'file-up' },
+          ],
+        },
+      ],
+    },
+    /* ======================================================================
+     * RELAIS EN LIGNE (30/10/2026) — le panneau superadmin de apps/web.
+     * Quatre écrans existent déjà côté Laravel ; les autres sont ceux que
+     * l on attend d un relais exploité. Réservé à l administrateur système.
+     * Source : docs/architecture/MODULES-WEB-RELAIS.md
+     * ==================================================================== */
+    {
+      domain: 'Relais en ligne',
+      icon: 'cloud',
+      modules: [
+        {
+          code: 'RLS', label: 'Relais en ligne (apps/web)', icon: 'cloud', roles: ['admin'],
+          items: [
+            { id: 'rls-tableau', label: 'Tableau de bord du relais', icon: 'layout-dashboard' },
+            { id: 'rls-appareils', label: 'Appareils', icon: 'monitor-smartphone' },
+            { id: 'rls-boites', label: 'Boîtes aux lettres', icon: 'inbox' },
+            { id: 'rls-codes', label: 'Codes d’appairage', icon: 'ticket' },
+            { id: 'rls-indicateurs', label: 'Indicateurs reçus', icon: 'activity' },
+            { id: 'rls-alertes', label: 'Alertes et notifications', icon: 'bell-ring' },
+            { id: 'rls-journal', label: 'Journal d’audit du relais', icon: 'scroll-text' },
+            { id: 'rls-superadmin', label: 'Comptes superadmin', icon: 'user-cog' },
+            { id: 'rls-parametres', label: 'Paramètres du relais', icon: 'sliders-horizontal' },
+            { id: 'rls-hebergement', label: 'Hébergement (cPanel)', icon: 'server' },
+            { id: 'rls-sauvegarde', label: 'Sauvegarde du relais', icon: 'database-backup' },
+            { id: 'rls-opacite', label: 'Preuve d’opacité', icon: 'eye-off' },
           ],
         },
       ],
@@ -760,8 +850,6 @@
                L'intitulé cesse de nommer un rôle qui n'ouvre plus de session. */
             { id: 'dash-pharmacien', label: 'Pharmacie', icon: 'pill',
               roles: ['caissier', 'stock', 'da', 'admin', 'direction'] },
-            { id: 'dash-biomedical', label: 'Ingénieur biomédical', icon: 'wrench',
-              roles: ['biomedical', 'admin', 'dm'] },
             { id: 'dash-laborantin', label: 'Biologiste médical', icon: 'flask-conical', roles: ['laborantin', 'admin'] },
             { id: 'dash-stock', label: 'Gestionnaire de stock', icon: 'package', roles: ['stock', 'da', 'admin'] },
             { id: 'dash-caissier', label: 'Caisse', icon: 'banknote', roles: ['caissier', 'admin'] },
@@ -870,7 +958,7 @@
        EXACTEMENT des droits du registre qu'elle alimente. */
     {
       id: 'm6-inventaire-feuille', label: 'Feuille d’inventaire — comptage', icon: 'clipboard-list',
-      servant: 'm6-inventaires',
+      servant: 'm6-inventaire',
       module: 'M6', moduleLabel: 'Pharmacie & Stocks', domain: 'Logistique',
     },
     /* L'ouverture d'un dossier patient : une page, parce qu'on la remplit
@@ -1288,6 +1376,12 @@
    * La propriété entry.module (code) déclenche la consultation des surcharges ;
    * seul le manifeste s'applique — c'est le cas des écrans hors ruban.
    */
+  /** Une surcharge D'ÉCRAN pose-t-elle explicitement un droit ? (le module n'est pas consulté) */
+  function surchargeEcranExplicite(roleId, ecranId) {
+    var f = surcharges()[roleId];
+    var parEcran = f && f.droitsEcrans && ecranId && f.droitsEcrans[ecranId];
+    return parEcran && parEcran.voir != null ? !!parEcran.voir : null;
+  }
   /** Une surcharge pose-t-elle EXPLICITEMENT un droit pour cet écran ? */
   function surchargeExplicite(roleId, ecranId, code) {
     var f = surcharges()[roleId];
@@ -1361,7 +1455,14 @@
        matrice administrable qui ne saurait qu'enlever ne permettrait jamais
        de doter un rôle nouvellement créé : il n'apparaît dans aucune liste du
        manifeste, et resterait inutilisable quoi qu'on lui ouvre. */
-    var explicite = surchargeExplicite(roleId, entry.id, code);
+    /* UN ÉCRAN UNIVERSEL NE CÈDE QUE DEVANT UNE SURCHARGE D'ÉCRAN (29/10/2026). Il ne doit pas céder devant la
+       fermeture de son MODULE : un rôle créé « à zéro » reçoit une fiche qui ferme chaque module nommément, M7
+       compris, et perdait alors « exprimer un besoin » alors que cet écran appartient à TOUT agent. Défaut
+       relevé en extrayant la matrice de la maquette : six rôles (aide-soignante, échographiste, surveillant,
+       assistant de direction, chirurgien, anesthésiste) n'ouvraient pas l'écran des besoins. */
+    var explicite = entry.universel
+      ? surchargeEcranExplicite(roleId, entry.id)
+      : surchargeExplicite(roleId, entry.id, code);
     if (explicite === false) return false;
     if (explicite === true) return true;
 

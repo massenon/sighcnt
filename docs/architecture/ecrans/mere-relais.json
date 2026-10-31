@@ -1,0 +1,48 @@
+{
+ "id": "mere-relais",
+ "module": "MERE",
+ "domaine": "Poste mère",
+ "libelleManifeste": "Relais en ligne",
+ "acces": "ouvert",
+ "titre": "Relais en ligne",
+ "description": "État de la liaison avec le relais (hébergement mutualisé) : battement, retard de réplication, secret de la mère.",
+ "fil": [
+  "Accueil",
+  "Poste mère",
+  "Liaison avec le relais",
+  "Relais en ligne"
+ ],
+ "actions": [
+  "Supervision",
+  "Appareils et appairage",
+  "Exploitation de la synchronisation"
+ ],
+ "regle": [
+  "Prototype de la cible : ce module n’existe que sur le poste mère (serveur local). Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "Liaison",
+  "Dernier battement",
+  "Retard de réplication",
+  "Enveloppes au relais"
+ ],
+ "cartes": [
+  "Derniers échanges"
+ ],
+ "tableaux": [
+  [
+   "Quand",
+   "Sens",
+   "Contenu",
+   "Résultat"
+  ]
+ ],
+ "commandes": [
+  "Tester la liaison",
+  "Faire tourner le secret de la mère"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

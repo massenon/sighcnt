@@ -1,0 +1,3787 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-m7-achats.js — l'écran m7-fournisseurs pilotés dans la maquette. Ne pas éditer.",
+ "etat": {
+  "jeu": {
+   "kpis": [
+    [
+     "Fournisseurs référencés",
+     "6"
+    ],
+    [
+     "Habilités aux retours",
+     "2"
+    ],
+    [
+     "Volume d’achats",
+     "7 744 335 FCFA"
+    ],
+    [
+     "Délai moyen",
+     "7 j"
+    ]
+   ],
+   "entetes": [
+    "Code",
+    "Raison sociale",
+    "Type",
+    "Ville",
+    "Téléphone",
+    "Délai (j)",
+    "Retours périmés",
+    "Commandes",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "",
+     "CAME",
+     "CAME — Centrale d’Achat des Médicaments Essentiels",
+     "Centrale d’achat",
+     "Cotonou",
+     "21 33 00 00",
+     "7",
+     "Habilité",
+     "2",
+     ""
+    ],
+    [
+     "",
+     "LABOTECH",
+     "LABOTECH Réactifs",
+     "Réactifs & consommables labo",
+     "Cotonou",
+     "21 35 00 00",
+     "10",
+     "Non habilité",
+     "2",
+     ""
+    ],
+    [
+     "",
+     "MEDIPLUS",
+     "MEDIPLUS Équipements",
+     "Matériel médical",
+     "Parakou",
+     "23 61 00 00",
+     "14",
+     "Non habilité",
+     "4",
+     ""
+    ],
+    [
+     "",
+     "NATIFOURN",
+     "NATI Fournitures",
+     "Fournitures & entretien",
+     "Natitingou",
+     "23 82 00 00",
+     "2",
+     "Non habilité",
+     "6",
+     ""
+    ],
+    [
+     "",
+     "SOBAPS",
+     "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+     "Grossiste pharmaceutique",
+     "Parakou",
+     "(229) 01 91 48 42 42 / 01 99 43 04 04",
+     "5",
+     "Habilité",
+     "1",
+     ""
+    ],
+    [
+     "",
+     "UBIPHARM",
+     "UBIPHARM Bénin",
+     "Grossiste pharmaceutique",
+     "Cotonou",
+     "21 31 00 00",
+     "6",
+     "Non habilité",
+     "0",
+     ""
+    ]
+   ],
+   "onglets": [
+    "Tous les fournisseurs6",
+    "Archivés0"
+   ]
+  },
+  "fournisseurs": [
+   {
+    "statut": "actif",
+    "id": "F001",
+    "code": "SOBAPS",
+    "nom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+    "type": "Grossiste pharmaceutique",
+    "ville": "Parakou",
+    "habilite": true,
+    "tel": "(229) 01 91 48 42 42 / 01 99 43 04 04",
+    "delai": 5,
+    "adresse": "BP 201 Parakou — Agence Régionale Parakou",
+    "ifu": "3202112446712",
+    "banque": "BANK OF AFRICA",
+    "compte": "007393360019",
+    "guichet": "01030",
+    "codeBanque": "B5061",
+    "cleRib": "94",
+    "codeClient": "1106035",
+    "certification": "ISO 9001:2015 · ISO 14001:2015 · ISO 45001:2018",
+    "source": "DOC — Facture de vente n° 26FNA00026"
+   },
+   {
+    "statut": "actif",
+    "id": "F002",
+    "code": "CAME",
+    "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "type": "Centrale d’achat",
+    "ville": "Cotonou",
+    "habilite": true,
+    "tel": "21 33 00 00",
+    "delai": 7
+   },
+   {
+    "statut": "actif",
+    "id": "F003",
+    "code": "UBIPHARM",
+    "nom": "UBIPHARM Bénin",
+    "type": "Grossiste pharmaceutique",
+    "ville": "Cotonou",
+    "habilite": false,
+    "tel": "21 31 00 00",
+    "delai": 6
+   },
+   {
+    "statut": "actif",
+    "id": "F004",
+    "code": "LABOTECH",
+    "nom": "LABOTECH Réactifs",
+    "type": "Réactifs & consommables labo",
+    "ville": "Cotonou",
+    "habilite": false,
+    "tel": "21 35 00 00",
+    "delai": 10
+   },
+   {
+    "statut": "actif",
+    "id": "F005",
+    "code": "MEDIPLUS",
+    "nom": "MEDIPLUS Équipements",
+    "type": "Matériel médical",
+    "ville": "Parakou",
+    "habilite": false,
+    "tel": "23 61 00 00",
+    "delai": 14
+   },
+   {
+    "statut": "actif",
+    "id": "F006",
+    "code": "NATIFOURN",
+    "nom": "NATI Fournitures",
+    "type": "Fournitures & entretien",
+    "ville": "Natitingou",
+    "habilite": false,
+    "tel": "23 82 00 00",
+    "delai": 2
+   }
+  ],
+  "commandes": [
+   {
+    "id": "BC0001",
+    "reference": "BC-2026-0001",
+    "date": "2026-07-24",
+    "fournisseur": "NATIFOURN",
+    "montant": 94650,
+    "statutCommande": "livree",
+    "lignes": [
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0002",
+    "reference": "BC-2026-0002",
+    "date": "2026-05-06",
+    "fournisseur": "NATIFOURN",
+    "montant": 1177940,
+    "statutCommande": "soldee",
+    "lignes": [
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0003",
+    "reference": "BC-2026-0003",
+    "date": "2026-04-19",
+    "fournisseur": "MEDIPLUS",
+    "montant": 859198,
+    "statutCommande": "livree",
+    "lignes": [
+     {},
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0004",
+    "reference": "BC-2026-0004",
+    "date": "2026-03-29",
+    "fournisseur": "MEDIPLUS",
+    "montant": 287010,
+    "statutCommande": "soldee",
+    "lignes": [
+     {},
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0005",
+    "reference": "BC-2026-0005",
+    "date": "2026-06-10",
+    "fournisseur": "MEDIPLUS",
+    "montant": 1449289,
+    "statutCommande": "livree",
+    "lignes": [
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0006",
+    "reference": "BC-2026-0006",
+    "date": "2026-02-03",
+    "fournisseur": "NATIFOURN",
+    "montant": 104140,
+    "statutCommande": "soldee",
+    "lignes": [
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0007",
+    "reference": "BC-2026-0007",
+    "date": "2026-08-05",
+    "fournisseur": "CAME",
+    "montant": 512192,
+    "statutCommande": "livree",
+    "lignes": [
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0008",
+    "reference": "BC-2026-0008",
+    "date": "2026-05-05",
+    "fournisseur": "LABOTECH",
+    "montant": 613500,
+    "statutCommande": "soldee",
+    "lignes": [
+     {},
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0009",
+    "reference": "BC-2026-0009",
+    "date": "2026-06-22",
+    "fournisseur": "NATIFOURN",
+    "montant": 242500,
+    "statutCommande": "soldee",
+    "lignes": [
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0010",
+    "reference": "BC-2026-0010",
+    "date": "2026-03-21",
+    "fournisseur": "CAME",
+    "montant": 813000,
+    "statutCommande": "validee",
+    "lignes": [
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0011",
+    "reference": "BC-2026-0011",
+    "date": "2026-07-17",
+    "fournisseur": "MEDIPLUS",
+    "montant": 126500,
+    "statutCommande": "validee",
+    "lignes": [
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0012",
+    "reference": "BC-2026-0012",
+    "date": "2026-08-09",
+    "fournisseur": "NATIFOURN",
+    "montant": 130200,
+    "statutCommande": "livree",
+    "lignes": [
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0013",
+    "reference": "BC-2026-0013",
+    "date": "2026-06-24",
+    "fournisseur": "NATIFOURN",
+    "montant": 390874,
+    "statutCommande": "attente_validation",
+    "lignes": [
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0014",
+    "reference": "BC-2026-0014",
+    "date": "2026-07-31",
+    "fournisseur": "LABOTECH",
+    "montant": 670502,
+    "statutCommande": "livree",
+    "lignes": [
+     {},
+     {},
+     {}
+    ]
+   },
+   {
+    "id": "BC0015",
+    "reference": "BC-2026-0015",
+    "date": "2026-06-01",
+    "fournisseur": "SOBAPS",
+    "montant": 272840,
+    "statutCommande": "attente_validation",
+    "lignes": [
+     {},
+     {}
+    ]
+   }
+  ]
+ },
+ "cas": [
+  {
+   "nom": "création complète : délai numérique, case cochée",
+   "mode": "creer",
+   "cible": null,
+   "saisie": {
+    "code": "TESTF",
+    "nom": "Fournisseur d'essai SARL",
+    "type": "Matériel médical",
+    "ville": "Natitingou",
+    "tel": "23 82 11 11",
+    "delai": "4",
+    "habilite": true
+   },
+   "champsModale": [
+    "code",
+    "nom",
+    "type",
+    "ville",
+    "tel",
+    "delai",
+    "habilite"
+   ],
+   "valeursInitiales": {
+    "code": "",
+    "nom": "",
+    "type": "Grossiste pharmaceutique",
+    "ville": "",
+    "tel": "",
+    "delai": "",
+    "habilite": false
+   },
+   "optionsType": [
+    "Grossiste pharmaceutique",
+    "Centrale d’achat",
+    "Réactifs & consommables labo",
+    "Matériel médical",
+    "Fournitures & entretien",
+    "Prestataire de services"
+   ],
+   "avant": null,
+   "sortie": {
+    "nouvelle": {
+     "statut": "actif",
+     "code": "TESTF",
+     "nom": "Fournisseur d'essai SARL",
+     "type": "Matériel médical",
+     "ville": "Natitingou",
+     "tel": "23 82 11 11",
+     "delai": 4,
+     "habilite": true
+    },
+    "modifiee": null,
+    "messages": [
+     {
+      "message": "Nouveau fournisseur créé.",
+      "type": "success",
+      "detail": "TESTF"
+     }
+    ]
+   },
+   "apres": {
+    "kpis": [
+     [
+      "Fournisseurs référencés",
+      "7"
+     ],
+     [
+      "Habilités aux retours",
+      "3"
+     ],
+     [
+      "Volume d’achats",
+      "7 744 335 FCFA"
+     ],
+     [
+      "Délai moyen",
+      "7 j"
+     ]
+    ],
+    "lignes": [
+     [
+      "",
+      "CAME",
+      "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "Centrale d’achat",
+      "Cotonou",
+      "21 33 00 00",
+      "7",
+      "Habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "TESTF",
+      "Fournisseur d'essai SARL",
+      "Matériel médical",
+      "Natitingou",
+      "23 82 11 11",
+      "4",
+      "Habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "LABOTECH",
+      "LABOTECH Réactifs",
+      "Réactifs & consommables labo",
+      "Cotonou",
+      "21 35 00 00",
+      "10",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "MEDIPLUS",
+      "MEDIPLUS Équipements",
+      "Matériel médical",
+      "Parakou",
+      "23 61 00 00",
+      "14",
+      "Non habilité",
+      "4",
+      ""
+     ],
+     [
+      "",
+      "NATIFOURN",
+      "NATI Fournitures",
+      "Fournitures & entretien",
+      "Natitingou",
+      "23 82 00 00",
+      "2",
+      "Non habilité",
+      "6",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "Grossiste pharmaceutique",
+      "Parakou",
+      "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "5",
+      "Habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "UBIPHARM",
+      "UBIPHARM Bénin",
+      "Grossiste pharmaceutique",
+      "Cotonou",
+      "21 31 00 00",
+      "6",
+      "Non habilité",
+      "0",
+      ""
+     ]
+    ],
+    "onglets": [
+     "Tous les fournisseurs7",
+     "Archivés0"
+    ]
+   },
+   "entree": {
+    "fournisseurs": [
+     {
+      "id": "FOUxmvv9sct5zb02l",
+      "statut": "actif",
+      "code": "TESTF",
+      "nom": "Fournisseur d'essai SARL",
+      "type": "Matériel médical",
+      "ville": "Natitingou",
+      "tel": "23 82 11 11",
+      "delai": 4,
+      "habilite": true,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.497Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F001",
+      "code": "SOBAPS",
+      "nom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Parakou",
+      "habilite": true,
+      "tel": "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "delai": 5,
+      "adresse": "BP 201 Parakou — Agence Régionale Parakou",
+      "ifu": "3202112446712",
+      "banque": "BANK OF AFRICA",
+      "compte": "007393360019",
+      "guichet": "01030",
+      "codeBanque": "B5061",
+      "cleRib": "94",
+      "codeClient": "1106035",
+      "certification": "ISO 9001:2015 · ISO 14001:2015 · ISO 45001:2018",
+      "source": "DOC — Facture de vente n° 26FNA00026"
+     },
+     {
+      "statut": "actif",
+      "id": "F002",
+      "code": "CAME",
+      "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "type": "Centrale d’achat",
+      "ville": "Cotonou",
+      "habilite": true,
+      "tel": "21 33 00 00",
+      "delai": 7
+     },
+     {
+      "statut": "actif",
+      "id": "F003",
+      "code": "UBIPHARM",
+      "nom": "UBIPHARM Bénin",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 31 00 00",
+      "delai": 6
+     },
+     {
+      "statut": "actif",
+      "id": "F004",
+      "code": "LABOTECH",
+      "nom": "LABOTECH Réactifs",
+      "type": "Réactifs & consommables labo",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 35 00 00",
+      "delai": 10
+     },
+     {
+      "statut": "actif",
+      "id": "F005",
+      "code": "MEDIPLUS",
+      "nom": "MEDIPLUS Équipements",
+      "type": "Matériel médical",
+      "ville": "Parakou",
+      "habilite": false,
+      "tel": "23 61 00 00",
+      "delai": 14
+     },
+     {
+      "statut": "actif",
+      "id": "F006",
+      "code": "NATIFOURN",
+      "nom": "NATI Fournitures",
+      "type": "Fournitures & entretien",
+      "ville": "Natitingou",
+      "habilite": false,
+      "tel": "23 82 00 00",
+      "delai": 2
+     }
+    ],
+    "commandes": [
+     {
+      "id": "BC0001",
+      "reference": "BC-2026-0001",
+      "date": "2026-07-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 94650,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0002",
+      "reference": "BC-2026-0002",
+      "date": "2026-05-06",
+      "fournisseur": "NATIFOURN",
+      "montant": 1177940,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0003",
+      "reference": "BC-2026-0003",
+      "date": "2026-04-19",
+      "fournisseur": "MEDIPLUS",
+      "montant": 859198,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0004",
+      "reference": "BC-2026-0004",
+      "date": "2026-03-29",
+      "fournisseur": "MEDIPLUS",
+      "montant": 287010,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0005",
+      "reference": "BC-2026-0005",
+      "date": "2026-06-10",
+      "fournisseur": "MEDIPLUS",
+      "montant": 1449289,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0006",
+      "reference": "BC-2026-0006",
+      "date": "2026-02-03",
+      "fournisseur": "NATIFOURN",
+      "montant": 104140,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0007",
+      "reference": "BC-2026-0007",
+      "date": "2026-08-05",
+      "fournisseur": "CAME",
+      "montant": 512192,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0008",
+      "reference": "BC-2026-0008",
+      "date": "2026-05-05",
+      "fournisseur": "LABOTECH",
+      "montant": 613500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0009",
+      "reference": "BC-2026-0009",
+      "date": "2026-06-22",
+      "fournisseur": "NATIFOURN",
+      "montant": 242500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0010",
+      "reference": "BC-2026-0010",
+      "date": "2026-03-21",
+      "fournisseur": "CAME",
+      "montant": 813000,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0011",
+      "reference": "BC-2026-0011",
+      "date": "2026-07-17",
+      "fournisseur": "MEDIPLUS",
+      "montant": 126500,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0012",
+      "reference": "BC-2026-0012",
+      "date": "2026-08-09",
+      "fournisseur": "NATIFOURN",
+      "montant": 130200,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0013",
+      "reference": "BC-2026-0013",
+      "date": "2026-06-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 390874,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0014",
+      "reference": "BC-2026-0014",
+      "date": "2026-07-31",
+      "fournisseur": "LABOTECH",
+      "montant": 670502,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0015",
+      "reference": "BC-2026-0015",
+      "date": "2026-06-01",
+      "fournisseur": "SOBAPS",
+      "montant": 272840,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {}
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "nom": "création sans délai ni case cochée : champs absents",
+   "mode": "creer",
+   "cible": null,
+   "saisie": {
+    "code": "TESTG",
+    "nom": "Sans délai",
+    "type": "Grossiste pharmaceutique",
+    "ville": "",
+    "tel": "",
+    "delai": "",
+    "habilite": false
+   },
+   "champsModale": [
+    "code",
+    "nom",
+    "type",
+    "ville",
+    "tel",
+    "delai",
+    "habilite"
+   ],
+   "valeursInitiales": {
+    "code": "",
+    "nom": "",
+    "type": "Grossiste pharmaceutique",
+    "ville": "",
+    "tel": "",
+    "delai": "",
+    "habilite": false
+   },
+   "optionsType": [
+    "Grossiste pharmaceutique",
+    "Centrale d’achat",
+    "Réactifs & consommables labo",
+    "Matériel médical",
+    "Fournitures & entretien",
+    "Prestataire de services"
+   ],
+   "avant": null,
+   "sortie": {
+    "nouvelle": {
+     "statut": "actif",
+     "code": "TESTG",
+     "nom": "Sans délai",
+     "type": "Grossiste pharmaceutique",
+     "ville": "",
+     "tel": "",
+     "delai": null,
+     "habilite": false
+    },
+    "modifiee": null,
+    "messages": [
+     {
+      "message": "Nouveau fournisseur créé.",
+      "type": "success",
+      "detail": "TESTG"
+     }
+    ]
+   },
+   "apres": {
+    "kpis": [
+     [
+      "Fournisseurs référencés",
+      "8"
+     ],
+     [
+      "Habilités aux retours",
+      "3"
+     ],
+     [
+      "Volume d’achats",
+      "7 744 335 FCFA"
+     ],
+     [
+      "Délai moyen",
+      "6 j"
+     ]
+    ],
+    "lignes": [
+     [
+      "",
+      "CAME",
+      "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "Centrale d’achat",
+      "Cotonou",
+      "21 33 00 00",
+      "7",
+      "Habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "TESTF",
+      "Fournisseur d'essai SARL",
+      "Matériel médical",
+      "Natitingou",
+      "23 82 11 11",
+      "4",
+      "Habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "LABOTECH",
+      "LABOTECH Réactifs",
+      "Réactifs & consommables labo",
+      "Cotonou",
+      "21 35 00 00",
+      "10",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "MEDIPLUS",
+      "MEDIPLUS Équipements",
+      "Matériel médical",
+      "Parakou",
+      "23 61 00 00",
+      "14",
+      "Non habilité",
+      "4",
+      ""
+     ],
+     [
+      "",
+      "NATIFOURN",
+      "NATI Fournitures",
+      "Fournitures & entretien",
+      "Natitingou",
+      "23 82 00 00",
+      "2",
+      "Non habilité",
+      "6",
+      ""
+     ],
+     [
+      "",
+      "TESTG",
+      "Sans délai",
+      "Grossiste pharmaceutique",
+      "—",
+      "—",
+      "—",
+      "Non habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "Grossiste pharmaceutique",
+      "Parakou",
+      "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "5",
+      "Habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "UBIPHARM",
+      "UBIPHARM Bénin",
+      "Grossiste pharmaceutique",
+      "Cotonou",
+      "21 31 00 00",
+      "6",
+      "Non habilité",
+      "0",
+      ""
+     ]
+    ],
+    "onglets": [
+     "Tous les fournisseurs8",
+     "Archivés0"
+    ]
+   },
+   "entree": {
+    "fournisseurs": [
+     {
+      "id": "FOUxmvv9scy5kkqvi",
+      "statut": "actif",
+      "code": "TESTG",
+      "nom": "Sans délai",
+      "type": "Grossiste pharmaceutique",
+      "ville": "",
+      "tel": "",
+      "delai": null,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.677Z"
+     },
+     {
+      "id": "FOUxmvv9sct5zb02l",
+      "statut": "actif",
+      "code": "TESTF",
+      "nom": "Fournisseur d'essai SARL",
+      "type": "Matériel médical",
+      "ville": "Natitingou",
+      "tel": "23 82 11 11",
+      "delai": 4,
+      "habilite": true,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.497Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F001",
+      "code": "SOBAPS",
+      "nom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Parakou",
+      "habilite": true,
+      "tel": "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "delai": 5,
+      "adresse": "BP 201 Parakou — Agence Régionale Parakou",
+      "ifu": "3202112446712",
+      "banque": "BANK OF AFRICA",
+      "compte": "007393360019",
+      "guichet": "01030",
+      "codeBanque": "B5061",
+      "cleRib": "94",
+      "codeClient": "1106035",
+      "certification": "ISO 9001:2015 · ISO 14001:2015 · ISO 45001:2018",
+      "source": "DOC — Facture de vente n° 26FNA00026"
+     },
+     {
+      "statut": "actif",
+      "id": "F002",
+      "code": "CAME",
+      "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "type": "Centrale d’achat",
+      "ville": "Cotonou",
+      "habilite": true,
+      "tel": "21 33 00 00",
+      "delai": 7
+     },
+     {
+      "statut": "actif",
+      "id": "F003",
+      "code": "UBIPHARM",
+      "nom": "UBIPHARM Bénin",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 31 00 00",
+      "delai": 6
+     },
+     {
+      "statut": "actif",
+      "id": "F004",
+      "code": "LABOTECH",
+      "nom": "LABOTECH Réactifs",
+      "type": "Réactifs & consommables labo",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 35 00 00",
+      "delai": 10
+     },
+     {
+      "statut": "actif",
+      "id": "F005",
+      "code": "MEDIPLUS",
+      "nom": "MEDIPLUS Équipements",
+      "type": "Matériel médical",
+      "ville": "Parakou",
+      "habilite": false,
+      "tel": "23 61 00 00",
+      "delai": 14
+     },
+     {
+      "statut": "actif",
+      "id": "F006",
+      "code": "NATIFOURN",
+      "nom": "NATI Fournitures",
+      "type": "Fournitures & entretien",
+      "ville": "Natitingou",
+      "habilite": false,
+      "tel": "23 82 00 00",
+      "delai": 2
+     }
+    ],
+    "commandes": [
+     {
+      "id": "BC0001",
+      "reference": "BC-2026-0001",
+      "date": "2026-07-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 94650,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0002",
+      "reference": "BC-2026-0002",
+      "date": "2026-05-06",
+      "fournisseur": "NATIFOURN",
+      "montant": 1177940,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0003",
+      "reference": "BC-2026-0003",
+      "date": "2026-04-19",
+      "fournisseur": "MEDIPLUS",
+      "montant": 859198,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0004",
+      "reference": "BC-2026-0004",
+      "date": "2026-03-29",
+      "fournisseur": "MEDIPLUS",
+      "montant": 287010,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0005",
+      "reference": "BC-2026-0005",
+      "date": "2026-06-10",
+      "fournisseur": "MEDIPLUS",
+      "montant": 1449289,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0006",
+      "reference": "BC-2026-0006",
+      "date": "2026-02-03",
+      "fournisseur": "NATIFOURN",
+      "montant": 104140,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0007",
+      "reference": "BC-2026-0007",
+      "date": "2026-08-05",
+      "fournisseur": "CAME",
+      "montant": 512192,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0008",
+      "reference": "BC-2026-0008",
+      "date": "2026-05-05",
+      "fournisseur": "LABOTECH",
+      "montant": 613500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0009",
+      "reference": "BC-2026-0009",
+      "date": "2026-06-22",
+      "fournisseur": "NATIFOURN",
+      "montant": 242500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0010",
+      "reference": "BC-2026-0010",
+      "date": "2026-03-21",
+      "fournisseur": "CAME",
+      "montant": 813000,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0011",
+      "reference": "BC-2026-0011",
+      "date": "2026-07-17",
+      "fournisseur": "MEDIPLUS",
+      "montant": 126500,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0012",
+      "reference": "BC-2026-0012",
+      "date": "2026-08-09",
+      "fournisseur": "NATIFOURN",
+      "montant": 130200,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0013",
+      "reference": "BC-2026-0013",
+      "date": "2026-06-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 390874,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0014",
+      "reference": "BC-2026-0014",
+      "date": "2026-07-31",
+      "fournisseur": "LABOTECH",
+      "montant": 670502,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0015",
+      "reference": "BC-2026-0015",
+      "date": "2026-06-01",
+      "fournisseur": "SOBAPS",
+      "montant": 272840,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {}
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "nom": "création : code DÉJÀ pris -> acceptée (aucun contrôle d'unicité)",
+   "mode": "creer",
+   "cible": null,
+   "saisie": {
+    "code": "SOBAPS",
+    "nom": "Doublon SoBAPS",
+    "type": "Centrale d’achat",
+    "delai": "9",
+    "habilite": false
+   },
+   "champsModale": [
+    "code",
+    "nom",
+    "type",
+    "ville",
+    "tel",
+    "delai",
+    "habilite"
+   ],
+   "valeursInitiales": {
+    "code": "",
+    "nom": "",
+    "type": "Grossiste pharmaceutique",
+    "ville": "",
+    "tel": "",
+    "delai": "",
+    "habilite": false
+   },
+   "optionsType": [
+    "Grossiste pharmaceutique",
+    "Centrale d’achat",
+    "Réactifs & consommables labo",
+    "Matériel médical",
+    "Fournitures & entretien",
+    "Prestataire de services"
+   ],
+   "avant": null,
+   "sortie": {
+    "nouvelle": {
+     "statut": "actif",
+     "code": "SOBAPS",
+     "nom": "Doublon SoBAPS",
+     "type": "Centrale d’achat",
+     "ville": "",
+     "tel": "",
+     "delai": 9,
+     "habilite": false
+    },
+    "modifiee": null,
+    "messages": [
+     {
+      "message": "Nouveau fournisseur créé.",
+      "type": "success",
+      "detail": "SOBAPS"
+     }
+    ]
+   },
+   "apres": {
+    "kpis": [
+     [
+      "Fournisseurs référencés",
+      "9"
+     ],
+     [
+      "Habilités aux retours",
+      "3"
+     ],
+     [
+      "Volume d’achats",
+      "7 744 335 FCFA"
+     ],
+     [
+      "Délai moyen",
+      "6 j"
+     ]
+    ],
+    "lignes": [
+     [
+      "",
+      "CAME",
+      "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "Centrale d’achat",
+      "Cotonou",
+      "21 33 00 00",
+      "7",
+      "Habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "Doublon SoBAPS",
+      "Centrale d’achat",
+      "—",
+      "—",
+      "9",
+      "Non habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "TESTF",
+      "Fournisseur d'essai SARL",
+      "Matériel médical",
+      "Natitingou",
+      "23 82 11 11",
+      "4",
+      "Habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "LABOTECH",
+      "LABOTECH Réactifs",
+      "Réactifs & consommables labo",
+      "Cotonou",
+      "21 35 00 00",
+      "10",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "MEDIPLUS",
+      "MEDIPLUS Équipements",
+      "Matériel médical",
+      "Parakou",
+      "23 61 00 00",
+      "14",
+      "Non habilité",
+      "4",
+      ""
+     ],
+     [
+      "",
+      "NATIFOURN",
+      "NATI Fournitures",
+      "Fournitures & entretien",
+      "Natitingou",
+      "23 82 00 00",
+      "2",
+      "Non habilité",
+      "6",
+      ""
+     ],
+     [
+      "",
+      "TESTG",
+      "Sans délai",
+      "Grossiste pharmaceutique",
+      "—",
+      "—",
+      "—",
+      "Non habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "Grossiste pharmaceutique",
+      "Parakou",
+      "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "5",
+      "Habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "UBIPHARM",
+      "UBIPHARM Bénin",
+      "Grossiste pharmaceutique",
+      "Cotonou",
+      "21 31 00 00",
+      "6",
+      "Non habilité",
+      "0",
+      ""
+     ]
+    ],
+    "onglets": [
+     "Tous les fournisseurs9",
+     "Archivés0"
+    ]
+   },
+   "entree": {
+    "fournisseurs": [
+     {
+      "id": "FOUxmvv9sd3eoikdv",
+      "statut": "actif",
+      "code": "SOBAPS",
+      "nom": "Doublon SoBAPS",
+      "type": "Centrale d’achat",
+      "ville": "",
+      "tel": "",
+      "delai": 9,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.866Z"
+     },
+     {
+      "id": "FOUxmvv9scy5kkqvi",
+      "statut": "actif",
+      "code": "TESTG",
+      "nom": "Sans délai",
+      "type": "Grossiste pharmaceutique",
+      "ville": "",
+      "tel": "",
+      "delai": null,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.677Z"
+     },
+     {
+      "id": "FOUxmvv9sct5zb02l",
+      "statut": "actif",
+      "code": "TESTF",
+      "nom": "Fournisseur d'essai SARL",
+      "type": "Matériel médical",
+      "ville": "Natitingou",
+      "tel": "23 82 11 11",
+      "delai": 4,
+      "habilite": true,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.497Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F001",
+      "code": "SOBAPS",
+      "nom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Parakou",
+      "habilite": true,
+      "tel": "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "delai": 5,
+      "adresse": "BP 201 Parakou — Agence Régionale Parakou",
+      "ifu": "3202112446712",
+      "banque": "BANK OF AFRICA",
+      "compte": "007393360019",
+      "guichet": "01030",
+      "codeBanque": "B5061",
+      "cleRib": "94",
+      "codeClient": "1106035",
+      "certification": "ISO 9001:2015 · ISO 14001:2015 · ISO 45001:2018",
+      "source": "DOC — Facture de vente n° 26FNA00026"
+     },
+     {
+      "statut": "actif",
+      "id": "F002",
+      "code": "CAME",
+      "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "type": "Centrale d’achat",
+      "ville": "Cotonou",
+      "habilite": true,
+      "tel": "21 33 00 00",
+      "delai": 7
+     },
+     {
+      "statut": "actif",
+      "id": "F003",
+      "code": "UBIPHARM",
+      "nom": "UBIPHARM Bénin",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 31 00 00",
+      "delai": 6
+     },
+     {
+      "statut": "actif",
+      "id": "F004",
+      "code": "LABOTECH",
+      "nom": "LABOTECH Réactifs",
+      "type": "Réactifs & consommables labo",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 35 00 00",
+      "delai": 10
+     },
+     {
+      "statut": "actif",
+      "id": "F005",
+      "code": "MEDIPLUS",
+      "nom": "MEDIPLUS Équipements",
+      "type": "Matériel médical",
+      "ville": "Parakou",
+      "habilite": false,
+      "tel": "23 61 00 00",
+      "delai": 14
+     },
+     {
+      "statut": "actif",
+      "id": "F006",
+      "code": "NATIFOURN",
+      "nom": "NATI Fournitures",
+      "type": "Fournitures & entretien",
+      "ville": "Natitingou",
+      "habilite": false,
+      "tel": "23 82 00 00",
+      "delai": 2
+     }
+    ],
+    "commandes": [
+     {
+      "id": "BC0001",
+      "reference": "BC-2026-0001",
+      "date": "2026-07-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 94650,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0002",
+      "reference": "BC-2026-0002",
+      "date": "2026-05-06",
+      "fournisseur": "NATIFOURN",
+      "montant": 1177940,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0003",
+      "reference": "BC-2026-0003",
+      "date": "2026-04-19",
+      "fournisseur": "MEDIPLUS",
+      "montant": 859198,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0004",
+      "reference": "BC-2026-0004",
+      "date": "2026-03-29",
+      "fournisseur": "MEDIPLUS",
+      "montant": 287010,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0005",
+      "reference": "BC-2026-0005",
+      "date": "2026-06-10",
+      "fournisseur": "MEDIPLUS",
+      "montant": 1449289,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0006",
+      "reference": "BC-2026-0006",
+      "date": "2026-02-03",
+      "fournisseur": "NATIFOURN",
+      "montant": 104140,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0007",
+      "reference": "BC-2026-0007",
+      "date": "2026-08-05",
+      "fournisseur": "CAME",
+      "montant": 512192,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0008",
+      "reference": "BC-2026-0008",
+      "date": "2026-05-05",
+      "fournisseur": "LABOTECH",
+      "montant": 613500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0009",
+      "reference": "BC-2026-0009",
+      "date": "2026-06-22",
+      "fournisseur": "NATIFOURN",
+      "montant": 242500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0010",
+      "reference": "BC-2026-0010",
+      "date": "2026-03-21",
+      "fournisseur": "CAME",
+      "montant": 813000,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0011",
+      "reference": "BC-2026-0011",
+      "date": "2026-07-17",
+      "fournisseur": "MEDIPLUS",
+      "montant": 126500,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0012",
+      "reference": "BC-2026-0012",
+      "date": "2026-08-09",
+      "fournisseur": "NATIFOURN",
+      "montant": 130200,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0013",
+      "reference": "BC-2026-0013",
+      "date": "2026-06-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 390874,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0014",
+      "reference": "BC-2026-0014",
+      "date": "2026-07-31",
+      "fournisseur": "LABOTECH",
+      "montant": 670502,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0015",
+      "reference": "BC-2026-0015",
+      "date": "2026-06-01",
+      "fournisseur": "SOBAPS",
+      "montant": 272840,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {}
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "nom": "création : raison sociale absente -> formulaire en erreur, rien d'écrit",
+   "mode": "creer",
+   "cible": null,
+   "saisie": {
+    "code": "TESTH",
+    "nom": ""
+   },
+   "champsModale": [
+    "code",
+    "nom",
+    "type",
+    "ville",
+    "tel",
+    "delai",
+    "habilite"
+   ],
+   "valeursInitiales": {
+    "code": "",
+    "nom": "",
+    "type": "Grossiste pharmaceutique",
+    "ville": "",
+    "tel": "",
+    "delai": "",
+    "habilite": false
+   },
+   "optionsType": [
+    "Grossiste pharmaceutique",
+    "Centrale d’achat",
+    "Réactifs & consommables labo",
+    "Matériel médical",
+    "Fournitures & entretien",
+    "Prestataire de services"
+   ],
+   "avant": null,
+   "sortie": {
+    "nouvelle": null,
+    "modifiee": null,
+    "messages": [
+     {
+      "message": "Le formulaire comporte des erreurs.",
+      "type": "error",
+      "detail": null
+     }
+    ]
+   },
+   "apres": {
+    "kpis": [
+     [
+      "Fournisseurs référencés",
+      "9"
+     ],
+     [
+      "Habilités aux retours",
+      "3"
+     ],
+     [
+      "Volume d’achats",
+      "7 744 335 FCFA"
+     ],
+     [
+      "Délai moyen",
+      "6 j"
+     ]
+    ],
+    "lignes": [
+     [
+      "",
+      "CAME",
+      "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "Centrale d’achat",
+      "Cotonou",
+      "21 33 00 00",
+      "7",
+      "Habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "Doublon SoBAPS",
+      "Centrale d’achat",
+      "—",
+      "—",
+      "9",
+      "Non habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "TESTF",
+      "Fournisseur d'essai SARL",
+      "Matériel médical",
+      "Natitingou",
+      "23 82 11 11",
+      "4",
+      "Habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "LABOTECH",
+      "LABOTECH Réactifs",
+      "Réactifs & consommables labo",
+      "Cotonou",
+      "21 35 00 00",
+      "10",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "MEDIPLUS",
+      "MEDIPLUS Équipements",
+      "Matériel médical",
+      "Parakou",
+      "23 61 00 00",
+      "14",
+      "Non habilité",
+      "4",
+      ""
+     ],
+     [
+      "",
+      "NATIFOURN",
+      "NATI Fournitures",
+      "Fournitures & entretien",
+      "Natitingou",
+      "23 82 00 00",
+      "2",
+      "Non habilité",
+      "6",
+      ""
+     ],
+     [
+      "",
+      "TESTG",
+      "Sans délai",
+      "Grossiste pharmaceutique",
+      "—",
+      "—",
+      "—",
+      "Non habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "Grossiste pharmaceutique",
+      "Parakou",
+      "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "5",
+      "Habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "UBIPHARM",
+      "UBIPHARM Bénin",
+      "Grossiste pharmaceutique",
+      "Cotonou",
+      "21 31 00 00",
+      "6",
+      "Non habilité",
+      "0",
+      ""
+     ]
+    ],
+    "onglets": [
+     "Tous les fournisseurs9",
+     "Archivés0"
+    ]
+   },
+   "entree": {
+    "fournisseurs": [
+     {
+      "id": "FOUxmvv9sd3eoikdv",
+      "statut": "actif",
+      "code": "SOBAPS",
+      "nom": "Doublon SoBAPS",
+      "type": "Centrale d’achat",
+      "ville": "",
+      "tel": "",
+      "delai": 9,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.866Z"
+     },
+     {
+      "id": "FOUxmvv9scy5kkqvi",
+      "statut": "actif",
+      "code": "TESTG",
+      "nom": "Sans délai",
+      "type": "Grossiste pharmaceutique",
+      "ville": "",
+      "tel": "",
+      "delai": null,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.677Z"
+     },
+     {
+      "id": "FOUxmvv9sct5zb02l",
+      "statut": "actif",
+      "code": "TESTF",
+      "nom": "Fournisseur d'essai SARL",
+      "type": "Matériel médical",
+      "ville": "Natitingou",
+      "tel": "23 82 11 11",
+      "delai": 4,
+      "habilite": true,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.497Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F001",
+      "code": "SOBAPS",
+      "nom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Parakou",
+      "habilite": true,
+      "tel": "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "delai": 5,
+      "adresse": "BP 201 Parakou — Agence Régionale Parakou",
+      "ifu": "3202112446712",
+      "banque": "BANK OF AFRICA",
+      "compte": "007393360019",
+      "guichet": "01030",
+      "codeBanque": "B5061",
+      "cleRib": "94",
+      "codeClient": "1106035",
+      "certification": "ISO 9001:2015 · ISO 14001:2015 · ISO 45001:2018",
+      "source": "DOC — Facture de vente n° 26FNA00026"
+     },
+     {
+      "statut": "actif",
+      "id": "F002",
+      "code": "CAME",
+      "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "type": "Centrale d’achat",
+      "ville": "Cotonou",
+      "habilite": true,
+      "tel": "21 33 00 00",
+      "delai": 7
+     },
+     {
+      "statut": "actif",
+      "id": "F003",
+      "code": "UBIPHARM",
+      "nom": "UBIPHARM Bénin",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 31 00 00",
+      "delai": 6
+     },
+     {
+      "statut": "actif",
+      "id": "F004",
+      "code": "LABOTECH",
+      "nom": "LABOTECH Réactifs",
+      "type": "Réactifs & consommables labo",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 35 00 00",
+      "delai": 10
+     },
+     {
+      "statut": "actif",
+      "id": "F005",
+      "code": "MEDIPLUS",
+      "nom": "MEDIPLUS Équipements",
+      "type": "Matériel médical",
+      "ville": "Parakou",
+      "habilite": false,
+      "tel": "23 61 00 00",
+      "delai": 14
+     },
+     {
+      "statut": "actif",
+      "id": "F006",
+      "code": "NATIFOURN",
+      "nom": "NATI Fournitures",
+      "type": "Fournitures & entretien",
+      "ville": "Natitingou",
+      "habilite": false,
+      "tel": "23 82 00 00",
+      "delai": 2
+     }
+    ],
+    "commandes": [
+     {
+      "id": "BC0001",
+      "reference": "BC-2026-0001",
+      "date": "2026-07-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 94650,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0002",
+      "reference": "BC-2026-0002",
+      "date": "2026-05-06",
+      "fournisseur": "NATIFOURN",
+      "montant": 1177940,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0003",
+      "reference": "BC-2026-0003",
+      "date": "2026-04-19",
+      "fournisseur": "MEDIPLUS",
+      "montant": 859198,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0004",
+      "reference": "BC-2026-0004",
+      "date": "2026-03-29",
+      "fournisseur": "MEDIPLUS",
+      "montant": 287010,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0005",
+      "reference": "BC-2026-0005",
+      "date": "2026-06-10",
+      "fournisseur": "MEDIPLUS",
+      "montant": 1449289,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0006",
+      "reference": "BC-2026-0006",
+      "date": "2026-02-03",
+      "fournisseur": "NATIFOURN",
+      "montant": 104140,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0007",
+      "reference": "BC-2026-0007",
+      "date": "2026-08-05",
+      "fournisseur": "CAME",
+      "montant": 512192,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0008",
+      "reference": "BC-2026-0008",
+      "date": "2026-05-05",
+      "fournisseur": "LABOTECH",
+      "montant": 613500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0009",
+      "reference": "BC-2026-0009",
+      "date": "2026-06-22",
+      "fournisseur": "NATIFOURN",
+      "montant": 242500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0010",
+      "reference": "BC-2026-0010",
+      "date": "2026-03-21",
+      "fournisseur": "CAME",
+      "montant": 813000,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0011",
+      "reference": "BC-2026-0011",
+      "date": "2026-07-17",
+      "fournisseur": "MEDIPLUS",
+      "montant": 126500,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0012",
+      "reference": "BC-2026-0012",
+      "date": "2026-08-09",
+      "fournisseur": "NATIFOURN",
+      "montant": 130200,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0013",
+      "reference": "BC-2026-0013",
+      "date": "2026-06-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 390874,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0014",
+      "reference": "BC-2026-0014",
+      "date": "2026-07-31",
+      "fournisseur": "LABOTECH",
+      "montant": 670502,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0015",
+      "reference": "BC-2026-0015",
+      "date": "2026-06-01",
+      "fournisseur": "SOBAPS",
+      "montant": 272840,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {}
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "nom": "modification : délai et habilitation",
+   "mode": "modifier",
+   "cible": "CAME",
+   "saisie": {
+    "delai": "12",
+    "habilite": false
+   },
+   "champsModale": [
+    "code",
+    "nom",
+    "type",
+    "ville",
+    "tel",
+    "delai",
+    "habilite"
+   ],
+   "valeursInitiales": {
+    "code": "CAME",
+    "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "type": "Centrale d’achat",
+    "ville": "Cotonou",
+    "tel": "21 33 00 00",
+    "delai": "7",
+    "habilite": true
+   },
+   "optionsType": [
+    "Grossiste pharmaceutique",
+    "Centrale d’achat",
+    "Réactifs & consommables labo",
+    "Matériel médical",
+    "Fournitures & entretien",
+    "Prestataire de services"
+   ],
+   "avant": {
+    "statut": "actif",
+    "code": "CAME",
+    "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+    "type": "Centrale d’achat",
+    "ville": "Cotonou",
+    "habilite": true,
+    "tel": "21 33 00 00",
+    "delai": 7
+   },
+   "sortie": {
+    "nouvelle": null,
+    "modifiee": {
+     "statut": "actif",
+     "code": "CAME",
+     "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+     "type": "Centrale d’achat",
+     "ville": "Cotonou",
+     "habilite": false,
+     "tel": "21 33 00 00",
+     "delai": 12
+    },
+    "messages": [
+     {
+      "message": "Modifications enregistrées.",
+      "type": "success",
+      "detail": "CAME"
+     }
+    ]
+   },
+   "apres": {
+    "kpis": [
+     [
+      "Fournisseurs référencés",
+      "9"
+     ],
+     [
+      "Habilités aux retours",
+      "2"
+     ],
+     [
+      "Volume d’achats",
+      "7 744 335 FCFA"
+     ],
+     [
+      "Délai moyen",
+      "7 j"
+     ]
+    ],
+    "lignes": [
+     [
+      "",
+      "CAME",
+      "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "Centrale d’achat",
+      "Cotonou",
+      "21 33 00 00",
+      "12",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "Doublon SoBAPS",
+      "Centrale d’achat",
+      "—",
+      "—",
+      "9",
+      "Non habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "TESTF",
+      "Fournisseur d'essai SARL",
+      "Matériel médical",
+      "Natitingou",
+      "23 82 11 11",
+      "4",
+      "Habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "LABOTECH",
+      "LABOTECH Réactifs",
+      "Réactifs & consommables labo",
+      "Cotonou",
+      "21 35 00 00",
+      "10",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "MEDIPLUS",
+      "MEDIPLUS Équipements",
+      "Matériel médical",
+      "Parakou",
+      "23 61 00 00",
+      "14",
+      "Non habilité",
+      "4",
+      ""
+     ],
+     [
+      "",
+      "NATIFOURN",
+      "NATI Fournitures",
+      "Fournitures & entretien",
+      "Natitingou",
+      "23 82 00 00",
+      "2",
+      "Non habilité",
+      "6",
+      ""
+     ],
+     [
+      "",
+      "TESTG",
+      "Sans délai",
+      "Grossiste pharmaceutique",
+      "—",
+      "—",
+      "—",
+      "Non habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "Grossiste pharmaceutique",
+      "Parakou",
+      "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "5",
+      "Habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "UBIPHARM",
+      "UBIPHARM Bénin",
+      "Grossiste pharmaceutique",
+      "Cotonou",
+      "21 31 00 00",
+      "6",
+      "Non habilité",
+      "0",
+      ""
+     ]
+    ],
+    "onglets": [
+     "Tous les fournisseurs9",
+     "Archivés0"
+    ]
+   },
+   "entree": {
+    "fournisseurs": [
+     {
+      "id": "FOUxmvv9sd3eoikdv",
+      "statut": "actif",
+      "code": "SOBAPS",
+      "nom": "Doublon SoBAPS",
+      "type": "Centrale d’achat",
+      "ville": "",
+      "tel": "",
+      "delai": 9,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.866Z"
+     },
+     {
+      "id": "FOUxmvv9scy5kkqvi",
+      "statut": "actif",
+      "code": "TESTG",
+      "nom": "Sans délai",
+      "type": "Grossiste pharmaceutique",
+      "ville": "",
+      "tel": "",
+      "delai": null,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.677Z"
+     },
+     {
+      "id": "FOUxmvv9sct5zb02l",
+      "statut": "actif",
+      "code": "TESTF",
+      "nom": "Fournisseur d'essai SARL",
+      "type": "Matériel médical",
+      "ville": "Natitingou",
+      "tel": "23 82 11 11",
+      "delai": 4,
+      "habilite": true,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.497Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F001",
+      "code": "SOBAPS",
+      "nom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Parakou",
+      "habilite": true,
+      "tel": "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "delai": 5,
+      "adresse": "BP 201 Parakou — Agence Régionale Parakou",
+      "ifu": "3202112446712",
+      "banque": "BANK OF AFRICA",
+      "compte": "007393360019",
+      "guichet": "01030",
+      "codeBanque": "B5061",
+      "cleRib": "94",
+      "codeClient": "1106035",
+      "certification": "ISO 9001:2015 · ISO 14001:2015 · ISO 45001:2018",
+      "source": "DOC — Facture de vente n° 26FNA00026"
+     },
+     {
+      "statut": "actif",
+      "id": "F002",
+      "code": "CAME",
+      "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "type": "Centrale d’achat",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 33 00 00",
+      "delai": 12,
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:52:34.208Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F003",
+      "code": "UBIPHARM",
+      "nom": "UBIPHARM Bénin",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 31 00 00",
+      "delai": 6
+     },
+     {
+      "statut": "actif",
+      "id": "F004",
+      "code": "LABOTECH",
+      "nom": "LABOTECH Réactifs",
+      "type": "Réactifs & consommables labo",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 35 00 00",
+      "delai": 10
+     },
+     {
+      "statut": "actif",
+      "id": "F005",
+      "code": "MEDIPLUS",
+      "nom": "MEDIPLUS Équipements",
+      "type": "Matériel médical",
+      "ville": "Parakou",
+      "habilite": false,
+      "tel": "23 61 00 00",
+      "delai": 14
+     },
+     {
+      "statut": "actif",
+      "id": "F006",
+      "code": "NATIFOURN",
+      "nom": "NATI Fournitures",
+      "type": "Fournitures & entretien",
+      "ville": "Natitingou",
+      "habilite": false,
+      "tel": "23 82 00 00",
+      "delai": 2
+     }
+    ],
+    "commandes": [
+     {
+      "id": "BC0001",
+      "reference": "BC-2026-0001",
+      "date": "2026-07-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 94650,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0002",
+      "reference": "BC-2026-0002",
+      "date": "2026-05-06",
+      "fournisseur": "NATIFOURN",
+      "montant": 1177940,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0003",
+      "reference": "BC-2026-0003",
+      "date": "2026-04-19",
+      "fournisseur": "MEDIPLUS",
+      "montant": 859198,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0004",
+      "reference": "BC-2026-0004",
+      "date": "2026-03-29",
+      "fournisseur": "MEDIPLUS",
+      "montant": 287010,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0005",
+      "reference": "BC-2026-0005",
+      "date": "2026-06-10",
+      "fournisseur": "MEDIPLUS",
+      "montant": 1449289,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0006",
+      "reference": "BC-2026-0006",
+      "date": "2026-02-03",
+      "fournisseur": "NATIFOURN",
+      "montant": 104140,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0007",
+      "reference": "BC-2026-0007",
+      "date": "2026-08-05",
+      "fournisseur": "CAME",
+      "montant": 512192,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0008",
+      "reference": "BC-2026-0008",
+      "date": "2026-05-05",
+      "fournisseur": "LABOTECH",
+      "montant": 613500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0009",
+      "reference": "BC-2026-0009",
+      "date": "2026-06-22",
+      "fournisseur": "NATIFOURN",
+      "montant": 242500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0010",
+      "reference": "BC-2026-0010",
+      "date": "2026-03-21",
+      "fournisseur": "CAME",
+      "montant": 813000,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0011",
+      "reference": "BC-2026-0011",
+      "date": "2026-07-17",
+      "fournisseur": "MEDIPLUS",
+      "montant": 126500,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0012",
+      "reference": "BC-2026-0012",
+      "date": "2026-08-09",
+      "fournisseur": "NATIFOURN",
+      "montant": 130200,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0013",
+      "reference": "BC-2026-0013",
+      "date": "2026-06-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 390874,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0014",
+      "reference": "BC-2026-0014",
+      "date": "2026-07-31",
+      "fournisseur": "LABOTECH",
+      "montant": 670502,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0015",
+      "reference": "BC-2026-0015",
+      "date": "2026-06-01",
+      "fournisseur": "SOBAPS",
+      "montant": 272840,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {}
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "nom": "modification : le code lui-même est modifiable",
+   "mode": "modifier",
+   "cible": "UBIPHARM",
+   "saisie": {
+    "code": "UBIPHARM2"
+   },
+   "champsModale": [
+    "code",
+    "nom",
+    "type",
+    "ville",
+    "tel",
+    "delai",
+    "habilite"
+   ],
+   "valeursInitiales": {
+    "code": "UBIPHARM",
+    "nom": "UBIPHARM Bénin",
+    "type": "Grossiste pharmaceutique",
+    "ville": "Cotonou",
+    "tel": "21 31 00 00",
+    "delai": "6",
+    "habilite": false
+   },
+   "optionsType": [
+    "Grossiste pharmaceutique",
+    "Centrale d’achat",
+    "Réactifs & consommables labo",
+    "Matériel médical",
+    "Fournitures & entretien",
+    "Prestataire de services"
+   ],
+   "avant": {
+    "statut": "actif",
+    "code": "UBIPHARM",
+    "nom": "UBIPHARM Bénin",
+    "type": "Grossiste pharmaceutique",
+    "ville": "Cotonou",
+    "habilite": false,
+    "tel": "21 31 00 00",
+    "delai": 6
+   },
+   "sortie": {
+    "nouvelle": null,
+    "modifiee": {
+     "statut": "actif",
+     "code": "UBIPHARM2",
+     "nom": "UBIPHARM Bénin",
+     "type": "Grossiste pharmaceutique",
+     "ville": "Cotonou",
+     "habilite": false,
+     "tel": "21 31 00 00",
+     "delai": 6
+    },
+    "messages": [
+     {
+      "message": "Modifications enregistrées.",
+      "type": "success",
+      "detail": "UBIPHARM2"
+     }
+    ]
+   },
+   "apres": {
+    "kpis": [
+     [
+      "Fournisseurs référencés",
+      "9"
+     ],
+     [
+      "Habilités aux retours",
+      "2"
+     ],
+     [
+      "Volume d’achats",
+      "7 744 335 FCFA"
+     ],
+     [
+      "Délai moyen",
+      "7 j"
+     ]
+    ],
+    "lignes": [
+     [
+      "",
+      "CAME",
+      "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "Centrale d’achat",
+      "Cotonou",
+      "21 33 00 00",
+      "12",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "Doublon SoBAPS",
+      "Centrale d’achat",
+      "—",
+      "—",
+      "9",
+      "Non habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "TESTF",
+      "Fournisseur d'essai SARL",
+      "Matériel médical",
+      "Natitingou",
+      "23 82 11 11",
+      "4",
+      "Habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "LABOTECH",
+      "LABOTECH Réactifs",
+      "Réactifs & consommables labo",
+      "Cotonou",
+      "21 35 00 00",
+      "10",
+      "Non habilité",
+      "2",
+      ""
+     ],
+     [
+      "",
+      "MEDIPLUS",
+      "MEDIPLUS Équipements",
+      "Matériel médical",
+      "Parakou",
+      "23 61 00 00",
+      "14",
+      "Non habilité",
+      "4",
+      ""
+     ],
+     [
+      "",
+      "NATIFOURN",
+      "NATI Fournitures",
+      "Fournitures & entretien",
+      "Natitingou",
+      "23 82 00 00",
+      "2",
+      "Non habilité",
+      "6",
+      ""
+     ],
+     [
+      "",
+      "TESTG",
+      "Sans délai",
+      "Grossiste pharmaceutique",
+      "—",
+      "—",
+      "—",
+      "Non habilité",
+      "0",
+      ""
+     ],
+     [
+      "",
+      "SOBAPS",
+      "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "Grossiste pharmaceutique",
+      "Parakou",
+      "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "5",
+      "Habilité",
+      "1",
+      ""
+     ],
+     [
+      "",
+      "UBIPHARM2",
+      "UBIPHARM Bénin",
+      "Grossiste pharmaceutique",
+      "Cotonou",
+      "21 31 00 00",
+      "6",
+      "Non habilité",
+      "0",
+      ""
+     ]
+    ],
+    "onglets": [
+     "Tous les fournisseurs9",
+     "Archivés0"
+    ]
+   },
+   "entree": {
+    "fournisseurs": [
+     {
+      "id": "FOUxmvv9sd3eoikdv",
+      "statut": "actif",
+      "code": "SOBAPS",
+      "nom": "Doublon SoBAPS",
+      "type": "Centrale d’achat",
+      "ville": "",
+      "tel": "",
+      "delai": 9,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.866Z"
+     },
+     {
+      "id": "FOUxmvv9scy5kkqvi",
+      "statut": "actif",
+      "code": "TESTG",
+      "nom": "Sans délai",
+      "type": "Grossiste pharmaceutique",
+      "ville": "",
+      "tel": "",
+      "delai": null,
+      "habilite": false,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.677Z"
+     },
+     {
+      "id": "FOUxmvv9sct5zb02l",
+      "statut": "actif",
+      "code": "TESTF",
+      "nom": "Fournisseur d'essai SARL",
+      "type": "Matériel médical",
+      "ville": "Natitingou",
+      "tel": "23 82 11 11",
+      "delai": 4,
+      "habilite": true,
+      "_creePar": "BASSONGUI Chabi Séko",
+      "_creeLe": "2026-10-30T17:52:33.497Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F001",
+      "code": "SOBAPS",
+      "nom": "SoBAPS SA — Société Béninoise pour l’Approvisionnement en Produits de Santé",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Parakou",
+      "habilite": true,
+      "tel": "(229) 01 91 48 42 42 / 01 99 43 04 04",
+      "delai": 5,
+      "adresse": "BP 201 Parakou — Agence Régionale Parakou",
+      "ifu": "3202112446712",
+      "banque": "BANK OF AFRICA",
+      "compte": "007393360019",
+      "guichet": "01030",
+      "codeBanque": "B5061",
+      "cleRib": "94",
+      "codeClient": "1106035",
+      "certification": "ISO 9001:2015 · ISO 14001:2015 · ISO 45001:2018",
+      "source": "DOC — Facture de vente n° 26FNA00026"
+     },
+     {
+      "statut": "actif",
+      "id": "F002",
+      "code": "CAME",
+      "nom": "CAME — Centrale d’Achat des Médicaments Essentiels",
+      "type": "Centrale d’achat",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 33 00 00",
+      "delai": 12,
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:52:34.208Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F003",
+      "code": "UBIPHARM2",
+      "nom": "UBIPHARM Bénin",
+      "type": "Grossiste pharmaceutique",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 31 00 00",
+      "delai": 6,
+      "_modifiePar": "BASSONGUI Chabi Séko",
+      "_modifieLe": "2026-10-30T17:52:34.380Z"
+     },
+     {
+      "statut": "actif",
+      "id": "F004",
+      "code": "LABOTECH",
+      "nom": "LABOTECH Réactifs",
+      "type": "Réactifs & consommables labo",
+      "ville": "Cotonou",
+      "habilite": false,
+      "tel": "21 35 00 00",
+      "delai": 10
+     },
+     {
+      "statut": "actif",
+      "id": "F005",
+      "code": "MEDIPLUS",
+      "nom": "MEDIPLUS Équipements",
+      "type": "Matériel médical",
+      "ville": "Parakou",
+      "habilite": false,
+      "tel": "23 61 00 00",
+      "delai": 14
+     },
+     {
+      "statut": "actif",
+      "id": "F006",
+      "code": "NATIFOURN",
+      "nom": "NATI Fournitures",
+      "type": "Fournitures & entretien",
+      "ville": "Natitingou",
+      "habilite": false,
+      "tel": "23 82 00 00",
+      "delai": 2
+     }
+    ],
+    "commandes": [
+     {
+      "id": "BC0001",
+      "reference": "BC-2026-0001",
+      "date": "2026-07-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 94650,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0002",
+      "reference": "BC-2026-0002",
+      "date": "2026-05-06",
+      "fournisseur": "NATIFOURN",
+      "montant": 1177940,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0003",
+      "reference": "BC-2026-0003",
+      "date": "2026-04-19",
+      "fournisseur": "MEDIPLUS",
+      "montant": 859198,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0004",
+      "reference": "BC-2026-0004",
+      "date": "2026-03-29",
+      "fournisseur": "MEDIPLUS",
+      "montant": 287010,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0005",
+      "reference": "BC-2026-0005",
+      "date": "2026-06-10",
+      "fournisseur": "MEDIPLUS",
+      "montant": 1449289,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0006",
+      "reference": "BC-2026-0006",
+      "date": "2026-02-03",
+      "fournisseur": "NATIFOURN",
+      "montant": 104140,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0007",
+      "reference": "BC-2026-0007",
+      "date": "2026-08-05",
+      "fournisseur": "CAME",
+      "montant": 512192,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0008",
+      "reference": "BC-2026-0008",
+      "date": "2026-05-05",
+      "fournisseur": "LABOTECH",
+      "montant": 613500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0009",
+      "reference": "BC-2026-0009",
+      "date": "2026-06-22",
+      "fournisseur": "NATIFOURN",
+      "montant": 242500,
+      "statutCommande": "soldee",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0010",
+      "reference": "BC-2026-0010",
+      "date": "2026-03-21",
+      "fournisseur": "CAME",
+      "montant": 813000,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0011",
+      "reference": "BC-2026-0011",
+      "date": "2026-07-17",
+      "fournisseur": "MEDIPLUS",
+      "montant": 126500,
+      "statutCommande": "validee",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0012",
+      "reference": "BC-2026-0012",
+      "date": "2026-08-09",
+      "fournisseur": "NATIFOURN",
+      "montant": 130200,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0013",
+      "reference": "BC-2026-0013",
+      "date": "2026-06-24",
+      "fournisseur": "NATIFOURN",
+      "montant": 390874,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0014",
+      "reference": "BC-2026-0014",
+      "date": "2026-07-31",
+      "fournisseur": "LABOTECH",
+      "montant": 670502,
+      "statutCommande": "livree",
+      "lignes": [
+       {},
+       {},
+       {}
+      ]
+     },
+     {
+      "id": "BC0015",
+      "reference": "BC-2026-0015",
+      "date": "2026-06-01",
+      "fournisseur": "SOBAPS",
+      "montant": 272840,
+      "statutCommande": "attente_validation",
+      "lignes": [
+       {},
+       {}
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "detail": [
+  {
+   "code": "NATIFOURN",
+   "fiche": {
+    "statut": "actif",
+    "id": "F006",
+    "code": "NATIFOURN",
+    "nom": "NATI Fournitures",
+    "type": "Fournitures & entretien",
+    "ville": "Natitingou",
+    "habilite": false,
+    "tel": "23 82 00 00",
+    "delai": 2
+   },
+   "tiroir": [
+    "NATIFOURN",
+    "NATIFOURN",
+    "Code",
+    "NATIFOURN",
+    "Raison sociale",
+    "NATI Fournitures",
+    "Type",
+    "Fournitures & entretien",
+    "Adresse",
+    "Natitingou",
+    "Téléphone",
+    "23 82 00 00",
+    "IFU",
+    "—",
+    "Délai de livraison",
+    "2 jours",
+    "Code client chez le fournisseur",
+    "—",
+    "Domiciliation bancaire",
+    "—",
+    "Certifications",
+    "—",
+    "Retours de périmés",
+    "Non habilité",
+    "Provenance",
+    "—",
+    "Commandes passées",
+    "6",
+    "Volume cumulé",
+    "2 140 304 FCFA",
+    "Historique des commandes",
+    "N°",
+    "Date",
+    "Montant",
+    "Statut",
+    "BC-2026-0012",
+    "09/08/2026",
+    "130 200",
+    "livree",
+    "BC-2026-0001",
+    "24/07/2026",
+    "94 650",
+    "livree",
+    "BC-2026-0013",
+    "24/06/2026",
+    "390 874",
+    "attente_validation",
+    "BC-2026-0009",
+    "22/06/2026",
+    "242 500",
+    "soldee",
+    "BC-2026-0002",
+    "06/05/2026",
+    "1 177 940",
+    "soldee",
+    "BC-2026-0006",
+    "03/02/2026",
+    "104 140",
+    "soldee",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ],
+   "boutonsTiroir": [
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ],
+   "impression": {
+    "titre": "Fiche fournisseur",
+    "sousTitre": "NATI Fournitures",
+    "cartouche": [
+     [
+      "Code",
+      "NATIFOURN"
+     ],
+     [
+      "Raison sociale",
+      "NATI Fournitures"
+     ],
+     [
+      "Type",
+      "Fournitures & entretien"
+     ],
+     [
+      "Ville",
+      "Natitingou"
+     ],
+     [
+      "Téléphone",
+      "23 82 00 00"
+     ],
+     [
+      "Délai",
+      "2 jours"
+     ]
+    ],
+    "contenu": [
+     {
+      "table": {
+       "entetes": [
+        "N° commande",
+        "Date",
+        "Articles",
+        "Montant",
+        "Statut"
+       ],
+       "lignes": [
+        [
+         "BC-2026-0012",
+         "09/08/2026",
+         "2",
+         "130 200",
+         "livree"
+        ],
+        [
+         "BC-2026-0001",
+         "24/07/2026",
+         "2",
+         "94 650",
+         "livree"
+        ],
+        [
+         "BC-2026-0013",
+         "24/06/2026",
+         "3",
+         "390 874",
+         "attente_validation"
+        ],
+        [
+         "BC-2026-0009",
+         "22/06/2026",
+         "3",
+         "242 500",
+         "soldee"
+        ],
+        [
+         "BC-2026-0002",
+         "06/05/2026",
+         "3",
+         "1 177 940",
+         "soldee"
+        ],
+        [
+         "BC-2026-0006",
+         "03/02/2026",
+         "3",
+         "104 140",
+         "soldee"
+        ]
+       ],
+       "pied": [
+        [
+         "TOTAL",
+         "",
+         "",
+         "2 140 304",
+         ""
+        ]
+       ]
+      }
+     }
+    ],
+    "signatures": [
+     {
+      "role": "Le Gestionnaire de Stock",
+      "nom": "MAMAN Zoukanéri"
+     }
+    ]
+   }
+  },
+  {
+   "code": "LABOTECH",
+   "fiche": {
+    "statut": "actif",
+    "id": "F004",
+    "code": "LABOTECH",
+    "nom": "LABOTECH Réactifs",
+    "type": "Réactifs & consommables labo",
+    "ville": "Cotonou",
+    "habilite": false,
+    "tel": "21 35 00 00",
+    "delai": 10
+   },
+   "tiroir": [
+    "LABOTECH",
+    "LABOTECH",
+    "Code",
+    "LABOTECH",
+    "Raison sociale",
+    "LABOTECH Réactifs",
+    "Type",
+    "Réactifs & consommables labo",
+    "Adresse",
+    "Cotonou",
+    "Téléphone",
+    "21 35 00 00",
+    "IFU",
+    "—",
+    "Délai de livraison",
+    "10 jours",
+    "Code client chez le fournisseur",
+    "—",
+    "Domiciliation bancaire",
+    "—",
+    "Certifications",
+    "—",
+    "Retours de périmés",
+    "Non habilité",
+    "Provenance",
+    "—",
+    "Commandes passées",
+    "2",
+    "Volume cumulé",
+    "1 284 002 FCFA",
+    "Historique des commandes",
+    "N°",
+    "Date",
+    "Montant",
+    "Statut",
+    "BC-2026-0014",
+    "31/07/2026",
+    "670 502",
+    "livree",
+    "BC-2026-0008",
+    "05/05/2026",
+    "613 500",
+    "soldee",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ],
+   "boutonsTiroir": [
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ],
+   "impression": {
+    "titre": "Fiche fournisseur",
+    "sousTitre": "LABOTECH Réactifs",
+    "cartouche": [
+     [
+      "Code",
+      "LABOTECH"
+     ],
+     [
+      "Raison sociale",
+      "LABOTECH Réactifs"
+     ],
+     [
+      "Type",
+      "Réactifs & consommables labo"
+     ],
+     [
+      "Ville",
+      "Cotonou"
+     ],
+     [
+      "Téléphone",
+      "21 35 00 00"
+     ],
+     [
+      "Délai",
+      "10 jours"
+     ]
+    ],
+    "contenu": [
+     {
+      "table": {
+       "entetes": [
+        "N° commande",
+        "Date",
+        "Articles",
+        "Montant",
+        "Statut"
+       ],
+       "lignes": [
+        [
+         "BC-2026-0014",
+         "31/07/2026",
+         "3",
+         "670 502",
+         "livree"
+        ],
+        [
+         "BC-2026-0008",
+         "05/05/2026",
+         "4",
+         "613 500",
+         "soldee"
+        ]
+       ],
+       "pied": [
+        [
+         "TOTAL",
+         "",
+         "",
+         "1 284 002",
+         ""
+        ]
+       ]
+      }
+     }
+    ],
+    "signatures": [
+     {
+      "role": "Le Gestionnaire de Stock",
+      "nom": "MAMAN Zoukanéri"
+     }
+    ]
+   }
+  },
+  {
+   "code": "TESTF",
+   "fiche": {
+    "id": "FOUxmvv9sct5zb02l",
+    "statut": "actif",
+    "code": "TESTF",
+    "nom": "Fournisseur d'essai SARL",
+    "type": "Matériel médical",
+    "ville": "Natitingou",
+    "tel": "23 82 11 11",
+    "delai": 4,
+    "habilite": true,
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-30T17:52:33.497Z"
+   },
+   "tiroir": [
+    "TESTF",
+    "TESTF",
+    "Code",
+    "TESTF",
+    "Raison sociale",
+    "Fournisseur d'essai SARL",
+    "Type",
+    "Matériel médical",
+    "Adresse",
+    "Natitingou",
+    "Téléphone",
+    "23 82 11 11",
+    "IFU",
+    "—",
+    "Délai de livraison",
+    "4 jours",
+    "Code client chez le fournisseur",
+    "—",
+    "Domiciliation bancaire",
+    "—",
+    "Certifications",
+    "—",
+    "Retours de périmés",
+    "Habilité",
+    "Provenance",
+    "—",
+    "Commandes passées",
+    "0",
+    "Volume cumulé",
+    "0 FCFA",
+    "Aucune commande enregistrée.",
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ],
+   "boutonsTiroir": [
+    "Imprimer",
+    "Modifier",
+    "Archiver"
+   ],
+   "impression": {
+    "titre": "Fiche fournisseur",
+    "sousTitre": "Fournisseur d'essai SARL",
+    "cartouche": [
+     [
+      "Code",
+      "TESTF"
+     ],
+     [
+      "Raison sociale",
+      "Fournisseur d'essai SARL"
+     ],
+     [
+      "Type",
+      "Matériel médical"
+     ],
+     [
+      "Ville",
+      "Natitingou"
+     ],
+     [
+      "Téléphone",
+      "23 82 11 11"
+     ],
+     [
+      "Délai",
+      "4 jours"
+     ]
+    ],
+    "contenu": [],
+    "signatures": [
+     {
+      "role": "Le Gestionnaire de Stock",
+      "nom": "MAMAN Zoukanéri"
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,4286 @@
+{
+ "constantes": {
+  "ns145": {
+   "reference": "NS 145/08/DA/CNT/2026",
+   "objet": "Répartition des secteurs de la clinique et désignation des responsables",
+   "version": 1,
+   "dateSignature": "2026-08-06",
+   "dateEffet": "2026-08-07",
+   "statut": "ACTIVE",
+   "signataire": "TAKI Alimatou épse BASSONGUI, Directrice Administrative",
+   "source": "DOC — Note de service NS 145/08/DA/CNT/2026",
+   "secteurs": [
+    {
+     "id": "SEC01",
+     "statut": "actif",
+     "ordre": 1,
+     "code": "ACC",
+     "libelle": "ACCUEIL",
+     "responsable": "OROU YO S. Edmond",
+     "adjoint": "YARADJINNIN Hafissou",
+     "qualification": "Secrétaire médical",
+     "role": "reception",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC02",
+     "statut": "actif",
+     "ordre": 2,
+     "code": "ADM",
+     "libelle": "ADMINISTRATION",
+     "responsable": "TAKI Alimatou",
+     "adjoint": "KASSA Augustin",
+     "qualification": "Comptable",
+     "role": "da",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC03",
+     "statut": "actif",
+     "ordre": 3,
+     "code": "MGE",
+     "libelle": "MÉDECINE GÉNÉRALE",
+     "responsable": "YENI M’PO Florent",
+     "adjoint": "ODEITO Mathieu",
+     "qualification": "Médecin généraliste",
+     "role": "medecin",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC04",
+     "statut": "actif",
+     "ordre": 4,
+     "code": "CHI",
+     "libelle": "CHIRURGIE",
+     "responsable": "Dr BASSONGUI Chabi Seko Y.",
+     "adjoint": null,
+     "qualification": "Chirurgien généraliste",
+     "role": "medecin",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC05",
+     "statut": "actif",
+     "ordre": 5,
+     "code": "MAT",
+     "libelle": "MATERNITÉ",
+     "responsable": "BADO BANI A. B. Zoulehath",
+     "adjoint": "YERRO SANNI Lamatou",
+     "qualification": "Sage-femme",
+     "role": "infirmier",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC06",
+     "statut": "actif",
+     "ordre": 6,
+     "code": "ECH",
+     "libelle": "ÉCHOGRAPHIE",
+     "responsable": "AHOHOU Rodrigue",
+     "adjoint": "AHOHOU Rodrigue",
+     "qualification": "Échographiste",
+     "role": "medecin",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC07",
+     "statut": "actif",
+     "ordre": 7,
+     "code": "LAB",
+     "libelle": "LABORATOIRE",
+     "responsable": "KINNOU A. Ganiou",
+     "adjoint": "IMOROU Choucouratou",
+     "qualification": "ABM",
+     "role": "laborantin",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC08",
+     "statut": "actif",
+     "ordre": 8,
+     "code": "HOS",
+     "libelle": "HOSPI",
+     "responsable": "BAGRI Elvyre",
+     "adjoint": "MAMAM Safarath",
+     "qualification": "Infirmière",
+     "role": "infirmier",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC09",
+     "statut": "actif",
+     "ordre": 9,
+     "code": "SOI",
+     "libelle": "SALLE DE SOINS",
+     "responsable": "ANIKI Baba Tounde",
+     "adjoint": "TAKPARA Adiabath",
+     "qualification": "Infirmière",
+     "role": "infirmier",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC10",
+     "statut": "actif",
+     "ordre": 10,
+     "code": "BLO",
+     "libelle": "BLOC OPÉRATOIRE",
+     "responsable": "N’KOUEI B. Jean",
+     "adjoint": "ADRIEN B. Modeste",
+     "qualification": "Infirmier",
+     "role": "infirmier",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC11",
+     "statut": "actif",
+     "ordre": 11,
+     "code": "SUR",
+     "libelle": "SURVEILLANCE",
+     "responsable": "GARBA Yahouza",
+     "adjoint": null,
+     "qualification": "Infirmier général",
+     "role": "infirmier",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC12",
+     "statut": "actif",
+     "ordre": 12,
+     "code": "CPH",
+     "libelle": "CAISSE / PHARMACIE",
+     "responsable": "DIEYABIDI Aïchatou",
+     "adjoint": "TCHANDO S. Lucresse",
+     "qualification": "Dispensatrice",
+     "role": "pharmacien",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC13",
+     "statut": "actif",
+     "ordre": 13,
+     "code": "SEC",
+     "libelle": "SÉCURITÉ",
+     "responsable": "OURTCHA Tereyama",
+     "adjoint": "TEOU B. Albert",
+     "qualification": "Gardien",
+     "role": "agentadmin",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    },
+    {
+     "id": "SEC14",
+     "statut": "actif",
+     "ordre": 14,
+     "code": "ENT",
+     "libelle": "ENTRETIEN",
+     "responsable": "ISSA Rabiatou",
+     "adjoint": "YARIGO B. Petronie",
+     "qualification": "Ménagère",
+     "role": "agentadmin",
+     "source": "NS 145/08/DA/CNT/2026 du 06/08/2026"
+    }
+   ]
+  },
+  "famillesTarif": [
+   {
+    "code": "CONSULTATION",
+    "label": "Consultations",
+    "icone": "stethoscope"
+   },
+   {
+    "code": "IMAGERIE",
+    "label": "Imagerie médicale",
+    "icone": "scan-line"
+   },
+   {
+    "code": "LABO",
+    "label": "Analyses de laboratoire",
+    "icone": "flask-conical"
+   },
+   {
+    "code": "AMI",
+    "label": "Actes médico-infirmiers",
+    "icone": "syringe"
+   },
+   {
+    "code": "GYNECO",
+    "label": "Actes gynéco-obstétricaux et kits",
+    "icone": "baby"
+   },
+   {
+    "code": "CERTIFICAT",
+    "label": "Certificats et attestations",
+    "icone": "file-badge"
+   }
+  ],
+  "secteursActivite": [
+   "Médecine générale",
+   "Chirurgie",
+   "Maternité",
+   "Imagerie médicale",
+   "Laboratoire",
+   "Accueil",
+   "Soins et observation",
+   "Pharmacie"
+  ],
+  "brand": {
+   "sigle": "CNT",
+   "nom": "CLINIQUE NASSIERA TOO SARL",
+   "slogan": "Votre santé, notre raison de vivre",
+   "forme": "Société à Responsabilité Limitée",
+   "adresse": "Quartier Tchirimina, Natitingou",
+   "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+   "pays": "République du Bénin",
+   "telephones": [
+    "01 95 44 51 51",
+    "01 66 43 28 20"
+   ],
+   "telephoneRdv": "60 33 92 92",
+   "email": "cliniquenassiera@gmail.com",
+   "ifu": "3201642748214",
+   "rccm": "RB/NAT/2016-B-268",
+   "autorisationExercice": null,
+   "autorisationExerciceMotif": "Non applicable — l’inscription à l’ordre suffit depuis la loi 2025-1 de juin 2026. L’autorisation d’exercice n’est plus imprimée sur les états.",
+   "devise": "FCFA",
+   "formuleArrete": "Arrêtée la présente facture à la somme de",
+   "formulePolitesse": "QUE DIEU VOUS GUÉRISSE ! AMINE !",
+   "autorisation": "N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020",
+   "logo": "assets/img/logo.jpeg",
+   "codeDevise": "XOF"
+  },
+  "imagerieTypes": [
+   {
+    "code": "liste",
+    "label": "Liste de choix"
+   },
+   {
+    "code": "binaire",
+    "label": "Deux valeurs"
+   },
+   {
+    "code": "mesure",
+    "label": "Mesure chiffrée"
+   },
+   {
+    "code": "dimensions",
+    "label": "Trois dimensions (mm)"
+   },
+   {
+    "code": "gestationnel",
+    "label": "Âge gestationnel (SA + jours)"
+   },
+   {
+    "code": "texte",
+    "label": "Texte libre"
+   },
+   {
+    "code": "zone",
+    "label": "Texte libre — plusieurs lignes"
+   },
+   {
+    "code": "multiple",
+    "label": "Choix multiples"
+   }
+  ],
+  "modalites": [
+   {
+    "code": "echographie",
+    "label": "Échographie"
+   },
+   {
+    "code": "radiographie",
+    "label": "Radiographie"
+   },
+   {
+    "code": "mammographie",
+    "label": "Mammographie"
+   },
+   {
+    "code": "scanner",
+    "label": "Scanner"
+   },
+   {
+    "code": "irm",
+    "label": "IRM — imagerie par résonance magnétique"
+   }
+  ],
+  "categoriesProduit": [
+   {
+    "id": "medicament",
+    "label": "Médicaments",
+    "cump": false,
+    "marge": false
+   },
+   {
+    "id": "reactif",
+    "label": "Réactifs de laboratoire",
+    "cump": true,
+    "marge": false
+   },
+   {
+    "id": "conso_labo",
+    "label": "Consommables de laboratoire",
+    "cump": true,
+    "marge": false
+   },
+   {
+    "id": "conso_medical",
+    "label": "Consommables médicaux",
+    "cump": true,
+    "marge": false
+   },
+   {
+    "id": "fourniture",
+    "label": "Fournitures administratives",
+    "cump": false,
+    "marge": false
+   },
+   {
+    "id": "entretien",
+    "label": "Produits d’entretien",
+    "cump": false,
+    "marge": false
+   },
+   {
+    "id": "petit_materiel",
+    "label": "Petit matériel médical",
+    "cump": false,
+    "marge": false
+   },
+   {
+    "id": "immobilisation",
+    "label": "Immobilisations",
+    "cump": false,
+    "marge": false
+   }
+  ],
+  "roles": [
+   [
+    "admin",
+    "Administrateur système",
+    false
+   ],
+   [
+    "direction",
+    "Direction / Gérance",
+    false
+   ],
+   [
+    "dm",
+    "Directeur Médical",
+    false
+   ],
+   [
+    "da",
+    "Directrice de l’Administration et des Finances (DAF)",
+    false
+   ],
+   [
+    "medecin",
+    "Médecin",
+    false
+   ],
+   [
+    "infirmier",
+    "Infirmier / Sage-femme",
+    false
+   ],
+   [
+    "pharmacien",
+    "Pharmacien",
+    true
+   ],
+   [
+    "laborantin",
+    "Biologiste médical",
+    false
+   ],
+   [
+    "stock",
+    "Gestionnaire de Stock",
+    false
+   ],
+   [
+    "caissier",
+    "Caissier — Dispensaire (Pharmacie)",
+    false
+   ],
+   [
+    "comptable",
+    "Comptable",
+    false
+   ],
+   [
+    "rh",
+    "Responsable RH",
+    true
+   ],
+   [
+    "reception",
+    "Réception / Accueil",
+    false
+   ],
+   [
+    "agentadmin",
+    "Agent Administratif",
+    false
+   ],
+   [
+    "ambulancier",
+    "Ambulancier",
+    false
+   ],
+   [
+    "aide_soignant",
+    "Aide-soignante",
+    false
+   ],
+   [
+    "echographiste",
+    "Technicien d’échographie",
+    false
+   ],
+   [
+    "surveillant",
+    "Surveillant",
+    false
+   ],
+   [
+    "assistant_comptable",
+    "Assistant de Direction",
+    false
+   ],
+   [
+    "chirurgien",
+    "Chirurgien",
+    false
+   ],
+   [
+    "anesthesiste",
+    "Anesthésiste — Réanimateur",
+    false
+   ],
+   [
+    "aide_comptable",
+    "Assistant Comptable",
+    false
+   ]
+  ],
+  "jour": "2026-10-31"
+ },
+ "organisation": {
+  "kpis": [
+   [
+    "Secteurs de la clinique",
+    "14",
+    "NS 145 du 06/08/2026"
+   ],
+   [
+    "Postes de l’organigramme",
+    "16",
+    null
+   ],
+   [
+    "Effectif porté",
+    "44",
+    null
+   ],
+   [
+    "Rôles RBAC",
+    "22",
+    null
+   ]
+  ],
+  "onglets": [
+   "Secteurs (NS 145)14",
+   "Organigramme16",
+   "Poste → rôle → accès"
+  ],
+  "secteurs": {
+   "entetes": [
+    "Code",
+    "Secteur",
+    "Responsable",
+    "Adjoint",
+    "Rôle RBAC",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "ACC",
+     "ACCUEIL",
+     "OROU YO S. EdmondSecrétaire médical",
+     "YARADJINNIN Hafissou",
+     "Réception / Accueil",
+     ""
+    ],
+    [
+     "ADM",
+     "ADMINISTRATION",
+     "TAKI AlimatouComptable",
+     "KASSA Augustin",
+     "Directrice de l’Administration et des Finances (DAF)",
+     ""
+    ],
+    [
+     "MGE",
+     "MÉDECINE GÉNÉRALE",
+     "YENI M’PO FlorentMédecin généraliste",
+     "ODEITO Mathieu",
+     "Médecin",
+     ""
+    ],
+    [
+     "CHI",
+     "CHIRURGIE",
+     "Dr BASSONGUI Chabi Seko Y.Chirurgien généraliste",
+     "non désigné",
+     "Médecin",
+     ""
+    ],
+    [
+     "MAT",
+     "MATERNITÉ",
+     "BADO BANI A. B. ZoulehathSage-femme",
+     "YERRO SANNI Lamatou",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "ECH",
+     "ÉCHOGRAPHIE",
+     "AHOHOU RodrigueÉchographiste",
+     "AHOHOU Rodrigue",
+     "Médecin",
+     ""
+    ],
+    [
+     "LAB",
+     "LABORATOIRE",
+     "KINNOU A. GaniouABM",
+     "IMOROU Choucouratou",
+     "Biologiste médical",
+     ""
+    ],
+    [
+     "HOS",
+     "HOSPI",
+     "BAGRI ElvyreInfirmière",
+     "MAMAM Safarath",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "SOI",
+     "SALLE DE SOINS",
+     "ANIKI Baba ToundeInfirmière",
+     "TAKPARA Adiabath",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "BLO",
+     "BLOC OPÉRATOIRE",
+     "N’KOUEI B. JeanInfirmier",
+     "ADRIEN B. Modeste",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "SUR",
+     "SURVEILLANCE",
+     "GARBA YahouzaInfirmier général",
+     "non désigné",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "CPH",
+     "CAISSE / PHARMACIE",
+     "DIEYABIDI AïchatouDispensatrice",
+     "TCHANDO S. Lucresse",
+     "Pharmacien",
+     ""
+    ],
+    [
+     "SEC",
+     "SÉCURITÉ",
+     "OURTCHA TereyamaGardien",
+     "TEOU B. Albert",
+     "Agent Administratif",
+     ""
+    ],
+    [
+     "ENT",
+     "ENTRETIEN",
+     "ISSA RabiatouMénagère",
+     "YARIGO B. Petronie",
+     "Agent Administratif",
+     ""
+    ]
+   ]
+  },
+  "notes": [
+   "NS 145/08/DA/CNT/2026 — Répartition des secteurs de la clinique et désignation des responsables, signée le 06/08/2026 par TAKI Alimatou épse BASSONGUI, Directrice Administrative, avec effet au 07/08/2026. Une note ultérieure se saisit ici : le référentiel est versionné par sa source, pas par le code."
+  ],
+  "impressionRepartition": {
+   "titre": "Répartition des secteurs de la clinique",
+   "sousTitre": "NS 145/08/DA/CNT/2026",
+   "cartouche": [
+    [
+     "Objet",
+     "Répartition des secteurs de la clinique et désignation des responsables"
+    ],
+    [
+     "Secteurs",
+     "14"
+    ],
+    [
+     "Date d’effet",
+     "07/08/2026"
+    ],
+    [
+     "Date d’édition",
+     "31/10/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou épse BASSONGUI"
+    }
+   ],
+   "texte": "N°SecteurResponsableResponsable adjointQualification1ACCUEILOROU YO S. EdmondYARADJINNIN HafissouSecrétaire médical2ADMINISTRATIONTAKI AlimatouKASSA AugustinComptable3MÉDECINE GÉNÉRALEYENI M’PO FlorentODEITO MathieuMédecin généraliste4CHIRURGIEDr BASSONGUI Chabi Seko Y.—Chirurgien généraliste5MATERNITÉBADO BANI A. B. ZoulehathYERRO SANNI LamatouSage-femme6ÉCHOGRAPHIEAHOHOU RodrigueAHOHOU RodrigueÉchographiste7LABORATOIREKINNOU A. GaniouIMOROU ChoucouratouABM8HOSPIBAGRI ElvyreMAMAM SafarathInfirmière9SALLE DE SOINSANIKI Baba ToundeTAKPARA AdiabathInfirmière10BLOC OPÉRATOIREN’KOUEI B. JeanADRIEN B. ModesteInfirmier11SURVEILLANCEGARBA Yahouza—Infirmier général12CAISSE / PHARMACIEDIEYABIDI AïchatouTCHANDO S. LucresseDispensatrice13SÉCURITÉOURTCHA TereyamaTEOU B. AlbertGardien14ENTRETIENISSA RabiatouYARIGO B. PetronieMénagère"
+  },
+  "organigramme": {
+   "entetes": [
+    "Poste",
+    "Rattaché à",
+    "Effectif",
+    "Titulaire",
+    "Rôle RBAC",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "Directeur Médical",
+     "Sommet",
+     "1",
+     "BASSONGUI Chabi Séko",
+     "Directeur Médical",
+     ""
+    ],
+    [
+     "Directrice Administrative",
+     "Directeur Médical",
+     "1",
+     "TAKI Alimatou épse BASSONGUI",
+     "Directrice de l’Administration et des Finances (DAF)",
+     ""
+    ],
+    [
+     "Comptable",
+     "Directrice Administrative",
+     "1",
+     "KASSA Augustin",
+     "Comptable",
+     ""
+    ],
+    [
+     "Assistant Comptable",
+     "Comptable",
+     "1",
+     "GBEDJI Hervé",
+     "Comptable",
+     ""
+    ],
+    [
+     "Gestionnaire de Stock",
+     "Directrice Administrative",
+     "1",
+     "MAMAN Zoukanéri",
+     "Gestionnaire de Stock",
+     ""
+    ],
+    [
+     "Secrétaires Médicaux",
+     "Directrice Administrative",
+     "4",
+     "OROU YO Edmond — chef de service",
+     "Réception / Accueil",
+     ""
+    ],
+    [
+     "Dispensatrices",
+     "Directrice Administrative",
+     "4",
+     "DIEYABIDI Aïssatou — chef de service",
+     "Pharmacien",
+     ""
+    ],
+    [
+     "Agents de Sécurité",
+     "Directrice Administrative",
+     "3",
+     "OURTCHA TEREYAMA — chef de service",
+     "Agent Administratif",
+     ""
+    ],
+    [
+     "Agents d’Entretien",
+     "Directrice Administrative",
+     "3",
+     "ISSA Rabiatou — chef de service",
+     "Agent Administratif",
+     ""
+    ],
+    [
+     "Chauffeur Coursier",
+     "Directrice Administrative",
+     "1",
+     "TCHANE Nourou",
+     "Ambulancier",
+     ""
+    ],
+    [
+     "Médecins Généralistes",
+     "Directeur Médical",
+     "2",
+     "YENI M’PO Florent",
+     "Médecin",
+     ""
+    ],
+    [
+     "Échographiste",
+     "Directeur Médical",
+     "1",
+     "AHOHOU Rodrigue",
+     "Médecin",
+     ""
+    ],
+    [
+     "Laborantins",
+     "Directeur Médical",
+     "2",
+     "KINNOU Addoul Ganiou — chef de service",
+     "Biologiste médical",
+     ""
+    ],
+    [
+     "Infirmiers",
+     "Directeur Médical",
+     "8",
+     "GARBA Yahouza — chef de service",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "Sages-Femmes",
+     "Directeur Médical",
+     "3",
+     "vacant",
+     "Infirmier / Sage-femme",
+     ""
+    ],
+    [
+     "Aide-Soignantes",
+     "Directeur Médical",
+     "8",
+     "TEPA Séraphine — chef de service",
+     "Aide-soignante",
+     ""
+    ]
+   ]
+  },
+  "arbre": [
+   "Directeur Médical(01)BASSONGUI Chabi SékoDirecteur Médical",
+   "Directrice Administrative(01)TAKI Alimatou épse BASSONGUIDirectrice de l’Administration et des Finances (DAF)",
+   "Comptable(01)KASSA AugustinComptable",
+   "Assistant Comptable(01)GBEDJI HervéComptable",
+   "Gestionnaire de Stock(01)MAMAN ZoukanériGestionnaire de Stock",
+   "Secrétaires Médicaux(04)OROU YO Edmond — chef de serviceRéception / Accueil",
+   "Dispensatrices(04)DIEYABIDI Aïssatou — chef de servicePharmacien",
+   "Agents de Sécurité(03)OURTCHA TEREYAMA — chef de serviceAgent Administratif",
+   "Agents d’Entretien(03)ISSA Rabiatou — chef de serviceAgent Administratif",
+   "Chauffeur Coursier(01)TCHANE NourouAmbulancier",
+   "Médecins Généralistes(02)YENI M’PO FlorentMédecin",
+   "Échographiste(01)AHOHOU RodrigueMédecin",
+   "Laborantins(02)KINNOU Addoul Ganiou — chef de serviceBiologiste médical",
+   "Infirmiers(08)GARBA Yahouza — chef de serviceInfirmier / Sage-femme",
+   "Sages-Femmes(03)Infirmier / Sage-femme",
+   "Aide-Soignantes(08)TEPA Séraphine — chef de serviceAide-soignante"
+  ],
+  "impressionOrganigramme": {
+   "titre": "Organigramme de la Clinique NASSIERA TOO",
+   "sousTitre": "Structure organisationnelle et correspondance des rôles",
+   "cartouche": [
+    [
+     "Effectif total",
+     "44 agents"
+    ],
+    [
+     "Postes distincts",
+     "16"
+    ],
+    [
+     "Rôles définis",
+     "22"
+    ],
+    [
+     "Date d’édition",
+     "31/10/2026"
+    ]
+   ],
+   "signatures": [
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "Le Directeur Médical",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ],
+   "texte": "PosteRattaché àEffectifTitulaire / chef de serviceRôle dans le systèmeDirecteur Médical—1BASSONGUI Chabi SékoDirecteur MédicalDirectrice AdministrativeDirecteur Médical1TAKI Alimatou épse BASSONGUIDirectrice de l’Administration et des Finances (DAF)ComptableDirectrice Administrative1KASSA AugustinComptableAssistant ComptableComptable1GBEDJI HervéComptableGestionnaire de StockDirectrice Administrative1MAMAN ZoukanériGestionnaire de StockSecrétaires MédicauxDirectrice Administrative4OROU YO EdmondRéception / AccueilDispensatricesDirectrice Administrative4DIEYABIDI AïssatouPharmacienAgents de SécuritéDirectrice Administrative3OURTCHA TEREYAMAAgent AdministratifAgents d’EntretienDirectrice Administrative3ISSA RabiatouAgent AdministratifChauffeur CoursierDirectrice Administrative1TCHANE NourouAmbulancierMédecins GénéralistesDirecteur Médical2YENI M’PO FlorentMédecinÉchographisteDirecteur Médical1AHOHOU RodrigueMédecinLaborantinsDirecteur Médical2KINNOU Addoul GaniouBiologiste médicalInfirmiersDirecteur Médical8GARBA YahouzaInfirmier / Sage-femmeSages-FemmesDirecteur Médical3—Infirmier / Sage-femmeAide-SoignantesDirecteur Médical8TEPA SéraphineAide-soignante"
+  },
+  "roles": {
+   "entetes": [
+    "Poste",
+    "Effectif",
+    "Titulaire / chef de service",
+    "Rôle RBAC",
+    "Modules accessibles"
+   ],
+   "lignes": [
+    [
+     "Directeur Médical",
+     "1",
+     "BASSONGUI Chabi Séko",
+     "Directeur Médical",
+     "M2M1M13M1M2M2M3M4M5M6M7M8M13RAPPILDASH"
+    ],
+    [
+     "Directrice Administrative",
+     "1",
+     "TAKI Alimatou épse BASSONGUI",
+     "Directrice de l’Administration et des Finances (DAF)",
+     "M1M13CFGM1M6M7M8M9MECEFM12M10M11M13GEDRAPM14CFGMEREMEREMEREMEREMEREPILM12DASH"
+    ],
+    [
+     "Comptable",
+     "1",
+     "KASSA Augustin",
+     "Comptable",
+     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPPILM12DASH"
+    ],
+    [
+     "Assistant Comptable",
+     "1",
+     "GBEDJI Hervé",
+     "Comptable",
+     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPPILM12DASH"
+    ],
+    [
+     "Gestionnaire de Stock",
+     "1",
+     "MAMAN Zoukanéri",
+     "Gestionnaire de Stock",
+     "M6M7M8RAPDASH"
+    ],
+    [
+     "Secrétaires Médicaux",
+     "4",
+     "OROU YO Edmond",
+     "Réception / Accueil",
+     "M2M1M13CFGM1M2M3M7M13RAPCFGDASH"
+    ],
+    [
+     "Dispensatrices",
+     "4",
+     "DIEYABIDI Aïssatou",
+     "Pharmacien",
+     ""
+    ],
+    [
+     "Agents de Sécurité",
+     "3",
+     "OURTCHA TEREYAMA",
+     "Agent Administratif",
+     "M1M13M1M7M13GEDRAPDASH"
+    ],
+    [
+     "Agents d’Entretien",
+     "3",
+     "ISSA Rabiatou",
+     "Agent Administratif",
+     "M1M13M1M7M13GEDRAPDASH"
+    ],
+    [
+     "Chauffeur Coursier",
+     "1",
+     "TCHANE Nourou",
+     "Ambulancier",
+     "M1M13M1M7M13RAPDASH"
+    ],
+    [
+     "Médecins Généralistes",
+     "2",
+     "YENI M’PO Florent",
+     "Médecin",
+     "M2M1M1M2M2M3M4M5M6M7RAPPILDASH"
+    ],
+    [
+     "Échographiste",
+     "1",
+     "AHOHOU Rodrigue",
+     "Médecin",
+     "M2M1M1M2M2M3M4M5M6M7RAPPILDASH"
+    ],
+    [
+     "Laborantins",
+     "2",
+     "KINNOU Addoul Ganiou",
+     "Biologiste médical",
+     "M1M13M1M5M7RAPPILDASH"
+    ],
+    [
+     "Infirmiers",
+     "8",
+     "GARBA Yahouza",
+     "Infirmier / Sage-femme",
+     "M2M1M13M1M2M2M3M4M5M7M13RAPPILDASH"
+    ],
+    [
+     "Sages-Femmes",
+     "3",
+     "—",
+     "Infirmier / Sage-femme",
+     "M2M1M13M1M2M2M3M4M5M7M13RAPPILDASH"
+    ],
+    [
+     "Aide-Soignantes",
+     "8",
+     "TEPA Séraphine",
+     "Aide-soignante",
+     "M1M1M3M7RAPDASH"
+    ]
+   ]
+  },
+  "notesRoles": [
+   "État calculé — lecture seule. Cette correspondance est calculée depuis l’organigramme et la matrice RBAC. Pour la modifier, changer le rôle du poste dans l’onglet Organigramme, ou la matrice dans Rôles & permissions."
+  ],
+  "lectureSeule": "ColonnesEx"
+ },
+ "organisationCreations": {
+  "secteurSansCode": {
+   "saisie": {
+    "libelle": "Zone Test Alpha",
+    "role": "infirmier"
+   },
+   "creees": [
+    {
+     "libelle": "Zone Test Alpha",
+     "code": "ZON",
+     "role": "infirmier",
+     "responsable": "",
+     "adjoint": "",
+     "qualification": "",
+     "source": "Décision de la Direction",
+     "ordre": 15
+    }
+   ],
+   "toasts": [
+    "Secteur créé."
+   ],
+   "nbAvant": 14
+  },
+  "secteurAvecCode": {
+   "saisie": {
+    "libelle": "Bloc Annexe",
+    "code": "bka",
+    "role": "da",
+    "responsable": "TEST Responsable"
+   },
+   "creees": [
+    {
+     "libelle": "Bloc Annexe",
+     "code": "bka",
+     "role": "da",
+     "responsable": "TEST Responsable",
+     "adjoint": "",
+     "qualification": "",
+     "source": "Décision de la Direction",
+     "ordre": 16
+    }
+   ],
+   "toasts": [
+    "Secteur créé."
+   ],
+   "nbAvant": 15
+  },
+  "posteSommet": {
+   "saisie": {
+    "poste": "Poste Test Sommet",
+    "effectif": 2,
+    "role": "infirmier",
+    "parentId": ""
+   },
+   "creees": [
+    {
+     "poste": "Poste Test Sommet",
+     "parentId": null,
+     "effectif": 2,
+     "titulaire": "",
+     "role": "infirmier",
+     "chef": false
+    }
+   ],
+   "toasts": [
+    "Poste créé."
+   ],
+   "nbAvant": 16
+  }
+ },
+ "branding": {
+  "champs": {
+   "nom": "CLINIQUE NASSIERA TOO SARL",
+   "sigle": "CNT",
+   "forme": "Société à Responsabilité Limitée",
+   "slogan": "Votre santé, notre raison de vivre",
+   "adresse": "Quartier Tchirimina, Natitingou",
+   "bp": "BP : 507 NATITINGOU (Rép. du Bénin)",
+   "telephones": "01 95 44 51 51 / 01 66 43 28 20",
+   "email": "cliniquenassiera@gmail.com",
+   "ifu": "3201642748214",
+   "rccm": "RB/NAT/2016-B-268",
+   "autorisation": "N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020",
+   "doubleLogo": true,
+   "piedPage": true,
+   "filigrane": ""
+  },
+  "cartes": [
+   "Paramètres de l’identité",
+   "Paramètres de l’identité",
+   "Aperçu du papier à en-tête",
+   "Aperçu du papier à en-tête",
+   "Ressources graphiquesDéposer une ressource",
+   "Ressources graphiques"
+  ],
+  "commandes": [
+   "Enregistrer",
+   "Prévisualiser un état",
+   "Déposer une ressource"
+  ],
+  "notes": [
+   "Les états produits par le prototype reprennent déjà fidèlement l’entête réelle relevée sur les documents de la clinique."
+  ],
+  "apercu": "CLINIQUE NASSIERA TOOBP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020IFU : 3201642748214 RCCM : RB/NAT/2016-B-268E-mail : cliniquenassiera@gmail.com— corps du document —CLINIQUE NASSIERA TOO SARL — RB/NAT/2016-B-268 — IFU 3201642748214 · Document généré par BASSONGUI Chabi Séko le 31/10/2026 à 02h05 · Réf. CNT-XXXXXXXX-0001",
+  "ressources": [
+   "Logo principalUtilisé sur tous les états et dans l’applicationÀ fournir",
+   "Logo monochromePour les impressions en noir et blancÀ fournir",
+   "Cachet de l’établissementApposé sur les documents officielsÀ fournir",
+   "Signature numérisée du DirecteurDocuments médicaux et administratifsÀ fournir",
+   "Photographies du siteSupports de communicationÀ fournir"
+  ],
+  "impression": {
+   "titre": "Aperçu du papier à en-tête",
+   "sousTitre": "Modèle appliqué à tous les documents édités",
+   "cartouche": null,
+   "signatures": [
+    {
+     "role": "La Directrice Administrative",
+     "nom": "TAKI Alimatou"
+    }
+   ],
+   "texte": "Ce document illustre le gabarit officiel appliqué automatiquement à l’ensemble des états produits par le système : factures normalisées, ordonnances, bulletins de paie, bons de commande et de sortie, résultats de laboratoire, états comptables et rapports de direction.MentionValeurDénominationCLINIQUE NASSIERA TOO SARLAdresse postaleBP : 507 NATITINGOU (Rép. du Bénin)Téléphones01 95 44 51 51 / 01 66 43 28 20Adresse électroniquecliniquenassiera@gmail.comAutorisation d’ouvertureN° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020IFU3201642748214RCCMRB/NAT/2016-B-268"
+  },
+  "enregistrement": {
+   "toasts": [
+    {
+     "message": "Identité enregistrée.",
+     "type": "success",
+     "detail": "Tous les états édités reprendront désormais ces mentions."
+    }
+   ],
+   "audit": {
+    "id": "LOGmvvrej56",
+    "dateHeure": "2026-10-31T02:05:41.610Z",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "action": "Modification",
+    "module": "CFG",
+    "entite": "BrandConfiguration",
+    "reference": "BRAND",
+    "ancienneValeur": null,
+    "nouvelleValeur": "{\"nom\":\"CLINIQUE NASSIERA TOO SARL\",\"sigle\":\"CNT\",\"forme\":\"Société à Responsabilité Limitée\",\"slogan",
+    "poste": "POSTE-LOCAL",
+    "succes": true
+   },
+   "nbAudit": 1
+  },
+  "refus": [
+   {
+    "message": "Le formulaire comporte des erreurs.",
+    "type": "error",
+    "detail": null
+   }
+  ]
+ },
+ "tarifs": {
+  "kpis": [
+   [
+    "Produits tarifés",
+    "184",
+    null
+   ],
+   [
+    "Analyses tarifées",
+    "48",
+    null
+   ],
+   [
+    "Actes et prestations",
+    "73",
+    "8 secteurs"
+   ],
+   [
+    "Tarifs à confirmer",
+    "48",
+    "Colonnes de prix vierges aux sources"
+   ]
+  ],
+  "onglets": [
+   "Produits & médicaments184",
+   "Analyses de laboratoire48",
+   "Actes & hospitalisation73",
+   "Certificats et Attestations6"
+  ],
+  "cartes": [
+   "Propagation du tarif"
+  ],
+  "flux": "Propagation du tarifTARIF MASTERPharmacieFacturationAssurancesRapportsComptabilité",
+  "produits": {
+   "entetes": [
+    "Code",
+    "Désignation",
+    "Catégorie",
+    "Unité",
+    "Prix d’achat",
+    "Prix de vente",
+    "Marge",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "ABA",
+     "ABAISSE LANGUE",
+     "Consommables médicaux",
+     "Unité",
+     "650",
+     "650",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ACC",
+     "ACCUZON",
+     "Médicaments",
+     "Unité",
+     "1 000",
+     "1 000",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ACE",
+     "ACE MISO 200 µg 1 CP",
+     "Médicaments",
+     "Comprimé",
+     "250",
+     "250",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ACU",
+     "ACUPAN 20 MG INJ",
+     "Médicaments",
+     "Ampoule",
+     "650",
+     "650",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ADRE",
+     "ADRENALINE 1 MG INJ (EPINEPHRINE)",
+     "Médicaments",
+     "Ampoule",
+     "549",
+     "549",
+     "Sans marge",
+     ""
+    ],
+    [
+     "AIG",
+     "AIGUILLE DE PL",
+     "Consommables médicaux",
+     "Unité",
+     "53",
+     "53",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ALC",
+     "ALCOOL",
+     "Consommables médicaux",
+     "Flacon",
+     "650",
+     "650",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ALE",
+     "ALESE ABSORBANT",
+     "Consommables médicaux",
+     "Unité",
+     "11",
+     "11",
+     "Sans marge",
+     ""
+    ],
+    [
+     "AMI",
+     "AMINOPHYLLINE 250 MG INJ",
+     "Médicaments",
+     "Ampoule",
+     "500",
+     "500",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ANT",
+     "ANTISEPTIQUE",
+     "Consommables médicaux",
+     "Unité",
+     "650",
+     "650",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ARTE60",
+     "ARTESUNATE 60 MG INJ",
+     "Médicaments",
+     "Ampoule",
+     "1 084",
+     "1 084",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ART120",
+     "ARTESUNATE 120 MG INJ",
+     "Médicaments",
+     "Ampoule",
+     "2 200",
+     "2 200",
+     "Sans marge",
+     ""
+    ],
+    [
+     "ATR",
+     "ATROPINE 1MG INJ",
+     "Médicaments",
+     "Ampoule",
+     "1 000",
+     "1 000",
+     "Sans marge",
+     ""
+    ],
+    [
+     "BANG",
+     "BANDE A GAZ",
+     "Consommables médicaux",
+     "Rouleau",
+     "263",
+     "263",
+     "Sans marge",
+     ""
+    ],
+    [
+     "BANE",
+     "BANDE ELASTIQUE",
+     "Consommables médicaux",
+     "Rouleau",
+     "300",
+     "300",
+     "Sans marge",
+     ""
+    ]
+   ]
+  },
+  "notesProduits": [
+   "RG-02 — pour les médicaments, le prix de vente est strictement égal au prix d’achat : aucune marge n’est appliquée."
+  ],
+  "analyses": {
+   "entetes": [
+    "N°",
+    "Code",
+    "Désignation",
+    "Catégorie",
+    "Tarif",
+    "Statut",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "1",
+     "L01",
+     "AKOP",
+     "Parasitologie",
+     "2 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "2",
+     "L02",
+     "ASLO",
+     "Sérologie",
+     "4 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "3",
+     "L03",
+     "AZOTEMIE (UREMIE)",
+     "Biochimie",
+     "2 500",
+     "À confirmer",
+     ""
+    ],
+    [
+     "4",
+     "L04",
+     "BILIRUBINE TOTALE ET CONJUGUEE (DIRECTE)",
+     "Biochimie",
+     "3 500",
+     "À confirmer",
+     ""
+    ],
+    [
+     "5",
+     "L05",
+     "BU",
+     "Biochimie",
+     "1 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "6",
+     "L06",
+     "CALCEMIE",
+     "Biochimie",
+     "3 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "7",
+     "L07",
+     "CHOLESTEROL TOTAL",
+     "Biochimie",
+     "3 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "8",
+     "L08",
+     "CHOLESTEROL HDL",
+     "Biochimie",
+     "3 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "9",
+     "L09",
+     "CREATININE",
+     "Biochimie",
+     "2 500",
+     "À confirmer",
+     ""
+    ],
+    [
+     "10",
+     "L10",
+     "CRP",
+     "Immunologie",
+     "4 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "11",
+     "L11",
+     "D-DIMERE",
+     "Hémostase",
+     "12 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "12",
+     "L12",
+     "ECBU",
+     "Bactériologie",
+     "5 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "13",
+     "L13",
+     "ELECTROPHORESE DE L’HEMOGLOBINE",
+     "Hématologie",
+     "8 000",
+     "À confirmer",
+     ""
+    ],
+    [
+     "14",
+     "L14",
+     "GLYCEMIE",
+     "Biochimie",
+     "1 500",
+     "À confirmer",
+     ""
+    ],
+    [
+     "15",
+     "L15",
+     "GLYCEMIE CAPILLAIRE",
+     "Biochimie",
+     "1 000",
+     "À confirmer",
+     ""
+    ]
+   ]
+  },
+  "notesAnalyses": [
+   "Les 48 désignations proviennent du document « Tarifs des analyses de laboratoire » de la clinique. Le document source ne renseignant pas la colonne des prix, les tarifs portés ici sont des valeurs d’attente à confirmer."
+  ],
+  "actes": {
+   "entetes": [
+    "Code",
+    "Prestation",
+    "Secteur",
+    "Tarif non assuré",
+    "Tarif assuré",
+    "Origine du tarif",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "CH01",
+     "Consultation spécialiste",
+     "Chirurgie",
+     "10 000",
+     "10 000",
+     "Tarifs des consultations NASSIERA TOOrapproché par libellé identique",
+     ""
+    ],
+    [
+     "CH02",
+     "Consultation spécialiste à domicile",
+     "Chirurgie",
+     "15 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH03",
+     "Opération",
+     "Chirurgie",
+     "150 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH04",
+     "Pansement chirurgical",
+     "Chirurgie",
+     "5 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH05",
+     "Petite chirurgie",
+     "Chirurgie",
+     "25 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH06",
+     "Hydrotubation",
+     "Chirurgie",
+     "15 000",
+     "non couvert",
+     "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOOrapproché par libellé identique",
+     ""
+    ],
+    [
+     "CH07",
+     "Cystostomie",
+     "Chirurgie",
+     "60 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH08",
+     "Ponction pleurale",
+     "Chirurgie",
+     "20 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH09",
+     "Plâtre",
+     "Chirurgie",
+     "20 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH10",
+     "Attelle plâtrée",
+     "Chirurgie",
+     "12 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH11",
+     "Infiltration de kyste synovial",
+     "Chirurgie",
+     "15 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "CH12",
+     "Infiltration de genou",
+     "Chirurgie",
+     "15 000",
+     "—",
+     "Valeur d’attente — à valider par la Direction ; tarif arrêté par la Direction le 01/09/2026",
+     ""
+    ],
+    [
+     "GY-SAA",
+     "Avortement — Soins Après Avortement (SAA)",
+     "Gynéco-obstétrique",
+     "20 000",
+     "15 000− 5 000",
+     "Rapport maternité 27/08/2026 — Module A ; tarif arrêté par la Direction le 01/09/2026Tarif aligné sur l’AMIU (la SAA se pratique par AMIU), arrêté par la Direction le 01/09/2026.",
+     ""
+    ],
+    [
+     "HO01",
+     "Journée d’hospitalisation — chambre Standard",
+     "Hospitalisation",
+     "5 000",
+     "—",
+     "CDCT — types de chambre et tarifs journaliers",
+     ""
+    ],
+    [
+     "HO02",
+     "Journée d’hospitalisation — chambre VIP",
+     "Hospitalisation",
+     "15 000",
+     "—",
+     "CDCT — types de chambre et tarifs journaliers",
+     ""
+    ],
+    [
+     "HO03",
+     "Journée d’hospitalisation — chambre VVIP",
+     "Hospitalisation",
+     "25 000",
+     "—",
+     "CDCT — types de chambre et tarifs journaliers",
+     ""
+    ],
+    [
+     "IM01",
+     "Échographie pelvienne",
+     "Imagerie médicale",
+     "9 000",
+     "5 000− 4 000",
+     "Tarifs des imageries médicales de NASSIERA TOOrapproché par libellé identique",
+     ""
+    ],
+    [
+     "IM02",
+     "Échographie obstétricale",
+     "Imagerie médicale",
+     "9 000",
+     "5 000− 4 000",
+     "Tarifs des imageries médicales de NASSIERA TOOrapproché par libellé identique",
+     ""
+    ],
+    [
+     "IM03",
+     "Échographie abdominale",
+     "Imagerie médicale",
+     "12 000",
+     "8 000− 4 000",
+     "Tarifs des imageries médicales de NASSIERA TOOrapproché par libellé identique",
+     ""
+    ],
+    [
+     "IM04",
+     "Échographie abdomino-pelvienne",
+     "Imagerie médicale",
+     "20 000",
+     "11 000− 9 000",
+     "Tarifs des imageries médicales de NASSIERA TOOrapproché par libellé identique",
+     ""
+    ]
+   ]
+  },
+  "notesActes": [
+   "28 prestation(s) reprennent leur tarif des grilles imprimées de la clinique, avec leurs deux colonnes — assuré et non assuré. Le rapprochement est fait sur libellé identique ou par une correspondance nommée, jamais par approximation : apparier « Consultation généraliste à domicile » avec « Consultation généraliste » ferait perdre le déplacement.",
+   "4 prestation(s) sont déclinées par la grille en plusieurs variantes — sept accouchements, quatre paliers d’oxygénothérapie, trois épisiotomies, deux ponctions lombaires. Ce n’est pas un prix manquant : c’est à la clinique de dire quelle variante son acte désigne. Choisir à sa place facturerait le mauvais tarif."
+  ],
+  "filtres": [
+   {
+    "valeur": "grille",
+    "libelle": "Repris d’une grille",
+    "compteur": [
+     "0 ligne sélectionnée",
+     "Affichage de 1 à 20 sur 28 enregistrements"
+    ],
+    "premieres": [
+     "CH01",
+     "CH06",
+     "IM01"
+    ]
+   },
+   {
+    "valeur": "valide",
+    "libelle": "Validé sur pièce",
+    "compteur": [
+     "0 ligne sélectionnée",
+     "Affichage de 1 à 20 sur 73 enregistrements"
+    ],
+    "premieres": [
+     "CH01",
+     "CH02",
+     "CH03"
+    ]
+   },
+   {
+    "valeur": "attente",
+    "libelle": "Valeur d’attente",
+    "compteur": [
+     "0 ligne sélectionnée"
+    ],
+    "premieres": []
+   },
+   {
+    "valeur": "decline",
+    "libelle": "Décliné par la grille",
+    "compteur": [
+     "0 ligne sélectionnée",
+     "Affichage de 1 à 4 sur 4 enregistrements"
+    ],
+    "premieres": [
+     "MA02",
+     "MA14",
+     "MG05"
+    ]
+   },
+   {
+    "valeur": "absent",
+    "libelle": "Sans tarif",
+    "compteur": [
+     "0 ligne sélectionnée"
+    ],
+    "premieres": []
+   }
+  ],
+  "certificats": {
+   "entetes": [
+    "Code",
+    "Pièce",
+    "Prix non assuré",
+    "Prix assuré"
+   ],
+   "lignes": [
+    [
+     "CERT-ATG",
+     "Attestation de grossesse",
+     "7 000",
+     "7 000 SOS seule"
+    ],
+    [
+     "CERT-APT",
+     "Certificat médical d’aptitude",
+     "7 000",
+     "7 000 SOS seule"
+    ],
+    [
+     "CERT-DEC",
+     "Certificat médical de décès",
+     "10 000",
+     "10 000 SOS seule"
+    ],
+    [
+     "CERT-DPS",
+     "Certificat médical de dispense aux activités physiques et sportives",
+     "5 000",
+     "5 000 SOS seule"
+    ],
+    [
+     "CERT-VC",
+     "Certificat médical de visite et de contre-visite",
+     "8 000",
+     "8 000 SOS seule"
+    ],
+    [
+     "CERT-CBV",
+     "Certificat médical initial / de coups et blessures volontaires",
+     "20 000",
+     "20 000 SOS seule"
+    ]
+   ]
+  },
+  "notesCertificats": [
+   "Les certificats ne sont couverts par aucune assurance à l’exception de SOS — mention manuscrite de la grille tarifaire. Les tarifs se corrigent au catalogue tarifaire, les pièces dans « Types de pièces certifiantes » : cet onglet les lit, il ne les duplique pas.",
+   "8 type(s) de pièce sans tarif au catalogue : Certificat médical de non-infirmité, Certificat médical d’accouchement, Certificat médical d’hospitalisation (garde-malade), Certificat médical de genre de mort, Certificat médical prénuptial, Certificat médical de non contre-indication aux activités physiques et sportives, Certificat médical d’arrêt de travail et/ou d’hospitalisation, Sortie contre avis médical. Une pièce non tarifée se délivre, elle ne se facture pas — rattacher son acte depuis « Types de pièces certifiantes »."
+  ]
+ },
+ "tarifsCreations": {
+  "medicament": {
+   "saisie": {
+    "designation": "Médicament Test A",
+    "categorie": "medicament",
+    "prixAchat": 700,
+    "prixVente": 900
+   },
+   "creees": [
+    {
+     "designation": "Médicament Test A",
+     "categorie": "medicament",
+     "code": "PRD-0185",
+     "unite": "",
+     "prixAchat": 700,
+     "prixVente": 700,
+     "seuilAlerte": null,
+     "stock": 0,
+     "stockGros": 0,
+     "stockDetail": 0
+    }
+   ],
+   "toasts": [
+    "Produit créé."
+   ],
+   "nbAvant": 184
+  },
+  "consommable": {
+   "saisie": {
+    "designation": "Consommable Test B",
+    "categorie": "conso_medical",
+    "prixAchat": 300,
+    "prixVente": 450,
+    "code": "CTB-1"
+   },
+   "creees": [
+    {
+     "designation": "Consommable Test B",
+     "categorie": "conso_medical",
+     "code": "CTB-1",
+     "unite": "",
+     "prixAchat": 300,
+     "prixVente": 450,
+     "seuilAlerte": null,
+     "stock": 0,
+     "stockGros": 0,
+     "stockDetail": 0
+    }
+   ],
+   "toasts": [
+    "Produit créé."
+   ],
+   "nbAvant": 185
+  },
+  "analyse": {
+   "saisie": {
+    "designation": "Analyse Test",
+    "categorie": "Hématologie",
+    "prix": 2500
+   },
+   "creees": [
+    {
+     "designation": "Analyse Test",
+     "categorie": "Hématologie",
+     "code": "L49",
+     "prix": 2500,
+     "echantillon": "",
+     "delai": "",
+     "n": 49,
+     "tarifProvisoire": true
+    }
+   ],
+   "toasts": [
+    "Analyse créé."
+   ],
+   "nbAvant": 48
+  },
+  "acteSansPrix": {
+   "saisie": {
+    "libelle": "Acte Test Sans Prix",
+    "secteur": "Médecine générale"
+   },
+   "creees": [
+    {
+     "libelle": "Acte Test Sans Prix",
+     "secteur": "Médecine générale",
+     "code": "ACT-074",
+     "prix": null,
+     "source": ""
+    }
+   ],
+   "toasts": [
+    "Acte créé."
+   ],
+   "nbAvant": 73
+  },
+  "acteAvecPrix": {
+   "saisie": {
+    "libelle": "Acte Test Prix",
+    "secteur": "Médecine générale",
+    "prix": 4000,
+    "code": "TST-9"
+   },
+   "creees": [
+    {
+     "libelle": "Acte Test Prix",
+     "secteur": "Médecine générale",
+     "code": "TST-9",
+     "prix": 4000,
+     "source": ""
+    }
+   ],
+   "toasts": [
+    "Acte créé."
+   ],
+   "nbAvant": 74
+  }
+ },
+ "catalogue": {
+  "kpis": [
+   [
+    "Actes au catalogue",
+    "147",
+    "6 familles"
+   ],
+   [
+    "Non couverts par les assurances",
+    "8",
+    "planification familiale et hydrotubation"
+   ],
+   [
+    "Couverts par SOS seule",
+    "6",
+    "les certificats"
+   ],
+   [
+    "Prix non renseigné",
+    "0",
+    "ligne non facturable"
+   ]
+  ],
+  "notes": [
+   "Divergence à arbitrer — Consultation prénatale : La Direction a énoncé 15 000 F ; le document tarifaire porte 1 500 / 5 000. Le prototype retient le document ; écraser une pièce écrite par une phrase, ou l’inverse, serait décider à la place de la clinique.",
+   "3 acte(s) arbitré(s) par la Direction, dont le tarif ne suit pas la grille relevée : LAB-HIV — HIV · LAB-SPER — Spermogramme · PSE — Pose de sérum. Un arbitrage tranché n’est pas une divergence en attente : il est appliqué et daté. Ne pas le « corriger » sans nouvelle décision écrite."
+  ],
+  "onglets": [
+   "Consultations6",
+   "Imagerie médicale23",
+   "Analyses de laboratoire41",
+   "Actes médico-infirmiers40",
+   "Actes gynéco-obstétricaux et kits31",
+   "Certificats et attestations6"
+  ],
+  "familles": [
+   {
+    "onglet": "Consultations6",
+    "tableau": {
+     "entetes": [
+      "Code",
+      "Désignation",
+      "Prix non assuré",
+      "Prix assuré",
+      "Écart",
+      "Document d’origine",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "CONS-DOM-GEN",
+       "Consultation à domicile — généraliste",
+       "25 000 FCFA",
+       "20 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des consultations NASSIERA TOO",
+       ""
+      ],
+      [
+       "CONS-DOM-SPE",
+       "Consultation à domicile — spécialiste",
+       "30 000 FCFA",
+       "25 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des consultations NASSIERA TOO",
+       ""
+      ],
+      [
+       "CONS-GEN",
+       "Consultation généraliste",
+       "5 000 FCFA",
+       "3 000 FCFA",
+       "-2 000 FCFA",
+       "Tarifs des consultations NASSIERA TOO",
+       ""
+      ],
+      [
+       "CONS-PRE",
+       "Consultation prénatale",
+       "5 000 FCFA",
+       "1 500 FCFA",
+       "-3 500 FCFA",
+       "Tarifs des consultations NASSIERA TOO",
+       ""
+      ],
+      [
+       "CONS-SPE",
+       "Consultation spécialiste",
+       "10 000 FCFA",
+       "10 000 FCFA",
+       "0 FCFA",
+       "Tarifs des consultations NASSIERA TOO",
+       ""
+      ],
+      [
+       "CONS-SPE-SRV",
+       "Consultation spécialiste sans rendez-vous",
+       "15 000 FCFA",
+       "10 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des consultations NASSIERA TOO",
+       ""
+      ]
+     ]
+    },
+    "detail": []
+   },
+   {
+    "onglet": "Imagerie médicale23",
+    "tableau": {
+     "entetes": [
+      "Code",
+      "Désignation",
+      "Prix non assuré",
+      "Prix assuré",
+      "Écart",
+      "Document d’origine",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "IMG-ECG",
+       "Électrocardiogramme (ECG)",
+       "15 000 FCFA",
+       "10 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des imageries médicales de NASSIERA TOO",
+       ""
+      ],
+      [
+       "IMG-ECHO-ABD",
+       "Échographie abdominale",
+       "12 000 FCFA",
+       "8 000 FCFA",
+       "-4 000 FCFA",
+       "Tarifs des imageries médicales de NASSIERA TOO",
+       ""
+      ],
+      [
+       "IMG-ECHO-ABP",
+       "Échographie abdomino-pelvienne",
+       "20 000 FCFA",
+       "11 000 FCFA",
+       "-9 000 FCFA",
+       "Tarifs des imageries médicales de NASSIERA TOO",
+       ""
+      ],
+      [
+       "IMG-ECHO-OBS",
+       "Échographie obstétricale",
+       "9 000 FCFA",
+       "5 000 FCFA",
+       "-4 000 FCFA",
+       "Tarifs des imageries médicales de NASSIERA TOO",
+       ""
+      ],
+      [
+       "IMG-ECHO-PEL",
+       "Échographie pelvienne",
+       "9 000 FCFA",
+       "5 000 FCFA",
+       "-4 000 FCFA",
+       "Tarifs des imageries médicales de NASSIERA TOO",
+       ""
+      ],
+      [
+       "IMG-ECHO-PRO",
+       "Échographie prostatique",
+       "12 000 FCFA",
+       "8 000 FCFA",
+       "-4 000 FCFA",
+       "Tarifs des imageries médicales de NASSIERA TOO",
+       ""
+      ],
+      [
+       "IMG-IRM-CER",
+       "IRM cérébrale",
+       "150 000 FCFA",
+       "130 000 FCFA",
+       "-20 000 FCFA",
+       "Tarif d’attente — aucune grille remise",
+       ""
+      ],
+      [
+       "IMG-IRM-GEN",
+       "IRM du genou",
+       "140 000 FCFA",
+       "120 000 FCFA",
+       "-20 000 FCFA",
+       "Tarif d’attente — aucune grille remise",
+       ""
+      ],
+      [
+       "IMG-IRM-PEL",
+       "IRM pelvienne",
+       "160 000 FCFA",
+       "140 000 FCFA",
+       "-20 000 FCFA",
+       "Tarif d’attente — aucune grille remise",
+       ""
+      ],
+      [
+       "IMG-IRM-RAC",
+       "IRM du rachis lombaire",
+       "150 000 FCFA",
+       "130 000 FCFA",
+       "-20 000 FCFA",
+       "Tarif d’attente — aucune grille remise",
+       ""
+      ],
+      [
+       "IMG-MAM-DEP",
+       "Mammographie bilatérale de dépistage",
+       "30 000 FCFA",
+       "25 000 FCFA",
+       "-5 000 FCFA",
+       "Tarif d’attente — aucune grille remise",
+       ""
+      ],
+      [
+       "IMG-MAM-DIA",
+       "Mammographie diagnostique",
+       "35 000 FCFA",
+       "30 000 FCFA",
+       "-5 000 FCFA",
+       "Tarif d’attente — aucune grille remise",
+       ""
+      ]
+     ]
+    },
+    "detail": []
+   },
+   {
+    "onglet": "Analyses de laboratoire41",
+    "tableau": {
+     "entetes": [
+      "Code",
+      "Désignation",
+      "Prix non assuré",
+      "Prix assuré",
+      "Écart",
+      "Document d’origine",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "LAB-AKOP",
+       "AKOP",
+       "2 500 FCFA",
+       "2 000 FCFA",
+       "-500 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-ASLO",
+       "ASLO",
+       "3 800 FCFA",
+       "2 800 FCFA",
+       "-1 000 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-AZOT",
+       "Azotémie (urémie)",
+       "2 500 FCFA",
+       "1 800 FCFA",
+       "-700 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-BILI",
+       "Bilirubine totale et conjuguée (directe)",
+       "4 800 FCFA",
+       "3 400 FCFA",
+       "-1 400 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-BU",
+       "BU — bandelette urinaire",
+       "1 000 FCFA",
+       "500 FCFA",
+       "-500 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-CALC",
+       "Calcémie",
+       "3 200 FCFA",
+       "2 200 FCFA",
+       "-1 000 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-CHOH",
+       "Cholestérol HDL",
+       "4 500 FCFA",
+       "3 200 FCFA",
+       "-1 300 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-CHOT",
+       "Cholestérol total",
+       "4 500 FCFA",
+       "3 200 FCFA",
+       "-1 300 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-CREA",
+       "Créatinine",
+       "2 500 FCFA",
+       "1 800 FCFA",
+       "-700 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-CRP",
+       "CRP",
+       "4 000 FCFA",
+       "3 000 FCFA",
+       "-1 000 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-ECBU",
+       "ECBU",
+       "3 500 FCFA",
+       "2 500 FCFA",
+       "-1 000 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAB-EMMEL",
+       "Test d’Emmel",
+       "2 000 FCFA",
+       "1 000 FCFA",
+       "-1 000 FCFA",
+       "Tarifs des analyses de laboratoire NASSIERA TOO",
+       ""
+      ]
+     ]
+    },
+    "detail": []
+   },
+   {
+    "onglet": "Actes médico-infirmiers40",
+    "tableau": {
+     "entetes": [
+      "Code",
+      "Désignation",
+      "Prix non assuré",
+      "Prix assuré",
+      "Écart",
+      "Document d’origine",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "ABCG",
+       "Abcès — grand",
+       "14 000 FCFA",
+       "10 000 FCFA",
+       "-4 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "ABCM",
+       "Abcès — moyen",
+       "12 000 FCFA",
+       "8 000 FCFA",
+       "-4 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "ABCP",
+       "Abcès — petit",
+       "8 000 FCFA",
+       "5 000 FCFA",
+       "-3 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "ABCTP",
+       "Abcès — très petit",
+       "5 000 FCFA",
+       "3 000 FCFA",
+       "-2 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "AERO",
+       "Aérosol",
+       "2 500 FCFA",
+       "2 000 FCFA",
+       "-500 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "DEPM",
+       "Dépistage",
+       "5 000 FCFA",
+       "5 000 FCFA",
+       "0 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "EXTN",
+       "Extraction d’ongle",
+       "7 000 FCFA",
+       "5 000 FCFA",
+       "-2 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "EXTO",
+       "Extraction de corps étranger",
+       "8 000 FCFA",
+       "6 000 FCFA",
+       "-2 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "INFG",
+       "Infiltration — grande",
+       "12 000 FCFA",
+       "10 000 FCFA",
+       "-2 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "INFM",
+       "Infiltration — moyenne",
+       "10 000 FCFA",
+       "7 000 FCFA",
+       "-3 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "INFP",
+       "Infiltration — petite",
+       "7 000 FCFA",
+       "5 000 FCFA",
+       "-2 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ],
+      [
+       "LAVO",
+       "Lavage oculaire",
+       "4 000 FCFA",
+       "3 000 FCFA",
+       "-1 000 FCFA",
+       "Tarifs des actes médico-infirmiers (AMI) NASSIERA TOO",
+       ""
+      ]
+     ]
+    },
+    "detail": []
+   },
+   {
+    "onglet": "Actes gynéco-obstétricaux et kits31",
+    "tableau": {
+     "entetes": [
+      "Code",
+      "Désignation",
+      "Prix non assuré",
+      "Prix assuré",
+      "Écart",
+      "Document d’origine",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "ACCD",
+       "Accouchement dystocique",
+       "20 000 FCFA",
+       "15 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "ACCDC",
+       "Accouchement dystocique — césarienne",
+       "18 000 FCFA",
+       "12 000 FCFA",
+       "-6 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "ACCDL",
+       "Accouchement dystocique — lourd",
+       "25 000 FCFA",
+       "20 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "ACCDM",
+       "Accouchement dystocique — moyen",
+       "20 000 FCFA",
+       "15 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "ACCE",
+       "Accouchement eutocique",
+       "15 000 FCFA",
+       "10 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "ACCS1",
+       "Accouchement sous surveillance — 1",
+       "60 000 FCFA",
+       "45 000 FCFA",
+       "-15 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "ACCS2",
+       "Accouchement sous surveillance — 2",
+       "75 000 FCFA",
+       "60 000 FCFA",
+       "-15 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "AMIU",
+       "Aspiration manuelle intra-utérine (AMIU)",
+       "20 000 FCFA",
+       "15 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "BARI",
+       "Bartholinite — incision",
+       "15 000 FCFA",
+       "10 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "DEA",
+       "Délivrance artificielle",
+       "8 000 FCFA",
+       "5 000 FCFA",
+       "-3 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "DECG",
+       "Décollement — grand",
+       "15 000 FCFA",
+       "10 000 FCFA",
+       "-5 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ],
+      [
+       "DECP",
+       "Décollement — petit",
+       "10 000 FCFA",
+       "6 000 FCFA",
+       "-4 000 FCFA",
+       "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+       ""
+      ]
+     ]
+    },
+    "detail": []
+   },
+   {
+    "onglet": "Certificats et attestations6",
+    "tableau": {
+     "entetes": [
+      "Code",
+      "Désignation",
+      "Prix non assuré",
+      "Prix assuré",
+      "Écart",
+      "Document d’origine",
+      "Actions"
+     ],
+     "lignes": [
+      [
+       "CERT-APT",
+       "Certificat médical d’aptitude",
+       "7 000 FCFA",
+       "SOS seule — 7 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      [
+       "CERT-ATG",
+       "Attestation de grossesse",
+       "7 000 FCFA",
+       "SOS seule — 7 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      [
+       "CERT-CBV",
+       "Certificat médical initial / de coups et blessures volontaires",
+       "20 000 FCFA",
+       "SOS seule — 20 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      [
+       "CERT-DEC",
+       "Certificat médical de décès",
+       "10 000 FCFA",
+       "SOS seule — 10 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      [
+       "CERT-DPS",
+       "Certificat médical de dispense aux activités physiques et sportives",
+       "5 000 FCFA",
+       "SOS seule — 5 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      [
+       "CERT-VC",
+       "Certificat médical de visite et de contre-visite",
+       "8 000 FCFA",
+       "SOS seule — 8 000 FCFA",
+       "0 FCFA",
+       "Mention manuscrite portée sur la grille des certificats",
+       ""
+      ]
+     ]
+    },
+    "detail": [
+     {
+      "ligne": [
+       "CERT-APT",
+       "Certificat médical d’aptitude",
+       "7 000 FCFA",
+       "SOS seule — 7 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      "tiroir": "CERT-APT — Certificat médical d’aptitudeCodeCERT-APTDésignationCertificat médical d’aptitudeFamilleCERTIFICATPrix non assuré7 000 FCFAPrix assuré7 000 FCFACouvertureSOS seuleDocument d’origineTarifs des certificats NASSIERA TOO"
+     },
+     {
+      "ligne": [
+       "CERT-ATG",
+       "Attestation de grossesse",
+       "7 000 FCFA",
+       "SOS seule — 7 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      "tiroir": "CERT-ATG — Attestation de grossesseCodeCERT-ATGDésignationAttestation de grossesseFamilleCERTIFICATPrix non assuré7 000 FCFAPrix assuré7 000 FCFACouvertureSOS seuleDocument d’origineTarifs des certificats NASSIERA TOO"
+     },
+     {
+      "ligne": [
+       "CERT-CBV",
+       "Certificat médical initial / de coups et blessures volontaires",
+       "20 000 FCFA",
+       "SOS seule — 20 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      "tiroir": "CERT-CBV — Certificat médical initial / de coups et blessures volontairesCodeCERT-CBVDésignationCertificat médical initial / de coups et blessures volontairesFamilleCERTIFICATPrix non assuré20 000 FCFAPrix assuré20 000 FCFACouvertureSOS seuleDocument d’origineTarifs des certificats NASSIERA TOO"
+     },
+     {
+      "ligne": [
+       "CERT-DEC",
+       "Certificat médical de décès",
+       "10 000 FCFA",
+       "SOS seule — 10 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      "tiroir": "CERT-DEC — Certificat médical de décèsCodeCERT-DECDésignationCertificat médical de décèsFamilleCERTIFICATPrix non assuré10 000 FCFAPrix assuré10 000 FCFACouvertureSOS seuleDocument d’origineTarifs des certificats NASSIERA TOO"
+     },
+     {
+      "ligne": [
+       "CERT-DPS",
+       "Certificat médical de dispense aux activités physiques et sportives",
+       "5 000 FCFA",
+       "SOS seule — 5 000 FCFA",
+       "0 FCFA",
+       "Tarifs des certificats NASSIERA TOO",
+       ""
+      ],
+      "tiroir": "CERT-DPS — Certificat médical de dispense aux activités physiques et sportivesCodeCERT-DPSDésignationCertificat médical de dispense aux activités physiques et sportivesFamilleCERTIFICATPrix non assuré5 000 FCFAPrix assuré5 000 FCFACouvertureSOS seuleDocument d’origineTarifs des certificats NASSIERA TOO"
+     },
+     {
+      "ligne": [
+       "CERT-VC",
+       "Certificat médical de visite et de contre-visite",
+       "8 000 FCFA",
+       "SOS seule — 8 000 FCFA",
+       "0 FCFA",
+       "Mention manuscrite portée sur la grille des certificats",
+       ""
+      ],
+      "tiroir": "CERT-VC — Certificat médical de visite et de contre-visiteCodeCERT-VCDésignationCertificat médical de visite et de contre-visiteFamilleCERTIFICATPrix non assuré8 000 FCFAPrix assuré8 000 FCFACouvertureSOS seuleDocument d’origineMention manuscrite portée sur la grille des certificats"
+     }
+    ]
+   }
+  ]
+ },
+ "catalogueDetails": [
+  {
+   "code": "LAB-HIV",
+   "drapeaux": {
+    "arbitrage": true,
+    "nonCouvert": false,
+    "aArbitrer": false,
+    "motifPrix": false,
+    "assurable": true
+   },
+   "ligne": [
+    "LAB-HIV",
+    "HIV",
+    "3 500 FCFA",
+    "2 500 FCFAarbitré",
+    "-1 000 FCFA",
+    "Tarifs des analyses de laboratoire NASSIERA TOO",
+    ""
+   ],
+   "tiroir": "LAB-HIV — HIVCodeLAB-HIVDésignationHIVFamilleLABOPrix non assuré3 500 FCFAPrix assuré2 500 FCFACouvertureToutes compagniesDocument d’origineTarifs des analyses de laboratoire NASSIERA TOOPrix arrêté par la Direction le 26/08/2026 — la grille ne le portait pas. Aligné sur les sérologies voisines : hépatite B et TPHA, 2 500 / 3 500."
+  },
+  {
+   "code": "HYD",
+   "drapeaux": {
+    "arbitrage": false,
+    "nonCouvert": true,
+    "aArbitrer": false,
+    "motifPrix": false,
+    "assurable": false
+   },
+   "ligne": [
+    "HYD",
+    "Hydrotubation",
+    "15 000 FCFA",
+    "NON COUVERT",
+    "—",
+    "Tarifs des actes gynéco-obstétricaux et kits NASSIERA TOO",
+    ""
+   ],
+   "tiroir": "HYD — HydrotubationCodeHYDDésignationHydrotubationFamilleGYNECOPrix non assuré15 000 FCFAPrix assuréNON COUVERTCouvertureAucuneDocument d’origineTarifs des actes gynéco-obstétricaux et kits NASSIERA TOOCet acte est NON COUVERT : l’assuré le règle au tarif non assuré, et la facture en porte le motif. Tous les actes de planification familiale sont dans ce cas."
+  },
+  {
+   "code": "CONS-PRE",
+   "drapeaux": {
+    "arbitrage": false,
+    "nonCouvert": false,
+    "aArbitrer": true,
+    "motifPrix": false,
+    "assurable": true
+   },
+   "ligne": [
+    "CONS-PRE",
+    "Consultation prénatale",
+    "5 000 FCFA",
+    "1 500 FCFA",
+    "-3 500 FCFA",
+    "Tarifs des consultations NASSIERA TOO",
+    ""
+   ],
+   "tiroir": "CONS-PRE — Consultation prénataleCodeCONS-PREDésignationConsultation prénataleFamilleCONSULTATIONPrix non assuré5 000 FCFAPrix assuré1 500 FCFACouvertureToutes compagniesDocument d’origineTarifs des consultations NASSIERA TOOLa Direction a énoncé 15 000 F ; le document tarifaire porte 1 500 / 5 000."
+  },
+  {
+   "code": "IMG-RX-THO",
+   "drapeaux": {
+    "arbitrage": false,
+    "nonCouvert": false,
+    "aArbitrer": false,
+    "motifPrix": true,
+    "assurable": true
+   },
+   "ligne": [
+    "IMG-RX-THO",
+    "Radiographie du thorax",
+    "10 000 FCFA",
+    "8 000 FCFA",
+    "-2 000 FCFA",
+    "Tarif d’attente — aucune grille remise",
+    ""
+   ],
+   "tiroir": "IMG-RX-THO — Radiographie du thoraxCodeIMG-RX-THODésignationRadiographie du thoraxFamilleIMAGERIEPrix non assuré10 000 FCFAPrix assuré8 000 FCFACouvertureToutes compagniesDocument d’origineTarif d’attente — aucune grille remiseTarif d’attente posé le 14/09/2026 — aucune grille remise pour cette modalité ; à arrêter par la Direction."
+  },
+  {
+   "code": "CERT-DPS",
+   "drapeaux": {
+    "arbitrage": false,
+    "nonCouvert": false,
+    "aArbitrer": false,
+    "motifPrix": false,
+    "assurable": "sos"
+   },
+   "ligne": [
+    "CERT-DPS",
+    "Certificat médical de dispense aux activités physiques et sportives",
+    "5 000 FCFA",
+    "SOS seule — 5 000 FCFA",
+    "0 FCFA",
+    "Tarifs des certificats NASSIERA TOO",
+    ""
+   ],
+   "tiroir": "CERT-DPS — Certificat médical de dispense aux activités physiques et sportivesCodeCERT-DPSDésignationCertificat médical de dispense aux activités physiques et sportivesFamilleCERTIFICATPrix non assuré5 000 FCFAPrix assuré5 000 FCFACouvertureSOS seuleDocument d’origineTarifs des certificats NASSIERA TOO"
+  }
+ ],
+ "catalogueCreations": {
+  "complet": {
+   "saisie": {
+    "code": "TST-C1",
+    "libelle": "Acte Test Complet",
+    "famille": "CONSULTATION",
+    "prixNonAssure": 5000,
+    "prixAssure": 4000
+   },
+   "creees": [
+    {
+     "code": "TST-C1",
+     "libelle": "Acte Test Complet",
+     "famille": "CONSULTATION",
+     "prixNonAssure": 5000,
+     "prixAssure": 4000,
+     "nonCouvert": false,
+     "source": "Saisi par l’administrateur",
+     "assurable": true,
+     "prixAValider": false
+    }
+   ],
+   "toasts": [
+    "Acte créé."
+   ],
+   "nbAvant": 147
+  },
+  "sansPrixAssure": {
+   "saisie": {
+    "code": "TST-C2",
+    "libelle": "Acte Test Sans Assuré",
+    "famille": "CONSULTATION",
+    "prixNonAssure": 5000
+   },
+   "creees": [
+    {
+     "code": "TST-C2",
+     "libelle": "Acte Test Sans Assuré",
+     "famille": "CONSULTATION",
+     "prixNonAssure": 5000,
+     "prixAssure": null,
+     "nonCouvert": false,
+     "source": "Saisi par l’administrateur",
+     "assurable": true,
+     "prixAValider": true
+    }
+   ],
+   "toasts": [
+    "Acte créé."
+   ],
+   "nbAvant": 148
+  },
+  "nonCouvert": {
+   "saisie": {
+    "code": "TST-C3",
+    "libelle": "Acte Test Non Couvert",
+    "famille": "CONSULTATION",
+    "prixNonAssure": 5000,
+    "nonCouvert": true,
+    "source": "Document test"
+   },
+   "creees": [
+    {
+     "code": "TST-C3",
+     "libelle": "Acte Test Non Couvert",
+     "famille": "CONSULTATION",
+     "prixNonAssure": 5000,
+     "prixAssure": null,
+     "nonCouvert": true,
+     "source": "Document test",
+     "assurable": false,
+     "prixAValider": false
+    }
+   ],
+   "toasts": [
+    "Acte créé."
+   ],
+   "nbAvant": 149
+  },
+  "sansPrix": {
+   "saisie": {
+    "code": "TST-C4",
+    "libelle": "Acte Test Sans Prix",
+    "famille": "CONSULTATION"
+   },
+   "creees": [
+    {
+     "code": "TST-C4",
+     "libelle": "Acte Test Sans Prix",
+     "famille": "CONSULTATION",
+     "prixNonAssure": null,
+     "prixAssure": null,
+     "nonCouvert": false,
+     "source": "Saisi par l’administrateur",
+     "assurable": true,
+     "prixAValider": true
+    }
+   ],
+   "toasts": [
+    "Acte créé."
+   ],
+   "nbAvant": 150
+  }
+ },
+ "entetes": {
+  "kpis": [
+   [
+    "IFU imprimé",
+    "1",
+    "3201642748214"
+   ],
+   [
+    "RCCM imprimé",
+    "1",
+    "RB/NAT/2016-B-268"
+   ],
+   [
+    "Autorisation d’ouverture",
+    "1",
+    null
+   ],
+   [
+    "États alimentés",
+    "Tous",
+    null
+   ]
+  ],
+  "notes": [
+   "Les pièces émises AVANT l’unification portent d’autres identités — trois IFU, trois RCCM et deux autorisations relevés sur les 37 documents collectés (certificats médico-légaux, rapport médical, comptes rendus de laboratoire et d’imagerie). Ces pièces restent valables et documentées par leurs scans dans docs/ ; elles ne sont simplement plus reproduites. Un document ancien qui diverge du présent en-tête n’est donc pas un faux."
+  ],
+  "grille": [
+   "IFU imprimé13201642748214RCCM imprimé1RB/NAT/2016-B-268Autorisation d’ouverture1États alimentésTous",
+   ""
+  ],
+  "texte": "IFU imprimé13201642748214RCCM imprimé1RB/NAT/2016-B-268Autorisation d’ouverture1États alimentésTousIdentité légale imprimée sur chaque étatDénominationCLINIQUE NASSIERA TOO SARL — Société à Responsabilité LimitéeDevise de l’établissementVotre santé, notre raison de vivreAdresseQuartier Tchirimina, Natitingou · BP : 507 NATITINGOU (Rép. du Bénin)Téléphones01 95 44 51 51 / 01 66 43 28 20Ligne rendez-vous60 33 92 92Courrielcliniquenassiera@gmail.comIFU3201642748214RCCMRB/NAT/2016-B-268Autorisation d’ouvertureN° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020Autorisation d’exerciceNon imprimée — Non applicable — l’inscription à l’ordre suffit depuis la loi 2025-1 de juin 2026. L’autorisation d’exercice n’est plus imprimée sur les états.Les pièces émises AVANT l’unification portent d’autres identités — trois IFU, trois RCCM et deux autorisations relevés sur les 37 documents collectés (certificats médico-légaux, rapport médical, comptes rendus de laboratoire et d’imagerie). Ces pièces restent valables et documentées par leurs scans dans docs/ ; elles ne sont simplement plus reproduites. Un document ancien qui diverge du présent en-tête n’est donc pas un faux."
+ },
+ "typesPiece": {
+  "kpis": [
+   [
+    "Types de pièces",
+    "14",
+    null
+   ],
+   [
+    "Tarifés au catalogue",
+    "6",
+    null
+   ],
+   [
+    "Sigles en collision",
+    "4",
+    null
+   ],
+   [
+    "Pièces délivrées",
+    "0",
+    null
+   ]
+  ],
+  "notes": [
+   "Deux sigles servent chacun à deux pièces dans les documents sources : CMA pour l’accouchement et pour l’aptitude, CMD pour le décès et pour le genre de mort. Les sigles sont conservés tels quels — renuméroter d’office romprait la correspondance avec les registres papier tenus depuis des années. Trancher appartient à la Direction."
+  ],
+  "tableau": {
+   "entetes": [
+    "Sigle",
+    "Pièce",
+    "Direction",
+    "Tarif",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "ATG",
+     "Attestation de grossesse",
+     "DG/DE",
+     "7 000 FCFA",
+     ""
+    ],
+    [
+     "CMAcollision",
+     "Certificat médical d’accouchement",
+     "DG/DE",
+     "—",
+     ""
+    ],
+    [
+     "CMAcollision",
+     "Certificat médical d’aptitude",
+     "DG/DE",
+     "7 000 FCFA",
+     ""
+    ],
+    [
+     "CMR-H",
+     "Certificat médical d’arrêt de travail et/ou d’hospitalisation",
+     "DG/DA",
+     "—",
+     ""
+    ],
+    [
+     "CMH",
+     "Certificat médical d’hospitalisation (garde-malade)",
+     "DG/DE",
+     "—",
+     ""
+    ],
+    [
+     "CMCBV",
+     "Certificat médical de coups et blessures volontaires",
+     "CN",
+     "20 000 FCFA",
+     ""
+    ],
+    [
+     "CMDcollision",
+     "Certificat médical de décès",
+     "DA",
+     "10 000 FCFA",
+     ""
+    ],
+    [
+     "CMDPS",
+     "Certificat médical de dispense aux activités physiques et sportives",
+     "DG/DE",
+     "5 000 FCFA",
+     ""
+    ],
+    [
+     "CMDcollision",
+     "Certificat médical de genre de mort",
+     "DA",
+     "—",
+     ""
+    ],
+    [
+     "CMNCI",
+     "Certificat médical de non contre-indication aux activités physiques et sportives",
+     "DM/DA",
+     "—",
+     ""
+    ],
+    [
+     "CMNI",
+     "Certificat médical de non-infirmité",
+     "DG/DE",
+     "—",
+     ""
+    ],
+    [
+     "CMVC",
+     "Certificat médical de visite et de contre-visite",
+     "DG/DE",
+     "8 000 FCFA",
+     ""
+    ]
+   ]
+  },
+  "details": [
+   {
+    "ligne": [
+     "ATG",
+     "Attestation de grossesse",
+     "DG/DE",
+     "7 000 FCFA",
+     ""
+    ],
+    "tiroir": "Attestation de grossesseSigleATGPièceAttestation de grossesseDirection émettriceDG/DENumérotationATG n°/n°/CNT/DG/DE/2026Tarif7 000 FCFACouvertureSOS seule"
+   },
+   {
+    "ligne": [
+     "CMAcollision",
+     "Certificat médical d’accouchement",
+     "DG/DE",
+     "—",
+     ""
+    ],
+    "tiroir": "Certificat médical d’accouchementSigleCMAPièceCertificat médical d’accouchementDirection émettriceDG/DENumérotationCMA n°/n°/CNT/DG/DE/2026Tarifnon tariféCouverture—Le sigle CMA désigne aussi le certificat médical d’aptitude. Le sigle est conservé tel quel : la correspondance avec les registres papier prime sur la cohérence apparente."
+   },
+   {
+    "ligne": [
+     "CMAcollision",
+     "Certificat médical d’aptitude",
+     "DG/DE",
+     "7 000 FCFA",
+     ""
+    ],
+    "tiroir": "Certificat médical d’aptitudeSigleCMAPièceCertificat médical d’aptitudeDirection émettriceDG/DENumérotationCMA n°/n°/CNT/DG/DE/2026Tarif7 000 FCFACouvertureSOS seuleLe sigle CMA désigne aussi le certificat médical d’accouchement. Le sigle est conservé tel quel : la correspondance avec les registres papier prime sur la cohérence apparente."
+   },
+   {
+    "ligne": [
+     "CMR-H",
+     "Certificat médical d’arrêt de travail et/ou d’hospitalisation",
+     "DG/DA",
+     "—",
+     ""
+    ],
+    "tiroir": "Certificat médical d’arrêt de travail et/ou d’hospitalisationSigleCMR-HPièceCertificat médical d’arrêt de travail et/ou d’hospitalisationDirection émettriceDG/DANumérotationCMR-H n°/n°/CNT/DG/DA/2026Tarifnon tariféCouverture—"
+   },
+   {
+    "ligne": [
+     "CMH",
+     "Certificat médical d’hospitalisation (garde-malade)",
+     "DG/DE",
+     "—",
+     ""
+    ],
+    "tiroir": "Certificat médical d’hospitalisation (garde-malade)SigleCMHPièceCertificat médical d’hospitalisation (garde-malade)Direction émettriceDG/DENumérotationCMH n°/n°/CNT/DG/DE/2026Tarifnon tariféCouverture—"
+   },
+   {
+    "ligne": [
+     "CMCBV",
+     "Certificat médical de coups et blessures volontaires",
+     "CN",
+     "20 000 FCFA",
+     ""
+    ],
+    "tiroir": "Certificat médical de coups et blessures volontairesSigleCMCBVPièceCertificat médical de coups et blessures volontairesDirection émettriceCNNumérotationCMCBV n°/n°/CNT/CN/2026Tarif20 000 FCFACouvertureSOS seule"
+   },
+   {
+    "ligne": [
+     "CMDcollision",
+     "Certificat médical de décès",
+     "DA",
+     "10 000 FCFA",
+     ""
+    ],
+    "tiroir": "Certificat médical de décèsSigleCMDPièceCertificat médical de décèsDirection émettriceDANumérotationCMD n°/n°/CNT/DA/2026Tarif10 000 FCFACouvertureSOS seuleLe sigle CMD désigne aussi le certificat de genre de mort. Le sigle est conservé tel quel : la correspondance avec les registres papier prime sur la cohérence apparente."
+   },
+   {
+    "ligne": [
+     "CMDPS",
+     "Certificat médical de dispense aux activités physiques et sportives",
+     "DG/DE",
+     "5 000 FCFA",
+     ""
+    ],
+    "tiroir": "Certificat médical de dispense aux activités physiques et sportivesSigleCMDPSPièceCertificat médical de dispense aux activités physiques et sportivesDirection émettriceDG/DENumérotationCMDPS n°/n°/CNT/DG/DE/2026Tarif5 000 FCFACouvertureSOS seule"
+   },
+   {
+    "ligne": [
+     "CMDcollision",
+     "Certificat médical de genre de mort",
+     "DA",
+     "—",
+     ""
+    ],
+    "tiroir": "Certificat médical de genre de mortSigleCMDPièceCertificat médical de genre de mortDirection émettriceDANumérotationCMD n°/n°/CNT/DA/2026Tarifnon tariféCouverture—Le sigle CMD désigne aussi le certificat médical de décès. Le sigle est conservé tel quel : la correspondance avec les registres papier prime sur la cohérence apparente."
+   },
+   {
+    "ligne": [
+     "CMNCI",
+     "Certificat médical de non contre-indication aux activités physiques et sportives",
+     "DM/DA",
+     "—",
+     ""
+    ],
+    "tiroir": "Certificat médical de non contre-indication aux activités physiques et sportivesSigleCMNCIPièceCertificat médical de non contre-indication aux activités physiques et sportivesDirection émettriceDM/DANumérotationCMNCI n°/n°/CNT/DM/DA/2026Tarifnon tariféCouverture—"
+   },
+   {
+    "ligne": [
+     "CMNI",
+     "Certificat médical de non-infirmité",
+     "DG/DE",
+     "—",
+     ""
+    ],
+    "tiroir": "Certificat médical de non-infirmitéSigleCMNIPièceCertificat médical de non-infirmitéDirection émettriceDG/DENumérotationCMNI n°/n°/CNT/DG/DE/2026Tarifnon tariféCouverture—"
+   },
+   {
+    "ligne": [
+     "CMVC",
+     "Certificat médical de visite et de contre-visite",
+     "DG/DE",
+     "8 000 FCFA",
+     ""
+    ],
+    "tiroir": "Certificat médical de visite et de contre-visiteSigleCMVCPièceCertificat médical de visite et de contre-visiteDirection émettriceDG/DENumérotationCMVC n°/n°/CNT/DG/DE/2026Tarif8 000 FCFACouvertureSOS seule"
+   }
+  ]
+ },
+ "typesPieceCreations": {
+  "sansTarif": {
+   "saisie": {
+    "sigle": "TST",
+    "libelle": "Pièce test",
+    "direction": "DM"
+   },
+   "creees": [
+    {
+     "sigle": "TST",
+     "libelle": "Pièce test",
+     "direction": "DM",
+     "tarifCode": ""
+    }
+   ],
+   "toasts": [
+    "Type de pièce créé."
+   ],
+   "nbAvant": 14
+  }
+ },
+ "rappels": {
+  "kpis": [
+   [
+    "Modèles de message",
+    "6",
+    null
+   ],
+   [
+    "Modèles actifs",
+    "6",
+    null
+   ],
+   [
+    "Rappels préparés",
+    "0",
+    null
+   ],
+   [
+    "En file d’envoi",
+    "0",
+    "le logiciel prépare, il n’envoie pas"
+   ]
+  ],
+  "notes": [
+   "Le prototype compose les messages et les met en file. Il ne les envoie pas : la solution fonctionne hors ligne, sans passerelle SMS ni serveur de messagerie. Prétendre l’envoi serait mentir sur ce qui se passe — et la clinique croirait ses patients prévenus."
+  ],
+  "onglets": [
+   "Modèles de message6",
+   "Rappels préparés0",
+   "Variables5"
+  ],
+  "modeles": {
+   "entetes": [
+    "Modèle",
+    "Occasion",
+    "Texte",
+    "Actif",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "Rappel de règlement",
+     "Échéance de règlement",
+     "Bonjour {{nom}}, un reliquat reste dû sur votre dossier à {{clinique}}. Nous vous remercio…",
+     "Oui",
+     ""
+    ],
+    [
+     "Résultat disponible",
+     "Résultat disponible",
+     "Bonjour {{nom}}, votre résultat est disponible à {{clinique}}. Vous pouvez le retirer aux …",
+     "Oui",
+     ""
+    ],
+    [
+     "Rappel de rendez-vous",
+     "Rappel de rendez-vous",
+     "Bonjour {{nom}}, nous vous rappelons votre rendez-vous à {{clinique}} le {{rdv}}. Pour tou…",
+     "Oui",
+     ""
+    ],
+    [
+     "Vœux de fête",
+     "Fête ou jour férié",
+     "Bonjour {{nom}}, {{clinique}} vous souhaite une excellente fête, entouré des vôtres.",
+     "Oui",
+     ""
+    ],
+    [
+     "Vœux de nouvel an",
+     "Nouvel an",
+     "Bonjour {{nom}}, {{clinique}} vous présente ses meilleurs vœux pour la nouvelle année : sa…",
+     "Oui",
+     ""
+    ],
+    [
+     "Anniversaire",
+     "Anniversaire du patient",
+     "Bonjour {{nom}}, toute l’équipe de {{clinique}} vous souhaite un très joyeux anniversaire …",
+     "Oui",
+     ""
+    ]
+   ]
+  },
+  "apercus": [
+   {
+    "ligne": [
+     "Rappel de règlement",
+     "Échéance de règlement",
+     "Bonjour {{nom}}, un reliquat reste dû sur votre dossier à {{clinique}}. Nous vous remercio…",
+     "Oui",
+     ""
+    ],
+    "tiroir": "Rappel de règlementIntituléRappel de règlementOccasionÉchéance de règlementActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, un reliquat reste dû sur votre dossier à {{clinique}}. Nous vous remercions de bien vouloir passer à la caisse.Aperçu, variables remplacéesBonjour OROU YO Marguerite, un reliquat reste dû sur votre dossier à CLINIQUE NASSIERA TOO SARL. Nous vous remercions de bien vouloir passer à la caisse."
+   },
+   {
+    "ligne": [
+     "Résultat disponible",
+     "Résultat disponible",
+     "Bonjour {{nom}}, votre résultat est disponible à {{clinique}}. Vous pouvez le retirer aux …",
+     "Oui",
+     ""
+    ],
+    "tiroir": "Résultat disponibleIntituléRésultat disponibleOccasionRésultat disponibleActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, votre résultat est disponible à {{clinique}}. Vous pouvez le retirer aux heures d’ouverture.Aperçu, variables remplacéesBonjour OROU YO Marguerite, votre résultat est disponible à CLINIQUE NASSIERA TOO SARL. Vous pouvez le retirer aux heures d’ouverture."
+   },
+   {
+    "ligne": [
+     "Rappel de rendez-vous",
+     "Rappel de rendez-vous",
+     "Bonjour {{nom}}, nous vous rappelons votre rendez-vous à {{clinique}} le {{rdv}}. Pour tou…",
+     "Oui",
+     ""
+    ],
+    "tiroir": "Rappel de rendez-vousIntituléRappel de rendez-vousOccasionRappel de rendez-vousActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, nous vous rappelons votre rendez-vous à {{clinique}} le {{rdv}}. Pour toute modification, appelez le {{telephone}}.Aperçu, variables remplacéesBonjour OROU YO Marguerite, nous vous rappelons votre rendez-vous à CLINIQUE NASSIERA TOO SARL le 31/10/2026 à 09h00. Pour toute modification, appelez le 60 33 92 92."
+   },
+   {
+    "ligne": [
+     "Vœux de fête",
+     "Fête ou jour férié",
+     "Bonjour {{nom}}, {{clinique}} vous souhaite une excellente fête, entouré des vôtres.",
+     "Oui",
+     ""
+    ],
+    "tiroir": "Vœux de fêteIntituléVœux de fêteOccasionFête ou jour fériéActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, {{clinique}} vous souhaite une excellente fête, entouré des vôtres.Aperçu, variables remplacéesBonjour OROU YO Marguerite, CLINIQUE NASSIERA TOO SARL vous souhaite une excellente fête, entouré des vôtres."
+   },
+   {
+    "ligne": [
+     "Vœux de nouvel an",
+     "Nouvel an",
+     "Bonjour {{nom}}, {{clinique}} vous présente ses meilleurs vœux pour la nouvelle année : sa…",
+     "Oui",
+     ""
+    ],
+    "tiroir": "Vœux de nouvel anIntituléVœux de nouvel anOccasionNouvel anActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, {{clinique}} vous présente ses meilleurs vœux pour la nouvelle année : santé, paix et prospérité à vous et à toute votre famille.Aperçu, variables remplacéesBonjour OROU YO Marguerite, CLINIQUE NASSIERA TOO SARL vous présente ses meilleurs vœux pour la nouvelle année : santé, paix et prospérité à vous et à toute votre famille."
+   },
+   {
+    "ligne": [
+     "Anniversaire",
+     "Anniversaire du patient",
+     "Bonjour {{nom}}, toute l’équipe de {{clinique}} vous souhaite un très joyeux anniversaire …",
+     "Oui",
+     ""
+    ],
+    "tiroir": "AnniversaireIntituléAnniversaireOccasionAnniversaire du patientActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, toute l’équipe de {{clinique}} vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre.Aperçu, variables remplacéesBonjour OROU YO Marguerite, toute l’équipe de CLINIQUE NASSIERA TOO SARL vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre."
+   }
+  ],
+  "rappelsVide": null,
+  "variables": [
+   {
+    "entetes": [
+     "Jeton",
+     "Remplacé par"
+    ],
+    "lignes": [
+     [
+      "{{nom}}",
+      "Nom et prénoms du patient"
+     ],
+     [
+      "{{clinique}}",
+      "Dénomination de la clinique"
+     ],
+     [
+      "{{date}}",
+      "Date de l’occasion"
+     ],
+     [
+      "{{telephone}}",
+      "Ligne téléphonique de la clinique"
+     ],
+     [
+      "{{rdv}}",
+      "Date et heure du rendez-vous"
+     ]
+    ]
+   }
+  ],
+  "notesVariables": [
+   "Le prototype compose les messages et les met en file. Il ne les envoie pas : la solution fonctionne hors ligne, sans passerelle SMS ni serveur de messagerie. Prétendre l’envoi serait mentir sur ce qui se passe — et la clinique croirait ses patients prévenus.",
+   "Ces jetons sont remplacés au moment de composer le message. Un jeton inconnu reste tel quel dans le texte — visible, donc corrigeable, plutôt que remplacé par du vide."
+  ]
+ },
+ "rappelsAnniversaires": {
+  "jour": "2026-10-31",
+  "patients": [
+   {
+    "nom": "TCHANE Bertine",
+    "tel": "0372398919",
+    "dateNaissance": "1990-10-31"
+   },
+   {
+    "nom": "BAKO Boukari",
+    "tel": "0395837962",
+    "dateNaissance": "2001-10-31"
+   }
+  ],
+  "texteModele": "Bonjour {{nom}}, toute l’équipe de {{clinique}} vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre.",
+  "premier": {
+   "toasts": [
+    {
+     "message": "2 rappel(s) préparé(s) — 2 anniversaire(s) aujourd’hui.",
+     "type": "success",
+     "detail": "Les messages sont EN FILE : le logiciel ne les envoie pas."
+    }
+   ],
+   "rappels": [
+    {
+     "reference": "RPL-00002",
+     "occasion": "Anniversaire",
+     "patientId": "PAT0002",
+     "destinataire": "BAKO Boukari",
+     "telephone": "0395837962",
+     "dateEcheance": "2026-10-31",
+     "etat": "en_file",
+     "message": "Bonjour BAKO Boukari, toute l’équipe de CLINIQUE NASSIERA TOO SARL vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre."
+    },
+    {
+     "reference": "RPL-00001",
+     "occasion": "Anniversaire",
+     "patientId": "PAT0001",
+     "destinataire": "TCHANE Bertine",
+     "telephone": "0372398919",
+     "dateEcheance": "2026-10-31",
+     "etat": "en_file",
+     "message": "Bonjour TCHANE Bertine, toute l’équipe de CLINIQUE NASSIERA TOO SARL vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre."
+    }
+   ],
+   "onglets": [
+    "Modèles de message6",
+    "Rappels préparés2",
+    "Variables5"
+   ],
+   "actif": "Modèles de message6"
+  },
+  "second": {
+   "toasts": [
+    {
+     "message": "0 rappel(s) préparé(s) — 2 anniversaire(s) aujourd’hui.",
+     "type": "info",
+     "detail": "Les messages sont EN FILE : le logiciel ne les envoie pas."
+    }
+   ],
+   "crees": 0
+  },
+  "sansModele": [
+   {
+    "message": "Aucun modèle d’anniversaire actif.",
+    "type": "error",
+    "detail": null
+   }
+  ],
+  "avant": [
+   "1989-07-01",
+   "1969-12-10"
+  ]
+ },
+ "rappelsCreations": {
+  "modele": {
+   "saisie": {
+    "occasion": "fete",
+    "libelle": "Modèle test",
+    "texte": "Bonjour {{nom}} — {{inconnu}} à {{clinique}}",
+    "actif": true
+   },
+   "creees": [
+    {
+     "source": "Rédigé par l’administrateur",
+     "occasion": "fete",
+     "libelle": "Modèle test",
+     "texte": "Bonjour {{nom}} — {{inconnu}} à {{clinique}}",
+     "actif": true
+    }
+   ],
+   "toasts": [
+    "Modèle créé."
+   ],
+   "nbAvant": 6
+  }
+ },
+ "certificats": {
+  "kpis": [
+   [
+    "Certificats délivrés",
+    "0",
+    null
+   ],
+   [
+    "Types au catalogue",
+    "8",
+    null
+   ],
+   [
+    "Délivrés ce mois",
+    "0",
+    null
+   ],
+   [
+    "Praticiens signataires",
+    "0",
+    null
+   ]
+  ],
+  "cartes": [
+   "Types de certificats — cliquer pour rédiger"
+  ],
+  "cartesTypes": [
+   "Certificat médical de reposAucun délivré",
+   "Certificat médical de grossesseAucun délivré",
+   "Attestation d’accouchementAucun délivré",
+   "Certificat médical de coups et blessures involontairesAucun délivré",
+   "Certificat médical initialAucun délivré",
+   "Certificat médical de guérisonAucun délivré",
+   "Certificat prénuptialAucun délivré",
+   "Certificat d’aptitude physiqueAucun délivré"
+  ],
+  "tableau": null,
+  "composes": [
+   {
+    "carte": "Certificat médical de reposAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "duree",
+     "dateDebut"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Durée du repos (jours) *",
+     "À compter du *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine, et atteste que son état de santé nécessite un repos de …………… jour(s) à compter du …………….",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine, et atteste que son état de santé nécessite un repos de 3 jour(s) à compter du 17/08/2026."
+   },
+   {
+    "carte": "Certificat médical de grossesseAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "termeSemaines",
+     "datePresumee"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Terme (semaines d’aménorrhée) *",
+     "Terme présumé *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine, et atteste qu’elle présente une grossesse évolutive de …………… semaines d’aménorrhée, dont le terme est présumé au …………….",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine, et atteste qu’elle présente une grossesse évolutive de 28 semaines d’aménorrhée, dont le terme est présumé au 20/11/2026."
+   },
+   {
+    "carte": "Attestation d’accouchementAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "dateAccouchement",
+     "sexeEnfant"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Date d’accouchement *",
+     "Sexe de l’enfant *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, atteste que TCHANE Bertine a accouché dans notre établissement le …………… d’un enfant de sexe masculin.",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, atteste que TCHANE Bertine a accouché dans notre établissement le 10/08/2026 d’un enfant de sexe féminin."
+   },
+   {
+    "carte": "Certificat médical de coups et blessures involontairesAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "constatations",
+     "itt"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Constatations médicales *",
+     "Incapacité totale de travail (jours) *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine et avoir constaté : ……………. Ces lésions entraînent une incapacité totale de travail de …………… jour(s), sauf complications.",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine et avoir constaté : une plaie superficielle du bras. Ces lésions entraînent une incapacité totale de travail de 5 jour(s), sauf complications."
+   },
+   {
+    "carte": "Certificat médical initialAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "constatations",
+     "itt"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Constatations médicales *",
+     "Incapacité totale de travail (jours) *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine et avoir constaté : ……………. Incapacité totale de travail estimée à …………… jour(s), sous réserve de complications ultérieures.",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine et avoir constaté : une plaie superficielle du bras. Incapacité totale de travail estimée à 5 jour(s), sous réserve de complications ultérieures."
+   },
+   {
+    "carte": "Certificat médical de guérisonAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "affection",
+     "dateGuerison"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Affection traitée *",
+     "Date de guérison *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, certifie que TCHANE Bertine, traité(e) pour ……………, est déclaré(e) guéri(e) depuis le …………… et peut reprendre ses activités.",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, certifie que TCHANE Bertine, traité(e) pour un paludisme simple, est déclaré(e) guéri(e) depuis le 12/08/2026 et peut reprendre ses activités."
+   },
+   {
+    "carte": "Certificat prénuptialAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "examens"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Examens pratiqués *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine dans le cadre d’un examen prénuptial. Examens pratiqués : ……………. Aucune contre-indication médicale au mariage n’a été relevée.",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine dans le cadre d’un examen prénuptial. Examens pratiqués : NFS, groupe sanguin, sérologies. Aucune contre-indication médicale au mariage n’a été relevée."
+   },
+   {
+    "carte": "Certificat d’aptitude physiqueAucun délivré",
+    "champs": [
+     "patientCode",
+     "praticien",
+     "date",
+     "activite"
+    ],
+    "libelles": [
+     "Patient *",
+     "Praticien signataire *",
+     "Date de délivrance *",
+     "Activité concernée *"
+    ],
+    "apercuVide": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine et n’avoir constaté aucune contre-indication à la pratique de : …………….",
+    "apercuRempli": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine et n’avoir constaté aucune contre-indication à la pratique de : la natation."
+   }
+  ],
+  "patient": {
+   "code": "CNT/1/25",
+   "nom": "TCHANE Bertine"
+  },
+  "praticien": "BASSONGUI Chabi Séko",
+  "valeurs": {
+   "duree": "3",
+   "dateDebut": "2026-08-17",
+   "termeSemaines": "28",
+   "datePresumee": "2026-11-20",
+   "dateAccouchement": "2026-08-10",
+   "sexeEnfant": "féminin",
+   "constatations": "une plaie superficielle du bras",
+   "itt": "5",
+   "affection": "un paludisme simple",
+   "dateGuerison": "2026-08-12",
+   "examens": "NFS, groupe sanguin, sérologies",
+   "activite": "la natation"
+  },
+  "delivrance": {
+   "fiche": [
+    {
+     "patientCode": "CNT/1/25",
+     "praticien": "BASSONGUI Chabi Séko",
+     "date": "2026-08-16",
+     "duree": 3,
+     "dateDebut": "2026-08-17",
+     "type": "repos",
+     "numero": "CERT-2026-0001",
+     "patientId": "PAT0001",
+     "patient": "TCHANE Bertine",
+     "texte": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine, et atteste que son état de santé nécessite un repos de 3 jour(s) à compter du 17/08/2026."
+    }
+   ],
+   "toasts": [
+    {
+     "message": "Certificat CERT-2026-0001 délivré.",
+     "type": "success",
+     "detail": "Certificat médical de repos — TCHANE Bertine"
+    }
+   ],
+   "impression": {
+    "titre": "CERTIFICAT MÉDICAL DE REPOS",
+    "sousTitre": "CERT-2026-0001",
+    "cartouche": [
+     [
+      "Patient",
+      "TCHANE Bertine"
+     ],
+     [
+      "Dossier",
+      "CNT/1/25"
+     ],
+     [
+      "Âge",
+      "36 ans"
+     ],
+     [
+      "Date de délivrance",
+      "16/08/2026"
+     ],
+     [
+      "Praticien",
+      "BASSONGUI Chabi Séko"
+     ],
+     [
+      "N° du certificat",
+      "CERT-2026-0001"
+     ]
+    ],
+    "signatures": [
+     {
+      "role": "Le praticien",
+      "nom": "BASSONGUI Chabi Séko",
+      "mention": "Signature et cachet"
+     }
+    ],
+    "texte": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine, et atteste que son état de santé nécessite un repos de 3 jour(s) à compter du 17/08/2026.Certificat établi à la demande de l’intéressé(e) et remis en main propre pour servir et valoir ce que de droit."
+   },
+   "journal": {
+    "id": "LOGmvvrep7u",
+    "dateHeure": "2026-10-31T02:05:49.482Z",
+    "utilisateur": "BASSONGUI Chabi Séko",
+    "action": "Délivrance de certificat",
+    "module": "CFG",
+    "entite": "Certificat médical de repos",
+    "reference": "CERT-2026-0001",
+    "ancienneValeur": null,
+    "nouvelleValeur": "{\"patient\":\"TCHANE Bertine\"}",
+    "poste": "POSTE-LOCAL",
+    "succes": true
+   }
+  },
+  "registre": {
+   "entetes": [
+    "N°",
+    "Date",
+    "Patient",
+    "Type",
+    "Praticien signataire",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "CERT-2026-0001",
+     "16/08/2026",
+     "TCHANE BertineCNT/1/25",
+     "Certificat médical de repos",
+     "BASSONGUI Chabi Séko",
+     ""
+    ]
+   ]
+  },
+  "kpisApres": [
+   [
+    "Certificats délivrés",
+    "1",
+    null
+   ],
+   [
+    "Types au catalogue",
+    "8",
+    null
+   ],
+   [
+    "Délivrés ce mois",
+    "0",
+    null
+   ],
+   [
+    "Praticiens signataires",
+    "1",
+    null
+   ]
+  ]
+ },
+ "natures": {
+  "kpis": [
+   [
+    "Natures disponibles",
+    "14",
+    null
+   ],
+   [
+    "Secteurs couverts",
+    "8",
+    null
+   ],
+   [
+    "Natures archivées",
+    "0",
+    "Restaurables depuis la corbeille"
+   ]
+  ],
+  "tableau": {
+   "entetes": [
+    "Code",
+    "Nature",
+    "Secteur émetteur",
+    "Origine",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "CONS",
+     "Consultation généraliste",
+     "Médecine générale",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "CSPE",
+     "Consultation spécialiste",
+     "Chirurgie",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "CCPN",
+     "Consultation prénatale (CPN)",
+     "Maternité",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "MATE",
+     "Maternité",
+     "Maternité",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "OBSE",
+     "Mise en observation",
+     "Soins et observation",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "HOSP",
+     "Hospitalisation",
+     "Soins et observation",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "LABO",
+     "Laboratoire",
+     "Laboratoire",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "PHAR",
+     "Pharmacie",
+     "Pharmacie",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "SOIN",
+     "Soins",
+     "Soins et observation",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "ECHO",
+     "Échographie",
+     "Imagerie médicale",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "CHIR",
+     "Chirurgie",
+     "Chirurgie",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "DOMI",
+     "Soins à domicile",
+     "Soins et observation",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "CERT",
+     "Certificat médical",
+     "Médecine générale",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ],
+    [
+     "AMBU",
+     "Ambulance",
+     "Accueil",
+     "Émission de facture — demande de la Direction du 19/08/2026",
+     ""
+    ]
+   ]
+  },
+  "notes": []
+ },
+ "naturesCreations": {
+  "sansCode": {
+   "saisie": {
+    "libelle": "Soins externes test",
+    "secteur": "Médecine générale"
+   },
+   "creees": [
+    {
+     "libelle": "Soins externes test",
+     "code": "SOIN",
+     "secteur": "Médecine générale",
+     "source": "Décision de la Direction",
+     "ordre": 15
+    }
+   ],
+   "toasts": [
+    "Nature créé."
+   ],
+   "nbAvant": 14
+  },
+  "avecCode": {
+   "saisie": {
+    "libelle": "Dentisterie",
+    "code": "dent",
+    "secteur": "Médecine générale",
+    "source": "Note test"
+   },
+   "creees": [
+    {
+     "libelle": "Dentisterie",
+     "code": "dent",
+     "secteur": "Médecine générale",
+     "source": "Note test",
+     "ordre": 16
+    }
+   ],
+   "toasts": [
+    "Nature créé."
+   ],
+   "nbAvant": 15
+  }
+ },
+ "imagerie": {
+  "kpis": [
+   [
+    "Examens au catalogue",
+    "24",
+    null
+   ],
+   [
+    "Variables de compte rendu",
+    "280",
+    null
+   ],
+   [
+    "Variables fermées",
+    "0",
+    null
+   ],
+   [
+    "Listes de choix",
+    "197",
+    "La demande du brouillon manuscrit"
+   ]
+  ],
+  "onglets": [
+   "Examens24",
+   "Variables280"
+  ],
+  "examens": {
+   "entetes": [
+    "Code",
+    "Intitulé",
+    "Modalité",
+    "Origine",
+    "Voie d’abord",
+    "Variables",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "IMG-ECHO-PEL",
+     "Échographie pelvienne",
+     "Échographie",
+     "Documentée",
+     "sus-pubienne",
+     "10",
+     ""
+    ],
+    [
+     "IMG-ECHO-ABD",
+     "Échographie abdominale",
+     "Échographie",
+     "Documentée",
+     "transpariétale",
+     "15",
+     ""
+    ],
+    [
+     "IMG-ECHO-ABP",
+     "Échographie abdomino-pelvienne",
+     "Échographie",
+     "Documentée",
+     "transpariétale",
+     "19",
+     ""
+    ],
+    [
+     "IMG-ECHO-PRO",
+     "Échographie vésico-prostatique",
+     "Échographie",
+     "Documentée",
+     "sus-pubienne",
+     "18",
+     ""
+    ],
+    [
+     "IMG-ECHO-OBS",
+     "Échographie obstétricale",
+     "Échographie",
+     "Documentée",
+     "sus-pubienne",
+     "25",
+     ""
+    ],
+    [
+     "IMG-ECHO-OBS1",
+     "Échographie obstétricale du 1er trimestre",
+     "Échographie",
+     "Documentée",
+     "sus-pubienne",
+     "12",
+     ""
+    ],
+    [
+     "IMG-ECHO-OBS1E",
+     "Échographie obstétricale du 1er trimestre évolué",
+     "Échographie",
+     "Documentée",
+     "sus-pubienne",
+     "15",
+     ""
+    ],
+    [
+     "IMG-ECG",
+     "Électrocardiogramme (ECG)",
+     "Échographie",
+     "Documentée",
+     "—",
+     "9",
+     ""
+    ],
+    [
+     "IMG-RX-THO",
+     "Radiographie du thorax",
+     "Radiographie",
+     "Proposition à valider",
+     "—",
+     "10",
+     ""
+    ],
+    [
+     "IMG-RX-BAS",
+     "Radiographie du bassin",
+     "Radiographie",
+     "Proposition à valider",
+     "—",
+     "6",
+     ""
+    ]
+   ]
+  },
+  "variables": {
+   "entetes": [
+    "Examen",
+    "Variable",
+    "Type",
+    "Choix / unité",
+    "État",
+    "Actions"
+   ],
+   "lignes": [
+    [
+     "Échographie pelvienneRésultat",
+     "Vessie",
+     "Liste de choix",
+     "bien remplie · insuffisamment remplie · vide",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneUtérus",
+     "Statique utérine",
+     "Liste de choix",
+     "antéversée, antéfléchie · rétroversée · intermédiaire · latérodéviée · Autre",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneUtérus",
+     "Vacuité utérine",
+     "Liste de choix",
+     "Visible · Non visible",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneUtérus",
+     "Dimensions utérines",
+     "Trois dimensions (mm)",
+     "mm",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneUtérus",
+     "Échostructure",
+     "Liste de choix",
+     "homogène · hétérogène",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneUtérus",
+     "Contours",
+     "Liste de choix",
+     "réguliers · irréguliers",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneUtérus",
+     "Épaisseur de l’endomètre",
+     "Mesure chiffrée",
+     "mm",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneUtérus",
+     "Contenu",
+     "Texte libre",
+     "—",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneOvaires et cul-de-sac de Douglas",
+     "Ovaires",
+     "Liste de choix",
+     "normaux · ovaire droit anormal · ovaire droit normal · ovaire gauche anormal · les deux anormaux",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie pelvienneOvaires et cul-de-sac de Douglas",
+     "Cul-de-sac de Douglas",
+     "Liste de choix",
+     "libre · épanchement de faible abondance · épanchement de moyenne abondance · épanchement de grande abondance",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie vésico-prostatiqueProstate",
+     "Prostate — largeur",
+     "Mesure chiffrée",
+     "mm",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie vésico-prostatiqueProstate",
+     "Prostate — hauteur",
+     "Mesure chiffrée",
+     "mm",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie vésico-prostatiqueProstate",
+     "Prostate — épaisseur",
+     "Mesure chiffrée",
+     "mm",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie vésico-prostatiqueProstate",
+     "Volume prostatique",
+     "Mesure chiffrée",
+     "g",
+     "Active",
+     ""
+    ],
+    [
+     "Échographie vésico-prostatiqueProstate",
+     "Échostructure prostatique",
+     "Liste de choix",
+     "homogène · hétérogène",
+     "Active",
+     ""
+    ]
+   ]
+  }
+ },
+ "imagerieCreations": {
+  "examen": {
+   "saisie": {
+    "code": "TST-IM1",
+    "label": "Examen test",
+    "modalite": "echographie",
+    "voie": "sus-pubienne"
+   },
+   "creees": [
+    {
+     "code": "TST-IM1",
+     "label": "Examen test",
+     "modalite": "echographie",
+     "voie": "sus-pubienne",
+     "tarifCode": ""
+    }
+   ],
+   "toasts": [
+    "Examen créé."
+   ],
+   "nbAvant": 24
+  },
+  "variable": {
+   "saisie": {
+    "examen": "IMG-ECHO-PEL",
+    "code": "TST_V1",
+    "libelle": "Variable test",
+    "type": "liste",
+    "optionsTexte": " homogène | hétérogène ||  ",
+    "rubrique": "Résultat",
+    "ordre": "7"
+   },
+   "creees": [
+    {
+     "examen": "IMG-ECHO-PEL",
+     "code": "TST_V1",
+     "libelle": "Variable test",
+     "type": "liste",
+     "unite": "",
+     "rubrique": "Résultat",
+     "normal": "",
+     "ordre": 7,
+     "options": [
+      "homogène",
+      "hétérogène"
+     ]
+    }
+   ],
+   "toasts": [
+    "Variable créé."
+   ],
+   "nbAvant": 280
+  },
+  "sans": {
+   "saisie": {
+    "examen": "IMG-ECHO-PEL",
+    "code": "TST_V2",
+    "libelle": "Variable sans choix",
+    "type": "liste",
+    "rubrique": "Résultat",
+    "ordre": "8",
+    "unite": "mm"
+   },
+   "creees": [
+    {
+     "examen": "IMG-ECHO-PEL",
+     "code": "TST_V2",
+     "libelle": "Variable sans choix",
+     "type": "liste",
+     "unite": "mm",
+     "rubrique": "Résultat",
+     "normal": "",
+     "ordre": 8,
+     "options": null
+    }
+   ],
+   "toasts": [
+    "Variable créé."
+   ],
+   "nbAvant": 281
+  },
+  "apresFermeture": {
+   "actif": false,
+   "toasts": [
+    {
+     "message": "Variable fermée.",
+     "type": "success",
+     "detail": "Les comptes rendus déjà rendus la conservent."
+    }
+   ]
+  }
+ },
+ "rechargements": 3
+}

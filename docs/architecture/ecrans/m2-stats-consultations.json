@@ -1,0 +1,43 @@
+{
+ "id": "m2-stats-consultations",
+ "module": "PIL",
+ "domaine": "Pilotage",
+ "libelleManifeste": "Statistiques des consultations",
+ "acces": "ouvert",
+ "titre": "Statistiques des consultations",
+ "description": "L’activité de consultation par praticien, par type et dans le temps — calculée depuis le registre.",
+ "fil": [
+  "Accueil",
+  "Pilotage",
+  "Pilotage & analyse",
+  "Statistiques des consultations"
+ ],
+ "actions": [
+  "Direction",
+  "Statistiques de la Direction",
+  "Pilotage & analyse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Consultations au registre",
+  "Ce mois-ci",
+  "Praticiens actifs",
+  "À domicile"
+ ],
+ "cartes": [
+  "Par praticien — et son service à l’organigramme",
+  "Par type",
+  "Évolution mensuelle"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Toute la période"
+ ],
+ "champs": [
+  "Du",
+  "au"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

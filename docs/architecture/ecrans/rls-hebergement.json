@@ -1,0 +1,44 @@
+{
+ "id": "rls-hebergement",
+ "module": "RLS",
+ "domaine": "Relais en ligne",
+ "libelleManifeste": "Hébergement (cPanel)",
+ "acces": "ouvert",
+ "titre": "Hébergement (cPanel)",
+ "description": "Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat.",
+ "fil": [
+  "Accueil",
+  "Relais en ligne",
+  "Relais en ligne (apps/web)",
+  "Hébergement (cPanel)"
+ ],
+ "actions": [
+  "Tableau de bord du relais",
+  "Appareils",
+  "Relais en ligne (apps/web)"
+ ],
+ "regle": [
+  "Prototype du relais en ligne (apps/web, Laravel + Livewire). Le relais ne contient aucune donnée de patient lisible. Données de démonstration."
+ ],
+ "onglets": [],
+ "kpis": [
+  "PHP",
+  "Base",
+  "Cron",
+  "Disque"
+ ],
+ "cartes": [
+  "Contrôles"
+ ],
+ "tableaux": [
+  [
+   "Contrôle",
+   "État",
+   "Détail"
+  ]
+ ],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

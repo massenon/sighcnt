@@ -1,0 +1,40 @@
+{
+ "id": "m8-proforma",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "Factures pro-forma",
+ "acces": "ouvert",
+ "titre": "Factures pro-forma",
+ "description": "Estimations remises au patient ou à l’assureur avant réalisation des prestations.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "Factures pro-forma"
+ ],
+ "actions": [
+  "Tableau de bord facturation",
+  "Nouvelle facture",
+  "Facturation & Caisse"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Pro-forma établies",
+  "Montant estimé",
+  "Converties en facture",
+  "Factures normalisées"
+ ],
+ "cartes": [
+  "Factures pro-forma"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "Nouvelle pro-forma"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

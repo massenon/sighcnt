@@ -99,6 +99,21 @@
    * Un seul geste engendre l'ordonnance, les demandes d'analyses, la facture et
    * les trois files d'attente. Rien n'est laissé à une ressaisie.
    * ======================================================================== */
+  /** Rang suivant d'une SÉRIE ANNUELLE de pièces de caisse (`FN-2026-`, `PRO-2026-`, `FP-2026-`) : le plus grand rang déjà porté
+      par les factures du même préfixe, plus un. Les deux volets d'une même émission (-A, -B) portent deux rangs consécutifs. Les archivées comptent
+      (une pièce archivée garde son numéro, RG-14). Écart E6, corrigé le 31/10/2026 : le rang était le nombre TOTAL de factures. */
+  function rangSerieFactures(prefixe) {
+    var max = 0;
+    col('factures').all().forEach(function (f) {
+      var n = String(f.numero || '');
+      if (n.indexOf(prefixe) !== 0) return;
+      var r = parseInt(n.slice(prefixe.length), 10);
+      if (r > max) max = r;
+    });
+    return max + 1;
+  }
+  function numeroSerieFacture(prefixe) { return prefixe + C.pad(rangSerieFactures(prefixe), 5); }
+
   function prescrire(v) {
     var p = patientParCode(v.patientCode);
     if (!p) throw new Error('Patient introuvable : ' + v.patientCode);
@@ -126,10 +141,20 @@
         echantillon: a.echantillon || '', delai: a.delai || '', prix: a.prix || 0 };
     });
 
+    /* C3 (corrigé le 31/10/2026) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées, décision du
+       26/08) s'applique réellement. Il était ANNONCÉ par l'écran des bons de pansement mais jamais appliqué : l'acte se facturait
+       au prix du catalogue (non assuré) et la garantie s'y appliquait. RG-09 décide, comme pour l'imagerie et les analyses :
+       carte valide à la date de la prescription => colonne assurée de la grille ; sinon colonne non assuré. */
+    var assureActes = !!(p.assureur && carteValide(p, date));
     var actes = (v.actes || []).map(function (code) {
       var a = acteParCode(code) || {};
-      return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: a.prix || 0,
-        tarifValide: a.prix != null };
+      /* Seule la colonne ASSURÉE de la grille change le prix : l'acte du catalogue la porte (`prixAssure`, rapprochée de la grille, SO09 => 6 000).
+         Sans carte valide, ou pour un acte que la grille exclut de l'assurance (`nonCouvert`, certificats `sos`), le prix du catalogue
+         administrable (cfg-tarifs) reste la référence. */
+      var tarifAssure = assureActes && a.assurable === true && !a.nonCouvert && a.prixAssure != null;
+      var prixActe = tarifAssure ? a.prixAssure : a.prix;
+      return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: prixActe || 0,
+        tarifValide: prixActe != null };
     });
 
     var mMed = C.sum(medicaments, 'total');
@@ -181,7 +206,7 @@
     /* --- Le laboratoire : demandes établies d'office ----------------------- */
     var demandes = analyses.map(function (a) {
       return col('demandesAnalyses').insert({
-        reference: C.nextRef('LAB-', 5),
+        reference: C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all()),
         codeAnalyse: codeAnalyse(date),
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         analyseCode: a.code, analyse: a.designation, categorie: a.categorie,
@@ -202,7 +227,9 @@
     });
 
     /* --- La caisse : facture en attente de règlement ------------------------ */
-    var taux = p.assureur ? (p.tauxPriseEnCharge || 0) : 0;
+    /* RG-09 — la prise en charge ne s'applique que si la carte est valide À LA DATE de la prescription (écart E340 : le taux du
+       dossier s'appliquait même carte expirée, alors que l'imagerie de la même pièce était déjà tarifée « non assuré »). */
+    var taux = (p.assureur && carteValide(p, date)) ? (p.tauxPriseEnCharge || 0) : 0;
     var montant = mMed + mAna + mAct + mImg;
     var partAssurance = Math.round(montant * taux / 100);
 
@@ -230,7 +257,7 @@
 
     var facture = col('factures').insert({
       lignes: lignesFacture,
-      numero: 'FP-' + String(new Date(date).getFullYear()) + '-' + C.pad(col('factures').all().length + 1, 5),
+      numero: numeroSerieFacture('FP-' + String(new Date(date).getFullYear()) + '-'),   /* E6 : rang de la série de l'année */
       numeroMecef: null,
       patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
       date: C.iso(new Date(date)), type: 'Prescription',
@@ -613,7 +640,7 @@
     /* Les demandes, marquées EXTERNE : le résultat se remet au patient. */
     var demandes = analyses.map(function (a) {
       return S.collection('demandesAnalyses').insert({
-        reference: C.nextRef('LAB-', 5),
+        reference: C.referenceSuivante('LAB-', 5, S.collection('demandesAnalyses').all()),
         codeAnalyse: codeAnalyse(date),
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         analyseCode: a.code, analyse: a.designation, categorie: a.categorie,
@@ -738,7 +765,8 @@
       /* RG-09 : la validité de la carte À LA DATE décide du tarif. */
       var pr = D.tarifPrix ? D.tarifPrix((ex && ex.tarifCode) || code, assure) : { montant: null };
       return col_.insert({
-        reference: C.nextRef('IME-', 5),
+        /* Lue sur les demandes EXISTANTES (écart E100) : le compteur de page de nextRef repartait à 1 à chaque chargement. */
+        reference: C.referenceSuivante('IME-', 5, col_.all()),
         dateHeure: date,
         patientId: p.id, patientCode: p.code, patient: p.nom + ' ' + p.prenom,
         examenCode: code, examen: ex ? ex.label : code,
@@ -796,7 +824,9 @@
     var cree = creerDemandesImagerie(p, v.examens, date, v);
     var demandes = cree.demandes;
 
-    var taux = p.assureur ? (p.tauxPriseEnCharge || 0) : 0;
+    /* RG-09 (écart E101) : la part de l'assureur ne se calcule QUE si la carte est valide à la date — le tarif non assuré était bien
+       appliqué sur carte expirée, mais 80 % de la pièce partaient quand même à l'assureur. */
+    var taux = (p.assureur && carteValide(p, date)) ? (p.tauxPriseEnCharge || 0) : 0;
     var lignes = construireLignes({
       taux: taux, personnelId: p.personnelId || null,
       autres: cree.lignes,
@@ -1175,15 +1205,49 @@
     prestations: { num: '706000', libelle: 'Services vendus — prestations de soins' },
   };
 
+  /* LA PART ASSUREUR SE CONSTATE UNE SEULE FOIS (correction du 30/10/2026, écart E1 de ECARTS-MAQUETTE.md).
+     Elle était ré-inscrite à CHAQUE versement partiel : une facture assurée réglée en deux fois par le patient posait
+     deux fois la créance sur la compagnie (411) et deux fois le produit correspondant (706). Désormais le PREMIER
+     versement constate la créance assureur ; les suivants ne constatent que ce que le patient verse.
+     Au total, sur la vie de la facture : 706 = montant facturé, 411 = part assureur, 571 = part patient. */
+  function creanceAssureurDejaConstatee(facture) {
+    return col('ecritures').all().some(function (e) {
+      return e.pieceId === facture.id && e.compte === COMPTES_CAISSE.clientsAssurance.num && e.statut !== 'archive';
+    });
+  }
+
+  /* LE NUMÉRO DE PIÈCE EST UNE SÉRIE ANNUELLE (correction du 30/10/2026, écart E3). Il prenait les cinq derniers chiffres
+     du numéro de facture — deux factures de deux années pouvaient se heurter, une facture sans chiffres donnait « CAI-2026-8 »
+     — et le millésime était écrit en dur. Désormais : le millésime est celui de la date de l'écriture, le rang est le
+     suivant de la série de l'année, et les versements d'une même facture REPRENNENT le numéro de sa première écriture. */
+  function numeroPieceCaisse(facture, date) {
+    var existante = col('ecritures').all().filter(function (e) {
+      return e.pieceId === facture.id && e.journal === 'CAI' && e.numero;
+    })[0];
+    if (existante) return existante.numero;
+    var annee = String(date).slice(0, 4);
+    var prefixe = 'CAI-' + annee + '-';
+    var max = 0;
+    col('ecritures').all().forEach(function (e) {
+      if (typeof e.numero === 'string' && e.numero.indexOf(prefixe) === 0) {
+        var n = parseInt(e.numero.slice(prefixe.length), 10);
+        if (n > max) max = n;
+      }
+    });
+    return prefixe + C.pad(max + 1, 5);
+  }
+
   function ecrireEncaissement(facture, montantRegle) {
     var lignes = [];
-    var partAssureur = Number(facture.partAssureur) || 0;
+    var constatee = creanceAssureurDejaConstatee(facture);
+    var partAssureur = constatee ? 0 : (Number(facture.partAssureur) || 0);
     var total = montantRegle + partAssureur;
     if (total <= 0) return [];
 
-    var numero = 'CAI-2026-' + String(facture.numero || facture.id).replace(/[^0-9]/g, '').slice(-5);
+    var date = C.iso(new Date());
+    var numero = numeroPieceCaisse(facture, date);
     var base = {
-      numero: numero, date: C.iso(new Date()),
+      numero: numero, date: date,
       journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
       libelle: 'Encaissement facture ' + (facture.numero || facture.id)
         + ' — ' + (facture.patient || ''),
@@ -1325,8 +1389,20 @@
       });
     } else {
       /* Facture sans lignes — pièce antérieure au modèle. On conserve le
-         comportement par montant plutôt que de la rendre inencaissable. */
-      paye = opts.montant != null ? Number(opts.montant) : duTotal;
+         comportement par montant plutôt que de la rendre inencaissable, mais JAMAIS au-delà du dû
+         (écart E2, corrigé le 31/10/2026) : sans ligne pour borner le versement, 99 999 sur 5 000 dus
+         faisaient dépasser le TTC à `montantPaye` et à la base MECeF. Le refus NOMME le défaut. */
+      var restantPiece = Math.max(0, duTotal - (fac.montantPaye || 0));
+      var voulu = opts.montant != null ? Number(opts.montant) : restantPiece;
+      if (!(voulu >= 0) || voulu > restantPiece) {
+        return {
+          facture: fac, refus: 'Versement de ' + C.money(voulu) + ' refusé : la pièce ' + (fac.numero || fac.id)
+            + ' ne porte aucune ligne et ne doit plus que ' + C.money(restantPiece) + '. Un versement ne dépasse jamais le dû.',
+          debloquees: [], ecritures: [], lignesReglees: [], montantRegle: 0, restantDu: restantPiece,
+          demandesLiberees: [],
+        };
+      }
+      paye = voulu;
     }
 
     /* --- Report sur la facture ------------------------------------------- */
@@ -1445,6 +1521,134 @@
   }
 
   /* ==========================================================================
+   * LE CANAL UNIQUE DE L'AVOIR (décision de la Direction du 31/10/2026, B10)
+   * --------------------------------------------------------------------------
+   * Une pièce émise ne se réécrit jamais : un seul mécanisme la corrige. Il vivait dans m8-facturation.js ; il vit AU SOCLE
+   * depuis le 31/10/2026 parce que l'écran de facturation (nature « Facture avoir »), l'avoir MECeF et l'écran des avoirs
+   * l'APPELLENT tous, et qu'une page ne charge que le module de son écran. Trois canaux (E12, E15) n'en font plus qu'un :
+   * la collection `avoirs`, plafond CUMULÉ partout, montant strictement positif, lignes nommées, contre-passation plate en
+   * brouillon (RG-10). La DATE d'une pièce est un JOUR ; l'instant d'émission est porté à part (`horodatage`, E4).
+   * ======================================================================== */
+  META.avoirs = { module: 'M8', entite: 'facture d’avoir', prefix: 'AVR' };
+  META.ecritures = { module: 'M12', entite: 'écriture' };
+
+  /** Référence d'un avoir : série annuelle lue sur les avoirs déjà émis (millésime de la DATE de l'avoir, rang de l'année). */
+  function referenceAvoir(date) {
+    return C.referenceSuivante('AV-' + String(date).slice(0, 4) + '-', 4, col('avoirs').all());
+  }
+
+  /** Émet un avoir. Retourne { record, ecritureIds } ou { erreur } : un refus se lit, il ne se devine pas.
+      params : { lignes:[{designation, montant}], motif, remboursement:'creance'|'especes', observations, date, origine }. */
+  function emettreAvoir(factureId, params) {
+    params = params || {};
+    var fac = col('factures').get(factureId);
+    if (!fac) return { erreur: 'Facture introuvable.' };
+    if (fac.type === 'Avoir' || (fac.montantTTC || 0) < 0) {
+      return { erreur: 'La pièce ' + fac.numero + ' est elle-même un avoir : on ne rectifie pas un avoir.' };
+    }
+
+    /* UNE FILLE CONSOLIDÉE EST FIGÉE : la mère émise porte son numéro, et la compagnie détient la pièce. */
+    var mere = S.collection('facturesMere').active().filter(function (m) {
+      return (m.piecesFilles || []).indexOf(fac.numero) !== -1;
+    })[0];
+    if (mere) {
+      return { erreur: 'La facture ' + fac.numero + ' est consolidée dans la facture mère '
+        + mere.numero + ' (' + (mere.compagnie || '') + '), déjà émise : la corriger passerait '
+        + 'derrière le dos de la compagnie. Émettre l’avoir au niveau de la mère, par avenant.' };
+    }
+
+    var lignes = params.lignes || [];
+    if (!lignes.length) return { erreur: 'Un avoir se rapporte à des LIGNES nommées — en cocher au moins une.' };
+    var montant = C.sum(lignes, 'montant');
+    if (!(montant > 0)) return { erreur: 'Le montant de l’avoir doit être strictement supérieur à 0 FCFA.' };
+
+    var dejaMontant = C.sum(col('avoirs').active().filter(function (a) { return a.factureId === fac.id; }), 'montant');
+    if (montant + dejaMontant > (fac.montantTTC || 0)) {
+      return { erreur: 'Le cumul des avoirs (' + C.money(montant + dejaMontant)
+        + ') excéderait la facture (' + C.money(fac.montantTTC) + ').' };
+    }
+
+    var date = jourDe(params.date || new Date());
+    var rec = col('avoirs').insert({
+      reference: referenceAvoir(date),
+      date: date,
+      horodatage: new Date().toISOString(),
+      factureId: fac.id, factureNumero: fac.numero,
+      patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
+      montant: montant,
+      motif: params.motif,
+      observations: params.observations || '',
+      lignesAnnulees: lignes,
+      remboursement: params.remboursement || 'creance',
+      origine: params.origine || 'caisse',
+      /* Le registre fiscal : une facture normalisée validée exige la régularisation MECeF ; une pièce non transmise n'en relève pas. */
+      statutMecef: fac.statutMecef === 'valide' ? 'en_attente' : 'sans_objet',
+      emisPar: S.currentUser(),
+    }).record;
+
+    /* LA CONTRE-PASSATION : écritures PLATES en brouillon, débit 706 (la recette diminue), crédit 571 si l'on rembourse en
+       espèces, crédit 411 sinon (la créance diminue). */
+    var base = {
+      numero: rec.reference, date: rec.date,
+      journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
+      pieceId: rec.id, pieceNumero: rec.reference,
+      origine: 'Facture d’avoir',
+      statut: 'brouillon',
+    };
+    var contre = rec.remboursement === 'especes'
+      ? { compte: '571000', libelle: 'Remboursement en espèces — avoir ' + rec.reference }
+      : { compte: '411000', libelle: 'Créance réduite — avoir ' + rec.reference };
+    var ecritures = [
+      Object.assign({}, base, {
+        compte: '706000', compteLibelle: 'Prestations de services',
+        libelle: 'Contre-passation — ' + fac.numero + ' (' + params.motif + ')',
+        debit: montant, credit: 0,
+      }),
+      Object.assign({}, base, {
+        compte: contre.compte, compteLibelle: contre.compte === '571000' ? 'Caisse' : 'Clients',
+        libelle: contre.libelle,
+        debit: 0, credit: montant,
+      }),
+    ];
+    var debit = C.sum(ecritures, 'debit'), credit = C.sum(ecritures, 'credit');
+    if (debit !== credit) {
+      col('avoirs').archive(rec.id);
+      return { erreur: 'RG-10 — contre-passation déséquilibrée (débit ' + C.money(debit)
+        + ', crédit ' + C.money(credit) + ') : rien n’est écrit.' };
+    }
+    var ids = ecritures.map(function (l) { return col('ecritures').insert(l).record.id; });
+    col('avoirs').update(rec.id, { ecritureIds: ids });
+
+    /* La facture PORTE ses avoirs, elle n'est jamais réécrite : la pièce d'origine et sa correction se lisent côte à côte. */
+    col('factures').update(fac.id, {
+      avoirIds: (fac.avoirIds || []).concat([rec.id]),
+      montantAvoirs: (fac.montantAvoirs || 0) + montant,
+    });
+
+    S.log('Facture d’avoir émise', 'M8', 'Avoir', rec.reference, null,
+      { facture: fac.numero, montant: montant, motif: params.motif, origine: rec.origine });
+    return { record: col('avoirs').get(rec.id), ecritureIds: ids };
+  }
+
+  /** Retire un avoir qu'on vient d'émettre (annulation visible d'un geste) : archivé avec ses écritures, jamais supprimé (RG-14),
+      et la facture rend le montant du plafond cumulé. */
+  function retirerAvoir(avoirId) {
+    var a = col('avoirs').get(avoirId);
+    if (!a) return false;
+    (a.ecritureIds || []).forEach(function (id) { col('ecritures').archive(id); });
+    col('avoirs').archive(a.id);
+    var fac = col('factures').get(a.factureId);
+    if (fac) {
+      col('factures').update(fac.id, {
+        avoirIds: (fac.avoirIds || []).filter(function (x) { return x !== a.id; }),
+        montantAvoirs: Math.max(0, (fac.montantAvoirs || 0) - (a.montant || 0)),
+      });
+    }
+    S.log('Facture d’avoir retirée', 'M8', 'Avoir', a.reference, null, { montant: a.montant });
+    return true;
+  }
+
+  /* ==========================================================================
    * 3. LA PHARMACIE DÉLIVRE
    * --------------------------------------------------------------------------
    * RG-03 : chaque sortie porte son justificatif — le numéro d'ordonnance — et
@@ -1454,9 +1658,14 @@
   function verifierStock(ordonnanceId) {
     var ord = col('ordonnances').get(ordonnanceId);
     if (!ord) throw new Error('Ordonnance introuvable.');
+    /* RG-03 : le CUMUL des lignes d'un même produit est contrôlé — deux lignes de 5 sur un stock de 8 passaient chacune seule et laissaient
+       un stock NÉGATIF (écart E42, corrigé le 30/10/2026). `disponible` est ce qui reste APRÈS les lignes précédentes du même produit. */
+    var prises = {};
     return (ord.medicaments || []).map(function (l) {
       var prod = produitParId(l.produitId);
-      var dispo = prod ? (prod.stockDetail != null ? prod.stockDetail : prod.stock) : 0;
+      var total = prod ? (prod.stockDetail != null ? prod.stockDetail : prod.stock) : 0;
+      var dispo = total - (prises[l.produitId] || 0);
+      if (prod) prises[l.produitId] = (prises[l.produitId] || 0) + l.quantite;
       return { ligne: l, produit: prod, disponible: dispo, suffisant: prod && dispo >= l.quantite };
     });
   }
@@ -1506,7 +1715,8 @@
       });
       var val = valoriserSortie(prod, x.ligne.quantite);
       return col('mouvements').insert({
-        reference: C.nextRef('M', 6),
+        /* Série lue sur les mouvements EXISTANTS, jamais sur un compteur de page qui repart à 1 à chaque chargement (écart E41b, cf. E8). */
+        reference: C.referenceSuivante('M', 6, col('mouvements').all()),
         date: new Date().toISOString(),
         produitId: prod.id, produit: prod.designation,
         type: 'sortie', typeLabel: 'Sortie',
@@ -1763,7 +1973,14 @@
     if (!patient) return false;
     var c = couvertureALaDate(patient, date);
     if (!c || !c.assureur || !c.carteExpiration) return false;
-    return C.toDate(c.carteExpiration).getTime() >= C.toDate(date || new Date()).getTime();
+    /* E4 (corrigé le 31/10/2026) : une date de pièce est un JOUR. Comparer des millisecondes rendait la même carte valide le
+       dernier jour pour une date « 2026-08-16 » et invalide pour l'instant « 2026-08-16T12:00:00Z » : les deux jours se comparent. */
+    return jourDe(c.carteExpiration) >= jourDe(date || new Date());
+  }
+  /** Le JOUR (AAAA-MM-JJ) d'une date : celui qui est ÉCRIT quand la valeur commence par une date, sinon le jour local. */
+  function jourDe(d) {
+    var m = typeof d === 'string' ? /^(\d{4}-\d{2}-\d{2})/.exec(d) : null;
+    return m ? m[1] : C.iso(d);
   }
 
   /* Nombre de mots significatifs partagés par deux libellés : « consultation
@@ -2240,7 +2457,7 @@
     }
 
     var rec = col('administrations').insert({
-      reference: C.nextRef('ADM-', 5),
+      reference: C.referenceSuivante('ADM-', 5, col('administrations').all()),   /* E363 : série lue sur le registre, jamais un compteur de page */
       prescriptionId: prescriptionId, prescriptionRef: pres.reference,
       ligneIndex: ligneIndex, libelle: ligne.libelle,
       patientId: pres.patientId, patientCode: pres.patientCode, patient: pres.patient,
@@ -2423,7 +2640,6 @@
    * l'affichent. Un BFR amputé de ses dettes est SURESTIMÉ, et un chiffre
    * faux qui a l'air juste est ce que ce prototype refuse partout ailleurs.
    * ======================================================================== */
-  var REF_PILOTAGE = new Date(2026, 7, 16);
 
   function objectifsPilotage() {
     var col = S.collection('objectifsPilotage', { module: 'M12', entite: 'ObjectifPilotage' });
@@ -2441,7 +2657,7 @@
   /** La fenêtre d'observation : 90 jours glissants par défaut, bornes nommées. */
   function fenetrePilotage(opts) {
     var o = opts || {};
-    var fin = o.fin ? C.toDate(o.fin) : REF_PILOTAGE;
+    var fin = o.fin ? C.toDate(o.fin) : C.aujourdhui();   /* la fenêtre glissante suit l'horloge (vague 68) */
     var debut = o.debut ? C.toDate(o.debut) : C.addDays(fin, -(o.jours || 90));
     return { debut: C.iso(debut), fin: C.iso(fin), jours: Math.max(1, C.daysBetween(debut, fin)) };
   }
@@ -2639,6 +2855,8 @@
     administrer: administrer, soinsDuSecteur: soinsDuSecteur,
     rangSuivant: rangSuivant,
     ecrireEncaissement: ecrireEncaissement, alerterStock: alerterStock,
+    emettreAvoir: emettreAvoir, retirerAvoir: retirerAvoir, referenceAvoir: referenceAvoir,
+    rangSerieFactures: rangSerieFactures,
     construireLignes: construireLignes, lignesDues: lignesDues, lignesReglees: lignesReglees,
     facturerPiece: facturerPiece, statutPiece: statutPiece,
     ouvrirDemandeExterne: ouvrirDemandeExterne,
@@ -2665,6 +2883,376 @@
     verifierStock: verifierStock,
     taches: taches, aFaire: aFaire, terminer: terminer, compteurs: compteurs,
     dossier: dossier,
+  };
+
+
+  /* ==========================================================================
+   * EXERCICES COMPTABLES — sélecteur, lecture seule au moteur, clôture en deux
+   * gestes (PRD-M12-cloture-exercice).
+   * --------------------------------------------------------------------------
+   * LE MOTEUR VIT AU SOCLE : le sélecteur d'exercice est lu par tous les écrans
+   * de M12, de M9 et des tableaux de bord, et une page ne charge que le module
+   * de son écran. Une clôture est un acte DÉFINITIF : un exercice clos ne se
+   * rouvre pas (obligation légale), il se corrige par une écriture de l'exercice
+   * suivant. La garde de lecture seule est posée sur la COLLECTION, pas sur
+   * l'écran — un champ désactivé dans le navigateur ne protège rien.
+   * ======================================================================== */
+  var CLE_EXERCICE = 'sigh-cnt:exercice';
+  var LETTRABLES = ['40', '41', '42', '43', '44', '47'];
+
+  function anneeDe(date) { var d = C.toDate(date); return d && !isNaN(d) ? d.getFullYear() : null; }
+  function anneeCourante() { return C.aujourdhui().getFullYear(); }
+
+  /* Les exercices sont DÉRIVÉS : une fiche par année portée par les écritures,
+     plus l'année courante, plus celle de la liasse déposée (close d'office —
+     c'est un fait déposé à la DGI, non un exercice du logiciel). */
+  function exercices() {
+    var col = S.collection('exercices', { module: 'M12', entite: 'Exercice' });
+    var annees = {};
+    S.collection('ecritures').all().forEach(function (e) { var a = anneeDe(e.date); if (a) annees[a] = true; });
+    annees[anneeCourante()] = true;
+    if (global.SIGH.liasse && global.SIGH.liasse.DEPOT) {
+      annees[global.SIGH.liasse.DEPOT.exerciceN] = true;
+      annees[global.SIGH.liasse.DEPOT.exerciceN1] = true;
+    }
+    var ajoute = false;
+    Object.keys(annees).forEach(function (a) {
+      a = Number(a);
+      if (col.all().some(function (x) { return x.annee === a; })) return;
+      var deposee = !!(global.SIGH.liasse && global.SIGH.liasse.DEPOT && (global.SIGH.liasse.DEPOT.exerciceN === a || global.SIGH.liasse.DEPOT.exerciceN1 === a));
+      col.all().unshift({
+        id: 'EXO-' + a, annee: a, debut: a + '-01-01', fin: a + '-12-31', statut: 'actif',
+        etat: deposee ? 'clos' : 'ouvert',
+        source: deposee ? 'liasse' : 'journal',
+        valideLe: deposee ? global.SIGH.liasse.DEPOT.dateDepot : null,
+        validePar: deposee ? 'Liasse déposée à la DGI' : null,
+        motif: deposee ? 'Exercice antérieur à la mise en service : fait par la liasse déposée.' : null,
+      });
+      ajoute = true;
+    });
+    if (ajoute) S.save();
+    return col.all().filter(function (x) { return x.statut !== 'archive'; })
+      .sort(function (a, b) { return b.annee - a.annee; });
+  }
+  function exercice(annee) { return exercices().filter(function (x) { return x.annee === Number(annee); })[0] || null; }
+  function etatExercice(annee) { var x = exercice(annee); return x ? x.etat : 'ouvert'; }
+
+  function exerciceChoisi() {
+    var v = null;
+    try { v = Number(global.localStorage.getItem(CLE_EXERCICE)); } catch (e) { /* stockage refusé */ }
+    return v && exercice(v) ? v : anneeCourante();
+  }
+  function choisirExercice(annee) {
+    try { global.localStorage.setItem(CLE_EXERCICE, String(annee)); } catch (e) { /* sans effet */ }
+    return Number(annee);
+  }
+
+  /* La garde de lecture seule : posée sur la collection, refusée AVANT l'écriture. */
+  S.garder('ecritures', function (op, rec) {
+    var a = anneeDe(rec && rec.date);
+    if (!a) return null;
+    if (etatExercice(a) === 'clos') {
+      var x = exercice(a);
+      return 'Exercice ' + a + ' clos' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '')
+        + ' — lecture seule. La correction passe par une écriture de l’exercice en cours.';
+    }
+    return null;
+  });
+
+  function sensLettrable(compte) {
+    return LETTRABLES.some(function (p) { return String(compte).indexOf(p) === 0; });
+  }
+
+  /* Écritures VALIDÉES d'un exercice (un brouillon n'est pas un fait comptable). */
+  function ecrituresDe(annee, inclureBrouillons) {
+    return S.collection('ecritures').active().filter(function (e) {
+      return anneeDe(e.date) === Number(annee) && (inclureBrouillons || e.statut === 'validee');
+    });
+  }
+
+  function soldesParCompte(lignes) {
+    var m = {};
+    lignes.forEach(function (e) {
+      var k = String(e.compte);
+      if (!m[k]) m[k] = { compte: k, libelle: e.compteLibelle || k, debit: 0, credit: 0 };
+      m[k].debit += Number(e.debit) || 0; m[k].credit += Number(e.credit) || 0;
+    });
+    return Object.keys(m).sort().map(function (k) { m[k].solde = m[k].debit - m[k].credit; return m[k]; });
+  }
+
+  /* Le résultat : classes 7 (+) moins 6 (−), HAO (8) compris. Positif = bénéfice. */
+  function resultatDe(lignes) {
+    var r = 0;
+    lignes.forEach(function (e) {
+      var cl = String(e.compte).charAt(0);
+      if (cl === '6' || cl === '7' || cl === '8') r += (Number(e.credit) || 0) - (Number(e.debit) || 0);
+    });
+    return r;
+  }
+
+  /* Lignes de report (classes 1 à 5) vers N+1. Comptes NON lettrables : un solde
+     global. Comptes de TIERS : ligne par ligne, uniquement les lignes NON lettrées —
+     c'est ce qui permet de suivre sur le nouvel exercice les factures en attente. */
+  function lignesDeReport(lignes) {
+    var out = [];
+    var bilan = lignes.filter(function (e) { return '12345'.indexOf(String(e.compte).charAt(0)) >= 0; });
+    var tiers = bilan.filter(function (e) { return sensLettrable(e.compte); });
+    var autres = bilan.filter(function (e) { return !sensLettrable(e.compte); });
+    soldesParCompte(autres).forEach(function (s) {
+      if (Math.abs(s.solde) < 1) return;
+      out.push({ compte: s.compte, compteLibelle: s.libelle, debit: s.solde > 0 ? s.solde : 0, credit: s.solde < 0 ? -s.solde : 0, lettrable: false });
+    });
+    tiers.filter(function (e) { return !e.lettrage; }).forEach(function (e) {
+      var net = (Number(e.debit) || 0) - (Number(e.credit) || 0);
+      if (Math.abs(net) < 1) return;
+      out.push({ compte: String(e.compte), compteLibelle: e.compteLibelle, debit: net > 0 ? net : 0, credit: net < 0 ? -net : 0,
+        lettrable: true, pieceOrigine: e.numero, libelle: 'Report — ' + (e.libelle || e.numero) });
+    });
+    return out;
+  }
+
+  /* À-NOUVEAUX PROVISOIRES : tant que N n'est pas clos, N+1 voit un report calculé
+     des soldes validés de N, RECALCULÉ à chaque lecture et jamais stocké. Le
+     résultat de N (non encore soldé) est porté au compte 131 / 139. */
+  function aNouveauxProvisoires(annee) {
+    var prec = Number(annee) - 1;
+    var ex = exercice(prec);
+    if (!ex || ex.etat === 'clos' || ex.source === 'liasse') return [];
+    var base = ecrituresDe(prec);
+    var lignes = lignesDeReport(base);
+    var res = resultatDe(base);
+    if (Math.abs(res) >= 1) {
+      lignes.push({ compte: res >= 0 ? '131000' : '139000', compteLibelle: res >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
+        debit: res < 0 ? -res : 0, credit: res > 0 ? res : 0, lettrable: false });
+    }
+    return lignes.map(function (l) {
+      return Object.assign({ id: 'PROV-' + annee + '-' + l.compte + '-' + (l.pieceOrigine || 'S'), numero: 'AN-PROV-' + annee,
+        date: annee + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux (provisoire)',
+        libelle: l.libelle || 'À-nouveau provisoire', statut: 'validee', provisoire: true, origine: 'Provisoire — calculé' }, l);
+    });
+  }
+
+  /* PRÉ-CLÔTURE : contrôles nommés, chacun avec les pièces en cause et l'écran où corriger. */
+  function preCloture(annee) {
+    annee = Number(annee);
+    var tous = ecrituresDe(annee, true);
+    var validees = tous.filter(function (e) { return e.statut === 'validee'; });
+    var brouillons = tous.filter(function (e) { return e.statut === 'brouillon'; });
+    var controles = [];
+    controles.push({ id: 'brouillons', bloquant: true, ok: brouillons.length === 0,
+      libelle: 'Aucune écriture en brouillon', ecran: 'm12-ecritures',
+      detail: brouillons.length ? brouillons.length + ' ligne(s) en brouillon, dont ' + brouillons.slice(0, 4).map(function (e) { return e.numero; })
+        .filter(function (v, i, a) { return a.indexOf(v) === i; }).join(', ') + '.' : '' });
+    var d = C.sum(validees, 'debit'), c = C.sum(validees, 'credit');
+    controles.push({ id: 'equilibre', bloquant: true, ok: Math.abs(d - c) < 1,
+      libelle: 'Journal équilibré (RG-10)', ecran: 'm12-balance',
+      detail: Math.abs(d - c) < 1 ? '' : 'Écart de ' + C.money(Math.abs(d - c)) + ' entre débit et crédit.' });
+    var pieces = {};
+    validees.forEach(function (e) { var p = pieces[e.numero] || (pieces[e.numero] = { d: 0, c: 0 }); p.d += Number(e.debit) || 0; p.c += Number(e.credit) || 0; });
+    var boiteuses = Object.keys(pieces).filter(function (k) { return Math.abs(pieces[k].d - pieces[k].c) >= 1; });
+    controles.push({ id: 'pieces', bloquant: true, ok: boiteuses.length === 0,
+      libelle: 'Chaque pièce validée est équilibrée', ecran: 'm12-ecritures',
+      detail: boiteuses.length ? boiteuses.length + ' pièce(s) déséquilibrée(s) : ' + boiteuses.slice(0, 4).join(', ') + '.' : '' });
+    var an = S.collection('ecritures').active().filter(function (e) { return anneeDe(e.date) === annee + 1 && e.journal === 'AN'; });
+    controles.push({ id: 'an-existants', bloquant: true, ok: an.length === 0,
+      libelle: 'Aucun à-nouveau déjà écrit sur ' + (annee + 1), ecran: 'm12-ouverture',
+      detail: an.length ? 'Des à-nouveaux existent (' + an[0].numero + ') : les archiver avant de clôturer, la clôture écrit les définitifs.' : '' });
+    var attente = validees.filter(function (e) { return String(e.compte).indexOf('47') === 0; });
+    var solde47 = C.sum(attente, 'debit') - C.sum(attente, 'credit');
+    controles.push({ id: 'compte-47', bloquant: false, ok: Math.abs(solde47) < 1,
+      libelle: 'Comptes d’attente (47x) soldés', ecran: 'm12-grand-livre',
+      detail: Math.abs(solde47) < 1 ? '' : 'Solde de ' + C.money(Math.abs(solde47)) + ' à régulariser.' });
+    controles.push({ id: 'ecritures', bloquant: true, ok: validees.length > 0,
+      libelle: 'L’exercice porte des écritures validées', ecran: 'm12-ecritures', detail: validees.length ? '' : 'Aucune écriture validée en ' + annee + '.' });
+    return { annee: annee, controles: controles, bloquants: controles.filter(function (x) { return x.bloquant && !x.ok; }),
+      resultat: resultatDe(validees), nbEcritures: validees.length };
+  }
+
+  function acteur() { var s = S.session && S.session(); return (s && (s.nomComplet || s.nom)) || 'Utilisateur'; }
+  function roleCourant() { var s = S.session && S.session(); return (s && s.role) || ''; }
+
+  /* GESTE 1 — la demande (comptable). Les contrôles bloquants refusent EN LES NOMMANT. */
+  function demanderCloture(annee) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x) return { ok: false, motif: 'Exercice ' + annee + ' inconnu.' };
+    if (x.etat === 'clos') return { ok: false, motif: 'Exercice ' + annee + ' déjà clos.' };
+    if (x.etat === 'en_attente_cloture') return { ok: false, motif: 'La clôture de ' + annee + ' attend déjà la validation de la Direction.' };
+    var pre = preCloture(annee);
+    if (pre.bloquants.length) return { ok: false, motif: 'Pré-clôture refusée — ' + pre.bloquants.map(function (b) { return b.libelle + (b.detail ? ' (' + b.detail + ')' : ''); }).join(' ; '), pre: pre };
+    S.collection('exercices').update(x.id, { etat: 'en_attente_cloture', demandeLe: new Date().toISOString(), demandePar: acteur(), resultatPrevu: pre.resultat });
+    S.log('Demande de clôture', 'M12', 'Exercice', String(annee), { etat: 'ouvert' }, { etat: 'en_attente_cloture', resultat: pre.resultat });
+    notifier({ type: 'cloture', poste: 'direction', libelle: 'Clôture ' + annee + ' à valider', detail: 'Le comptable a demandé la clôture de l’exercice ' + annee + '.', priorite: 'haute', reference: String(annee) });
+    return { ok: true, pre: pre };
+  }
+
+  /* Empreinte SHA-256 synchrone (FIPS 180-4) de l'export d'archive. */
+  function sha256(texte) {
+    var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    var b = unescape(encodeURIComponent(texte)), l = b.length, w = [], i, j;
+    for (i = 0; i < l; i++) w[i >> 2] |= b.charCodeAt(i) << (24 - (i % 4) * 8);
+    w[l >> 2] |= 0x80 << (24 - (l % 4) * 8);
+    var n = (((l + 8) >> 6) + 1) * 16; w[n - 1] = l * 8; for (i = 0; i < n; i++) w[i] = w[i] | 0;
+    var rotr = function (x, k) { return (x >>> k) | (x << (32 - k)); };
+    for (i = 0; i < n; i += 16) {
+      var s = w.slice(i, i + 16), a = H.slice();
+      for (j = 16; j < 64; j++) {
+        var s0 = rotr(s[j - 15], 7) ^ rotr(s[j - 15], 18) ^ (s[j - 15] >>> 3), s1 = rotr(s[j - 2], 17) ^ rotr(s[j - 2], 19) ^ (s[j - 2] >>> 10);
+        s[j] = (s[j - 16] + s0 + s[j - 7] + s1) | 0;
+      }
+      for (j = 0; j < 64; j++) {
+        var S1 = rotr(a[4], 6) ^ rotr(a[4], 11) ^ rotr(a[4], 25), ch = (a[4] & a[5]) ^ (~a[4] & a[6]);
+        var t1 = (a[7] + S1 + ch + K[j] + s[j]) | 0, S0 = rotr(a[0], 2) ^ rotr(a[0], 13) ^ rotr(a[0], 22);
+        var mj = (a[0] & a[1]) ^ (a[0] & a[2]) ^ (a[1] & a[2]), t2 = (S0 + mj) | 0;
+        a = [(t1 + t2) | 0, a[0], a[1], a[2], (a[3] + t1) | 0, a[4], a[5], a[6]];
+      }
+      for (j = 0; j < 8; j++) H[j] = (H[j] + a[j]) | 0;
+    }
+    return H.map(function (v) { return ('00000000' + (v >>> 0).toString(16)).slice(-8); }).join('');
+  }
+
+  /* GESTE 2 — la validation (Direction / DAF), par une personne DIFFÉRENTE de celle qui a demandé. */
+  function validerCloture(annee, motif) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x || x.etat !== 'en_attente_cloture') return { ok: false, motif: 'Aucune demande de clôture en attente pour ' + annee + '.' };
+    if (['da', 'direction', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La clôture est validée par la Direction ou la Directrice Administrative.' };
+    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour valider une clôture.' };
+    if (x.demandePar === acteur()) return { ok: false, motif: 'Signer n’est pas saisir : la validation doit venir d’une autre personne que le demandeur (' + x.demandePar + ').' };
+    var pre = preCloture(annee);
+    if (pre.bloquants.length) return { ok: false, motif: 'Contrôles bloquants à nouveau en échec : ' + pre.bloquants.map(function (b) { return b.libelle; }).join(' ; ') };
+
+    var col = S.collection('ecritures', { module: 'M12', entite: 'Écriture' });
+    var base = ecrituresDe(annee);
+    var res = resultatDe(base);
+
+    /* (1) Détermination du résultat : chaque compte 6/7/8 est soldé vers 131 / 139 — UNE pièce équilibrée. */
+    var numOD = 'OD-' + annee + '-RES';
+    var odBase = { numero: numOD, date: annee + '-12-31', journal: 'OD', journalLibelle: 'Journal des opérations diverses',
+      libelle: 'Détermination du résultat ' + annee, origine: 'Clôture — résultat', statut: 'validee', origineCloture: 'resultat', centreCout: null };
+    var lignesOD = [];
+    soldesParCompte(base.filter(function (e) { return '678'.indexOf(String(e.compte).charAt(0)) >= 0; })).forEach(function (s) {
+      if (Math.abs(s.solde) < 1) return;
+      lignesOD.push(Object.assign({}, odBase, { compte: s.compte, compteLibelle: s.libelle, debit: s.solde < 0 ? -s.solde : 0, credit: s.solde > 0 ? s.solde : 0 }));
+    });
+    if (Math.abs(res) >= 1) {
+      lignesOD.push(Object.assign({}, odBase, { compte: res >= 0 ? '131000' : '139000', compteLibelle: res >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
+        debit: res < 0 ? -res : 0, credit: res > 0 ? res : 0 }));
+    }
+    var dOD = C.sum(lignesOD, 'debit'), cOD = C.sum(lignesOD, 'credit');
+    if (Math.abs(dOD - cOD) >= 1) return { ok: false, motif: 'Pièce de résultat déséquilibrée (' + C.money(Math.abs(dOD - cOD)) + ') — clôture refusée (RG-10).' };
+    lignesOD.forEach(function (l) { col.insert(l); });
+
+    /* (2) À-nouveaux DÉFINITIFS au 1er janvier N+1, calculés APRÈS la pièce de résultat. */
+    var apres = ecrituresDe(annee);
+    var report = lignesDeReport(apres);
+    var anBase = { numero: 'AN-' + (annee + 1) + '-00001', date: (annee + 1) + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux',
+      libelle: 'À-nouveaux au 1er janvier ' + (annee + 1), origine: 'Clôture — à-nouveaux', statut: 'validee', origineCloture: 'an', centreCout: null };
+    var dAN = 0, cAN = 0;
+    report.forEach(function (l) {
+      dAN += l.debit; cAN += l.credit;
+    });
+    if (Math.abs(dAN - cAN) >= 1) {
+      /* Les lignes lettrées exclues ne peuvent pas déséquilibrer un report si le lettrage est équilibré :
+         un écart dit un lettrage faux, on refuse plutôt que de propager. */
+      return { ok: false, motif: 'À-nouveaux déséquilibrés (' + C.money(Math.abs(dAN - cAN)) + ') : vérifier les lettrages. L’exercice reste ouvert.', resteOD: numOD };
+    }
+    report.forEach(function (l) {
+      col.insert(Object.assign({}, anBase, { compte: l.compte, compteLibelle: l.compteLibelle, debit: l.debit, credit: l.credit,
+        libelle: l.libelle || anBase.libelle, pieceOrigine: l.pieceOrigine || null }));
+    });
+
+    /* (3) Archive : empreinte du journal ARRÊTÉ, puis état « clos » — en dernier. */
+    var arret = ecrituresDe(annee);
+    var texte = arret.map(function (e) { return [e.numero, e.date, e.journal, e.compte, e.debit, e.credit].join('|'); }).sort().join('\n');
+    var empreinte = sha256(texte);
+    S.collection('exercices').update(x.id, { etat: 'clos', valideLe: new Date().toISOString(), validePar: acteur(), motif: String(motif).trim(),
+      resultat: res, empreinte: empreinte, nbEcrituresArchivees: arret.length, anNumero: anBase.numero });
+    if (!exercice(annee + 1)) {
+      S.collection('exercices').all().unshift({ id: 'EXO-' + (annee + 1), annee: annee + 1, debut: (annee + 1) + '-01-01', fin: (annee + 1) + '-12-31',
+        statut: 'actif', etat: 'ouvert', source: 'journal' });
+    }
+    S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_attente_cloture' }, { etat: 'clos', resultat: res, empreinte: empreinte });
+    notifier({ type: 'cloture', poste: 'comptable', libelle: 'Exercice ' + annee + ' clos', detail: 'Résultat ' + C.money(res) + ' ; à-nouveaux ' + (annee + 1) + ' écrits.', reference: String(annee) });
+    S.save();
+    /* L'archive de conservation naît AVEC la clôture, par quelque porte qu'elle soit validée : un exercice
+       clos sans archive serait un exercice dont la conservation dépend d'un geste qu'on peut oublier. */
+    var archive = null;
+    try { archive = archiverExercice(annee); } catch (e) { if (global.console) global.console.error('[SIGH] archive de clôture', e); }
+    return { ok: true, resultat: res, empreinte: empreinte, lignesAN: report.length, archive: archive ? archive.reference : null };
+  }
+
+  /**
+   * L'ARCHIVE DE CLÔTURE DANS LA GED. L'obligation de conservation (dix ans, OHADA) se tient là où la
+   * clinique range ses pièces. La fiche porte la balance générale de l'exercice figé et son EMPREINTE
+   * SHA-256 : l'exercice étant en lecture seule au moteur, le grand livre se rééditera à l'identique, et
+   * l'empreinte le prouve. UNE archive par exercice : en déposer deux créerait deux « vérités » à conserver.
+   * Retourne la fiche (existante ou nouvelle) ; `.deja` dit qu'elle existait.
+   */
+  function archiverExercice(annee) {
+    var col = S.collection('documents', { module: 'GED', entite: 'Document' });
+    var code = 'EX' + annee;
+    var deja = col.active().filter(function (d) { return d.codeRattachement === code; })[0];
+    if (deja) return Object.assign({}, deja, { deja: true });
+    var f = exercice(annee) || { annee: annee };
+    var esc = function (v) { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    var csv = ['Compte;Intitulé;Débit;Crédit'].concat(soldesParCompte(ecrituresDe(annee)).map(function (l) {
+      return [l.compte, l.libelle, l.debit, l.credit].map(esc).join(';');
+    })).join('\n');
+    var an = String(C.aujourdhui().getFullYear()), rang = 0;
+    col.all().forEach(function (d) {
+      var m = new RegExp('^DOC-' + an + '-(\\d+)$').exec(String(d.reference || ''));
+      if (m) rang = Math.max(rang, Number(m[1]));
+    });
+    var empBalance = sha256(csv);
+    var r = col.insert({
+      reference: 'DOC-' + an + '-' + ('00000' + (rang + 1)).slice(-5),
+      libelle: 'Clôture de l’exercice ' + annee + ' — balance générale (empreinte ' + String(f.empreinte || empBalance).slice(0, 12) + '…)',
+      categorie: 'cloture_exercice', rattachement: 'Administration', rattacheA: 'Exercice ' + annee, codeRattachement: code,
+      format: 'CSV', taille: csv.length, version: 1, signe: true, archive: true, etatValidation: 'valide', conservation: 10,
+      consultations: 0, date: C.iso(C.aujourdhui()), deposePar: (S.session() || {}).nom || '—',
+      empreinte: f.empreinte || empBalance, empreinteBalance: empBalance, resultat: f.resultat == null ? null : f.resultat, contenu: csv,
+    });
+    return Object.assign({}, r.record, { deja: false });
+  }
+
+  /* LETTRAGE : un ensemble de lignes d'UN compte de tiers dont le total s'annule. */
+  function lettrer(compte, ids) {
+    if (!sensLettrable(compte)) return { ok: false, motif: 'Le compte ' + compte + ' n’est pas lettrable (comptes de tiers seulement).' };
+    var col = S.collection('ecritures');
+    var lignes = (ids || []).map(function (id) { return col.get(id); });
+    if (lignes.length < 2 || lignes.some(function (l) { return !l || String(l.compte) !== String(compte) || l.lettrage; }))
+      return { ok: false, motif: 'Sélection invalide : au moins deux lignes, du même compte, non encore lettrées.' };
+    var net = C.sum(lignes, 'debit') - C.sum(lignes, 'credit');
+    if (Math.abs(net) >= 1) return { ok: false, motif: 'Lettrage refusé — l’ensemble ne s’annule pas (écart ' + C.money(Math.abs(net)) + ').' };
+    var code = String.fromCharCode(65 + (col.all().filter(function (e) { return e.lettrage; }).map(function (e) { return e.lettrage; })
+      .filter(function (v, i, a) { return a.indexOf(v) === i; }).length % 26));
+    lignes.forEach(function (l) { col.update(l.id, { lettrage: code, lettreLe: new Date().toISOString(), lettrePar: acteur() }); });
+    return { ok: true, code: code, lignes: lignes.length };
+  }
+  function delettrer(compte, code, motif) {
+    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour dé-lettrer.' };
+    var col = S.collection('ecritures'), n = 0;
+    col.all().filter(function (e) { return String(e.compte) === String(compte) && e.lettrage === code; })
+      .forEach(function (l) { col.update(l.id, { lettrage: null, delettreLe: new Date().toISOString(), delettreMotif: String(motif).trim() }); n++; });
+    return n ? { ok: true, lignes: n } : { ok: false, motif: 'Aucune ligne lettrée « ' + code + ' » sur ce compte.' };
+  }
+
+  /** La date tombe-t-elle dans l'exercice choisi ? (écrans de flux : registre fiscal, avoirs…) */
+  function dansExerciceChoisi(date) { return !date || anneeDe(date) === exerciceChoisi(); }
+  /** La fenêtre de l'exercice choisi : du 1er janvier au 31 décembre, ou à aujourd'hui pour l'année en cours. */
+  function fenetreExercice() {
+    var a = exerciceChoisi(), auj = C.aujourdhui(), fin = a >= auj.getFullYear() ? auj : new Date(a, 11, 31);
+    return { annee: a, debut: C.iso(new Date(a, 0, 1)), fin: C.iso(fin) };
+  }
+
+  global.SIGH.exercice = {
+    dansExercice: dansExerciceChoisi, fenetre: fenetreExercice,
+    liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
+    anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
+    provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, valider: validerCloture,
+    lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice,
   };
 
   /* Le moteur du BFR est EXPOSÉ pour être SONDÉ, jamais recopié : le scénario

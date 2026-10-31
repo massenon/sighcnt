@@ -1,0 +1,59 @@
+{
+ "id": "m11-avances",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Avances sur salaire",
+ "acces": "ouvert",
+ "titre": "Avances sur salaire",
+ "description": "Octroi et suivi du remboursement des avances, avec retenue automatique sur le bulletin.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Avances sur salaire"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [
+  "La mensualité de remboursement est automatiquement retenue sur le bulletin de paie tant que l’avance n’est pas soldée."
+ ],
+ "onglets": [
+  "Tous les avances",
+  "Archivés"
+ ],
+ "kpis": [
+  "Avances accordées",
+  "Montant total accordé",
+  "Restant dû",
+  "Retenues mensuelles"
+ ],
+ "cartes": [],
+ "tableaux": [
+  [
+   "N°",
+   "Date",
+   "Mat.",
+   "Agent",
+   "Motif",
+   "Montant accordé",
+   "Mensualités",
+   "Retenue mensuelle",
+   "Remboursé",
+   "Restant dû",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Tous les avances12",
+  "Archivés0",
+  "Colonnes",
+  "Exporter",
+  "Nouveau"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

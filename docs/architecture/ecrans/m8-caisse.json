@@ -1,0 +1,65 @@
+{
+ "id": "m8-caisse",
+ "module": "M8",
+ "domaine": "Financier",
+ "libelleManifeste": "État de caisse journalier",
+ "acces": "ouvert",
+ "titre": "État de caisse journalier",
+ "description": "Arrêté de caisse : encaissements du jour ventilés par mode de règlement et par nature de prestation.",
+ "fil": [
+  "Accueil",
+  "Financier",
+  "Facturation & Caisse",
+  "État de caisse journalier"
+ ],
+ "actions": [
+  "Ordonnances",
+  "Nouvelle facture",
+  "Tableau de bord facturation"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Factures émises",
+  "Chiffre d’affaires",
+  "Total encaissé",
+  "Reliquats du jour"
+ ],
+ "cartes": [
+  "Prescriptions à encaisser — 73 à traiter",
+  "Pièces de la journée — reçus et reliquats",
+  "Ventilation par mode de règlement",
+  "Ventilation par nature de prestation",
+  "Détail des factures du 30/10/2026"
+ ],
+ "tableaux": [
+  [
+   "Origine",
+   "Patient",
+   "À faire",
+   "Montant",
+   "État",
+   "Actions"
+  ],
+  [
+   "Mode de règlement",
+   "Opérations",
+   "Montant encaissé"
+  ]
+ ],
+ "commandes": [
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "Éditer l’arrêté de caisse"
+ ],
+ "champs": [
+  "Journée de caisse"
+ ],
+ "nbTableaux": 2,
+ "nbKpis": 4
+}

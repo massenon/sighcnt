@@ -1,0 +1,59 @@
+{
+ "id": "m11-ortb",
+ "module": "M11",
+ "domaine": "RH",
+ "libelleManifeste": "Redevance ORTB",
+ "acces": "ouvert",
+ "titre": "Redevance ORTB",
+ "description": "Redevances audiovisuelles prélevées sur les salaires : catégorie Radio et catégorie Télé, mois de prélèvement et suivi de l’exercice.",
+ "fil": [
+  "Accueil",
+  "RH",
+  "Paie & Primes",
+  "Redevance ORTB"
+ ],
+ "actions": [
+  "Prêts-études et avances",
+  "Tableau de bord paie",
+  "Paie & Primes"
+ ],
+ "regle": [
+  "La radio et la télé sont deux redevances distinctes qui se cumulent : un salaire supérieur à 60 000 n’est pas dispensé de la radio, il acquitte les deux. Total dû sur l’exercice 2026 : 158 000 FCFA — 44 000 FCFA en mars (radio) et 114 000 FCFA en juin (télé)."
+ ],
+ "onglets": [],
+ "kpis": [
+  "ORTB Radio — tous les salariés",
+  "ORTB Télé — au-delà de 60 000",
+  "Cumul par agent au-delà du seuil",
+  "Dû sur octobre"
+ ],
+ "cartes": [
+  "Redevances par agent — octobre 2026"
+ ],
+ "tableaux": [
+  [
+   "Matricule",
+   "Agent",
+   "Salaire brut",
+   "ORTB Radio",
+   "ORTB Télé",
+   "Catégories",
+   "Total annuel",
+   "Dû ce mois"
+  ]
+ ],
+ "commandes": [
+  "Imprimer l’état",
+  "Obligations",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [
+  "Mois de paie"
+ ],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

@@ -1,0 +1,32 @@
+{
+ "id": "hub-m5",
+ "module": "M5",
+ "domaine": "Soins",
+ "libelleManifeste": "Laboratoire",
+ "acces": "ouvert",
+ "titre": "Laboratoire",
+ "description": "Tous les écrans du module M5 — Laboratoire.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [
+  "Patients & Dossier médical",
+  "Consultations & prescriptions",
+  "Maternité, Naissances & Décès"
+ ],
+ "onglets": [],
+ "kpis": [],
+ "cartes": [],
+ "tableaux": [],
+ "commandes": [],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 0
+}
