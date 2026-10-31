@@ -218,5 +218,13 @@
  "m12-cloture": "porté",
  "m12-ouverture": "porté",
  "m12-bfr": "porté",
- "m12-cout-activite": "porté"
+ "m12-cout-activite": "porté",
+ "m10-badges": "porté",
+ "m10-badges-verification": "porté",
+ "m10-badges-modeles": "porté",
+ "m10-badges-impression": "porté",
+ "m10-evenements": "porté",
+ "m10-participations": "porté",
+ "m10-assurance-personnel": "porté",
+ "m10-securite-entretien": "porté"
 }

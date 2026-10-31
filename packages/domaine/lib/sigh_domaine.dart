@@ -82,3 +82,4 @@ export 'src/comptabilite/cpc_baseline.dart';
 export 'src/comptabilite/cpc_echeances.dart';
 export 'src/comptabilite/cpc_bfr.dart';
 export 'src/comptabilite/cpc_etats.dart';
+export 'src/rh/rhc_regles.dart';

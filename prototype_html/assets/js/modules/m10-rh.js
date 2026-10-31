@@ -3435,7 +3435,7 @@
                 v.montantParAgent = Number(v.montantParAgent) || D.PARAM_EVENEMENTS.montantStandard;
                 var ben = personnel().filter(function (e) { return e.id === v.beneficiaireId; })[0];
                 v.beneficiaire = ben ? ben.nomComplet : null;
-                v.reference = C.nextRef('EVT-', 4);
+                v.reference = C.referenceSuivante('EVT-', 4, colEvenements().all());
                 var res = colEvenements().insert(v);
                 var n = engendrerParticipations(res.record);
                 S.log('Création d’un événement du personnel', 'M10', 'Événement', res.record.id, null,
@@ -3531,17 +3531,19 @@
           danger: b.regles > 0, requireMotif: true,
         }).then(function (rep) {
           if (!rep) return;
-          var archivees = 0;
+          var archivees = 0; var annulations = [];
           participationsDe(evt.id).forEach(function (x) {
             if (x.statutPaiement === 'paye') return;
-            colParticipations().archive(x.id, rep.motif); archivees++;
+            annulations.push(colParticipations().archive(x.id, rep.motif).undo); archivees++;
           });
           var res = colEvenements().archive(evt.id, rep.motif);
           afficher();
           U.toast('Événement annulé.', {
             type: 'success',
             detail: C.num(archivees) + ' participation(s) non réglée(s) archivée(s).',
-            undo: function () { res.undo(); afficher(); },
+            /* L'annulation restitue l'événement ET ses participations : ne restaurer que l'événement laissait ses participations archivées,
+               donc un événement vivant dont le montant attendu avait fondu (E741). */
+            undo: function () { res.undo(); annulations.forEach(function (u) { u(); }); afficher(); },
           });
         });
       }
@@ -3685,7 +3687,7 @@
               render: function (x) {
                 return el('div.min-w-0', null, [
                   el('p.truncate.text-sm.font-medium.text-slate-800', { text: x.agent }),
-                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + fonctionLabel(x.fonction) }),
+                  el('p.truncate.text-xs.text-slate-400', { text: (x.matricule || '—') + ' · ' + (x.fonction ? fonctionLabel(x.fonction) : '—') }),
                 ]);
               },
             },
@@ -3821,7 +3823,7 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
-                var recu = C.nextRef('REC-PART-', 4);
+                var recu = C.referenceSuivante('REC-PART-', 4, colParticipations().all().map(function (p) { return { reference: p.recu }; }));
                 var res = colParticipations().update(x.id, {
                   statutPaiement: 'paye', mode: 'comptant',
                   montantVerse: Number(v.montantVerse), datePaiement: v.datePaiement,
@@ -4025,7 +4027,7 @@
         S.collection('demandesAnalyses').active().forEach(function (a) {
           var pat = parPatient[a.patientId];
           if (!pat) return;
-          var d = String(a.date || a.dateDemande || '').slice(0, 10);
+          var d = String(a.date || a.dateDemande || a.dateHeure || '').slice(0, 10);
           if (!d || (min && d < min)) return;
           var analyse = D.ANALYSES.filter(function (x) { return x.code === a.analyse || x.libelle === a.analyse; })[0];
           out.push({
@@ -4034,7 +4036,7 @@
             fonction: pat.fonctionAgent, fonctionLabel: fonctionLabel(pat.fonctionAgent),
             nature: 'Analyse', detail: a.analyse || (analyse ? analyse.libelle : 'Analyse'),
             praticien: a.prescripteur || a.demandeur || '—',
-            valeur: Number(a.montant) || (analyse ? Number(analyse.prix) || 0 : 0),
+            valeur: Number(a.montant) || Number(a.prix) || (analyse ? Number(analyse.prix) || 0 : 0),
           });
         });
 
@@ -4232,15 +4234,23 @@
       + 'Les vacations restent celles du <strong>planning validé</strong> — même collection que « Planning & gardes », '
       + 'donc toute modification y est immédiatement visible. Le repos de 24 h qui suit une garde reste opposable.',
     render: function (root) {
-      var agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; });
+      /* E749 : `agents` était lu UNE fois au rendu — un agent créé ou archivé ici ne paraissait ni dans la grille de rotation ni aux indicateurs avant le
+         rechargement de la page (« enregistré mais introuvable »). La liste est relue à chaque rafraîchissement. */
+      var agents = [];
+      function relireAgents() { agents = personnel().filter(function (e) { return e.fonction === 'securite' || e.fonction === 'entretien'; }); }
       var host = el('div.space-y-4');
-
-      host.appendChild(U.kpiGrid([
-        { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
-        { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
-        { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
-        { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
-      ]));
+      var blocKpi = el('div');
+      host.appendChild(blocKpi);
+      function rendreKpi() {
+        C.clear(blocKpi);
+        blocKpi.appendChild(U.kpiGrid([
+          { label: 'Agents de sécurité', value: C.num(agents.filter(function (e) { return e.fonction === 'securite'; }).length), icon: 'shield', tone: 'navy' },
+          { label: 'Agents d’entretien', value: C.num(agents.filter(function (e) { return e.fonction === 'entretien'; }).length), icon: 'spray-can', tone: 'info' },
+          { label: 'En poste aujourd’hui', value: C.num(planning().filter(function (p) { return p.date === C.iso(AUJ) && (p.fonction === 'securite' || p.fonction === 'entretien') && p.type !== 'repos24' && p.type !== 'repos48'; }).length), icon: 'user-check', tone: 'success' },
+          { label: 'Masse salariale', value: C.money(C.sum(agents, 'salaireBase')), icon: 'banknote', tone: 'neutral' },
+        ]));
+        U.icons(blocKpi);
+      }
 
       /* Légendes reprises telles quelles des plannings de la clinique */
       var legendes = el('div.grid.gap-3.sm\\:grid-cols-2');
@@ -4277,7 +4287,7 @@
       root.appendChild(host);
       return null;
 
-      function rendreTout() { rendreGrille(); rendreAgents(); rendreGraphes(); }
+      function rendreTout() { relireAgents(); rendreKpi(); rendreGrille(); rendreAgents(); rendreGraphes(); }
 
       function rendreGrille() {
       C.clear(blocGrille);
@@ -4447,7 +4457,7 @@
           entite: 'Agent',
           defauts: function () { return { fonction: 'securite', dateEmbauche: C.iso(AUJ), salaireBase: 40000 }; },
           transform: function (v) {
-            if (!v.matricule) v.matricule = C.nextRef('SE-', 3);
+            if (!v.matricule) v.matricule = C.referenceSuivante('SE-', 3, S.collection('personnel').all().map(function (e) { return { reference: e.matricule }; }));
             /* Sécurité, entretien et chauffeurs sont rattachés à la Direction :
                un seul intitulé de service, comme partout ailleurs. */
             v.service = 'Direction';
