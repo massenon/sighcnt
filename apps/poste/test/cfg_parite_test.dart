@@ -27,6 +27,8 @@ const ecransMesures = [
   'cfg-catalogue',
   'cfg-branding',
   'cfg-entetes',
+  'cfg-types-piece',
+  'cfg-certificats',
 ];
 
 void main() {
