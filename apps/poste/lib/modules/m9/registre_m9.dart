@@ -4,8 +4,10 @@ import '../../core/config_poste.dart';
 import 'assures.dart';
 import 'compagnies.dart';
 import 'creances.dart';
+import 'facture_mere.dart';
 import 'historique.dart';
 import 'prises_en_charge.dart';
+import 'releve.dart';
 import 'relances.dart';
 import 'tableau_bord.dart';
 
@@ -21,4 +23,6 @@ final Map<String, ConstruireEcran> ecransM9 = {
   'm9-historique': (c, cfg) => const EcranHistoriqueAssureur(),
   'm9-creances': (c, cfg) => const EcranCreances(),
   'm9-relances': (c, cfg) => const EcranRelances(),
+  'm9-factures-assureur': (c, cfg) => const EcranReleveAssureur(),
+  'm9-facture-mere': (c, cfg) => const EcranFactureMere(),
 };
