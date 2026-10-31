@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../core/donnees_navigation.dart';
 import '../donnees/magasin.dart';
 
 /// Ce qu'un écran porté reçoit de la coque : son identifiant, le rôle de l'agent, ses droits SUR CET ÉCRAN (jamais ceux d'un autre module),
@@ -16,6 +17,7 @@ class ContexteEcran extends InheritedWidget {
     this.utilisateur = '',
     this.horloge,
     this.ouvre,
+    this.donnees,
     required super.child,
   });
 
@@ -29,6 +31,9 @@ class ContexteEcran extends InheritedWidget {
 
   /// `ecranOuvert(id)` : l'écran est-il ouvert au profil de l'agent ? (parcours des tableaux de bord : une étape fermée reste visible mais non cliquable). `null` = non branché : tout est réputé ouvert.
   final bool Function(String id)? ouvre;
+
+  /// Manifeste, droits et parité (écrans qui décrivent le logiciel lui-même : aide, plan du site). `null` = non branché.
+  final DonneesNavigation? donnees;
 
   /// Nom affiché de l'agent connecté (RG-12 : aucune action anonyme).
   final String utilisateur;

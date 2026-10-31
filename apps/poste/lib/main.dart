@@ -10,6 +10,7 @@ import 'core/parametres_poste.dart';
 import 'core/theme.dart';
 import 'mere/activation.dart';
 import 'mere/client_mere.dart';
+import 'modules/auth/acc_session.dart';
 import 'modules/registre.dart';
 import 'shell/coque.dart';
 import 'sync/etat_sync.dart';
@@ -26,6 +27,12 @@ const String secretAdmin =
     String.fromEnvironment('SIGH_ADMIN', defaultValue: '');
 const String roleDev =
     String.fromEnvironment('SIGH_ROLE', defaultValue: 'admin');
+
+/// `SIGH_CONNEXION=oui` : le poste démarre sur l'écran de connexion et verrouille la session après quinze minutes d'inactivité. Par défaut (`non`), il
+/// s'ouvre sous `SIGH_ROLE`, comme avant. ATTENTION : le poste n'a pas encore d'authentification réelle (limite A5) — la connexion reconnaît un compte du
+/// jeu sans vérifier le mot de passe ; elle n'est pas une barrière.
+const String connexionExigee =
+    String.fromEnvironment('SIGH_CONNEXION', defaultValue: 'non');
 
 /// Dossier des données du poste. À remplacer par le dossier d'application du système à l'installation (tâche de packaging).
 const String dossierDonnees =
@@ -65,6 +72,7 @@ Future<void> main() async {
       controleur: controleur,
       donnees: await DonneesNavigation.chargerAssets(),
       magasin: await Magasin.depuisAssets(Magasin.collectionsDuJeu),
+      session: connexionExigee == 'oui' ? SessionPoste(exigeConnexion: true) : null,
       etatSync: moteur.source()));
 }
 
@@ -78,7 +86,15 @@ class SighPoste extends StatelessWidget {
       this.etatSync,
       this.magasin,
       this.horloge,
-      this.ecranInitial});
+      this.ecranInitial,
+      this.session,
+      this.parametres = const {}});
+
+  /// Session du poste (connexion, verrou d'inactivité) ; absente = l'agent est réputé connecté sous le rôle de la configuration.
+  final SessionPoste? session;
+
+  /// Paramètres de l'adresse d'un écran autonome (`jeton` de la page publique d'enquête).
+  final Map<String, String> parametres;
 
   /// Données de navigation engendrées (manifeste, droits, parité).
   final DonneesNavigation donnees;
@@ -125,6 +141,8 @@ class SighPoste extends StatelessWidget {
       config: cfg,
       donnees: donnees,
       ecranInitial: ecranInitial,
+      session: session,
+      parametres: parametres,
       ecrans: ecransPortes(controleur: ctl, client: cl),
       magasin: magasin,
       horloge: horloge,

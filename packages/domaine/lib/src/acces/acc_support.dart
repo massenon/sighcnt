@@ -74,10 +74,11 @@ String accTexteSansBalises(String s) => s.replaceAll(RegExp(r'<[^>]+>'), '').rep
 
 /// Une ligne de la rubrique « Modules du logiciel » et de la liste des modules de l'anomalie : le module d'une rangée du manifeste.
 class AccModuleManifeste {
-  const AccModuleManifeste(this.domaine, this.code, this.label, this.ecrans);
+  const AccModuleManifeste(this.domaine, this.code, this.label, this.icone, this.ecrans);
   final String domaine;
   final String code;
   final String label;
+  final String? icone;
   final List<EcranNav> ecrans;
 }
 
@@ -87,7 +88,7 @@ List<AccModuleManifeste> accModules(Manifeste m) {
   final out = <AccModuleManifeste>[];
   for (final d in m.domaines) {
     for (final r in m.rangees.where((r) => r.domaine == d.nom)) {
-      out.add(AccModuleManifeste(d.nom, r.code, r.label, [
+      out.add(AccModuleManifeste(d.nom, r.code, r.label, r.icone, [
         for (final id in r.ecrans)
           if (m.ecran(id) != null) m.ecran(id)!
       ]));
@@ -161,15 +162,17 @@ String accDetailDemande(String reference) => 'Référence $reference — répons
 // ----------------------------------------------------------------------------------------------------------------------------------------------
 
 class AccPlanModule {
-  const AccPlanModule(this.label, this.code, this.ecrans);
+  const AccPlanModule(this.label, this.code, this.icone, this.ecrans);
   final String label;
   final String code;
+  final String? icone;
   final List<EcranNav> ecrans;
 }
 
 class AccPlanSection {
-  const AccPlanSection(this.domaine, this.modules);
+  const AccPlanSection(this.domaine, this.icone, this.modules);
   final String domaine;
+  final String? icone;
   final List<AccPlanModule> modules;
 }
 
@@ -190,7 +193,7 @@ AccPlan accPlanDuSite(Manifeste m, List<EcranNav> systeme) {
   final sections = [
     for (final d in m.domaines)
       if (mods.any((x) => x.domaine == d.nom))
-        AccPlanSection(d.nom, [for (final x in mods.where((x) => x.domaine == d.nom)) AccPlanModule(x.label, x.code, x.ecrans)]),
+        AccPlanSection(d.nom, d.icone, [for (final x in mods.where((x) => x.domaine == d.nom)) AccPlanModule(x.label, x.code, x.icone, x.ecrans)]),
   ];
   return AccPlan(sections, systeme, mods.fold(0, (n, x) => n + x.ecrans.length));
 }
