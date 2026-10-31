@@ -6,6 +6,7 @@ import 'tba_comptable.dart';
 import 'tba_infirmier.dart';
 import 'tba_laborantin.dart';
 import 'tba_medecin.dart';
+import 'tba_rh.dart';
 import 'tba_stock.dart';
 import 'tba_pharmacien.dart';
 
@@ -22,4 +23,5 @@ final Map<String, ConstruireEcran> ecransDASH = {
   'dash-stock': (c, cfg) => const EcranDashStock(),
   'dash-caissier': (c, cfg) => const EcranDashCaissier(),
   'dash-comptable': (c, cfg) => const EcranDashComptable(),
+  'dash-rh': (c, cfg) => const EcranDashRh(),
 };
