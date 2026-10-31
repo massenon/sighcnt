@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'cfa_natures.dart';
+import 'cfa_catalogue.dart';
 import 'cfa_organisation.dart';
 import 'cfa_tarifs.dart';
 
@@ -12,5 +13,6 @@ typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste con
 final Map<String, ConstruireEcran> ecransCFG = {
   'cfg-organisation': (c, cfg) => const EcranOrganisation(),
   'cfg-tarifs': (c, cfg) => const EcranTarifs(),
+  'cfg-catalogue': (c, cfg) => const EcranCatalogue(),
   'cfg-natures-facture': (c, cfg) => const EcranNaturesFacture(),
 };

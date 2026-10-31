@@ -24,6 +24,7 @@ const ecransMesures = [
   'cfg-natures-facture',
   'cfg-organisation',
   'cfg-tarifs',
+  'cfg-catalogue',
 ];
 
 void main() {
