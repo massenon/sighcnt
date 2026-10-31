@@ -69,8 +69,8 @@ List<String> textesSous(WidgetTester t, Finder f) => [
       for (final e in find.descendant(of: f, matching: find.byType(Text)).evaluate()) sp(texteDe(e))
     ].where((s) => s.isNotEmpty).toList();
 
-String ligneRegard(WidgetTester t) => sp(texteDe(find.byKey(const Key('tbb:regard-ligne')).evaluate().single as Element));
-String noteRegard(WidgetTester t) => sp(texteDe(find.byKey(const Key('tbb:regard-note')).evaluate().single as Element));
+String ligneRegard(WidgetTester t) => sp(texteDe(find.byKey(const Key('tbb:regard-ligne')).evaluate().single));
+String noteRegard(WidgetTester t) => sp(texteDe(find.byKey(const Key('tbb:regard-note')).evaluate().single));
 
 /// Les KPI affichés : (libellé, valeur, indice).
 List<(String, String, String?)> kpisAffiches(WidgetTester t) {
