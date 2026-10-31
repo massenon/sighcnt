@@ -4,6 +4,7 @@ import '../../core/config_poste.dart';
 import 'audit.dart';
 import 'sauvegardes.dart';
 import 'sessions.dart';
+import 'taches.dart';
 import 'soignants.dart';
 import 'utilisateurs.dart';
 
@@ -17,4 +18,5 @@ final Map<String, ConstruireEcran> ecransM14 = {
   'm14-sessions': (c, cfg) => const EcranSessions(),
   'm14-audit': (c, cfg) => const EcranAudit(),
   'm14-sauvegardes': (c, cfg) => const EcranSauvegardes(),
+  'm14-taches': (c, cfg) => const EcranTaches(),
 };
