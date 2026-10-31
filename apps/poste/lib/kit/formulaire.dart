@@ -17,7 +17,10 @@ enum TypeChamp {
   select,
   multiselect,
   case_,
-  section
+  section,
+
+  /// `type="password"` : la saisie est masquée (M14 — le mot de passe est saisi, il n'est pas gardé).
+  motDePasse
 }
 
 /// Largeur d'un champ dans la grille à SIX colonnes : `demi` (3), `tiers` (2), `plein` (6). Six se divise par deux ET par trois.
@@ -335,6 +338,9 @@ class _TexteState extends State<_Texte> {
               : TextInputType.text,
         },
         style: styleSaisie,
+        obscureText: d.type == TypeChamp.motDePasse,
+        enableSuggestions: d.type != TypeChamp.motDePasse,
+        autocorrect: d.type != TypeChamp.motDePasse,
         decoration:
             decorationChamp(indicatif: d.indicatif, erreur: widget.erreur),
         onChanged: (v) => widget.ctl.poser(d.nom, v),

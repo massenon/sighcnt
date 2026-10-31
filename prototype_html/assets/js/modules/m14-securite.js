@@ -225,7 +225,7 @@
             },
           ].filter(Boolean);
         },
-        transform: function (v) {
+        transform: function (v, record) {
           /* Le secret ne franchit pas cette ligne : on note qu'il a été posé,
              par qui et quand — c'est ce que le journal doit pouvoir montrer —
              et l'on efface la saisie avant l'écriture. */
@@ -238,8 +238,12 @@
           delete v.motDePasseConfirmation;
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.nomComplet = e.nomComplet; v.matricule = e.matricule; v.poste = e.poste; v.service = v.service || e.service; }
-          if (!v.dernierAcces) v.dernierAcces = C.iso(AUJ);
-          if (v.echecs == null) v.echecs = 0;
+          /* E591 — ces deux valeurs sont celles d’un compte NEUF. À la modification, le formulaire ne les porte pas : les poser ici remettait le « dernier
+             accès » à aujourd’hui et les échecs de connexion à zéro à chaque correction d’une fiche — la trace même que cet écran existe pour montrer. */
+          if (!record) {
+            if (!v.dernierAcces) v.dernierAcces = C.iso(AUJ);
+            if (v.echecs == null) v.echecs = 0;
+          }
           if (['dm', 'da', 'direction', 'admin'].indexOf(v.role) !== -1) v.mfa = true;
           return v;
         },
@@ -406,6 +410,8 @@
 
       root.appendChild(host);
       host.appendChild(vue);
+      /* E590 — l’affectation vivait APRÈS le return (code mort) : le bouton « Nouveau rôle » ne faisait rien. Elle se pose avant le premier rendu. */
+      creerRoleRef.fn = creerRole;
       afficher();
       return null;
 
@@ -1011,7 +1017,6 @@
        * rien ouvert. C'est le comportement sûr — l'inverse donnerait tous les
        * droits à un rôle qu'on vient d'inventer.
        * ------------------------------------------------------------------ */
-      creerRoleRef.fn = creerRole;
       function creerRole() {
         var f = U.form([
           { name: 'libelle', label: 'Intitulé du rôle', type: 'text', required: true, col: 'full' },
