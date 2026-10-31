@@ -173,7 +173,7 @@ class _Tableau extends StatelessWidget {
                         'patient': pt != null ? '${pt['nom']} ${pt['prenom']}' : v['patientCode'],
                         'sageFemme': _nomSoignant(m, v['sageFemmeId']),
                         'creeLe': c.aujourdhui.toIso8601String(),
-                        '_creePar': c.utilisateur,
+                        '_creePar': acteur(c).nom,
                       });
                       final r = col.inserer(fiche, prefixe: 'CRM');
                       ToastsSigh.afficher(ctx, 'Compte rendu créé.', type: TypeToast.succes, detail: '${r.fiche['reference']}', annuler: r.annuler);

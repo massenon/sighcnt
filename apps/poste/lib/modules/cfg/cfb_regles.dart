@@ -121,7 +121,7 @@ class EcranRegles extends StatelessWidget with EcranMaquette {
         ('Documents sources', nombre(cfbSourcesVerite.length)),
         ('Règles de gestion', nombre(cfbReglesGestion.length)),
         ('Date d’édition', dateFR(c.aujourdhui)),
-        ('Établi par', c.utilisateur),
+        ('Établi par', acteur(c).nom),
       ],
       blocs: [
         BlocTableau(

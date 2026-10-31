@@ -127,7 +127,7 @@ class EcranSorties extends StatelessWidget with EcranMaquette {
           ],
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
         ));
   }

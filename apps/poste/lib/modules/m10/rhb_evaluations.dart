@@ -229,7 +229,7 @@ void ouvrirEvaluation(BuildContext ctx, ContexteEcran c, {Fiche? existante}) {
                     // `C.nextRef('EV-', 4)` de la maquette repartait de 1 à chaque chargement : « EV-0001 » doublonnait la série « EV-AAAA-NNNN » du jeu.
                     // Corrigé dans la maquette (E663) : la série de l'année, lue sur les fiches EXISTANTES.
                     'reference': existante?['reference'] ?? rhbReferenceSuivante('EV-${c.aujourdhui.year}-', 4, col.toutes),
-                    'evaluateur': c.utilisateur,
+                    'evaluateur': acteur(c).nom,
                   };
                   fermer();
                   VoidCallback annuler;
@@ -647,7 +647,7 @@ class BlocBareme extends StatelessWidget {
               'dateEffet': critere['dateEffet'],
               'dateFin': iso(ajouterJours(c.aujourdhui, -1)),
               'remplacePar': 'Version du ${dateFR(c.aujourdhui)}',
-              'archivePar': c.utilisateur,
+              'archivePar': acteur(c).nom,
             }, prefixe: 'HBA');
           }
           final annuler = colB.mettreAJour(critere['id'], {
@@ -656,7 +656,7 @@ class BlocBareme extends StatelessWidget {
             'version': ((critere['version'] as num?) ?? 1).toInt() + 1,
             'portee': portee,
             'modifieLe': iso(c.aujourdhui),
-            'modifiePar': c.utilisateur,
+            'modifiePar': acteur(c).nom,
           });
           c.magasin.journaliser('Modification du barème NS 131', 'M10', 'Barème', '${critere['critereId']}', {'sanctions': avant}, {'sanctions': apres, 'portee': portee});
           ToastsSigh.afficher(ctx, 'Barème modifié.',
@@ -687,7 +687,7 @@ class BlocBareme extends StatelessWidget {
       'dateEffet': b['dateEffet'],
       'dateFin': iso(ajouterJours(c.aujourdhui, -1)),
       'remplacePar': 'Critère retiré — $motif',
-      'archivePar': c.utilisateur,
+      'archivePar': acteur(c).nom,
     }, prefixe: 'HBA');
     final annuler = c.magasin.collection('baremeNS131').archiver(b['id']);
     ToastsSigh.afficher(ctx, 'Critère retiré du barème.', type: TypeToast.succes, detail: 'Archivage logique (RG-14) — restaurable depuis la corbeille.', annuler: annuler);

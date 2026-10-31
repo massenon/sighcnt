@@ -340,7 +340,7 @@ class _EtatResultats extends State<EcranResultats> {
                 ]),
         actionsLigne: (_, r) {
           // LA CONTINUITÉ VAUT AUSSI POUR LA RELECTURE : laisser corriger la saisie d'un collègue puis le laisser signer viderait la règle de son sens.
-          final cont = continuiteRespectee(r, agentId: p.agentId, agentNom: p.agentNom);
+          final cont = continuiteRespectee(r, agentId: p.agentId, agentNom: p.agentNom, identifiants: p.identifiants);
           return [
             if (cont.ok)
               commandeLigne(BoutonIcone(
@@ -481,7 +481,7 @@ class _EtatResultats extends State<EcranResultats> {
 
   void _validerBio(BuildContext ctx, ContexteEcran c, ProfilLabo p, Fiche r, bool interim) {
     // CONTINUITÉ — celui qui a prélevé valide. Le refus NOMME le préleveur, faute de quoi on chercherait la panne du côté du logiciel.
-    final cont = continuiteRespectee(r, agentId: p.agentId, agentNom: p.agentNom);
+    final cont = continuiteRespectee(r, agentId: p.agentId, agentNom: p.agentNom, identifiants: p.identifiants);
     if (!cont.ok) {
       ToastsSigh.afficher(ctx, cont.motif ?? '', type: TypeToast.erreur);
       return;
@@ -496,7 +496,7 @@ class _EtatResultats extends State<EcranResultats> {
       final GesteResultat g;
       try {
         g = validerBiologique(r,
-            session: p.session, utilisateur: c.utilisateur, maintenant: c.aujourdhui);
+            session: p.session, utilisateur: acteur(c).nom, maintenant: c.aujourdhui);
       } on RefusResultat catch (e) {
         ToastsSigh.afficher(ctx, 'Validation impossible : ${e.motif}', type: TypeToast.erreur);
         return;
@@ -585,7 +585,7 @@ class _EtatResultats extends State<EcranResultats> {
                     g = rectifierResultat(r, valeurs,
                         motif: '${v['motif']}',
                         commentaireGeneral: commentaire,
-                        utilisateur: c.utilisateur,
+                        utilisateur: acteur(c).nom,
                         maintenant: c.aujourdhui);
                   } on RefusResultat catch (e) {
                     ToastsSigh.afficher(ctx, 'Rectification impossible : ${e.motif}',

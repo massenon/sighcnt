@@ -218,7 +218,7 @@ PieceA4 pieceBordereau(List<Fiche> rows, ContexteEcran c) {
     titre: 'Bordereau d’archivage documentaire',
     sousTitre: 'Situation au ${dateFR(c.aujourdhui)}',
     reference: referenceEtat(c),
-    utilisateur: c.utilisateur,
+    utilisateur: acteur(c).nom,
     edite: c.aujourdhui,
     cartouche: [
       ('Documents', nombre(rows.length)),

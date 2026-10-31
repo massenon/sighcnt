@@ -189,7 +189,7 @@ class EcranRemboursements extends StatelessWidget with EcranMaquette {
     afficherApercu(
         ctx,
         pieceOperation(r,
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui,
             reference: PieceA4.reference_(
                 c.aujourdhui, ImpressionPoste.prochainNumero())));
@@ -294,7 +294,7 @@ class EcranRemboursements extends StatelessWidget with EcranMaquette {
                           facturesMere: m.collection('facturesMere').actives,
                           idAvoir: idAvoirSuivant(m),
                           jour: iso(c.aujourdhui),
-                          utilisateur: c.utilisateur);
+                          utilisateur: acteur(c).nom);
                     } on RefusOperation catch (e) {
                       ToastsSigh.afficher(ctx, e.motif, type: TypeToast.erreur);
                       return;

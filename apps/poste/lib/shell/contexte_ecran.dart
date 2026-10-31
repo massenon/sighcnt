@@ -15,6 +15,7 @@ class ContexteEcran extends InheritedWidget {
     required this.magasin,
     required this.aller,
     this.utilisateur = '',
+    this.agentConnecte,
     this.horloge,
     this.ouvre,
     this.donnees,
@@ -38,6 +39,13 @@ class ContexteEcran extends InheritedWidget {
   /// Nom affiché de l'agent connecté (RG-12 : aucune action anonyme).
   final String utilisateur;
 
+  /// L'agent NOMINATIF de la session (A1) : `null` quand le poste n'a pas de session nominative (développement, tests).
+  final Agent? agentConnecte;
+
+  /// L'agent qui agit : l'agent de la session, sinon l'agent de DÉMONSTRATION du rôle (déterministe, nom = [utilisateur]). Les écrans ne lisent jamais
+  /// [utilisateur] pour s'attribuer un geste : ils passent par `acteur(contexte)` du kit, qui lit ceci.
+  Agent get agent => agentConnecte ?? agentDemonstration(role, nom: utilisateur.isEmpty ? null : utilisateur);
+
   /// Horloge du poste, fixable par un test ; `null` = l'horloge réelle (`C.aujourdhui()`).
   final DateTime Function()? horloge;
   DateTime get aujourdhui => (horloge ?? DateTime.now)();
@@ -57,6 +65,7 @@ class ContexteEcran extends InheritedWidget {
       o.ecranId != ecranId ||
       o.role != role ||
       o.droit != droit ||
+      o.agentConnecte != agentConnecte ||
       o.magasin != magasin ||
       o.ouvre != ouvre;
 }

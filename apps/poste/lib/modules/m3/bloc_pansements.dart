@@ -159,7 +159,7 @@ class EcranBonsPansements extends StatelessWidget with EcranMaquette {
             const Signature('L’exécutant', mention: 'Salle de soins'),
           ],
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
         ));
   }

@@ -333,7 +333,7 @@ class EcranEtiquetage extends StatelessWidget with EcranMaquette {
     return afficherApercu(
         ctx,
         pieceEtiquettes(items, lots, emplacement,
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui,
             reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero())));
   }

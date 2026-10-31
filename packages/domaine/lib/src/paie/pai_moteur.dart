@@ -549,7 +549,7 @@ num paiResteAvances(Iterable<PaiFiche> avances) => avances.fold<num>(0, (a, x) {
 /// La fiche que « Générer les bulletins » insère, un bulletin par agent : AUCUN montant n'est saisi, tout découle du calcul. Statut `a_valider` :
 /// aucun bulletin ne se diffuse sans la validation formelle de la Direction. Le détail ORTB et les participations voyagent avec la pièce (E682).
 /// [genereePar] est l'agent qui génère (A2 : le validateur sera un AUTRE), [dateGeneration] la date du jour au format `AAAA-MM-JJ`.
-PaiFiche paiBulletinDe(PaiCalcul c, String reference, {String? genereePar, String? dateGeneration}) => {
+PaiFiche paiBulletinDe(PaiCalcul c, String reference, {String? genereePar, String? genereeParId, String? dateGeneration}) => {
       'reference': reference,
       'periode': c.periode,
       'annee': c.annee,
@@ -592,6 +592,8 @@ PaiFiche paiBulletinDe(PaiCalcul c, String reference, {String? genereePar, Strin
       'coutEmployeur': c.coutEmployeur,
       'statutBulletin': 'a_valider',
       'genereePar': genereePar,
+      // A1 : l'IDENTIFIANT du compte de l'agent qui génère. Le contrôle de séparation le compare, jamais le seul nom.
+      if (genereeParId != null) 'genereeParId': genereeParId,
       'dateGeneration': dateGeneration,
     };
 
@@ -733,10 +735,19 @@ String _nomNormalise(Object? n) => '${n ?? ''}'.replaceAll(RegExp(r'\s+'), ' ').
 
 /// A2 : le validateur ne peut pas être celui qui a généré le lot. Rend le motif de refus, ou `null`. Une pièce sans `genereePar` (antérieure au
 /// contrôle) n'est pas contestée : on ne devine pas son auteur. Un validateur non identifié est refusé (RG-12, aucune action anonyme).
-String? paiControleSeparation(Iterable<PaiFiche> lot, String validateur) {
+///
+/// A1 : [validateurId] est l'identifiant du compte du validateur. Quand la pièce porte aussi `genereeParId`, la comparaison se fait sur les
+/// IDENTIFIANTS (deux agents de même nom ne sont pas la même personne, et une même personne sous deux libellés l'est) ; sinon, sur le nom, comme avant.
+String? paiControleSeparation(Iterable<PaiFiche> lot, String validateur, {String? validateurId}) {
   final v = _nomNormalise(validateur);
   if (v.isEmpty) return 'Validation refusée : l’agent connecté n’est pas identifié (RG-12).';
-  final meme = lot.where((b) => _nomNormalise(b['genereePar']) == v).firstOrNull;
+  bool memePersonne(PaiFiche b) {
+    final gid = b['genereeParId'];
+    if (gid != null && validateurId != null) return gid == validateurId;
+    return _nomNormalise(b['genereePar']) == v;
+  }
+
+  final meme = lot.where(memePersonne).firstOrNull;
   if (meme == null) return null;
   return 'Séparation des tâches : la paie de ${meme['periode']} a été générée par ${meme['genereePar']} ; elle doit être validée par une autre personne.';
 }

@@ -88,7 +88,7 @@ class EcranBesoins extends StatelessWidget with EcranMaquette {
       listenable: col,
       builder: (context, _) {
         final actifs = col.actives;
-        final moi = c.utilisateur;
+        final moi = acteur(c).nom;
         final miennes = bonsMiens(actifs, moi);
         final aArbitrer = bonsAArbitrer(actifs);
         final pourAchat = bonsPourAchat(actifs);
@@ -390,7 +390,7 @@ class _TableauBesoins extends StatelessWidget {
 void _imprimer(BuildContext ctx, Fiche b) => imprimerPiece(
     ctx,
     (c) => pieceBon(b,
-        utilisateur: c.utilisateur, edite: c.aujourdhui, reference: refEtat(c)));
+        utilisateur: acteur(c).nom, edite: c.aujourdhui, reference: refEtat(c)));
 
 void _consulter(BuildContext ctx, Fiche b) {
   final idx = [for (final e in etapesBesoin) e.id].indexOf('${b['etape']}');
@@ -542,7 +542,7 @@ class _EtatModaleArbitrage extends State<_ModaleArbitrage> {
           bon: widget.bon,
           quoi: widget.quoi,
           motif: '${v['motif'] ?? ''}',
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           maintenant: c.aujourdhui.toIso8601String());
     } on RefusAchat catch (e) {
       dire(widget.ecran, e.motif, type: TypeToast.erreur);
@@ -612,7 +612,7 @@ Future<void> _versCommande(BuildContext ecran, Fiche b) async {
   c.magasin.collection('besoins').mettreAJour(
       b['id'],
       versCommandeBesoin(
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           maintenant: c.aujourdhui.toIso8601String()));
   c.aller('m7-commandes');
 }
@@ -628,7 +628,7 @@ Future<void> _distribuer(BuildContext ecran, Fiche b) async {
   c.magasin.collection('besoins').mettreAJour(
       b['id'],
       distribuerBesoin(
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           maintenant: c.aujourdhui.toIso8601String()));
   dire(ecran, messageDistribution(b), type: TypeToast.succes);
 }
@@ -709,7 +709,7 @@ class _EtatModaleBon extends State<_ModaleBon> {
     ], r ?? {
       'date': iso(c.aujourdhui),
       'etape': etapeParDefaut(pilote: pilote),
-      'demandeur': c.utilisateur,
+      'demandeur': acteur(c).nom,
     });
   }
 

@@ -305,14 +305,14 @@ class _EtatStatsLabo extends State<EcranStatsLabo> {
           titre: 'Activité du laboratoire d’analyses biomédicales',
           sousTitre: 'Du $du au $au',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Période', '$du – $au'),
             ('Examens demandés', nombre(s.demandes)),
             ('Résultats rendus', nombre(s.rendus)),
             ('Patients distincts', nombre(s.patientsDistincts)),
-            ('Établi par', c.utilisateur),
+            ('Établi par', acteur(c).nom),
             ('Date d’édition', dateFR(c.aujourdhui)),
           ],
           blocs: [

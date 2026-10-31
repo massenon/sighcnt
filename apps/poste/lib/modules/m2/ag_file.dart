@@ -159,7 +159,7 @@ class _EtatFile extends State<EcranFileAttente> {
   void _appeler(BuildContext ecran, ContexteEcran c, Fiche r) {
     c.magasin
         .collection('fileAttente')
-        .mettreAJour(r['id'], agPatchAppel(c.utilisateur, c.aujourdhui));
+        .mettreAJour(r['id'], agPatchAppel(acteur(c).nom, c.aujourdhui));
     ToastsSigh.afficher(ecran, 'Patient appelé — ${r['numero']}.',
         type: TypeToast.succes, detail: '${r['patient']}');
   }

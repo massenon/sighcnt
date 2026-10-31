@@ -133,7 +133,7 @@ class EcranRapport extends StatelessWidget with EcranMaquette {
             ],
             signatures: [Signature('Le Médecin traitant', nom: '${r['medecin']}', mention: 'Signature et cachet')],
             reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui));
   }
 

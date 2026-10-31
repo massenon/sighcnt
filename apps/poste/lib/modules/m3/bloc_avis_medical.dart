@@ -115,7 +115,7 @@ class EcranSortieAvisMedical extends StatelessWidget with EcranMaquette {
             Signature('La Direction', mention: 'Visa'),
           ],
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
         ));
   }

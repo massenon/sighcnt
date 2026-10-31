@@ -256,7 +256,7 @@ class _EcranPaiementsState extends State<EcranPaiements> {
                       'statutPaiement': restant <= 0 ? 'soldee' : 'partielle',
                       'dernierReglement': {
                         'montant': montant,
-                        'encaissePar': c.utilisateur,
+                        'encaissePar': acteur(c).nom,
                         'le': iso(c.aujourdhui)
                       },
                     });

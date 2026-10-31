@@ -146,7 +146,7 @@ class _VueGenerateurState extends State<_VueGenerateur> {
         dateFin: v['dateFin'],
         filigrane: '${v['filigrane'] ?? ''}',
         sectionsCochees: cochees,
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         sources: _sources(c.magasin));
     String jour(Object? d) => rapMs(d) == null
         ? ''
@@ -158,7 +158,7 @@ class _VueGenerateurState extends State<_VueGenerateur> {
           sousTitre: r.sousTitre,
           filigrane: r.filigrane,
           reference: rapReference(c),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: r.cartouche,
           // Les filtres EN FORCE de la page : listes d'abord, puis les dates (`filtresDeLaPage()`).
@@ -182,7 +182,7 @@ class _VueGenerateurState extends State<_VueGenerateur> {
             ]
           ],
           signatures: [
-            Signature('Le Rédacteur', nom: c.utilisateur),
+            Signature('Le Rédacteur', nom: acteur(c).nom),
             const Signature('La Directrice Administrative',
                 nom: 'TAKI Alimatou'),
             const Signature('Le Directeur Médical',

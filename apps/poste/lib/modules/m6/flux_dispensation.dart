@@ -202,7 +202,7 @@ class EcranDispensation extends StatelessWidget with EcranMaquette {
     return afficherApercu(
         ctx,
         pieceBon(d,
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui,
             reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero())));
   }
@@ -294,7 +294,7 @@ class EcranDispensation extends StatelessWidget with EcranMaquette {
         mouvementsExistants: mag.collection('mouvements').toutes,
         // La méthode de valorisation des sorties est un réglage d'exploitation de la Direction ; le jeu du poste n'en porte pas : prix de vente (= prix d'achat, RG-02).
         methode: 'prixVente',
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         instant: c.aujourdhui.toIso8601String(),
       );
     } on RefusDelivrance catch (e) {

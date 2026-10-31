@@ -94,9 +94,9 @@ class _Corps extends StatelessWidget {
       'actif': !fermer,
       'motif': fermer ? (cfaVrai(motif) ? motif : f['motif']) : f['motif'],
       'fermeLe': fermer ? jour : null,
-      'fermePar': fermer ? c.utilisateur : null,
+      'fermePar': fermer ? acteur(c).nom : null,
       'rouvertLe': fermer ? null : jour,
-      'rouvertPar': fermer ? null : c.utilisateur,
+      'rouvertPar': fermer ? null : acteur(c).nom,
     });
     c.magasin.journaliser(fermer ? 'Fermeture d’une activité' : 'Réouverture d’une activité', 'CFG', 'Activité', '${f['code']}', {'actif': avant}, {'actif': !fermer});
     ToastsSigh.afficher(ctx, fermer ? 'Activité fermée.' : 'Activité rouverte.',

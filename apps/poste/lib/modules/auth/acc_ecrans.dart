@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../core/identifiants.dart';
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
@@ -14,11 +15,14 @@ import 'acc_session.dart';
 /// Les écrans d'accès SANS COQUE (`auth.js`) : connexion, mot de passe oublié, réinitialisation, double facteur, écran verrouillé, pages d'erreur.
 /// Règles dans `packages/domaine/lib/src/acces/` ; vecteurs : `prototype_html/build/vecteurs-acces.js`.
 ///
-/// LE POSTE N'A PAS D'AUTHENTIFICATION RÉELLE (document des limites, A5 — hachage Argon2id, sel par compte, hors périmètre ici). Chaque écran qui en
-/// simule un morceau LE DIT, comme la maquette dit ce qu'elle fait : la connexion reconnaît un compte du jeu sans vérifier le mot de passe ; le mot de
-/// passe oublié inscrit une demande au journal ; la réinitialisation ne conserve rien ; le double facteur ne vérifie aucun code.
+/// A5 : le poste AUTHENTIFIE. Le mot de passe est comparé au haché Argon2id de la collection `identifiants` (`ServiceIdentifiants`), un compte se verrouille
+/// après trois échecs, chaque tentative est écrite dans `tentativesConnexion` (RG-12), la politique de mot de passe est appliquée. Ce que le poste ne fait
+/// pas encore, et que l'écran du double facteur dit : le second facteur (aucun secret partagé à comparer).
 const String noteConnexion =
-    'Ce poste ne vérifie pas encore le mot de passe : l’authentification par compte haché n’est pas livrée (limite A5). La connexion reconnaît un compte du jeu — elle ne protège rien. Toute connexion est journalisée.';
+    'Après $accEchecsAvantVerrou tentatives infructueuses, le compte est verrouillé 15 minutes. Toute tentative, réussie ou refusée, est journalisée (RG-12).';
+
+/// La note de sécurité de la connexion : une information, non un avertissement de simulation.
+Widget _noteSecurite(String texte) => KeyedSubtree(key: const Key('acces:securite'), child: NoteSigh(texte, icone: LucideIcons.shieldCheck));
 
 String _horodatage(DateTime d) =>
     '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year} ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
@@ -26,6 +30,52 @@ String _horodatage(DateTime d) =>
 /// Les initiales de `C.initials` : deux premiers mots, première lettre de chacun, majuscules.
 String initialesAcces(String nom) =>
     nom.trim().split(RegExp(r'\s+')).take(2).map((w) => w.isEmpty ? '' : w[0]).join().toUpperCase();
+
+/// Les quatre règles de la politique, avec une coche VERTE pour chacune que le mot de passe saisi respecte et une croix sinon : la politique est APPLIQUÉE
+/// (le refus nomme les règles manquantes), l'écran la montre avant de refuser.
+Widget _reglesPolitique(String saisie, String? identifiant) {
+  final manque = accRegleManquantes(saisie, identifiant: identifiant);
+  return Container(
+      key: const Key('acces:politique'),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: JetonsShell.slate50, borderRadius: BorderRadius.circular(8)),
+      child: Column(children: [
+        for (final r in accRegleMotDePasse)
+          Padding(
+              padding: const EdgeInsets.symmetric(vertical: 3),
+              child: Row(children: [
+                Icon(
+                    // « Renouvellement tous les 90 jours » est une règle de DURÉE, pas une propriété de la saisie : toujours cochée.
+                    manque.contains(r) ? LucideIcons.x : LucideIcons.check,
+                    size: 14,
+                    color: manque.contains(r) ? JetonsShell.danger600 : JetonsShell.success600),
+                const SizedBox(width: 8),
+                Expanded(child: Text(r, style: const TextStyle(color: JetonsShell.slate600, fontSize: 12, height: 16 / 12))),
+              ])),
+      ]));
+}
+
+/// Le mot de passe provisoire de l'administrateur initial, affiché UNE fois à la première mise en service : ni dans le dépôt, ni dans un fichier.
+Widget _bandeauProvisoire(ProvisoireAdmin p) => Padding(
+    padding: const EdgeInsets.only(top: 16),
+    child: Container(
+        key: const Key('acces:provisoire'),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: JetonsShell.warning50, border: Border.all(color: JetonsShell.warning200), borderRadius: BorderRadius.circular(8)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Première mise en service',
+              style: TextStyle(color: JetonsShell.warning900, fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Text.rich(
+              TextSpan(children: [
+                TextSpan(text: 'Compte administrateur : ${p.identifiant}. Mot de passe provisoire (affiché une seule fois, à noter maintenant) : '),
+                TextSpan(
+                    text: p.motDePasse,
+                    style: const TextStyle(fontFamily: 'LiberationMono', fontWeight: FontWeight.w700, color: JetonsShell.slate900)),
+                const TextSpan(text: '. Il devra être changé à la première connexion.'),
+              ]),
+              style: const TextStyle(color: JetonsShell.warning800, fontSize: 12, height: 16 / 12)),
+        ])));
 
 Widget _lienRetour(BuildContext c, String texte, String cible) => LienAcces(texte, onTap: () => ContexteAutonome.of(c).aller(cible));
 
@@ -46,35 +96,56 @@ class _EtatConnexion extends State<EcranConnexion> {
   bool _souvenir = false;
   int _tentatives = 0;
   String? _erreur;
+  bool _occupe = false;
+
+  /// Le compte dont le mot de passe est juste mais à CHANGER avant d'ouvrir la session (mot de passe provisoire, première connexion, renouvellement échu).
+  AccCompte? _aChanger;
+  final _nouveau = TextEditingController();
+  final _confirmation = TextEditingController();
 
   @override
   void dispose() {
     _id.dispose();
     _mdp.dispose();
+    _nouveau.dispose();
+    _confirmation.dispose();
     super.dispose();
   }
 
-  void _soumettre() {
+  @override
+  void initState() {
+    super.initState();
+    _nouveau.addListener(() {
+      if (mounted && _aChanger != null) setState(() {});
+    });
+  }
+
+  Set<String> _rolesArchives(ContexteAutonome x) => {
+        for (final r in x.magasin.collection('rbac').toutes)
+          if ('${r['statut']}' == 'archive') '${r['role']}'
+      };
+
+  Future<void> _soumettre() async {
+    if (_occupe) return;
     final x = ContexteAutonome.of(context);
     if (_id.text.trim().isEmpty || _mdp.text.isEmpty) {
       setState(() => _erreur = accMessageSaisieVide(++_tentatives));
       return;
     }
     final m = x.magasin;
-    final decision = accEvaluer(
-      identifiant: _id.text,
-      utilisateurs: m.collection('utilisateurs').toutes,
-      rolesArchives: {
-        for (final r in m.collection('rbac').toutes)
-          if ('${r['statut']}' == 'archive') '${r['role']}'
-      },
-      libelleRole: (r) => x.donnees?.matrice.libelle(r) ?? r,
-    );
+    setState(() => _occupe = true);
+    // A5 : le mot de passe est VÉRIFIÉ contre le haché Argon2id ; le service écrit lui-même chaque tentative refusée dans `tentativesConnexion` (RG-12).
+    final r = await ServiceIdentifiants.de(m).verifier(
+        identifiant: _id.text,
+        motDePasse: _mdp.text,
+        rolesArchives: _rolesArchives(x),
+        libelleRole: (ro) => x.donnees?.matrice.libelle(ro) ?? ro,
+        maintenant: x.maintenant);
+    if (!mounted) return;
+    setState(() => _occupe = false);
+    final decision = r.decision;
     if (!decision.accepte) {
       _tentatives++;
-      // RG-12 : la tentative est écrite, quel que soit le refus (le serveur de la maquette le fait aussi).
-      m.utilisateur = _id.text.trim();
-      m.collection('tentativesConnexion').inserer(accTentative(identifiant: _id.text, decision: decision, maintenant: x.maintenant), prefixe: 'TNT');
       if (decision.issue == AccIssue.roleArchive) {
         m.journaliser('Connexion refusée', 'M14', 'Session', decision.compte!.identifiant, null, {'role': decision.compte!.role, 'motif': 'rôle archivé'});
       }
@@ -83,9 +154,23 @@ class _EtatConnexion extends State<EcranConnexion> {
       return;
     }
     final c = decision.compte!;
-    m.utilisateur = c.nom;
-    // Honnêteté du journal : la connexion ne dit pas « mot de passe vérifié », parce qu'il ne l'a pas été.
-    m.journaliser('Connexion', 'M14', 'Session', c.identifiant, null, {'role': c.role, 'motDePasseVerifie': decision.motDePasseVerifie});
+    if (r.doitChanger) {
+      setState(() {
+        _aChanger = c;
+        _erreur = null;
+      });
+      return;
+    }
+    _ouvrirSession(x, c);
+  }
+
+  void _ouvrirSession(ContexteAutonome x, AccCompte c) {
+    final m = x.magasin;
+    // L'administrateur a ouvert sa session : le mot de passe provisoire n'est plus affiché (il ne l'était qu'une fois).
+    if (ServiceIdentifiants.provisoireAffiche?.identifiant == c.identifiant) ServiceIdentifiants.provisoireAffiche = null;
+    m.poserActeur(c.agent ?? agentDemonstration(c.role, nom: c.nom));
+    // Le journal dit ce qui s'est passé : le mot de passe a été VÉRIFIÉ contre le haché.
+    m.journaliser('Connexion', 'M14', 'Session', c.identifiant, null, {'role': c.role, 'motDePasseVerifie': true});
     setState(() => _erreur = null);
     final s = x.session;
     if (s != null) {
@@ -93,6 +178,27 @@ class _EtatConnexion extends State<EcranConnexion> {
     } else {
       x.aller(x.donnees?.matrice.accueil(c.role) ?? 'plan-du-site');
     }
+  }
+
+  /// Le changement OBLIGATOIRE : le nouveau mot de passe respecte la politique et diffère de l'actuel ; il remplace le provisoire, puis la session s'ouvre.
+  Future<void> _changer() async {
+    final x = ContexteAutonome.of(context);
+    final c = _aChanger!;
+    final refus = accControlerNouveauMotDePasse(_nouveau.text, _confirmation.text, identifiant: c.identifiant, ancien: _mdp.text);
+    if (refus != null) {
+      setState(() => _erreur = refus);
+      return;
+    }
+    if (_occupe) return;
+    setState(() => _occupe = true);
+    final id = c.agent?.utilisateurId ?? c.identifiant;
+    await ServiceIdentifiants.de(x.magasin).definir(id, _nouveau.text, par: c.nom, doitChanger: false, maintenant: x.maintenant);
+    if (!mounted) return;
+    setState(() {
+      _occupe = false;
+      _aChanger = null;
+    });
+    _ouvrirSession(x, c);
   }
 
   void _modaleRefus(AccDecision d, ContexteAutonome x) {
@@ -141,8 +247,36 @@ class _EtatConnexion extends State<EcranConnexion> {
             ]);
   }
 
+  Widget _panneauChangement() => SceneAcces(
+        icone: LucideIcons.lockKeyhole,
+        titre: 'Choisir un nouveau mot de passe',
+        sousTitre: 'Le mot de passe provisoire doit être remplacé avant d’ouvrir la session.',
+        corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          ChampAcces(cle: const Key('acces:nouveau'), libelle: 'Nouveau mot de passe', controleur: _nouveau, indicatif: '••••••••', masque: true, autofocus: true),
+          const SizedBox(height: 16),
+          ChampAcces(
+              cle: const Key('acces:confirmation'),
+              libelle: 'Confirmer le mot de passe',
+              controleur: _confirmation,
+              indicatif: '••••••••',
+              masque: true,
+              surValidation: _changer),
+          const SizedBox(height: 16),
+          _reglesPolitique(_nouveau.text, _aChanger?.identifiant),
+          if (_erreur != null) Padding(padding: const EdgeInsets.only(top: 16), child: MessageErreurAcces(_erreur!)),
+          const SizedBox(height: 16),
+          BoutonSigh(libelle: 'Définir le mot de passe et se connecter', taille: TailleBouton.lg, onPressed: _changer),
+        ]),
+        pied: LienAcces('← Utiliser un autre compte', onTap: () => setState(() {
+              _aChanger = null;
+              _mdp.clear();
+              _erreur = null;
+            })),
+      );
+
   @override
   Widget build(BuildContext context) {
+    if (_aChanger != null) return _panneauChangement();
     return SceneAcces(
       titre: 'Connexion',
       sousTitre: 'Authentification individuelle obligatoire — aucun compte partagé (CDCT §12.2).',
@@ -186,7 +320,8 @@ class _EtatConnexion extends State<EcranConnexion> {
         const SizedBox(height: 16),
         BoutonSigh(libelle: 'Se connecter', taille: TailleBouton.lg, icone: LucideIcons.logIn, onPressed: _soumettre),
         const SizedBox(height: 16),
-        const NoteSimulation(noteConnexion),
+        _noteSecurite(noteConnexion),
+        if (ServiceIdentifiants.provisoireAffiche != null) _bandeauProvisoire(ServiceIdentifiants.provisoireAffiche!),
       ]),
     );
   }
@@ -221,9 +356,17 @@ class _EtatOubli extends State<EcranMotDePasseOublie> {
       return;
     }
     setState(() => _erreur = null);
-    // Ce que le poste FAIT vraiment : la demande est inscrite au journal (RG-12), que l'administrateur lit à « Journal d'audit ». Rien n'est envoyé.
-    x.magasin.utilisateur = _id.text.trim();
-    x.magasin.journaliser('Demande de réinitialisation du mot de passe', 'M14', 'Session', _id.text.trim(), null, null);
+    // Ce que le poste FAIT vraiment : la demande est inscrite au journal (RG-12) ET marquée sur le compte (`reinitialisationDemandeeLe`), que
+    // l'administrateur lit à « Utilisateurs » avant de définir un nouveau mot de passe. Rien n'est envoyé. La réponse est la MÊME que le compte existe ou non :
+    // dire lequel serait un annuaire offert à qui essaie.
+    final m = x.magasin;
+    final id = _id.text.trim();
+    m.utilisateur = id;
+    final compte = m.collection('utilisateurs').toutes.where((u) => '${u['identifiant']}' == id || '${u['email'] ?? ''}' == id).firstOrNull;
+    if (compte != null) {
+      m.collection('utilisateurs').mettreAJour(compte['id'], {'reinitialisationDemandeeLe': x.maintenant.toIso8601String()});
+    }
+    m.journaliser('Demande de réinitialisation du mot de passe', 'M14', 'Session', id, null, null);
     ToastsSigh.afficher(context, 'Demande transmise à l’administrateur système.',
         type: TypeToast.succes, detail: 'La réinitialisation est effectuée par l’Administrateur (CDCT §12.2).');
     _suite = Timer(const Duration(milliseconds: 1200), () {
@@ -248,7 +391,7 @@ class _EtatOubli extends State<EcranMotDePasseOublie> {
           BoutonSigh(libelle: 'Envoyer les instructions', taille: TailleBouton.lg, onPressed: _envoyer),
           const SizedBox(height: 16),
           const NoteSimulation(
-              'Aucun message n’est envoyé : la demande est inscrite au journal d’audit de ce poste, que l’administrateur consulte (M14). L’envoi d’instructions suppose un service de messagerie que le poste n’a pas.'),
+              'Aucun message n’est envoyé : la demande est inscrite au journal d’audit de ce poste et marquée sur le compte, que l’administrateur consulte (M14) avant de définir un nouveau mot de passe. L’envoi d’instructions suppose un service de messagerie que le poste n’a pas.'),
         ]),
         pied: _lienRetour(context, '← Retour à la connexion', 'index'),
       );
@@ -265,29 +408,83 @@ class EcranReinitialisation extends StatefulWidget with EcranAutonome {
 }
 
 class _EtatReinit extends State<EcranReinitialisation> {
+  final _identifiant = TextEditingController();
+  final _actuel = TextEditingController();
   final _a = TextEditingController();
   final _b = TextEditingController();
   Timer? _suite;
+  bool _occupe = false;
+  bool _prerempli = false;
 
   @override
   void dispose() {
     _suite?.cancel();
+    _identifiant.dispose();
+    _actuel.dispose();
     _a.dispose();
     _b.dispose();
     super.dispose();
   }
 
-  void _definir() {
+  @override
+  void initState() {
+    super.initState();
+    // Les règles de la politique se cochent à la frappe.
+    _a.addListener(_rafraichir);
+  }
+
+  void _rafraichir() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_prerempli) return;
+    _prerempli = true;
+    _identifiant.text = ContexteAutonome.of(context).session?.compte?.identifiant ?? '';
+  }
+
+  /// A5 : la réinitialisation est RÉELLE. Elle prouve d'abord l'identité (identifiant + mot de passe actuel ou provisoire, vérifié contre le haché, avec le
+  /// même verrou que la connexion), applique la politique (12 caractères, familles, différent de l'actuel), puis remplace le haché. Le secret n'est ni
+  /// gardé ni journalisé : seul le geste l'est.
+  Future<void> _definir() async {
+    if (_occupe) return;
     final x = ContexteAutonome.of(context);
-    final refus = accControlerReinitialisation(_a.text, _b.text);
+    final id = _identifiant.text.trim();
+    if (id.isEmpty || _actuel.text.isEmpty) {
+      ToastsSigh.afficher(context, 'Renseigner l’identifiant et le mot de passe actuel (ou provisoire).', type: TypeToast.erreur);
+      return;
+    }
+    final refus = accControlerNouveauMotDePasse(_a.text, _b.text, identifiant: id, ancien: _actuel.text);
     if (refus != null) {
       ToastsSigh.afficher(context, refus, type: TypeToast.erreur);
       return;
     }
-    // Le secret n'est ni gardé ni journalisé : seul le geste l'est. Le poste ne stocke aucun mot de passe (A5).
-    x.magasin.journaliser('Réinitialisation du mot de passe (saisie contrôlée, non conservée)', 'M14', 'Session', x.session?.compte?.identifiant ?? '—', null, null);
-    ToastsSigh.afficher(context, 'Saisie contrôlée — aucun mot de passe n’est conservé sur ce poste.',
-        type: TypeToast.info, detail: 'La maquette écrit « Mot de passe mis à jour. » : le poste ne stocke pas de secret (limite A5).');
+    final m = x.magasin;
+    setState(() => _occupe = true);
+    final r = await ServiceIdentifiants.de(m).verifier(
+        identifiant: id,
+        motDePasse: _actuel.text,
+        rolesArchives: {
+          for (final ro in m.collection('rbac').toutes)
+            if ('${ro['statut']}' == 'archive') '${ro['role']}'
+        },
+        libelleRole: (ro) => x.donnees?.matrice.libelle(ro) ?? ro,
+        maintenant: x.maintenant,
+        poste: 'Réinitialisation du mot de passe');
+    if (!mounted) return;
+    if (!r.accepte) {
+      setState(() => _occupe = false);
+      ToastsSigh.afficher(context, r.decision.message, type: TypeToast.erreur);
+      return;
+    }
+    final c = r.decision.compte!;
+    await ServiceIdentifiants.de(m).definir(c.agent?.utilisateurId ?? c.identifiant, _a.text, par: c.nom, doitChanger: false, maintenant: x.maintenant);
+    if (!mounted) return;
+    setState(() => _occupe = false);
+    if (ServiceIdentifiants.provisoireAffiche?.identifiant == c.identifiant) ServiceIdentifiants.provisoireAffiche = null;
+    ToastsSigh.afficher(context, 'Mot de passe mis à jour.', type: TypeToast.succes, detail: 'Conservé haché (Argon2id) ; reconnexion avec le nouveau mot de passe.');
     _suite = Timer(const Duration(milliseconds: 1000), () {
       if (mounted) x.aller('index');
     });
@@ -299,7 +496,17 @@ class _EtatReinit extends State<EcranReinitialisation> {
         titre: 'Réinitialiser le mot de passe',
         sousTitre: 'Politique de mot de passe de la clinique (CDCT §12.2).',
         corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          ChampAcces(cle: const Key('acces:nouveau'), libelle: 'Nouveau mot de passe', controleur: _a, indicatif: '••••••••', masque: true),
+          ChampAcces(cle: const Key('acces:identifiant'), libelle: 'Identifiant', controleur: _identifiant, indicatif: 'prenom.nom'),
+          const SizedBox(height: 16),
+          ChampAcces(
+              cle: const Key('acces:actuel'), libelle: 'Mot de passe actuel ou provisoire', controleur: _actuel, indicatif: '••••••••', masque: true),
+          const SizedBox(height: 16),
+          ChampAcces(
+              cle: const Key('acces:nouveau'),
+              libelle: 'Nouveau mot de passe',
+              controleur: _a,
+              indicatif: '••••••••',
+              masque: true),
           const SizedBox(height: 16),
           ChampAcces(
               cle: const Key('acces:confirmation'),
@@ -309,24 +516,11 @@ class _EtatReinit extends State<EcranReinitialisation> {
               masque: true,
               surValidation: _definir),
           const SizedBox(height: 16),
-          Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: JetonsShell.slate50, borderRadius: BorderRadius.circular(8)),
-              child: Column(children: [
-                for (final r in accRegleMotDePasse)
-                  Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 3),
-                      child: Row(children: [
-                        const Icon(LucideIcons.check, size: 14, color: JetonsShell.success600),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(r, style: const TextStyle(color: JetonsShell.slate600, fontSize: 12, height: 16 / 12))),
-                      ])),
-              ])),
+          _reglesPolitique(_a.text, _identifiant.text),
           const SizedBox(height: 16),
           BoutonSigh(libelle: 'Définir le mot de passe', taille: TailleBouton.lg, onPressed: _definir),
           const SizedBox(height: 16),
-          const NoteSimulation(
-              'Seule la concordance des deux saisies est contrôlée (comme la maquette : la politique est affichée, non appliquée). Le poste ne conserve aucun mot de passe.'),
+          _noteSecurite('Le mot de passe actuel est vérifié, la politique est appliquée, le nouveau mot de passe est conservé haché (Argon2id) et jamais en clair.'),
         ]),
         pied: _lienRetour(context, '← Retour à la connexion', 'index'),
       );
@@ -437,7 +631,7 @@ class _EtatVerrou extends State<EcranVerrou> {
   AccCompte _compte(ContexteAutonome x) =>
       x.session?.compte ?? AccCompte(identifiant: x.config.role, nom: x.libelleRole ?? x.config.role, role: x.config.role);
 
-  void _deverrouiller() {
+  Future<void> _deverrouiller() async {
     final x = ContexteAutonome.of(context);
     if (_mdp.text.isEmpty) {
       setState(() => _erreur = 'Saisir le mot de passe.');
@@ -445,9 +639,27 @@ class _EtatVerrou extends State<EcranVerrou> {
     }
     final s = x.session;
     final c = _compte(x);
+    // A5 : si le compte de la session a un mot de passe, le déverrouillage le VÉRIFIE (même service, même verrou après échecs que la connexion). Un compte
+    // sans identifiant (poste de développement `SIGH_ROLE`, agent de démonstration) garde le comportement d'origine.
+    final svc = ServiceIdentifiants.de(x.magasin);
+    final uid = c.agent?.utilisateurId;
+    if (uid != null && !(c.agent?.demonstration ?? true) && svc.possede(uid)) {
+      final r = await svc.verifier(
+          identifiant: c.identifiant,
+          motDePasse: _mdp.text,
+          rolesArchives: const {},
+          libelleRole: (ro) => ro,
+          maintenant: x.maintenant,
+          poste: 'Écran verrouillé');
+      if (!mounted) return;
+      if (!r.accepte) {
+        setState(() => _erreur = r.decision.message);
+        return;
+      }
+    }
     final surCouche = s?.etat == EtatSession.verrouillee;
     final retour = s?.retour;
-    x.magasin.utilisateur = c.nom;
+    x.magasin.poserActeur(c.agent ?? agentDemonstration(c.role, nom: c.nom));
     x.magasin.journaliser('Déverrouillage de session', 'M14', 'Session', c.identifiant, null, {'retour': retour?.adresse()});
     // L'adresse de retour est à USAGE UNIQUE : le déverrouillage la consomme. Verrouillée en surcouche, le travail en cours est resté monté sous cet écran :
     // le retirer suffit pour retrouver l'écran, à l'onglet près. Sans verrou posé (adresse directe), retour à l'accueil du profil.
@@ -525,7 +737,7 @@ class _EtatVerrou extends State<EcranVerrou> {
         const SizedBox(height: 16),
         BoutonSigh(libelle: 'Déverrouiller', taille: TailleBouton.lg, icone: LucideIcons.lockOpen, onPressed: _deverrouiller),
         const SizedBox(height: 16),
-        const NoteSimulation('Le mot de passe n’est pas vérifié : le poste n’a pas d’authentification réelle (limite A5). Le déverrouillage est journalisé.'),
+        _noteSecurite('Le mot de passe est vérifié pour les comptes qui en ont un. Le déverrouillage est journalisé.'),
       ]),
       pied: LienAcces('Se connecter avec un autre compte', onTap: _autreCompte),
     );

@@ -1,13 +1,15 @@
 /// Écrans d'accès (AUTH) — la CONNEXION. Règles de `prototype_html/assets/js/modules/auth.js` (écran `index`) rejouées sur les vecteurs de la
 /// maquette (`vecteurs-acces.js`).
 ///
-/// CE QUE LE POSTE NE FAIT PAS, ET QU'IL DIT. La maquette envoie l'identifiant et le mot de passe à `api/auth.php`, qui vérifie le HACHÉ (`password_verify`).
-/// Le poste n'a aucune authentification réelle : le hachage local (Argon2id, sel par compte) est la tâche A5 du document des limites. [accEvaluer]
-/// reconnaît donc un COMPTE du jeu (`utilisateurs`) — il ne vérifie JAMAIS le mot de passe, et [accMotDePasseVerifie] le dit. Le résultat porte
-/// `motDePasseVerifie == false` : l'écran l'annonce, et l'écart est consigné. Tant que A5 n'est pas fait, la connexion du poste n'est PAS une barrière.
+/// CE QUE FAIT [accEvaluer], ET CE QU'ELLE NE FAIT PAS. Elle RECONNAÎT un compte du jeu (`utilisateurs`) et construit son agent nominatif ; elle ne
+/// vérifie JAMAIS le mot de passe, et [accMotDePasseVerifie] le dit. La vérification du haché Argon2id (A5) est faite AVANT elle par le service
+/// d'identifiants du poste (`apps/poste/lib/core/identifiants.dart`) ; les règles pures de cette authentification (politique, verrou, renouvellement)
+/// sont dans `acc_identifiants.dart`.
 library;
 
-/// Le poste ne vérifie pas le mot de passe (A5). Une constante plutôt qu'un commentaire : l'écran et les tests la lisent.
+import 'acc_agent.dart';
+
+/// [accEvaluer] ne vérifie pas le mot de passe : c'est le service d'identifiants du poste qui le fait. Une constante plutôt qu'un commentaire.
 const bool accMotDePasseVerifie = false;
 
 /// Nombre de tentatives après lequel la maquette annonce que le compte serait verrouillé.
@@ -32,11 +34,15 @@ const String accMotifRoleArchive = 'Rôle archivé — accès retiré par l’ad
 enum AccIssue { accepte, refuse, compteArchive, roleArchive }
 
 class AccCompte {
-  const AccCompte({required this.identifiant, required this.nom, required this.role, this.mfa = false});
+  const AccCompte({required this.identifiant, required this.nom, required this.role, this.mfa = false, this.agent});
   final String identifiant;
   final String nom;
   final String role;
   final bool mfa;
+
+  /// L'agent NOMINATIF du compte (A1) : identifiant du compte, matricule, fonction et secteur issus du dossier RH. `null` pour un compte construit à la
+  /// main (poste de développement `SIGH_ROLE`, tests) : la coque lui donne alors l'agent de démonstration de son rôle.
+  final Agent? agent;
 }
 
 class AccDecision {
@@ -65,6 +71,8 @@ AccDecision accEvaluer({
   required Iterable<Map<String, Object?>> utilisateurs,
   required Set<String> rolesArchives,
   required String Function(String role) libelleRole,
+  Iterable<Map<String, Object?>> personnel = const [],
+  Iterable<Map<String, Object?>> soignants = const [],
 }) {
   final id = identifiant.trim();
   Map<String, Object?>? u;
@@ -82,7 +90,8 @@ AccDecision accEvaluer({
       identifiant: id,
       nom: '${u['nomComplet'] ?? u['nom'] ?? id}',
       role: role,
-      mfa: u['mfa'] == true);
+      mfa: u['mfa'] == true,
+      agent: agentDepuisCompte(u, personnel: personnel, soignants: soignants));
   if ('${u['statut'] ?? 'actif'}' != 'actif') {
     return AccDecision(AccIssue.compteArchive, compte: compte, message: accMessageCompteArchive, motif: accMotifCompteArchive);
   }

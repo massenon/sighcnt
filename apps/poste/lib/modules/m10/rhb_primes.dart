@@ -232,7 +232,7 @@ class _Grille extends StatelessWidget {
               'dateEffet': dEffet,
               'dateFin': iso(ajouterJours(c.aujourdhui, -1)),
               'remplaceePar': 'Version du ${dateFR(c.aujourdhui)}',
-              'archiveePar': c.utilisateur,
+              'archiveePar': acteur(c).nom,
             }, prefixe: 'HPR');
           }
           final annuler = c.magasin.collection('grillePrimes').mettreAJour(prime['id'], {
@@ -241,7 +241,7 @@ class _Grille extends StatelessWidget {
             'version': ((prime['version'] as num?) ?? 1).toInt() + 1,
             'portee': portee,
             'modifieeLe': iso(c.aujourdhui),
-            'modifieePar': c.utilisateur,
+            'modifieePar': acteur(c).nom,
           });
           c.magasin.journaliser('Modification de la grille des primes', 'M10', 'Prime', '${prime['primeId']}', {'montants': avantM}, {'montants': apresM, 'portee': portee});
           ToastsSigh.afficher(ctx, 'Grille des primes modifiée.',
@@ -303,7 +303,7 @@ class _Grille extends StatelessWidget {
                       'dateFin': dateFin,
                       'retiree': true,
                       'remplaceePar': 'Prime retirée : ${v['motif']}',
-                      'archiveePar': c.utilisateur,
+                      'archiveePar': acteur(c).nom,
                     }, prefixe: 'HPR');
                     final annuler = c.magasin.collection('grillePrimes').archiver(prime['id']);
                     ToastsSigh.afficher(ctx, 'Prime retirée de la grille.',
@@ -396,7 +396,7 @@ class _Grille extends StatelessWidget {
                                       'matricule': a['matricule'],
                                       'debut': v['debut'],
                                       'fin': null,
-                                      'designePar': c.utilisateur,
+                                      'designePar': acteur(c).nom,
                                     }, prefixe: 'BPR');
                                     ajoutes.add('${a['nomComplet']}');
                                   }

@@ -325,7 +325,7 @@ class _EtatDepenses extends State<EcranDepenses> {
                         'compteTresorerie': '${v['compteTresorerie']}',
                         'categorie': '${v['categorie']}',
                         'justificatif': _justificatif('${fichier['justificatif']}', null),
-                        'saisiPar': c.utilisateur.isEmpty ? 'Utilisateur' : c.utilisateur,
+                        'saisiPar': acteur(c).nom.isEmpty ? 'Utilisateur' : acteur(c).nom,
                         'saisiLe': iso(c.aujourdhui),
                         'statut': 'actif',
                       }, prefixe: 'DEP').fiche;

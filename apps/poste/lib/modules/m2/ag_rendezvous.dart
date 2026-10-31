@@ -147,7 +147,7 @@ class _EtatCrudAg extends State<EcranCrudAg> {
           titre: 'Sélection — $_p',
           sousTitre: '${sel.length} enregistrement(s)',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           tableaux: [
             TableauEtat(colonnes: [

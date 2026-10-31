@@ -247,7 +247,7 @@ class _GrilleObjectifReel extends StatelessWidget {
           titre: 'Tableau de bord décisionnel',
           sousTitre: 'Objectif fixé / réel atteint — arrêté au ${dateFR(DateTime.parse(b.arrete))}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Besoin en fonds de roulement', money(b.bfr)),
@@ -525,7 +525,7 @@ class _EtatModaleObjectif extends State<_ModaleObjectif> {
     }
     final c = widget.contexte;
     // Corriger une cible, c'est l'ARRÊTER : la Direction vient de la décider, la marque de proposition n'a plus lieu d'être.
-    final patch = pilArreterObjectif({...v, 'cible': cible, 'alerte': alerte}, auj: c.aujourdhui, par: c.utilisateur);
+    final patch = pilArreterObjectif({...v, 'cible': cible, 'alerte': alerte}, auj: c.aujourdhui, par: acteur(c).nom);
     final annuler = c.magasin.collection('objectifsPilotage').mettreAJour(widget.objectif['id'], patch);
     Navigator.of(context).pop();
     ToastsSigh.afficher(widget.ecran, 'Modifications enregistrées.', type: TypeToast.succes, annuler: annuler, messageAnnulation: 'Modification annulée.');

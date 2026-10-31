@@ -585,7 +585,7 @@ class _EtatNouveau extends State<EcranDossierObstetricalNouveau> {
       return;
     }
     final fiche = matFicheDossier(c.magasin, v, c.aujourdhui);
-    c.magasin.collection('dossiersObstetricaux').inserer({'statut': 'actif', ...fiche, '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'DOB');
+    c.magasin.collection('dossiersObstetricaux').inserer({'statut': 'actif', ...fiche, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'DOB');
     // Le message survit à la navigation : il est posé sur le calque racine avant de revenir au registre.
     ToastsSigh.afficher(ctx, 'Dossier obstétrical créé.', type: TypeToast.succes, duree: const Duration(seconds: 7));
     c.aller('m4-dossier-obstetrical');

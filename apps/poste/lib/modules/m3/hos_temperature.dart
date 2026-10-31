@@ -132,7 +132,7 @@ class _EtatTemperature extends State<EcranFeuilleTemperature> {
                       return;
                     }
                     fermer();
-                    final r = col.inserer(EcranFeuilleTemperature.construireReleve(v, courant['id'], c.utilisateur), prefixe: 'REL');
+                    final r = col.inserer(EcranFeuilleTemperature.construireReleve(v, courant['id'], acteur(c).nom), prefixe: 'REL');
                     ToastsSigh.afficher(ctx, 'Relevé enregistré.', type: TypeToast.succes, annuler: r.annuler);
                   }),
             ]);
@@ -182,7 +182,7 @@ class _EtatTemperature extends State<EcranFeuilleTemperature> {
               const Signature('Le Médecin'),
             ],
             reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-            utilisateur: c.utilisateur,
+            utilisateur: acteur(c).nom,
             edite: c.aujourdhui));
   }
 

@@ -786,7 +786,7 @@ class EcranMecefAvoirs extends StatelessWidget with EcranMaquette {
           titre: 'Avoir sur facture normalisée',
           sousTitre: '${a['reference']} — rectifie la facture ${a['factureNumero']}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('N° avoir', '${a['reference']}'),
@@ -905,7 +905,7 @@ class EcranMecefAvoirs extends StatelessWidget with EcranMaquette {
                           facturesMere: mag.collection('facturesMere').actives,
                           idAvoir: idAvoir,
                           jour: iso(c.aujourdhui),
-                          utilisateur: c.utilisateur);
+                          utilisateur: acteur(c).nom);
                     } on RefusAvoirMecef catch (e) {
                       ToastsSigh.afficher(ctx, 'Avoir refusé.',
                           type: TypeToast.erreur,

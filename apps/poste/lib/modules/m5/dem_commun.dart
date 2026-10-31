@@ -241,7 +241,7 @@ Future<void> imprimerDemande(BuildContext ctx, Fiche r) {
           titre: 'Résultat d’analyse de laboratoire',
           sousTitre: '${r['reference']}',
           reference: _refPiece(c),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Patient', '${r['patient'] ?? ''}'),
@@ -280,7 +280,7 @@ Future<void> imprimerDemande(BuildContext ctx, Fiche r) {
         titre: 'Bon de prélèvement',
         sousTitre: '${r['reference']}',
         reference: _refPiece(c),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         cartouche: [
           ('Patient', '${r['patient'] ?? ''}'),
@@ -323,7 +323,7 @@ Future<void> imprimerBonAnalyse(BuildContext ctx, Fiche r) {
         titre: 'Bulletin d’analyses bio-médicales',
         sousTitre: 'Bon n° ${r['reference']}',
         reference: _refPiece(c),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         cartouche: [
           ('Patient', '${r['patient'] ?? ''}'),

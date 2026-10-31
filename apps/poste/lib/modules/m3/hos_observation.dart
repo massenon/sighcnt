@@ -185,7 +185,7 @@ class EcranObservation extends StatelessWidget with EcranMaquette {
                     final r = col.inserer({
                       'statut': 'actif',
                       ...fiche,
-                      '_creePar': c.utilisateur,
+                      '_creePar': acteur(c).nom,
                       '_creeLe': maintenant.toUtc().toIso8601String(),
                     }, prefixe: 'OBS');
                     final u = hosUnitesObservation.where((x) => x.id == v['unite']).firstOrNull;
@@ -238,7 +238,7 @@ class EcranObservation extends StatelessWidget with EcranMaquette {
     ], {
       'date': iso(maintenant),
       'heure': hhmm(maintenant),
-      'par': c.utilisateur,
+      'par': acteur(c).nom,
     });
     afficherModale<void>(ctx,
         titre: 'Relevé de constantes — ${o['patient']}',
@@ -344,7 +344,7 @@ class EcranObservation extends StatelessWidget with EcranMaquette {
                         'statut': 'actif',
                         ...hosAdmissionDepuisObservation(o, sortie, '${v['conclusion']}',
                             referenceSuivante('H', 5, adm.toutes)),
-                        '_creePar': c.utilisateur,
+                        '_creePar': acteur(c).nom,
                         '_creeLe': maintenant.toUtc().toIso8601String(),
                       }, prefixe: 'ADM');
                     }
@@ -485,7 +485,7 @@ class EcranObservation extends StatelessWidget with EcranMaquette {
           Signature('Le médecin responsable', nom: '${o['medecin']}'),
         ],
         reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui);
   }
 

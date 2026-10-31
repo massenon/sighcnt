@@ -731,7 +731,7 @@ class _OngletTentatives extends StatelessWidget {
               onPressed: () {
                 col.mettreAJour(r['id'], {
                   'traitee': true,
-                  'examineePar': c.utilisateur,
+                  'examineePar': acteur(c).nom,
                   'examineeLe': iso(c.aujourdhui),
                 });
                 ToastsSigh.afficher(
@@ -1041,7 +1041,7 @@ void _editerRole(BuildContext ctx, _Ctx x, RoleSec r) {
                         },
                         'statut': 'actif',
                         'definiLe': iso(c.aujourdhui),
-                        'definiPar': c.utilisateur,
+                        'definiPar': acteur(c).nom,
                       },
                       'Modification des droits RBAC');
                   fermer();
@@ -1400,7 +1400,7 @@ void _creerRole(BuildContext ctx, ContexteEcran c) {
                     'role': id,
                     ...fiche,
                     'definiLe': iso(c.aujourdhui),
-                    'definiPar': c.utilisateur,
+                    'definiPar': acteur(c).nom,
                   }, prefixe: 'RBAC');
                   nx.m.journaliser('Création d’un rôle', 'M14', 'Rôle', id,
                       null, {'libelle': libelle});
@@ -1486,7 +1486,7 @@ Future<void> _archiver(BuildContext ctx, _Ctx x, RoleSec r) async {
       {
         'statut': 'archive',
         'archiveLe': iso(c.aujourdhui),
-        'archivePar': c.utilisateur,
+        'archivePar': acteur(c).nom,
         'motifArchivage': motif,
       },
       'Archivage de rôle');
@@ -1506,7 +1506,7 @@ void _restaurer(BuildContext ctx, _Ctx x, RoleSec r) {
       {
         'statut': 'actif',
         'restaureLe': iso(c.aujourdhui),
-        'restaurePar': c.utilisateur
+        'restaurePar': acteur(c).nom
       },
       'Restauration de rôle');
   ToastsSigh.afficher(ctx, 'Rôle « ${r.label} » restauré.',
@@ -1544,7 +1544,7 @@ void _imprimerMatrice(BuildContext ctx, _Ctx x) {
         sousTitre:
             'Politique de sécurité — situation au ${dateFR(c.aujourdhui)}',
         reference: referenceImpression(c),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         cartouche: [
           ('Rôles actifs', nombre(x.actifs.length)),

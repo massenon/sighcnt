@@ -347,7 +347,7 @@ class _EtatModaleCliche extends State<_ModaleCliche> {
       'legende': _vrai(v['legende']) ? v['legende'] : '',
       'crReference': _vrai(v['crReference']) ? v['crReference'] : null,
       'fichier': _fichier,
-      'deposePar': c.utilisateur,
+      'deposePar': acteur(c).nom,
       'statut': 'actif',
     }, prefixe: 'CLI');
     Navigator.of(context).pop();

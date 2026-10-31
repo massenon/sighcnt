@@ -137,7 +137,7 @@ class _EtatFactureMere extends State<EcranFactureMere> {
             depuis: _depuis(c),
             auj: c.aujourdhui,
             nbExistantes: col.toutes.length,
-            emisePar: c.utilisateur),
+            emisePar: acteur(c).nom),
         prefixe: 'FM');
     ToastsSigh.afficher(ctx, 'Facture mère ${r.fiche['numero']} émise.',
         type: TypeToast.succes,
@@ -199,7 +199,7 @@ class _EtatFactureMere extends State<EcranFactureMere> {
                           montant: montant,
                           reference: '${v['reference']}',
                           ecritures: mag.collection('ecritures').toutes,
-                          utilisateur: c.utilisateur,
+                          utilisateur: acteur(c).nom,
                           horodatage: c.aujourdhui.toUtc().toIso8601String());
                     } on RefusReglementMere catch (e) {
                       ToastsSigh.afficher(ctx, 'Règlement refusé.',

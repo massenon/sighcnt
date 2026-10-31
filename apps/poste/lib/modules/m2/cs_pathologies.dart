@@ -123,13 +123,13 @@ class _Corps extends StatelessWidget {
           titre: 'Tableau de morbidité',
           sousTitre: 'Consultations enregistrées — situation au ${dateFR(c.aujourdhui)}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Pathologies rencontrées', nombre(rows.length)),
             ('Cas totaux', nombre(total)),
             ('Dont à déclaration obligatoire', nombre(notif)),
-            ('Établi par', c.utilisateur),
+            ('Établi par', acteur(c).nom),
             ('Date d’édition', dateFR(c.aujourdhui)),
           ],
           blocs: [

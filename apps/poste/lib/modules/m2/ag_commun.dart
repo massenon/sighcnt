@@ -437,7 +437,7 @@ Future<void> imprimerConsultationAg(BuildContext ecran, Fiche r) {
         titre: 'Compte rendu de consultation',
         sousTitre: '${r['type']} du ${d == null ? 'NaN/NaN/NaN' : dateFR(d)}',
         reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         cartouche: [
           ('Patient', '${r['patient']}'),

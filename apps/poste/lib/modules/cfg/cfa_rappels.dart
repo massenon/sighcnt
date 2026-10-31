@@ -161,7 +161,7 @@ class _OngletRappels extends StatelessWidget {
       return;
     }
     for (final f in r.rappels) {
-      col.inserer({'statut': 'actif', ...f, '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'RPL');
+      col.inserer({'statut': 'actif', ...f, '_creePar': acteur(c).nom, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'RPL');
     }
     ToastsSigh.afficher(ctx, r.message,
         type: r.faits > 0 ? TypeToast.succes : TypeToast.info, detail: 'Les messages sont EN FILE : le logiciel ne les envoie pas.');

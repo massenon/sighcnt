@@ -44,8 +44,8 @@ class EcranValidationPaie extends StatelessWidget with EcranMaquette {
     final col = c.magasin.collection('bulletins');
     final lot = col.actives.where((b) => b['periode'] == l.periode && b['statutBulletin'] == 'a_valider').toList();
     // A2 : le validateur est l'agent connecté, jamais celui qui a généré.
-    final validateur = c.utilisateur.isEmpty ? 'Utilisateur non identifié' : c.utilisateur;
-    final refus = paiControleSeparation(lot, validateur);
+    final validateur = acteur(c).nom.isEmpty ? 'Utilisateur non identifié' : acteur(c).nom;
+    final refus = paiControleSeparation(lot, validateur, validateurId: acteur(c).utilisateurId);
     if (refus != null) {
       c.magasin.journaliser('Validation de paie refusée', 'M11', 'BulletinPaie', l.periode, null, {'motif': refus});
       ToastsSigh.afficher(ctx, 'Validation refusée.', type: TypeToast.erreur, detail: refus);
@@ -73,7 +73,7 @@ class EcranValidationPaie extends StatelessWidget with EcranMaquette {
       return;
     }
     for (final b in lot) {
-      annulations.add(col.mettreAJour(b['id'], {'statutBulletin': 'valide', 'validePar': validateur, 'dateValidation': iso(c.aujourdhui), 'ecritureNumero': piece.numero}));
+      annulations.add(col.mettreAJour(b['id'], {'statutBulletin': 'valide', 'validePar': validateur, 'valideParId': acteur(c).utilisateurId, 'dateValidation': iso(c.aujourdhui), 'ecritureNumero': piece.numero}));
     }
     ToastsSigh.afficher(ctx, 'Paie de ${l.periode} validée par $validateur.',
         type: TypeToast.succes,
@@ -94,7 +94,7 @@ class EcranValidationPaie extends StatelessWidget with EcranMaquette {
     final col = c.magasin.collection('bulletins');
     final annulations = [
       for (final b in col.actives.where((b) => b['periode'] == l.periode && b['statutBulletin'] == 'valide'))
-        col.mettreAJour(b['id'], {'statutBulletin': 'diffuse', 'diffusePar': c.utilisateur.isEmpty ? 'Utilisateur non identifié' : c.utilisateur, 'dateDiffusion': iso(c.aujourdhui)})
+        col.mettreAJour(b['id'], {'statutBulletin': 'diffuse', 'diffusePar': acteur(c).nom.isEmpty ? 'Utilisateur non identifié' : acteur(c).nom, 'dateDiffusion': iso(c.aujourdhui)})
     ];
     ToastsSigh.afficher(ctx, 'Paie de ${l.periode} diffusée.', type: TypeToast.succes, detail: '${annulations.length} bulletin(s) remis aux agents.', annuler: () {
       for (final u in annulations) {

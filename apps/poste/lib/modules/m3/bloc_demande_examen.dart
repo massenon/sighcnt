@@ -177,7 +177,7 @@ class EcranDemandeExamen extends StatelessWidget with EcranMaquette {
           ],
           signatures: [Signature('Le prescripteur', nom: prescripteur)],
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
         ));
   }

@@ -181,7 +181,7 @@ class _CrudStockState extends State<CrudStock> {
                       final r = widget.collection.inserer({
                         'statut': 'actif',
                         ...fiche,
-                        '_creePar': c.utilisateur,
+                        '_creePar': acteur(c).nom,
                         '_creeLe': c.aujourdhui.toIso8601String(),
                       }, prefixe: widget.prefixeId);
                       ToastsSigh.afficher(ctx, 'Nouveau ${widget.entite} créé.',

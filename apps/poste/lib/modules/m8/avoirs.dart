@@ -76,7 +76,7 @@ Future<void> imprimerAvoir(BuildContext ctx, Fiche a) {
   return afficherApercu(
       ctx,
       pieceAvoir(a,
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference:
               PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero())));
@@ -428,7 +428,7 @@ class _EtatModaleAvoir extends State<_ModaleAvoir> {
         remboursement: '${v['remboursement']}',
         observations: '${v['observations'] ?? ''}',
         jour: iso(c.aujourdhui),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         facturesMere: m.collection('facturesMere').actives,
         avoirs: avoirs.actives,
       );

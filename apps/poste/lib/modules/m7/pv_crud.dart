@@ -173,7 +173,7 @@ class _CrudFormulaireSighState extends State<CrudFormulaireSigh> {
           sousTitre: '${sel.length} enregistrement(s)',
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           tableaux: [
             TableauEtat(colonnes: [

@@ -270,7 +270,11 @@ class ContinuiteLabo {
 
 /// `PR.continuiteRespectee(demande, agent)` — CELUI QUI A PRÉLEVÉ EST CELUI QUI VALIDE. Règle de PREUVE : le validateur atteste d'un échantillon,
 /// et s'il ne l'a pas vu arriver il atteste de ce qu'un collègue lui a dit. Le refus NOMME le préleveur.
-ContinuiteLabo continuiteRespectee(FicheLabo? demande, {Object? agentId, Object? agentNom}) {
+///
+/// A1 : [identifiants] porte TOUS les identifiants que l'agent de la session a dans le jeu (compte, dossier RH, fiche de soignant). Une demande désigne
+/// son préleveur par l'un d'eux (`preleveParId` : `SOI01` dans le jeu, `EMP01` ailleurs) : comparer le seul identifiant du dossier RH refuserait la
+/// personne même qui a prélevé.
+ContinuiteLabo continuiteRespectee(FicheLabo? demande, {Object? agentId, Object? agentNom, Iterable<Object?> identifiants = const []}) {
   if (demande == null) return const ContinuiteLabo(false, motif: 'Demande introuvable.');
   Object? ou(Object? a, Object? b) => _vide(a) ? b : a;
   final preleveur = ou(demande['preleveParId'], ou(demande['prelevePar'], null));
@@ -279,7 +283,8 @@ ContinuiteLabo continuiteRespectee(FicheLabo? demande, {Object? agentId, Object?
         motif: 'Aucun prélèvement enregistré — la continuité ne s’applique pas encore.');
   }
   final meme = (!_vide(agentId) && preleveur == agentId) ||
-      (!_vide(agentNom) && preleveur == agentNom);
+      (!_vide(agentNom) && preleveur == agentNom) ||
+      identifiants.any((i) => !_vide(i) && preleveur == i);
   if (meme) return const ContinuiteLabo(true);
   final nom = _vide(demande['prelevePar']) ? '$preleveur' : '${demande['prelevePar']}';
   return ContinuiteLabo(false,

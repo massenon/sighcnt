@@ -80,7 +80,7 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
 
   static void _deposer(BuildContext ctx, ContexteEcran c) {
     final defs = champs(c, null);
-    final ctl = ControleurFormulaire(defs, {'date': iso(c.aujourdhui), 'etat': 'en_attente', 'depose': c.utilisateur});
+    final ctl = ControleurFormulaire(defs, {'date': iso(c.aujourdhui), 'etat': 'en_attente', 'depose': acteur(c).nom});
     final chemin = TextEditingController();
     String? data, nom, format;
     int taille = 0;

@@ -273,7 +273,7 @@ class _EtatContact extends State<EcranContactEditeur> {
     final r = col.inserer({
       'reference': reference,
       'date': iso(c.aujourdhui),
-      'auteur': c.utilisateur,
+      'auteur': acteur(c).nom,
       'etat': 'envoyee',
       ...donnees,
     });

@@ -113,7 +113,7 @@ class EcranPlanning extends StatelessWidget with EcranMaquette {
             cartouche: [
               ('Période', '${dateFR(jours.first)} – ${dateFR(jours.last)}'),
               ('Agents concernés', nombre(agents.length)),
-              ('Établi par', c.utilisateur),
+              ('Établi par', acteur(c).nom),
               ('Date d’édition', dateFR(c.aujourdhui)),
             ],
             tableaux: [
@@ -488,7 +488,7 @@ class _Regimes extends StatelessWidget {
             ...valeurs,
             'portee': portee,
             'modifieLe': iso(c.aujourdhui),
-            'modifiePar': c.utilisateur,
+            'modifiePar': acteur(c).nom,
           });
           var touchees = 0;
           if (portee == 'tout') {

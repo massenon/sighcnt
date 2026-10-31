@@ -252,8 +252,8 @@ class _EtatBadges extends State<EcranBadges> {
                       'expireLe': v['expireLe'],
                       'etat': etat,
                       if (etat == 'remis') 'remisLe': v['emisLe'],
-                      'emisPar': c.utilisateur,
-                      '_creePar': c.utilisateur,
+                      'emisPar': acteur(c).nom,
+                      '_creePar': acteur(c).nom,
                       '_creeLe': c.aujourdhui.toIso8601String(),
                     }, prefixe: 'BDG');
                     fermer();
@@ -305,7 +305,7 @@ class _EtatBadges extends State<EcranBadges> {
                       'motifRetrait': v['motifRetrait'],
                       'retireLe': v['retireLe'],
                       if (obs.isNotEmpty) 'observationRetrait': obs,
-                      'retirePar': c.utilisateur,
+                      'retirePar': acteur(c).nom,
                     });
                     fermer();
                     ToastsSigh.afficher(ctx, 'Badge ${b['numero']} retiré.',

@@ -144,7 +144,7 @@ Future<void> imprimerFactureNormalisee(BuildContext ctx, Fiche f) {
       ctx,
       pieceFactureNormalisee(f, paramFiscal(c.magasin),
           patient: c.magasin.collection('patients').parId(f['patientId']),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference: PieceA4.reference_(
               c.aujourdhui, ImpressionPoste.prochainNumero())));

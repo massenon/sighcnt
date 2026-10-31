@@ -165,7 +165,7 @@ class EcranAdmissions extends StatelessWidget with EcranMaquette {
         const Signature('Le Patient ou son représentant'),
       ],
       reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-      utilisateur: c.utilisateur,
+      utilisateur: acteur(c).nom,
       edite: c.aujourdhui);
 
   @override

@@ -82,7 +82,12 @@ StockMagasin stockDe(ContexteEcran c) => StockMagasin(c.magasin, () => c.aujourd
 
 /// La session qui agit. Le poste ne porte pas le secteur de session de la maquette (écart E343) : la demande part sans secteur demandeur
 /// tant que la prescription n'en désigne pas.
-SessionCs sessionDe(ContexteEcran c) => SessionCs(role: c.role, fonction: c.role);
+SessionCs sessionDe(ContexteEcran c) {
+  // A1 / D1 : la fonction et le SECTEUR viennent de l'agent de la session (dossier RH). Le secteur est celui que porte la demande d'analyse ou d'imagerie
+  // quand la prescription n'en désigne pas : sans lui, aucune sage-femme ne voit rien (RBAC métier). Sans agent nominatif : comportement antérieur.
+  final a = acteur(c);
+  return SessionCs(role: c.role, fonction: a.fonction ?? c.role, secteur: libelleSecteur(a.secteur));
+}
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // Options de sélection (les référentiels sont ceux du magasin — rien n'est écrit ici)
@@ -531,7 +536,7 @@ PieceA4 pieceOrdonnance(ContexteEcran c, Fiche r) {
     titre: 'Ordonnance médicale',
     sousTitre: '${r['numero']}',
     reference: _ref(c),
-    utilisateur: c.utilisateur,
+    utilisateur: acteur(c).nom,
     edite: c.aujourdhui,
     cartouche: [
       ('Patient', '${r['patient']}'),
@@ -621,7 +626,7 @@ PieceA4 pieceBulletin(ContexteEcran c, Fiche r) {
     titre: 'Bulletin d’analyses bio-médicales',
     sousTitre: '${r['numero']}',
     reference: _ref(c),
-    utilisateur: c.utilisateur,
+    utilisateur: acteur(c).nom,
     edite: c.aujourdhui,
     cartouche: [
       ('Patient', '${r['patient']}'),
@@ -716,7 +721,7 @@ Future<void> imprimerDossier(BuildContext ctx, Fiche d) {
         titre: 'DOSSIER DE CONSULTATION',
         sousTitre: '${_ou(d['reference'], d['id'])} — ${d['patient']}',
         reference: _ref(c),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         cartouche: [
           ('Patient', '${d['patient']}'),

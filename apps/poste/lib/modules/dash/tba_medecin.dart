@@ -32,7 +32,7 @@ class EcranDashMedecin extends StatelessWidget with EcranMaquette {
           consultations: tbaActives(c, 'consultations'),
           admissions: tbaActives(c, 'admissions'),
           // Écart E923 : le poste ne porte pas le nom de l'agent (la maquette lit `session.nomComplet`) ; c'est l'intitulé du profil.
-          nom: c.utilisateur,
+          nom: acteur(c).nom,
           auj: c.aujourdhui,
         );
         return TbaDash(
@@ -92,7 +92,7 @@ class _MaFile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final moi = c.utilisateur;
+    final moi = acteur(c).nom;
     return tbaCarte(
         'Vos patients en attente',
         Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [

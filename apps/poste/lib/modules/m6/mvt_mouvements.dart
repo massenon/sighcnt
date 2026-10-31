@@ -183,7 +183,7 @@ class EcranMouvements extends StatelessWidget with EcranMaquette {
         titre: 'Sélection — mouvements',
         sousTitre: '${sel.length} enregistrement(s)',
         reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-        utilisateur: c.utilisateur,
+        utilisateur: acteur(c).nom,
         edite: c.aujourdhui,
         tableaux: [
           TableauEtat(colonnes: [
@@ -293,7 +293,7 @@ class EcranMouvements extends StatelessWidget with EcranMaquette {
                       return;
                     }
                     final prepare = preparerMouvement(valeurs,
-                        existant: existant, produits: c.magasin.collection('produits').actives, mouvements: col.toutes, utilisateur: c.utilisateur);
+                        existant: existant, produits: c.magasin.collection('produits').actives, mouvements: col.toutes, utilisateur: acteur(c).nom);
                     fermer();
                     if (existant != null) {
                       final undo = col.mettreAJour(existant['id'], prepare);

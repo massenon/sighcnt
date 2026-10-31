@@ -242,7 +242,7 @@ class EcranRegistreAppels extends StatelessWidget with EcranMaquette {
           initial: {
             'dateHeure': agIsoLocal(c.aujourdhui),
             'sens': 'entrant',
-            'agent': c.utilisateur
+            'agent': acteur(c).nom
           },
           record: rec,
           prefixe: 'APP',
@@ -294,7 +294,7 @@ class _EtatAgendaMedecin extends State<EcranAgendaMedecin> {
     if (_f != null) return;
     final c = ContexteEcran.of(context);
     final med = medecinsAg(c);
-    final moi = med.where((a) => a['nomComplet'] == c.utilisateur).firstOrNull;
+    final moi = med.where((a) => a['nomComplet'] == acteur(c).nom).firstOrNull;
     _f = ControleurFormulaire([
       ChampDef(
           nom: 'praticien',

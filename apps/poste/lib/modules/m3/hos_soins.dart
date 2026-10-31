@@ -137,7 +137,7 @@ class EcranSoins extends StatelessWidget with EcranMaquette {
       ],
       signatures: const [Signature('Le soignant'), Signature('Le Directeur Médical')],
       reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-      utilisateur: c.utilisateur,
+      utilisateur: acteur(c).nom,
       edite: c.aujourdhui);
 
   /// « Marquer le soin fait » : refus NOMMÉ sans la capacité ; sinon confirmation, puis l'ordonnance reçoit `statutActes`/`actesFaitsLe`/`actesFaitsPar`
@@ -161,10 +161,10 @@ class EcranSoins extends StatelessWidget with EcranMaquette {
     final ord = c.magasin.collection('ordonnances');
     if (ord.parId(tache['ordonnanceId']) != null) {
       ord.mettreAJour(tache['ordonnanceId'],
-          {'statutActes': 'fait', 'actesFaitsLe': iso, 'actesFaitsPar': c.utilisateur});
+          {'statutActes': 'fait', 'actesFaitsLe': iso, 'actesFaitsPar': acteur(c).nom});
     }
     c.magasin.collection('taches').mettreAJour(
-        tache['id'], {'statut': 'fait', 'faitLe': iso, 'faitPar': c.utilisateur});
+        tache['id'], {'statut': 'fait', 'faitLe': iso, 'faitPar': acteur(c).nom});
     ToastsSigh.afficher(ctx, 'Soin fait — exécution enregistrée à ${heure(maintenant)}.',
         type: TypeToast.succes, detail: '${tache['detail'] ?? ''}');
   }
@@ -257,7 +257,7 @@ class EcranSoins extends StatelessWidget with EcranMaquette {
             'date': iso(c.aujourdhui),
             'heure': '08:00',
             'etat': 'realise',
-            'soignant': c.utilisateur,
+            'soignant': acteur(c).nom,
             'quantite': '1',
           },
           transformer: (ctx, v) => construire(v, c.magasin),

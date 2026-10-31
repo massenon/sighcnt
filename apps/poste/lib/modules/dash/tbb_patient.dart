@@ -117,7 +117,7 @@ class _EtatDashPatient extends State<EcranDashPatient> {
           titre: 'Situation du patient',
           sousTitre: 'Dossier ${p['code']}',
           reference: PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
-          utilisateur: c.utilisateur,
+          utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           cartouche: [
             ('Patient', '${p['nom']} ${p['prenom']}'),
