@@ -234,4 +234,26 @@ void main() {
       expect(m, contains('3 tentatives'));
     });
   });
+
+  group('paie : générateur ≠ validateur sur l\'identifiant (A2 + A1)', () {
+    final lot = <M>[
+      {'periode': 'Mai 2026', 'genereePar': 'KASSA Augustin', 'genereeParId': 'USR003'}
+    ];
+
+    test('la même personne est refusée même sous un autre libellé', () {
+      expect(paiControleSeparation(lot, 'Comptable', validateurId: 'USR003'), contains('Séparation des tâches'));
+    });
+
+    test('un homonyme (même nom, autre compte) n\'est pas la même personne', () {
+      expect(paiControleSeparation(lot, 'KASSA Augustin', validateurId: 'USR777'), isNull);
+    });
+
+    test('une pièce antérieure, sans identifiant, retombe sur le nom', () {
+      final ancien = <M>[
+        {'periode': 'Avril 2026', 'genereePar': 'KASSA Augustin'}
+      ];
+      expect(paiControleSeparation(ancien, 'KASSA  Augustin', validateurId: 'USR003'), isNotNull);
+      expect(paiControleSeparation(ancien, 'AUTRE Agent', validateurId: 'USR004'), isNull);
+    });
+  });
 }
