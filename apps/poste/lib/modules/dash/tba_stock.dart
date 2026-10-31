@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
-import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'tba_commun.dart';
