@@ -4,6 +4,7 @@ import '../../core/config_poste.dart';
 import 'cfa_natures.dart';
 import 'cfa_catalogue.dart';
 import 'cfa_identite.dart';
+import 'cfa_imagerie.dart';
 import 'cfa_organisation.dart';
 import 'cfa_pieces.dart';
 import 'cfa_rappels.dart';
@@ -22,5 +23,6 @@ final Map<String, ConstruireEcran> ecransCFG = {
   'cfg-types-piece': (c, cfg) => const EcranTypesPiece(),
   'cfg-certificats': (c, cfg) => const EcranCertificats(),
   'cfg-rappels': (c, cfg) => const EcranRappels(),
+  'cfg-imagerie-catalogue': (c, cfg) => const EcranImagerieCatalogue(),
   'cfg-natures-facture': (c, cfg) => const EcranNaturesFacture(),
 };

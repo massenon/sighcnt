@@ -30,6 +30,7 @@ const ecransMesures = [
   'cfg-types-piece',
   'cfg-certificats',
   'cfg-rappels',
+  'cfg-imagerie-catalogue',
 ];
 
 void main() {
