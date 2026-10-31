@@ -99,6 +99,9 @@ class MatriceDroits {
   /// Page d'accueil du rôle (`home` de la maquette), si elle existe.
   String? accueil(String role) => _accueils[role];
 
+  /// Les cases de la matrice engendrée pour un rôle (copie), sans le filtre de l'archivage : la base de la superposition.
+  Map<String, Droit> parRoleBrut(String role) => {...?_parRole[role]};
+
   Droit droit(String role, String ecran) {
     if (estArchive(role)) return Droit.aucun;
     return _parRole[role]?[ecran] ?? Droit.aucun;

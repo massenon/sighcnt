@@ -9326,8 +9326,8 @@
    ],
    "m6-inventaire-feuille": [
     1,
-    1,
-    1
+    0,
+    0
    ],
    "m1-patient-nouveau": [
     1,
@@ -10834,8 +10834,8 @@
    ],
    "m2-imagerie-cr": [
     1,
-    0,
-    0
+    1,
+    1
    ],
    "m1-patient-nouveau": [
     1,
@@ -11540,7 +11540,7 @@
    ],
    "m2-imagerie-cr": [
     1,
-    1,
+    0,
     0
    ],
    "m1-patient-nouveau": [

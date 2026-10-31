@@ -48,6 +48,16 @@ void main() {
     expect(ecarts, isEmpty, reason: ecarts.take(40).join('\n'));
   });
 
+  test('MATRICE ENGENDRÉE : une page de saisie y porte les mêmes droits que son registre (extraction corrigée, E1123)', () {
+    final pages = manifeste.tousLesEcrans.where((e) => e.servant != null).toList();
+    expect(pages, isNotEmpty);
+    for (final role in base.rolesBruts.map((r) => '${r['id']}')) {
+      for (final e in pages) {
+        expect(base.droit(role, e.id), base.droit(role, e.servant!), reason: '$role : ${e.id} suit ${e.servant}');
+      }
+    }
+  });
+
   test('FERMETURE : la banque de sang et la transfusion sont fermées pour TOUS les rôles, administrateur compris (E203)', () {
     final m = calc();
     for (final role in base.rolesBruts.map((r) => '${r['id']}')) {
@@ -302,5 +312,104 @@ void main() {
     expect(m.fermetures!.ecrans, isEmpty);
     expect(m.fermetures!.modules, isEmpty);
     expect(m.peutVoir('admin', 'm5-banque-sang'), isTrue);
+  });
+
+  group('AVEC RÉFÉRENCE : la matrice engendrée reste la BASE, seul ce qui a changé depuis les fiches de l\'extraction la remplace', () {
+    MatriceDroits chaud({List<Fiche>? rbac, List<Fiche>? modules, MatriceDroits? sur}) => superposerDroits(sur ?? base, manifeste,
+        rbac: rbac ?? jeuRbac, modulesActifs: modules ?? jeuModules, referenceRbac: jeuRbac, referenceModules: jeuModules);
+    String cases(MatriceDroits m, String role) {
+      final l = [for (final e in manifeste.tousLesEcrans.where((e) => !e.hub)) '${e.id}=${m.peutVoir(role, e.id) ? d(m, role, e.id) : '-'}']..sort();
+      return l.join(',');
+    }
+
+    test('fiches inchangées : la matrice est EXACTEMENT la matrice engendrée, case pour case, pour les 22 rôles', () {
+      final m = chaud();
+      for (final role in base.rolesBruts.map((r) => '${r['id']}')) {
+        expect(cases(m, role), cases(base, role), reason: role);
+        expect(m.estArchive(role), base.estArchive(role), reason: role);
+        expect(m.libelle(role), base.libelle(role), reason: role);
+        expect(m.accueil(role), base.accueil(role), reason: role);
+      }
+    });
+
+    test('une case retouchée dans la matrice engendrée (banc de test) survit tant que les fiches ne changent pas', () {
+      final j = jsonDecode(jsonEncode(brut)) as Map<String, Object?>;
+      ((j['parRole'] as Map)['da'] as Map)['m14-taches'] = [1, 0, 0];
+      final retouchee = MatriceDroits.depuisJson(j);
+      expect(retouchee.droit('da', 'm14-taches').voir, isTrue);
+      final m = chaud(sur: retouchee);
+      expect(d(m, 'da', 'm14-taches'), '100');
+      expect(m.peutVoir('da', 'm1-patients'), base.peutVoir('da', 'm1-patients'));
+    });
+
+    test('RÉOUVERTURE : les fiches de fermeture archivées font paraître l\'écran, avec les droits que le manifeste donne', () {
+      final m = chaud(modules: rouvertes());
+      expect(base.peutVoir('admin', 'm5-banque-sang'), isFalse, reason: 'la matrice engendrée ne le porte pas');
+      expect(d(m, 'admin', 'm5-banque-sang'), '111');
+      expect(d(m, 'laborantin', 'm5-donneurs'), '111');
+      expect(d(m, 'direction', 'm5-banque-sang'), '100');
+      expect(m.peutVoir('caissier', 'm5-banque-sang'), isFalse);
+      expect(m.peutVoir('admin', 'm5-demandes'), base.peutVoir('admin', 'm5-demandes'));
+    });
+
+    test('FERMETURE À CHAUD : un module fermé retire ses écrans de tous les rôles, le reste de la matrice ne bouge pas', () {
+      final m = chaud(modules: [
+        ...jeuModules,
+        {'id': 'F9', 'module': 'M13', 'libelle': 'Administration', 'actif': false, 'motif': 'Essai'}
+      ]);
+      expect(m.peutVoir('admin', 'm13-courriers'), isFalse);
+      expect(m.peutVoir('reception', 'm13-repertoire-ambulances'), isFalse);
+      expect(cases(m, 'caissier'), cases(base, 'caissier'));
+      expect(m.fermetures!.fermeturePour('m13-courriers', 'M13')!['motif'], 'Essai');
+    });
+
+    test('FICHE MODIFIÉE : seules les cases touchées changent ; un écran retiré à un rôle disparaît, son module reste', () {
+      final modifiees = [
+        for (final f in jeuRbac)
+          f['role'] == 'reception'
+              ? {
+                  ...f,
+                  'droitsEcrans': {
+                    ...(f['droitsEcrans'] as Map).cast<String, Object?>(),
+                    'm13-repertoire-ambulances': {'voir': false}
+                  }
+                }
+              : f
+      ];
+      final m = chaud(rbac: modifiees);
+      expect(m.peutVoir('reception', 'm13-repertoire-ambulances'), isFalse);
+      expect(m.peutVoir('reception', 'm13-courriers'), base.peutVoir('reception', 'm13-courriers'));
+      expect(cases(m, 'medecin'), cases(base, 'medecin'));
+    });
+
+    test('ARCHIVAGE DE RÔLE : le rôle n\'a plus aucun écran ; restauré, il retrouve la matrice engendrée', () {
+      final archive = [
+        for (final f in jeuRbac) f['role'] == 'comptable' ? {...f, 'statut': 'archive'} : f
+      ];
+      final m = chaud(rbac: archive);
+      expect(m.estArchive('comptable'), isTrue);
+      expect(m.ecransVisibles('comptable'), isEmpty);
+      expect(cases(chaud(), 'comptable'), cases(base, 'comptable'));
+    });
+
+    test('RÔLE CRÉÉ : il vient entièrement des fiches, la matrice engendrée n\'en sait rien', () {
+      final m = chaud(rbac: [
+        ...jeuRbac,
+        {
+          'id': 'N1',
+          'role': 'auditeur',
+          'nouveau': true,
+          'statut': 'actif',
+          'libelle': 'Auditeur',
+          'droitsEcrans': {
+            'm12-journaux': {'voir': true, 'editer': false, 'annuler': false}
+          }
+        }
+      ]);
+      expect(m.roleConnu('auditeur'), isTrue);
+      expect(m.libelle('auditeur'), 'Auditeur');
+      expect(d(m, 'auditeur', 'm12-journaux'), '100');
+      expect(m.peutVoir('auditeur', 'm8-caisse'), isFalse);
+    });
   });
 }

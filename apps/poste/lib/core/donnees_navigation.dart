@@ -12,36 +12,50 @@ class DonneesNavigation {
   DonneesNavigation(
       {required this.manifeste,
       required this.matrice,
-      required Map<String, Map<String, Object?>> parite})
+      required Map<String, Map<String, Object?>> parite,
+      this.referenceRbac,
+      this.referenceModules})
       : _parite = parite;
   final Manifeste manifeste;
 
-  /// La matrice EN FORCE : celle de `rbac.json` (engendrée), ou la matrice recalculée à chaud par [aChaud].
+  /// La matrice EN FORCE : celle de `rbac.json` (engendrée), ou la matrice superposée à chaud par [aChaud].
   final MatriceDroits matrice;
   final Map<String, Map<String, Object?>> _parite;
 
-  /// Les mêmes données de navigation sous une autre matrice (manifeste et parité partagés).
-  DonneesNavigation avecMatrice(MatriceDroits m) => DonneesNavigation(manifeste: manifeste, matrice: m, parite: _parite);
+  /// Les fiches que la matrice engendrée a connues au jour de l'extraction (le jeu livré : collections `rbac` et `modulesActifs`). Elles sont la
+  /// RÉFÉRENCE de la superposition : seul ce qui a changé depuis elles remplace la matrice engendrée. `null` = inconnues, aucune superposition.
+  final List<Map<String, Object?>>? referenceRbac, referenceModules;
 
-  /// DROITS À CHAUD (A4) : la matrice recalculée depuis le manifeste, les fiches de la collection `rbac` (surcharges par rôle, module et écran, rôles
-  /// archivés ou créés) et celles de `modulesActifs` (activités fermées), comme `N.can()` de la maquette. Les deux collections absentes ou vides :
-  /// la matrice engendrée reste en force, qui a déjà cuit les mêmes fiches au jour de l'extraction. Les décisions de l'administrateur (m14-roles,
-  /// cfg-modules) y sont donc effectives dès qu'elles sont écrites.
+  /// Les mêmes données de navigation sous une autre matrice (manifeste, parité et références partagés).
+  DonneesNavigation avecMatrice(MatriceDroits m) =>
+      DonneesNavigation(manifeste: manifeste, matrice: m, parite: _parite, referenceRbac: referenceRbac, referenceModules: referenceModules);
+
+  /// DROITS À CHAUD (A4) : la matrice engendrée reste la BASE ; les fiches de la collection `rbac` (surcharges par rôle, module et écran, rôles
+  /// archivés ou créés) et de `modulesActifs` (activités fermées) du magasin la superposent, comme `N.can()` de la maquette, pour tout ce qui a changé
+  /// depuis les fiches de l'extraction (`superposerDroits`). Fiches inchangées, matrice inchangée ; une décision saisie depuis m14-roles ou cfg-modules
+  /// (ou rechargée du magasin persisté) est effective aussitôt. Références inconnues ou collections vides : la matrice engendrée reste en force.
   DonneesNavigation aChaud(Magasin m) {
     final rbac = m.collection('rbac').toutes;
     final modules = m.collection('modulesActifs').toutes;
-    if (rbac.isEmpty && modules.isEmpty) return this;
-    return avecMatrice(superposerDroits(matrice, manifeste, rbac: rbac, modulesActifs: modules));
+    if ((referenceRbac == null && referenceModules == null) || (rbac.isEmpty && modules.isEmpty)) return this;
+    return avecMatrice(superposerDroits(matrice, manifeste,
+        rbac: rbac, modulesActifs: modules, referenceRbac: referenceRbac ?? const [], referenceModules: referenceModules ?? const []));
   }
 
   /// Tranche de portage (1 à 6) d'un écran, ou `null`.
   int? tranche(String id) => (_parite[id]?['tranche'] as num?)?.toInt();
   String statut(String id) => '${_parite[id]?['statut'] ?? 'non commencé'}';
 
+  static List<Map<String, Object?>>? _fiches(String? json) =>
+      json == null ? null : [for (final f in (jsonDecode(json) as List)) (f as Map).cast<String, Object?>()];
+
+  /// `fichesRbac` / `fichesModules` : le jeu livré (`jeu/rbac.json`, `jeu/modulesActifs.json`), RÉFÉRENCE de la superposition à chaud.
   static DonneesNavigation depuisJson(
       {required String manifeste,
       required String rbac,
-      required String parite}) {
+      required String parite,
+      String? fichesRbac,
+      String? fichesModules}) {
     final p = <String, Map<String, Object?>>{
       for (final e in ((jsonDecode(parite) as Map)['ecrans'] as List))
         '${(e as Map)['id']}': e.cast<String, Object?>(),
@@ -52,6 +66,8 @@ class DonneesNavigation {
       matrice: MatriceDroits.depuisJson(
           (jsonDecode(rbac) as Map).cast<String, Object?>()),
       parite: p,
+      referenceRbac: _fiches(fichesRbac),
+      referenceModules: _fiches(fichesModules),
     );
   }
 
@@ -59,6 +75,8 @@ class DonneesNavigation {
         manifeste: await rootBundle.loadString('assets/donnees/manifeste.json'),
         rbac: await rootBundle.loadString('assets/donnees/rbac.json'),
         parite: await rootBundle.loadString('assets/donnees/parite.json'),
+        fichesRbac: await rootBundle.loadString('assets/donnees/jeu/rbac.json'),
+        fichesModules: await rootBundle.loadString('assets/donnees/jeu/modulesActifs.json'),
       );
 
   /// Pour les tests : lit les mêmes fichiers engendrés sur le disque.
@@ -67,5 +85,9 @@ class DonneesNavigation {
         manifeste: File('$dossier/manifeste.json').readAsStringSync(),
         rbac: File('$dossier/rbac.json').readAsStringSync(),
         parite: File('$dossier/parite.json').readAsStringSync(),
+        fichesRbac: _lireSiPresent('$dossier/jeu/rbac.json'),
+        fichesModules: _lireSiPresent('$dossier/jeu/modulesActifs.json'),
       );
+
+  static String? _lireSiPresent(String chemin) => File(chemin).existsSync() ? File(chemin).readAsStringSync() : null;
 }

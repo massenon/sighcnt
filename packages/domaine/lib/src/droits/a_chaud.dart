@@ -61,10 +61,18 @@ CfbFermetures fermeturesEnVigueur(Iterable<Map<String, Object?>> modulesActifs) 
         if (!_fermeLeNoyau(f)) f
     ]);
 
-/// Recalcule la matrice des droits. `base` ne fournit que la liste des rôles (libellés d'origine, couleurs, accueils) ; les droits ne viennent
-/// que du manifeste et des fiches.
-MatriceDroits superposerDroits(MatriceDroits base, Manifeste manifeste,
-    {Iterable<Map<String, Object?>> rbac = const [], Iterable<Map<String, Object?>> modulesActifs = const []}) {
+/// Le résultat d'un calcul complet : tout ce qu'une matrice porte.
+typedef _Calcul = ({
+  Map<String, Map<String, Droit>> parRole,
+  Set<String> archives,
+  Map<String, String> libelles,
+  Map<String, String> accueils,
+  List<Map<String, Object?>> roles,
+  CfbFermetures fermetures
+});
+
+/// Calcule la matrice COMPLÈTE depuis le manifeste et les fiches. `base` ne fournit que la liste des rôles (libellés d'origine, couleurs, accueils).
+_Calcul _calculer(MatriceDroits base, Manifeste manifeste, Iterable<Map<String, Object?>> rbac, Iterable<Map<String, Object?>> modulesActifs) {
   final sur = surchargesParRole(rbac);
   final ferm = fermeturesEnVigueur(modulesActifs);
 
@@ -177,6 +185,68 @@ MatriceDroits superposerDroits(MatriceDroits base, Manifeste manifeste,
     }
     parRole[id] = droits;
   }
+  return (parRole: parRole, archives: archives, libelles: libelles, accueils: accueils, roles: roles, fermetures: ferm);
+}
+
+MatriceDroits _assembler(_Calcul c) => MatriceDroits.assemblee(
+    parRole: c.parRole, archives: c.archives, libelles: c.libelles, accueils: c.accueils, rolesBruts: c.roles, fermetures: c.fermetures);
+
+/// Superpose les fiches à la matrice.
+///
+///  * SANS référence (`referenceRbac` et `referenceModules` absents) : la matrice est entièrement RECALCULÉE depuis le manifeste et les fiches ;
+///  * AVEC référence : les fiches qu'a connues l'extraction de la matrice engendrée (le jeu livré). La matrice engendrée reste la BASE : seules les
+///    cases (rôle, écran) que les fiches d'aujourd'hui font changer par rapport à celles de l'extraction sont remplacées, de même que les rôles
+///    dont l'archivage, le libellé ou l'accueil a changé. Fiches inchangées, matrice inchangée, case pour case. C'est ce qui rend effective une décision
+///    saisie depuis (m14-roles, cfg-modules) sans jamais réécrire ce que la maquette a extrait.
+MatriceDroits superposerDroits(MatriceDroits base, Manifeste manifeste,
+    {Iterable<Map<String, Object?>> rbac = const [],
+    Iterable<Map<String, Object?>> modulesActifs = const [],
+    Iterable<Map<String, Object?>>? referenceRbac,
+    Iterable<Map<String, Object?>>? referenceModules}) {
+  final maintenant = _calculer(base, manifeste, rbac, modulesActifs);
+  if (referenceRbac == null && referenceModules == null) return _assembler(maintenant);
+  final ref = _calculer(base, manifeste, referenceRbac ?? const [], referenceModules ?? const []);
+
+  final parRole = <String, Map<String, Droit>>{};
+  final archives = <String>{};
+  final libelles = <String, String>{};
+  final accueils = <String, String>{};
+  final connus = <String>{for (final r in base.rolesBruts) '${r['id']}'};
+  for (final r in maintenant.roles) {
+    final id = '${r['id']}';
+    if (!connus.contains(id)) {
+      // Un rôle CRÉÉ depuis l'extraction : rien dans la matrice engendrée, tout vient des fiches.
+      parRole[id] = maintenant.parRole[id] ?? {};
+      libelles[id] = maintenant.libelles[id] ?? id;
+      if (maintenant.accueils[id] != null) accueils[id] = maintenant.accueils[id]!;
+      if (maintenant.archives.contains(id)) archives.add(id);
+      continue;
+    }
+    final n = maintenant.parRole[id] ?? const <String, Droit>{};
+    final e = ref.parRole[id] ?? const <String, Droit>{};
+    final b = base.parRoleBrut(id);
+    final cases = <String, Droit>{...b};
+    for (final ecran in {...n.keys, ...e.keys}) {
+      final dn = n[ecran] ?? Droit.aucun, de = e[ecran] ?? Droit.aucun;
+      if (dn == de) continue;
+      if (dn == Droit.aucun || !dn.voir) {
+        cases.remove(ecran);
+      } else {
+        cases[ecran] = dn;
+      }
+    }
+    parRole[id] = cases;
+    final archiveChange = maintenant.archives.contains(id) != ref.archives.contains(id);
+    if (archiveChange ? maintenant.archives.contains(id) : base.estArchive(id)) archives.add(id);
+    libelles[id] = maintenant.libelles[id] != ref.libelles[id] ? maintenant.libelles[id]! : (base.libelle(id) ?? maintenant.libelles[id]!);
+    final acc = maintenant.accueils[id] != ref.accueils[id] ? maintenant.accueils[id] : base.accueil(id);
+    if (acc != null) accueils[id] = acc;
+  }
   return MatriceDroits.assemblee(
-      parRole: parRole, archives: archives, libelles: libelles, accueils: accueils, rolesBruts: roles, fermetures: ferm);
+      parRole: parRole,
+      archives: archives,
+      libelles: libelles,
+      accueils: accueils,
+      rolesBruts: maintenant.roles,
+      fermetures: maintenant.fermetures);
 }
