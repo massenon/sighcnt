@@ -74,4 +74,5 @@ export 'src/comptabilite/cpb_liasse.dart';
 export 'src/comptabilite/cpb_donnees.dart';
 export 'src/comptabilite/cpb_feuillets.dart';
 export 'src/comptabilite/cpb_seuil.dart';
+export 'src/comptabilite/cpb_gestion.dart';
 export 'src/rh/rhb_regles.dart';

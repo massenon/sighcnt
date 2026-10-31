@@ -331,6 +331,24 @@ void main() {
       expect(r.seuil != null ? mof(r.seuil) : 'incalculable', nt(k[4]['valeur']));
     });
 
+    test('graphique : chiffre d\'affaires, charges variables, charges fixes, seuil (0 quand il est incalculable)', () {
+      for (final nom in ['defaut', 'toutVariable', 'toutFixe']) {
+        final sc = carte(scens[nom]);
+        Map<String, String> natures = const {};
+        if (nom != 'defaut') {
+          natures = {for (final x in {for (final y in toutes) if ('${y['compte']}'.startsWith('6')) '${y['compte']}'}) x: nom == 'toutVariable' ? 'variable' : 'fixe'};
+        }
+        final r = calc(sc, natures: natures);
+        final g = liste(sc['graphiques']).single;
+        expect(g['etiquettes'], ['Chiffre d’affaires', 'Charges variables', 'Charges fixes', 'Seuil de rentabilité'], reason: nom);
+        final data = (liste(g['series']).single['data'] as List).cast<num>();
+        final attendu = [r.ca, r.variable, r.fixe, r.seuil ?? 0];
+        for (var i = 0; i < 4; i++) {
+          expect(data[i].toDouble(), closeTo(attendu[i], 1e-3), reason: '$nom $i');
+        }
+      }
+    });
+
     test('le tableau des charges : mêmes comptes, même ordre (du plus grand au plus petit), mêmes montants', () {
       final s = carte(scens['defaut']);
       final r = calc(s);

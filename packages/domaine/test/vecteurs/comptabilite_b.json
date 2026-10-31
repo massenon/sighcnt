@@ -7571,7 +7571,28 @@
      "periode": "annee",
      "arrete": "2026-10-30"
     },
-    "graphiques": [],
+    "graphiques": [
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Chiffre d’affaires",
+       "Charges variables",
+       "Charges fixes",
+       "Seuil de rentabilité"
+      ],
+      "series": [
+       {
+        "label": "Montant",
+        "data": [
+         11522544,
+         10568000,
+         25305000,
+         305463106.90759146
+        ]
+       }
+      ]
+     }
+    ],
     "piece": {
      "titre": "Seuil de rentabilité",
      "sousTitre": "Du 31/10/2025 au 30/10/2026",
@@ -7834,6 +7855,26 @@
      "arrete": "2026-10-30"
     },
     "graphiques": [
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Chiffre d’affaires",
+       "Charges variables",
+       "Charges fixes",
+       "Seuil de rentabilité"
+      ],
+      "series": [
+       {
+        "label": "Montant",
+        "data": [
+         11522544,
+         10568000,
+         25305000,
+         305463106.90759146
+        ]
+       }
+      ]
+     },
      {
       "type": "barres",
       "etiquettes": [
@@ -8158,6 +8199,26 @@
        {
         "label": "Montant",
         "data": [
+         11522544,
+         10568000,
+         25305000,
+         305463106.90759146
+        ]
+       }
+      ]
+     },
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Chiffre d’affaires",
+       "Charges variables",
+       "Charges fixes",
+       "Seuil de rentabilité"
+      ],
+      "series": [
+       {
+        "label": "Montant",
+        "data": [
          5988544,
          5312000,
          14693000,
@@ -8268,6 +8329,26 @@
      "arrete": "2026-10-30"
     },
     "graphiques": [
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Chiffre d’affaires",
+       "Charges variables",
+       "Charges fixes",
+       "Seuil de rentabilité"
+      ],
+      "series": [
+       {
+        "label": "Montant",
+        "data": [
+         11522544,
+         10568000,
+         25305000,
+         305463106.90759146
+        ]
+       }
+      ]
+     },
      {
       "type": "barres",
       "etiquettes": [
@@ -8580,6 +8661,26 @@
      "arrete": "2026-08-31"
     },
     "graphiques": [
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Chiffre d’affaires",
+       "Charges variables",
+       "Charges fixes",
+       "Seuil de rentabilité"
+      ],
+      "series": [
+       {
+        "label": "Montant",
+        "data": [
+         11522544,
+         10568000,
+         25305000,
+         305463106.90759146
+        ]
+       }
+      ]
+     },
      {
       "type": "barres",
       "etiquettes": [
@@ -8994,7 +9095,28 @@
      "periode": "annee",
      "arrete": "2026-10-30"
     },
-    "graphiques": []
+    "graphiques": [
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Chiffre d’affaires",
+       "Charges variables",
+       "Charges fixes",
+       "Seuil de rentabilité"
+      ],
+      "series": [
+       {
+        "label": "Montant",
+        "data": [
+         11522544,
+         35873000,
+         0,
+         0
+        ]
+       }
+      ]
+     }
+    ]
    },
    "toutFixe": {
     "kpis": [
@@ -9285,9 +9407,3012 @@
      "periode": "annee",
      "arrete": "2026-10-30"
     },
-    "graphiques": []
+    "graphiques": [
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Chiffre d’affaires",
+       "Charges variables",
+       "Charges fixes",
+       "Seuil de rentabilité"
+      ],
+      "series": [
+       {
+        "label": "Montant",
+        "data": [
+         11522544,
+         0,
+         35873000,
+         35873000
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "m12-analytique": {
+   "kpis": [
+    {
+     "label": "Centres de coûts",
+     "valeur": "7",
+     "indice": null
+    },
+    {
+     "label": "Produits analysés",
+     "valeur": "10 888 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Charges analysées",
+     "valeur": "35 873 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Résultat analytique",
+     "valeur": "-24 985 000 FCFA",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      [
+       "CENTRE DE COÛTS / SECTEUR",
+       "ÉCRITURES",
+       "PRODUITS",
+       "CHARGES",
+       "RÉSULTAT",
+       "MARGE"
+      ]
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Maternité",
+        "30",
+        "4 839 000",
+        "2 908 000",
+        "1 931 000",
+        "40 %"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Imagerie médicale",
+        "28",
+        "2 390 000",
+        "3 880 000",
+        "-1 490 000",
+        "-62 %"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Hospitalisation et soins",
+        "28",
+        "2 247 000",
+        "3 797 000",
+        "-1 550 000",
+        "-69 %"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Consultation",
+        "24",
+        "361 000",
+        "2 157 000",
+        "-1 796 000",
+        "-498 %"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Pharmacie",
+        "14",
+        "533 000",
+        "2 415 000",
+        "-1 882 000",
+        "-353 %"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Laboratoire",
+        "20",
+        "518 000",
+        "3 885 000",
+        "-3 367 000",
+        "-650 %"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Direction",
+        "116",
+        "0",
+        "16 831 000",
+        "-16 831 000",
+        "—"
+       ],
+       "boutons": []
+      }
+     ]
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Résultat par centre de coûts",
+    "Poids des secteurs dans les produits"
+   ],
+   "boutons": [
+    "Colonnes affichées",
+    "Exporter",
+    "Imprimer la balance analytique",
+    "Tout désélectionner"
+   ],
+   "notes": [],
+   "graphiques": [
+    {
+     "type": "barres",
+     "etiquettes": [
+      "Maternité",
+      "Imagerie médicale",
+      "Hospitalisation et soins",
+      "Consultation",
+      "Pharmacie",
+      "Laboratoire",
+      "Direction"
+     ],
+     "series": [
+      {
+       "label": "Produits",
+       "data": [
+        4839000,
+        2390000,
+        2247000,
+        361000,
+        533000,
+        518000,
+        0
+       ]
+      },
+      {
+       "label": "Charges",
+       "data": [
+        2908000,
+        3880000,
+        3797000,
+        2157000,
+        2415000,
+        3885000,
+        16831000
+       ]
+      }
+     ]
+    },
+    {
+     "type": "anneau",
+     "etiquettes": [
+      "Laboratoire",
+      "Pharmacie",
+      "Consultation",
+      "Imagerie médicale",
+      "Maternité",
+      "Hospitalisation et soins"
+     ],
+     "series": [
+      518000,
+      533000,
+      361000,
+      2390000,
+      4839000,
+      2247000
+     ]
+    }
+   ],
+   "piece": {
+    "titre": "Balance analytique",
+    "sousTitre": "Résultat par centre de coûts — exercice 2026",
+    "cartouche": [
+     [
+      "Centres de coûts",
+      "7"
+     ],
+     [
+      "Produits",
+      "10 888 000 FCFA"
+     ],
+     [
+      "Charges",
+      "35 873 000 FCFA"
+     ],
+     [
+      "Résultat",
+      "-24 985 000 FCFA"
+     ]
+    ],
+    "contenu": "Centre de coûtsÉcrituresProduitsChargesRésultatLaboratoire20518 0003 885 000-3 367 000Pharmacie14533 0002 415 000-1 882 000Consultation24361 0002 157 000-1 796 000Imagerie médicale282 390 0003 880 000-1 490 000Maternité304 839 0002 908 0001 931 000Hospitalisation et soins282 247 0003 797 000-1 550 000Direction116016 831 000-16 831 000TOTAL10 888 00035 873 000-24 985 000",
+    "tables": [],
+    "signatures": [
+     {
+      "role": "Le Comptable",
+      "nom": "KASSA Augustin"
+     },
+     {
+      "role": "La Direction",
+      "nom": "BASSONGUI Chabi Séko"
+     }
+    ]
+   }
+  },
+  "m12-budgets": {
+   "kpis": [
+    {
+     "label": "Budget total prévu",
+     "valeur": "62 000 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Budget consommé",
+     "valeur": "35 873 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Disponible",
+     "valeur": "26 127 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Taux de consommation",
+     "valeur": "57.9 %",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      [
+       "N°",
+       "EXERCICE",
+       "CENTRE DE COÛTS",
+       "NATURE",
+       "BUDGET PRÉVU",
+       "RÉALISÉ",
+       "DISPONIBLE",
+       "CONSOMMATION",
+       "ACTIONS"
+      ]
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "",
+        "BG-2026-005",
+        "2026",
+        "Maternité",
+        "Charges de fonctionnement",
+        "18 000 000",
+        "2 908 000",
+        "15 092 000",
+        "16 %",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "BG-2026-004",
+        "2026",
+        "Imagerie médicale",
+        "Charges de fonctionnement",
+        "12 500 000",
+        "3 880 000",
+        "8 620 000",
+        "31 %",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "BG-2026-002",
+        "2026",
+        "Pharmacie",
+        "Charges de fonctionnement",
+        "12 000 000",
+        "2 415 000",
+        "9 585 000",
+        "20 %",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "BG-2026-001",
+        "2026",
+        "Laboratoire",
+        "Charges de fonctionnement",
+        "9 500 000",
+        "3 885 000",
+        "5 615 000",
+        "41 %",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "BG-2026-007",
+        "2026",
+        "Direction",
+        "Charges de fonctionnement",
+        "5 000 000",
+        "16 831 000",
+        "-11 831 000",
+        "337 %",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "BG-2026-006",
+        "2026",
+        "Hospitalisation et soins",
+        "Charges de fonctionnement",
+        "3 000 000",
+        "3 797 000",
+        "-797 000",
+        "127 %",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "BG-2026-003",
+        "2026",
+        "Consultation",
+        "Charges de fonctionnement",
+        "2 000 000",
+        "2 157 000",
+        "-157 000",
+        "108 %",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Modifier",
+        "Archiver"
+       ]
+      }
+     ]
+    }
+   ],
+   "onglets": [
+    "Tous les budgets7",
+    "Budget vs réalisé",
+    "Archivés0"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Tous les budgets7",
+    "Budget vs réalisé",
+    "Archivés0",
+    "Colonnes affichées",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Modifier",
+    "Archiver"
+   ],
+   "notes": [],
+   "suivi": {
+    "graphiques": [
+     {
+      "type": "barres",
+      "etiquettes": [
+       "Laboratoire",
+       "Pharmacie",
+       "Consultation",
+       "Imagerie médicale",
+       "Maternité",
+       "Hospitalisation et soins",
+       "Direction"
+      ],
+      "series": [
+       {
+        "label": "Prévu",
+        "data": [
+         9500000,
+         12000000,
+         2000000,
+         12500000,
+         18000000,
+         3000000,
+         5000000
+        ]
+       },
+       {
+        "label": "Réalisé",
+        "data": [
+         3885000,
+         2415000,
+         2157000,
+         3880000,
+         2908000,
+         3797000,
+         16831000
+        ]
+       }
+      ]
+     }
+    ],
+    "texte": "Budget total prévu 62 000 000 FCFA Budget consommé 35 873 000 FCFA Disponible 26 127 000 FCFA Taux de consommation 57.9 % Tous les budgets7 Budget vs réalisé Archivés0 Comparaison budget prévisionnel et réalisé"
+   },
+   "archives": {
+    "kpis": [
+     {
+      "label": "Budget total prévu",
+      "valeur": "62 000 000 FCFA",
+      "indice": null
+     },
+     {
+      "label": "Budget consommé",
+      "valeur": "35 873 000 FCFA",
+      "indice": null
+     },
+     {
+      "label": "Disponible",
+      "valeur": "26 127 000 FCFA",
+      "indice": null
+     },
+     {
+      "label": "Taux de consommation",
+      "valeur": "57.9 %",
+      "indice": null
+     }
+    ],
+    "tables": [],
+    "onglets": [
+     "Tous les budgets7",
+     "Budget vs réalisé",
+     "Archivés0"
+    ],
+    "cartes": [],
+    "boutons": [
+     "Tous les budgets7",
+     "Budget vs réalisé",
+     "Archivés0",
+     "Colonnes affichées",
+     "Exporter",
+     "Tout désélectionner"
+    ],
+    "notes": []
+   },
+   "formulaire": {
+    "texte": "Nouveau budget Les champs marqués d’un astérisque sont obligatoires. Exercice * Centre de coûts * Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Nature budgétaire * Charges de fonctionnement Investissements Charges de personnel Achats de marchandises Montant prévisionnel (FCFA) * Annuler Créer",
+    "valeurs": [
+     [
+      "exercice",
+      "2026"
+     ],
+     [
+      "centreCout",
+      "laboratoire"
+     ],
+     [
+      "nature",
+      "Charges de fonctionnement"
+     ],
+     [
+      "prevu",
+      ""
+     ]
+    ]
+   },
+   "boutonsFormulaire": [
+    "Annuler",
+    "Créer"
+   ],
+   "creation": {
+    "toasts": [
+     {
+      "message": "Nouveau budget créé.",
+      "type": "success",
+      "detail": "BG-2026-008"
+     }
+    ],
+    "ecart": {
+     "inserts": {
+      "budgets": [
+       {
+        "statut": "actif",
+        "exercice": 2026,
+        "centreCout": "maternite",
+        "nature": "Investissements",
+        "prevu": 1500000,
+        "centre": "Maternité",
+        "reference": "BG-2026-008"
+       }
+      ]
+     },
+     "modifs": {}
+    }
+   },
+   "sansMontant": {
+    "toasts": [
+     {
+      "message": "Le formulaire comporte des erreurs.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {}
+    },
+    "modaleOuverte": true,
+    "texte": "Nouveau budget Les champs marqués d’un astérisque sont obligatoires. Exercice * Centre de coûts * Laboratoire Pharmacie Consultation Imagerie médicale Maternité Hospitalisation et soins Direction Nature budgétaire * Charges de fonctionnement Investissements Charges de personnel Achats de marchandise"
+   },
+   "creeRef": "BG-2026-008",
+   "deuxiemeCreation": {
+    "ecart": {
+     "inserts": {
+      "budgets": [
+       {
+        "statut": "actif",
+        "exercice": 2026,
+        "centreCout": "consultation",
+        "nature": "Charges de fonctionnement",
+        "prevu": 800000,
+        "centre": "Consultation",
+        "reference": "BG-2026-009"
+       }
+      ]
+     },
+     "modifs": {}
+    }
+   },
+   "formulaireModifier": {
+    "valeurs": [
+     [
+      "exercice",
+      "2026"
+     ],
+     [
+      "centreCout",
+      "maternite"
+     ],
+     [
+      "nature",
+      "Investissements"
+     ],
+     [
+      "prevu",
+      "1500000"
+     ]
+    ]
+   },
+   "modification": {
+    "toasts": [
+     {
+      "message": "Modifications enregistrées.",
+      "type": "success",
+      "detail": "BG-2026-008"
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {
+      "budgets": [
+       {
+        "cle": "BG-2026-008",
+        "patch": {
+         "nature": "Charges de personnel",
+         "prevu": 2000000
+        }
+       }
+      ]
+     }
+    }
+   },
+   "tiroir": {
+    "texte": "BG-2026-008 BG-2026-008 N° BG-2026-008 Exercice 2026 Centre de coûts Maternité Nature Charges de personnel Budget prévu 2 000 000 Réalisé 2 908 000 Disponible -908 000 Consommation 145 % Centre de coûts Maternité Modifier Archiver",
+    "boutons": [
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "archivageDialogue": "Archiver cet enregistrement ? L’enregistrement ne sera pas supprimé : il est archivé et reste consultable dans l’onglet « Archivés ». L’opération est journalisée et peut être annulée. Motif (consigné dans le journal d’audit) Annuler Archiver",
+   "archivage": {
+    "toasts": [
+     {
+      "message": "Enregistrement archivé.",
+      "type": "success",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {
+      "budgets": [
+       {
+        "cle": "BG-2026-008",
+        "patch": {
+         "statut": "archive",
+         "_motifArchivage": null
+        }
+       }
+      ]
+     }
+    }
+   }
+  },
+  "m12-immobilisations": {
+   "kpis": [
+    {
+     "label": "Immobilisations",
+     "valeur": "10",
+     "indice": "0 sortie(s) du patrimoine"
+    },
+    {
+     "label": "Valeur d’acquisition (BRUT)",
+     "valeur": "52 700 000 FCFA",
+     "indice": "Colonne BRUT du bilan — rubrique AI"
+    },
+    {
+     "label": "Amortissements cumulés",
+     "valeur": "27 124 999 FCFA",
+     "indice": "Colonne AMORT. et DÉPRÉC. du bilan"
+    },
+    {
+     "label": "Valeur nette comptable",
+     "valeur": "25 575 001 FCFA",
+     "indice": "Colonne NET du bilan — reportée à l’actif immobilisé"
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      [
+       "N°",
+       "DÉSIGNATION",
+       "CATÉGORIE",
+       "DATE D’ACQUISITION",
+       "VALEUR D’ACQUISITION",
+       "DURÉE",
+       "CESSION / SORTIE",
+       "AMORT. CUMULÉ",
+       "VALEUR NETTE",
+       "ÉTAT",
+       "ACTIONS"
+      ]
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "",
+        "IM-004",
+        "Ambulance médicalisée",
+        "Matériel de transport",
+        "15/09/2025",
+        "18 000 000",
+        "5 ans (10 sem.)",
+        "—",
+        "3 600 000",
+        "14 400 000",
+        "En maintenance",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-001",
+        "Échographe",
+        "Matériel médical",
+        "01/06/2022",
+        "8 500 000",
+        "5 ans (10 sem.)",
+        "—",
+        "6 800 000",
+        "1 700 000",
+        "En service",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-002",
+        "Automate de biochimie",
+        "Matériel de laboratoire",
+        "08/01/2021",
+        "6 200 000",
+        "5 ans (10 sem.)",
+        "—",
+        "6 200 000",
+        "0",
+        "En maintenance",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-003",
+        "Groupe électrogène 30 kVA",
+        "Matériel technique",
+        "21/05/2025",
+        "4 500 000",
+        "10 ans (20 sem.)",
+        "—",
+        "450 000",
+        "4 050 000",
+        "En maintenance",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-008",
+        "Serveur et postes informatiques",
+        "Matériel informatique",
+        "27/01/2025",
+        "3 800 000",
+        "3 ans (6 sem.)",
+        "—",
+        "1 899 999",
+        "1 900 001",
+        "En maintenance",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-005",
+        "Table d’opération",
+        "Matériel médical",
+        "13/10/2022",
+        "3 200 000",
+        "10 ans (20 sem.)",
+        "—",
+        "1 280 000",
+        "1 920 000",
+        "En service",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-009",
+        "Climatiseurs (lot de 8)",
+        "Installations",
+        "21/10/2021",
+        "2 800 000",
+        "5 ans (10 sem.)",
+        "—",
+        "2 800 000",
+        "0",
+        "En service",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-006",
+        "Lits d’hospitalisation (lot de 12)",
+        "Mobilier médical",
+        "02/12/2020",
+        "2 400 000",
+        "10 ans (20 sem.)",
+        "—",
+        "1 320 000",
+        "1 080 000",
+        "En service",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-010",
+        "Stérilisateur autoclave",
+        "Matériel médical",
+        "14/09/2020",
+        "2 100 000",
+        "8 ans (16 sem.)",
+        "—",
+        "1 575 000",
+        "525 000",
+        "En maintenance",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "",
+        "IM-007",
+        "Onduleurs (lot)",
+        "Matériel technique",
+        "27/06/2020",
+        "1 200 000",
+        "3 ans (6 sem.)",
+        "—",
+        "1 200 000",
+        "0",
+        "En maintenance",
+        ""
+       ],
+       "boutons": [
+        "Consulter",
+        "Imprimer l’état",
+        "Modifier",
+        "Archiver"
+       ]
+      }
+     ]
+    }
+   ],
+   "onglets": [
+    "Tous les immobilisations10",
+    "Report au bilan",
+    "Archivés0"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Tous les immobilisations10",
+    "Report au bilan",
+    "Archivés0",
+    "Colonnes affichées",
+    "Exporter",
+    "Nouveau",
+    "Imprimer la sélection",
+    "Archiver",
+    "Tout désélectionner",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver",
+    "Consulter",
+    "Imprimer l’état",
+    "Modifier",
+    "Archiver"
+   ],
+   "notes": [],
+   "filtres": [
+    {
+     "label": "Catégorie",
+     "options": [
+      [
+       "",
+       "Catégorie"
+      ],
+      [
+       "Matériel médical",
+       "Matériel médical"
+      ],
+      [
+       "Matériel de laboratoire",
+       "Matériel de laboratoire"
+      ],
+      [
+       "Matériel technique",
+       "Matériel technique"
+      ],
+      [
+       "Matériel de transport",
+       "Matériel de transport"
+      ],
+      [
+       "Mobilier médical",
+       "Mobilier médical"
+      ],
+      [
+       "Matériel informatique",
+       "Matériel informatique"
+      ],
+      [
+       "Installations",
+       "Installations"
+      ]
+     ]
+    },
+    {
+     "label": "État",
+     "options": [
+      [
+       "",
+       "État"
+      ],
+      [
+       "En service",
+       "En service"
+      ],
+      [
+       "En maintenance",
+       "En maintenance"
+      ],
+      [
+       "Hors service",
+       "Hors service"
+      ],
+      [
+       "Cédé",
+       "Cédé"
+      ]
+     ]
+    }
+   ],
+   "filtresNb": {
+    "Catégorie|Matériel médical": 3,
+    "Catégorie|Matériel de laboratoire": 1,
+    "Catégorie|Matériel technique": 2,
+    "Catégorie|Matériel de transport": 1,
+    "Catégorie|Mobilier médical": 1,
+    "Catégorie|Matériel informatique": 1,
+    "Catégorie|Installations": 1,
+    "État|En service": 4,
+    "État|En maintenance": 6,
+    "État|Hors service": 0,
+    "État|Cédé": 0
+   },
+   "bilan": {
+    "kpis": [
+     {
+      "label": "Immobilisations",
+      "valeur": "10",
+      "indice": "0 sortie(s) du patrimoine"
+     },
+     {
+      "label": "Valeur d’acquisition (BRUT)",
+      "valeur": "52 700 000 FCFA",
+      "indice": "Colonne BRUT du bilan — rubrique AI"
+     },
+     {
+      "label": "Amortissements cumulés",
+      "valeur": "27 124 999 FCFA",
+      "indice": "Colonne AMORT. et DÉPRÉC. du bilan"
+     },
+     {
+      "label": "Valeur nette comptable",
+      "valeur": "25 575 001 FCFA",
+      "indice": "Colonne NET du bilan — reportée à l’actif immobilisé"
+     }
+    ],
+    "tables": [
+     {
+      "titre": "Report à l’actif immobilisé — rubrique par rubrique",
+      "entetes": [
+       [
+        "RÉF.",
+        "RUBRIQUE DU BILAN",
+        "BIENS",
+        "BRUT",
+        "AMORT. ET DÉPRÉC.",
+        "NET"
+       ]
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "AD",
+         "IMMOBILISATIONS INCORPORELLES",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AE",
+         "Frais de développement et de prospection",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AF",
+         "Brevets, licences, logiciels et droits similaires",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AG",
+         "Fonds commercial et droit au bail",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AH",
+         "Autres immobilisations incorporelles",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AI",
+         "IMMOBILISATIONS CORPORELLES",
+         "10",
+         "52 700 000",
+         "27 124 999",
+         "25 575 001"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AJ",
+         "Terrains",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AK",
+         "Bâtiments",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AL",
+         "Aménagements, agencements et installations",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AM",
+         "Matériel, mobilier et actifs biologiques",
+         "9",
+         "34 700 000",
+         "23 524 999",
+         "11 175 001"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AN",
+         "Matériel de transport",
+         "1",
+         "18 000 000",
+         "3 600 000",
+         "14 400 000"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AQ",
+         "IMMOBILISATIONS FINANCIÈRES",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AR",
+         "Titres de participation",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AS",
+         "Autres immobilisations financières",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AZ",
+         "TOTAL ACTIF IMMOBILISÉ",
+         "10",
+         "52 700 000",
+         "27 124 999",
+         "25 575 001"
+        ],
+        "boutons": []
+       }
+      ]
+     }
+    ],
+    "onglets": [
+     "Tous les immobilisations10",
+     "Report au bilan",
+     "Archivés0"
+    ],
+    "cartes": [
+     "Report à l’actif immobilisé — rubrique par rubrique"
+    ],
+    "boutons": [
+     "Tous les immobilisations10",
+     "Report au bilan",
+     "Archivés0",
+     "Ouvrir les états financiers",
+     "Imprimer le report"
+    ],
+    "notes": [
+     "Ce tableau EST la rubrique « Immobilisations corporelles » (AI) de l’actif du bilan : ses trois colonnes sont celles de la liasse — BRUT, AMORT. et DÉPRÉC., NET. Le rattachement se fait par le compte SYSCOHADA porté par chaque bien, jamais par sa catégorie d’usage."
+    ]
+   },
+   "pieceReport": {
+    "titre": "Report des immobilisations à l’actif du bilan",
+    "sousTitre": "Situation au 30/10/2026",
+    "cartouche": [
+     [
+      "Biens au patrimoine",
+      "10"
+     ],
+     [
+      "Biens sortis",
+      "0"
+     ],
+     [
+      "Mode d’amortissement",
+      "Linéaire, pas semestriel"
+     ]
+    ],
+    "contenu": "Réf.RubriqueBrutAmort. et dépréc.NetADIMMOBILISATIONS INCORPORELLES000AE Frais de développement et de prospection000AF Brevets, licences, logiciels et droits similaires000AG Fonds commercial et droit au bail000AH Autres immobilisations incorporelles000AIIMMOBILISATIONS CORPORELLES52 700 00027 124 99925 575 001AJ Terrains000AK Bâtiments000AL Aménagements, agencements et installations000AM Matériel, mobilier et actifs biologiques34 700 00023 524 99911 175 001AN Matériel de transport18 000 0003 600 00014 400 000AQIMMOBILISATIONS FINANCIÈRES000AR Titres de participation000AS Autres immobilisations financières000TOTAL ACTIF IMMOBILISÉ52 700 00027 124 99925 575 001",
+    "tables": [],
+    "signatures": [
+     {
+      "role": "Le Comptable",
+      "nom": "KASSA Augustin"
+     },
+     {
+      "role": "La Directrice Administrative",
+      "nom": "TAKI Alimatou"
+     }
+    ]
+   },
+   "archives": {
+    "kpis": [
+     {
+      "label": "Immobilisations",
+      "valeur": "10",
+      "indice": "0 sortie(s) du patrimoine"
+     },
+     {
+      "label": "Valeur d’acquisition (BRUT)",
+      "valeur": "52 700 000 FCFA",
+      "indice": "Colonne BRUT du bilan — rubrique AI"
+     },
+     {
+      "label": "Amortissements cumulés",
+      "valeur": "27 124 999 FCFA",
+      "indice": "Colonne AMORT. et DÉPRÉC. du bilan"
+     },
+     {
+      "label": "Valeur nette comptable",
+      "valeur": "25 575 001 FCFA",
+      "indice": "Colonne NET du bilan — reportée à l’actif immobilisé"
+     }
+    ],
+    "tables": [],
+    "onglets": [
+     "Tous les immobilisations10",
+     "Report au bilan",
+     "Archivés0"
+    ],
+    "cartes": [],
+    "boutons": [
+     "Tous les immobilisations10",
+     "Report au bilan",
+     "Archivés0",
+     "Colonnes affichées",
+     "Exporter",
+     "Tout désélectionner"
+    ],
+    "notes": []
+   },
+   "bilanParCompte": {
+    "comptes": [
+     "211000",
+     "213000",
+     "215000",
+     "217000",
+     "221000",
+     "231100",
+     "235000",
+     "241000",
+     "245000",
+     "261000",
+     "271000",
+     "229000"
+    ],
+    "lignes": [
+     [
+      "AD",
+      "IMMOBILISATIONS INCORPORELLES",
+      "4",
+      "10 000 000",
+      "2 500 000",
+      "7 500 000"
+     ],
+     [
+      "AE",
+      "Frais de développement et de prospection",
+      "1",
+      "1 000 000",
+      "250 000",
+      "750 000"
+     ],
+     [
+      "AF",
+      "Brevets, licences, logiciels et droits similaires",
+      "1",
+      "2 000 000",
+      "500 000",
+      "1 500 000"
+     ],
+     [
+      "AG",
+      "Fonds commercial et droit au bail",
+      "1",
+      "3 000 000",
+      "750 000",
+      "2 250 000"
+     ],
+     [
+      "AH",
+      "Autres immobilisations incorporelles",
+      "1",
+      "4 000 000",
+      "1 000 000",
+      "3 000 000"
+     ],
+     [
+      "AI",
+      "IMMOBILISATIONS CORPORELLES",
+      "15",
+      "87 700 000",
+      "35 874 999",
+      "51 825 001"
+     ],
+     [
+      "AJ",
+      "Terrains",
+      "1",
+      "5 000 000",
+      "1 250 000",
+      "3 750 000"
+     ],
+     [
+      "AK",
+      "Bâtiments",
+      "1",
+      "6 000 000",
+      "1 500 000",
+      "4 500 000"
+     ],
+     [
+      "AL",
+      "Aménagements, agencements et installations",
+      "1",
+      "7 000 000",
+      "1 750 000",
+      "5 250 000"
+     ],
+     [
+      "AM",
+      "Matériel, mobilier et actifs biologiques",
+      "10",
+      "42 700 000",
+      "25 524 999",
+      "17 175 001"
+     ],
+     [
+      "AN",
+      "Matériel de transport",
+      "2",
+      "27 000 000",
+      "5 850 000",
+      "21 150 000"
+     ],
+     [
+      "AQ",
+      "IMMOBILISATIONS FINANCIÈRES",
+      "2",
+      "21 000 000",
+      "5 250 000",
+      "15 750 000"
+     ],
+     [
+      "AR",
+      "Titres de participation",
+      "1",
+      "10 000 000",
+      "2 500 000",
+      "7 500 000"
+     ],
+     [
+      "AS",
+      "Autres immobilisations financières",
+      "1",
+      "11 000 000",
+      "2 750 000",
+      "8 250 000"
+     ],
+     [
+      "—",
+      "Compte non rattaché à une rubrique du bilan",
+      "1",
+      "12 000 000",
+      "3 000 000",
+      "9 000 000"
+     ],
+     [
+      "AZ",
+      "TOTAL ACTIF IMMOBILISÉ",
+      "22",
+      "130 700 000",
+      "46 624 999",
+      "84 075 001"
+     ]
+    ]
+   },
+   "tiroir": {
+    "texte": "Ambulance médicalisée IM-004 Valeur d’acquisition 18 000 000 FCFA Amortissements cumulés 3 600 000 FCFA Valeur nette comptable 14 400 000 FCFA Référence IM-004 Désignation Ambulance médicalisée Catégorie Matériel de transport Compte 245000 Date d’acquisition 15/09/2025 Durée d’amortissement 5 ans, soit 10 semestres Dotation semestrielle 1 800 000 FCFA Semestres courus 2 / 10 (1 an(s) écoulé(s)) Cession / sortie Au patrimoine Fournisseur MEDIPLUS Équipements État En maintenance Plan d’amortissement — pas SEMESTRIEL PÉRIODE BASE AMORTISSABLE DOTATION AMORT. CUMULÉ VALEUR NETTE COURU S2 2025 18 000 000 1 800 000 1 800 000 16 200 000 Couru S1 2026 18 000 000 1 800 000 3 600 000 14 400 000 Couru S2 2026 18 000 000 1 800 000 5 400 000 12 600 000 À venir S1 2027 18 000 000 1 800 000 7 200 000 10 800 000 À venir S2 2027 18 000 000 1 800 000 9 000 000 9 000 000 À venir S1 2028 18 000 000 1 800 000 10 800 000 7 200 000 À venir S2 2028 18 000 000 1 800 000 12 600 000 5 400 000 À venir S1 2029 18 000 000 1 800 000 14 400 000 3 600 000 À venir S2 2029 18 000 000 1 800 000 16 200 000 1 800 000 À venir S1 2030 18 000 000 1 800 000 18 000 000 0 À venir L’amortissement court de la date d’acquisition à aujourd’hui, par pas de six mois : l’annuité ne se constate qu’à la clôture, et elle donnait le même amortissement à un bien acquis en février et à un bien acquis en novembre. Imprimer Modifier Archiver",
+    "boutons": [
+     "Imprimer",
+     "Modifier",
+     "Archiver"
+    ],
+    "tables": [
+     {
+      "entetes": [
+       "PÉRIODE",
+       "BASE AMORTISSABLE",
+       "DOTATION",
+       "AMORT. CUMULÉ",
+       "VALEUR NETTE",
+       "COURU"
+      ],
+      "lignes": [
+       [
+        "S2 2025",
+        "18 000 000",
+        "1 800 000",
+        "1 800 000",
+        "16 200 000",
+        "Couru"
+       ],
+       [
+        "S1 2026",
+        "18 000 000",
+        "1 800 000",
+        "3 600 000",
+        "14 400 000",
+        "Couru"
+       ],
+       [
+        "S2 2026",
+        "18 000 000",
+        "1 800 000",
+        "5 400 000",
+        "12 600 000",
+        "À venir"
+       ],
+       [
+        "S1 2027",
+        "18 000 000",
+        "1 800 000",
+        "7 200 000",
+        "10 800 000",
+        "À venir"
+       ],
+       [
+        "S2 2027",
+        "18 000 000",
+        "1 800 000",
+        "9 000 000",
+        "9 000 000",
+        "À venir"
+       ],
+       [
+        "S1 2028",
+        "18 000 000",
+        "1 800 000",
+        "10 800 000",
+        "7 200 000",
+        "À venir"
+       ],
+       [
+        "S2 2028",
+        "18 000 000",
+        "1 800 000",
+        "12 600 000",
+        "5 400 000",
+        "À venir"
+       ],
+       [
+        "S1 2029",
+        "18 000 000",
+        "1 800 000",
+        "14 400 000",
+        "3 600 000",
+        "À venir"
+       ],
+       [
+        "S2 2029",
+        "18 000 000",
+        "1 800 000",
+        "16 200 000",
+        "1 800 000",
+        "À venir"
+       ],
+       [
+        "S1 2030",
+        "18 000 000",
+        "1 800 000",
+        "18 000 000",
+        "0",
+        "À venir"
+       ]
+      ]
+     }
+    ]
+   },
+   "pieceFiche": {
+    "titre": "Fiche d’immobilisation & plan d’amortissement",
+    "sousTitre": "Ambulance médicalisée — IM-004",
+    "cartouche": [
+     [
+      "Bien",
+      "Ambulance médicalisée"
+     ],
+     [
+      "Référence",
+      "IM-004"
+     ],
+     [
+      "Catégorie",
+      "Matériel de transport"
+     ],
+     [
+      "Compte d’immobilisation",
+      "245000"
+     ],
+     [
+      "Date d’acquisition",
+      "15/09/2025"
+     ],
+     [
+      "Valeur d’acquisition",
+      "18 000 000 FCFA"
+     ],
+     [
+      "Durée",
+      "5 ans — linéaire, pas semestriel"
+     ],
+     [
+      "Dotation semestrielle",
+      "1 800 000 FCFA"
+     ],
+     [
+      "Semestres courus",
+      "2 / 10"
+     ],
+     [
+      "Amortissements cumulés",
+      "3 600 000 FCFA"
+     ],
+     [
+      "VALEUR NETTE COMPTABLE",
+      "14 400 000 FCFA"
+     ],
+     [
+      "Cession / sortie",
+      "Au patrimoine"
+     ]
+    ],
+    "contenu": "PériodeDotationAmortissement cumuléValeur nette comptableÉtatS2 20251 800 0001 800 00016 200 000CouruS1 20261 800 0003 600 00014 400 000CouruS2 20261 800 0005 400 00012 600 000À venirS1 20271 800 0007 200 00010 800 000À venirS2 20271 800 0009 000 0009 000 000À venirS1 20281 800 00010 800 0007 200 000À venirS2 20281 800 00012 600 0005 400 000À venirS1 20291 800 00014 400 0003 600 000À venirS2 20291 800 00016 200 0001 800 000À venirS1 20301 800 00018 000 0000À venirTOTAL DES DOTATIONS18 000 000Le total des dotations égale la valeur d’acquisition : le dernier semestre solde le reliquat d’arrondi. La valeur nette comptable au 30/10/2026 est de 14 400 000 FCFA — c’est elle qui est reportée à l’actif immobilisé du bilan.",
+    "tables": [
+     {
+      "entetes": [
+       [
+        "Période",
+        "Dotation",
+        "Amortissement cumulé",
+        "Valeur nette comptable",
+        "État"
+       ]
+      ],
+      "lignes": [
+       [
+        "S2 2025",
+        "1 800 000",
+        "1 800 000",
+        "16 200 000",
+        "Couru"
+       ],
+       [
+        "S1 2026",
+        "1 800 000",
+        "3 600 000",
+        "14 400 000",
+        "Couru"
+       ],
+       [
+        "S2 2026",
+        "1 800 000",
+        "5 400 000",
+        "12 600 000",
+        "À venir"
+       ],
+       [
+        "S1 2027",
+        "1 800 000",
+        "7 200 000",
+        "10 800 000",
+        "À venir"
+       ],
+       [
+        "S2 2027",
+        "1 800 000",
+        "9 000 000",
+        "9 000 000",
+        "À venir"
+       ],
+       [
+        "S1 2028",
+        "1 800 000",
+        "10 800 000",
+        "7 200 000",
+        "À venir"
+       ],
+       [
+        "S2 2028",
+        "1 800 000",
+        "12 600 000",
+        "5 400 000",
+        "À venir"
+       ],
+       [
+        "S1 2029",
+        "1 800 000",
+        "14 400 000",
+        "3 600 000",
+        "À venir"
+       ],
+       [
+        "S2 2029",
+        "1 800 000",
+        "16 200 000",
+        "1 800 000",
+        "À venir"
+       ],
+       [
+        "S1 2030",
+        "1 800 000",
+        "18 000 000",
+        "0",
+        "À venir"
+       ]
+      ],
+      "pied": [
+       "TOTAL DES DOTATIONS",
+       "18 000 000",
+       "",
+       "",
+       ""
+      ]
+     }
+    ],
+    "signatures": [
+     {
+      "role": "Le Comptable",
+      "nom": "KASSA Augustin"
+     },
+     {
+      "role": "La Directrice Administrative",
+      "nom": "TAKI Alimatou"
+     }
+    ]
+   },
+   "formulaire": {
+    "texte": "Nouveau immobilisation Les champs marqués d’un astérisque sont obligatoires. Désignation du bien * Catégorie * Matériel médical Matériel de laboratoire Matériel technique Matériel de transport Mobilier médical Matériel informatique Installations Date d’acquisition * Valeur d’acquisition (FCFA) * Durée d’amortissement (années) * Compte d’immobilisation 241000 — Matériel et outillage médical Fournisseur État — Sélectionner — En service En maintenance Hors service Cédé CESSION OU SORTIE DU PATRIMOINE Date de cession / sortie Renseignée, elle ARRÊTE l’amortissement à cette date et sort le bien du bilan. Prix de cession (FCFA) Motif de la sortie — Sélectionner — Cession Réforme Destruction Vol ou perte Don Annuler Créer",
+    "valeurs": [
+     [
+      "designation",
+      ""
+     ],
+     [
+      "categorie",
+      "Matériel médical"
+     ],
+     [
+      "dateAcquisition",
+      "2026-10-30"
+     ],
+     [
+      "valeurAcquisition",
+      ""
+     ],
+     [
+      "dureeAmortissement",
+      "5"
+     ],
+     [
+      "etat",
+      "En service"
+     ]
+    ]
+   },
+   "creation": {
+    "toasts": [
+     {
+      "message": "Nouveau immobilisation créé.",
+      "type": "success",
+      "detail": "IM-011"
+     }
+    ],
+    "ecart": {
+     "inserts": {
+      "immobilisations": [
+       {
+        "statut": "actif",
+        "designation": "Réfrigérateur de laboratoire",
+        "categorie": "Matériel de laboratoire",
+        "dateAcquisition": "2025-03-15",
+        "valeurAcquisition": 1000000,
+        "dureeAmortissement": 4,
+        "compte": "241000",
+        "fournisseur": "",
+        "etat": "En service",
+        "dateCession": "",
+        "valeurCession": null,
+        "motifSortie": "",
+        "reference": "IM-011"
+       }
+      ]
+     },
+     "modifs": {}
+    }
+   },
+   "creeRef": "IM-011",
+   "ligneCree": [
+    "",
+    "IM-011",
+    "Réfrigérateur de laboratoire",
+    "Matériel de laboratoire",
+    "15/03/2025",
+    "1 000 000",
+    "4 ans (8 sem.)",
+    "—",
+    "375 000",
+    "625 000",
+    "En service",
+    ""
+   ],
+   "cession": {
+    "toasts": [
+     {
+      "message": "Modifications enregistrées.",
+      "type": "success",
+      "detail": "IM-011"
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {
+      "immobilisations": [
+       {
+        "cle": "IM-011",
+        "patch": {
+         "dateCession": "2025-12-20",
+         "valeurCession": 400000,
+         "motifSortie": "Cession"
+        }
+       }
+      ]
+     }
+    }
+   },
+   "ligneCedee": [
+    "",
+    "IM-011",
+    "Réfrigérateur de laboratoire",
+    "Matériel de laboratoire",
+    "15/03/2025",
+    "1 000 000",
+    "4 ans (8 sem.)",
+    "20/12/2025 Cession · 400 000",
+    "125 000",
+    "875 000",
+    "En service",
+    ""
+   ],
+   "kpisApresCession": [
+    {
+     "label": "Immobilisations",
+     "valeur": "11",
+     "indice": "1 sortie(s) du patrimoine"
+    },
+    {
+     "label": "Valeur d’acquisition (BRUT)",
+     "valeur": "52 700 000 FCFA",
+     "indice": "Colonne BRUT du bilan — rubrique AI"
+    },
+    {
+     "label": "Amortissements cumulés",
+     "valeur": "27 124 999 FCFA",
+     "indice": "Colonne AMORT. et DÉPRÉC. du bilan"
+    },
+    {
+     "label": "Valeur nette comptable",
+     "valeur": "25 575 001 FCFA",
+     "indice": "Colonne NET du bilan — reportée à l’actif immobilisé"
+    }
+   ],
+   "tiroirCede": {
+    "texte": "Réfrigérateur de laboratoire IM-011 Valeur d’acquisition 1 000 000 FCFA Amortissements cumulés 125 000 FCFA Valeur nette comptable 875 000 FCFA Référence IM-011 Désignation Réfrigérateur de laboratoire Catégorie Matériel de laboratoire Compte 241000 Date d’acquisition 15/03/2025 Durée d’amortissement 4 ans, soit 8 semestres Dotation semestrielle 125 000 FCFA Semestres courus 1 / 8 (0 an(s) écoulé(s)) Cession / sortie 20/12/2025 — Cession, cédé 400 000 FCFA Fournisseur — État En service Bien SORTI du patrimoine le 20/12/2025 : son amortissement est ARRÊTÉ à cette date et il ne figure plus au bilan. La fiche reste au registre — c’est elle qu’on ressort au contrôle. Plan d’amortissement — pas SEMESTRIEL PÉRIODE BASE AMORTISSABLE DOTATION AMORT. CUMULÉ VALEUR NETTE COURU S1 2025 1 000 000 125 000 125 000 875 000 Couru S2 2025 1 000 000 125 000 250 000 750 000 À venir S1 2026 1 000 000 125 000 375 000 625 000 À venir S2 2026 1 000 000 125 000 500 000 500 000 À venir S1 2027 1 000 000 125 000 625 000 375 000 À venir S2 2027 1 000 000 125 000 750 000 250 000 À venir S1 2028 1 000 000 125 000 875 000 125 000 À venir S2 2028 1 000 000 125 000 1 000 000 0 À venir L’amortissement court de la date d’acquisition à aujourd’hui, par pas de six mois : l’annuité ne se constate qu’à la clôture, et elle donnait le même amortissement à un bien acquis en février et à un bien acquis en novembre. Imprimer Modifier Archiver",
+    "tables": [
+     {
+      "lignes": [
+       [
+        "S1 2025",
+        "1 000 000",
+        "125 000",
+        "125 000",
+        "875 000",
+        "Couru"
+       ],
+       [
+        "S2 2025",
+        "1 000 000",
+        "125 000",
+        "250 000",
+        "750 000",
+        "À venir"
+       ],
+       [
+        "S1 2026",
+        "1 000 000",
+        "125 000",
+        "375 000",
+        "625 000",
+        "À venir"
+       ],
+       [
+        "S2 2026",
+        "1 000 000",
+        "125 000",
+        "500 000",
+        "500 000",
+        "À venir"
+       ],
+       [
+        "S1 2027",
+        "1 000 000",
+        "125 000",
+        "625 000",
+        "375 000",
+        "À venir"
+       ],
+       [
+        "S2 2027",
+        "1 000 000",
+        "125 000",
+        "750 000",
+        "250 000",
+        "À venir"
+       ],
+       [
+        "S1 2028",
+        "1 000 000",
+        "125 000",
+        "875 000",
+        "125 000",
+        "À venir"
+       ],
+       [
+        "S2 2028",
+        "1 000 000",
+        "125 000",
+        "1 000 000",
+        "0",
+        "À venir"
+       ]
+      ]
+     }
+    ]
+   },
+   "bilanApresCession": {
+    "kpis": [
+     {
+      "label": "Immobilisations",
+      "valeur": "11",
+      "indice": "1 sortie(s) du patrimoine"
+     },
+     {
+      "label": "Valeur d’acquisition (BRUT)",
+      "valeur": "52 700 000 FCFA",
+      "indice": "Colonne BRUT du bilan — rubrique AI"
+     },
+     {
+      "label": "Amortissements cumulés",
+      "valeur": "27 124 999 FCFA",
+      "indice": "Colonne AMORT. et DÉPRÉC. du bilan"
+     },
+     {
+      "label": "Valeur nette comptable",
+      "valeur": "25 575 001 FCFA",
+      "indice": "Colonne NET du bilan — reportée à l’actif immobilisé"
+     }
+    ],
+    "tables": [
+     {
+      "titre": "Report à l’actif immobilisé — rubrique par rubrique",
+      "entetes": [
+       [
+        "RÉF.",
+        "RUBRIQUE DU BILAN",
+        "BIENS",
+        "BRUT",
+        "AMORT. ET DÉPRÉC.",
+        "NET"
+       ]
+      ],
+      "lignes": [
+       {
+        "cellules": [
+         "AD",
+         "IMMOBILISATIONS INCORPORELLES",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AE",
+         "Frais de développement et de prospection",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AF",
+         "Brevets, licences, logiciels et droits similaires",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AG",
+         "Fonds commercial et droit au bail",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AH",
+         "Autres immobilisations incorporelles",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AI",
+         "IMMOBILISATIONS CORPORELLES",
+         "10",
+         "52 700 000",
+         "27 124 999",
+         "25 575 001"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AJ",
+         "Terrains",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AK",
+         "Bâtiments",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AL",
+         "Aménagements, agencements et installations",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AM",
+         "Matériel, mobilier et actifs biologiques",
+         "9",
+         "34 700 000",
+         "23 524 999",
+         "11 175 001"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AN",
+         "Matériel de transport",
+         "1",
+         "18 000 000",
+         "3 600 000",
+         "14 400 000"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AQ",
+         "IMMOBILISATIONS FINANCIÈRES",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AR",
+         "Titres de participation",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AS",
+         "Autres immobilisations financières",
+         "0",
+         "0",
+         "0",
+         "0"
+        ],
+        "boutons": []
+       },
+       {
+        "cellules": [
+         "AZ",
+         "TOTAL ACTIF IMMOBILISÉ",
+         "10",
+         "52 700 000",
+         "27 124 999",
+         "25 575 001"
+        ],
+        "boutons": []
+       }
+      ]
+     }
+    ],
+    "onglets": [
+     "Tous les immobilisations11",
+     "Report au bilan",
+     "Archivés0"
+    ],
+    "cartes": [
+     "Report à l’actif immobilisé — rubrique par rubrique"
+    ],
+    "boutons": [
+     "Tous les immobilisations11",
+     "Report au bilan",
+     "Archivés0",
+     "Ouvrir les états financiers",
+     "Imprimer le report"
+    ],
+    "notes": [
+     "Ce tableau EST la rubrique « Immobilisations corporelles » (AI) de l’actif du bilan : ses trois colonnes sont celles de la liasse — BRUT, AMORT. et DÉPRÉC., NET. Le rattachement se fait par le compte SYSCOHADA porté par chaque bien, jamais par sa catégorie d’usage.",
+     "1 bien(s) sorti(s) du patrimoine ne figurent PAS dans ce report : un bien cédé n’est plus à l’actif. Ils restent au registre, avec leur date et leur motif de sortie."
+    ]
+   },
+   "archivageDialogue": "Archiver cet enregistrement ? L’enregistrement ne sera pas supprimé : il est archivé et reste consultable dans l’onglet « Archivés ». L’opération est journalisée et peut être annulée. Motif (consigné dans le journal d’audit) Annuler Archiver",
+   "archivage": {
+    "toasts": [
+     {
+      "message": "Enregistrement archivé.",
+      "type": "success",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {
+      "immobilisations": [
+       {
+        "cle": "IM-011",
+        "patch": {
+         "statut": "archive",
+         "_motifArchivage": null
+        }
+       }
+      ]
+     }
+    }
+   }
+  },
+  "m12-banques": {
+   "kpis": [
+    {
+     "label": "Comptes bancaires",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "label": "Rapprochements effectués",
+     "valeur": "18",
+     "indice": null
+    },
+    {
+     "label": "Sans écart",
+     "valeur": "13",
+     "indice": null
+    },
+    {
+     "label": "Avec écart",
+     "valeur": "5",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      [
+       "ÉTABLISSEMENT",
+       "INTITULÉ DU COMPTE",
+       "N° DE COMPTE",
+       "COMPTE SYSCOHADA",
+       "DEVISE",
+       "ÉTAT",
+       "ACTIONS"
+      ]
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Caisse",
+        "Caisse de la clinique",
+        "",
+        "571000",
+        "FCFA",
+        "Actif",
+        ""
+       ],
+       "boutons": [
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "BOA",
+        "Compte courant BOA",
+        "001 40218 001",
+        "521100",
+        "FCFA",
+        "Actif",
+        ""
+       ],
+       "boutons": [
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "Orabank",
+        "Compte courant Orabank",
+        "002 51907 001",
+        "521200",
+        "FCFA",
+        "Actif",
+        ""
+       ],
+       "boutons": [
+        "Modifier",
+        "Archiver"
+       ]
+      },
+      {
+       "cellules": [
+        "Coris Bank",
+        "Compte courant Coris Bank",
+        "003 33184 001",
+        "521300",
+        "FCFA",
+        "Actif",
+        ""
+       ],
+       "boutons": [
+        "Modifier",
+        "Archiver"
+       ]
+      }
+     ]
+    },
+    {
+     "titre": null,
+     "entetes": [
+      [
+       "N°",
+       "BANQUE",
+       "COMPTE",
+       "PÉRIODE",
+       "SOLDE COMPTABLE",
+       "SOLDE RELEVÉ",
+       "ÉCART",
+       "EFFECTUÉ PAR",
+       "ACTIONS"
+      ]
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "RB-0001",
+        "ECOBANK Bénin",
+        "521000",
+        "Mars 2026",
+        "5 417 000",
+        "5 417 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0007",
+        "Bank Of Africa Bénin",
+        "521000",
+        "Mars 2026",
+        "1 816 000",
+        "1 647 000",
+        "-169 000",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0013",
+        "Orabank Bénin",
+        "521000",
+        "Mars 2026",
+        "2 415 000",
+        "2 415 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0003",
+        "ECOBANK Bénin",
+        "521000",
+        "Mai 2026",
+        "8 181 000",
+        "8 181 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0009",
+        "Bank Of Africa Bénin",
+        "521000",
+        "Mai 2026",
+        "7 766 000",
+        "7 766 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0015",
+        "Orabank Bénin",
+        "521000",
+        "Mai 2026",
+        "5 565 000",
+        "5 565 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0004",
+        "ECOBANK Bénin",
+        "521000",
+        "Juin 2026",
+        "1 627 000",
+        "1 555 000",
+        "-72 000",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0010",
+        "Bank Of Africa Bénin",
+        "521000",
+        "Juin 2026",
+        "1 141 000",
+        "1 141 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0016",
+        "Orabank Bénin",
+        "521000",
+        "Juin 2026",
+        "4 555 000",
+        "4 555 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0005",
+        "ECOBANK Bénin",
+        "521000",
+        "Juillet 2026",
+        "765 000",
+        "1 152 000",
+        "+387 000",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0011",
+        "Bank Of Africa Bénin",
+        "521000",
+        "Juillet 2026",
+        "3 953 000",
+        "3 953 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0017",
+        "Orabank Bénin",
+        "521000",
+        "Juillet 2026",
+        "7 000 000",
+        "7 000 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0002",
+        "ECOBANK Bénin",
+        "521000",
+        "Avril 2026",
+        "3 392 000",
+        "3 392 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0008",
+        "Bank Of Africa Bénin",
+        "521000",
+        "Avril 2026",
+        "2 312 000",
+        "2 312 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      },
+      {
+       "cellules": [
+        "RB-0014",
+        "Orabank Bénin",
+        "521000",
+        "Avril 2026",
+        "4 572 000",
+        "4 572 000",
+        "Rapproché",
+        "KASSA Augustin",
+        ""
+       ],
+       "boutons": [
+        "Imprimer l’état"
+       ]
+      }
+     ]
+    }
+   ],
+   "onglets": [],
+   "cartes": [],
+   "boutons": [
+    "Colonnes affichées",
+    "Exporter",
+    "Nouveau",
+    "Tout désélectionner",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Modifier",
+    "Archiver",
+    "Colonnes affichées",
+    "Exporter",
+    "Tout désélectionner",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "Imprimer l’état",
+    "1",
+    "2"
+   ],
+   "notes": [],
+   "filtres": [
+    {
+     "label": "Banque",
+     "options": [
+      [
+       "",
+       "Banque"
+      ],
+      [
+       "Caisse",
+       "Caisse"
+      ],
+      [
+       "BOA",
+       "BOA"
+      ],
+      [
+       "Orabank",
+       "Orabank"
+      ],
+      [
+       "Coris Bank",
+       "Coris Bank"
+      ]
+     ]
+    },
+    {
+     "label": "Résultat",
+     "options": [
+      [
+       "",
+       "Résultat"
+      ],
+      [
+       "rapproche",
+       "Sans écart"
+      ],
+      [
+       "ecart",
+       "Avec écart"
+      ]
+     ]
+    }
+   ],
+   "filtresNb": {
+    "Banque|Caisse": 0,
+    "Banque|BOA": 0,
+    "Banque|Orabank": 0,
+    "Banque|Coris Bank": 0,
+    "Résultat|rapproche": 13,
+    "Résultat|ecart": 5
+   },
+   "pieces": [
+    {
+     "ligne": [
+      "RB-0001",
+      "ECOBANK Bénin",
+      "521000",
+      "Mars 2026",
+      "5 417 000",
+      "5 417 000",
+      "Rapproché",
+      "KASSA Augustin",
+      ""
+     ],
+     "piece": {
+      "titre": "État de rapprochement bancaire",
+      "sousTitre": "ECOBANK Bénin — Mars 2026",
+      "cartouche": [
+       [
+        "Banque",
+        "ECOBANK Bénin"
+       ],
+       [
+        "Compte comptable",
+        "521000"
+       ],
+       [
+        "Période",
+        "Mars 2026"
+       ],
+       [
+        "Référence",
+        "RB-0001"
+       ],
+       [
+        "Effectué par",
+        "KASSA Augustin"
+       ],
+       [
+        "Date d’édition",
+        "30/10/2026"
+       ]
+      ],
+      "contenu": "RubriqueMontantSolde du compte en comptabilité5 417 000Solde du relevé bancaire5 417 000ÉCART CONSTATÉ0Le rapprochement ne fait apparaître aucun écart : la comptabilité et le relevé bancaire concordent.",
+      "tables": [
+       {
+        "entetes": [
+         [
+          "Rubrique",
+          "Montant"
+         ]
+        ],
+        "lignes": [
+         [
+          "Solde du compte en comptabilité",
+          "5 417 000"
+         ],
+         [
+          "Solde du relevé bancaire",
+          "5 417 000"
+         ],
+         [
+          "ÉCART CONSTATÉ",
+          "0"
+         ]
+        ],
+        "pied": []
+       }
+      ],
+      "signatures": [
+       {
+        "role": "Le Comptable",
+        "nom": "KASSA Augustin"
+       },
+       {
+        "role": "La Directrice Administrative",
+        "nom": "TAKI Alimatou"
+       }
+      ]
+     }
+    },
+    {
+     "ligne": [
+      "RB-0007",
+      "Bank Of Africa Bénin",
+      "521000",
+      "Mars 2026",
+      "1 816 000",
+      "1 647 000",
+      "-169 000",
+      "KASSA Augustin",
+      ""
+     ],
+     "piece": {
+      "titre": "État de rapprochement bancaire",
+      "sousTitre": "Bank Of Africa Bénin — Mars 2026",
+      "cartouche": [
+       [
+        "Banque",
+        "Bank Of Africa Bénin"
+       ],
+       [
+        "Compte comptable",
+        "521000"
+       ],
+       [
+        "Période",
+        "Mars 2026"
+       ],
+       [
+        "Référence",
+        "RB-0007"
+       ],
+       [
+        "Effectué par",
+        "KASSA Augustin"
+       ],
+       [
+        "Date d’édition",
+        "30/10/2026"
+       ]
+      ],
+      "contenu": "RubriqueMontantSolde du compte en comptabilité1 816 000Solde du relevé bancaire1 647 000ÉCART CONSTATÉ-169 000Un écart de 169 000 FCFA est constaté. Il doit être justifié (chèques en circulation, virements non encore comptabilisés, frais bancaires) puis régularisé par écriture d’opérations diverses.",
+      "tables": [
+       {
+        "entetes": [
+         [
+          "Rubrique",
+          "Montant"
+         ]
+        ],
+        "lignes": [
+         [
+          "Solde du compte en comptabilité",
+          "1 816 000"
+         ],
+         [
+          "Solde du relevé bancaire",
+          "1 647 000"
+         ],
+         [
+          "ÉCART CONSTATÉ",
+          "-169 000"
+         ]
+        ],
+        "pied": []
+       }
+      ],
+      "signatures": [
+       {
+        "role": "Le Comptable",
+        "nom": "KASSA Augustin"
+       },
+       {
+        "role": "La Directrice Administrative",
+        "nom": "TAKI Alimatou"
+       }
+      ]
+     }
+    }
+   ],
+   "formulaire": {
+    "texte": "Nouveau compte bancaire Les champs marqués d’un astérisque sont obligatoires. Établissement bancaire * Intitulé du compte * Numéro de compte * Compte comptable (SYSCOHADA) * Classe 52 — banques. Sert à l’imputation automatique des mouvements. Devise — Sélectionner — FCFA EUR USD État du compte * Actif Clôturé Annuler Créer",
+    "valeurs": [
+     [
+      "banque",
+      ""
+     ],
+     [
+      "intitule",
+      ""
+     ],
+     [
+      "numeroCompte",
+      ""
+     ],
+     [
+      "compteComptable",
+      "521"
+     ],
+     [
+      "devise",
+      "FCFA"
+     ],
+     [
+      "statutCompte",
+      "actif"
+     ]
+    ],
+    "boutons": [
+     "Annuler",
+     "Créer"
+    ]
+   },
+   "boutonCreer": "Créer",
+   "creation": {
+    "toasts": [
+     {
+      "message": "Compte créé.",
+      "type": "success",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {
+      "banques": [
+       {
+        "statut": "actif",
+        "banque": "Banque Atlantique Bénin",
+        "intitule": "Compte courant BAB",
+        "numeroCompte": "010 20300 55",
+        "compteComptable": "521300",
+        "devise": "FCFA",
+        "statutCompte": "actif"
+       }
+      ]
+     },
+     "modifs": {}
+    }
+   },
+   "sansChamps": {
+    "toasts": [
+     {
+      "message": "Le formulaire comporte des erreurs.",
+      "type": "error",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {}
+    },
+    "modaleOuverte": true,
+    "texte": "Nouveau compte bancaire Les champs marqués d’un astérisque sont obligatoires. Établissement bancaire * Ce champ est obligatoire. Intitulé du compte * Ce champ est obligatoire. Numéro de compte * Ce champ est obligatoire. Compte comptable (SYSCOHADA) * Classe 52 — banques. Sert à l’imputation automatique des mouvements. Devise — Sélectionner — FCFA EUR USD État du compte * Actif Clôturé Annuler Cré"
+   },
+   "creeId": "BQxmvusx17nldpbu",
+   "ligneCreee": {
+    "cellules": [
+     "Banque Atlantique Bénin",
+     "Compte courant BAB",
+     "010 20300 55",
+     "521300",
+     "FCFA",
+     "Actif",
+     ""
+    ],
+    "boutons": [
+     "Modifier",
+     "Archiver"
+    ]
+   },
+   "modification": {
+    "toasts": [
+     {
+      "message": "Modifications enregistrées.",
+      "type": "success",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {
+      "banques": [
+       {
+        "cle": "BQxmvusx17nldpbu",
+        "patch": {
+         "statutCompte": "cloture"
+        }
+       }
+      ]
+     }
+    }
+   },
+   "archivageDialogue": "Archiver cet enregistrement ? Archivage logique (RG-14) : la donnée reste consultable et l’opération est annulable. Motif (consigné dans le journal d’audit) Annuler Archiver",
+   "archivage": {
+    "toasts": [
+     {
+      "message": "Enregistrement archivé.",
+      "type": "success",
+      "detail": null
+     }
+    ],
+    "ecart": {
+     "inserts": {},
+     "modifs": {
+      "banques": [
+       {
+        "cle": "BQxmvusx17nldpbu",
+        "patch": {
+         "statut": "archive",
+         "_motifArchivage": null
+        }
+       }
+      ]
+     }
+    }
    }
   }
  },
- "toastsTotal": 1
+ "toastsTotal": 13
 }

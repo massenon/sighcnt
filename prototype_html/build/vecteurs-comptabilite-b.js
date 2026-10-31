@@ -198,8 +198,8 @@ function litDart(v, ind) {
       {
         const scen = {};
         async function lire(periode, arrete) {
-          const root = await monter('m12-seuil-rentabilite');
           graphiques.length = 0;
+          const root = await monter('m12-seuil-rentabilite');
           if (periode || arrete) {
             const sel = root.querySelector('select'), inp = root.querySelector('input[type=date]');
             if (periode) { sel.value = periode; sel.dispatchEvent(new Event('change', { bubbles: true })); }
@@ -254,6 +254,278 @@ function litDart(v, ind) {
           S.setReglage('naturesCharges', {});
         }
         R['m12-seuil-rentabilite'] = scen;
+      }
+
+      /* ---------- m12-analytique ------------------------------------------------------------------------------------------------------ */
+      {
+        graphiques.length = 0;
+        const root = await monter('m12-analytique');
+        const r = releve(root);
+        r.graphiques = propre(graphiques);
+        const pa = pieces.length;
+        await cliquer(root, /Imprimer la balance analytique/);
+        r.piece = pieces.length > pa ? derniere() : null;
+        R['m12-analytique'] = r; root.remove();
+      }
+
+      /* ---------- m12-budgets ----------------------------------------------------------------------------------------------------------- */
+      {
+        const COL = ['budgets'];
+        const r = {};
+        let root = await monter('m12-budgets');
+        Object.assign(r, releve(root));
+        graphiques.length = 0;
+        await onglet(root, /Budget vs réalisé/);
+        r.suivi = { graphiques: propre(graphiques), texte: texte(root.querySelector('.card-title') ? root : root) .slice(0, 400) };
+        await onglet(root, /Archivés/);
+        r.archives = releve(root);
+        await onglet(root, /Tous les budgets/);
+        // un budget d'un autre exercice : le réalisé suit-il l'exercice du budget ? (le jeu n'en porte qu'un)
+        // création
+        const t0 = toasts.length, avant = instantane(COL);
+        await cliquer(root, /^Nouveau$/);
+        let dlg = dialogue();
+        r.formulaire = { texte: texte(dlg), valeurs: ['exercice', 'centreCout', 'nature', 'prevu'].map((k) => { const e = dlg.querySelector('#f_' + k); return [k, e ? e.value : null]; }) };
+        poser(dlg, 'exercice', '2026'); poser(dlg, 'centreCout', 'maternite'); poser(dlg, 'nature', 'Investissements'); poser(dlg, 'prevu', '1500000');
+        r.boutonsFormulaire = [...dlg.querySelectorAll('button')].map(texte).filter(Boolean);
+        await cliquer(dlg, /^Créer$/);
+        r.creation = { toasts: vuToasts(t0), ecart: ecart(avant, instantane(COL)) };
+        fermerDialogues();
+        // sans montant : refus
+        {
+          const t1 = toasts.length, av = instantane(COL);
+          await cliquer(root, /^Nouveau$/);
+          const d2 = dialogue();
+          poser(d2, 'centreCout', 'maternite'); poser(d2, 'prevu', '');
+          await cliquer(d2, /^Créer$/);
+          r.sansMontant = { toasts: vuToasts(t1), ecart: ecart(av, instantane(COL)), modaleOuverte: !!dialogue(), texte: texte(dialogue() || d2).slice(0, 300) };
+          fermerDialogues();
+        }
+        root.remove();
+        root = await monter('m12-budgets');
+        const cree = db().budgets.find((b) => b.reference && b.nature === 'Investissements' && b.prevu === 1500000);
+        r.creeRef = cree ? cree.reference : null;
+        if (!r.creeRef) throw new Error('budget non créé : ' + JSON.stringify(r.creation) + ' / ' + JSON.stringify(r.sansMontant));
+        const ligneDe = (ref) => [...root.querySelectorAll('table tbody tr')].find((x) => texte(x).indexOf(ref) >= 0);
+        // la seconde création : la référence suit-elle la précédente ?
+        {
+          const av = instantane(COL);
+          await cliquer(root, /^Nouveau$/);
+          const d3 = dialogue();
+          poser(d3, 'centreCout', 'consultation'); poser(d3, 'prevu', '800000');
+          await cliquer(d3, /^Créer$/);
+          r.deuxiemeCreation = { ecart: ecart(av, instantane(COL)) };
+          fermerDialogues();
+        }
+        // modification
+        {
+          const t2 = toasts.length, av = instantane(COL);
+          root.remove(); root = await monter('m12-budgets');
+          const bm = [...ligneDe(r.creeRef).querySelectorAll('button')].find((b) => /Modifier/.test(b.getAttribute('title') || ''));
+          bm.click(); await dormir(150);
+          const d4 = dialogue();
+          r.formulaireModifier = { valeurs: ['exercice', 'centreCout', 'nature', 'prevu'].map((k) => { const e = d4.querySelector('#f_' + k); return [k, e ? e.value : null]; }) };
+          poser(d4, 'prevu', '2000000'); poser(d4, 'nature', 'Charges de personnel');
+          await cliquer(d4, /^Enregistrer$/);
+          r.modification = { toasts: vuToasts(t2), ecart: ecart(av, instantane(COL)) };
+          fermerDialogues();
+        }
+        // tiroir
+        root.remove(); root = await monter('m12-budgets');
+        ligneDe(r.creeRef).click(); await dormir(200);
+        r.tiroir = { texte: texte(dialogue()), boutons: [...dialogue().querySelectorAll('button')].map(texte).filter(Boolean) };
+        fermerDialogues();
+        // archivage
+        {
+          const t3 = toasts.length, av = instantane(COL);
+          const ba = [...ligneDe(r.creeRef).querySelectorAll('button')].find((b) => /Archiver/.test(b.getAttribute('title') || ''));
+          ba.click(); await dormir(150);
+          const dc = dialogue(); r.archivageDialogue = texte(dc);
+          await cliquer(dc, /^Archiver$/);
+          r.archivage = { toasts: vuToasts(t3), ecart: ecart(av, instantane(COL)) };
+          fermerDialogues();
+        }
+        R['m12-budgets'] = r; root.remove(); poserJeu();
+      }
+
+      /* ---------- m12-immobilisations -------------------------------------------------------------------------------------------------- */
+      {
+        const COL = ['immobilisations'];
+        const r = {};
+        let root = await monter('m12-immobilisations');
+        Object.assign(r, releve(root));
+        r.filtres = [...root.querySelectorAll('select[aria-label]')].map((s) => ({ label: s.getAttribute('aria-label'), options: [...s.options].map((o) => [o.value, texte(o)]) }));
+        const f = {};
+        for (const fl of r.filtres) {
+          for (const [val] of fl.options) {
+            if (val === '') continue;
+            await filtrer(root, fl.label, val);
+            f[fl.label + '|' + val] = [...root.querySelectorAll('table tbody tr')].length;
+          }
+          await filtrer(root, fl.label, '');
+        }
+        r.filtresNb = f;
+        await onglet(root, /Report au bilan/);
+        r.bilan = releve(root);
+        { const pa = pieces.length; await cliquer(root, /Imprimer le report/); r.pieceReport = pieces.length > pa ? derniere() : null; }
+        await onglet(root, /Archivés/);
+        r.archives = releve(root);
+        await onglet(root, /Tous les immobilisations/);
+        // un bien par rubrique du bilan (comptes de classe 2), relus au rapport : le rattachement se fait par le COMPTE, jamais par la catégorie
+        {
+          const avantRub = propre(db().immobilisations);
+          const comptes = ['211000', '213000', '215000', '217000', '221000', '231100', '235000', '241000', '245000', '261000', '271000', '229000'];
+          comptes.forEach((cpt, i) => {
+            db().immobilisations.unshift({ id: 'IMMX' + i, statut: 'actif', reference: 'IX-' + (i + 1), designation: 'Bien ' + cpt, categorie: 'Installations',
+              valeurAcquisition: 1000000 * (i + 1), dureeAmortissement: 2, compte: cpt, dateAcquisition: '2026-01-10', etat: 'En service' });
+          });
+          const rt = await monter('m12-immobilisations');
+          await onglet(rt, /Report au bilan/);
+          r.bilanParCompte = { comptes, lignes: [...rt.querySelectorAll('table tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)) };
+          rt.remove();
+          db().immobilisations.splice(0, db().immobilisations.length, ...avantRub);
+        }
+        // tiroir du premier bien + impression de la fiche
+        root.querySelectorAll('table tbody tr')[0].click(); await dormir(250);
+        {
+          const d = dialogue();
+          r.tiroir = { texte: texte(d), boutons: [...d.querySelectorAll('button')].map(texte).filter(Boolean),
+            tables: [...d.querySelectorAll('table')].map((tb) => ({ entetes: [...tb.querySelectorAll('thead th')].map(texte), lignes: [...tb.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)) })) };
+          const pa = pieces.length;
+          await cliquer(d, /^Imprimer$/);
+          r.pieceFiche = pieces.length > pa ? derniere() : null;
+          fermerDialogues();
+        }
+        // création d'un bien, puis cession
+        const t0 = toasts.length, avant = instantane(COL);
+        await cliquer(root, /^Nouveau$/);
+        let dlg = dialogue();
+        r.formulaire = { texte: texte(dlg), valeurs: ['designation', 'categorie', 'dateAcquisition', 'valeurAcquisition', 'dureeAmortissement', 'etat'].map((k) => { const e = dlg.querySelector('#f_' + k); return [k, e ? e.value : null]; }) };
+        poser(dlg, 'designation', 'Réfrigérateur de laboratoire'); poser(dlg, 'categorie', 'Matériel de laboratoire');
+        poser(dlg, 'dateAcquisition', '2025-03-15'); poser(dlg, 'valeurAcquisition', '1000000'); poser(dlg, 'dureeAmortissement', '4');
+        await cliquer(dlg, /^Créer$/);
+        r.creation = { toasts: vuToasts(t0), ecart: ecart(avant, instantane(COL)) };
+        fermerDialogues();
+        const cree = db().immobilisations.find((b) => b.designation === 'Réfrigérateur de laboratoire');
+        r.creeRef = cree ? cree.reference : null;
+        root.remove(); root = await monter('m12-immobilisations');
+        const ligneDe = (ref) => [...root.querySelectorAll('table tbody tr')].find((x) => texte(x).indexOf(ref) >= 0);
+        r.ligneCree = ligneDe(r.creeRef) ? [...ligneDe(r.creeRef).querySelectorAll('td')].map(texte) : null;
+        // cession : l'amortissement s'ARRÊTE à la date de sortie, le bien quitte le bilan
+        {
+          const t1 = toasts.length, av = instantane(COL);
+          const bm = [...ligneDe(r.creeRef).querySelectorAll('button')].find((b) => /Modifier/.test(b.getAttribute('title') || ''));
+          bm.click(); await dormir(150);
+          const d4 = dialogue();
+          poser(d4, 'dateCession', '2025-12-20'); poser(d4, 'motifSortie', 'Cession'); poser(d4, 'valeurCession', '400000');
+          await cliquer(d4, /^Enregistrer$/);
+          r.cession = { toasts: vuToasts(t1), ecart: ecart(av, instantane(COL)) };
+          fermerDialogues();
+        }
+        root.remove(); root = await monter('m12-immobilisations');
+        r.ligneCedee = ligneDe(r.creeRef) ? [...ligneDe(r.creeRef).querySelectorAll('td')].map(texte) : null;
+        r.kpisApresCession = releve(root).kpis;
+        ligneDe(r.creeRef).click(); await dormir(250);
+        r.tiroirCede = { texte: texte(dialogue()), tables: [...dialogue().querySelectorAll('table')].map((tb) => ({ lignes: [...tb.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)) })) };
+        fermerDialogues();
+        await onglet(root, /Report au bilan/);
+        r.bilanApresCession = releve(root);
+        await onglet(root, /Tous les immobilisations/);
+        // archivage
+        {
+          const t3 = toasts.length, av = instantane(COL);
+          const ba = [...ligneDe(r.creeRef).querySelectorAll('button')].find((b) => /Archiver/.test(b.getAttribute('title') || ''));
+          ba.click(); await dormir(150);
+          const dc = dialogue(); r.archivageDialogue = texte(dc);
+          await cliquer(dc, /^Archiver$/);
+          r.archivage = { toasts: vuToasts(t3), ecart: ecart(av, instantane(COL)) };
+          fermerDialogues();
+        }
+        R['m12-immobilisations'] = r; root.remove(); poserJeu();
+      }
+
+      /* ---------- m12-banques ----------------------------------------------------------------------------------------------------------- */
+      {
+        const COL = ['banques'];
+        const r = {};
+        let root = await monter('m12-banques');
+        Object.assign(r, releve(root));
+        r.filtres = [...root.querySelectorAll('select[aria-label]')].map((s) => ({ label: s.getAttribute('aria-label'), options: [...s.options].map((o) => [o.value, texte(o)]) }));
+        const f = {};
+        for (const fl of r.filtres) {
+          for (const [val] of fl.options) {
+            if (val === '') continue;
+            await filtrer(root, fl.label, val);
+            const tbs = [...root.querySelectorAll('table')];
+            f[fl.label + '|' + val] = tbs.length > 1 ? tbs[1].querySelectorAll('tbody tr').length : 0;
+          }
+          await filtrer(root, fl.label, '');
+        }
+        r.filtresNb = f;
+        // impression d'un rapprochement avec écart, d'un autre sans écart
+        const rapRows = [...root.querySelectorAll('table')[1].querySelectorAll('tbody tr')];
+        r.pieces = [];
+        for (const sel of [(x) => /Rapproché/.test(texte(x)), (x) => !/Rapproché/.test(texte(x))]) {
+          const tr = rapRows.find(sel);
+          if (!tr) continue;
+          const pa = pieces.length;
+          const b = [...tr.querySelectorAll('button')].find((x) => /Imprimer/.test(x.getAttribute('title') || ''));
+          b.click(); await dormir(120);
+          r.pieces.push({ ligne: [...tr.querySelectorAll('td')].map(texte), piece: pieces.length > pa ? derniere() : null });
+        }
+        // création d'un compte bancaire
+        const t0 = toasts.length, avant = instantane(COL);
+        await cliquer(root, /^Nouveau$/);
+        let dlg = dialogue();
+        r.formulaire = { texte: texte(dlg), valeurs: ['banque', 'intitule', 'numeroCompte', 'compteComptable', 'devise', 'statutCompte'].map((k) => { const e = dlg.querySelector('#f_' + k); return [k, e ? e.value : null]; }), boutons: [...dlg.querySelectorAll('button')].map(texte).filter(Boolean) };
+        poser(dlg, 'banque', 'Banque Atlantique Bénin'); poser(dlg, 'intitule', 'Compte courant BAB'); poser(dlg, 'numeroCompte', '010 20300 55');
+        poser(dlg, 'compteComptable', '521300');
+        const bc = [...dlg.querySelectorAll('button')].find((b) => /^(Créer|Enregistrer|Ajouter)$/.test(texte(b)));
+        r.boutonCreer = bc ? texte(bc) : null;
+        bc.click(); await dormir(200);
+        r.creation = { toasts: vuToasts(t0), ecart: ecart(avant, instantane(COL)) };
+        fermerDialogues();
+        // champs obligatoires
+        {
+          const av = instantane(COL), t1 = toasts.length;
+          await cliquer(root, /^Nouveau$/);
+          const d2 = dialogue();
+          const bc2 = [...d2.querySelectorAll('button')].find((b) => /^(Créer|Enregistrer|Ajouter)$/.test(texte(b)));
+          bc2.click(); await dormir(150);
+          r.sansChamps = { toasts: vuToasts(t1), ecart: ecart(av, instantane(COL)), modaleOuverte: !!dialogue(), texte: texte(dialogue() || d2).slice(0, 400) };
+          fermerDialogues();
+        }
+        root.remove(); root = await monter('m12-banques');
+        const cree = db().banques.find((b) => b.banque === 'Banque Atlantique Bénin');
+        const t2 = toasts.length;
+        r.creeId = cree ? cree.id : null;
+        const ligneB = () => [...root.querySelectorAll('table')[0].querySelectorAll('tbody tr')].find((x) => texte(x).indexOf('Banque Atlantique') >= 0);
+        r.ligneCreee = ligneB() ? { cellules: [...ligneB().querySelectorAll('td')].map(texte), boutons: [...ligneB().querySelectorAll('button')].map((b) => b.getAttribute('title')) } : null;
+        // modification : clôturer le compte
+        {
+          const av = instantane(COL), t3 = toasts.length;
+          const bm = [...ligneB().querySelectorAll('button')].find((b) => /Modifier/.test(b.getAttribute('title') || ''));
+          bm.click(); await dormir(150);
+          const d3 = dialogue();
+          poser(d3, 'statutCompte', 'cloture');
+          const bs = [...d3.querySelectorAll('button')].find((b) => /^(Enregistrer|Créer)$/.test(texte(b)));
+          bs.click(); await dormir(150);
+          r.modification = { toasts: vuToasts(t3), ecart: ecart(av, instantane(COL)) };
+          fermerDialogues();
+        }
+        // archivage
+        {
+          const av = instantane(COL), t4 = toasts.length;
+          root.remove(); root = await monter('m12-banques');
+          const ba = [...ligneB().querySelectorAll('button')].find((b) => /Archiver/.test(b.getAttribute('title') || ''));
+          ba.click(); await dormir(150);
+          const dc = dialogue(); r.archivageDialogue = texte(dc);
+          const bo = [...dc.querySelectorAll('button')].find((b) => /^Archiver$/.test(texte(b)));
+          bo.click(); await dormir(200);
+          r.archivage = { toasts: vuToasts(t4), ecart: ecart(av, instantane(COL)) };
+          fermerDialogues();
+        }
+        R['m12-banques'] = r; root.remove(); poserJeu();
       }
 
       return { referentiels, donnees, ecrans: R, toastsTotal: toasts.length };
