@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
 
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+
 import '../core/controleur_poste.dart';
 import '../core/theme.dart';
+import '../kit/kit.dart';
 import '../mere/activation.dart';
+import '../shell/contexte_ecran.dart';
 
 /// « Ce poste » : où l'on active le MODE MÈRE sur le serveur local, et où on le désactive. Réservé à l'administrateur
 /// et à la DAF. Un seul poste peut être mère : le relais refuse la deuxième déclaration en nommant la première.
-class ReglagesPoste extends StatefulWidget {
+class ReglagesPoste extends StatefulWidget with EcranMaquette {
   const ReglagesPoste({super.key, required this.controleur});
   final ControleurPoste controleur;
+
+  // L'en-tête de `cfg-poste` de la maquette (titre, description, règle) : le mode du poste se lit en deux indicateurs, puis la note de ce qu'il exige.
+  @override
+  String get titre => 'Ce poste';
+  @override
+  String get description => 'Mode du poste : fileul ou mère. La mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes).';
+  @override
+  String get regle =>
+      'Il ne peut y avoir qu’un seul poste mère par clinique : le relais refuse une seconde déclaration en nommant la première. L’activation est atomique : si le service ne démarre pas, le poste reste fileul.';
 
   @override
   State<ReglagesPoste> createState() => _ReglagesPosteState();
@@ -66,9 +79,21 @@ class _ReglagesPosteState extends State<ReglagesPoste> {
       listenable: widget.controleur,
       builder: (context, _) {
         final c = widget.controleur.config;
-        return ListView(padding: const EdgeInsets.all(16), children: [
-          Text('Ce poste', style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
+        return ListView(shrinkWrap: true, padding: const EdgeInsets.all(16), children: [
+          KpiGrilleSigh(kpis: [
+            KpiSigh(
+                libelle: 'Mode de ce poste',
+                valeur: c.estMere ? 'Mère' : 'Fileul',
+                icone: c.estMere ? LucideIcons.server : LucideIcons.monitor,
+                ton: c.estMere ? TonSigh.succes : TonSigh.navy),
+            KpiSigh(libelle: 'Service de synchronisation', valeur: c.estMere ? 'En marche' : 'Arrêté', icone: LucideIcons.power, ton: c.estMere ? TonSigh.succes : TonSigh.neutre),
+          ]),
+          const SizedBox(height: 16),
+          if (!c.estMere)
+            const NoteSigh('À faire sur le serveur local uniquement. Exige l’adresse du relais, le secret de la mère et la clé de clinique.')
+          else
+            const NoteSigh('Les modules du groupe Poste mère sont maintenant disponibles pour l’administrateur et la DAF.', ton: TonSigh.succes, icone: LucideIcons.check),
+          const SizedBox(height: 12),
           Card(
             child: ListTile(
               leading: Icon(c.estMere ? Icons.dns : Icons.computer,
@@ -95,7 +120,7 @@ class _ReglagesPosteState extends State<ReglagesPoste> {
                 style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 4),
             const Text(
-                'À faire sur le SERVEUR local uniquement. Exige le secret de la mère (relais) et la clé de clinique.'),
+                'Le relais déclare la mère : il exige le secret de la mère et la clé de clinique, saisis ici et jamais conservés dans le fichier des réglages.'),
             const SizedBox(height: 8),
             TextField(
                 key: const Key('relais'),

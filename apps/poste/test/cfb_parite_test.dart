@@ -25,6 +25,9 @@ const ecransMesures = [
   'cfg-regles',
   'cfg-fiscalite',
   'cfg-comptabilite',
+  'cfg-notifications',
+  'cfg-compte',
+  'cfg-poste',
 ];
 
 void main() {

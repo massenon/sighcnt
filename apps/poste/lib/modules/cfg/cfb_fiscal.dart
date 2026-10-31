@@ -19,8 +19,6 @@ class EcranFiscalite extends StatelessWidget with EcranMaquette {
   String get titre => 'Paramètres fiscaux (IFU / RCCM)';
   @override
   String get description => 'Identifiants fiscaux, numérotation des documents et paramètres de la facturation normalisée.';
-  @override
-  String get regle => 'Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.';
 
   @override
   Widget build(BuildContext context) {
