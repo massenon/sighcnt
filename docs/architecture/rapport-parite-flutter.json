@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 229,
+ "ecrans_portes": 270,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -116,6 +116,198 @@
    "mesure": true,
    "attendus": 14,
    "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-admin",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-admin-agent",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-aide-comptable",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-aide-soignant",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-ambulancier",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-anesthesiste",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-assistant-comptable",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-caissier",
+   "mesure": true,
+   "attendus": 31,
+   "presents": 31,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-chirurgien",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-comptable",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-croise",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-da",
+   "mesure": true,
+   "attendus": 29,
+   "presents": 29,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-direction",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-echographiste",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-infirmier",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-laborantin",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-maternite",
+   "mesure": true,
+   "attendus": 35,
+   "presents": 35,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-medecin",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-patient",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-pharmacien",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-receptionniste",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-rh",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-stock",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "dash-surveillant",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
    "taux": 1.0,
    "manquants": []
   },
@@ -261,6 +453,46 @@
    "manquants": []
   },
   {
+   "id": "m10-assurance-personnel",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges-impression",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges-modeles",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-badges-verification",
+   "mesure": true,
+   "attendus": 6,
+   "presents": 6,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m10-conges",
    "mesure": true,
    "attendus": 25,
@@ -273,6 +505,14 @@
    "mesure": true,
    "attendus": 21,
    "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-cout-agent",
+   "mesure": true,
+   "attendus": 6,
+   "presents": 6,
    "taux": 1.0,
    "manquants": []
   },
@@ -301,6 +541,14 @@
    "manquants": []
   },
   {
+   "id": "m10-evenements",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m10-fiches-poste",
    "mesure": true,
    "attendus": 15,
@@ -313,6 +561,14 @@
    "mesure": true,
    "attendus": 17,
    "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-participations",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
    "taux": 1.0,
    "manquants": []
   },
@@ -361,6 +617,14 @@
    "mesure": true,
    "attendus": 20,
    "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m10-securite-entretien",
+   "mesure": true,
+   "attendus": 39,
+   "presents": 39,
    "taux": 1.0,
    "manquants": []
   },
@@ -621,10 +885,26 @@
    "manquants": []
   },
   {
+   "id": "m12-rentabilite-groupes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m12-seuil-rentabilite",
    "mesure": true,
    "attendus": 19,
    "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m12-tableau-decisionnel",
+   "mesure": true,
+   "attendus": 26,
+   "presents": 26,
    "taux": 1.0,
    "manquants": []
   },
@@ -957,6 +1237,22 @@
    "manquants": []
   },
   {
+   "id": "m2-stats-consultations",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m2-stats-echographie",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m2-visites",
    "mesure": true,
    "attendus": 4,
@@ -1097,6 +1393,22 @@
    "mesure": true,
    "attendus": 17,
    "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-stats-bloc",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m3-stats-hospitalisations",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
    "taux": 1.0,
    "manquants": []
   },
@@ -1245,11 +1557,19 @@
    "manquants": []
   },
   {
+   "id": "m4-stats-maternite",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m5-banque-sang",
    "mesure": true,
    "attendus": 20,
-   "presents": 2,
-   "taux": 0.1,
+   "presents": 4,
+   "taux": 0.2,
    "manquants": [
     "banque de sang",
     "gestion des poches de sang par groupe, dates de péremption et demandes de transfusion.",
@@ -1259,9 +1579,7 @@
     "périmées à détruire",
     "n° poche",
     "volume",
-    "prélèvement",
     "péremption",
-    "reste",
     "donneur",
     "réservée",
     "bon de demande de sang",
@@ -1383,6 +1701,14 @@
    "mesure": true,
    "attendus": 16,
    "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m5-stats-examens",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
@@ -1862,15 +2188,14 @@
    "id": "mere-conflits",
    "mesure": true,
    "attendus": 17,
-   "presents": 1,
-   "taux": 0.059,
+   "presents": 2,
+   "taux": 0.118,
    "manquants": [
     "ce que la mère ne peut pas trancher seule : même champ modifié sur deux postes, homonymes créés hors ligne.",
     "ouverts",
     "doublons possibles",
     "tranchés (30 j)",
     "n°",
-    "fiche",
     "champ",
     "version a",
     "version b",
@@ -1920,8 +2245,8 @@
    "id": "mere-supervision",
    "mesure": true,
    "attendus": 12,
-   "presents": 2,
-   "taux": 0.167,
+   "presents": 3,
+   "taux": 0.25,
    "manquants": [
     "santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité.",
     "santé de la mère",
@@ -1929,7 +2254,6 @@
     "retard vers le relais",
     "contrôle",
     "état",
-    "détail",
     "sauvegarder maintenant",
     "actualiser",
     "contrôles"
