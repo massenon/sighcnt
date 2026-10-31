@@ -1,0 +1,2641 @@
+{
+ "connexion": {
+  "textes": [
+   "CLINIQUE NASSIERA TOO",
+   "Natitingou — République du Bénin",
+   "Système Intégré de Gestion Hospitalière",
+   "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+   "Traçabilité intégrale des actions (journal d’audit)",
+   "Alertes de rupture et de péremption automatiques (FEFO)",
+   "Facture normalisée conforme au dispositif MECeF",
+   "Comptabilité SYSCOHADA alimentée automatiquement",
+   "« Votre santé, notre raison de vivre »",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+   "CLINIQUE NASSIERA TOO",
+   "Votre santé, notre raison de vivre",
+   "Connexion",
+   "Authentification individuelle obligatoire — aucun compte partagé (CDCT §12.2).",
+   "Identifiant",
+   "Mot de passe",
+   "Mot de passe oublié ?",
+   "Se souvenir de ce poste",
+   "Identifiant ou mot de passe incorrect.",
+   "Se connecter",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
+  ],
+  "essaisVides": [
+   {
+    "texte": "Identifiant et mot de passe obligatoires (tentative 1 sur 3).",
+    "visible": true
+   },
+   {
+    "texte": "Identifiant et mot de passe obligatoires (tentative 2 sur 3).",
+    "visible": true
+   },
+   {
+    "texte": "Trois tentatives infructueuses. Conformément à la politique de sécurité, le compte serait verrouillé et l’événement journalisé.",
+    "visible": true
+   }
+  ],
+  "refusServeur": {
+   "texte": "Identifiant ou mot de passe incorrect.",
+   "visible": true
+  },
+  "champs": [
+   {
+    "id": "identifiant",
+    "type": "text",
+    "valeur": "inconnu.xyz",
+    "placeholder": "prenom.nom",
+    "requis": true,
+    "autocomplete": "username"
+   },
+   {
+    "id": "motdepasse",
+    "type": "password",
+    "valeur": "faux",
+    "placeholder": "••••••••",
+    "requis": true,
+    "autocomplete": "current-password"
+   },
+   {
+    "id": null,
+    "type": "checkbox",
+    "valeur": "on",
+    "placeholder": "",
+    "requis": false,
+    "autocomplete": null
+   }
+  ],
+  "nbSelect": 0,
+  "nbLiens": [
+   {
+    "texte": "Mot de passe oublié ?",
+    "href": "pages/auth-forgot.php"
+   }
+  ],
+  "bascule": {
+   "avant": "password",
+   "apres": "text"
+  },
+  "mentions": [
+   "CLINIQUE NASSIERA TOO",
+   "Natitingou — République du Bénin",
+   "Système Intégré de Gestion Hospitalière",
+   "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+   "Traçabilité intégrale des actions (journal d’audit)",
+   "Alertes de rupture et de péremption automatiques (FEFO)",
+   "Facture normalisée conforme au dispositif MECeF",
+   "Comptabilité SYSCOHADA alimentée automatiquement",
+   "« Votre santé, notre raison de vivre »",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268"
+  ]
+ },
+ "oubli": {
+  "textes": [
+   "CLINIQUE NASSIERA TOO",
+   "Natitingou — République du Bénin",
+   "Système Intégré de Gestion Hospitalière",
+   "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+   "Traçabilité intégrale des actions (journal d’audit)",
+   "Alertes de rupture et de péremption automatiques (FEFO)",
+   "Facture normalisée conforme au dispositif MECeF",
+   "Comptabilité SYSCOHADA alimentée automatiquement",
+   "« Votre santé, notre raison de vivre »",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+   "CLINIQUE NASSIERA TOO",
+   "Votre santé, notre raison de vivre",
+   "Mot de passe oublié",
+   "La réinitialisation est prise en charge par l’Administrateur système et journalisée.",
+   "Identifiant ou adresse électronique",
+   "Envoyer les instructions",
+   "← Retour à la connexion",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
+  ],
+  "champ": {
+   "requis": true,
+   "placeholder": "prenom.nom"
+  },
+  "toasts": [
+   {
+    "titre": "Demande transmise à l’administrateur système.",
+    "detail": "La réinitialisation est effectuée par l’Administrateur (CDCT §12.2)."
+   }
+  ],
+  "navigation": [
+   "pages/auth-reset.php"
+  ]
+ },
+ "reinit": {
+  "textes": [
+   "CLINIQUE NASSIERA TOO",
+   "Natitingou — République du Bénin",
+   "Système Intégré de Gestion Hospitalière",
+   "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+   "Traçabilité intégrale des actions (journal d’audit)",
+   "Alertes de rupture et de péremption automatiques (FEFO)",
+   "Facture normalisée conforme au dispositif MECeF",
+   "Comptabilité SYSCOHADA alimentée automatiquement",
+   "« Votre santé, notre raison de vivre »",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+   "CLINIQUE NASSIERA TOO",
+   "Votre santé, notre raison de vivre",
+   "Réinitialiser le mot de passe",
+   "Politique de mot de passe de la clinique (CDCT §12.2).",
+   "Nouveau mot de passe",
+   "Confirmer le mot de passe",
+   "12 caractères minimum",
+   "Au moins une majuscule et une minuscule",
+   "Au moins un chiffre et un caractère spécial",
+   "Renouvellement obligatoire tous les 90 jours",
+   "Définir le mot de passe",
+   "← Retour à la connexion",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
+  ],
+  "discordance": [
+   {
+    "titre": "Les deux mots de passe ne correspondent pas.",
+    "detail": ""
+   }
+  ],
+  "navDiscordance": [],
+  "faible": [
+   {
+    "titre": "Mot de passe mis à jour.",
+    "detail": ""
+   }
+  ],
+  "navFaible": [
+   "index.php"
+  ],
+  "ok": [
+   {
+    "titre": "Mot de passe mis à jour.",
+    "detail": ""
+   }
+  ],
+  "navigation": [
+   "index.php"
+  ],
+  "regles": [
+   "12 caractères minimum",
+   "Au moins une majuscule et une minuscule",
+   "Au moins un chiffre et un caractère spécial",
+   "Renouvellement obligatoire tous les 90 jours"
+  ]
+ },
+ "doubleFacteur": {
+  "textes": [
+   "CLINIQUE NASSIERA TOO",
+   "Natitingou — République du Bénin",
+   "Système Intégré de Gestion Hospitalière",
+   "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+   "Traçabilité intégrale des actions (journal d’audit)",
+   "Alertes de rupture et de péremption automatiques (FEFO)",
+   "Facture normalisée conforme au dispositif MECeF",
+   "Comptabilité SYSCOHADA alimentée automatiquement",
+   "« Votre santé, notre raison de vivre »",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+   "CLINIQUE NASSIERA TOO",
+   "Votre santé, notre raison de vivre",
+   "Vérification en 2 étapes",
+   "Exigée pour les profils à privilèges élevés : Administrateur et Direction (CDCT §12.2).",
+   "Vérifier",
+   "Code non reçu ? Un nouvel envoi est possible dans 30 secondes.",
+   "← Utiliser un autre compte",
+   "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
+  ],
+  "nbCases": 6,
+  "maxlength": 1,
+  "mode": "numeric",
+  "etiquettes": [
+   "Chiffre 1",
+   "Chiffre 2",
+   "Chiffre 3",
+   "Chiffre 4",
+   "Chiffre 5",
+   "Chiffre 6"
+  ],
+  "focusApresSaisie": true,
+  "toasts": [
+   {
+    "titre": "Vérification réussie.",
+    "detail": ""
+   }
+  ],
+  "navigation": [
+   "pages/dash-receptionniste.php"
+  ],
+  "retourSansSession": null
+ },
+ "erreurs": {
+  "error-404": {
+   "textes": [
+    "404",
+    "Page introuvable",
+    "L’écran demandé n’existe pas ou a été déplacé. Utiliser le plan du site pour retrouver le module recherché.",
+    "Retour à l’accueil",
+    "Plan du site",
+    "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
+   ],
+   "liensConnecte": [
+    {
+     "texte": "Retour à l’accueil",
+     "href": "pages/dash-receptionniste.php"
+    },
+    {
+     "texte": "Plan du site",
+     "href": "pages/plan-du-site.php"
+    }
+   ],
+   "lienAccueilDeconnecte": [
+    {
+     "texte": "Retour à l’accueil",
+     "href": "index.php"
+    },
+    {
+     "texte": "Plan du site",
+     "href": "pages/plan-du-site.php"
+    }
+   ],
+   "roleAccueil": "dash-receptionniste"
+  },
+  "error-403": {
+   "textes": [
+    "403",
+    "Accès refusé",
+    "Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.",
+    "Retour à l’accueil",
+    "Plan du site",
+    "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
+   ],
+   "liensConnecte": [
+    {
+     "texte": "Retour à l’accueil",
+     "href": "pages/dash-receptionniste.php"
+    },
+    {
+     "texte": "Plan du site",
+     "href": "pages/plan-du-site.php"
+    }
+   ],
+   "lienAccueilDeconnecte": [
+    {
+     "texte": "Retour à l’accueil",
+     "href": "index.php"
+    },
+    {
+     "texte": "Plan du site",
+     "href": "pages/plan-du-site.php"
+    }
+   ],
+   "roleAccueil": "dash-receptionniste"
+  }
+ },
+ "verrou": {
+  "avecRetour": {
+   "textes": [
+    "CLINIQUE NASSIERA TOO",
+    "Natitingou — République du Bénin",
+    "Système Intégré de Gestion Hospitalière",
+    "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+    "Traçabilité intégrale des actions (journal d’audit)",
+    "Alertes de rupture et de péremption automatiques (FEFO)",
+    "Facture normalisée conforme au dispositif MECeF",
+    "Comptabilité SYSCOHADA alimentée automatiquement",
+    "« Votre santé, notre raison de vivre »",
+    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+    "CLINIQUE NASSIERA TOO",
+    "Votre santé, notre raison de vivre",
+    "Session verrouillée",
+    "Verrouillage automatique après 15 minutes d’inactivité, sur les postes partagés — accueil et caisse (CDCT §12.2).",
+    "EZIN Orou",
+    "Réception / Accueil",
+    "Votre session est suspendue, pas fermée.",
+    "Au déverrouillage, vous reviendrez sur « Agenda ».",
+    "Mot de passe",
+    "Déverrouiller",
+    "Se connecter avec un autre compte",
+    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
+   ],
+   "retourPresentAvant": true,
+   "navigation": [
+    "m2-agenda.php#onglet=semaine"
+   ],
+   "retourConsommeApres": true,
+   "journal": {
+    "action": "Déverrouillage de session",
+    "module": "M14",
+    "entite": "Session",
+    "reference": "e.orou",
+    "apres": null
+   }
+  },
+  "sansRetour": {
+   "textes": [
+    "CLINIQUE NASSIERA TOO",
+    "Natitingou — République du Bénin",
+    "Système Intégré de Gestion Hospitalière",
+    "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+    "Traçabilité intégrale des actions (journal d’audit)",
+    "Alertes de rupture et de péremption automatiques (FEFO)",
+    "Facture normalisée conforme au dispositif MECeF",
+    "Comptabilité SYSCOHADA alimentée automatiquement",
+    "« Votre santé, notre raison de vivre »",
+    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+    "CLINIQUE NASSIERA TOO",
+    "Votre santé, notre raison de vivre",
+    "Session verrouillée",
+    "Verrouillage automatique après 15 minutes d’inactivité, sur les postes partagés — accueil et caisse (CDCT §12.2).",
+    "EZIN Orou",
+    "Réception / Accueil",
+    "Mot de passe",
+    "Déverrouiller",
+    "Se connecter avec un autre compte",
+    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
+   ],
+   "navigation": [
+    "pages/dash-receptionniste.php"
+   ]
+  },
+  "retourInconnu": {
+   "textes": [
+    "CLINIQUE NASSIERA TOO",
+    "Natitingou — République du Bénin",
+    "Système Intégré de Gestion Hospitalière",
+    "Dossier patient, hospitalisation, laboratoire, pharmacie et stocks, facturation normalisée, ressources humaines, paie et comptabilité SYSCOHADA.",
+    "Traçabilité intégrale des actions (journal d’audit)",
+    "Alertes de rupture et de péremption automatiques (FEFO)",
+    "Facture normalisée conforme au dispositif MECeF",
+    "Comptabilité SYSCOHADA alimentée automatiquement",
+    "« Votre santé, notre raison de vivre »",
+    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268",
+    "CLINIQUE NASSIERA TOO",
+    "Votre santé, notre raison de vivre",
+    "Session verrouillée",
+    "Verrouillage automatique après 15 minutes d’inactivité, sur les postes partagés — accueil et caisse (CDCT §12.2).",
+    "EZIN Orou",
+    "Réception / Accueil",
+    "Mot de passe",
+    "Déverrouiller",
+    "Se connecter avec un autre compte",
+    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
+   ]
+  },
+  "sansSession": {
+   "navigation": [
+    "index.php"
+   ]
+  },
+  "autreCompte": {
+   "href": "index.php",
+   "sessionApres": true,
+   "retourApres": true,
+   "navigation": [
+    "index.php"
+   ]
+  },
+  "delaiDefautMinutes": 15,
+  "cleRetour": "sigh-cnt:verrou-retour"
+ },
+ "plan": {
+  "entete": [
+   "Plan du site",
+   "Inventaire de tous les écrans du prototype, organisés par domaine et par module.",
+   "Retour à l’application"
+  ],
+  "sections": [
+   {
+    "titre": "Accueil",
+    "modules": [
+     {
+      "titre": "RDV, Visites & Consultations",
+      "code": "M2",
+      "ecrans": [
+       {
+        "label": "Agenda",
+        "href": "pages/m2-agenda.php"
+       },
+       {
+        "label": "Rendez-vous & visites",
+        "href": "pages/m2-rendezvous.php"
+       },
+       {
+        "label": "File d’attente",
+        "href": "pages/m2-file-attente.php"
+       },
+       {
+        "label": "File par cabinet",
+        "href": "pages/m2-file-cabinet.php"
+       },
+       {
+        "label": "Agenda du médecin",
+        "href": "pages/m2-agenda-medecin.php"
+       },
+       {
+        "label": "Écran d’appel des patients",
+        "href": "pages/m2-affichage.php"
+       },
+       {
+        "label": "Consultations & soins à domicile",
+        "href": "pages/m2-domicile.php"
+       },
+       {
+        "label": "Registre des appels",
+        "href": "pages/m2-registre-appels.php"
+       },
+       {
+        "label": "Consultations",
+        "href": "pages/m2-consultations.php"
+       }
+      ]
+     },
+     {
+      "titre": "Patients & constantes",
+      "code": "M1",
+      "ecrans": [
+       {
+        "label": "Répertoire des patients",
+        "href": "pages/m1-patients.php"
+       },
+       {
+        "label": "Constantes à l’accueil",
+        "href": "pages/m1-constantes.php"
+       },
+       {
+        "label": "Patient externe",
+        "href": "pages/m1-externe.php"
+       }
+      ]
+     },
+     {
+      "titre": "Courriers & orientation",
+      "code": "M13",
+      "ecrans": [
+       {
+        "label": "Courriers (départ / arrivée)",
+        "href": "pages/m13-courriers.php"
+       },
+       {
+        "label": "Répertoire des ambulances",
+        "href": "pages/m13-repertoire-ambulances.php"
+       }
+      ]
+     },
+     {
+      "titre": "Tarification & information patient",
+      "code": "CFG",
+      "ecrans": [
+       {
+        "label": "Référentiel tarifaire public",
+        "href": "pages/cfg-tarifs.php"
+       },
+       {
+        "label": "Catalogue des prestations",
+        "href": "pages/cfg-catalogue.php"
+       },
+       {
+        "label": "Tarifs des certificats & attestations",
+        "href": "pages/cfg-certificats.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Soins",
+    "modules": [
+     {
+      "titre": "Patients & Dossier médical",
+      "code": "M1",
+      "ecrans": [
+       {
+        "label": "Répertoire des patients",
+        "href": "pages/m1-patients.php"
+       },
+       {
+        "label": "Fiche patient",
+        "href": "pages/m1-patient-profil.php"
+       },
+       {
+        "label": "Patient externe",
+        "href": "pages/m1-externe.php"
+       },
+       {
+        "label": "Antécédents & allergies",
+        "href": "pages/m1-antecedents.php"
+       },
+       {
+        "label": "Certificats & attestations",
+        "href": "pages/m1-pieces.php"
+       },
+       {
+        "label": "Constantes à l’accueil",
+        "href": "pages/m1-constantes.php"
+       },
+       {
+        "label": "Fiches de référence",
+        "href": "pages/m1-reference.php"
+       },
+       {
+        "label": "Fiches de contre-référence",
+        "href": "pages/m1-contre-reference.php"
+       },
+       {
+        "label": "Documents numérisés",
+        "href": "pages/m1-documents.php"
+       },
+       {
+        "label": "Plan de numérisation",
+        "href": "pages/m1-numerisation.php"
+       }
+      ]
+     },
+     {
+      "titre": "Consultations & prescriptions",
+      "code": "M2",
+      "ecrans": [
+       {
+        "label": "Dossiers de consultation",
+        "href": "pages/m2-dossiers-consultation.php"
+       },
+       {
+        "label": "Fiche de consultation",
+        "href": "pages/m2-consultation-fiche.php"
+       },
+       {
+        "label": "Pathologies & morbidité",
+        "href": "pages/m2-pathologies.php"
+       },
+       {
+        "label": "Ordonnances",
+        "href": "pages/m2-ordonnances.php"
+       },
+       {
+        "label": "Prescriptions",
+        "href": "pages/m2-prescriptions.php"
+       },
+       {
+        "label": "Salle de soins",
+        "href": "pages/m2-salle-soins.php"
+       }
+      ]
+     },
+     {
+      "titre": "Imagerie médicale",
+      "code": "M2",
+      "ecrans": [
+       {
+        "label": "Poste d’imagerie médicale",
+        "href": "pages/m2-dashboard-imagerie.php"
+       },
+       {
+        "label": "Demandes d’imagerie médicale",
+        "href": "pages/m2-imagerie-demandes.php"
+       },
+       {
+        "label": "Tableau Échographie",
+        "href": "pages/m2-imagerie.php"
+       },
+       {
+        "label": "Tableau Radiographie",
+        "href": "pages/m2-imagerie-radiographie.php"
+       },
+       {
+        "label": "Tableau Mammographie",
+        "href": "pages/m2-imagerie-mammographie.php"
+       },
+       {
+        "label": "Tableau Scanner",
+        "href": "pages/m2-imagerie-scanner.php"
+       },
+       {
+        "label": "Tableau IRM",
+        "href": "pages/m2-imagerie-irm.php"
+       },
+       {
+        "label": "Galerie des clichés",
+        "href": "pages/m2-echographie-galerie.php"
+       }
+      ]
+     },
+     {
+      "titre": "Hospitalisation",
+      "code": "M3",
+      "ecrans": [
+       {
+        "label": "Admissions",
+        "href": "pages/m3-admissions.php"
+       },
+       {
+        "label": "Mise en observation",
+        "href": "pages/m3-observation.php"
+       },
+       {
+        "label": "Plan des lits",
+        "href": "pages/m3-plan-lits.php"
+       },
+       {
+        "label": "Chambres & lits",
+        "href": "pages/m3-chambres.php"
+       },
+       {
+        "label": "Feuille de température",
+        "href": "pages/m3-feuille-temperature.php"
+       },
+       {
+        "label": "Feuille de soins",
+        "href": "pages/m3-soins.php"
+       },
+       {
+        "label": "Administration des traitements",
+        "href": "pages/m3-administrations.php"
+       },
+       {
+        "label": "Consultation pré-anesthésique",
+        "href": "pages/m3-cpa.php"
+       },
+       {
+        "label": "Comptes rendus opératoires",
+        "href": "pages/m3-bloc-cro.php"
+       },
+       {
+        "label": "Comptes rendus d’anesthésie",
+        "href": "pages/m3-cr-anesthesie.php"
+       },
+       {
+        "label": "Check-listes du bloc",
+        "href": "pages/m3-bloc-checklist.php"
+       },
+       {
+        "label": "Demande d’examen",
+        "href": "pages/m3-demande-examen.php"
+       },
+       {
+        "label": "Bons de pansement",
+        "href": "pages/m3-bons-pansements.php"
+       },
+       {
+        "label": "Fiche de surveillance",
+        "href": "pages/m3-surveillance.php"
+       },
+       {
+        "label": "Surveillance transfusionnelle",
+        "href": "pages/m3-transfusion.php"
+       },
+       {
+        "label": "Score de Glasgow",
+        "href": "pages/m3-glasgow.php"
+       },
+       {
+        "label": "Rapport médical",
+        "href": "pages/m3-rapport.php"
+       },
+       {
+        "label": "Visites aux hospitalisés",
+        "href": "pages/m3-visites-patients.php"
+       },
+       {
+        "label": "Sorties d’hospitalisation",
+        "href": "pages/m3-sorties.php"
+       },
+       {
+        "label": "Sortie contre avis médical",
+        "href": "pages/m3-sortie-avis-medical.php"
+       }
+      ]
+     },
+     {
+      "titre": "Maternité, Naissances & Décès",
+      "code": "M4",
+      "ecrans": [
+       {
+        "label": "Dossier obstétrical",
+        "href": "pages/m4-dossier-obstetrical.php"
+       },
+       {
+        "label": "Suivi maternité",
+        "href": "pages/m4-maternite.php"
+       },
+       {
+        "label": "CPN & carte maternelle",
+        "href": "pages/m4-cpn.php"
+       },
+       {
+        "label": "Partogramme",
+        "href": "pages/m4-partogramme.php"
+       },
+       {
+        "label": "Accouchements",
+        "href": "pages/m4-accouchements.php"
+       },
+       {
+        "label": "Dossier bébé & soins du nouveau-né",
+        "href": "pages/m4-dossier-bebe.php"
+       },
+       {
+        "label": "Consultations post-natales (CPoN)",
+        "href": "pages/m4-cpon.php"
+       },
+       {
+        "label": "Planification familiale",
+        "href": "pages/m4-planification.php"
+       },
+       {
+        "label": "Registre SONUB / SONUC",
+        "href": "pages/m4-sonu.php"
+       },
+       {
+        "label": "Registre PTME",
+        "href": "pages/m4-ptme.php"
+       },
+       {
+        "label": "Soins curatifs & urgences maternité",
+        "href": "pages/m4-soins-curatifs.php"
+       },
+       {
+        "label": "Comptes rendus de maternité",
+        "href": "pages/m4-comptes-rendus.php"
+       },
+       {
+        "label": "Registre des naissances",
+        "href": "pages/m4-naissances.php"
+       },
+       {
+        "label": "Registre des décès",
+        "href": "pages/m4-deces.php"
+       }
+      ]
+     },
+     {
+      "titre": "Laboratoire",
+      "code": "M5",
+      "ecrans": [
+       {
+        "label": "Demandes d’analyses",
+        "href": "pages/m5-demandes.php"
+       },
+       {
+        "label": "Demandes — maternité",
+        "href": "pages/m5-demandes-maternite.php"
+       },
+       {
+        "label": "Demandes — hospitalisation",
+        "href": "pages/m5-demandes-hospitalisation.php"
+       },
+       {
+        "label": "Saisie des résultats",
+        "href": "pages/m5-resultats.php"
+       },
+       {
+        "label": "Comparatif des résultats",
+        "href": "pages/m5-resultats-comparatif.php"
+       },
+       {
+        "label": "Impression des résultats",
+        "href": "pages/m5-impression-resultats.php"
+       },
+       {
+        "label": "Catalogue des analyses",
+        "href": "pages/m5-catalogue.php"
+       },
+       {
+        "label": "Unités de mesure",
+        "href": "pages/m5-unites.php"
+       },
+       {
+        "label": "Valeurs de référence",
+        "href": "pages/m5-valeurs-reference.php"
+       },
+       {
+        "label": "Salle de prélèvement",
+        "href": "pages/m5-prelevement.php"
+       },
+       {
+        "label": "Statistiques du laboratoire",
+        "href": "pages/m5-stats.php"
+       },
+       {
+        "label": "Réactifs & consommables",
+        "href": "pages/m5-reactifs.php"
+       },
+       {
+        "label": "Statistiques des réactifs",
+        "href": "pages/m5-reactifs-stats.php"
+       },
+       {
+        "label": "Banque de sang",
+        "href": "pages/m5-banque-sang.php"
+       },
+       {
+        "label": "Donneurs & transfusions",
+        "href": "pages/m5-donneurs.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Logistique",
+    "modules": [
+     {
+      "titre": "Pharmacie & Stocks",
+      "code": "M6",
+      "ecrans": [
+       {
+        "label": "Pharmacie interne — urgences",
+        "href": "pages/m6-pharmacie-interne.php"
+       },
+       {
+        "label": "Pharmacie externe — voie orale",
+        "href": "pages/m6-pharmacie-externe.php"
+       },
+       {
+        "label": "Tableau de bord stock",
+        "href": "pages/m6-dashboard.php"
+       },
+       {
+        "label": "Référentiel produits",
+        "href": "pages/m6-produits.php"
+       },
+       {
+        "label": "Stock gros (magasin)",
+        "href": "pages/m6-stock-gros.php"
+       },
+       {
+        "label": "Stock détail (pharmacie)",
+        "href": "pages/m6-stock-detail.php"
+       },
+       {
+        "label": "Transferts gros → détail",
+        "href": "pages/m6-transferts.php"
+       },
+       {
+        "label": "Mouvements de stock",
+        "href": "pages/m6-mouvements.php"
+       },
+       {
+        "label": "Lots & péremptions (FEFO)",
+        "href": "pages/m6-lots.php"
+       },
+       {
+        "label": "Alertes & seuils",
+        "href": "pages/m6-alertes.php"
+       },
+       {
+        "label": "Inventaires",
+        "href": "pages/m6-inventaire.php"
+       },
+       {
+        "label": "Pertes, casses & rebuts",
+        "href": "pages/m6-pertes.php"
+       },
+       {
+        "label": "Dispensation",
+        "href": "pages/m6-dispensation.php"
+       },
+       {
+        "label": "Étiquetage & emplacements",
+        "href": "pages/m6-etiquetage.php"
+       },
+       {
+        "label": "Reprise SAGE 100",
+        "href": "pages/m6-reprise.php"
+       },
+       {
+        "label": "Suivi des ventes",
+        "href": "pages/m6-point-ventes.php"
+       },
+       {
+        "label": "Point du stock valorisé",
+        "href": "pages/m6-point-stock.php"
+       }
+      ]
+     },
+     {
+      "titre": "Achats & Fournisseurs",
+      "code": "M7",
+      "ecrans": [
+       {
+        "label": "Bons d’expression de besoins",
+        "href": "pages/m7-besoins.php"
+       },
+       {
+        "label": "Bons de commande",
+        "href": "pages/m7-commandes.php"
+       },
+       {
+        "label": "Bons de livraison",
+        "href": "pages/m7-livraisons.php"
+       },
+       {
+        "label": "Réceptions & contrôles",
+        "href": "pages/m7-receptions.php"
+       },
+       {
+        "label": "Écarts de livraison",
+        "href": "pages/m7-ecarts.php"
+       },
+       {
+        "label": "PV de réception — consommables",
+        "href": "pages/m7-pv-reception-consommables.php"
+       },
+       {
+        "label": "PV de réception — réactifs",
+        "href": "pages/m7-pv-reception-reactifs.php"
+       },
+       {
+        "label": "Fournisseurs",
+        "href": "pages/m7-fournisseurs.php"
+       },
+       {
+        "label": "Factures fournisseurs",
+        "href": "pages/m7-factures-fournisseurs.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Financier",
+    "modules": [
+     {
+      "titre": "Facturation & Caisse",
+      "code": "M8",
+      "ecrans": [
+       {
+        "label": "Tableau de bord facturation",
+        "href": "pages/m8-dashboard.php"
+       },
+       {
+        "label": "Nouvelle facture",
+        "href": "pages/m8-facturation.php"
+       },
+       {
+        "label": "Factures",
+        "href": "pages/m8-factures.php"
+       },
+       {
+        "label": "Factures pro-forma",
+        "href": "pages/m8-proforma.php"
+       },
+       {
+        "label": "Paiements",
+        "href": "pages/m8-paiements.php"
+       },
+       {
+        "label": "Reliquats",
+        "href": "pages/m8-reliquats.php"
+       },
+       {
+        "label": "Remboursements & annulations",
+        "href": "pages/m8-remboursements.php"
+       },
+       {
+        "label": "Factures d’avoir",
+        "href": "pages/m8-facture-avoir.php"
+       },
+       {
+        "label": "État de caisse journalier",
+        "href": "pages/m8-caisse.php"
+       },
+       {
+        "label": "Opérations de caisse",
+        "href": "pages/m8-operations.php"
+       },
+       {
+        "label": "Recettes par période",
+        "href": "pages/m8-recettes.php"
+       }
+      ]
+     },
+     {
+      "titre": "Assurances & Créances",
+      "code": "M9",
+      "ecrans": [
+       {
+        "label": "Tableau de bord assurances",
+        "href": "pages/m9-dashboard.php"
+       },
+       {
+        "label": "Compagnies partenaires",
+        "href": "pages/m9-compagnies.php"
+       },
+       {
+        "label": "Assurés & cartes",
+        "href": "pages/m9-assures.php"
+       },
+       {
+        "label": "Conventions & garanties",
+        "href": "pages/m9-conventions.php"
+       },
+       {
+        "label": "Prises en charge",
+        "href": "pages/m9-prises-en-charge.php"
+       },
+       {
+        "label": "Factures mensuelles assureur",
+        "href": "pages/m9-factures-assureur.php"
+       },
+       {
+        "label": "Facture mère assurance",
+        "href": "pages/m9-facture-mere.php"
+       },
+       {
+        "label": "Historique par assureur",
+        "href": "pages/m9-historique.php"
+       },
+       {
+        "label": "Créances",
+        "href": "pages/m9-creances.php"
+       },
+       {
+        "label": "Relances",
+        "href": "pages/m9-relances.php"
+       }
+      ]
+     },
+     {
+      "titre": "MECeF — Facture normalisée",
+      "code": "MECEF",
+      "ecrans": [
+       {
+        "label": "Tableau de bord fiscal",
+        "href": "pages/mecef-dashboard.php"
+       },
+       {
+        "label": "Factures normalisées",
+        "href": "pages/mecef-factures.php"
+       },
+       {
+        "label": "Transmission & réponses",
+        "href": "pages/mecef-transmission.php"
+       },
+       {
+        "label": "Avoirs & annulations",
+        "href": "pages/mecef-avoirs.php"
+       },
+       {
+        "label": "Journal des transactions",
+        "href": "pages/mecef-journal.php"
+       },
+       {
+        "label": "Configuration fiscale",
+        "href": "pages/mecef-config.php"
+       }
+      ]
+     },
+     {
+      "titre": "Comptabilité SYSCOHADA",
+      "code": "M12",
+      "ecrans": [
+       {
+        "label": "Tableau de bord comptable",
+        "href": "pages/m12-dashboard.php"
+       },
+       {
+        "label": "Plan comptable OHADA",
+        "href": "pages/m12-plan-comptable.php"
+       },
+       {
+        "label": "Journaux comptables",
+        "href": "pages/m12-journaux.php"
+       },
+       {
+        "label": "Écritures comptables",
+        "href": "pages/m12-ecritures.php"
+       },
+       {
+        "label": "Dépenses journalières",
+        "href": "pages/m12-depenses.php"
+       },
+       {
+        "label": "Grand livre",
+        "href": "pages/m12-grand-livre.php"
+       },
+       {
+        "label": "Balance générale & âgée",
+        "href": "pages/m12-balance.php"
+       },
+       {
+        "label": "Comptabilité analytique",
+        "href": "pages/m12-analytique.php"
+       },
+       {
+        "label": "Budgets",
+        "href": "pages/m12-budgets.php"
+       },
+       {
+        "label": "Immobilisations & amortissements",
+        "href": "pages/m12-immobilisations.php"
+       },
+       {
+        "label": "Banques & rapprochements",
+        "href": "pages/m12-banques.php"
+       },
+       {
+        "label": "Compte de résultat",
+        "href": "pages/m12-compte-resultat.php"
+       },
+       {
+        "label": "Tableau des flux de trésorerie",
+        "href": "pages/m12-flux-tresorerie.php"
+       },
+       {
+        "label": "Seuil de rentabilité",
+        "href": "pages/m12-seuil-rentabilite.php"
+       },
+       {
+        "label": "États financiers",
+        "href": "pages/m12-etats-financiers.php"
+       },
+       {
+        "label": "Baseline 2025",
+        "href": "pages/m12-baseline-2025.php"
+       },
+       {
+        "label": "Échéances fiscales & paiements",
+        "href": "pages/m12-echeances.php"
+       },
+       {
+        "label": "Exercices & clôtures",
+        "href": "pages/m12-cloture.php"
+       },
+       {
+        "label": "Bilan d’ouverture & à-nouveaux",
+        "href": "pages/m12-ouverture.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "RH",
+    "modules": [
+     {
+      "titre": "Ressources humaines",
+      "code": "M10",
+      "ecrans": [
+       {
+        "label": "Fiches de poste",
+        "href": "pages/m10-fiches-poste.php"
+       },
+       {
+        "label": "Tableau de bord RH",
+        "href": "pages/m10-dashboard.php"
+       },
+       {
+        "label": "Personnel",
+        "href": "pages/m10-personnel.php"
+       },
+       {
+        "label": "Fiche employé",
+        "href": "pages/m10-employe-profil.php"
+       },
+       {
+        "label": "Contrats",
+        "href": "pages/m10-contrats.php"
+       },
+       {
+        "label": "Badges du personnel",
+        "href": "pages/m10-badges.php"
+       },
+       {
+        "label": "Vérifier un badge",
+        "href": "pages/m10-badges-verification.php"
+       },
+       {
+        "label": "Modèles de badge",
+        "href": "pages/m10-badges-modeles.php"
+       },
+       {
+        "label": "Planche d’impression des badges",
+        "href": "pages/m10-badges-impression.php"
+       },
+       {
+        "label": "Planning & gardes",
+        "href": "pages/m10-planning.php"
+       },
+       {
+        "label": "Statistiques de garde",
+        "href": "pages/m10-stats-gardes.php"
+       },
+       {
+        "label": "Statistiques des permanences",
+        "href": "pages/m10-stats-permanences.php"
+       },
+       {
+        "label": "Taux de présence par service",
+        "href": "pages/m10-stats-presence.php"
+       },
+       {
+        "label": "Présences & absences",
+        "href": "pages/m10-presences.php"
+       },
+       {
+        "label": "Congés",
+        "href": "pages/m10-conges.php"
+       },
+       {
+        "label": "Ordres de mission",
+        "href": "pages/m10-missions.php"
+       },
+       {
+        "label": "Évaluations (NS 131)",
+        "href": "pages/m10-evaluations.php"
+       },
+       {
+        "label": "Sanctions",
+        "href": "pages/m10-sanctions.php"
+       },
+       {
+        "label": "Primes (NS 132)",
+        "href": "pages/m10-primes.php"
+       },
+       {
+        "label": "Événements du personnel",
+        "href": "pages/m10-evenements.php"
+       },
+       {
+        "label": "Frais de participation",
+        "href": "pages/m10-participations.php"
+       },
+       {
+        "label": "Assurance du personnel",
+        "href": "pages/m10-assurance-personnel.php"
+       },
+       {
+        "label": "Prestataires externes",
+        "href": "pages/m10-prestataires.php"
+       },
+       {
+        "label": "Sécurité & entretien",
+        "href": "pages/m10-securite-entretien.php"
+       }
+      ]
+     },
+     {
+      "titre": "Paie & Primes",
+      "code": "M11",
+      "ecrans": [
+       {
+        "label": "Prêts-études et avances",
+        "href": "pages/m11-prets-etudes.php"
+       },
+       {
+        "label": "Tableau de bord paie",
+        "href": "pages/m11-dashboard.php"
+       },
+       {
+        "label": "Calcul de la paie",
+        "href": "pages/m11-calcul.php"
+       },
+       {
+        "label": "Bulletins de paie",
+        "href": "pages/m11-bulletins.php"
+       },
+       {
+        "label": "Cotisations CNSS / ITS / VPS",
+        "href": "pages/m11-cotisations.php"
+       },
+       {
+        "label": "Heures supplémentaires",
+        "href": "pages/m11-heures-sup.php"
+       },
+       {
+        "label": "Avances sur salaire",
+        "href": "pages/m11-avances.php"
+       },
+       {
+        "label": "Redevance ORTB",
+        "href": "pages/m11-ortb.php"
+       },
+       {
+        "label": "Validation Direction",
+        "href": "pages/m11-validation.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Administration",
+    "modules": [
+     {
+      "titre": "Administration & Ambulance",
+      "code": "M13",
+      "ecrans": [
+       {
+        "label": "Courriers (départ / arrivée)",
+        "href": "pages/m13-courriers.php"
+       },
+       {
+        "label": "Réunions",
+        "href": "pages/m13-reunions.php"
+       },
+       {
+        "label": "Événements & notifications",
+        "href": "pages/m13-evenements.php"
+       },
+       {
+        "label": "Plan annuel de travail",
+        "href": "pages/m13-plan-annuel.php"
+       },
+       {
+        "label": "Notes de service",
+        "href": "pages/m13-notes-service.php"
+       },
+       {
+        "label": "Interventions ambulance",
+        "href": "pages/m13-ambulance.php"
+       },
+       {
+        "label": "Répertoire des ambulances",
+        "href": "pages/m13-repertoire-ambulances.php"
+       },
+       {
+        "label": "Parc technique & maintenance",
+        "href": "pages/m13-maintenance.php"
+       },
+       {
+        "label": "Validations en attente",
+        "href": "pages/adm-validations.php"
+       },
+       {
+        "label": "Enquêtes & questionnaires",
+        "href": "pages/adm-enquetes.php"
+       },
+       {
+        "label": "Satisfaction des patients",
+        "href": "pages/adm-satisfaction.php"
+       }
+      ]
+     },
+     {
+      "titre": "Gestion documentaire",
+      "code": "GED",
+      "ecrans": [
+       {
+        "label": "Bibliothèque documentaire",
+        "href": "pages/ged-bibliotheque.php"
+       },
+       {
+        "label": "Workflow de validation",
+        "href": "pages/ged-workflow.php"
+       },
+       {
+        "label": "Archivage & conservation",
+        "href": "pages/ged-archives.php"
+       }
+      ]
+     },
+     {
+      "titre": "Rapports & Impression",
+      "code": "RAP",
+      "ecrans": [
+       {
+        "label": "Bibliothèque des états",
+        "href": "pages/rapports-bibliotheque.php"
+       },
+       {
+        "label": "États de la Direction",
+        "href": "pages/rapports-direction.php"
+       },
+       {
+        "label": "Générateur de rapports",
+        "href": "pages/rapports-generateur.php"
+       },
+       {
+        "label": "Historique des éditions",
+        "href": "pages/rapports-historique.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Système",
+    "modules": [
+     {
+      "titre": "Sécurité & Utilisateurs",
+      "code": "M14",
+      "ecrans": [
+       {
+        "label": "Utilisateurs",
+        "href": "pages/m14-utilisateurs.php"
+       },
+       {
+        "label": "Rôles & permissions (RBAC)",
+        "href": "pages/m14-roles.php"
+       },
+       {
+        "label": "Prescripteurs & exécutants de soins",
+        "href": "pages/m14-soignants.php"
+       },
+       {
+        "label": "Sessions actives",
+        "href": "pages/m14-sessions.php"
+       },
+       {
+        "label": "Journal d’audit",
+        "href": "pages/m14-audit.php"
+       },
+       {
+        "label": "Sauvegardes & restauration",
+        "href": "pages/m14-sauvegardes.php"
+       },
+       {
+        "label": "Tâches planifiées",
+        "href": "pages/m14-taches.php"
+       }
+      ]
+     },
+     {
+      "titre": "Configuration Clinique",
+      "code": "CFG",
+      "ecrans": [
+       {
+        "label": "Organisation & organigramme",
+        "href": "pages/cfg-organisation.php"
+       },
+       {
+        "label": "Identité & papier à en-tête",
+        "href": "pages/cfg-branding.php"
+       },
+       {
+        "label": "Référentiel tarifaire",
+        "href": "pages/cfg-tarifs.php"
+       },
+       {
+        "label": "Catalogue tarifaire (deux prix)",
+        "href": "pages/cfg-catalogue.php"
+       },
+       {
+        "label": "Catalogue de l’imagerie",
+        "href": "pages/cfg-imagerie-catalogue.php"
+       },
+       {
+        "label": "Papier à en-tête officiel",
+        "href": "pages/cfg-entetes.php"
+       },
+       {
+        "label": "Types de pièces certifiantes",
+        "href": "pages/cfg-types-piece.php"
+       },
+       {
+        "label": "Rappels & messages",
+        "href": "pages/cfg-rappels.php"
+       },
+       {
+        "label": "Certificats médicaux",
+        "href": "pages/cfg-certificats.php"
+       },
+       {
+        "label": "Natures de facture",
+        "href": "pages/cfg-natures-facture.php"
+       },
+       {
+        "label": "Centres de coûts",
+        "href": "pages/cfg-centres-couts.php"
+       },
+       {
+        "label": "Règles métier versionnées",
+        "href": "pages/cfg-regles.php"
+       },
+       {
+        "label": "Paramètres fiscaux (IFU / RCCM)",
+        "href": "pages/cfg-fiscalite.php"
+       },
+       {
+        "label": "Paramètres comptables & obligations",
+        "href": "pages/cfg-comptabilite.php"
+       },
+       {
+        "label": "Notifications",
+        "href": "pages/cfg-notifications.php"
+       },
+       {
+        "label": "Mon compte",
+        "href": "pages/cfg-compte.php"
+       },
+       {
+        "label": "Activité des modules",
+        "href": "pages/cfg-modules.php"
+       },
+       {
+        "label": "Paramètres système",
+        "href": "pages/cfg-systeme.php"
+       },
+       {
+        "label": "Ce poste (mode fileul / mère)",
+        "href": "pages/cfg-poste.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Poste mère",
+    "modules": [
+     {
+      "titre": "Exploitation de la synchronisation",
+      "code": "MERE",
+      "ecrans": [
+       {
+        "label": "Supervision",
+        "href": "pages/mere-supervision.php"
+       },
+       {
+        "label": "Appareils et appairage",
+        "href": "pages/mere-appareils.php"
+       },
+       {
+        "label": "Conflits et doublons",
+        "href": "pages/mere-conflits.php"
+       },
+       {
+        "label": "« À traiter » consolidé",
+        "href": "pages/mere-a-traiter.php"
+       },
+       {
+        "label": "Journal des opérations",
+        "href": "pages/mere-journal-operations.php"
+       },
+       {
+        "label": "Plages de numéros et baux de stock",
+        "href": "pages/mere-plages-baux.php"
+       },
+       {
+        "label": "Lots de tournée (mobiles)",
+        "href": "pages/mere-lots-tournee.php"
+       }
+      ]
+     },
+     {
+      "titre": "Sécurité et continuité",
+      "code": "MERE",
+      "ecrans": [
+       {
+        "label": "Journal technique",
+        "href": "pages/mere-journal-technique.php"
+       },
+       {
+        "label": "Sauvegardes et restauration",
+        "href": "pages/mere-sauvegardes.php"
+       },
+       {
+        "label": "Clé de clinique",
+        "href": "pages/mere-cle-clinique.php"
+       },
+       {
+        "label": "Intégrité et altérations",
+        "href": "pages/mere-integrite.php"
+       },
+       {
+        "label": "Réinitialisation de production",
+        "href": "pages/mere-reinit.php"
+       }
+      ]
+     },
+     {
+      "titre": "Liaison avec le relais",
+      "code": "MERE",
+      "ecrans": [
+       {
+        "label": "Relais en ligne",
+        "href": "pages/mere-relais.php"
+       },
+       {
+        "label": "Indicateurs publiés",
+        "href": "pages/mere-indicateurs.php"
+       }
+      ]
+     },
+     {
+      "titre": "Plateforme locale",
+      "code": "MERE",
+      "ecrans": [
+       {
+        "label": "Service et démarrage",
+        "href": "pages/mere-service.php"
+       },
+       {
+        "label": "Base de données locale",
+        "href": "pages/mere-base.php"
+       },
+       {
+        "label": "Réseau local",
+        "href": "pages/mere-reseau.php"
+       },
+       {
+        "label": "Planificateur",
+        "href": "pages/mere-planificateur.php"
+       },
+       {
+        "label": "Notifications serveur",
+        "href": "pages/mere-notifications.php"
+       }
+      ]
+     },
+     {
+      "titre": "Cycle de vie",
+      "code": "MERE",
+      "ecrans": [
+       {
+        "label": "Assistant de première mise en service",
+        "href": "pages/mere-mise-en-service.php"
+       },
+       {
+        "label": "Mises à jour et compatibilité",
+        "href": "pages/mere-mises-a-jour.php"
+       },
+       {
+        "label": "Import de migration",
+        "href": "pages/mere-import.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Relais en ligne",
+    "modules": [
+     {
+      "titre": "Relais en ligne (apps/web)",
+      "code": "RLS",
+      "ecrans": [
+       {
+        "label": "Tableau de bord du relais",
+        "href": "pages/rls-tableau.php"
+       },
+       {
+        "label": "Appareils",
+        "href": "pages/rls-appareils.php"
+       },
+       {
+        "label": "Boîtes aux lettres",
+        "href": "pages/rls-boites.php"
+       },
+       {
+        "label": "Codes d’appairage",
+        "href": "pages/rls-codes.php"
+       },
+       {
+        "label": "Indicateurs reçus",
+        "href": "pages/rls-indicateurs.php"
+       },
+       {
+        "label": "Alertes et notifications",
+        "href": "pages/rls-alertes.php"
+       },
+       {
+        "label": "Journal d’audit du relais",
+        "href": "pages/rls-journal.php"
+       },
+       {
+        "label": "Comptes superadmin",
+        "href": "pages/rls-superadmin.php"
+       },
+       {
+        "label": "Paramètres du relais",
+        "href": "pages/rls-parametres.php"
+       },
+       {
+        "label": "Hébergement (cPanel)",
+        "href": "pages/rls-hebergement.php"
+       },
+       {
+        "label": "Sauvegarde du relais",
+        "href": "pages/rls-sauvegarde.php"
+       },
+       {
+        "label": "Preuve d’opacité",
+        "href": "pages/rls-opacite.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Pilotage",
+    "modules": [
+     {
+      "titre": "Pilotage & analyse",
+      "code": "PIL",
+      "ecrans": [
+       {
+        "label": "Direction",
+        "href": "pages/dash-direction.php"
+       },
+       {
+        "label": "Statistiques de la Direction",
+        "href": "pages/dash-da.php"
+       },
+       {
+        "label": "Tableau de bord dynamique croisé",
+        "href": "pages/dash-croise.php"
+       },
+       {
+        "label": "Administrateur",
+        "href": "pages/dash-admin.php"
+       },
+       {
+        "label": "Statistiques maternité & naissances",
+        "href": "pages/m4-stats-maternite.php"
+       },
+       {
+        "label": "Statistiques de l’imagerie médicale",
+        "href": "pages/m2-stats-echographie.php"
+       },
+       {
+        "label": "Statistiques des examens",
+        "href": "pages/m5-stats-examens.php"
+       },
+       {
+        "label": "Statistiques des consultations",
+        "href": "pages/m2-stats-consultations.php"
+       },
+       {
+        "label": "Statistiques du bloc & anesthésie",
+        "href": "pages/m3-stats-bloc.php"
+       },
+       {
+        "label": "Statistiques des hospitalisations",
+        "href": "pages/m3-stats-hospitalisations.php"
+       },
+       {
+        "label": "Coût global de l’agent",
+        "href": "pages/m10-cout-agent.php"
+       },
+       {
+        "label": "Recettes & charges par groupe",
+        "href": "pages/m12-rentabilite-groupes.php"
+       },
+       {
+        "label": "Tableau de bord décisionnel",
+        "href": "pages/m12-tableau-decisionnel.php"
+       }
+      ]
+     },
+     {
+      "titre": "Gestion & trésorerie",
+      "code": "M12",
+      "ecrans": [
+       {
+        "label": "Besoin en fonds de roulement",
+        "href": "pages/m12-bfr.php"
+       },
+       {
+        "label": "Coût à l’activité",
+        "href": "pages/m12-cout-activite.php"
+       }
+      ]
+     },
+     {
+      "titre": "Tableaux de bord par poste",
+      "code": "DASH",
+      "ecrans": [
+       {
+        "label": "Médecin",
+        "href": "pages/dash-medecin.php"
+       },
+       {
+        "label": "Infirmier / Sage-femme",
+        "href": "pages/dash-infirmier.php"
+       },
+       {
+        "label": "Pharmacie",
+        "href": "pages/dash-pharmacien.php"
+       },
+       {
+        "label": "Biologiste médical",
+        "href": "pages/dash-laborantin.php"
+       },
+       {
+        "label": "Gestionnaire de stock",
+        "href": "pages/dash-stock.php"
+       },
+       {
+        "label": "Caisse",
+        "href": "pages/dash-caissier.php"
+       },
+       {
+        "label": "Comptabilité",
+        "href": "pages/dash-comptable.php"
+       },
+       {
+        "label": "Ressources humaines",
+        "href": "pages/dash-rh.php"
+       },
+       {
+        "label": "Accueil",
+        "href": "pages/dash-receptionniste.php"
+       },
+       {
+        "label": "Agent administratif",
+        "href": "pages/dash-admin-agent.php"
+       },
+       {
+        "label": "Ambulance",
+        "href": "pages/dash-ambulancier.php"
+       },
+       {
+        "label": "Aide-soignante",
+        "href": "pages/dash-aide-soignant.php"
+       },
+       {
+        "label": "Échographie",
+        "href": "pages/dash-echographiste.php"
+       },
+       {
+        "label": "Surveillant",
+        "href": "pages/dash-surveillant.php"
+       },
+       {
+        "label": "Assistant de Direction",
+        "href": "pages/dash-assistant-comptable.php"
+       },
+       {
+        "label": "Chirurgien",
+        "href": "pages/dash-chirurgien.php"
+       },
+       {
+        "label": "Anesthésiste",
+        "href": "pages/dash-anesthesiste.php"
+       },
+       {
+        "label": "Assistant Comptable",
+        "href": "pages/dash-aide-comptable.php"
+       },
+       {
+        "label": "Maternité",
+        "href": "pages/dash-maternite.php"
+       },
+       {
+        "label": "Espace patient",
+        "href": "pages/dash-patient.php"
+       }
+      ]
+     }
+    ],
+    "liensSysteme": []
+   },
+   {
+    "titre": "Accès et pages système",
+    "modules": [],
+    "liensSysteme": [
+     {
+      "label": "Connexion",
+      "href": "index.php"
+     },
+     {
+      "label": "Mot de passe oublié",
+      "href": "pages/auth-forgot.php"
+     },
+     {
+      "label": "Réinitialisation du mot de passe",
+      "href": "pages/auth-reset.php"
+     },
+     {
+      "label": "Vérification en 2 étapes",
+      "href": "pages/auth-2fa.php"
+     },
+     {
+      "label": "Écran verrouillé",
+      "href": "pages/auth-lock.php"
+     },
+     {
+      "label": "Page introuvable",
+      "href": "pages/error-404.php"
+     },
+     {
+      "label": "Accès refusé",
+      "href": "pages/error-403.php"
+     },
+     {
+      "label": "Plan du site",
+      "href": "pages/plan-du-site.php"
+     },
+     {
+      "label": "Aide & À propos",
+      "href": "pages/aide-apropos.php"
+     },
+     {
+      "label": "Contactez l’éditeur",
+      "href": "pages/contact-editeur.php"
+     },
+     {
+      "label": "Dossier médical informatisé",
+      "href": "pages/m1-dossier-medical.php"
+     },
+     {
+      "label": "Dossier de consultation étendu",
+      "href": "pages/m1-dossier-etendu.php"
+     },
+     {
+      "label": "Dossier de consultation — saisie",
+      "href": "pages/m2-dossier-consultation-nouveau.php"
+     },
+     {
+      "label": "Nouvelle ordonnance — saisie",
+      "href": "pages/m2-ordonnance-nouvelle.php"
+     },
+     {
+      "label": "Compte rendu d’imagerie — saisie",
+      "href": "pages/m2-imagerie-cr.php"
+     },
+     {
+      "label": "Feuille d’inventaire — comptage",
+      "href": "pages/m6-inventaire-feuille.php"
+     },
+     {
+      "label": "Ouvrir un dossier patient",
+      "href": "pages/m1-patient-nouveau.php"
+     },
+     {
+      "label": "Ouvrir un dossier obstétrical",
+      "href": "pages/m4-dossier-obstetrical-nouveau.php"
+     },
+     {
+      "label": "Registre des visites de suivi clinique",
+      "href": "pages/m2-visites.php"
+     },
+     {
+      "label": "Certificats — patients externes",
+      "href": "pages/m1-certificats-externes.php"
+     },
+     {
+      "label": "Fiche d’enquête (lien partagé)",
+      "href": "pages/enquete-publique.php"
+     }
+    ]
+   }
+  ],
+  "pied": "308 écrans métier recensés au manifeste, plus 21 pages d’accès et système.",
+  "retour": "Retour à l’application",
+  "homeAdmin": "dash-admin"
+ },
+ "aide": {
+  "kpis": [
+   {
+    "label": "Modules fonctionnels",
+    "valeur": "32"
+   },
+   {
+    "label": "Écrans disponibles",
+    "valeur": "308"
+   },
+   {
+    "label": "Règles de gestion appliquées",
+    "valeur": "14"
+   },
+   {
+    "label": "Profils d’utilisateur",
+    "valeur": "22"
+   }
+  ],
+  "faq": [
+   {
+    "q": "Comment est attribué le numéro de dossier d’un patient ?",
+    "r": "Automatiquement, au format CNT/[n° d’ordre]/[année] — par exemple CNT/530/25. Le champ est verrouillé à la saisie : il ne peut être ni choisi ni modifié après création (règle RG-01). C’est cette unicité qui permet de retrouver un dossier partout dans l’application.",
+    "ouvert": true
+   },
+   {
+    "q": "Pourquoi le prix de vente d’un médicament est-il égal à son prix d’achat ?",
+    "r": "C’est la règle RG-02 arrêtée par la clinique : les médicaments sont facturés au prix d’achat, sans marge. Toute exception doit être validée par la Direction et reste tracée. Le référentiel tarifaire signale immédiatement une ligne dont le prix de vente s’écarterait du prix d’achat.",
+    "ouvert": false
+   },
+   {
+    "q": "Un patient présente une carte d’assurance expirée : que fait le système ?",
+    "r": "La prise en charge n’est pas appliquée et la facturation devient intégrale au patient (règle RG-09). L’écran de facturation affiche un bandeau rouge rappelant la date d’expiration ; il suffit de mettre à jour la validité dans le dossier du patient pour rétablir la couverture.",
+    "ouvert": false
+   },
+   {
+    "q": "Pourquoi une sortie de stock est-elle refusée ?",
+    "r": "Parce que la quantité demandée dépasse le stock disponible : le stock ne peut jamais devenir négatif (règle RG-03). Vérifier l’état réel du rayon, puis régulariser par un inventaire ou une réception.",
+    "ouvert": false
+   },
+   {
+    "q": "Comment obtenir un document en PDF ?",
+    "r": "Chaque état dispose d’un bouton Imprimer qui ouvre l’aperçu au papier à en-tête de la clinique, puis la boîte d’impression du navigateur. Y choisir la destination « Enregistrer au format PDF ». Le catalogue complet se trouve dans Rapports & Impression → Bibliothèque des états.",
+    "ouvert": false
+   },
+   {
+    "q": "J’ai supprimé un enregistrement par erreur : est-il perdu ?",
+    "r": "Non. La suppression physique n’existe pas (règle RG-14) : l’enregistrement est archivé. Il reste consultable dans l’onglet « Archivés » de son écran et peut être restauré. Juste après l’opération, le message de confirmation propose d’ailleurs « Annuler ».",
+    "ouvert": false
+   },
+   {
+    "q": "Pourquoi certains écrans ne proposent-ils pas de modification ?",
+    "r": "Parce qu’ils affichent un état calculé ou une preuve : grand livre, balance, état de caisse, alertes de stock, journal d’audit, journal MECeF. Les modifier reviendrait à falsifier un résultat. Chacun de ces écrans indique où corriger la donnée d’origine.",
+    "ouvert": false
+   },
+   {
+    "q": "Qui a accès à quoi ?",
+    "r": "Le périmètre dépend du profil de connexion (règle RG-13) : le médical est réservé aux soignants habilités, le financier et les ressources humaines aux profils comptables et RH. Le menu lui-même est filtré : un écran interdit n’apparaît pas. Toute action reste journalisée avec son auteur (RG-12).",
+    "ouvert": false
+   },
+   {
+    "q": "Mes saisies disparaissent après un rechargement de la page.",
+    "r": "C’est le comportement du prototype ouvert par double-clic : le navigateur refuse alors l’accès au stockage local et les données ne vivent qu’en mémoire. Servir le dossier (npx serve .) pour les conserver. La version définitive s’appuiera sur une base PostgreSQL installée sur le serveur.",
+    "ouvert": false
+   }
+  ],
+  "modules": [
+   {
+    "titre": "RDV, Visites & Consultations",
+    "code": "M2",
+    "resume": "Agenda, rendez-vous, consultations, ordonnances et soins à domicile, en remplacement des registres papier.",
+    "domaine": "Domaine Accueil",
+    "href": "pages/hub-m2.php"
+   },
+   {
+    "titre": "Patients & constantes",
+    "code": "M1",
+    "resume": "Dossier patient unique : identité, antécédents, allergies, documents numérisés et historique complet.",
+    "domaine": "Domaine Accueil",
+    "href": "pages/hub-m1.php"
+   },
+   {
+    "titre": "Courriers & orientation",
+    "code": "M13",
+    "resume": "Courriers, réunions, plan annuel de travail, notes de service et interventions de l’ambulance.",
+    "domaine": "Domaine Accueil",
+    "href": "pages/hub-m13.php"
+   },
+   {
+    "titre": "Tarification & information patient",
+    "code": "CFG",
+    "resume": "Organigramme, papier à en-tête, référentiel tarifaire, règles métier et paramètres fiscaux.",
+    "domaine": "Domaine Accueil",
+    "href": "pages/hub-cfg.php"
+   },
+   {
+    "titre": "Patients & Dossier médical",
+    "code": "M1",
+    "resume": "Dossier patient unique : identité, antécédents, allergies, documents numérisés et historique complet.",
+    "domaine": "Domaine Soins",
+    "href": "pages/hub-m1.php"
+   },
+   {
+    "titre": "Consultations & prescriptions",
+    "code": "M2",
+    "resume": "Agenda, rendez-vous, consultations, ordonnances et soins à domicile, en remplacement des registres papier.",
+    "domaine": "Domaine Soins",
+    "href": "pages/hub-m2.php"
+   },
+   {
+    "titre": "Imagerie médicale",
+    "code": "M2",
+    "resume": "Agenda, rendez-vous, consultations, ordonnances et soins à domicile, en remplacement des registres papier.",
+    "domaine": "Domaine Soins",
+    "href": "pages/hub-m2.php"
+   },
+   {
+    "titre": "Hospitalisation",
+    "code": "M3",
+    "resume": "Admissions, plan des lits, feuilles de température et de soins, sorties avec les signatures exigées.",
+    "domaine": "Domaine Soins",
+    "href": "pages/hub-m3.php"
+   },
+   {
+    "titre": "Maternité, Naissances & Décès",
+    "code": "M4",
+    "resume": "Suivi de grossesse, accouchements, registres officiels des naissances et des décès.",
+    "domaine": "Domaine Soins",
+    "href": "pages/hub-m4.php"
+   },
+   {
+    "titre": "Laboratoire",
+    "code": "M5",
+    "resume": "Demandes d’analyses, saisie des résultats, réactifs et banque de sang, du prélèvement au compte rendu.",
+    "domaine": "Domaine Soins",
+    "href": "pages/hub-m5.php"
+   },
+   {
+    "titre": "Pharmacie & Stocks",
+    "code": "M6",
+    "resume": "Pharmacie et magasin : produits, lots, péremptions FEFO, mouvements, inventaires et dispensation.",
+    "domaine": "Domaine Logistique",
+    "href": "pages/hub-m6.php"
+   },
+   {
+    "titre": "Achats & Fournisseurs",
+    "code": "M7",
+    "resume": "Expression des besoins, commandes validées par la Direction, livraisons, réceptions et factures fournisseurs.",
+    "domaine": "Domaine Logistique",
+    "href": "pages/hub-m7.php"
+   },
+   {
+    "titre": "Facturation & Caisse",
+    "code": "M8",
+    "resume": "Facturation, encaissements, reliquats et état de caisse journalier.",
+    "domaine": "Domaine Financier",
+    "href": "pages/hub-m8.php"
+   },
+   {
+    "titre": "Assurances & Créances",
+    "code": "M9",
+    "resume": "Compagnies partenaires, cartes d’assurés, prises en charge, factures mensuelles et créances.",
+    "domaine": "Domaine Financier",
+    "href": "pages/hub-m9.php"
+   },
+   {
+    "titre": "MECeF — Facture normalisée",
+    "code": "MECEF",
+    "resume": "Facture normalisée : structure fiscale, transmission, avoirs et journal des transactions certifiées.",
+    "domaine": "Domaine Financier",
+    "href": "pages/hub-mecef.php"
+   },
+   {
+    "titre": "Comptabilité SYSCOHADA",
+    "code": "M12",
+    "resume": "Comptabilité SYSCOHADA : plan comptable, journaux, écritures équilibrées, balance et états financiers.",
+    "domaine": "Domaine Financier",
+    "href": "pages/hub-m12.php"
+   },
+   {
+    "titre": "Ressources humaines",
+    "code": "M10",
+    "resume": "Personnel, contrats, planning des gardes, présences, congés, évaluations et primes.",
+    "domaine": "Domaine RH",
+    "href": "pages/hub-m10.php"
+   },
+   {
+    "titre": "Paie & Primes",
+    "code": "M11",
+    "resume": "Calcul de la paie, bulletins, cotisations CNSS / ITS / VPS et validation par la Direction.",
+    "domaine": "Domaine RH",
+    "href": "pages/hub-m11.php"
+   },
+   {
+    "titre": "Administration & Ambulance",
+    "code": "M13",
+    "resume": "Courriers, réunions, plan annuel de travail, notes de service et interventions de l’ambulance.",
+    "domaine": "Domaine Administration",
+    "href": "pages/hub-m13.php"
+   },
+   {
+    "titre": "Gestion documentaire",
+    "code": "GED",
+    "resume": "Bibliothèque documentaire, circuit de validation et archivage avec durée de conservation.",
+    "domaine": "Domaine Administration",
+    "href": "pages/hub-ged.php"
+   },
+   {
+    "titre": "Rapports & Impression",
+    "code": "RAP",
+    "resume": "Bibliothèque des états officiels, générateur de rapports et historique des éditions.",
+    "domaine": "Domaine Administration",
+    "href": "pages/hub-rap.php"
+   },
+   {
+    "titre": "Sécurité & Utilisateurs",
+    "code": "M14",
+    "resume": "Utilisateurs, rôles et permissions, sessions actives, journal d’audit et sauvegardes.",
+    "domaine": "Domaine Système",
+    "href": "pages/hub-m14.php"
+   },
+   {
+    "titre": "Configuration Clinique",
+    "code": "CFG",
+    "resume": "Organigramme, papier à en-tête, référentiel tarifaire, règles métier et paramètres fiscaux.",
+    "domaine": "Domaine Système",
+    "href": "pages/hub-cfg.php"
+   },
+   {
+    "titre": "Exploitation de la synchronisation",
+    "code": "MERE",
+    "resume": "Module du système.",
+    "domaine": "Domaine Poste mère",
+    "href": "pages/hub-mere.php"
+   },
+   {
+    "titre": "Sécurité et continuité",
+    "code": "MERE",
+    "resume": "Module du système.",
+    "domaine": "Domaine Poste mère",
+    "href": "pages/hub-mere.php"
+   },
+   {
+    "titre": "Liaison avec le relais",
+    "code": "MERE",
+    "resume": "Module du système.",
+    "domaine": "Domaine Poste mère",
+    "href": "pages/hub-mere.php"
+   },
+   {
+    "titre": "Plateforme locale",
+    "code": "MERE",
+    "resume": "Module du système.",
+    "domaine": "Domaine Poste mère",
+    "href": "pages/hub-mere.php"
+   },
+   {
+    "titre": "Cycle de vie",
+    "code": "MERE",
+    "resume": "Module du système.",
+    "domaine": "Domaine Poste mère",
+    "href": "pages/hub-mere.php"
+   },
+   {
+    "titre": "Relais en ligne (apps/web)",
+    "code": "RLS",
+    "resume": "Module du système.",
+    "domaine": "Domaine Relais en ligne",
+    "href": "pages/hub-rls.php"
+   },
+   {
+    "titre": "Pilotage & analyse",
+    "code": "PIL",
+    "resume": "La lecture transversale de l’activité : synthèse de la Direction, statistiques et tableau croisé dynamique.",
+    "domaine": "Domaine Pilotage",
+    "href": "pages/hub-pil.php"
+   },
+   {
+    "titre": "Gestion & trésorerie",
+    "code": "M12",
+    "resume": "Comptabilité SYSCOHADA : plan comptable, journaux, écritures équilibrées, balance et états financiers.",
+    "domaine": "Domaine Pilotage",
+    "href": "pages/hub-m12.php"
+   },
+   {
+    "titre": "Tableaux de bord par poste",
+    "code": "DASH",
+    "resume": "Un tableau de bord par profil : indicateurs, alertes et accès rapides propres au poste de travail.",
+    "domaine": "Domaine Pilotage",
+    "href": "pages/hub-dash.php"
+   }
+  ],
+  "apropos": [
+   [
+    "Version",
+    "Prototype v1.0 — août 2026"
+   ],
+   [
+    "Éditeur",
+    "Dr MASSENON Rhodes"
+   ],
+   [
+    "Établissement",
+    "CLINIQUE NASSIERA TOO SARL"
+   ],
+   [
+    "IFU",
+    "3201642748214"
+   ],
+   [
+    "RCCM",
+    "RB/NAT/2016-B-268"
+   ]
+  ],
+  "textes": [
+   "Le SIGH-CNT est le Système Intégré de Gestion Hospitalière de la CLINIQUE NASSIERA TOO SARL. Il réunit en une seule application des activités jusqu’ici réparties entre plusieurs logiciels cloisonnés et de nombreux registres papier : dossier patient, consultations, hospitalisation, laboratoire, pharmacie, achats, facturation, assurances, ressources humaines, paie et comptabilité.",
+   "Une donnée saisie une fois circule ensuite d’un module à l’autre : une prescription alimente la facturation, une dispensation décrémente le stock, un planning validé nourrit le calcul des primes.",
+   "Les quatorze règles de gestion du cahier des charges sont appliquées et rappelées à l’écran là où elles s’imposent : identifiant patient, marge nulle sur les médicaments, stock jamais négatif, signatures de sortie, validité des cartes d’assurance, équilibre des écritures, journalisation et archivage logique.",
+   "À propos",
+   "Modules fonctionnels",
+   "32",
+   "Écrans disponibles",
+   "308",
+   "Règles de gestion appliquées",
+   "14",
+   "Profils d’utilisateur",
+   "22"
+  ],
+  "nbRoles": 22,
+  "rolesArchives": [
+   "pharmacien",
+   "rh"
+  ],
+  "appel": "Vous ne trouvez pas de réponse ?",
+  "lienContact": [
+   "pages/contact-editeur.php"
+  ]
+ },
+ "contact": {
+  "cartes": [
+   "Envoyer un message",
+   "Signaler une anomalie",
+   "Coordonnées de l’éditeur",
+   "Avant de nous écrire"
+  ],
+  "champs": [
+   {
+    "id": "objet",
+    "balise": "input",
+    "requis": false,
+    "placeholder": "ex. : question sur le module Comptabilité"
+   },
+   {
+    "id": "message",
+    "balise": "textarea",
+    "requis": false,
+    "placeholder": "Décrivez votre question ou votre suggestion…"
+   },
+   {
+    "id": "module",
+    "balise": "div",
+    "requis": null,
+    "placeholder": null
+   },
+   {
+    "id": "description",
+    "balise": "textarea",
+    "requis": false,
+    "placeholder": "Que s’est-il passé ? Qu’attendiez-vous à la place ?"
+   },
+   {
+    "id": "etapes",
+    "balise": "textarea",
+    "requis": false,
+    "placeholder": "1. Aller dans…   2. Cliquer sur…   3. Le message suivant apparaît…"
+   }
+  ],
+  "libelles": [
+   "Objet *",
+   "Message *",
+   "Module concerné *",
+   "Description du problème *",
+   "Étapes pour reproduire"
+  ],
+  "refusMessage": [
+   {
+    "titre": "Renseigner l’objet et le message.",
+    "detail": ""
+   }
+  ],
+  "refusAnomalie": [
+   {
+    "titre": "Indiquer le module et décrire le problème.",
+    "detail": ""
+   }
+  ],
+  "toastMessage": [
+   {
+    "titre": "Message envoyé à l’éditeur.",
+    "detail": "Référence SUP-2026-0001 — réponse sous 48 h ouvrées."
+   }
+  ],
+  "toastAnomalie": [
+   {
+    "titre": "Anomalie signalée à l’éditeur.",
+    "detail": "Référence SUP-2026-0002 — réponse sous 48 h ouvrées."
+   }
+  ],
+  "apresMessage": {
+   "objet": "",
+   "message": ""
+  },
+  "fiches": [
+   {
+    "statut": "actif",
+    "reference": "SUP-2026-0002",
+    "date": "2026-10-30",
+    "auteur": "Admin",
+    "etat": "envoyee",
+    "type": "anomalie",
+    "objet": "Anomalie — M8",
+    "module": "M8",
+    "description": "Le reçu ne se détaille pas",
+    "etapes": "1. Encaisser 2. Imprimer",
+    "capture": null
+   },
+   {
+    "statut": "actif",
+    "reference": "SUP-2026-0001",
+    "date": "2026-10-30",
+    "auteur": "Admin",
+    "etat": "envoyee",
+    "type": "message",
+    "objet": "Question sur la comptabilité",
+    "description": "Comment lire la balance ?",
+    "module": null,
+    "etapes": null,
+    "capture": null
+   }
+  ],
+  "lignes": [
+   [
+    "SUP-2026-0002",
+    "30/10/2026",
+    "Anomalie",
+    "Anomalie — M8",
+    "M8",
+    "Envoyée"
+   ],
+   [
+    "SUP-2026-0001",
+    "30/10/2026",
+    "Message",
+    "Question sur la comptabilité",
+    "—",
+    "Envoyée"
+   ]
+  ],
+  "entetes": [
+   "Référence",
+   "Date",
+   "Nature",
+   "Objet",
+   "Module",
+   "État"
+  ],
+  "optionsModule": [
+   {
+    "valeur": "M2",
+    "label": "M2 — RDV, Visites & Consultations",
+    "domaine": "Accueil"
+   },
+   {
+    "valeur": "M1",
+    "label": "M1 — Patients & constantes",
+    "domaine": "Accueil"
+   },
+   {
+    "valeur": "M13",
+    "label": "M13 — Courriers & orientation",
+    "domaine": "Accueil"
+   },
+   {
+    "valeur": "CFG",
+    "label": "CFG — Tarification & information patient",
+    "domaine": "Accueil"
+   },
+   {
+    "valeur": "M1",
+    "label": "M1 — Patients & Dossier médical",
+    "domaine": "Soins"
+   },
+   {
+    "valeur": "M2",
+    "label": "M2 — Consultations & prescriptions",
+    "domaine": "Soins"
+   },
+   {
+    "valeur": "M2",
+    "label": "M2 — Imagerie médicale",
+    "domaine": "Soins"
+   },
+   {
+    "valeur": "M3",
+    "label": "M3 — Hospitalisation",
+    "domaine": "Soins"
+   },
+   {
+    "valeur": "M4",
+    "label": "M4 — Maternité, Naissances & Décès",
+    "domaine": "Soins"
+   },
+   {
+    "valeur": "M5",
+    "label": "M5 — Laboratoire",
+    "domaine": "Soins"
+   },
+   {
+    "valeur": "M6",
+    "label": "M6 — Pharmacie & Stocks",
+    "domaine": "Logistique"
+   },
+   {
+    "valeur": "M7",
+    "label": "M7 — Achats & Fournisseurs",
+    "domaine": "Logistique"
+   },
+   {
+    "valeur": "M8",
+    "label": "M8 — Facturation & Caisse",
+    "domaine": "Financier"
+   },
+   {
+    "valeur": "M9",
+    "label": "M9 — Assurances & Créances",
+    "domaine": "Financier"
+   },
+   {
+    "valeur": "MECEF",
+    "label": "MECEF — MECeF — Facture normalisée",
+    "domaine": "Financier"
+   },
+   {
+    "valeur": "M12",
+    "label": "M12 — Comptabilité SYSCOHADA",
+    "domaine": "Financier"
+   },
+   {
+    "valeur": "M10",
+    "label": "M10 — Ressources humaines",
+    "domaine": "RH"
+   },
+   {
+    "valeur": "M11",
+    "label": "M11 — Paie & Primes",
+    "domaine": "RH"
+   },
+   {
+    "valeur": "M13",
+    "label": "M13 — Administration & Ambulance",
+    "domaine": "Administration"
+   },
+   {
+    "valeur": "GED",
+    "label": "GED — Gestion documentaire",
+    "domaine": "Administration"
+   },
+   {
+    "valeur": "RAP",
+    "label": "RAP — Rapports & Impression",
+    "domaine": "Administration"
+   },
+   {
+    "valeur": "M14",
+    "label": "M14 — Sécurité & Utilisateurs",
+    "domaine": "Système"
+   },
+   {
+    "valeur": "CFG",
+    "label": "CFG — Configuration Clinique",
+    "domaine": "Système"
+   },
+   {
+    "valeur": "MERE",
+    "label": "MERE — Exploitation de la synchronisation",
+    "domaine": "Poste mère"
+   },
+   {
+    "valeur": "MERE",
+    "label": "MERE — Sécurité et continuité",
+    "domaine": "Poste mère"
+   },
+   {
+    "valeur": "MERE",
+    "label": "MERE — Liaison avec le relais",
+    "domaine": "Poste mère"
+   },
+   {
+    "valeur": "MERE",
+    "label": "MERE — Plateforme locale",
+    "domaine": "Poste mère"
+   },
+   {
+    "valeur": "MERE",
+    "label": "MERE — Cycle de vie",
+    "domaine": "Poste mère"
+   },
+   {
+    "valeur": "RLS",
+    "label": "RLS — Relais en ligne (apps/web)",
+    "domaine": "Relais en ligne"
+   },
+   {
+    "valeur": "PIL",
+    "label": "PIL — Pilotage & analyse",
+    "domaine": "Pilotage"
+   },
+   {
+    "valeur": "M12",
+    "label": "M12 — Gestion & trésorerie",
+    "domaine": "Pilotage"
+   },
+   {
+    "valeur": "DASH",
+    "label": "DASH — Tableaux de bord par poste",
+    "domaine": "Pilotage"
+   },
+   {
+    "valeur": "AUTRE",
+    "label": "AUTRE — Autre / je ne sais pas",
+    "domaine": null
+   }
+  ],
+  "coordonnees": [
+   "Dr MASSENON Rhodes",
+   "Éditeur du logiciel SIGH-CNT",
+   "rarhodes06@gmail.com · contact@massenonrhodes.com",
+   "+229 01 51 33 50 40",
+   "Lundi au vendredi, 8h – 17h (GMT)"
+  ],
+  "textes": [
+   "Envoyer un message",
+   "Objet *",
+   "Message *",
+   "Envoyer le message",
+   "Signaler une anomalie",
+   "Module concerné *",
+   "M8 — Facturation & Caisse",
+   "Description du problème *",
+   "Étapes pour reproduire",
+   "Capture d’écran (facultative)"
+  ],
+  "note": "Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires."
+ }
+}
