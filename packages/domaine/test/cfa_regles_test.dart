@@ -107,9 +107,9 @@ void main() {
       fiche(cfaFichePoste(saisie), e);
     });
     test('modules d’un rôle : un code par rangée dont un écran est visible', () {
-      final rangees = [('M1', ['a', 'b']), ('M2', ['c']), ('M1', ['d'])];
-      expect(cfaModulesRole(rangees, (e) => e == 'b' || e == 'd'), ['M1', 'M1']);
-      expect(cfaModulesRole(rangees, (e) => false), isEmpty);
+      final rangees = [('M1', ['a', 'b'], false), ('M2', ['c'], true), ('M1', ['d'], false)];
+      expect(cfaModulesRole(rangees, (c, e, a) => e == 'b' || e == 'd'), ['M1', 'M1']);
+      expect(cfaModulesRole(rangees, (c, e, a) => false), isEmpty);
     });
   });
 

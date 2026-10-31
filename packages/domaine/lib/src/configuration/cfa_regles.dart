@@ -146,8 +146,11 @@ CfaFiche cfaFichePoste(Map<String, Object?> saisie) {
 
 /// `modulesRole` : un code par RANGÉE du manifeste (les codes se répètent quand un module a des rangées secondaires ou des alias) dont au moins un écran
 /// est visible du rôle.
-List<String> cfaModulesRole(Iterable<(String code, List<String> ecrans)> rangees, bool Function(String ecran) voit) =>
-    [for (final r in rangees) if (r.$2.any(voit)) r.$1];
+///
+/// Une rangée CANONIQUE se juge sur les droits de ses écrans (la matrice engendrée) ; une rangée d'ALIAS ne déclare aucun rôle : la maquette l'interroge
+/// avec « tous les rôles » et seuls comptent les droits du module et les réglages d'écran — c'est ce que [voit] reçoit dans `alias`.
+List<String> cfaModulesRole(Iterable<(String code, List<String> ecrans, bool alias)> rangees, bool Function(String code, String ecran, bool alias) voit) =>
+    [for (final r in rangees) if (r.$2.any((e) => voit(r.$1, e, r.$3))) r.$1];
 
 // =============================================================================================================================================
 // cfg-branding

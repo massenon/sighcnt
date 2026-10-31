@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import '../../core/donnees_navigation.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../m14/commun_m14.dart' show rolesDe, surchargesRbac;
 import '../m4/mat_commun.dart';
 
 /// Ce que partagent les dix écrans de configuration de CFG : indicateurs, tableau adossé à une collection (`K.creer` + `K.actionsLigne` de la maquette),
@@ -303,6 +305,37 @@ String cfaMoney(Object? v, {bool devise = false}) => money(v, avecDevise: devise
 
 /// `D.SECTEURS_ACTIVITE` : un référentiel STATIQUE du jeu (liste de chaînes, pas de fiches).
 List<String> cfaSecteursActivite(Magasin m) => [for (final s in (m.referentiels['secteursActivite'] as List? ?? const [])) '$s'];
+
+/// `modulesRole(role)` : les codes des rangées du manifeste dont le rôle voit au moins un écran — droits d'ÉCRAN, surcharges comprises (l'écran
+/// l'emporte sur son module, un écran universel s'ouvre à tous).
+List<String> cfaModulesDuRole(Magasin m, DonneesNavigation nav, String role) {
+  // Un rôle ARCHIVÉ n'ouvre rien : un écran universel ne le ressuscite pas.
+  if (rolesDe(m).any((r) => r.id == role && r.archive)) return const [];
+  final base = m.collection('rolesBase').toutes;
+  final bases = {for (final b in base) '${b['id']}': b};
+  final sur = surchargesRbac(m);
+  final rangeesMag = m.collection('modulesManifeste').toutes;
+  final universels = {
+    for (final r in rangeesMag)
+      for (final u in ((r['universels'] as List?) ?? const [])) '$u'
+  };
+  final rangees = <(String, List<String>, bool)>[
+    for (final d in nav.manifeste.domaines)
+      for (final r in nav.manifeste.rangees.where((r) => r.domaine == d.nom)) (r.code, r.ecrans, r.alias)
+  ];
+  return cfaModulesRole(
+      rangees,
+      (code, ecran, alias) => alias
+          ? secDroitEcran(role, ecran, code, bases: bases, sur: sur, rolesBase: base, universels: universels).voir
+          : nav.matrice.peutVoir(role, ecran));
+}
+
+/// Les données de navigation (manifeste + matrice engendrée), que la coque détient et que les écrans ne reçoivent pas : chargées une fois depuis les
+/// assets (les tests les posent par [cfaPoserNavigation]).
+DonneesNavigation? _navigation;
+Future<DonneesNavigation> cfaNavigation() async => _navigation ??= await DonneesNavigation.chargerAssets();
+void cfaPoserNavigation(DonneesNavigation d) => _navigation = d;
+DonneesNavigation? get cfaNavigationChargee => _navigation;
 
 /// Les valeurs distinctes d'une colonne, triées (`Object.keys(C.groupBy(rows, k)).sort()`).
 List<String> cfaDistincts(Iterable<Fiche> rows, String cle) => ({for (final r in rows) '${r[cle]}'}.toList()..sort((a, b) => comparerNaturel(a, b)));

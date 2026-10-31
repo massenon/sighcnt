@@ -22,6 +22,7 @@ import 'parite/extracteur.dart';
 /// 10 h, rôle admin) mais limitée aux écrans de ce module : chacun DOIT être à 100 % — le test échoue en nommant ce qui manque.
 const ecransMesures = [
   'cfg-natures-facture',
+  'cfg-organisation',
 ];
 
 void main() {
