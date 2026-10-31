@@ -90,3 +90,4 @@ export 'src/pilotage/pil_vue.dart';
 export 'src/pilotage/pil_stats.dart';
 export 'src/pilotage/pil_tableaux.dart';
 export 'src/tableaux_de_bord/tba_regles.dart';
+export 'src/rapports/rap_regles.dart';
