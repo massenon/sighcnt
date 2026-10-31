@@ -24,5 +24,5 @@ final Map<String, ConstruireEcran> ecransM13 = {
   'adm-enquetes': (c, cfg) => const EcranEnquetes(),
   'adm-satisfaction': (c, cfg) => const EcranSatisfaction(),
   'adm-validations': (c, cfg) => const EcranValidations(),
-  'enquete-publique': (c, cfg) => const EnquetePubliqueDansCoque(),
+  'enquete-publique': (c, cfg) => const EnquetePubliqueAutonome(),
 };

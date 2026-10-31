@@ -4,7 +4,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
-import '../../shell/contexte_ecran.dart';
+import '../../shell/contexte_autonome.dart';
 import 'qual_commun.dart';
 
 /// `enquete-publique` — la page publique d'une fiche d'enquête (lien partagé). Elle est ISOLÉE, et c'est tout son intérêt : ni ruban, ni recherche, ni
@@ -16,10 +16,9 @@ import 'qual_commun.dart';
 /// « expiré » et « révoqué » reçoivent LA MÊME réponse (`qualPagePublique`). L'anonymat est porté par le lien : annoncé anonyme, on ne stocke ni nom ni
 /// lien vers un dossier. Aucune donnée médicale.
 ///
-/// LIMITE DE LA COQUE (E571) : la coque du poste enveloppe tout écran dans sa barre supérieure, son ruban et sa page standard — elle ne sait pas servir un
-/// écran SANS chrome (les écrans autonomes `auth-*` et `error-*` ne sont pas servis non plus). Cette page est donc un widget autonome, monté par
-/// `ouvrirPagePublique` dans une route plein écran au-dessus de la coque (aucun chrome, aucun `ContexteEcran`) ; le branchement du registre de la coque
-/// n'affiche, lui, que la réponse unique « Ce lien n'est plus valable » (aucun jeton dans la coque).
+/// LIMITE DE LA COQUE (E571) LEVÉE : la coque sert désormais les écrans `standalone` en plein écran (`EcranAutonome`, `ContexteAutonome`). Le registre
+/// branche cette page par `EnquetePubliqueAutonome` (le jeton vient de l'adresse) ; `ouvrirPagePublique` reste le chemin du bouton « Ouvrir le lien » de
+/// l'écran des enquêtes (une route plein écran au-dessus de la coque).
 class EcranEnquetePublique extends StatefulWidget {
   const EcranEnquetePublique({super.key, required this.magasin, required this.code, this.horloge, this.chrome = false});
 
@@ -208,16 +207,15 @@ Future<void> ouvrirPagePublique(BuildContext contexte, Magasin magasin, String c
         fullscreenDialog: true,
         builder: (_) => EcranEnquetePublique(magasin: magasin, code: code, horloge: horloge)));
 
-/// Le branchement du registre de la coque : sans adresse, aucun jeton — la réponse unique.
-class EnquetePubliqueDansCoque extends StatelessWidget with EcranMaquette {
-  const EnquetePubliqueDansCoque({super.key});
-
-  @override
-  String get titre => 'Fiche d’enquête (lien partagé)';
+/// Le branchement du registre de la coque : la coque sert cet écran EN PLEIN ÉCRAN, sans barre, sans ruban, sans page standard (`EcranAutonome`), et
+/// ne lui donne NI session, NI manifeste, NI navigation (`ContexteAutonome.publique`) — seulement le magasin local, l'horloge et le paramètre `jeton`
+/// de l'adresse. Sans jeton : la réponse unique.
+class EnquetePubliqueAutonome extends StatelessWidget with EcranAutonome {
+  const EnquetePubliqueAutonome({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final c = ContexteEcran.of(context);
-    return EcranEnquetePublique(magasin: c.magasin, code: null, horloge: () => c.aujourdhui, chrome: true);
+    final x = ContexteAutonome.of(context);
+    return EcranEnquetePublique(magasin: x.magasin, code: x.parametres['jeton'], horloge: x.horloge);
   }
 }

@@ -329,6 +329,7 @@ class Magasin {
     'objectifsPilotage': 'M12',
     'modulesActifs': 'CFG',
     'reglages': 'CFG',
+    'support': 'SUP',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
@@ -543,6 +544,7 @@ class Magasin {
     'bulletins',
     'exercices',
     'objectifsPilotage',
-    'modulesActifs'
+    'modulesActifs',
+    'support'
   ];
 }
