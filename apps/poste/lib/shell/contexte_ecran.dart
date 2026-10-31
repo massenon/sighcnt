@@ -15,6 +15,7 @@ class ContexteEcran extends InheritedWidget {
     required this.aller,
     this.utilisateur = '',
     this.horloge,
+    this.ouvre,
     required super.child,
   });
 
@@ -25,6 +26,9 @@ class ContexteEcran extends InheritedWidget {
 
   /// `app.go(id)` : ouvre un autre écran (refusé par la coque s'il est fermé au rôle).
   final void Function(String id) aller;
+
+  /// `ecranOuvert(id)` : l'écran est-il ouvert au profil de l'agent ? (parcours des tableaux de bord : une étape fermée reste visible mais non cliquable). `null` = non branché : tout est réputé ouvert.
+  final bool Function(String id)? ouvre;
 
   /// Nom affiché de l'agent connecté (RG-12 : aucune action anonyme).
   final String utilisateur;
@@ -48,7 +52,8 @@ class ContexteEcran extends InheritedWidget {
       o.ecranId != ecranId ||
       o.role != role ||
       o.droit != droit ||
-      o.magasin != magasin;
+      o.magasin != magasin ||
+      o.ouvre != ouvre;
 }
 
 /// Un écran qui déclare lui-même son en-tête de page (`SIGH.screen({title, description, regle, actions})`).
