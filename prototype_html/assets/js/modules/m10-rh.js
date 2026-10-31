@@ -248,10 +248,11 @@
             : U.empty('Aucun relevé de présence.', { icon: 'calendar-check' })));
           box.appendChild(U.card('Congés', cong.length
             ? K.miniTable([
-              { label: 'Type', render: function (x) { return x.type || x.typeConge || '—'; } },
+              /* E621 : les congés portent `nature` et `duree` — l’onglet lisait `type` et `jours`, donc « — » partout. */
+              { label: 'Type', render: function (x) { return x.nature || x.type || x.typeConge || '—'; } },
               { label: 'Du', render: function (x) { return C.dateFR(x.dateDebut); } },
               { label: 'Au', render: function (x) { return C.dateFR(x.dateFin); } },
-              { label: 'Jours', align: 'right', render: function (x) { return String(x.jours || '—'); } },
+              { label: 'Jours', align: 'right', render: function (x) { return String(x.duree || x.jours || '—'); } },
               { label: 'État', render: function (x) { return U.statut(x.statutConge || 'valide'); } },
             ], C.sortBy(cong, 'dateDebut', 'desc'))
             : U.empty('Aucun congé enregistré.', { icon: 'palmtree' })));
@@ -553,10 +554,11 @@
             { name: 'salaire', label: 'Salaire mensuel (FCFA)', type: 'money', required: true, min: 0 },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.poste = e.poste; v.fonction = e.fonction; }
-          if (!v.reference) v.reference = C.nextRef('CT-', 4);
+          /* E620 : la référence venait de C.nextRef (compteur de page → CT-0001 déjà pris) ET était réécrite à chaque modification. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CT-', 4, col.all());
           v.statutContrat = 'en_vigueur';
           return v;
         },
@@ -1705,11 +1707,12 @@
             { name: 'motif', label: 'Motif', type: 'textarea', rows: 2, col: 'full' },
           ];
         },
-        transform: function (v) {
+        transform: function (v, rec) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) { v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service; }
           v.duree = Math.max(1, C.daysBetween(v.dateDebut, v.dateFin));
-          if (!v.reference) v.reference = C.nextRef('CG-', 4);
+          /* E620 (suite) : même défaut que les contrats. */
+          v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('CG-', 4, col.all());
           return v;
         },
         beforeSave: function (v) {
@@ -3103,7 +3106,8 @@
           { name: 'ifu', label: 'IFU du prestataire' },
           { name: 'factureNormalisee', label: 'Facture normalisée fournie', type: 'checkbox', col: 'full' },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('PE-', 4); return v; },
+        /* E620 (suite) : même défaut que les contrats. */
+        transform: function (v, rec) { v.reference = rec && rec.reference ? rec.reference : C.referenceSuivante('PE-', 4, col.all()); return v; },
         onCreate: function () { return { actesRealises: 0, factureNormalisee: false }; },
         filters: [{ name: 'specialite', label: 'Spécialité', options: ['Circoncision', 'Hydrotubation', 'Accouchement', 'Analyses spécialisées', 'Chirurgie', 'Échographie', 'Anesthésie'] }],
         apresTableau: graphiquesPrestataires,
@@ -4748,12 +4752,14 @@
           onRowClick: fiche,
           rowActions: function (m) {
             var actions = [];
+            /* E623 : valider, terminer et reporter ÉCRIVENT — commandes déclarées comme telles (absentes sans le droit d'édition). */
+            var ecrit = function (c) { if (c) actions.push(c); };
             if (m.statutMission === 'a_valider') {
-              actions.push(K.iconBtn('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
+              ecrit(K.commandeIcone('stamp', 'Valider (Directrice Administrative)', function () { valider(m); }));
             }
             if (m.statutMission === 'validee' || m.statutMission === 'en_cours') {
-              actions.push(K.iconBtn('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
-              actions.push(K.iconBtn('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
+              ecrit(K.commandeIcone('check', 'Marquer terminée', function () { changerEtat(m, 'terminee', 'Mission terminée.'); }));
+              ecrit(K.commandeIcone('calendar-clock', 'Reporter', function () { changerEtat(m, 'reportee', 'Mission reportée.'); }));
             }
             actions.push(K.iconBtn('printer', 'Imprimer l’ordre', function () { imprimer(m); }));
             return actions.concat(K.actionsLigne(colMissions(), champsMission, { entite: 'ordre de mission' })(m));
