@@ -26,13 +26,13 @@ String sp(String s) => s.replaceAll(' ', ' ').replaceAll(' ', ' ');
 
 Magasin magasin() => Magasin.depuisDossier(Magasin.collectionsDuJeu);
 
-Future<void> ouvrir(WidgetTester t, Magasin m, String ecran, {String role = 'admin', DateTime? le}) async {
+Future<void> ouvrir(WidgetTester t, Magasin m, String ecran, {String role = 'admin', DateTime? le, DonneesNavigation? nav}) async {
   t.view.physicalSize = const Size(1600, 1100);
   t.view.devicePixelRatio = 1;
   addTearDown(t.view.resetPhysicalSize);
   await t.pumpWidget(SighPoste(
       key: UniqueKey(),
-      donnees: donnees,
+      donnees: nav ?? donnees,
       config: ConfigPoste(mode: ModePoste.fileul, role: role),
       ecranInitial: ecran,
       magasin: m,
@@ -99,4 +99,41 @@ void poserBulletins(Magasin m) {
   for (final b in bulletinsVecteur().reversed) {
     col.inserer({...b, 'statut': 'actif'});
   }
+}
+
+/// Choisit une option d'un filtre de tableau (`PopupMenuButton` dont l'infobulle est le libellé du filtre).
+Future<void> filtrer(WidgetTester t, String filtre, String option) async {
+  await t.tap(find.byTooltip(filtre).first);
+  await t.pumpAndSettle();
+  await t.tap(find.text(option).last);
+  await t.pumpAndSettle();
+}
+
+/// Pose une date par le sélecteur du système : le jour [jour] du mois affiché (sans valeur, le sélecteur s'ouvre sur le mois de l'horloge RÉELLE).
+Future<void> dater(WidgetTester t, String champ, int jour) async {
+  await toucher(t, find.descendant(of: find.byKey(Key('kit:champ:$champ')), matching: find.byType(InkWell)).first);
+  await t.pump(const Duration(seconds: 1));
+  final j = find.descendant(of: find.byType(DatePickerDialog), matching: find.text('$jour'));
+  await t.tap(j.last);
+  await t.pump(const Duration(milliseconds: 300));
+  await t.tap(find.text('OK'));
+  await t.pump(const Duration(seconds: 1));
+}
+
+/// Les cellules d'un tableau de la maquette, ligne par ligne.
+List<List<String>> cellulesVecteur(Object? table) => [for (final l in mm(table)['lignes'] as List) [for (final c in (l as List)) '$c']];
+
+/// Les fiches INSÉRÉES / les correctifs APPLIQUÉS à une collection par un geste de la maquette (`ecart` du pilote).
+List<M> inserts(Object? geste, String col) => lm(mm(mm(mm(geste)['ecart'])['inserts'])[col]);
+List<M> modifs(Object? geste, String col) => lm(mm(mm(mm(geste)['ecart'])['modifs'])[col]);
+
+/// La matrice des droits de la maquette, AVEC un droit d'écran posé à la main (`[voir, éditer, annuler]`) : pour éprouver une commande d'écriture
+/// ABSENTE sans le droit d'écrire sur un profil que la matrice d'origine n'offre pas.
+DonneesNavigation navAvecDroit(String role, String ecran, List<int> droit) {
+  final rbac = (jsonDecode(File('assets/donnees/rbac.json').readAsStringSync()) as Map).cast<String, Object?>();
+  ((rbac['parRole'] as Map)[role] as Map)[ecran] = droit;
+  return DonneesNavigation.depuisJson(
+      manifeste: File('assets/donnees/manifeste.json').readAsStringSync(),
+      rbac: jsonEncode(rbac),
+      parite: File('assets/donnees/parite.json').readAsStringSync());
 }

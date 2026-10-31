@@ -10,8 +10,8 @@ import 'pai_commun.dart';
 import 'pai_pieces.dart';
 
 /// `m11-bulletins` — « Bulletins de paie » : le registre des bulletins GÉNÉRÉS, en lecture seule (`readonly: true` de la maquette) — ils sont produits par le
-/// moteur de calcul, une correction passe par la reprise du calcul de la période. Aucune commande « Nouveau » ni « Modifier » ; l'archivage (RG-14) reste
-/// derrière le droit d'annuler. Le détail ORTB et les participations imputées voyagent avec le bulletin stocké (E682).
+/// moteur de calcul, une correction passe par la reprise du calcul de la période. Aucune commande « Nouveau », « Modifier » ni « Archiver » (ce que
+/// `readonly` retire dans la maquette, pour TOUS les profils : un bulletin émis ne se réécrit ni ne s'efface). Le détail ORTB et les participations imputées voyagent avec le bulletin stocké (E682).
 class EcranBulletins extends StatelessWidget with EcranMaquette {
   const EcranBulletins({super.key});
 
@@ -85,6 +85,7 @@ class EcranBulletins extends StatelessWidget with EcranMaquette {
       entite: 'bulletin',
       entiteP: 'bulletins',
       taillePage: 15,
+      readonly: true,
       triInitial: 'periode',
       sensInitial: 'desc',
       intro: (_) => const NoteSigh(
