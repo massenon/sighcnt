@@ -170,5 +170,21 @@
  "m10-contrats": "porté",
  "m10-conges": "porté",
  "m10-missions": "porté",
- "m10-prestataires": "porté"
+ "m10-prestataires": "porté",
+ "m11-prets-etudes": "porté",
+ "m11-dashboard": "porté",
+ "m11-calcul": "porté",
+ "m11-bulletins": "porté",
+ "m11-cotisations": "porté",
+ "m11-heures-sup": "porté",
+ "m11-avances": "porté",
+ "m11-ortb": "porté",
+ "m11-validation": "porté",
+ "m12-dashboard": "porté",
+ "m12-plan-comptable": "porté",
+ "m12-journaux": "porté",
+ "m12-ecritures": "porté",
+ "m12-depenses": "porté",
+ "m12-grand-livre": "porté",
+ "m12-balance": "porté"
 }

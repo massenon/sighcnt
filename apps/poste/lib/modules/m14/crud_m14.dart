@@ -39,6 +39,7 @@ class CrudM14 extends StatefulWidget {
     this.prefixeId = 'ID',
     this.valeursCreation = const {},
     this.provenance,
+    this.ongletsApres,
   });
 
   final CollectionMagasin collection;
@@ -57,6 +58,9 @@ class CrudM14 extends StatefulWidget {
   final Map<String, Object?> valeursCreation;
   final String prefixeId;
   final String? provenance;
+
+  /// `extraTabs` de la maquette : des onglets propres à l'écran, posés ENTRE « Tous les X » et « Archivés » (m12-plan-comptable : « Par classe »).
+  final List<OngletDef> Function(BuildContext)? ongletsApres;
   final List<KpiSigh> Function(List<Fiche> actives)? kpis;
   final List<FiltreTableau> filtres;
   final Widget Function(BuildContext, Fiche)? detail;
@@ -348,6 +352,7 @@ class _CrudM14State extends State<CrudM14> {
             libelle: 'Tous les $_p',
             compte: actives.length,
             construire: (ctx) => _tableau(ctx, c, archive: false)),
+        ...?widget.ongletsApres?.call(context),
         OngletDef(
             id: 'archives',
             libelle: 'Archivés',

@@ -67,3 +67,6 @@ export 'src/assurances/ass_regles.dart';
 export 'src/securite/securite.dart';
 export 'src/rh/rha_regles.dart';
 export 'src/paie/pai_moteur.dart';
+export 'src/comptabilite/cpa_referentiels.dart';
+export 'src/comptabilite/cpa_ecritures.dart';
+export 'src/comptabilite/cpa_depenses.dart';
