@@ -268,5 +268,9 @@
  "cfg-compte": "porté",
  "cfg-modules": "porté",
  "cfg-systeme": "porté",
- "cfg-poste": "porté"
+ "cfg-poste": "porté",
+ "rapports-bibliotheque": "porté",
+ "rapports-direction": "porté",
+ "rapports-generateur": "porté",
+ "rapports-historique": "porté"
 }
