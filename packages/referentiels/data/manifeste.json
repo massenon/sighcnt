@@ -127,7 +127,12 @@
     "cfg-tarifs",
     "cfg-catalogue",
     "cfg-certificats"
-   ]
+   ],
+   "libellesEcrans": {
+    "cfg-tarifs": "Référentiel tarifaire public",
+    "cfg-catalogue": "Catalogue des prestations",
+    "cfg-certificats": "Tarifs des certificats & attestations"
+   }
   },
   {
    "domaine": "Soins",

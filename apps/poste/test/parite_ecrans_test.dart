@@ -108,6 +108,9 @@ void main() {
       {bool activiteRouverte = false, Map<String, List<Map<String, Object?>>> fixture = const {}}) async {
     final f = fiche(id);
     if (f == null || f['acces'] != 'ouvert') return null;
+    // Les neuf écrans AUTONOMES (sans coque) ont leur propre mesure, qui les monte comme la coque le fait (session, jeton, placeholders et étiquettes
+    // lus) : `parite_autonomes_test.dart`, contre des fiches extraites de leurs pages réelles (`build/extraire-autonomes.js`).
+    if (f['autonome'] == true) return null;
     // `remplacerContenu` ne journalise pas : la mesure ne laisse aucune trace dans le journal d'audit que d'autres écrans affichent.
     final colModules = magasin.collection('modulesActifs');
     final avant = [for (final fm in colModules.toutes) {...fm}];
@@ -179,7 +182,7 @@ void main() {
         rapport.add({
           'id': id,
           'mesure': false,
-          'raison': 'aucune fiche de la maquette (lancer extraire-ecrans.js)'
+          'raison': 'aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)'
         });
         continue;
       }

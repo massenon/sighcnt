@@ -83,7 +83,10 @@ async function extraireRbac() {
       const domaines = N.NAV.map((d) => ({ nom: d.domain, icone: d.icon || null }));
       N.NAV.forEach((d) => d.modules.forEach((mod) => {
         modules.push({ domaine: d.domain, code: mod.code, label: mod.label, icone: mod.icon || null, alias: !!mod.alias, secondaire: !!mod.secondaire,
-          roles: mod.roles === undefined ? 'ALL' : propre(mod.roles), ecrans: mod.items.map((i) => i.id) });
+          roles: mod.roles === undefined ? 'ALL' : propre(mod.roles), ecrans: mod.items.map((i) => i.id),
+          /* Le libellé que la RANGÉE donne à un écran quand il diffère du canonique (rangées alias : « Référentiel tarifaire public » pour
+             `cfg-tarifs`). Le plan du site l'affiche tel quel (E1083). Absent quand aucun libellé ne diffère. */
+          libellesEcrans: (() => { const acc = {}; mod.items.forEach((i) => { const c = N.get(i.id); if (c && i.label && i.label !== c.label) acc[i.id] = i.label; }); return Object.keys(acc).length ? acc : undefined; })() });
         vus.add(mod.code);
       }));
       const codes = Array.from(new Set(Object.values(N.INDEX).map((e) => e.module)));

@@ -3,6 +3,74 @@
  "module": "M13",
  "domaine": "Administration",
  "libelleManifeste": "Fiche d’enquête (lien partagé)",
- "acces": "erreur",
- "erreur": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#page-content') to be visible\u001b[22"
+ "acces": "ouvert",
+ "autonome": true,
+ "titre": "Satisfaction des patients",
+ "titreOnglet": "Fiche d’enquête (lien partagé) — SIGH Clinique NASSIERA TOO",
+ "description": [
+  "CLINIQUE NASSIERA TOO",
+  "Votre santé, notre raison de vivre",
+  "Recueil à la sortie.",
+  "Questionnaire ANONYME : votre réponse n’est reliée ni à votre nom, ni à votre dossier. Aucune question ne porte sur votre santé.",
+  "CLINIQUE NASSIERA TOO SARL — BP : 507 NATITINGOU (Rép. du Bénin)"
+ ],
+ "cartes": [],
+ "champs": [
+  "Qualité de l’accueil (1 à 5) *",
+  "1",
+  "Recommanderiez-vous la clinique ? *",
+  "Oui",
+  "Ce que nous pourrions améliorer"
+ ],
+ "commandes": [
+  "Envoyer ma réponse"
+ ],
+ "fixtureEnquete": {
+  "enquete": {
+   "id": "ENQxmvwph19mn2dp8",
+   "statut": "actif",
+   "reference": "ENQ-SAT",
+   "titre": "Satisfaction des patients",
+   "description": "Recueil à la sortie.",
+   "questions": [
+    {
+     "code": "Q_ACCUEIL",
+     "libelle": "Qualité de l’accueil",
+     "type": "note"
+    },
+    {
+     "code": "Q_RECO",
+     "libelle": "Recommanderiez-vous la clinique ?",
+     "type": "choix",
+     "options": [
+      "Oui",
+      "Non"
+     ]
+    },
+    {
+     "code": "Q_LIBRE",
+     "libelle": "Ce que nous pourrions améliorer",
+     "type": "texte"
+    }
+   ],
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-31T17:59:25.354Z"
+  },
+  "jeton": {
+   "id": "JETxmvwph19mea5v5",
+   "statut": "actif",
+   "jeton": "wtzn8q3ep44ti48tu6cahep5",
+   "enqueteId": "ENQxmvwph19mn2dp8",
+   "enqueteTitre": "Satisfaction des patients",
+   "anonyme": true,
+   "usage": "Lien",
+   "creeLe": "2026-10-31",
+   "expireLe": "2099-12-31",
+   "revoqueLe": null,
+   "note": null,
+   "ouvertPar": "extraction",
+   "_creePar": "BASSONGUI Chabi Séko",
+   "_creeLe": "2026-10-31T17:59:25.354Z"
+  }
+ }
 }

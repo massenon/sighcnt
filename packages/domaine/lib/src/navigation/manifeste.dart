@@ -44,7 +44,8 @@ class RangeeManifeste {
       required this.icone,
       required this.alias,
       required this.secondaire,
-      required this.ecrans});
+      required this.ecrans,
+      this.libellesEcrans = const {}});
   final String domaine;
   final String code;
   final String label;
@@ -54,6 +55,10 @@ class RangeeManifeste {
   final bool alias;
   final bool secondaire;
   final List<String> ecrans;
+
+  /// Le libellé que CETTE rangée donne à un écran quand il diffère du canonique (rangées alias : « Référentiel tarifaire public » pour `cfg-tarifs`).
+  /// Seul le plan du site l'affiche ; le ruban garde le libellé canonique de l'écran.
+  final Map<String, String> libellesEcrans;
 }
 
 class DomaineManifeste {
@@ -143,6 +148,9 @@ class Manifeste {
               alias: m['alias'] == true,
               secondaire: m['secondaire'] == true,
               ecrans: ((m['ecrans'] ?? const []) as List).cast<String>(),
+              libellesEcrans: {
+                for (final e in ((m['libellesEcrans'] ?? const {}) as Map).entries) '${e.key}': '${e.value}'
+              },
             );
           }(),
       ],

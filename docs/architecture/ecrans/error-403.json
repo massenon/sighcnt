@@ -3,6 +3,19 @@
  "module": "AUTH",
  "domaine": "Système",
  "libelleManifeste": "Accès refusé",
- "acces": "erreur",
- "erreur": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#page-content') to be visible\u001b[22"
+ "acces": "ouvert",
+ "autonome": true,
+ "titre": "Accès refusé",
+ "titreOnglet": "Accès refusé — SIGH Clinique NASSIERA TOO",
+ "description": [
+  "403",
+  "Votre profil ne dispose pas des habilitations requises pour cet écran. L’accès est régi par la matrice RBAC (CDCT §12.1) et toute tentative est journalisée.",
+  "CLINIQUE NASSIERA TOO SARL — SIGH-CNT"
+ ],
+ "cartes": [],
+ "champs": [],
+ "commandes": [
+  "Retour à l’accueil",
+  "Plan du site"
+ ]
 }

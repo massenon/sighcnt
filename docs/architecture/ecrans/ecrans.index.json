@@ -2901,57 +2901,57 @@
   },
   {
    "id": "auth-forgot",
-   "acces": "erreur",
-   "titre": null,
+   "acces": "ouvert",
+   "titre": "Système Intégré de Gestion Hospitalière",
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 0
+   "commandes": 2
   },
   {
    "id": "auth-reset",
-   "acces": "erreur",
-   "titre": null,
+   "acces": "ouvert",
+   "titre": "Système Intégré de Gestion Hospitalière",
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 0
+   "commandes": 2
   },
   {
    "id": "auth-2fa",
-   "acces": "erreur",
-   "titre": null,
+   "acces": "ouvert",
+   "titre": "Système Intégré de Gestion Hospitalière",
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 0
+   "commandes": 2
   },
   {
    "id": "auth-lock",
-   "acces": "erreur",
-   "titre": null,
+   "acces": "ouvert",
+   "titre": "Système Intégré de Gestion Hospitalière",
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 0
+   "commandes": 2
   },
   {
    "id": "error-404",
-   "acces": "erreur",
-   "titre": null,
+   "acces": "ouvert",
+   "titre": "Page introuvable",
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 0
+   "commandes": 2
   },
   {
    "id": "error-403",
-   "acces": "erreur",
-   "titre": null,
+   "acces": "ouvert",
+   "titre": "Accès refusé",
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 0
+   "commandes": 2
   },
   {
    "id": "aide-apropos",
@@ -3063,12 +3063,30 @@
   },
   {
    "id": "enquete-publique",
-   "acces": "erreur",
-   "titre": null,
+   "acces": "ouvert",
+   "titre": "Satisfaction des patients",
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 0
+   "commandes": 1
+  },
+  {
+   "id": "index",
+   "acces": "ouvert",
+   "titre": "Système Intégré de Gestion Hospitalière",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "plan-du-site",
+   "acces": "ouvert",
+   "titre": "Plan du site",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 325
   }
  ]
 }

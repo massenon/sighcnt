@@ -82,6 +82,22 @@ class AccModuleManifeste {
   final List<EcranNav> ecrans;
 }
 
+/// L'écran tel que la RANGÉE le nomme : les rangées alias donnent à un écran un intitulé qui leur est propre (E1083), le plan du site l'affiche.
+EcranNav _sousLibelle(EcranNav e, String? libelle) => libelle == null
+    ? e
+    : EcranNav(
+        id: e.id,
+        label: libelle,
+        icone: e.icone,
+        module: e.module,
+        moduleLabel: e.moduleLabel,
+        domaine: e.domaine,
+        hub: e.hub,
+        standalone: e.standalone,
+        roles: e.roles,
+        universel: e.universel,
+        servant: e.servant);
+
 /// Les rangées du manifeste dans l'ordre des domaines (`N.NAV`), chacune avec ses écrans. Ni les hubs ni les pages d'accès n'y figurent : ce sont les
 /// écrans fonctionnels que la maquette compte.
 List<AccModuleManifeste> accModules(Manifeste m) {
@@ -90,7 +106,7 @@ List<AccModuleManifeste> accModules(Manifeste m) {
     for (final r in m.rangees.where((r) => r.domaine == d.nom)) {
       out.add(AccModuleManifeste(d.nom, r.code, r.label, r.icone, [
         for (final id in r.ecrans)
-          if (m.ecran(id) != null) m.ecran(id)!
+          if (m.ecran(id) != null) _sousLibelle(m.ecran(id)!, r.libellesEcrans[id])
       ]));
     }
   }

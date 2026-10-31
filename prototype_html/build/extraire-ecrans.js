@@ -31,6 +31,12 @@ const SORTIE = path.join(REPO, 'docs', 'architecture', 'ecrans');
     n++;
     const url = `http://127.0.0.1:${BANC.PORT_PHP}/pages/${e.id}.php`;
     let res;
+    /* Les écrans AUTONOMES (sans coquille, donc sans #page-content) ont leur extracteur (`extraire-autonomes.js`) : leur fiche n'est pas écrasée ici. */
+    const existante = path.join(SORTIE, e.id + '.json');
+    if (fs.existsSync(existante)) {
+      const f0 = JSON.parse(fs.readFileSync(existante, 'utf8'));
+      if (f0.autonome === true) { index.push({ id: e.id, acces: f0.acces, titre: f0.titre || null, kpis: 0, tableaux: 0, onglets: 0, commandes: (f0.commandes || []).length }); continue; }
+    }
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded' });
       await page.waitForSelector('#page-content', { timeout: 12000 });
