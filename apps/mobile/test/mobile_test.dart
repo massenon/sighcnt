@@ -1,41 +1,9 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_mobile/main.dart';
 import 'package:sigh_mobile/moteur/moteur_mobile.dart';
 
-class FauxMoteur implements MoteurMobile {
-  FauxMoteur({this.refus});
-  final String? refus;
-  @override
-  ProfilMobile? profil;
-  @override
-  final ValueNotifier<EtatMobile> etat = ValueNotifier(const EtatMobile(horsLigne: true));
-  final List<FichePatient> lot = [const FichePatient(id: 'p1', champs: {'nom': 'DOSSOU', 'prenom': 'Aline', 'code': 'CNT/12/26', 'quartier': 'Kouba'})];
-  final List<FichePatient> crees = [];
-  final List<(String, Map<String, Object?>)> constantes = [];
-  String? codeAppairage;
-
-  @override
-  Future<void> appairer({required String code, required String cleClinique, required ProfilMobile profil}) async {
-    if (refus != null) throw StateError(refus!);
-    codeAppairage = code;
-    this.profil = profil;
-  }
-
-  @override
-  Future<List<FichePatient>> tournee() async => lot;
-  @override
-  Future<List<FichePatient>> dossiersCrees() async => crees;
-  @override
-  Future<String> creerPatient(Map<String, Object?> champs) async {
-    crees.add(FichePatient(id: 'n${crees.length}', champs: champs));
-    etat.value = EtatMobile(horsLigne: true, enAttente: crees.length);
-    return 'n${crees.length - 1}';
-  }
-
-  @override
-  Future<void> enregistrerConstantes(String patientId, Map<String, Object?> c) async => constantes.add((patientId, c));
-}
+import 'aide_mobile.dart';
 
 void main() {
   testWidgets('appairage : champs obligatoires, refus affiché tel quel, puis l\'accueil du profil choisi', (t) async {
@@ -49,6 +17,8 @@ void main() {
     await t.enterText(find.byKey(const Key('cle')), 'Y2xl');
     await t.tap(find.text('Réception de secours'));
     await t.pump();
+    // La réception de secours n'a ni agent ni fonction à déclarer.
+    expect(find.byKey(const Key('agent')), findsNothing);
     await t.tap(find.byKey(const Key('appairer')));
     await t.pumpAndSettle();
     expect(m.codeAppairage, 'ABCD2345');
@@ -56,39 +26,40 @@ void main() {
     expect(find.text('Réception de secours'), findsWidgets);
   });
 
+  testWidgets('appairage soignant : l\'agent est obligatoire (RG-12), sa fonction part avec l\'appairage', (t) async {
+    final m = FauxMoteur();
+    await t.pumpWidget(SighMobile(moteur: m));
+    await t.enterText(find.byKey(const Key('code')), 'abcd2345');
+    await t.enterText(find.byKey(const Key('cle')), 'Y2xl');
+    await t.tap(find.byKey(const Key('appairer')));
+    await t.pump();
+    expect(find.text('Le nom de l’agent est obligatoire : aucune action anonyme (RG-12).'), findsOneWidget);
+    expect(m.codeAppairage, isNull);
+
+    await t.enterText(find.byKey(const Key('agent')), 'Dr YENI M’PO Florent');
+    await t.ensureVisible(find.byKey(const Key('fonction')));
+    await t.tap(find.byKey(const Key('fonction')));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Infirmier(ère)').last);
+    await t.pumpAndSettle();
+    await t.ensureVisible(find.byKey(const Key('appairer')));
+    await t.tap(find.byKey(const Key('appairer')));
+    await t.pumpAndSettle();
+    expect(m.agentAppairage, 'Dr YENI M’PO Florent');
+    expect(m.fonctionAppairage, 'infirmier');
+    expect(m.profil, ProfilMobile.soignant);
+  });
+
   testWidgets('appairage refusé par la mère : la cause s\'affiche, on reste sur l\'écran', (t) async {
     await t.pumpWidget(SighMobile(moteur: FauxMoteur(refus: 'code_invalide')));
     await t.enterText(find.byKey(const Key('code')), 'X');
     await t.enterText(find.byKey(const Key('cle')), 'Y');
+    await t.enterText(find.byKey(const Key('agent')), 'Agent');
+    await t.ensureVisible(find.byKey(const Key('appairer')));
     await t.tap(find.byKey(const Key('appairer')));
     await t.pumpAndSettle();
     expect(find.textContaining('code_invalide'), findsOneWidget);
     expect(find.byKey(const Key('appairer')), findsOneWidget);
-  });
-
-  testWidgets('soignant : tournée du lot, constantes saisies, refus nommé d\'un nombre faux', (t) async {
-    final m = FauxMoteur()..profil = ProfilMobile.soignant;
-    await t.pumpWidget(SighMobile(moteur: m));
-    await t.pumpAndSettle();
-    expect(find.text('Ma tournée'), findsOneWidget);
-    expect(find.textContaining('Hors ligne'), findsOneWidget);
-    expect(find.text('DOSSOU Aline'), findsOneWidget);
-    expect(find.text('Réception de secours'), findsNothing);
-
-    await t.tap(find.byKey(const Key('patient-p1')));
-    await t.pumpAndSettle();
-    await t.enterText(find.byKey(const Key('champ-temperature')), 'chaud');
-    await t.tap(find.byKey(const Key('enregistrer')));
-    await t.pump();
-    expect(find.text('« temperature » doit être un nombre.'), findsOneWidget);
-    expect(m.constantes, isEmpty);
-
-    await t.enterText(find.byKey(const Key('champ-temperature')), '38,5');
-    await t.enterText(find.byKey(const Key('champ-tension')), '12/8');
-    await t.tap(find.byKey(const Key('enregistrer')));
-    await t.pumpAndSettle();
-    expect(m.constantes.single.$1, 'p1');
-    expect(m.constantes.single.$2, {'temperature': 38.5, 'tension': '12/8'});
   });
 
   testWidgets('réception de secours : dossier visible AUSSITÔT, compteur « en attente », contrôles du formulaire', (t) async {
@@ -117,13 +88,45 @@ void main() {
     expect(find.textContaining('1 en attente d’envoi'), findsOneWidget);
   });
 
+  testWidgets('le bandeau dit qu\'un refus attend et ouvre « À traiter » avec son code, son motif et son geste', (t) async {
+    final m = FauxMoteur(refusATraiter: const [
+      RefusAffiche(operation: 'op1', code: 'droit_refuse', motif: 'Infirmier(ère) : la prescription de « Médicaments » n’est pas dans ses habilitations.', geste: 'Demander la prescription à un médecin')
+    ])
+      ..profil = ProfilMobile.soignant;
+    m.etat.value = const EtatMobile(horsLigne: false, aTraiter: 1);
+    await t.pumpWidget(SighMobile(moteur: m));
+    await t.pumpAndSettle();
+    expect(find.textContaining('1 à traiter'), findsOneWidget);
+    await t.tap(find.byKey(const Key('bandeau')));
+    await t.pumpAndSettle();
+    expect(find.textContaining('n’est pas dans ses habilitations'), findsOneWidget);
+    expect(find.textContaining('À faire : Demander la prescription à un médecin'), findsOneWidget);
+    expect(find.textContaining('droit_refuse'), findsOneWidget);
+  });
+
+  testWidgets('un lot expiré se dit au bandeau', (t) async {
+    final m = FauxMoteur()..profil = ProfilMobile.soignant;
+    m.etat.value = EtatMobile(horsLigne: true, lotExpire: DateTime.now().millisecondsSinceEpoch - 1000);
+    await t.pumpWidget(SighMobile(moteur: m));
+    await t.pumpAndSettle();
+    expect(find.textContaining('lot de tournée expiré'), findsOneWidget);
+  });
+
   test('le moteur réel (sigh_sync) s\'instancie dans l\'application : non appairé, rien en attente, aucun profil', () async {
     final m = MoteurMobileSync.creer(dbChemin: ':memory:', relais: 'http://127.0.0.1:1');
     expect(m.profil, isNull);
+    expect(m.soignant, isNull);
     await m.actualiser();
     expect(m.etat.value.appaire, isFalse);
     expect(m.etat.value.enAttente, 0);
     expect(m.etat.value.suspendu, isFalse);
+    m.arreter();
+  });
+
+  test('le profil soignant exige l\'agent et sa fonction à l\'appairage (RG-12) : refus avant tout appel réseau', () async {
+    final m = MoteurMobileSync.creer(dbChemin: ':memory:', relais: 'http://127.0.0.1:1');
+    await expectLater(m.appairer(code: 'ABCD2345', cleClinique: 'Y2xl', profil: ProfilMobile.soignant), throwsStateError);
+    await expectLater(m.appairer(code: 'ABCD2345', cleClinique: 'Y2xl', profil: ProfilMobile.soignant, agent: 'X', fonction: 'chauffeur'), throwsStateError);
     m.arreter();
   });
 }
