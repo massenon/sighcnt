@@ -18,6 +18,8 @@ import 'cpb_commun.dart';
 /// portent d'autres libellés (« ECOBANK Bénin », « Bank Of Africa Bénin »…) : choisir une banque ne retrouve AUCUN rapprochement. Porté fidèlement et dit ;
 /// à trancher (aligner les libellés, ou lier le rapprochement au compte).
 /// Écart E780 : les rapprochements du jeu sont amorcés par l'écran (aucune saisie de rapprochement n'existe) ; l'écran les LIT et les imprime.
+/// Écart E781 : le formulaire d'un compte exige le « Numéro de compte » ; la caisse (571000) n'en a pas — « Modifier » la caisse est donc toujours REFUSÉ
+/// (« Ce champ est obligatoire ») : porté fidèlement et dit.
 class EcranBanques extends StatefulWidget with EcranMaquette {
   const EcranBanques({super.key});
 

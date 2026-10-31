@@ -18,6 +18,8 @@ import 'cpb_commun.dart';
 ///
 /// Écart E770 : le sélecteur d'exercice de la coque (`SIGH.exercice`) n'est pas porté (E717) ; les écrans gardent le leur, comme la maquette, et la
 /// liste d'exercices est celle du journal (année de l'horloge comprise) plus l'exercice déposé.
+/// Écart E779 : la pièce A4 du poste n'a qu'UNE rangée d'en-tête de colonnes (la maquette en imprime deux, avec fusions) : la source de chaque colonne
+/// (« calculé — arrêté au … » / « déposé — liasse … ») est portée par l'intitulé de colonne et par le cartouche.
 abstract class _EcranFeuillet extends StatefulWidget with EcranMaquette {
   const _EcranFeuillet({super.key});
 

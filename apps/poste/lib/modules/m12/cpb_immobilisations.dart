@@ -19,7 +19,7 @@ import 'cpb_commun.dart';
 /// Écarts E772 / E773 : référence tirée des biens existants (« IM-011 », non « IM-001 » redonné par le compteur de page) et conservée à la modification
 /// — corrigés dans la maquette d'abord.
 /// Écart E778 : l'état « Cédé » SANS date de sortie sort le bien du bilan mais ne l'arrête pas d'amortir (le terme du calcul reste aujourd'hui) ; porté
-/// fidèlement. Écart E779 : le plan de l'état imprimé s'ouvre sur « Durée — linéaire, pas semestriel » même pour un bien dont le plan est semestriel.
+/// fidèlement.
 class EcranImmobilisations extends StatelessWidget with EcranMaquette {
   const EcranImmobilisations({super.key});
 
