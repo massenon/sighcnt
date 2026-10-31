@@ -94,7 +94,9 @@ void comparer(WidgetTester t, M v, {bool parcours = true}) {
         for (final cell in (l as List)) {
           final s = sp('$cell');
           if (s.isEmpty || s == '—') continue;
-          expect(a(s), isTrue, reason: 'cellule « $s » (ligne $i) de « ${c['titre']} »');
+          // Une cellule peut empiler deux textes (patient + code du dossier) que `innerText` a mis bout à bout : on accepte la coupure en deux.
+          final coupee = a(s) || [for (var k = 1; k < s.length; k++) a(s.substring(0, k).trim()) && a(s.substring(k).trim())].any((x) => x);
+          expect(a(s) || coupee, isTrue, reason: 'cellule « $s » (ligne $i) de « ${c['titre']} »');
         }
       }
     }

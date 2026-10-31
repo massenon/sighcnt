@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/config_poste.dart';
 import 'tba_infirmier.dart';
 import 'tba_medecin.dart';
+import 'tba_pharmacien.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -12,4 +13,5 @@ typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste con
 final Map<String, ConstruireEcran> ecransDASH = {
   'dash-medecin': (c, cfg) => const EcranDashMedecin(),
   'dash-infirmier': (c, cfg) => const EcranDashInfirmier(),
+  'dash-pharmacien': (c, cfg) => const EcranDashPharmacien(),
 };
