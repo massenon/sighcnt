@@ -8,7 +8,9 @@ import 'cpa_ecritures.dart';
 import 'cpa_grand_livre.dart';
 import 'cpa_journaux.dart';
 import 'cpa_plan_comptable.dart';
+import 'cpc_baseline.dart';
 import 'cpc_cloture.dart';
+import 'cpc_echeances.dart';
 import 'cpc_ouverture.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
@@ -25,4 +27,6 @@ final Map<String, ConstruireEcran> ecransM12 = {
   'm12-balance': (c, cfg) => const EcranBalance(),
   'm12-cloture': (c, cfg) => const EcranCloture(),
   'm12-ouverture': (c, cfg) => const EcranOuverture(),
+  'm12-echeances': (c, cfg) => const EcranEcheances(),
+  'm12-baseline-2025': (c, cfg) => const EcranBaseline2025(),
 };
