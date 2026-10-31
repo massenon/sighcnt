@@ -212,6 +212,7 @@ class PilDirection {
     required this.indisponibles,
     required this.caMois,
     required this.encaisseMois,
+    required this.nbFacturesMois,
     required this.lignesRapport,
   });
 
@@ -224,6 +225,7 @@ class PilDirection {
   final List<String> enAlerte;
   final int indisponibles;
   final double caMois, encaisseMois;
+  final int nbFacturesMois;
 
   /// Le tableau de l'état « Rapport d'activité — Direction » : (indicateur, valeur).
   final List<(String, String)> lignesRapport;
@@ -290,13 +292,13 @@ PilDirection pilDirection({
   // Évolution du chiffre d'affaires (12 mois) : facturé / encaissé.
   final s = pilParMois(factures, 'date', champValeur: 'montantTTC', ref: refMois);
   final e = pilParMois(factures, 'date', champValeur: 'montantPaye', ref: refMois);
-  v.graphiques.add(PilGraphique('ligne', s.etiquettes, [PilSerie('Facturé', s.valeurs), PilSerie('Encaissé', e.valeurs)]));
+  v.graphiques.add(PilGraphique('ligne', s.etiquettes, [PilSerie('Facturé', s.valeurs), PilSerie('Encaissé', e.valeurs)], titre: 'Évolution du chiffre d’affaires (12 mois)'));
   final parType = pilGrouper(factures, (x) => pilCle(x['type']));
-  v.graphiques.add(PilGraphique('anneau', parType.keys.toList(), [PilSerie('', [for (final l in parType.values) pilSomme(l, 'montantTTC')])]));
+  v.graphiques.add(PilGraphique('anneau', parType.keys.toList(), [PilSerie('', [for (final l in parType.values) pilSomme(l, 'montantTTC')])], titre: 'Recettes par activité'));
   final c = pilParMois(consultations, 'date', ref: refMois), a = pilParMois(admissions, 'dateEntree', ref: refMois);
-  v.graphiques.add(PilGraphique('barres', c.etiquettes, [PilSerie('Consultations', c.valeurs), PilSerie('Hospitalisations', a.valeurs)]));
+  v.graphiques.add(PilGraphique('barres', c.etiquettes, [PilSerie('Consultations', c.valeurs), PilSerie('Hospitalisations', a.valeurs)], titre: 'Activité — consultations et hospitalisations'));
   final parMode = pilGrouper(factures, (x) => pilCle(x['modePaiement']));
-  v.graphiques.add(PilGraphique('anneau', [for (final k in parMode.keys) libelleMode(k)], [PilSerie('', [for (final l in parMode.values) pilSomme(l, 'montantPaye')])]));
+  v.graphiques.add(PilGraphique('anneau', [for (final k in parMode.keys) libelleMode(k)], [PilSerie('', [for (final l in parMode.values) pilSomme(l, 'montantPaye')])], titre: 'Répartition des modes de paiement'));
   v.classements.add(PilClassement([for (final k in pilTriDesc(parType.entries, (x) => pilSomme(x.value, 'montantTTC'))) (k.key, pilSomme(k.value, 'montantTTC'))]));
   return PilDirection(
     vue: v,
@@ -309,6 +311,7 @@ PilDirection pilDirection({
     indisponibles: ind.where((x) => x.etat == 'indisponible').length,
     caMois: ca,
     encaisseMois: enc,
+    nbFacturesMois: fm.length,
     lignesRapport: [
       ('Patients au répertoire', nombre(patients.length)),
       ('Consultations du mois', nombre(consMois)),
@@ -364,7 +367,7 @@ PilVue pilAdmin({
     ('Agents', personnel.length),
   ]));
   final g = pilGrouper(audit, (a) => pilCle(a['module']));
-  v.graphiques.add(PilGraphique('anneau', g.keys.toList(), [PilSerie('', [for (final l in g.values) l.length])]));
+  v.graphiques.add(PilGraphique('anneau', g.keys.toList(), [PilSerie('', [for (final l in g.values) l.length])], titre: 'Répartition des actions par module'));
   return v;
 }
 
@@ -531,7 +534,8 @@ PilPanneauDa pilPanneauDa({
           'barres',
           const ['Médicaments', 'Actes', 'Analyses', 'Consultations', 'Hospitalisation'],
           [PilSerie('Montant facturé', [c.medicamentsMontant, c.actesMontant, c.analysesMontant, c.consultationsMontant, c.hospitalisationMontant])],
-          horizontal: true),
+          horizontal: true,
+          titre: 'Répartition du chiffre d’affaires — ${pilLibelleDa(code, bc)}'),
       pilLibelleDa(code, bc));
 }
 

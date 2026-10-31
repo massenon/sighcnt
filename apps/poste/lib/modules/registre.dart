@@ -13,6 +13,7 @@ import 'm12/registre_m12.dart';
 import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
 import 'm9/registre_m9.dart';
+import 'pil/registre_pil.dart';
 import 'm2/registre_m2.dart';
 import 'm3/registre_m3.dart';
 import 'm4/registre_m4.dart';
@@ -55,6 +56,7 @@ Map<String, ConstruireEcran> ecransPortes(
     // Tranche 2 — chaque module déclare ses écrans dans SON registre (un fichier par module : pas de conflit d'édition).
     ...ecransGED,
     ...ecransM13,
+    ...ecransPIL,
     ...ecransM14,
     ...ecransCFG,
     ...ecransM9,

@@ -100,12 +100,12 @@ PilVue pilStatsExamens(Iterable<PilFiche> demandes, Iterable<PilFiche> patients,
   }
   final cCat = pilTriDesc(parCategorie.entries, (e) => e.value), cSer = pilTriDesc(parService.entries, (e) => e.value);
   if (cCat.isNotEmpty) {
-    v.graphiques.add(PilGraphique('barres', [for (final e in cCat) e.key], [PilSerie('Examens', [for (final e in cCat) e.value])], horizontal: true));
+    v.graphiques.add(PilGraphique('barres', [for (final e in cCat) e.key], [PilSerie('Examens', [for (final e in cCat) e.value])], horizontal: true, titre: 'Par section d’examen'));
   }
   if (cSer.isNotEmpty) {
-    v.graphiques.add(PilGraphique('barres', [for (final e in cSer) e.key], [PilSerie('Examens', [for (final e in cSer) e.value])], horizontal: true));
+    v.graphiques.add(PilGraphique('barres', [for (final e in cSer) e.key], [PilSerie('Examens', [for (final e in cSer) e.value])], horizontal: true, titre: 'Par service demandeur'));
   }
-  v.graphiques.add(PilGraphique('barres', [for (final t in pilTranchesAgeExamens) t.$2], [PilSerie('Examens', [for (final t in pilTranchesAgeExamens) parTranche[t.$2]!])]));
+  v.graphiques.add(PilGraphique('barres', [for (final t in pilTranchesAgeExamens) t.$2], [PilSerie('Examens', [for (final t in pilTranchesAgeExamens) parTranche[t.$2]!])], titre: 'Par tranche d’âge'));
   v.tables.add(PilTable(null, ['EXAMEN', 'DEMANDES'], [for (final d in pilDetailExamens(rows)) [d.$1, nombre(d.$2)]]));
   return v;
 }
@@ -152,10 +152,10 @@ PilVue pilStatsImagerie(Iterable<PilFiche> demandes, Iterable<PilFiche> comptesR
   final mois = pilClesTriees(parMois.keys);
   final six = mois.length > 6 ? mois.sublist(mois.length - 6) : mois;
   if (cles.isNotEmpty) {
-    v.graphiques.add(PilGraphique('barres', [for (final e in cles) e.key], [PilSerie('Comptes rendus', [for (final e in cles) e.value])], horizontal: true));
+    v.graphiques.add(PilGraphique('barres', [for (final e in cles) e.key], [PilSerie('Comptes rendus', [for (final e in cles) e.value])], horizontal: true, titre: 'Examens par type'));
   }
   if (six.isNotEmpty) {
-    v.graphiques.add(PilGraphique('barres', six, [PilSerie('Comptes rendus', [for (final m in six) parMois[m]!])]));
+    v.graphiques.add(PilGraphique('barres', six, [PilSerie('Comptes rendus', [for (final m in six) parMois[m]!])], titre: 'Évolution mensuelle'));
   }
   final parReal = <String, int>{};
   for (final r in crs) {
@@ -194,7 +194,7 @@ PilVue pilStatsConsultations(Iterable<PilFiche> consultations, Iterable<PilFiche
     final k = pilVrai(r['type']) ? '${r['type']}' : 'Consultation';
     parType[k] = (parType[k] ?? 0) + 1;
   }
-  v.graphiques.add(PilGraphique('anneau', parType.keys.toList(), [PilSerie('', parType.values.toList())]));
+  v.graphiques.add(PilGraphique('anneau', parType.keys.toList(), [PilSerie('', parType.values.toList())], titre: 'Par type'));
   v.graphiques.add(_evolutionMensuelle(rows, 'date', 'Consultations'));
   return v;
 }
@@ -208,7 +208,7 @@ PilGraphique _evolutionMensuelle(Iterable<PilFiche> rows, String champ, String l
   }
   final mois = pilClesTriees(parMois.keys);
   final six = mois.length > 6 ? mois.sublist(mois.length - 6) : mois;
-  return PilGraphique('barres', six, [PilSerie(libelle, [for (final m in six) parMois[m]!])]);
+  return PilGraphique('barres', six, [PilSerie(libelle, [for (final m in six) parMois[m]!])], titre: 'Évolution mensuelle');
 }
 
 // =====================================================================================================================================================
@@ -245,8 +245,8 @@ PilVue pilStatsBloc(Iterable<PilFiche> crOperatoires, Iterable<PilFiche> crAnest
     final k = pilVrai(r['conclusion']) ? '${r['conclusion']}' : '—';
     parConc[k] = (parConc[k] ?? 0) + 1;
   }
-  if (parTech.isNotEmpty) v.graphiques.add(PilGraphique('barres', parTech.keys.toList(), [PilSerie('CR', parTech.values.toList())], horizontal: true));
-  if (parConc.isNotEmpty) v.graphiques.add(PilGraphique('anneau', parConc.keys.toList(), [PilSerie('', parConc.values.toList())]));
+  if (parTech.isNotEmpty) v.graphiques.add(PilGraphique('barres', parTech.keys.toList(), [PilSerie('CR', parTech.values.toList())], horizontal: true, titre: 'Anesthésies par technique'));
+  if (parConc.isNotEmpty) v.graphiques.add(PilGraphique('anneau', parConc.keys.toList(), [PilSerie('', parConc.values.toList())], titre: 'Conclusions des CPA'));
   v.kpis.addAll([
     PilKpi('Incidents per-opératoires NOMMÉS', nombre(incidents), ton: incidents > 0 ? 'attention' : 'succes'),
     PilKpi('Surveillances prolongées en réveil',
@@ -317,7 +317,7 @@ PilHospitalisations pilStatsHospitalisations(Iterable<PilFiche> admissions, Stri
   ], (r) => r.nb);
   final huit = rangs.take(8).toList();
   if (rangs.isNotEmpty) {
-    v.graphiques.add(PilGraphique('barres', [for (final r in huit) r.motif], [PilSerie('Séjours', [for (final r in huit) r.nb])], horizontal: true));
+    v.graphiques.add(PilGraphique('barres', [for (final r in huit) r.motif], [PilSerie('Séjours', [for (final r in huit) r.nb])], horizontal: true, titre: 'Diagnostics d’entrée les plus fréquents'));
   }
   v.graphiques.add(pilSejoursParMois(toutes, refMois));
   v.tables.add(PilTable('Durée moyenne par diagnostic — sur les séjours terminés', ['DIAGNOSTIC D’ENTRÉE', 'SÉJOURS', 'DURÉE MOYENNE'], [
@@ -329,7 +329,7 @@ PilHospitalisations pilStatsHospitalisations(Iterable<PilFiche> admissions, Stri
 /// Les graphiques « Séjours par mois » : [ref] est l'ancre du mois de référence (la maquette l'ancre au 1ᵉʳ août 2026 — E20).
 PilGraphique pilSejoursParMois(Iterable<PilFiche> toutes, DateTime ref) {
   final m = pilParMois(toutes, 'dateEntree', nb: 8, ref: ref);
-  return PilGraphique('ligne', m.etiquettes, [PilSerie('Séjours', m.valeurs)]);
+  return PilGraphique('ligne', m.etiquettes, [PilSerie('Séjours', m.valeurs)], titre: 'Séjours par mois');
 }
 
 /// Le cartouche de l'état imprimé « Statistiques des hospitalisations ».
@@ -556,9 +556,9 @@ PilVue pilStatsMaternite({
     PilKpi('Urgences SONUC', nombre(sonuc), ton: 'danger'),
   ]);
   final types = pilGrouper(accouchements, (a) => pilCle(pilVrai(a['type']) ? a['type'] : a['voie']));
-  v.graphiques.add(PilGraphique('barres', types.keys.toList(), [PilSerie('Accouchements', [for (final e in types.values) e.length])]));
+  v.graphiques.add(PilGraphique('barres', types.keys.toList(), [PilSerie('Accouchements', [for (final e in types.values) e.length])], titre: 'Types d’accouchement'));
   final meth = pilGrouper(pfs, (p) => pilCle(p['methodeLabel']));
-  v.graphiques.add(PilGraphique('barres', meth.keys.toList(), [PilSerie('Consultations', [for (final e in meth.values) e.length])], horizontal: true));
+  v.graphiques.add(PilGraphique('barres', meth.keys.toList(), [PilSerie('Consultations', [for (final e in meth.values) e.length])], horizontal: true, titre: 'Méthodes PF adoptées'));
   v.tables.add(PilTable('Vaccination et soins de naissance (J0)', ['SOIN', 'FAITS', 'COUVERTURE'], [
     for (final s in const [('Vitamine K1', 'vitK1'), ('VPO0', 'vpo0'), ('BCG', 'bcg'), ('Hépatite B J0', 'hepB0')])
       (() {
