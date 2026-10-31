@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/config_poste.dart';
 import 'assures.dart';
 import 'compagnies.dart';
+import 'conventions.dart';
 import 'creances.dart';
 import 'facture_mere.dart';
 import 'historique.dart';
@@ -19,6 +20,7 @@ final Map<String, ConstruireEcran> ecransM9 = {
   'm9-dashboard': (c, cfg) => const EcranDashboardAssurances(),
   'm9-compagnies': (c, cfg) => const EcranCompagnies(),
   'm9-assures': (c, cfg) => const EcranAssures(),
+  'm9-conventions': (c, cfg) => const EcranConventions(),
   'm9-prises-en-charge': (c, cfg) => const EcranPrisesEnCharge(),
   'm9-historique': (c, cfg) => const EcranHistoriqueAssureur(),
   'm9-creances': (c, cfg) => const EcranCreances(),
