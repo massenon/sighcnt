@@ -285,5 +285,17 @@
  "error-404": "porté",
  "error-403": "porté",
  "plan-du-site": "porté",
- "enquete-publique": "porté"
+ "enquete-publique": "porté",
+ "rls-tableau": "porté",
+ "rls-appareils": "porté",
+ "rls-boites": "porté",
+ "rls-codes": "porté",
+ "rls-indicateurs": "porté",
+ "rls-alertes": "porté",
+ "rls-journal": "porté",
+ "rls-superadmin": "porté",
+ "rls-parametres": "porté",
+ "rls-hebergement": "porté",
+ "rls-sauvegarde": "porté",
+ "rls-opacite": "porté"
 }
