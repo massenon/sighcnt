@@ -236,4 +236,188 @@ void main() {
       expect(find.text('TOTAUX'), findsWidgets, reason: 'le pied est refait depuis les lignes imprimées');
     });
   });
+
+  group('m12-ecritures', () {
+    Future<void> ligne(WidgetTester t, String compte, {String debit = '0', String credit = '0'}) async {
+      await choisirM14(t, 'compte', compte);
+      await saisir(t, 'debit', debit);
+      await saisir(t, 'credit', credit);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Ajouter la ligne'));
+    }
+
+    /// Ouvre la saisie et remplit l'en-tête ; les lignes viennent ensuite.
+    Future<void> entete(WidgetTester t, {String journal = 'OD — Journal des opérations diverses', String libelle = 'Essai'}) async {
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouvelle écriture'));
+      await choisirM14(t, 'journal', journal);
+      await saisir(t, 'libelle', libelle);
+    }
+
+    List<Fiche> piece(Magasin m, String libelle) =>
+        [for (final e in m.collection('ecritures').toutes) if (e['libelle'] == libelle) e];
+
+    casM14('quatre indicateurs lus sur les écritures actives ; le tableau porte ses dix colonnes', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      final a = m.collection('ecritures').actives;
+      expect(find.text('Écritures enregistrées'), findsOneWidget);
+      expect(find.text(nombre(a.where((e) => '${e['origine']}'.startsWith('Automatique')).length)), findsWidgets);
+      for (final k in ['N° pièce', 'Date', 'Journal', 'Compte', 'Libellé de l’opération', 'Débit', 'Crédit', 'Centre de coûts', 'Origine', 'Statut']) {
+        expect(find.text(k.toUpperCase()), findsWidgets, reason: k);
+      }
+    });
+
+    casM14('une écriture VALIDÉE équilibrée : deux lignes plates en tête, numérotée dans la série, journalisée', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      final suivant = cpaNumeroPiece('OD', 2026, m.collection('ecritures').toutes);
+      await entete(t, libelle: 'Achat de petit matériel');
+      await ligne(t, '605600 — Achats de petit matériel et outillages', debit: '7500');
+      await ligne(t, '571000 — Caisse', credit: '7500');
+      expect(find.textContaining('RG-10 respectée'), findsOneWidget);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider l’écriture'));
+      final p = piece(m, 'Achat de petit matériel');
+      expect(p.length, 2);
+      expect(p.every((e) => e['numero'] == suivant && e['statut'] == 'validee' && e['origine'] == 'Saisie manuelle' && e['journal'] == 'OD'), isTrue);
+      expect(p.fold<num>(0, (a, e) => a + (e['debit'] as num)), 7500);
+      expect(p.fold<num>(0, (a, e) => a + (e['credit'] as num)), 7500);
+      expect(m.collection('ecritures').toutes.first['libelle'], 'Achat de petit matériel', reason: 'insérées en tête');
+      final journal = m.collection('audit').toutes.first;
+      expect(journal['action'], 'Création', reason: 'RG-12 : la saisie est journalisée (le journal est plafonné à 400 : on lit la dernière entrée)');
+      expect(journal['utilisateur'], isNotEmpty);
+      expect(find.textContaining('enregistrée (2 ligne(s))'), findsOneWidget);
+    });
+
+    casM14('RG-10 : VALIDER une écriture déséquilibrée est REFUSÉ, l\'écart est nommé, la saisie reste ouverte, rien n\'est écrit', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      final n0 = m.collection('ecritures').toutes.length;
+      await entete(t, libelle: 'Écriture déséquilibrée');
+      await ligne(t, '601100 — Achats de marchandises', debit: '5000');
+      await ligne(t, '571000 — Caisse', credit: '4000');
+      expect(find.textContaining('La validation est impossible tant que débit ≠ crédit.'), findsOneWidget);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider l’écriture'));
+      expect(find.text('RG-10 — écriture déséquilibrée : validation impossible.'), findsOneWidget);
+      expect(find.textContaining('Écart de ${money(1000)}.'), findsOneWidget);
+      expect(m.collection('ecritures').toutes.length, n0);
+      expect(find.text('Nouvelle écriture comptable'), findsOneWidget, reason: 'la saisie reste ouverte');
+    });
+
+    casM14('un BROUILLON déséquilibré est accepté ; sa validation, ligne par ligne, est refusée en nommant la pièce', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      await entete(t, libelle: 'Brouillon déséquilibré');
+      await ligne(t, '601100 — Achats de marchandises', debit: '5000');
+      await ligne(t, '571000 — Caisse', credit: '4000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer en brouillon'));
+      final p = piece(m, 'Brouillon déséquilibré');
+      expect(p.length, 2);
+      expect(p.every((e) => e['statut'] == 'brouillon'), isTrue);
+      await t.pump(const Duration(seconds: 6));
+      await t.enterText(find.byType(TextField).first, 'Brouillon déséquilibré');
+      await t.pump(const Duration(milliseconds: 600));
+      await toucherM14(t, find.byTooltip('Valider').first);
+      expect(find.text('RG-10 — écriture déséquilibrée : validation impossible.'), findsOneWidget);
+      expect(find.textContaining('Pièce ${p.first['numero']} : écart de ${money(1000)}.'), findsOneWidget);
+      expect(piece(m, 'Brouillon déséquilibré').every((e) => e['statut'] == 'brouillon'), isTrue, reason: 'aucune ligne n\'a été validée seule');
+    });
+
+    casM14('valider un brouillon équilibré valide la PIÈCE ENTIÈRE (E710)', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      await entete(t, libelle: 'Frais de tenue de compte', journal: 'BQ — Journal de banque');
+      await ligne(t, '631810 — Frais bancaire BOA', debit: '2500');
+      await ligne(t, '521000 — Banque', credit: '2500');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer en brouillon'));
+      await t.pump(const Duration(seconds: 6));
+      await t.enterText(find.byType(TextField).first, 'Frais de tenue de compte');
+      await t.pump(const Duration(milliseconds: 600));
+      await toucherM14(t, find.byTooltip('Valider').first);
+      final p = piece(m, 'Frais de tenue de compte');
+      expect(p.length, 2);
+      expect(p.every((e) => e['statut'] == 'validee'), isTrue, reason: 'les DEUX lignes, pas une seule');
+      expect(find.text('Écriture validée.'), findsOneWidget);
+    });
+
+    casM14('archiver archive la PIÈCE entière (E716), jamais supprimée (RG-14), annulable', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      await entete(t, libelle: 'Pièce à archiver');
+      await ligne(t, '601100 — Achats de marchandises', debit: '100');
+      await ligne(t, '571000 — Caisse', credit: '100');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider l’écriture'));
+      await t.pump(const Duration(seconds: 6));
+      await t.enterText(find.byType(TextField).first, 'Pièce à archiver');
+      await t.pump(const Duration(milliseconds: 600));
+      await toucherM14(t, find.byTooltip('Archiver').first);
+      final p = piece(m, 'Pièce à archiver');
+      expect(p.length, 2, reason: 'rien n\'est supprimé');
+      expect(p.every((e) => e['statut'] == 'archive'), isTrue);
+      expect(find.text('Écriture archivée.'), findsOneWidget);
+    });
+
+    casM14('aucune ligne : « Ajouter au moins une ligne. » ; ni débit ni crédit, ou les deux sens : refus nommés', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      final n0 = m.collection('ecritures').toutes.length;
+      await entete(t, libelle: 'Sans ligne');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer en brouillon'));
+      expect(find.text('Ajouter au moins une ligne.'), findsOneWidget);
+      await ligne(t, '601100 — Achats de marchandises');
+      expect(find.text('Renseigner un montant au débit ou au crédit.'), findsOneWidget);
+      await ligne(t, '601100 — Achats de marchandises', debit: '10', credit: '10');
+      expect(find.text('Une ligne ne peut être simultanément au débit et au crédit.'), findsOneWidget);
+      expect(m.collection('ecritures').toutes.length, n0);
+    });
+
+    casM14('exercice CLOS : l\'écriture est refusée avec le motif du moteur, rien n\'est écrit, aucun faux « enregistrée » (E713)', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures', horloge: DateTime(2025, 12, 20, 10));
+      final n0 = m.collection('ecritures').toutes.length;
+      await entete(t, libelle: 'Écriture sur exercice clos');
+      await ligne(t, '601100 — Achats de marchandises', debit: '1000');
+      await ligne(t, '571000 — Caisse', credit: '1000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider l’écriture'));
+      expect(find.text('Écriture refusée.'), findsOneWidget);
+      expect(find.textContaining('Exercice 2025 clos le 15/05/2026 — lecture seule.'), findsOneWidget);
+      expect(find.textContaining('enregistrée ('), findsNothing);
+      expect(m.collection('ecritures').toutes.length, n0);
+    });
+
+    casM14('« Nouveau centre de coûts » sans quitter la saisie : code CCnn, source dite, sélectionné', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      final n0 = m.collection('centresCouts').toutes.length;
+      await entete(t, libelle: 'Avec centre neuf');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouveau centre de coûts'));
+      await t.enterText(
+          find.descendant(of: find.byKey(const Key('kit:champ:libelle')).last, matching: find.byType(TextField)), 'Buanderie');
+      await t.pump();
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      final cc = m.collection('centresCouts').toutes.first;
+      expect(m.collection('centresCouts').toutes.length, n0 + 1);
+      expect(cc['code'], 'CC${(n0 + 1).toString().padLeft(2, '0')}');
+      expect(cc['source'], 'Créé depuis la saisie comptable');
+      expect(cc['libelle'], 'Buanderie');
+      expect(find.text('Nouvelle écriture comptable'), findsOneWidget, reason: 'la saisie n\'a pas été quittée');
+    });
+
+    casM14('la fiche d\'une écriture : toutes les lignes de la pièce, équilibre dit', (t) async {
+      final m = magasinComplet();
+      await ouvrir(t, m, 'm12-ecritures');
+      await toucherM14(t, find.byTooltip('Consulter').first);
+      await t.pump(const Duration(milliseconds: 500));
+      expect(find.text('Lignes de l’écriture'), findsOneWidget);
+      expect(find.textContaining('(RG-10)', findRichText: true), findsOneWidget);
+    });
+
+    casM14('en lecture seule : « Nouvelle écriture », « Valider » et « Archiver » sont ABSENTS, le bandeau le dit (E723)', (t) async {
+      final m = magasinComplet();
+      await ouvrirM14(t, m, 'm12-ecritures', role: 'comptable', donnees: donneesLectureSeule('comptable', 'm12-ecritures'));
+      expect(find.widgetWithText(BoutonSigh, 'Nouvelle écriture'), findsNothing);
+      expect(find.byTooltip('Valider'), findsNothing);
+      expect(find.byTooltip('Archiver'), findsNothing);
+      expect(find.byTooltip('Consulter'), findsWidgets);
+      expect(find.textContaining('Lecture seule'), findsOneWidget);
+    });
+  });
 }

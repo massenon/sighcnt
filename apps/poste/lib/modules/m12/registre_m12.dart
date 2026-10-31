@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'cpa_dashboard.dart';
+import 'cpa_ecritures.dart';
 import 'cpa_journaux.dart';
 import 'cpa_plan_comptable.dart';
 
@@ -13,4 +14,5 @@ final Map<String, ConstruireEcran> ecransM12 = {
   'm12-dashboard': (c, cfg) => const EcranDashboardCompta(),
   'm12-plan-comptable': (c, cfg) => const EcranPlanComptable(),
   'm12-journaux': (c, cfg) => const EcranJournaux(),
+  'm12-ecritures': (c, cfg) => const EcranEcritures(),
 };
