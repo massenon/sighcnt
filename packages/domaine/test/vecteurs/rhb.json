@@ -10650,7 +10650,7 @@
      "service": "Direction"
     },
     "nouvelle": {
-     "id": "PRExmsvr6fguhdxk1",
+     "id": "PRExmsvr6h8cdbwjo",
      "statut": "actif",
      "employeId": "EMP01",
      "date": "2026-08-16",
@@ -12170,7 +12170,7 @@
      "salaireBase": 350000
     },
     "nouvelle": {
-     "id": "EVAxmsvr6h6iipw1d",
+     "id": "EVAxmsvr6ji0ve30l",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -12189,7 +12189,7 @@
      "prelevementMontant": 94500,
      "salaireBrut": 350000,
      "observations": "Retards répétés.",
-     "reference": "EV-0001",
+     "reference": "EV-2026-0025",
      "evaluateur": "BASSONGUI Chabi Séko"
     },
     "delta": 1,
@@ -12201,7 +12201,7 @@
    },
    "modification": {
     "fiche": {
-     "id": "EVAxmsvr6h6iipw1d",
+     "id": "EVAxmsvr6ji0ve30l",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -12220,7 +12220,7 @@
      "prelevementMontant": 0,
      "salaireBrut": 350000,
      "observations": "Retards répétés.",
-     "reference": "EV-0001",
+     "reference": "EV-2026-0025",
      "evaluateur": "BASSONGUI Chabi Séko"
     },
     "delta": 1,
@@ -14200,7 +14200,7 @@
      },
      "historique": [
       {
-       "id": "HPRxmsvr6jbrn4g43",
+       "id": "HPRxmsvr6lpnyv574",
        "statut": "actif",
        "primeId": "garde",
        "label": "Garde",
@@ -14218,12 +14218,12 @@
        "remplaceePar": "Version du 16/08/2026",
        "archiveePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:21.591Z"
+       "_creeLe": "2026-08-16T12:00:24.683Z"
       }
      ],
      "audit": {
-      "id": "LOGmsvr6jbr",
-      "dateHeure": "2026-08-16T12:00:21.591Z",
+      "id": "LOGmsvr6lpo",
+      "dateHeure": "2026-08-16T12:00:24.684Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -14688,8 +14688,8 @@
      },
      "historique": [],
      "audit": {
-      "id": "LOGmsvr6k9j",
-      "dateHeure": "2026-08-16T12:00:22.807Z",
+      "id": "LOGmsvr6mr3",
+      "dateHeure": "2026-08-16T12:00:26.031Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -15152,7 +15152,7 @@
      },
      "historique": [
       {
-       "id": "HPRxmsvr6l6m40sq3",
+       "id": "HPRxmsvr6nnz77pn9",
        "statut": "actif",
        "primeId": "aide_bloc",
        "label": "Aide bloc",
@@ -15169,12 +15169,12 @@
        "remplaceePar": "Version du 16/08/2026",
        "archiveePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:23.998Z"
+       "_creeLe": "2026-08-16T12:00:27.215Z"
       }
      ],
      "audit": {
-      "id": "LOGmsvr6l6m",
-      "dateHeure": "2026-08-16T12:00:23.998Z",
+      "id": "LOGmsvr6nnz",
+      "dateHeure": "2026-08-16T12:00:27.215Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de la grille des primes",
       "module": "M10",
@@ -15922,7 +15922,7 @@
      "detail": "Prime de nuit"
     },
     "fiche": {
-     "id": "GPRxmsvr6m0l8biai",
+     "id": "GPRxmsvr6of2w85nu",
      "statut": "actif",
      "primeId": "prime-de-nuit",
      "label": "Prime de nuit",
@@ -15961,12 +15961,12 @@
      "version": 1,
      "source": "NS n° 132/07/DM/DA/CNT/2026",
      "_archivePar": "BASSONGUI Chabi Séko",
-     "_archiveLe": "2026-08-16T12:00:25.865Z",
+     "_archiveLe": "2026-08-16T12:00:28.981Z",
      "_motifArchivage": "Prime abrogée par note"
     },
     "historique": [
      {
-      "id": "HPRxmsvr6mmhnio9p",
+      "id": "HPRxmsvr6p11ihp5q",
       "statut": "actif",
       "primeId": "caisse",
       "label": "Caisse",
@@ -15979,7 +15979,7 @@
       "remplaceePar": "Prime retirée — Prime abrogée par note",
       "archiveePar": "BASSONGUI Chabi Séko",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-08-16T12:00:25.865Z"
+      "_creeLe": "2026-08-16T12:00:28.981Z"
      }
     ],
     "montantCaisse": 10000,
@@ -16154,7 +16154,7 @@
      },
      "historique": [
       {
-       "id": "HBAxmsvr6ntbp3r7a",
+       "id": "HBAxmsvr6q67sbl4w",
        "statut": "actif",
        "critereId": "ponctualite",
        "num": "01",
@@ -16177,7 +16177,7 @@
        "remplacePar": "Version du 16/08/2026",
        "archivePar": "BASSONGUI Chabi Séko",
        "_creePar": "BASSONGUI Chabi Séko",
-       "_creeLe": "2026-08-16T12:00:27.407Z"
+       "_creeLe": "2026-08-16T12:00:30.463Z"
       }
      ],
      "table": {
@@ -16239,8 +16239,8 @@
      },
      "historiqueAffiche": true,
      "audit": {
-      "id": "LOGmsvr6ntb",
-      "dateHeure": "2026-08-16T12:00:27.407Z",
+      "id": "LOGmsvr6q67",
+      "dateHeure": "2026-08-16T12:00:30.463Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification du barème NS 131",
       "module": "M10",
@@ -16374,8 +16374,8 @@
      },
      "historiqueAffiche": true,
      "audit": {
-      "id": "LOGmsvr6os5",
-      "dateHeure": "2026-08-16T12:00:28.661Z",
+      "id": "LOGmsvr6r30",
+      "dateHeure": "2026-08-16T12:00:31.644Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification du barème NS 131",
       "module": "M10",
@@ -16404,7 +16404,7 @@
    ],
    "evaluationApres": {
     "nouvelle": {
-     "id": "EVAxmsvr6pspw5p0t",
+     "id": "EVAxmsvr6s1rrkipa",
      "statut": "actif",
      "employeId": "EMP02",
      "employe": "TAKI Alimatou",
@@ -16423,7 +16423,7 @@
      "prelevementMontant": 73500,
      "salaireBrut": 350000,
      "observations": "",
-     "reference": "EV-0002",
+     "reference": "EV-2026-0026",
      "evaluateur": "BASSONGUI Chabi Séko"
     },
     "bareme": [
@@ -16494,7 +16494,7 @@
      "detail": "Hygiène et tenue"
     },
     "critere": {
-     "id": "BARxmsvr6q8c6oxxh",
+     "id": "BARxmsvr6sjl4h2e9",
      "statut": "actif",
      "critereId": "hygi_ne_et_tenue",
      "num": "05",
@@ -16520,7 +16520,7 @@
      "detail": "Archivage logique (RG-14) — restaurable depuis la corbeille."
     },
     "archive": {
-     "id": "BARxmsvr6q8c6oxxh",
+     "id": "BARxmsvr6sjl4h2e9",
      "statut": "archive",
      "critereId": "hygi_ne_et_tenue",
      "num": "05",
@@ -16538,12 +16538,12 @@
      "version": 1,
      "source": "Créé dans l’application le 16/08/2026 — à couvrir par un avenant",
      "_archivePar": "BASSONGUI Chabi Séko",
-     "_archiveLe": "2026-08-16T12:00:31.245Z",
+     "_archiveLe": "2026-08-16T12:00:34.146Z",
      "_motifArchivage": "Critère abrogé"
     },
     "historique": [
      {
-      "id": "HBAxmsvr6qrx3zbj2",
+      "id": "HBAxmsvr6t0ixi5xx",
       "statut": "actif",
       "critereId": "hygi_ne_et_tenue",
       "num": "05",
@@ -16562,7 +16562,7 @@
       "remplacePar": "Critère retiré — Critère abrogé",
       "archivePar": "BASSONGUI Chabi Séko",
       "_creePar": "BASSONGUI Chabi Séko",
-      "_creeLe": "2026-08-16T12:00:31.245Z"
+      "_creeLe": "2026-08-16T12:00:34.146Z"
      }
     ]
    }
@@ -16627,8 +16627,8 @@
       }
      ],
      "audit": {
-      "id": "LOGmsvr6rjn",
-      "dateHeure": "2026-08-16T12:00:32.243Z",
+      "id": "LOGmsvr6trs",
+      "dateHeure": "2026-08-16T12:00:35.128Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de régime",
       "module": "M10",
@@ -16696,8 +16696,8 @@
       }
      ],
      "audit": {
-      "id": "LOGmsvr6sac",
-      "dateHeure": "2026-08-16T12:00:33.204Z",
+      "id": "LOGmsvr6ueq",
+      "dateHeure": "2026-08-16T12:00:35.954Z",
       "utilisateur": "BASSONGUI Chabi Séko",
       "action": "Modification de régime",
       "module": "M10",
@@ -16739,7 +16739,7 @@
       "source": "Planning des agents de sécurité",
       "mention": "Rotation « G » (garde 24 h), « S » (soirée de 18h à 8h) et « R » (repos).",
       "_archivePar": "BASSONGUI Chabi Séko",
-      "_archiveLe": "2026-08-16T12:00:33.860Z",
+      "_archiveLe": "2026-08-16T12:00:36.441Z",
       "_motifArchivage": null
      }
     }
