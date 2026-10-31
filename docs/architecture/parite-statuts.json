@@ -139,5 +139,11 @@
  "m13-notes-service": "porté",
  "m13-ambulance": "porté",
  "m13-repertoire-ambulances": "porté",
- "m13-maintenance": "porté"
+ "m13-maintenance": "porté",
+ "adm-validations": "porté",
+ "adm-enquetes": "porté",
+ "adm-satisfaction": "porté",
+ "ged-bibliotheque": "porté",
+ "ged-workflow": "porté",
+ "ged-archives": "porté"
 }

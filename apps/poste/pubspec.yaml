@@ -22,6 +22,7 @@ dependencies:
   shelf_router: any
   postgres: any                 # mode mère : PostgreSQL local
   pdf: ^3.13.1
+  qr: any                       # le QR du lien de partage d'une enquête (encodeur local, aucune requête réseau)
 dev_dependencies:
   flutter_test:
     sdk: flutter
