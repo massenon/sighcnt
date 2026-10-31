@@ -2269,7 +2269,7 @@
                   prelevementMontant: emp ? Math.round(emp.salaireBase * pct / 100) : 0,
                   salaireBrut: emp ? emp.salaireBase : 0,
                   observations: v.observations,
-                  reference: (record && record.reference) || C.nextRef('EV-', 4),
+                  reference: (record && record.reference) || C.referenceSuivante('EV-' + AUJ.getFullYear() + '-', 4, col.all().concat(col.archived())),
                   evaluateur: S.currentUser(),
                 };
                 var res = record ? col.update(record.id, enr) : col.insert(enr);
