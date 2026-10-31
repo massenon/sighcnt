@@ -12,6 +12,7 @@ import 'cpc_baseline.dart';
 import 'cpc_bfr.dart';
 import 'cpc_cloture.dart';
 import 'cpc_cout_activite.dart';
+import 'cpc_etats.dart';
 import 'cpc_echeances.dart';
 import 'cpc_ouverture.dart';
 
@@ -32,5 +33,6 @@ final Map<String, ConstruireEcran> ecransM12 = {
   'm12-echeances': (c, cfg) => const EcranEcheances(),
   'm12-baseline-2025': (c, cfg) => const EcranBaseline2025(),
   'm12-bfr': (c, cfg) => const EcranBfr(),
+  'm12-etats-financiers': (c, cfg) => const EcranEtatsFinanciers(),
   'm12-cout-activite': (c, cfg) => const EcranCoutActivite(),
 };
