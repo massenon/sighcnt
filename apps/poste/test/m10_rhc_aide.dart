@@ -16,9 +16,14 @@ final vc = obj(jsonDecode(File('../../packages/domaine/test/vecteurs/rhc.json').
 const collectionsRhc = ['personnel', 'planning', 'regimesTravail', 'patients', 'consultations', 'demandesAnalyses', 'admissions', 'evenements', 'participations', 'badges', 'modelesBadge'];
 
 /// Un poste portant le jeu de ces écrans (+ les référentiels statiques de la maquette : `D.ANALYSES`).
+///
+/// E742 : les vecteurs `rhc.json` (participations) ont été tirés sur l'ANCIEN semis (toutes dues, sous la forme `agentId` / `regle`). Le jeu du poste porte désormais la forme que
+/// l'écran écrit (`employeId` / `statutPaiement`) ; tant que `vecteurs-rh-c.js` n'est pas rejoué sur ce jeu corrigé, ces tests gardent le semis d'avant en fixture.
+List<M> participationsAvantE742() => [for (final x in (jsonDecode(File('test/fixtures/m10_participations_avant_e742.json').readAsStringSync()) as List)) (x as Map).cast<String, Object?>()];
+
 Magasin posteRhc([Map<String, List<M>> remplace = const {}]) => Magasin({
       'audit': const [],
-      for (final n in collectionsRhc) n: [for (final x in (remplace[n] ?? jeu(n))) {...x}],
+      for (final n in collectionsRhc) n: [for (final x in (remplace[n] ?? (n == 'participations' ? participationsAvantE742() : jeu(n)))) {...x}],
     }, 'POSTE', (jsonDecode(File('assets/donnees/jeu/referentiels.json').readAsStringSync()) as Map).cast<String, Object?>());
 
 /// Les libellés d'indicateurs affichés (libellé → valeur) et leurs indices.

@@ -2688,6 +2688,8 @@
             /* La configuration fiscale engage la clinique devant la DGI :
                elle se décide, elle ne se retouche pas au fil des saisies. */
             'mecef-config': { voir: true, editer: false, annuler: false },
+            /* A2 (31/10/2026) : le comptable GÉNÈRE les bulletins, il ne les VALIDE pas. Voir seulement : celui qui calcule ne signe pas. */
+            'm11-validation': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La comptabilité, la caisse (avoirs compris), les créances, la paie et le fiscal. '
