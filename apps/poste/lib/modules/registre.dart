@@ -14,6 +14,7 @@ import 'm11/registre_m11.dart';
 import 'm12/registre_m12.dart';
 import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
+import 'mere/registre_mere.dart';
 import 'm9/registre_m9.dart';
 import 'pil/registre_pil.dart';
 import 'rap/registre_rap.dart';
@@ -94,9 +95,7 @@ Map<String, ConstruireEcran> ecransPortes(
       'cfg-poste': (c, cfg) => ReglagesPoste(controleur: controleur),
     // Modules complémentaires de la MÈRE (le domaine « Poste mère » n'existe que sur la mère, voir Manifeste.ruban).
     if (client != null) ...{
-      'mere-supervision': (c, cfg) => console(SectionMere.supervision),
-      'mere-appareils': (c, cfg) => console(SectionMere.appareils),
-      'mere-conflits': (c, cfg) => console(SectionMere.conflits),
+      ...ecransMEREPour(client),
       'mere-journal-technique': (c, cfg) => console(SectionMere.journal),
       'mere-reinit': (c, cfg) => console(SectionMere.maintenance),
     },
