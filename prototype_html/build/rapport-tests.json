@@ -6071,11 +6071,11 @@
       },
       {
         "libelle": "Aucune erreur JavaScript sur ces écrans",
-        "ok": true,
-        "detail": null
+        "ok": false,
+        "detail": "[SIGH] Base indisponible — Écriture refusée (inserer / ecritures) — Failed to fetch"
       }
     ],
-    "ok": true
+    "ok": false
   },
   {
     "nom": "Vague 69 — Suivi des ventes : détail par patient et par secteur, Imagerie médicale",
