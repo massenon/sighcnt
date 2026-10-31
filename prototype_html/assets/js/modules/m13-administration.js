@@ -92,7 +92,9 @@
         transform: function (v, record) {
           /* E530 : à la modification, le formulaire ne porte pas la référence — elle était recalculée (ARR-2026-0004 devenait ARR-2026-0012). */
           if (record && record.reference) v.reference = record.reference;
-          if (!v.reference) v.reference = (v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + '2026-' + C.pad(S.collection('courriers').all().length + 1, 4);
+          /* E538 : série annuelle ARR-AAAA-NNNN / DEP-AAAA-NNNN. Le millésime est l'année de la DATE du courrier, le rang court par sens et par année (archivés compris). */
+          if (!v.reference) v.reference = C.referenceSuivante((v.sens === 'arrivee' ? 'ARR-' : 'DEP-') + String(v.date || C.iso(AUJ)).slice(0, 4) + '-', 4,
+            S.collection('courriers').all().concat(S.collection('courriers').archived()));
           return v;
         },
         onCreate: function () { return { date: C.iso(AUJ), sens: 'arrivee', traitement: 'en_attente', nature: 'Lettre' }; },
@@ -135,7 +137,11 @@
           var rows = C.sortBy(S.collection('courriers').active(), 'date', 'desc');
           P.etat({
             titre: 'Registre du courrier',
-            sousTitre: 'Arrivées et départs — exercice 2026',
+            sousTitre: 'Arrivées et départs, exercice ' + (function () {
+              var an = {}; rows.forEach(function (c) { an[String(c.date || '').slice(0, 4)] = true; });
+              var l = Object.keys(an).filter(Boolean).sort();
+              return l.length ? l.join(', ') : String(AUJ.getFullYear());
+            })(),
             cartouche: [['Courriers enregistrés', C.num(rows.length)],
               ['Arrivées', C.num(rows.filter(function (c) { return c.sens === 'arrivee'; }).length)],
               ['Départs', C.num(rows.filter(function (c) { return c.sens === 'depart'; }).length)],

@@ -40,7 +40,7 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
               final rows = trierPar(c.magasin.collection('courriers').actives, (x) => x['date'], descendant: true);
               matImprimer(context,
                   titre: 'Registre du courrier',
-                  sousTitre: 'Arrivées et départs — exercice 2026',
+                  sousTitre: 'Arrivées et départs, exercice ${admExercicesCourriers(rows, c.aujourdhui.year)}',
                   cartouche: [
                     ('Courriers enregistrés', nombre(rows.length)),
                     ('Arrivées', nombre(rows.where((x) => x['sens'] == 'arrivee').length)),
@@ -68,7 +68,7 @@ class EcranCourriers extends StatelessWidget with EcranMaquette {
     final col = c.magasin.collection('courriers');
     Fiche fiche(BuildContext ctx, Fiche v, Fiche? e) {
       // E530 : à la modification la référence est GARDÉE (le formulaire ne la porte pas).
-      v['reference'] = e?['reference'] ?? admReferenceCourrier(v['sens'], col.toutes.length);
+      v['reference'] = e?['reference'] ?? admReferenceCourrier(v['sens'], v['date'], col.toutes);
       return matSansNuls(v);
     }
 

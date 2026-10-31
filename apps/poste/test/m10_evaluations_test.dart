@@ -14,6 +14,8 @@ void main() {
   setUpAll(chargerPolices);
   tearDown(ToastsSigh.viderPourTests);
 
+  ControleurFormulaire formulaireDe(WidgetTester t) => t.widget<FormulaireSigh>(find.byType(FormulaireSigh).last).controleur;
+
   /// La porte du barème est ouverte « depuis Paramètres système » : ici, la fiche qu'elle écrit.
   void ouvrirPorte(Magasin m) => m.collection('reglages').inserer({'id': 'baremeModifiable', 'valeur': true, 'statut': 'actif'});
 
@@ -222,7 +224,7 @@ void main() {
       expect(h['remplacePar'], 'Critère retiré — Critère abrogé');
     });
 
-    casM14('LE BARÈME MODIFIÉ NE REJOINT PAS LES ÉVALUATIONS : elles lisent le barème d\'origine de la note (écart E650, porté fidèlement)', (t) async {
+    casM14('LE BARÈME MODIFIÉ REJOINT LES ÉVALUATIONS : le formulaire et la retenue lisent le barème en vigueur à leur date (écart E650 levé)', (t) async {
       final m = magasinRhb();
       ouvrirPorte(m);
       await ouvrirM14(t, m, 'm10-evaluations', horloge: auj16);
@@ -233,11 +235,18 @@ void main() {
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Appliquer'));
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouvelle évaluation'));
       final apres = dico(maquette('bareme'));
-      // Le formulaire propose encore « Moyenne (− 6 %) » : le choisir ci-dessous échouerait sinon.
-      await choisirM14(t, 'crit_ponctualite', 'Moyenne (− 6 %)');
+      // Le formulaire propose le barème relevé, comme la maquette : « Moyenne (− 7 %) ».
+      expect((apres['optionsCritere'] as List).map(norm), contains('Moyenne (− 7 %)'));
+      await choisirM14(t, 'crit_ponctualite', 'Moyenne (− 7 %)');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider l’évaluation'));
-      expect(premiere(m, 'evaluations')['prelevementPct'], 6);
-      expect(dico(dico(apres['evaluationApres'])['nouvelle'])['prelevementPct'], 21);
+      final nouvelle = premiere(m, 'evaluations');
+      expect(nouvelle['prelevementPct'], 7);
+      expect(nouvelle['dateBareme'], '2026-08-16');
+      // Le barème d'alors reste celui d'alors : une évaluation du 15/08 se calcule encore à 6 %.
+      expect(
+          rhbPrelevementALaDate({'ponctualite': 'moyenne'}, m.collection('baremeNS131').actives, m.collection('historiqueBareme').actives, '2026-08-15'), 6);
+      expect(
+          rhbPrelevementALaDate({'ponctualite': 'moyenne'}, m.collection('baremeNS131').actives, m.collection('historiqueBareme').actives, '2026-08-16'), 7);
     });
   });
 
@@ -396,24 +405,99 @@ void main() {
       expect(m.collection('grillePrimes').actives.length, 11);
     });
 
-    casM14('retirer une prime : motif exigé, version antérieure écrite, archivage logique — et le moteur la CALCULE ENCORE (écart E651)', (t) async {
+    casM14('retirer une prime : date de fin et motif exigés, version antérieure écrite, archivage logique, la paie ne la lit plus après (écart E651 levé)', (t) async {
       final m = magasinRhb();
       await ouvrirM14(t, m, 'm10-primes', horloge: auj16);
       await toucherM14(t, find.byTooltip('Retirer cette prime').at(6)); // Caisse
+      expect(find.textContaining('Dernier jour de la prime'), findsOneWidget);
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Retirer la prime'));
       expect(m.collection('grillePrimes').actives.length, 11, reason: 'sans motif, rien n\'est retiré');
-      await t.enterText(find.byType(TextField).last, 'Prime abrogée par note');
-      await t.pump();
+      await taper(t, 'motif', 'Prime abrogée par note');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Retirer la prime'));
       expect(m.collection('grillePrimes').actives.length, 10);
       expect(m.collection('grillePrimes').archivees.single['primeId'], 'caisse');
       final h = m.collection('historiquePrimes').toutes.single;
-      expect(h['remplaceePar'], 'Prime retirée — Prime abrogée par note');
+      final r = dico(dico(maquette('primesEcritures'))['retrait']);
+      final attendu = net(liste(r['historique']).single);
+      expect({for (final k in attendu.keys) k: h[k]}, attendu);
+      expect(h['retiree'], true);
       expect(h['dateFin'], '2026-08-15');
       expect(find.text('Prime retirée de la grille.'), findsOneWidget);
-      expect(rhbMontantPrime(m.collection('grillePrimes').actives, m.collection('historiquePrimes').actives, 'caisse', 'caissiere'), 10000);
-      final r = dico(dico(maquette('primesEcritures'))['retrait']);
-      expect(r['montantCaisse'], 10000);
+      final g = m.collection('grillePrimes').actives, hs = m.collection('historiquePrimes').actives;
+      for (final x in (r['aLaDate'] as List).cast<List>()) {
+        expect(rhbMontantPrime(g, hs, 'caisse', 'caissiere', x[0] as String?), x[1], reason: '$x');
+      }
+      expect(rhbMontantPrime(g, hs, 'caisse', 'caissiere'), 0);
+      expect(r['montantCaisse'], 0);
+    });
+
+    casM14('une date de fin avant l\'entrée en vigueur de la prime est refusée, nommée', (t) async {
+      final m = magasinRhb();
+      await ouvrirM14(t, m, 'm10-primes', horloge: auj16);
+      await toucherM14(t, find.byTooltip('Retirer cette prime').at(6));
+      formulaireDe(t).poser('dateFin', '2026-07-01');
+      await taper(t, 'motif', 'Test');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Retirer la prime'));
+      expect(find.text('La date de fin précède l’entrée en vigueur de la prime.'), findsOneWidget);
+      expect(m.collection('grillePrimes').actives.length, 11);
+      expect(m.collection('historiquePrimes').toutes, isEmpty);
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    casM14('les bénéficiaires d\'un forfait : règle d\'attente dite, désignation datée, forfait réservé aux désignés, fin de désignation (écart E654 levé)', (t) async {
+      final m = magasinRhb();
+      await ouvrirM14(t, m, 'm10-primes', horloge: auj16);
+      final accueils = [for (final a in m.collection('personnel').actives) if (a['fonction'] == 'accueil') a];
+      expect(accueils.length, greaterThan(1));
+      await toucherM14(t, find.byTooltip('Bénéficiaires du forfait').at(3)); // Accueil
+      expect(find.textContaining('Aucun bénéficiaire désigné. Règle d’attente'), findsOneWidget);
+      formulaireDe(t).poser('agents', ['${accueils.first['id']}']);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Désigner'));
+      final d = m.collection('beneficiairesPrimes').toutes.single;
+      expect(d['primeId'], 'accueil');
+      expect(d['agentId'], accueils.first['id']);
+      expect(d['debut'], '2026-08-16');
+      expect(d['fin'], isNull);
+      expect(find.textContaining('Seuls les agents désignés'), findsOneWidget);
+      final g = m.collection('grillePrimes').actives, hs = m.collection('historiquePrimes').actives, ds = m.collection('beneficiairesPrimes').actives;
+      expect(rhbMontantAgent(g, hs, ds, 'accueil', accueils.first['id'], 'accueil', '2026-08-16'), 7000);
+      expect(rhbMontantAgent(g, hs, ds, 'accueil', accueils.last['id'], 'accueil', '2026-08-16'), 0);
+      expect(m.collection('audit').toutes.first['action'], 'Désignation des bénéficiaires d’une prime fixe');
+      await toucherM14(t, find.byTooltip('Mettre fin à la désignation'));
+      expect(m.collection('beneficiairesPrimes').toutes.single['fin'], '2026-08-16');
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    casM14('une prime FIXE créée à l\'écran entre dans les primes fixes du mois (écart E651 levé)', (t) async {
+      final m = magasinRhb();
+      await ouvrirM14(t, m, 'm10-primes', horloge: auj16);
+      final avant = rhbPrimesAcquises(
+          personnelActif: m.collection('personnel').actives,
+          planningActif: m.collection('planning').actives,
+          grille: m.collection('grillePrimes').actives,
+          historique: const [],
+          date: '2026-08-16',
+          annee: 2026,
+          mois: 8);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouvelle prime'));
+      await taper(t, 'label', 'Prime de sujétion');
+      await choisirM14(t, 'mode', 'Forfait mensuel');
+      await taper(t, 'm_infirmier', '4000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer la prime'));
+      final c = dico(dico(maquette('primesEcritures'))['primeFixeCreee']);
+      final fiche = premiere(m, 'grillePrimes');
+      expect(fiche['primeId'], dico(c['fiche'])['primeId']);
+      final apres = rhbPrimesAcquises(
+          personnelActif: m.collection('personnel').actives,
+          planningActif: m.collection('planning').actives,
+          grille: m.collection('grillePrimes').actives,
+          historique: const [],
+          date: '2026-08-16',
+          annee: 2026,
+          mois: 8);
+      final nb = m.collection('personnel').actives.where((x) => x['fonction'] == 'infirmier').length;
+      expect(apres.fold<num>(0, (a, x) => a + x.primesFixes) - avant.fold<num>(0, (a, x) => a + x.primesFixes), 4000 * nb);
+      await t.pump(const Duration(seconds: 10));
     });
 
     casM14('« Imprimer la note » et « Éditer l\'état des primes » : la grille d\'origine, puis les agents primés avec leur total', (t) async {

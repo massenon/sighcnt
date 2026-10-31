@@ -63,7 +63,7 @@ class _EtatOuverture extends State<EcranOuverture> {
 
   void _imprimer(BuildContext ctx, ContexteEcran c) {
     final s = cpcSoldesDeCloture(_ecritures(c), _a);
-    final lignes = cpcLignesOuverture(s, _a, compteResultat: '130000');
+    final lignes = cpcLignesOuverture(s, _a);
     afficherApercu(
         ctx,
         pieceM9(c,
@@ -174,6 +174,13 @@ class _EtatOuverture extends State<EcranOuverture> {
                   'Le report NE S’ÉQUILIBRE PAS — écart de ${money(s.ecart)}. L’à-nouveau est refusé : un report boiteux propagerait le déséquilibre à toutes les années suivantes (RG-10). Vérifier les écritures de l’exercice $_a avant de reporter.',
                   ton: TonSigh.danger,
                   icone: LucideIcons.triangleAlert),
+          if (_ecritures(c).any((x) => x['journal'] == 'AN' && x['compte'] == '130000')) ...[
+            const SizedBox(height: 16),
+            NoteSigh(
+                'Report manuel antérieur au compte 130000 : ${nombre(_ecritures(c).where((x) => x['journal'] == 'AN' && x['compte'] == '130000').length)} ligne(s) portent le résultat à l’ancien compte. Le résultat se porte désormais au 131000 (bénéfice) ou au 139000 (perte), comme à la clôture ; le 130000 n’est réservé qu’à ces reports manuels signalés, qui ne se réécrivent pas.',
+                ton: TonSigh.attention,
+                icone: LucideIcons.triangleAlert),
+          ],
           if (deja > 0) ...[
             const SizedBox(height: 16),
             NoteSigh(

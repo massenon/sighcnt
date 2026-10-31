@@ -263,7 +263,8 @@ void main() {
       final an = m.collection('ecritures').actives.where((e) => e['journal'] == 'AN').toList();
       expect(an, hasLength(9));
       expect(an.every((e) => e['statut'] == 'brouillon' && e['numero'] == 'AN-2027-00001'), true);
-      expect(an.any((e) => e['compte'] == '130000'), true, reason: 'le résultat entre au compte 13');
+      expect(an.any((e) => e['compte'] == '131000' || e['compte'] == '139000'), true, reason: 'le résultat entre au compte de résultat unique, 131000 ou 139000 (E813 levé)');
+      expect(an.any((e) => e['compte'] == '130000'), false);
       expect(m.collection('ecritures').actives.length, avant + 9);
       expect(find.text('À-nouveaux écrits — 9 ligne(s) au journal AN.'), findsOneWidget);
       expect(find.textContaining('sont DÉJÀ écrits : 9 ligne(s) au journal AN'), findsOneWidget);

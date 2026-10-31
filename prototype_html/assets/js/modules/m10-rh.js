@@ -213,8 +213,8 @@
       {
         id: 'primes', label: 'Primes (NS 132)',
         render: function () {
-          var lignes = D.NS132.primes.map(function (pr) {
-            var montant = D.NS132.montant(pr.id, e.fonction);
+          var lignes = D.NS132.primesALaDate().map(function (pr) {
+            var montant = D.NS132.montantAgent(pr.id, e, C.iso(AUJ));
             if (!montant) return null;
             var nb = pr.mode === 'fixe' ? 1 : (pr.id === 'garde' ? gardes : (pr.id === 'permanence' ? permanences : 0));
             return { prime: pr.label, mode: pr.mode === 'fixe' ? 'Forfait mensuel' : 'Par occurrence', montant: montant, nb: nb, total: montant * nb };
@@ -1785,6 +1785,60 @@
     return S.collection('historiqueBareme', { module: 'M10', entite: 'version de barème', prefix: 'HBA' });
   }
 
+  /* ------------------------------------------------------------------------
+   * LE BARÈME EN VIGUEUR À UNE DATE (E650).
+   * ------------------------------------------------------------------------
+   * Les évaluations, les retenues, les fiches imprimées et les sanctions lisent
+   * ce moteur, plus la note d'origine : le barème est VERSIONNÉ par date
+   * (baremeNS131 pour la version courante, historiqueBareme pour les sorties),
+   * comme la grille des primes. Une évaluation garde le barème de SA date
+   * (`dateBareme`) : relever un taux ne change pas une retenue prononcée.
+   * Sans fiche au magasin, la note d'origine reste le repli.
+   * ---------------------------------------------------------------------- */
+  function dateBaremeDe(e) {
+    return (e && e.dateBareme) || D.NS131.dateEffet;
+  }
+  function criteresBaremeALaDate(date) {
+    var courants = [], hist = [];
+    try { courants = S.collection('baremeNS131').active(); } catch (err) { courants = []; }
+    try { hist = S.collection('historiqueBareme').active(); } catch (err) { hist = []; }
+    var d = date || C.iso(AUJ);
+    var out = [];
+    var vus = {};
+    function entree(b, id) {
+      return { num: b.num, id: id, label: b.label, criteres: (b.criteres || []).slice(), sanctions: b.sanctions || {} };
+    }
+    courants.forEach(function (b) {
+      var id = b.critereId;
+      vus[id] = true;
+      if (!b.dateEffet || String(d) >= String(b.dateEffet)) { out.push(entree(b, id)); return; }
+      /* Antérieure à la version courante : la version sortante qui couvrait la date. */
+      var v = hist.filter(function (x) {
+        return x.critereId === id && (!x.dateEffet || String(d) >= String(x.dateEffet)) && (!x.dateFin || String(d) <= String(x.dateFin));
+      }).sort(function (x, y) { return String(y.dateEffet).localeCompare(String(x.dateEffet)); })[0];
+      if (v) { out.push(entree(v, id)); return; }
+      var o = D.NS131.criteres.filter(function (c) { return c.id === id; })[0];
+      if (o) out.push(entree(o, id));
+    });
+    /* Un critère retiré : encore en vigueur aux dates que sa version couvre. */
+    hist.forEach(function (x) {
+      if (vus[x.critereId]) return;
+      if ((!x.dateEffet || String(d) >= String(x.dateEffet)) && (!x.dateFin || String(d) <= String(x.dateFin))) {
+        vus[x.critereId] = true; out.push(entree(x, x.critereId));
+      }
+    });
+    if (!courants.length && !hist.length) {
+      D.NS131.criteres.forEach(function (c) { out.push(entree(c, c.id)); });
+    }
+    return out.sort(function (a, b) { return String(a.num).localeCompare(String(b.num)); });
+  }
+  function prelevementALaDate(criteresEval, date) {
+    return criteresBaremeALaDate(date).reduce(function (t, c) {
+      return t + ((c.sanctions || {})[(criteresEval || {})[c.id]] || 0);
+    }, 0);
+  }
+  global.SIGH.bareme131 = { criteres: criteresBaremeALaDate, prelevement: prelevementALaDate };
+
   function blocBaremeNS131(rafraichir) {
     var ouvert = global.SIGH.baremeModifiable && global.SIGH.baremeModifiable();
     var hote = el('div.space-y-3');
@@ -2095,10 +2149,10 @@
         var periode = mois.charAt(0).toUpperCase() + mois.slice(1) + ' ' + AUJ.getFullYear();
         db.evaluations = personnel().slice(0, 24).map(function (e) {
           var criteres = {};
-          D.NS131.criteres.forEach(function (c) {
+          criteresBaremeALaDate(C.iso(AUJ)).forEach(function (c) {
             criteres[c.id] = C.pick(rnd, ['bonne', 'bonne', 'bonne', 'moyenne', 'faible']);
           });
-          var pct = D.NS131.prelevement(criteres);
+          var pct = prelevementALaDate(criteres, C.iso(AUJ));
           return {
             id: 'EVAL' + C.pad(++n, 4),
             reference: 'EV-' + AUJ.getFullYear() + '-' + C.pad(n, 4),
@@ -2107,7 +2161,7 @@
             periode: periode, criteres: criteres,
             prelevementPct: pct,
             prelevementMontant: Math.round(e.salaireBase * pct / 100),
-            salaireBrut: e.salaireBase,
+            salaireBrut: e.salaireBase, dateBareme: C.iso(AUJ),
             observations: '',
             evaluateur: 'TAKI Alimatou',
             statut: 'actif',
@@ -2152,7 +2206,7 @@
           { key: 'matricule', label: 'Mat.', align: 'right', nowrap: true },
           { key: 'employe', label: 'Agent' },
           { key: 'service', label: 'Service' },
-        ].concat(D.NS131.criteres.map(function (c) {
+        ].concat(criteresBaremeALaDate(C.iso(AUJ)).map(function (c) {
           return {
             key: 'crit_' + c.id, label: c.label.split(' ')[0],
             value: function (e) { return (e.criteres || {})[c.id]; },
@@ -2192,12 +2246,16 @@
       return null;
 
       function ouvrir(record) {
+        /* Le barème en vigueur à la date de l'évaluation (E650) : celle de la
+           fiche existante, ou le jour de la saisie. */
+        var dateB = (record && record.dateBareme) || (record ? dateBaremeDe(record) : C.iso(AUJ));
+        var critsB = criteresBaremeALaDate(dateB);
         var champs = [
           { name: 'employeId', label: 'Agent', type: 'select', required: true, options: optionsEmployes(), col: 'full' },
-          { name: 'periode', label: 'Période évaluée', type: 'select', required: true, options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' 2026'; }) },
+          { name: 'periode', label: 'Période évaluée', type: 'select', required: true, options: C.MOIS.map(function (m) { return m.charAt(0).toUpperCase() + m.slice(1) + ' ' + AUJ.getFullYear(); }) },
           { type: 'section', label: 'Éléments d’évaluation — barème ' + D.NS131.reference },
         ];
-        D.NS131.criteres.forEach(function (c) {
+        critsB.forEach(function (c) {
           champs.push({
             name: 'crit_' + c.id, label: c.num + ' — ' + c.label, type: 'select', required: true,
             options: D.NS131.niveaux.map(function (n) {
@@ -2209,11 +2267,11 @@
         });
         champs.push({ name: 'observations', label: 'Observations de l’évaluateur', type: 'textarea', rows: 2, col: 'full' });
 
-        var valeurs = record ? Object.assign({}, record) : { periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' 2026' };
+        var valeurs = record ? Object.assign({}, record) : { periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' ' + AUJ.getFullYear() };
         if (record && record.criteres) {
-          D.NS131.criteres.forEach(function (c) { valeurs['crit_' + c.id] = record.criteres[c.id]; });
+          critsB.forEach(function (c) { valeurs['crit_' + c.id] = record.criteres[c.id]; });
         } else {
-          D.NS131.criteres.forEach(function (c) { valeurs['crit_' + c.id] = 'bonne'; });
+          critsB.forEach(function (c) { valeurs['crit_' + c.id] = 'bonne'; });
         }
 
         var f = U.form(champs, valeurs);
@@ -2221,11 +2279,11 @@
 
         function majApercu() {
           var evalv = {};
-          D.NS131.criteres.forEach(function (c) {
+          critsB.forEach(function (c) {
             var ctrl = f.controls['crit_' + c.id];
             evalv[c.id] = ctrl ? ctrl.value : 'bonne';
           });
-          var pct = D.NS131.prelevement(evalv);
+          var pct = prelevementALaDate(evalv, dateB);
           var emp = personnel().filter(function (x) { return x.id === f.controls.employeId.value; })[0];
           var brut = emp ? emp.salaireBase : 0;
           C.clear(apercu);
@@ -2238,7 +2296,7 @@
           U.icons(apercu);
         }
 
-        D.NS131.criteres.forEach(function (c) {
+        critsB.forEach(function (c) {
           var ctrl = f.controls['crit_' + c.id];
           if (ctrl) ctrl.addEventListener('change', majApercu);
         });
@@ -2260,8 +2318,8 @@
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 var emp = personnel().filter(function (x) { return x.id === v.employeId; })[0];
                 var criteres = {};
-                D.NS131.criteres.forEach(function (c) { criteres[c.id] = v['crit_' + c.id]; });
-                var pct = D.NS131.prelevement(criteres);
+                critsB.forEach(function (c) { criteres[c.id] = v['crit_' + c.id]; });
+                var pct = prelevementALaDate(criteres, dateB);
                 var enr = {
                   employeId: v.employeId,
                   employe: emp ? emp.nomComplet : '', matricule: emp ? emp.matricule : '',
@@ -2272,7 +2330,7 @@
                   prelevementMontant: emp ? Math.round(emp.salaireBase * pct / 100) : 0,
                   salaireBrut: emp ? emp.salaireBase : 0,
                   observations: v.observations,
-                  reference: (record && record.reference) || C.referenceSuivante('EV-' + AUJ.getFullYear() + '-', 4, col.all().concat(col.archived())),
+                  dateBareme: dateB, reference: (record && record.reference) || C.referenceSuivante('EV-' + AUJ.getFullYear() + '-', 4, col.all().concat(col.archived())),
                   evaluateur: S.currentUser(),
                 };
                 var res = record ? col.update(record.id, enr) : col.insert(enr);
@@ -2318,7 +2376,7 @@
                   return p ? el('span.font-semibold.text-danger-600', { text: '− ' + p + ' %' }) : '—';
                 },
               },
-            ], D.NS131.criteres)),
+            ], criteresBaremeALaDate(dateBaremeDe(e)))),
             e.observations ? U.card('Observations', el('p.text-sm.text-slate-700', { text: e.observations })) : null,
           ]),
           footer: [
@@ -2357,7 +2415,7 @@
             var p = c.sanctions[n] || 0;
             return '1) ' + lib + '   2) ' + (p ? p + ' %' : 'Aucune') + '   3) ' + (p ? C.money(Math.round(brut * p / 100), false) : '0');
           } },
-        ], D.NS131.criteres, {
+        ], criteresBaremeALaDate(dateBaremeDe(e)), {
           total: { num: '', label: '', '1) Résultat  2) Sanction  3) Prélèvement': '' },
           totalLabel: 'TOTAL À PRÉLEVER : ' + C.money(prelev, false),
         }));
@@ -2417,7 +2475,7 @@
               { label: 'Bonne', value: function () { return 'Aucune'; } },
               { label: 'Moyenne (1er niveau)', value: function (c) { return '1 à 2 — moins ' + c.sanctions.moyenne + ' % du salaire brut'; } },
               { label: 'Faible à mauvaise (2e niveau)', value: function (c) { return '3 et plus — ' + c.sanctions.faible + ' % du salaire brut'; } },
-            ], D.NS131.criteres),
+            ], criteresBaremeALaDate(dateBaremeDe(e))),
             el('p.mt-3', { text: D.NS131.mention + ' Entre en vigueur à compter de sa date de signature.' }),
             el('p.mt-2.text-\\[10px\\]', { text: 'Ampliation : ' + D.NS131.ampliation }),
           ]),
@@ -2462,11 +2520,11 @@
           {
             key: 'motifs', label: 'Critères sanctionnés', sortable: false,
             text: function (e) {
-              return D.NS131.criteres.filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; })
+              return criteresBaremeALaDate(dateBaremeDe(e)).filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; })
                 .map(function (c) { return c.label; }).join(', ');
             },
             render: function (e) {
-              var liste = D.NS131.criteres.filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; });
+              var liste = criteresBaremeALaDate(dateBaremeDe(e)).filter(function (c) { return (c.sanctions[(e.criteres || {})[c.id]] || 0) > 0; });
               if (!liste.length) return '—';
               return el('div.flex.flex-wrap.gap-1', null, liste.map(function (c) {
                 return U.badge(c.label, 'danger');
@@ -2496,7 +2554,7 @@
                     var p = c.sanctions[(e.criteres || {})[c.id]] || 0;
                     return p ? p + ' %' : '—';
                   } },
-                ], D.NS131.criteres),
+                ], criteresBaremeALaDate(dateBaremeDe(e))),
                 e.observations ? el('p.mt-2.italic', { text: 'Observations : ' + e.observations }) : null,
               ]),
               signatures: [{ role: 'L’Agent', nom: e.employe, mention: 'Pris connaissance' },
@@ -2514,10 +2572,11 @@
         /* Un critère est « sanctionné » quand son résultat entraîne une retenue.
            C'est le croisement qui intéresse la Direction : sur quel axe du
            barème NS 131 la clinique perd-elle le plus de points ? */
-        var parCritere = D.NS131.criteres.map(function (c) {
+        var parCritere = criteresBaremeALaDate(C.iso(AUJ)).map(function (c) {
           var touchees = evals.filter(function (e) {
             var r = (e.criteres || {})[c.id];
-            return r && (c.sanctions[r] || 0) > 0;
+            var cv = criteresBaremeALaDate(dateBaremeDe(e)).filter(function (x) { return x.id === c.id; })[0];
+            return r && cv && (cv.sanctions[r] || 0) > 0;
           });
           return {
             label: c.label, n: touchees.length,
@@ -2624,6 +2683,7 @@
         tr.appendChild(el('td.text-right', null,
           el('span.text-xs.text-slate-500', { text: pr.dateEffet ? C.dateFR(pr.dateEffet) : '—' })));
         var actes = [];
+        if (pr.mode === 'fixe') actes.push(K.iconBtn('users', 'Bénéficiaires du forfait', function () { beneficiairesPrime(pr); }));
         if (K.droits('M10').editer) actes.push(K.iconBtn('pencil', 'Modifier cette prime', function () { editerPrime(pr); }));
         if (K.droits('M10').annuler) actes.push(K.iconBtn('archive', 'Retirer cette prime', function () { archiverPrime(pr); }, 'ghost'));
         tr.appendChild(el('td.text-right.whitespace-nowrap', null, el('div.flex.justify-end.gap-1', null, actes)));
@@ -2856,32 +2916,129 @@
         });
       }
 
+      /* --------------------------------------------------------------------
+       * LES BÉNÉFICIAIRES D'UN FORFAIT (E654) : une liste DATÉE d'agents.
+       * Un forfait se désigne ; tant qu'aucun agent n'est désigné, la règle
+       * d'attente (tous les agents de la fonction) s'applique et l'écran le dit.
+       * Une désignation ne se supprime pas : on y met fin à une date.
+       * ------------------------------------------------------------------ */
+      function colBeneficiaires() {
+        return S.collection('beneficiairesPrimes', { module: 'M10', entite: 'bénéficiaire de prime', prefix: 'BPR' });
+      }
+      function beneficiairesPrime(prime) {
+        var droit = K.droits('M10').editer;
+        var eligibles = personnel().filter(function (a) { return (prime.montants || {})[a.fonction] > 0; });
+        var corps = el('div.space-y-3');
+        var m = U.modal({
+          title: 'Bénéficiaires : ' + prime.label, subtitle: D.NS132.reference, size: 'lg', body: corps,
+          footer: [K.btn('Fermer', { onclick: function () { m.close(); } })],
+        });
+        dessinerBeneficiaires();
+
+        function dessinerBeneficiaires() {
+          C.clear(corps);
+          var liste = colBeneficiaires().active().filter(function (x) { return x.primeId === prime.primeId; });
+          corps.appendChild(K.note(liste.length
+            ? 'Seuls les agents désignés, aux dates indiquées, perçoivent ce forfait.'
+            : '<strong>Aucun bénéficiaire désigné.</strong> Règle d’attente : le forfait est versé à tous les agents '
+              + 'dont la fonction figure à la grille. Désigner un premier agent la remplace par la liste.',
+          { tone: liste.length ? 'info' : 'warning', icon: 'users' }));
+          if (liste.length) {
+            corps.appendChild(K.miniTable([
+              { label: 'Agent', render: function (x) { return x.agent; } },
+              { label: 'Depuis le', render: function (x) { return C.dateFR(x.debut); } },
+              { label: 'Jusqu’au', render: function (x) { return x.fin ? C.dateFR(x.fin) : 'en cours'; } },
+              { label: '', render: function (x) {
+                if (!droit || x.fin) return '';
+                return K.iconBtn('calendar-x', 'Mettre fin à la désignation', function () {
+                  var res = colBeneficiaires().update(x.id, { fin: C.iso(AUJ) });
+                  dessinerBeneficiaires(); rendreAcquises();
+                  U.toast('Désignation terminée.', { type: 'success', detail: x.agent + ' : jusqu’au ' + C.dateFR(C.iso(AUJ)) + '.',
+                    undo: function () { res.undo(); dessinerBeneficiaires(); rendreAcquises(); } });
+                }, 'ghost');
+              } },
+            ], C.sortBy(liste, 'agent')));
+          }
+          if (!droit) { U.icons(corps); return; }
+          var f = U.form([
+            { name: 'agents', label: 'Agents à désigner', type: 'multiselect', required: true, col: 'full',
+              options: eligibles.map(function (a) { return { value: a.id, label: a.nomComplet + ' (' + fonctionLabel(a.fonction) + ')' }; }) },
+            { name: 'debut', label: 'Depuis le', type: 'date', required: true },
+          ], { debut: C.iso(AUJ) });
+          corps.appendChild(U.card('Désigner des bénéficiaires', el('div.space-y-3', null, [
+            f,
+            K.btn('Désigner', { variant: 'primary', icon: 'user-plus', onclick: function () {
+              var v = f.collect();
+              if (!v) return;
+              var deja = {};
+              liste.forEach(function (x) { if (!x.fin) deja[x.agentId] = true; });
+              var ajoutes = [];
+              (v.agents || []).forEach(function (id) {
+                if (deja[id]) return;
+                var a = eligibles.filter(function (x) { return x.id === id; })[0];
+                if (!a) return;
+                colBeneficiaires().insert({ primeId: prime.primeId, primeLabel: prime.label, agentId: a.id, agent: a.nomComplet,
+                  matricule: a.matricule, debut: v.debut, fin: null, designePar: S.currentUser() });
+                ajoutes.push(a.nomComplet);
+              });
+              if (!ajoutes.length) { U.toast('Ces agents sont déjà désignés.', { type: 'warning' }); return; }
+              S.log('Désignation des bénéficiaires d’une prime fixe', 'M10', 'Prime', prime.primeId, null, { agents: ajoutes, debut: v.debut });
+              dessinerBeneficiaires(); rendreAcquises();
+              U.toast(ajoutes.length + ' bénéficiaire(s) désigné(s).', { type: 'success', detail: prime.label });
+            } }),
+          ])));
+          U.icons(corps);
+        }
+      }
+
       function archiverPrime(prime) {
-        U.confirm({
-          title: 'Retirer la prime « ' + prime.label + ' » ?',
-          message: '<strong>Attention.</strong> Cette prime cesse d’être calculée sur les bulletins à venir. '
-            + 'Les bulletins déjà édités ne changent pas — les versions antérieures de la grille restent '
-            + 'consultables.<br><br>'
-            + 'Conformément à <strong>RG-14</strong>, la prime est <strong>archivée</strong> et non supprimée : '
-            + 'elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut '
-            + 'être retirée que par une note qui l’abroge.',
-          confirmLabel: 'Retirer la prime', danger: true, requireMotif: true,
-        }).then(function (rep) {
-          if (!rep) return;
-          colHistorique().insert({
-            primeId: prime.primeId, label: prime.label, mode: prime.mode,
-            montants: Object.assign({}, prime.montants),
-            dateEffet: prime.dateEffet || D.NS132.dateEffet,
-            dateFin: C.iso(C.addDays(AUJ, -1)),
-            remplaceePar: 'Prime retirée — ' + rep.motif,
-            archiveePar: S.currentUser(),
-          });
-          var res = colGrille().archive(prime.id, rep.motif);
-          rendreGrille(); rendreAcquises();
-          U.toast('Prime retirée de la grille.', {
-            type: 'success', detail: 'Archivage logique (RG-14) — restaurable depuis la corbeille.',
-            undo: function () { res.undo(); rendreGrille(); rendreAcquises(); },
-          });
+        /* Une prime retirée reçoit une DATE DE FIN (E651) : la paie la lit
+           jusqu'à ce jour inclus, et plus jamais après. */
+        var fRetrait = U.form([
+          { name: 'dateFin', label: 'Dernier jour de la prime', type: 'date', required: true,
+            hint: 'La paie lit la prime jusqu’à cette date incluse, et plus après.' },
+          { name: 'motif', label: 'Motif du retrait', type: 'textarea', rows: 2, required: true, col: 'full' },
+        ], { dateFin: C.iso(C.addDays(AUJ, -1)) });
+        var mRetrait = U.modal({
+          title: 'Retirer la prime « ' + prime.label + ' » ?', subtitle: D.NS132.reference, size: 'lg',
+          body: el('div.space-y-3', null, [
+            K.note('<strong>Attention.</strong> Cette prime cesse d’être calculée après sa date de fin. '
+              + 'Les bulletins déjà édités ne changent pas : les versions antérieures de la grille restent '
+              + 'consultables. Conformément à <strong>RG-14</strong>, la prime est <strong>archivée</strong> et non supprimée : '
+              + 'elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut '
+              + 'être retirée que par une note qui l’abroge.', { tone: 'warning', icon: 'shield-alert' }),
+            fRetrait,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { mRetrait.close(); } }),
+            K.btn('Retirer la prime', {
+              variant: 'danger', icon: 'archive',
+              onclick: function () {
+                var rep = fRetrait.collect();
+                if (!rep) return;
+                if (prime.dateEffet && String(rep.dateFin) < String(prime.dateEffet)) {
+                  U.toast('La date de fin précède l’entrée en vigueur de la prime.', { type: 'error',
+                    detail: 'En vigueur depuis le ' + C.dateFR(prime.dateEffet) + '.' });
+                  return;
+                }
+                mRetrait.close();
+                colHistorique().insert({
+                  primeId: prime.primeId, label: prime.label, mode: prime.mode,
+                  montants: Object.assign({}, prime.montants),
+                  dateEffet: prime.dateEffet || D.NS132.dateEffet,
+                  dateFin: rep.dateFin, retiree: true,
+                  remplaceePar: 'Prime retirée : ' + rep.motif,
+                  archiveePar: S.currentUser(),
+                });
+                var res = colGrille().archive(prime.id, rep.motif);
+                rendreGrille(); rendreAcquises();
+                U.toast('Prime retirée de la grille.', {
+                  type: 'success', detail: 'Dernier jour : ' + C.dateFR(rep.dateFin) + '. Archivage logique (RG-14), restaurable depuis la corbeille.',
+                  undo: function () { res.undo(); rendreGrille(); rendreAcquises(); },
+                });
+              },
+            }),
+          ],
         });
       }
 
@@ -2895,8 +3052,11 @@
         var permanences = compter(e.id, annee, mois, 'permanence');
         var pGarde = D.NS132.montant('garde', e.fonction) * gardes;
         var pPerm = D.NS132.montant('permanence', e.fonction) * permanences;
-        var fixes = D.NS132.primes.filter(function (p) { return p.mode === 'fixe'; })
-          .reduce(function (s, p) { return s + D.NS132.montant(p.id, e.fonction); }, 0);
+        /* Les primes fixes : barème d'origine ET primes créées à l'écran (E651),
+           retirées exclues à partir de leur date de fin, forfait versé aux seuls
+           bénéficiaires désignés quand il y en a (E654). */
+        var fixes = D.NS132.primesALaDate().filter(function (p) { return p.mode === 'fixe'; })
+          .reduce(function (s, p) { return s + D.NS132.montantAgent(p.id, e, C.iso(AUJ)); }, 0);
         return {
           id: e.id, matricule: e.matricule, employe: e.nomComplet,
           fonction: e.fonction, service: e.service,
@@ -4688,7 +4848,8 @@
           },
           transform: function (v) {
             var a = S.collection('personnel').get(v.agentId);
-            v.reference = 'OM-2026-' + C.pad(colMissions().all().length + 1, 4);
+            /* Millésime = année de la date de départ (la pièce), rang par année, archivés compris. */
+            v.reference = C.referenceSuivante('OM-' + String(v.dateDepart || C.iso(AUJ)).slice(0, 4) + '-', 4, colMissions().all().concat(colMissions().archived()));
             v.agent = a ? a.nomComplet : '—';
             v.fonction = a ? a.poste : '';
             return v;

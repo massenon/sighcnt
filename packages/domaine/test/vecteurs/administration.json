@@ -1030,7 +1030,7 @@
   },
   "etatRegistre": {
    "titre": "Registre du courrier",
-   "sousTitre": "Arrivées et départs — exercice 2026",
+   "sousTitre": "Arrivées et départs, exercice 2026",
    "cartouche": [
     [
      "Courriers enregistrés",
@@ -1181,11 +1181,11 @@
     "toasts": [
      [
       "Nouveau courrier créé.",
-      "ARR-2026-0010"
+      "ARR-2026-0009"
      ]
     ],
     "fiche": {
-     "id": "COUxmvuswn40d15e6",
+     "id": "COUxmvuswn40g4g4v",
      "statut": "actif",
      "sens": "arrivee",
      "date": "2026-10-30",
@@ -1197,7 +1197,7 @@
      "accuseReception": false,
      "numerise": false,
      "observations": "",
-     "reference": "ARR-2026-0010"
+     "reference": "ARR-2026-0009"
     },
     "total": 10
    },
@@ -1205,11 +1205,11 @@
     "toasts": [
      [
       "Nouveau courrier créé.",
-      "DEP-2026-0011"
+      "DEP-2026-0010"
      ]
     ],
     "fiche": {
-     "id": "COUxmvuswn40jyhd8",
+     "id": "COUxmvuswn40pa92d",
      "statut": "actif",
      "sens": "depart",
      "date": "2026-10-30",
@@ -1221,7 +1221,7 @@
      "accuseReception": true,
      "numerise": true,
      "observations": "Urgent",
-     "reference": "DEP-2026-0011"
+     "reference": "DEP-2026-0010"
     },
     "total": 11
    },
@@ -1269,7 +1269,7 @@
       ],
       "lignes": [
        [
-        "DEP-2026-0011",
+        "DEP-2026-0010",
         "Départ",
         "30/10/2026",
         "SOS Assurances",
@@ -1281,7 +1281,7 @@
         ""
        ],
        [
-        "ARR-2026-0010",
+        "ARR-2026-0009",
         "Arrivée",
         "30/10/2026",
         "DGI Natitingou",
@@ -1991,7 +1991,7 @@
      ]
     ],
     "fiche": {
-     "id": "REUxmvuswn4053fki",
+     "id": "REUxmvuswn40dy5rq",
      "statut": "actif",
      "type": "Réunion de direction",
      "date": "2026-10-30",
@@ -2847,7 +2847,7 @@
      }
     ],
     "fiche": {
-     "id": "EVExmvuswn40rkbq7",
+     "id": "EVExmvuswn40ctuzt",
      "statut": "actif",
      "libelle": "Dépistage du cancer du sein",
      "categorie": "Santé publique",
@@ -2866,7 +2866,7 @@
    },
    "sansNotif": {
     "fiche": {
-     "id": "EVExmvuswn40xfth2",
+     "id": "EVExmvuswn40jzgqe",
      "statut": "actif",
      "libelle": "Réunion sans annonce",
      "categorie": "Santé publique",
@@ -4141,7 +4141,7 @@
      ]
     ],
     "fiche": {
-     "id": "AMBxmvuswn40r733x",
+     "id": "AMBxmvuswn40cvmhl",
      "statut": "actif",
      "patientCode": "CNT/8/25",
      "dateHeure": "2026-10-30T09:30",
@@ -4183,7 +4183,7 @@
    },
    "tarifSaisi": {
     "fiche": {
-     "id": "AMBxmvuswn40g3bx3",
+     "id": "AMBxmvuswn40xk0j8",
      "statut": "actif",
      "patientCode": "CNT/9/26",
      "dateHeure": "2026-11-02T16:00",
@@ -4270,7 +4270,7 @@
   "amorcage": {
    "fiches": [
     {
-     "id": "AMBxmvuswn40trwo8",
+     "id": "AMBxmvuswn40309hp",
      "statut": "actif",
      "libelle": "Sapeurs-pompiers",
      "type": "publique",
@@ -4283,7 +4283,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn4068jhl",
+     "id": "AMBxmvuswn406pppu",
      "statut": "actif",
      "libelle": "Zone sanitaire de Natitingou",
      "type": "publique",
@@ -4296,7 +4296,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn402s0g0",
+     "id": "AMBxmvuswn40ffd33",
      "statut": "actif",
      "libelle": "CHD Atacora — ambulance",
      "type": "publique",
@@ -4309,7 +4309,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn40ta85w",
+     "id": "AMBxmvuswn40whd0a",
      "statut": "actif",
      "libelle": "Ambulance CNT 02",
      "type": "clinique",
@@ -4322,7 +4322,7 @@
      "source": "En-tête officiel de la clinique"
     },
     {
-     "id": "AMBxmvuswn40v3a1d",
+     "id": "AMBxmvuswn400pzkb",
      "statut": "actif",
      "libelle": "Ambulance CNT 01",
      "type": "clinique",
@@ -5096,7 +5096,7 @@
     ],
     "total": 9,
     "derniere": {
-     "id": "AMBxmvuswn40l0x4s",
+     "id": "AMBxmvuswn40h1nzo",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": true,
@@ -5121,7 +5121,7 @@
     ],
     "total": 10,
     "derniere": {
-     "id": "AMBxmvuswn40wrof4",
+     "id": "AMBxmvuswn40f3a7a",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": false,
@@ -6405,7 +6405,7 @@
      ]
     ],
     "fiche": {
-     "id": "MATxmvuswn40e09pb",
+     "id": "MATxmvuswn40pcgk3",
      "statut": "actif",
      "libelle": "Autoclave 2",
      "categorie": "Bloc opératoire",
@@ -6445,7 +6445,7 @@
    },
    "complet": {
     "fiche": {
-     "id": "MATxmvuswn408rhc3",
+     "id": "MATxmvuswn40i2se5",
      "statut": "actif",
      "libelle": "Réfrigérateur 3",
      "categorie": "Énergie & froid",
@@ -6543,7 +6543,7 @@
   "evenements": {
    "jeu": [
     {
-     "id": "EVExmvuswn40xfth2",
+     "id": "EVExmvuswn40jzgqe",
      "statut": "actif",
      "libelle": "Réunion sans annonce",
      "categorie": "Santé publique",
@@ -6559,7 +6559,7 @@
      "_creeLe": "2026-10-30T10:00:00.000Z"
     },
     {
-     "id": "EVExmvuswn40rkbq7",
+     "id": "EVExmvuswn40ctuzt",
      "statut": "actif",
      "libelle": "Dépistage du cancer du sein",
      "categorie": "Santé publique",
@@ -6773,7 +6773,7 @@
   "reunions": {
    "jeu": [
     {
-     "id": "REUxmvuswn4053fki",
+     "id": "REUxmvuswn40dy5rq",
      "statut": "actif",
      "type": "Réunion de direction",
      "date": "2026-10-30",
@@ -7038,7 +7038,7 @@
   "repertoire": {
    "jeu": [
     {
-     "id": "AMBxmvuswn40wrof4",
+     "id": "AMBxmvuswn40f3a7a",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": false,
@@ -7056,7 +7056,7 @@
      "_creeLe": "2026-10-30T10:00:00.000Z"
     },
     {
-     "id": "AMBxmvuswn40l0x4s",
+     "id": "AMBxmvuswn40h1nzo",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": true,

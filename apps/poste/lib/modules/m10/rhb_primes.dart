@@ -27,7 +27,7 @@ class EcranPrimes extends StatelessWidget with EcranMaquette {
 
   @override
   Widget build(BuildContext context) =>
-      RhbEcoute(collections: const ['grillePrimes', 'historiquePrimes', 'planning', 'personnel'], construire: _corps);
+      RhbEcoute(collections: const ['grillePrimes', 'historiquePrimes', 'beneficiairesPrimes', 'planning', 'personnel'], construire: _corps);
 
   Widget _corps(BuildContext context, ContexteEcran c) => rhbEspace([
         _Grille(contexte: context),
@@ -81,6 +81,7 @@ class _Grille extends StatelessWidget {
             }),
           ColonneMini('En vigueur', (p) => '', droite: true, rendu: (p) => Text(p['dateEffet'] != null ? dateFR(DateTime.parse('${p['dateEffet']}')) : '—', style: const TextStyle(color: JetonsShell.slate500, fontSize: 12))),
           ColonneMini('', (p) => '', droite: true, rendu: (p) => Row(mainAxisSize: MainAxisSize.min, children: [
+                if (p['mode'] == 'fixe') BoutonIcone(icone: LucideIcons.users, libelle: 'Bénéficiaires du forfait', onPressed: () => _beneficiaires(context, c, p)),
                 if (c.droit.editer) BoutonIcone(icone: LucideIcons.pencil, libelle: 'Modifier cette prime', onPressed: () => _editer(context, c, p)),
                 if (c.droit.annuler) BoutonIcone(icone: LucideIcons.archive, libelle: 'Retirer cette prime', onPressed: () => _retirer(context, c, p)),
               ])),
@@ -252,27 +253,166 @@ class _Grille extends StatelessWidget {
         });
   }
 
-  void _retirer(BuildContext ctx, ContexteEcran c, Fiche prime) async {
-    final motif = await confirmerAvecMotif(ctx,
+  /// Une prime retirée reçoit une DATE DE FIN (E651 levé) : la paie la lit jusqu'à ce jour inclus, et plus jamais après.
+  void _retirer(BuildContext ctx, ContexteEcran c, Fiche prime) {
+    final ctl = ControleurFormulaire(const [
+      ChampDef(
+          nom: 'dateFin',
+          libelle: 'Dernier jour de la prime',
+          type: TypeChamp.date,
+          requis: true,
+          aide: 'La paie lit la prime jusqu’à cette date incluse, et plus après.'),
+      ChampDef(nom: 'motif', libelle: 'Motif du retrait', type: TypeChamp.textarea, lignes: 2, requis: true, col: ColChamp.plein),
+    ], {'dateFin': iso(ajouterJours(c.aujourdhui, -1))});
+    afficherModale<void>(ctx,
         titre: 'Retirer la prime « ${prime['label']} » ?',
-        message:
-            'Attention. Cette prime cesse d’être calculée sur les bulletins à venir. Les bulletins déjà édités ne changent pas — les versions antérieures de la grille restent consultables.\n\nConformément à RG-14, la prime est archivée et non supprimée : elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut être retirée que par une note qui l’abroge.',
-        libelleOk: 'Retirer la prime',
-        dangereux: true);
-    if (motif == null || !ctx.mounted) return;
-    c.magasin.collection('historiquePrimes').inserer({
-      'statut': 'actif',
-      'primeId': prime['primeId'],
-      'label': prime['label'],
-      'mode': prime['mode'],
-      'montants': {...((prime['montants'] as Map?) ?? const {}).cast<String, Object?>()},
-      'dateEffet': prime['dateEffet'] ?? rhbNs132DateEffet,
-      'dateFin': iso(ajouterJours(c.aujourdhui, -1)),
-      'remplaceePar': 'Prime retirée — $motif',
-      'archiveePar': c.utilisateur,
-    }, prefixe: 'HPR');
-    final annuler = c.magasin.collection('grillePrimes').archiver(prime['id']);
-    ToastsSigh.afficher(ctx, 'Prime retirée de la grille.', type: TypeToast.succes, detail: 'Archivage logique (RG-14) — restaurable depuis la corbeille.', annuler: annuler);
+        sousTitre: rhbNs132Reference,
+        taille: TailleModale.lg,
+        corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+          const NoteSigh(
+              'Attention. Cette prime cesse d’être calculée après sa date de fin. Les bulletins déjà édités ne changent pas : les versions antérieures de la grille restent consultables. Conformément à RG-14, la prime est archivée et non supprimée : elle reste restaurable depuis la corbeille. Une prime instituée par note de service ne peut être retirée que par une note qui l’abroge.',
+              ton: TonSigh.attention,
+              icone: LucideIcons.shieldAlert),
+          const SizedBox(height: 12),
+          FormulaireSigh(controleur: ctl),
+        ]),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Retirer la prime',
+                  icone: LucideIcons.archive,
+                  variante: VarianteBouton.danger,
+                  onPressed: () {
+                    final v = ctl.valider();
+                    if (v == null) return;
+                    final dateFin = '${v['dateFin']}';
+                    final effet = prime['dateEffet'];
+                    if (effet != null && effet != '' && dateFin.compareTo('$effet') < 0) {
+                      ToastsSigh.afficher(ctx, 'La date de fin précède l’entrée en vigueur de la prime.',
+                          type: TypeToast.erreur, detail: 'En vigueur depuis le ${dateFR(DateTime.parse('$effet'))}.');
+                      return;
+                    }
+                    fermer();
+                    c.magasin.collection('historiquePrimes').inserer({
+                      'statut': 'actif',
+                      'primeId': prime['primeId'],
+                      'label': prime['label'],
+                      'mode': prime['mode'],
+                      'montants': {...((prime['montants'] as Map?) ?? const {}).cast<String, Object?>()},
+                      'dateEffet': prime['dateEffet'] ?? rhbNs132DateEffet,
+                      'dateFin': dateFin,
+                      'retiree': true,
+                      'remplaceePar': 'Prime retirée : ${v['motif']}',
+                      'archiveePar': c.utilisateur,
+                    }, prefixe: 'HPR');
+                    final annuler = c.magasin.collection('grillePrimes').archiver(prime['id']);
+                    ToastsSigh.afficher(ctx, 'Prime retirée de la grille.',
+                        type: TypeToast.succes,
+                        detail: 'Dernier jour : ${dateFR(DateTime.parse(dateFin))}. Archivage logique (RG-14), restaurable depuis la corbeille.',
+                        annuler: annuler);
+                  }),
+            ]);
+  }
+
+  /// LES BÉNÉFICIAIRES D'UN FORFAIT (E654 levé) : une liste DATÉE d'agents. Un forfait se désigne ; tant qu'aucun agent n'est désigné, la règle
+  /// d'attente (tous les agents de la fonction) s'applique et l'écran le dit. Une désignation ne se supprime pas : on y met fin à une date.
+  void _beneficiaires(BuildContext ctx, ContexteEcran c, Fiche prime) {
+    final col = c.magasin.collection('beneficiairesPrimes');
+    final eligibles = [
+      for (final a in rhbActives(c, 'personnel'))
+        if (((prime['montants'] as Map?)?[a['fonction']] as num? ?? 0) > 0) a
+    ];
+    final ctl = ControleurFormulaire([
+      ChampDef(
+          nom: 'agents',
+          libelle: 'Agents à désigner',
+          type: TypeChamp.multiselect,
+          requis: true,
+          col: ColChamp.plein,
+          options: [for (final a in eligibles) OptionChamp('${a['id']}', '${a['nomComplet']} (${rhbFonctionLabel(a['fonction'])})')]),
+      const ChampDef(nom: 'debut', libelle: 'Depuis le', type: TypeChamp.date, requis: true),
+    ], {'debut': iso(c.aujourdhui)});
+    afficherModale<void>(ctx,
+        titre: 'Bénéficiaires : ${prime['label']}',
+        sousTitre: rhbNs132Reference,
+        taille: TailleModale.lg,
+        corps: ListenableBuilder(
+            listenable: col,
+            builder: (_, __) {
+              final liste = [for (final x in col.actives) if (x['primeId'] == prime['primeId']) x];
+              return Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
+                NoteSigh(
+                    liste.isNotEmpty
+                        ? 'Seuls les agents désignés, aux dates indiquées, perçoivent ce forfait.'
+                        : 'Aucun bénéficiaire désigné. Règle d’attente : le forfait est versé à tous les agents dont la fonction figure à la grille. Désigner un premier agent la remplace par la liste.',
+                    ton: liste.isNotEmpty ? TonSigh.info : TonSigh.attention,
+                    icone: LucideIcons.users),
+                if (liste.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  MiniTableauSigh(colonnes: [
+                    ColonneMini('Agent', (x) => '${x['agent']}'),
+                    ColonneMini('Depuis le', (x) => dateFR(DateTime.parse('${x['debut']}'))),
+                    ColonneMini('Jusqu’au', (x) => x['fin'] != null && x['fin'] != '' ? dateFR(DateTime.parse('${x['fin']}')) : 'en cours'),
+                    ColonneMini('', (x) => '', rendu: (x) {
+                      if (!c.droit.editer || (x['fin'] != null && x['fin'] != '')) return const SizedBox.shrink();
+                      return BoutonIcone(
+                          icone: LucideIcons.calendarX,
+                          libelle: 'Mettre fin à la désignation',
+                          onPressed: () {
+                            final annuler = col.mettreAJour(x['id'], {'fin': iso(c.aujourdhui)});
+                            ToastsSigh.afficher(ctx, 'Désignation terminée.',
+                                type: TypeToast.succes, detail: '${x['agent']} : jusqu’au ${dateFR(c.aujourdhui)}.', annuler: annuler);
+                          });
+                    }),
+                  ], lignes: trierPar(liste, (x) => '${x['agent']}')),
+                ],
+                if (c.droit.editer) ...[
+                  const SizedBox(height: 12),
+                  CarteSigh(
+                      titre: 'Désigner des bénéficiaires',
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        FormulaireSigh(controleur: ctl),
+                        const SizedBox(height: 12),
+                        Align(
+                            alignment: Alignment.centerLeft,
+                            child: BoutonSigh(
+                                libelle: 'Désigner',
+                                icone: LucideIcons.userPlus,
+                                onPressed: () {
+                                  final v = ctl.valider();
+                                  if (v == null) return;
+                                  final deja = {for (final x in liste) if (x['fin'] == null || x['fin'] == '') '${x['agentId']}'};
+                                  final ajoutes = <String>[];
+                                  for (final id in ((v['agents'] as List?) ?? const []).map((e) => '$e')) {
+                                    if (deja.contains(id)) continue;
+                                    final a = eligibles.where((x) => '${x['id']}' == id).firstOrNull;
+                                    if (a == null) continue;
+                                    col.inserer({
+                                      'statut': 'actif',
+                                      'primeId': prime['primeId'],
+                                      'primeLabel': prime['label'],
+                                      'agentId': a['id'],
+                                      'agent': a['nomComplet'],
+                                      'matricule': a['matricule'],
+                                      'debut': v['debut'],
+                                      'fin': null,
+                                      'designePar': c.utilisateur,
+                                    }, prefixe: 'BPR');
+                                    ajoutes.add('${a['nomComplet']}');
+                                  }
+                                  if (ajoutes.isEmpty) {
+                                    ToastsSigh.afficher(ctx, 'Ces agents sont déjà désignés.', type: TypeToast.attention);
+                                    return;
+                                  }
+                                  c.magasin.journaliser('Désignation des bénéficiaires d’une prime fixe', 'M10', 'Prime', '${prime['primeId']}', null,
+                                      {'agents': ajoutes, 'debut': v['debut']});
+                                  ToastsSigh.afficher(ctx, '${ajoutes.length} bénéficiaire(s) désigné(s).', type: TypeToast.succes, detail: '${prime['label']}');
+                                })),
+                      ])),
+                ],
+              ]);
+            }),
+        pied: (fermer) => [BoutonSigh(libelle: 'Fermer', variante: VarianteBouton.secondaire, onPressed: fermer)]);
   }
 
   void _imprimerNote(BuildContext ctx, ContexteEcran c) {
@@ -318,6 +458,8 @@ class _Acquises extends StatelessWidget {
         planningActif: rhbActives(c, 'planning'),
         grille: rhbActives(c, 'grillePrimes'),
         historique: rhbActives(c, 'historiquePrimes'),
+        designations: rhbActives(c, 'beneficiairesPrimes'),
+        date: iso(c.aujourdhui),
         annee: c.aujourdhui.year,
         mois: c.aujourdhui.month);
     num s(num Function(RhbPrimeAcquise) f) => lignes.fold<num>(0, (a, x) => a + f(x));

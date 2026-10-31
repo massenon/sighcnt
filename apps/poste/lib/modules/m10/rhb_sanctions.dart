@@ -23,11 +23,11 @@ class EcranSanctions extends StatelessWidget with EcranMaquette {
       'Écran calculé : une sanction découle d’une évaluation NS 131 dont la retenue est supérieure à zéro. Elle ne se saisit pas ici — pour la corriger, modifier l’évaluation d’origine, ce qui recalcule la retenue et laisse trace du motif (RG-12).';
 
   @override
-  Widget build(BuildContext context) => RhbEcoute(collections: const ['evaluations', 'personnel'], construire: _corps);
+  Widget build(BuildContext context) => RhbEcoute(collections: const ['evaluations', 'personnel', 'baremeNS131', 'historiqueBareme'], construire: _corps);
 
-  /// Les critères DONT le résultat entraîne une retenue sur cette évaluation (barème d'origine de la note).
-  static List<RhbCritere> critSanctionnes(Fiche e) => [
-        for (final k in rhbCriteres)
+  /// Les critères DONT le résultat entraîne une retenue sur cette évaluation, au barème EN VIGUEUR À SA DATE (E650 levé).
+  static List<RhbCritere> critSanctionnes(Fiche e, List<Fiche> bareme, List<Fiche> historique) => [
+        for (final k in rhbCriteresALaDate(bareme, historique, rhbDateBaremeDe(e)))
           if (k.sanction((e['criteres'] as Map?)?[k.id]) > 0) k
       ];
 
@@ -44,10 +44,14 @@ class EcranSanctions extends StatelessWidget with EcranMaquette {
     }
 
     final moy = evals.isNotEmpty ? arrondiJs(somme(evals, 'prelevementPct') / evals.length).toInt() : 0;
+    final bareme = rhbActives(c, 'baremeNS131'), historiqueB = rhbActives(c, 'historiqueBareme');
     final parCritere = trierPar([
-      for (final k in rhbCriteres)
+      for (final k in rhbCriteresALaDate(bareme, historiqueB, iso(c.aujourdhui)))
         (() {
-          final touchees = [for (final e in evals) if (k.sanction((e['criteres'] as Map?)?[k.id]) > 0) e];
+          final touchees = [
+            for (final e in evals)
+              if ((rhbCriteresALaDate(bareme, historiqueB, rhbDateBaremeDe(e)).where((x) => x.id == k.id).firstOrNull?.sanction((e['criteres'] as Map?)?[k.id]) ?? 0) > 0) e
+          ];
           return (label: k.label, n: touchees.length, montant: somme(touchees, 'prelevementMontant'));
         })()
     ], (x) => x.n, descendant: true);
@@ -82,9 +86,9 @@ class EcranSanctions extends StatelessWidget with EcranMaquette {
               cle: 'motifs',
               libelle: 'Critères sanctionnés',
               triable: false,
-              texte: (e) => critSanctionnes(e).map((k) => k.label).join(', '),
+              texte: (e) => critSanctionnes(e, bareme, historiqueB).map((k) => k.label).join(', '),
               rendu: (_, e) {
-                final l = critSanctionnes(e);
+                final l = critSanctionnes(e, bareme, historiqueB);
                 if (l.isEmpty) return const Text('—');
                 return Wrap(spacing: 4, runSpacing: 4, children: [for (final k in l) BadgeSigh(k.label, ton: TonSigh.danger)]);
               }),
@@ -158,7 +162,8 @@ class EcranSanctions extends StatelessWidget with EcranMaquette {
                 ColonneEtat(libelle: 'Résultat', valeur: (r) => r['res']),
                 ColonneEtat(libelle: 'Retenue', valeur: (r) => r['ret'], droite: true),
               ], lignes: [
-                for (final k in rhbCriteres) {'label': k.label, 'res': lib(cr[k.id]), 'ret': k.sanction(cr[k.id]) > 0 ? '${k.sanction(cr[k.id])} %' : '—'}
+                for (final k in rhbCriteresALaDate(rhbActives(c, 'baremeNS131'), rhbActives(c, 'historiqueBareme'), rhbDateBaremeDe(e)))
+                  {'label': k.label, 'res': lib(cr[k.id]), 'ret': k.sanction(cr[k.id]) > 0 ? '${k.sanction(cr[k.id])} %' : '—'}
               ])),
               if ('${e['observations'] ?? ''}'.isNotEmpty) BlocTexte('Observations : ${e['observations']}', italique: true),
             ],

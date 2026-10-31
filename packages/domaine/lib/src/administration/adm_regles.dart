@@ -77,9 +77,19 @@ const Map<String, (String, String)> admTraitementsCourrier = {
 
 String admLibelleSens(Object? sens) => sens == 'arrivee' ? 'Arrivée' : 'Départ';
 
-/// Référence d'un nouveau courrier : `ARR-` / `DEP-`, millésime ÉCRIT EN DUR (2026, écart E538), rang = effectif de la collection + 1.
-String admReferenceCourrier(Object? sens, int effectif) =>
-    '${sens == 'arrivee' ? 'ARR-' : 'DEP-'}2026-${(effectif + 1).toString().padLeft(4, '0')}';
+/// Référence d'un nouveau courrier (E538 levé) : série annuelle `ARR-AAAA-NNNN` / `DEP-AAAA-NNNN`. Le millésime est l'année de la DATE du courrier ([date], ISO), le
+/// rang court par sens et par année sur les fiches EXISTANTES ([toutes], archivées comprises).
+String admReferenceCourrier(Object? sens, Object? date, Iterable<AdmFiche> toutes) {
+  final d = '$date';
+  final an = d.length >= 4 ? d.substring(0, 4) : '';
+  return admReferenceSuivante('${sens == 'arrivee' ? 'ARR-' : 'DEP-'}$an-', 4, toutes);
+}
+
+/// Les exercices que couvre un registre de courriers (années des dates, triées), à défaut l'année [parDefaut] : le sous-titre de l'état imprimé.
+String admExercicesCourriers(Iterable<AdmFiche> rows, int parDefaut) {
+  final an = <String>{for (final c in rows) if ('${c['date'] ?? ''}'.length >= 4) '${c['date']}'.substring(0, 4)}.toList()..sort();
+  return an.isEmpty ? '$parDefaut' : an.join(', ');
+}
 
 List<AdmKpi> admKpisCourriers(List<AdmFiche> rows) => [
       AdmKpi('Courriers enregistrés', nombre(rows.length), 'mail', 'navy'),

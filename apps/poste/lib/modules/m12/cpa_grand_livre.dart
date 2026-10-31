@@ -69,7 +69,7 @@ class _EtatGrandLivre extends State<EcranGrandLivre> {
 
   void _imprimer(BuildContext ctx, ContexteEcran c, String compte, List<Fiche> rows) {
     final s = cpaSoldeCompte(ecrituresExercice(c), compte);
-    final lib = cpaCompteLibelle(compte);
+    final lib = cpaCompteLibelle(compte, comptes: c.magasin.collection('comptes').toutes);
     afficherApercu(
         ctx,
         pieceM9(c,
@@ -164,7 +164,7 @@ class _EtatGrandLivre extends State<EcranGrandLivre> {
           const SizedBox(height: 16),
           TableauSigh(
             key: ValueKey('gl-$compte'),
-            titre: '$compte — ${cpaCompteLibelle(compte)}',
+            titre: '$compte — ${cpaCompteLibelle(compte, comptes: c.magasin.collection('comptes').toutes)}',
             lignes: rows,
             nomExport: 'grand-livre-$compte',
             taillePage: 20,

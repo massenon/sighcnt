@@ -103,7 +103,11 @@ class FicheEmploye extends StatelessWidget {
   }
 
   Widget _primes(Fiche e, int gardes, int permanences) {
-    final lignes = rhaPrimesAgent(c.magasin.collection('grillePrimes').actives, e['fonction'], gardes, permanences);
+    final lignes = rhaPrimesAgent(c.magasin.collection('grillePrimes').actives, e['fonction'], gardes, permanences,
+        historique: c.magasin.collection('historiquePrimes').actives,
+        designations: c.magasin.collection('beneficiairesPrimes').actives,
+        agentId: e['id'],
+        date: iso(c.aujourdhui));
     if (lignes.isEmpty) return const Padding(padding: EdgeInsets.only(top: 16), child: VideSigh('Aucune prime prévue pour cette fonction par la note NS 132.', icone: LucideIcons.gift));
     return Padding(
         padding: const EdgeInsets.only(top: 16),
