@@ -226,5 +226,15 @@
  "m10-evenements": "porté",
  "m10-participations": "porté",
  "m10-assurance-personnel": "porté",
- "m10-securite-entretien": "porté"
+ "m10-securite-entretien": "porté",
+ "dash-ambulancier": "porté",
+ "dash-aide-soignant": "porté",
+ "dash-echographiste": "porté",
+ "dash-surveillant": "porté",
+ "dash-assistant-comptable": "porté",
+ "dash-chirurgien": "porté",
+ "dash-anesthesiste": "porté",
+ "dash-aide-comptable": "porté",
+ "dash-maternite": "porté",
+ "dash-patient": "porté"
 }
