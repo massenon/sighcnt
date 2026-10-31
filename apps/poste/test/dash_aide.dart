@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
+import 'package:sigh_poste/kit/kit.dart' show BoutonSigh;
 import 'package:sigh_poste/main.dart';
 
 /// Aides communes des tests des tableaux de bord par poste (DASH). Les attendus sont les RELEVÉS de l'écran réel de la maquette
@@ -126,13 +127,12 @@ void comparer(WidgetTester t, M v, {bool parcours = true}) {
             reason: 'étapes fermées de « ${g['titre']} »');
         final liens = find.descendant(of: dansCarte, matching: find.byWidgetPredicate((w) => w.key is ValueKey && '${(w.key as ValueKey).value}'.startsWith('tba:etape:')));
         expect(liens.evaluate().length, cliquables, reason: 'étapes cliquables de « ${g['titre']} »');
+        // Le bouton porte la PREMIÈRE action — et n'existe pas si cette étape-là est fermée (commande interdite ABSENTE).
         final act = g['action'];
-        final premiere = liste(g['etapes']).first;
-        if (premiere['ecran'] != null && premiere['ferme'] != true) {
-          expect(act, isNotNull);
-          expect(find.descendant(of: dansCarte, matching: find.text('${obj(act)['libelle']}')), findsOneWidget, reason: 'bouton de « ${g['titre']} »');
-        } else {
-          expect(act, isNull, reason: 'pas de bouton si la première étape est fermée');
+        final boutons = find.descendant(of: dansCarte, matching: find.byType(BoutonSigh));
+        expect(boutons.evaluate().length, act == null ? 0 : 1, reason: 'bouton d\'ouverture de « ${g['titre']} »');
+        if (act != null) {
+          expect(find.descendant(of: dansCarte, matching: find.text('${obj(act)['libelle']}')), findsWidgets, reason: 'libellé du bouton de « ${g['titre']} »');
         }
       }
     }
