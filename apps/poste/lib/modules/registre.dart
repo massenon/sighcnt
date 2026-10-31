@@ -14,9 +14,10 @@ import 'm11/registre_m11.dart';
 import 'm12/registre_m12.dart';
 import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
-import 'mere/registre_mere.dart';
 import 'm9/registre_m9.dart';
 import 'mere/mrb_source.dart' show mrbClientMere;
+import 'mere/mrc_commun.dart' show Mrc;
+import 'mere/registre_mere.dart';
 import 'pil/registre_pil.dart';
 import 'rap/registre_rap.dart';
 import 'm2/registre_m2.dart';
@@ -55,6 +56,7 @@ Map<String, ConstruireEcran> ecransPortes(
   // Le lot (b) de la console mère lit le service par ce client (voir mere/mrb_source.dart).
   mrbClientMere = client;
   Widget console(SectionMere s) => ConsoleMere(client: client!, section: s);
+  Mrc.brancher(client: client, controleur: controleur);
   return {
     // Tranche 1 — Caisse, MECeF, impression.
     'm8-dashboard': (c, cfg) => const EcranDashboardFacturation(),

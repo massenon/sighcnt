@@ -311,5 +311,13 @@
  "mere-integrite": "porté",
  "mere-reinit": "porté",
  "mere-relais": "porté",
- "mere-indicateurs": "porté"
+ "mere-indicateurs": "porté",
+ "mere-service": "porté",
+ "mere-base": "porté",
+ "mere-reseau": "porté",
+ "mere-planificateur": "porté",
+ "mere-notifications": "porté",
+ "mere-mise-en-service": "porté",
+ "mere-mises-a-jour": "porté",
+ "mere-import": "porté"
 }
