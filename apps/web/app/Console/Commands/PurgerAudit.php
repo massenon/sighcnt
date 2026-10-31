@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\DB;
  */
 class PurgerAudit extends Command
 {
-    protected $signature = 'relais:purger {--jours=365 : durée de conservation de l\'audit} {--oui : appliquer (sinon simulation)}';
+    protected $signature = 'relais:purger {--jours= : durée de conservation de l\'audit (défaut : config relais.retention_audit_jours)} {--oui : appliquer (sinon simulation)}';
 
     protected $description = 'Purge le journal d\'audit du relais au-delà de la conservation (jamais les enveloppes)';
 
     public function handle(): int
     {
-        $jours = (int) $this->option('jours');
+        $jours = (int) ($this->option('jours') ?: config('relais.retention_audit_jours'));
         if ($jours < 30) {
             $this->error('La conservation minimale de l\'audit est de 30 jours.');
 

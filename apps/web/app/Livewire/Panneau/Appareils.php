@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Panneau;
 
+use App\Relais\Format;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -22,19 +23,21 @@ class Appareils extends Component
             return;
         }
         DB::table('relais_audit')->insert([
-            'quand' => (int) (microtime(true) * 1000), 'acteur' => (string) optional(auth()->user())->email, 'action' => 'appareil_revoque', 'detail' => $uuid,
+            'quand' => Format::maintenant(), 'acteur' => (string) optional(auth()->user())->email, 'action' => 'appareil_revoque', 'detail' => $uuid,
         ]);
         $this->message = 'Appareil révoqué : il ne peut plus ni déposer ni relever. L\'effacement des données du téléphone a lieu à son prochain contact.';
     }
 
     public function render()
     {
+        // « Dernier contact » = dernier dépôt de l'appareil : le relais n'en connaît pas d'autre. « En attente » = enveloppes
+        // posées dans sa boîte (vers_mobile) : le relais ne sait pas lesquelles le mobile a déjà relevées.
         $lignes = DB::table('relais_appareils as a')
             ->leftJoin('relais_enveloppes as e', 'e.appareil', '=', 'a.uuid')
             ->selectRaw("a.uuid, a.etat,
                 SUM(CASE WHEN e.dir = 'vers_mere' THEN 1 ELSE 0 END) as deposees,
                 SUM(CASE WHEN e.dir = 'vers_mobile' THEN 1 ELSE 0 END) as boite,
-                MAX(e.recu) as dernier")
+                MAX(CASE WHEN e.dir = 'vers_mere' THEN e.recu END) as dernier")
             ->groupBy('a.uuid', 'a.etat')->orderBy('a.uuid')->get();
 
         return view('livewire.panneau.appareils', ['lignes' => $lignes]);

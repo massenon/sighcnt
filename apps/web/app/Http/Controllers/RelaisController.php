@@ -78,7 +78,7 @@ class RelaisController extends Controller
     public function code(Request $r): JsonResponse
     {
         $this->exigerMere($r);
-        DB::table('relais_codes')->insertOrIgnore(['hash' => (string) $r->input('hash'), 'utilise' => false]);
+        DB::table('relais_codes')->insertOrIgnore(['hash' => (string) $r->input('hash'), 'utilise' => false, 'cree' => (int) (microtime(true) * 1000)]);
 
         return response()->json(['ok' => true]);
     }
@@ -100,7 +100,7 @@ class RelaisController extends Controller
         }
         $secret = bin2hex(random_bytes(24));
         DB::transaction(function () use ($hash, $uuid, $secret) {
-            DB::table('relais_codes')->where('hash', $hash)->update(['utilise' => true]);
+            DB::table('relais_codes')->where('hash', $hash)->update(['utilise' => true, 'utilise_le' => (int) (microtime(true) * 1000)]);
             DB::table('relais_appareils')->insert(['uuid' => $uuid, 'jeton_hash' => hash('sha256', $secret), 'etat' => 'actif']);
         });
 
@@ -257,7 +257,10 @@ class RelaisController extends Controller
     public function indicateurs(Request $r): JsonResponse
     {
         $this->exigerMere($r);
-        $this->poserMeta('indicateurs', json_encode($r->input('indicateurs', []), JSON_UNESCAPED_UNICODE));
+        $charge = json_encode($r->input('indicateurs', []), JSON_UNESCAPED_UNICODE);
+        $this->poserMeta('indicateurs', $charge);
+        // Historique (24 h affichées au panneau, 48 h conservées) : même contenu que le dernier envoi, rien de plus.
+        DB::table('relais_indicateurs_historique')->insert(['quand' => (int) (microtime(true) * 1000), 'charge' => $charge]);
 
         return response()->json(['ok' => true]);
     }

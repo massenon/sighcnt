@@ -4,18 +4,33 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
-    <title>{{ $titre ?? 'Panneau du relais' }} — SIGH-CNT</title>
+    <title>{{ $titre ?? 'Panneau du relais' }} · SIGH-CNT</title>
     <link rel="stylesheet" href="{{ asset('css/panneau.css') }}">
     @livewireStyles
 </head>
 <body>
+@php
+    $menu = [
+        'panneau.tableau' => 'Tableau de bord du relais',
+        'panneau.appareils' => 'Appareils',
+        'panneau.boites' => 'Boîtes aux lettres',
+        'panneau.codes' => 'Codes d’appairage',
+        'panneau.indicateurs' => 'Indicateurs reçus',
+        'panneau.alertes' => 'Alertes et notifications',
+        'panneau.journal' => 'Journal d’audit du relais',
+        'panneau.superadmin' => 'Comptes superadmin',
+        'panneau.parametres' => 'Paramètres du relais',
+        'panneau.hebergement' => 'Hébergement (cPanel)',
+        'panneau.sauvegarde' => 'Sauvegarde du relais',
+        'panneau.opacite' => 'Preuve d’opacité',
+    ];
+@endphp
 <header class="entete">
-    <strong>SIGH-CNT · Relais</strong>
+    <strong>SIGH-CNT · Relais en ligne (apps/web)</strong>
     <nav aria-label="Navigation du panneau">
-        <a href="{{ route('panneau.tableau') }}" @if(request()->routeIs('panneau.tableau')) aria-current="page" @endif>Tableau de bord</a>
-        <a href="{{ route('panneau.appareils') }}" @if(request()->routeIs('panneau.appareils')) aria-current="page" @endif>Appareils</a>
-        <a href="{{ route('panneau.codes') }}" @if(request()->routeIs('panneau.codes')) aria-current="page" @endif>Codes d'appairage</a>
-        <a href="{{ route('panneau.journal') }}" @if(request()->routeIs('panneau.journal')) aria-current="page" @endif>Journal</a>
+        @foreach($menu as $route => $libelle)
+            <a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $libelle }}</a>
+        @endforeach
     </nav>
     <form method="post" action="{{ route('panneau.deconnexion') }}">@csrf <button type="submit">Se déconnecter</button></form>
 </header>
