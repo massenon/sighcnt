@@ -6,6 +6,9 @@ import '../mere/client_mere.dart';
 import '../mere/console.dart';
 import 'ged/registre_ged.dart';
 import 'm1/registre_m1.dart';
+import 'm10/registre_m10.dart';
+import 'm11/registre_m11.dart';
+import 'm12/registre_m12.dart';
 import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
 import 'm9/registre_m9.dart';
@@ -54,6 +57,9 @@ Map<String, ConstruireEcran> ecransPortes(
     ...ecransM14,
     ...ecransM9,
     ...ecransM1,
+    ...ecransM10,
+    ...ecransM11,
+    ...ecransM12,
     ...ecransM2,
     ...ecransM3,
     ...ecransM4,
