@@ -155,5 +155,12 @@
  "m9-facture-mere": "porté",
  "m9-historique": "porté",
  "m9-creances": "porté",
- "m9-relances": "porté"
+ "m9-relances": "porté",
+ "m14-utilisateurs": "porté",
+ "m14-roles": "porté",
+ "m14-soignants": "porté",
+ "m14-sessions": "porté",
+ "m14-audit": "porté",
+ "m14-sauvegardes": "porté",
+ "m14-taches": "porté"
 }

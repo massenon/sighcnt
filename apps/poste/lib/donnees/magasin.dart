@@ -235,6 +235,14 @@ class Magasin {
     'echeancesFiscales': 'M12',
     'assureurs': 'M9',
     'relances': 'M9',
+    'utilisateurs': 'M14',
+    'rbac': 'M14',
+    'tentativesConnexion': 'M14',
+    'fichiersSauvegarde': 'M14',
+    'tachesPlanifiees': 'M14',
+    'executionsTaches': 'M14',
+    'rolesBase': 'M14',
+    'modulesManifeste': 'M14',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
@@ -394,6 +402,14 @@ class Magasin {
     'jetonsEnquete',
     'echeancesFiscales',
     'assureurs',
-    'relances'
+    'relances',
+    'utilisateurs',
+    'rbac',
+    'tentativesConnexion',
+    'fichiersSauvegarde',
+    'tachesPlanifiees',
+    'executionsTaches',
+    'rolesBase',
+    'modulesManifeste'
   ];
 }
