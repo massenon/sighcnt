@@ -15,6 +15,8 @@ import 'm12/registre_m12.dart';
 import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
 import 'm9/registre_m9.dart';
+import 'mere/mrb_source.dart' show mrbClientMere;
+import 'mere/registre_mere.dart';
 import 'pil/registre_pil.dart';
 import 'rap/registre_rap.dart';
 import 'm2/registre_m2.dart';
@@ -50,6 +52,8 @@ const rolesAdminMere = {'admin', 'da'};
 /// Les droits ne sont PAS décidés ici : le ruban n'affiche que ce que la matrice RBAC ouvre au rôle.
 Map<String, ConstruireEcran> ecransPortes(
     {ControleurPoste? controleur, ClientMere? client}) {
+  // Le lot (b) de la console mère lit le service par ce client (voir mere/mrb_source.dart).
+  mrbClientMere = client;
   Widget console(SectionMere s) => ConsoleMere(client: client!, section: s);
   return {
     // Tranche 1 — Caisse, MECeF, impression.
@@ -76,6 +80,7 @@ Map<String, ConstruireEcran> ecransPortes(
     ...ecransM5,
     ...ecransM6,
     ...ecransM7,
+    ...ecransMERE,
     'mecef-dashboard': (c, cfg) => const EcranMecefTableauDeBord(),
     'mecef-factures': (c, cfg) => const EcranMecefFactures(),
     'mecef-transmission': (c, cfg) => const EcranMecefTransmission(),
@@ -97,8 +102,6 @@ Map<String, ConstruireEcran> ecransPortes(
       'mere-supervision': (c, cfg) => console(SectionMere.supervision),
       'mere-appareils': (c, cfg) => console(SectionMere.appareils),
       'mere-conflits': (c, cfg) => console(SectionMere.conflits),
-      'mere-journal-technique': (c, cfg) => console(SectionMere.journal),
-      'mere-reinit': (c, cfg) => console(SectionMere.maintenance),
     },
   };
 }
