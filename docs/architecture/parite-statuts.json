@@ -194,5 +194,15 @@
  "m10-presences": "porté",
  "m10-evaluations": "porté",
  "m10-sanctions": "porté",
- "m10-primes": "porté"
+ "m10-primes": "porté",
+ "cfg-natures-facture": "porté",
+ "cfg-organisation": "porté",
+ "cfg-tarifs": "porté",
+ "cfg-catalogue": "porté",
+ "cfg-branding": "porté",
+ "cfg-entetes": "porté",
+ "cfg-types-piece": "porté",
+ "cfg-certificats": "porté",
+ "cfg-rappels": "porté",
+ "cfg-imagerie-catalogue": "porté"
 }
