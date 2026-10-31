@@ -487,15 +487,30 @@
           var acts = [K.iconBtn('eye', 'Consulter', function () { consulter(e); })];
           if (e.statut === 'brouillon') {
             acts.push(K.iconBtn('check', 'Valider', function () {
-              var res = col.update(e.id, { statut: 'validee' });
+              /* On valide la PIÈCE ENTIÈRE, jamais une ligne seule (écart E710) : valider une ligne coupait l'écriture en deux
+                 et laissait la balance boiteuse. RG-10 est contrôlé sur l'ensemble des lignes de même numéro AVANT. */
+              var piece = col.active().filter(function (x) { return x.numero === e.numero && x.statut === 'brouillon'; });
+              var td = C.sum(piece, 'debit'), tc = C.sum(piece, 'credit');
+              if (td !== tc) {
+                U.toast('RG-10 — écriture déséquilibrée : validation impossible.', {
+                  type: 'error', detail: 'Pièce ' + e.numero + ' : écart de ' + C.money(Math.abs(td - tc)) + '.',
+                });
+                return;
+              }
+              var res = piece.map(function (x) { return col.update(x.id, { statut: 'validee' }); });
               table.refresh();
-              U.toast('Écriture validée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+              U.toast('Écriture validée.', { type: 'success', detail: piece.length + ' ligne(s).',
+                undo: function () { res.forEach(function (r) { if (r) r.undo(); }); table.refresh(); } });
             }, 'ghost'));
           }
           acts.push(K.iconBtn('archive', 'Archiver', function () {
-            var res = col.archive(e.id);
+            /* On archive la PIÈCE ENTIÈRE (écart E716, même défaut que la validation) : archiver une ligne seule laissait
+               l'autre au journal — une demi-écriture serait pire qu'aucune (RG-10, comme l'archivage d'une dépense). */
+            var piece = col.active().filter(function (x) { return x.numero === e.numero; });
+            var res = piece.map(function (x) { return col.archive(x.id); });
             table.refresh();
-            U.toast('Écriture archivée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+            U.toast('Écriture archivée.', { type: 'success', detail: piece.length + ' ligne(s).',
+              undo: function () { res.forEach(function (r) { if (r) r.undo(); }); table.refresh(); } });
           }, 'ghost'));
           return acts;
         },
@@ -658,7 +673,13 @@
             });
             return;
           }
-          var num = v.journal + '-' + exo() + '-' + C.pad(col.active().length + 1, 5);
+          /* Écart E711 : le rang était « nombre de lignes actives + 1 » — il repart en arrière à chaque archivage et redonne un numéro déjà
+             attribué. Le rang est le plus grand déjà écrit pour ce journal et cet exercice, plus un (lu sur les fiches existantes). */
+          var prefNum = v.journal + '-' + exo() + '-', maxNum = 0;
+          col.all().forEach(function (x) {
+            if (String(x.numero || '').indexOf(prefNum) === 0) maxNum = Math.max(maxNum, parseInt(String(x.numero).slice(prefNum.length), 10) || 0);
+          });
+          var num = prefNum + C.pad(maxNum + 1, 5);
           var crees = lignes.map(function (l) {
             return col.insert({
               numero: num, date: v.date, journal: v.journal, journalLibelle: journalLibelle(v.journal),
@@ -668,6 +689,13 @@
               origine: 'Saisie manuelle', statut: statut,
             });
           });
+          /* Écart E713 : une écriture refusée par la garde de l'exercice clos rend null — la maquette annonçait « enregistrée » et
+             fermait la saisie. On défait ce qui a pu être écrit et la saisie reste ouverte (le refus a déjà été dit). */
+          if (crees.some(function (r) { return !r; })) {
+            crees.forEach(function (r) { if (r) r.undo(); });
+            table.refresh();
+            return;
+          }
           m.close(); table.refresh();
           U.toast('Écriture ' + num + ' enregistrée (' + crees.length + ' ligne(s)).', {
             type: 'success',
@@ -3911,6 +3939,17 @@
         };
       }
 
+      /* Écart E714 : la garde de l'exercice clos refuse l'écriture (insert rend null) — la maquette levait alors une TypeError dans
+         poserEcriture APRÈS avoir écrit la dépense. Le refus est dit AVANT toute écriture, avec le motif du moteur. */
+      function exerciceDeLaDateClos(date) {
+        var a = global.SIGH.exercice.anneeDe(date);
+        if (!a || global.SIGH.exercice.etat(a) !== 'clos') return false;
+        var x = global.SIGH.exercice.de(a);
+        U.toast('Écriture refusée.', { type: 'error', detail: 'Exercice ' + a + ' clos' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '')
+          + ' — lecture seule. La correction passe par une écriture de l’exercice en cours.' });
+        return true;
+      }
+
       function nouvelle() {
         if (!K.droits('M12').editer) return;
         var f = U.form(champs(), { date: C.iso(AUJ), categorie: 'fonctionnement' });
@@ -3928,9 +3967,12 @@
                 if (!v) return;
                 var t = totauxDepuisLignes(v, editeur);
                 if (!t) return;
+                if (exerciceDeLaDateClos(v.date)) return;
                 var sess = S.session() || {};
                 var rec = colDepenses().insert({
-                  reference: C.nextRef('DEP-' + String(C.toDate(v.date).getFullYear()) + '-', 4),
+                  /* Écart E712 : C.nextRef est un compteur de PAGE (repart à 1 à chaque chargement) — la première dépense de la
+                     session redonnait DEP-2026-0001, déjà attribuée. Le rang se lit sur les dépenses existantes (E8). */
+                  reference: C.referenceSuivante('DEP-' + String(C.toDate(v.date).getFullYear()) + '-', 4, colDepenses().all()),
                   date: v.date,
                   lignes: t.lignes, montant: t.montant,
                   libelle: t.libelle, compteCharge: t.compteCharge,
@@ -3978,6 +4020,7 @@
                 if (!v) return;
                 var t = totauxDepuisLignes(v, editeur);
                 if (!t) return;
+                if (exerciceDeLaDateClos(v.date)) return;
                 colDepenses().update(r.id, {
                   date: v.date,
                   lignes: t.lignes, montant: t.montant, libelle: t.libelle,
