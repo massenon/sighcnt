@@ -29,6 +29,7 @@ const ecransMesures = [
   'cfg-entetes',
   'cfg-types-piece',
   'cfg-certificats',
+  'cfg-rappels',
 ];
 
 void main() {

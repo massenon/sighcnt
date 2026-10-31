@@ -109,12 +109,13 @@ void cfaSaisir(BuildContext ctx,
     required String titreCreation,
     required String entite,
     Map<String, Object?> initiales = const {},
+    Map<String, Object?> Function(Fiche)? preparer,
     TailleModale taille = TailleModale.lg,
     String prefixeId = 'ID',
     bool Function(BuildContext ctx, Map<String, Object?> saisie, Fiche? existante)? avant,
     void Function(Fiche creee)? apres}) {
   final c = ContexteEcran.of(ctx);
-  final ctl = ControleurFormulaire(champs, existante != null ? {for (final e in existante.entries) e.key: e.value is num ? '${e.value}' : e.value} : initiales);
+  final ctl = ControleurFormulaire(champs, existante != null ? {for (final e in (preparer?.call(existante) ?? existante).entries) e.key: e.value is num ? '${e.value}' : e.value} : initiales);
   afficherModale<void>(ctx,
       titre: existante == null ? titreCreation : 'Modifier l’enregistrement',
       sousTitre: existante == null
@@ -180,6 +181,8 @@ class CfaTableau extends StatelessWidget {
     this.lignes,
     this.fiche,
     this.avant,
+    this.preparer,
+    this.actionsLigneApres,
     this.detail,
     this.titreDetail,
     this.sousTitreDetail,
@@ -212,6 +215,10 @@ class CfaTableau extends StatelessWidget {
   final List<Fiche> Function(List<Fiche> actives)? lignes;
   final Fiche Function(Map<String, Object?> saisie, Fiche? existante)? fiche;
   final bool Function(BuildContext, Map<String, Object?>, Fiche?)? avant;
+
+  /// Les valeurs du formulaire d'ÉDITION quand elles ne sont pas celles de la fiche (les choix d'une liste relus dans un champ texte).
+  final Map<String, Object?> Function(Fiche)? preparer;
+  final List<Widget> Function(BuildContext, Fiche)? actionsLigneApres;
   final Widget Function(BuildContext, Fiche)? detail;
   final String Function(Fiche)? titreDetail;
   final String? Function(Fiche)? sousTitreDetail;
@@ -284,8 +291,9 @@ class CfaTableau extends StatelessWidget {
                 BoutonIcone(
                     icone: LucideIcons.pencil,
                     libelle: 'Modifier',
-                    onPressed: () => cfaSaisir(ctx2, col: col, champs: champs(f), fiche: _fiche, existante: f, titreCreation: titreCreation, entite: entite, taille: taille, avant: avant)),
+                    onPressed: () => cfaSaisir(ctx2, col: col, champs: champs(f), fiche: _fiche, existante: f, titreCreation: titreCreation, entite: entite, taille: taille, avant: avant, preparer: preparer)),
               if (archivable && c.droit.annuler) BoutonIcone(icone: LucideIcons.archive, libelle: 'Archiver', onPressed: () => cfaArchiver(ctx2, col, f)),
+              ...?actionsLigneApres?.call(ctx2, f),
             ],
           );
         });
@@ -302,6 +310,13 @@ void cfaImprimer(BuildContext ctx,
     matImprimer(ctx, titre: titre, sousTitre: sousTitre, cartouche: cartouche, blocs: blocs, signatures: signatures);
 
 String cfaMoney(Object? v, {bool devise = false}) => money(v, avecDevise: devise);
+
+/// `K.section(titre, contenu)` : un intertitre en petites capitales suivi de son contenu (fiches détaillées).
+Widget cfaSection(String titre, Widget contenu) => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Text(titre.toUpperCase(), style: const TextStyle(fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w600, letterSpacing: 0.6, color: JetonsShell.slate500)),
+      const SizedBox(height: 8),
+      contenu,
+    ]);
 
 /// `D.SECTEURS_ACTIVITE` : un référentiel STATIQUE du jeu (liste de chaînes, pas de fiches).
 List<String> cfaSecteursActivite(Magasin m) => [for (final s in (m.referentiels['secteursActivite'] as List? ?? const [])) '$s'];
