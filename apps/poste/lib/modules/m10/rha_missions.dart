@@ -131,7 +131,7 @@ class EcranMissions extends StatelessWidget with EcranMaquette {
                             'dateRetour': iso(c.aujourdhui.add(const Duration(days: 2))),
                             'structurePrise': 'CLINIQUE NASSIERA TOO SARL',
                           },
-                          fiche: (v, ex) => matSansNuls(ex == null ? rhaMissionEnregistrable({...v}, rhaAgentPar(c.magasin, v['agentId']), effectifTotal: col.toutes.length) : {...v}),
+                          fiche: (v, ex) => matSansNuls(ex == null ? rhaMissionEnregistrable({...v}, rhaAgentPar(c.magasin, v['agentId']), toutes: col.toutes) : {...v}),
                           detailToast: (f) => '${f['libelle'] ?? ''}')),
               ],
               actionsLigne: (ctx, m) => [

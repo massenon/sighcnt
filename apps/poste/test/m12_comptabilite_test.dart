@@ -87,10 +87,11 @@ void main() {
       await t.pump(const Duration(milliseconds: 600));
     }
 
-    casM14('112 comptes, quatre indicateurs, trois onglets ; un compte du document porte sa provenance', (t) async {
+    casM14('110 comptes actifs (112 fiches, 2 doublons du plan archivés), quatre indicateurs, trois onglets ; un compte du document porte sa provenance', (t) async {
       final m = magasinM14();
       await ouvrir(t, m, 'm12-plan-comptable');
-      expect(m.collection('comptes').actives.length, 112);
+      expect(m.collection('comptes').actives.length, 110, reason: 'les deux doublons (244100, 631810) sont archivés au chargement (E724/E725)');
+      expect(m.collection('comptes').archivees.map((x) => x['num']).toSet(), {'244100', '631810'});
       for (final k in ['Comptes paramétrés', 'Issus des documents', 'Classes utilisées', 'Comptes mouvementés']) {
         expect(find.text(k), findsOneWidget, reason: k);
       }
@@ -108,7 +109,7 @@ void main() {
       await saisir(t, 'libelle', 'Compte court');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer'));
       expect(find.text('Le numéro de compte doit comporter 6 chiffres.'), findsOneWidget);
-      expect(m.collection('comptes').actives.length, 112);
+      expect(m.collection('comptes').actives.length, 110);
     });
 
     casM14('un numéro déjà attribué est REFUSÉ à la création', (t) async {
@@ -119,7 +120,33 @@ void main() {
       await saisir(t, 'libelle', 'Doublon');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer'));
       expect(find.text('Ce numéro de compte existe déjà.'), findsOneWidget);
-      expect(m.collection('comptes').actives.length, 112);
+      expect(m.collection('comptes').actives.length, 110);
+    });
+
+    casM14('l\'unicité vaut aussi à la MODIFICATION et face à un compte ARCHIVÉ (E724 levé), le refus nomme la corbeille', (t) async {
+      final m = magasinM14();
+      await ouvrir(t, m, 'm12-plan-comptable');
+      await chercherCompte(t, '601100');
+      await toucherM14(t, find.byTooltip('Modifier').first);
+      await saisir(t, 'num', '604100');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(find.text('Ce numéro de compte existe déjà.'), findsOneWidget);
+      expect(m.collection('comptes').actives.firstWhere((x) => x['libelle'] == 'Achats de marchandises')['num'], '601100', reason: 'rien n\'est écrit');
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    casM14('un numéro de compte ARCHIVÉ ne se recrée pas : le refus dit où le restaurer', (t) async {
+      final m = magasinM14();
+      final cpt = m.collection('comptes').actives.firstWhere((x) => x['num'] == '604100');
+      m.collection('comptes').archiver(cpt['id']);
+      await ouvrir(t, m, 'm12-plan-comptable');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Nouveau'));
+      await saisir(t, 'num', '604100');
+      await saisir(t, 'libelle', 'Essai');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Créer'));
+      expect(find.text('Ce numéro de compte existe déjà (compte archivé : le restaurer depuis la corbeille).'), findsOneWidget);
+      expect(m.collection('comptes').actives.where((x) => x['num'] == '604100'), isEmpty);
+      await t.pump(const Duration(seconds: 10));
     });
 
     casM14('la création écrit un « Complément », en tête, journalisée', (t) async {

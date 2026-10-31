@@ -862,7 +862,7 @@
      ]
     ],
     "fiche": {
-     "id": "CPAxmsvmvr40s2te0",
+     "id": "CPAxmsvmvr40l32ai",
      "statut": "actif",
      "patientCode": "CNT/2/26",
      "date": "2026-08-16",
@@ -912,7 +912,7 @@
      ]
     ],
     "fiche": {
-     "id": "CPAxmsvmvr40ktcnw",
+     "id": "CPAxmsvmvr40are5p",
      "statut": "actif",
      "patientCode": "CNT/4/26",
      "date": "2026-08-16",
@@ -1429,7 +1429,7 @@
       ]
      ],
      "fiche": {
-      "id": "CROxmsvmvr404fxzg",
+      "id": "CROxmsvmvr40tl8l3",
       "statut": "actif",
       "patientCode": "CNT/3/26",
       "nip": "NIP-9",
@@ -1473,7 +1473,7 @@
     },
     "sansAide": {
      "fiche": {
-      "id": "CROxmsvmvr406ox0h",
+      "id": "CROxmsvmvr40vqvx3",
       "statut": "actif",
       "patientCode": "CNT/3/26",
       "nip": "NIP-10",
@@ -1888,7 +1888,7 @@
      ]
     ],
     "fiche": {
-     "id": "CRAxmsvmvr406hitk",
+     "id": "CRAxmsvmvr40a6eoa",
      "statut": "actif",
      "patientCode": "CNT/4/26",
      "dateOperation": "2026-08-16",
@@ -2474,7 +2474,7 @@
      ]
     ],
     "fiche": {
-     "id": "CKLxmsvmvr406pbkz",
+     "id": "CKLxmsvmvr40ui6c4",
      "statut": "actif",
      "reference": "CKL-0005",
      "moment": "sortie",
@@ -2556,7 +2556,7 @@
      ]
     ],
     "fiche": {
-     "id": "CKLxmsvmvr40outu4",
+     "id": "CKLxmsvmvr40n00kd",
      "statut": "actif",
      "reference": "CKL-0006",
      "moment": "sortie",
@@ -2638,7 +2638,7 @@
     ]
    ],
    "fiche": {
-    "id": "CKLxmsvmvr40zhttw",
+    "id": "CKLxmsvmvr40463u3",
     "statut": "actif",
     "reference": "CKL-0007",
     "moment": "entree",
@@ -3046,7 +3046,7 @@
    ],
    "demandes": [
     {
-     "id": "DEMxmsvmvr40aempt",
+     "id": "DEMxmsvmvr404nitl",
      "statut": "actif",
      "reference": "LAB-00007",
      "codeAnalyse": "00007-2026",
@@ -3071,11 +3071,11 @@
      "indication": "Anémie",
      "hospitalise": true,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr406xtq0",
+     "factureId": "FACxmsvmvr406ju49",
      "factureNumero": "FE-2026-00001"
     },
     {
-     "id": "DEMxmsvmvr40aje6d",
+     "id": "DEMxmsvmvr40nj7ke",
      "statut": "actif",
      "reference": "LAB-00006",
      "codeAnalyse": "00006-2026",
@@ -3100,13 +3100,13 @@
      "indication": "Anémie",
      "hospitalise": true,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr406xtq0",
+     "factureId": "FACxmsvmvr406ju49",
      "factureNumero": "FE-2026-00001"
     }
    ],
    "factures": [
     {
-     "id": "FACxmsvmvr406xtq0",
+     "id": "FACxmsvmvr406ju49",
      "statut": "actif",
      "lignes": [
       {
@@ -3123,7 +3123,7 @@
        "partAssureur": 1400,
        "partPersonnel": 0,
        "partPatient": 600,
-       "demandeId": "DEMxmsvmvr40aje6d",
+       "demandeId": "DEMxmsvmvr40nj7ke",
        "produitId": null,
        "acteCode": null,
        "demandeImagerieId": null,
@@ -3146,7 +3146,7 @@
        "partAssureur": 2800,
        "partPersonnel": 0,
        "partPatient": 1200,
-       "demandeId": "DEMxmsvmvr40aempt",
+       "demandeId": "DEMxmsvmvr404nitl",
        "produitId": null,
        "acteCode": null,
        "demandeImagerieId": null,
@@ -3185,27 +3185,27 @@
    ],
    "taches": [
     {
-     "id": "TCHxmsvmvr40ohqph",
+     "id": "TCHxmsvmvr40g21s6",
      "statut": "bloque",
      "type": "prelevement",
      "poste": "laboratoire",
      "libelle": "Patient externe — BAKO Boukari",
      "detail": "2 examen(s)",
      "reference": "FE-2026-00001",
-     "factureId": "FACxmsvmvr406xtq0",
+     "factureId": "FACxmsvmvr406ju49",
      "patientId": "PAT0002",
      "patient": "BAKO Boukari",
      "creeLe": "2026-08-16T10:00:00.000Z"
     },
     {
-     "id": "TCHxmsvmvr40hdcxp",
+     "id": "TCHxmsvmvr40k011z",
      "statut": "en_attente",
      "type": "encaissement",
      "poste": "caisse",
      "libelle": "Patient externe — BAKO Boukari",
      "detail": "2 examen(s) — 6 000",
      "reference": "FE-2026-00001",
-     "factureId": "FACxmsvmvr406xtq0",
+     "factureId": "FACxmsvmvr406ju49",
      "patientId": "PAT0002",
      "patient": "BAKO Boukari",
      "montant": 6000,
@@ -3321,7 +3321,7 @@
    ],
    "demandes": [
     {
-     "id": "DEMxmsvmvr40lv3y8",
+     "id": "DEMxmsvmvr40oflvg",
      "statut": "actif",
      "reference": "LAB-00008",
      "codeAnalyse": "00008-2026",
@@ -3346,7 +3346,7 @@
      "indication": "Anémie",
      "hospitalise": false,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr40tj1e9",
+     "factureId": "FACxmsvmvr40bts6o",
      "factureNumero": "FE-2026-00002"
     }
    ]
@@ -3357,7 +3357,7 @@
    ],
    "demandes": [
     {
-     "id": "DEMxmsvmvr40wsqif",
+     "id": "DEMxmsvmvr407ztnt",
      "statut": "actif",
      "reference": "LAB-00009",
      "codeAnalyse": "00009-2026",
@@ -3382,7 +3382,7 @@
      "indication": "Anémie",
      "hospitalise": false,
      "bloqueParPaiement": true,
-     "factureId": "FACxmsvmvr4064f6w",
+     "factureId": "FACxmsvmvr40lvd4w",
      "factureNumero": "FE-2026-00003"
     }
    ]
@@ -3432,7 +3432,7 @@
     {
      "libelle": "Tarif du pansement",
      "valeur": "9 000 FCFA",
-     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré"
+     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)"
     }
    ],
    "cartes": [
@@ -3515,7 +3515,7 @@
    ],
    "ordonnances": [
     {
-     "id": "ORDxmsvmvr405n9e7",
+     "id": "ORDxmsvmvr40zbvi0",
      "statut": "actif",
      "numero": "ORD-2026-00001",
      "date": "2026-08-16T10:00:00.000Z",
@@ -3563,13 +3563,13 @@
      "statutAnalyses": "sans_objet",
      "statutActes": "en_attente",
      "statutImagerie": "sans_objet",
-     "factureId": "FACxmsvmvr40qv7ej",
+     "factureId": "FACxmsvmvr40460g5",
      "factureNumero": "FP-2026-00001"
     }
    ],
    "factures": [
     {
-     "id": "FACxmsvmvr40qv7ej",
+     "id": "FACxmsvmvr40460g5",
      "statut": "actif",
      "lignes": [
       {
@@ -3665,14 +3665,14 @@
      "modePaiement": null,
      "statutPaiement": "impayee",
      "statutMecef": "en_attente",
-     "ordonnanceId": "ORDxmsvmvr405n9e7",
+     "ordonnanceId": "ORDxmsvmvr40zbvi0",
      "ordonnanceNumero": "ORD-2026-00001",
      "dossierConsultationId": null
     }
    ],
    "taches": [
     {
-     "id": "TCHxmsvmvr40wnrmm",
+     "id": "TCHxmsvmvr40uvecx",
      "statut": "bloque",
      "type": "acte",
      "role": "infirmier",
@@ -3681,8 +3681,8 @@
      "titre": "Exécuter les actes prescrits",
      "icon": "stethoscope",
      "reference": "ORD-2026-00001",
-     "ordonnanceId": "ORDxmsvmvr405n9e7",
-     "factureId": "FACxmsvmvr40qv7ej",
+     "ordonnanceId": "ORDxmsvmvr40zbvi0",
+     "factureId": "FACxmsvmvr40460g5",
      "factureNumero": "FP-2026-00001",
      "patient": "TCHANE Bertine",
      "patientCode": "CNT/1/25",
@@ -3694,7 +3694,7 @@
      "montant": 27000
     },
     {
-     "id": "TCHxmsvmvr40jjlph",
+     "id": "TCHxmsvmvr404a0jq",
      "statut": "en_attente",
      "type": "encaissement",
      "role": "caissier",
@@ -3703,8 +3703,8 @@
      "titre": "Encaisser la prescription",
      "icon": "coins",
      "reference": "ORD-2026-00001",
-     "ordonnanceId": "ORDxmsvmvr405n9e7",
-     "factureId": "FACxmsvmvr40qv7ej",
+     "ordonnanceId": "ORDxmsvmvr40zbvi0",
+     "factureId": "FACxmsvmvr40460g5",
      "factureNumero": "FP-2026-00001",
      "patient": "TCHANE Bertine",
      "patientCode": "CNT/1/25",
@@ -3794,7 +3794,7 @@
     },
     {
      "libelle": "Séances en attente de règlement",
-     "valeur": "1",
+     "valeur": "3",
      "indice": null
     },
     {
@@ -3805,7 +3805,7 @@
     {
      "libelle": "Tarif du pansement",
      "valeur": "9 000 FCFA",
-     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré"
+     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)"
     }
    ],
    "tableaux": [
@@ -3868,7 +3868,7 @@
     },
     {
      "libelle": "Séances en attente de règlement",
-     "valeur": "1",
+     "valeur": "2",
      "indice": null
     },
     {
@@ -3879,7 +3879,7 @@
     {
      "libelle": "Tarif du pansement",
      "valeur": "9 000 FCFA",
-     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré"
+     "indice": "Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)"
     }
    ],
    "tableaux": [
@@ -4003,7 +4003,71 @@
      }
     ]
    }
-  }
+  },
+  "tarifAssure": [
+   {
+    "nom": "carte valide : 6 000 la séance (grille, colonnes inversées)",
+    "carteExpiration": "2099-12-31",
+    "montant": 12000,
+    "actes": [
+     {
+      "code": "SO09",
+      "prix": 6000
+     },
+     {
+      "code": "SO09",
+      "prix": 6000
+     }
+    ],
+    "lignes": [
+     {
+      "acteCode": "SO09",
+      "montant": 6000,
+      "partAssureur": 4800,
+      "partPatient": 1200
+     },
+     {
+      "acteCode": "SO09",
+      "montant": 6000,
+      "partAssureur": 4800,
+      "partPatient": 1200
+     }
+    ],
+    "partPatient": 2400,
+    "partAssurance": 9600
+   },
+   {
+    "nom": "carte expirée : 9 000 la séance (non assuré)",
+    "carteExpiration": "2000-01-01",
+    "montant": 18000,
+    "actes": [
+     {
+      "code": "SO09",
+      "prix": 9000
+     },
+     {
+      "code": "SO09",
+      "prix": 9000
+     }
+    ],
+    "lignes": [
+     {
+      "acteCode": "SO09",
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000
+     },
+     {
+      "acteCode": "SO09",
+      "montant": 9000,
+      "partAssureur": 0,
+      "partPatient": 9000
+     }
+    ],
+    "partPatient": 18000,
+    "partAssurance": 0
+   }
+  ]
  },
  "sorties": {
   "jeu": {
@@ -4863,7 +4927,7 @@
      ]
     ],
     "fiche": {
-     "id": "SORxmsvmvr40s58t6",
+     "id": "SORxmsvmvr407n0gl",
      "statut": "actif",
      "admissionId": "ADM1",
      "dateSortie": "2026-08-16",
@@ -4933,7 +4997,7 @@
      ]
     ],
     "fiche": {
-     "id": "SORxmsvmvr40j75nk",
+     "id": "SORxmsvmvr40ym0in",
      "statut": "actif",
      "admissionId": "ADM2",
      "dateSortie": "2026-08-16",
@@ -5069,7 +5133,7 @@
      ]
     ],
     "fiche": {
-     "id": "SORxmsvmvr40s58t6",
+     "id": "SORxmsvmvr407n0gl",
      "statut": "actif",
      "admissionId": "ADM1",
      "dateSortie": "2026-08-16",

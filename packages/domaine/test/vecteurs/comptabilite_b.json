@@ -12350,7 +12350,7 @@
     "modaleOuverte": true,
     "texte": "Nouveau compte bancaire Les champs marqués d’un astérisque sont obligatoires. Établissement bancaire * Ce champ est obligatoire. Intitulé du compte * Ce champ est obligatoire. Numéro de compte * Ce champ est obligatoire. Compte comptable (SYSCOHADA) * Classe 52 — banques. Sert à l’imputation automatique des mouvements. Devise — Sélectionner — FCFA EUR USD État du compte * Actif Clôturé Annuler Cré"
    },
-   "creeId": "BQxmvusx17nldpbu",
+   "creeId": "BQxmvusx3667znce",
    "ligneCreee": {
     "cellules": [
      "Banque Atlantique Bénin",
@@ -12379,7 +12379,7 @@
      "modifs": {
       "banques": [
        {
-        "cle": "BQxmvusx17nldpbu",
+        "cle": "BQxmvusx3667znce",
         "patch": {
          "statutCompte": "cloture"
         }
@@ -12402,7 +12402,7 @@
      "modifs": {
       "banques": [
        {
-        "cle": "BQxmvusx17nldpbu",
+        "cle": "BQxmvusx3667znce",
         "patch": {
          "statut": "archive",
          "_motifArchivage": null

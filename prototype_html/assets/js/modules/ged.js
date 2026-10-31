@@ -330,7 +330,14 @@
       var rows = col.active();
       var host = el('div.space-y-4');
 
-      function echeance(d) { return C.addDays(d.date, d.conservation * 365); }
+      /* E565 : l'échéance est CALENDAIRE (date du document + N années civiles), plus N × 365 jours, qui
+         tombait 5 jours avant l'anniversaire sur 20 ans (années bissextiles ignorées). Un 29 février
+         retombe, hors année bissextile, au 1er mars : la conservation n'est jamais écourtée. */
+      function echeance(d) {
+        var x = new Date(C.toDate(d.date).getTime());
+        x.setFullYear(x.getFullYear() + Number(d.conservation));
+        return x;
+      }
       function expire(d) { return echeance(d) < AUJ; }
 
       var archives = rows.filter(function (d) { return d.archive; });

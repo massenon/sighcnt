@@ -3688,20 +3688,22 @@
 
       function afficher() {
         var rows = bons();
-        var attente = rows.filter(function (o) { var s = seancesDe(o); return s.total && s.reglees < s.total; });
+        /* C4 (corrigé le 31/10/2026) : l'indicateur compte des SÉANCES (lignes payables restantes), non des bons dont des
+           séances restent dues : un bon de 5 séances dont 2 sont réglées pèse 3, pas 1. */
+        var seancesAttente = C.sum(rows, function (o) { var s = seancesDe(o); return s.total ? s.total - s.reglees : 0; });
 
         C.clear(vue);
         vue.appendChild(U.kpiGrid([
           { label: 'Bons émis', value: C.num(rows.length), icon: 'bandage', tone: 'navy' },
-          { label: 'Séances en attente de règlement', value: C.num(attente.length), icon: 'wallet',
-            tone: attente.length ? 'warning' : 'neutral' },
+          { label: 'Séances en attente de règlement', value: C.num(seancesAttente), icon: 'wallet',
+            tone: seancesAttente ? 'warning' : 'neutral' },
           { label: 'Types au catalogue', value: C.num(actesPansement().length), icon: 'list',
             tone: 'neutral', hint: 'Pansement (SO09) et pansement chirurgical (CH04)' },
           { label: 'Tarif du pansement', value: (function () {
             var a = actesPansement().filter(function (x) { return x.code === 'SO09'; })[0];
             return a && a.prix != null ? C.money(a.prix) : '—';
           })(), icon: 'receipt', tone: 'info',
-          hint: 'Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré' },
+          hint: 'Grille (colonnes inversées, 26/08) : 9 000 non assuré · 6 000 assuré, appliqué par la carte valide à la date (RG-09)' },
         ]));
 
         vue.appendChild(U.dataTable({

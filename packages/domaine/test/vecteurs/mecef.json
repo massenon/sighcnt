@@ -5,7 +5,7 @@
    "nom": "une ligne",
    "regime": "exonere",
    "facture": {
-    "id": "FACxmvuzqzencziuu",
+    "id": "FACxmvwbzpp46y3k8",
     "statut": "actif",
     "numero": "FN-2099-00001",
     "patientId": "P1",
@@ -26,7 +26,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 10000,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.311Z"
+    "_creeLe": "2026-10-31T11:42:02.200Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00001 — MECEF1234567",
@@ -49,7 +49,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -133,7 +133,7 @@
    "nom": "plusieurs lignes, quantités",
    "regime": "exonere",
    "facture": {
-    "id": "FACxmvuzqzf5fyj47",
+    "id": "FACxmvwbzpppc3bh2",
     "statut": "actif",
     "numero": "FN-2099-00002",
     "patientId": "P2",
@@ -159,7 +159,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 18000,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.329Z"
+    "_creeLe": "2026-10-31T11:42:02.221Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00002 — MECEF7654321",
@@ -182,7 +182,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -274,7 +274,7 @@
    "nom": "montant impair (arrondis HT / AIB)",
    "regime": "exonere",
    "facture": {
-    "id": "FACxmvuzqzfbqu5br",
+    "id": "FACxmvwbzpq1uhgkq",
     "statut": "actif",
     "numero": "FN-2099-00003",
     "patientId": "P3",
@@ -295,7 +295,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 7777,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.335Z"
+    "_creeLe": "2026-10-31T11:42:02.233Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00003 — MECEF1000001",
@@ -318,7 +318,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -402,7 +402,7 @@
    "nom": "pièce sans détail par ligne et non transmise",
    "regime": "exonere",
    "facture": {
-    "id": "FACxmvuzqzfgi9cc4",
+    "id": "FACxmvwbzpqath7va",
     "statut": "actif",
     "numero": "FN-2099-00004",
     "patientId": "P4",
@@ -416,7 +416,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 5000,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.340Z"
+    "_creeLe": "2026-10-31T11:42:02.242Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00004",
@@ -439,7 +439,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -523,7 +523,7 @@
    "nom": "grand montant",
    "regime": "exonere",
    "facture": {
-    "id": "FACxmvuzqzfrkkgxi",
+    "id": "FACxmvwbzpqoi6e8u",
     "statut": "actif",
     "numero": "FN-2099-00005",
     "patientId": "P5",
@@ -544,7 +544,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 184552,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.351Z"
+    "_creeLe": "2026-10-31T11:42:02.256Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00005 — MECEF9999999",
@@ -567,7 +567,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -648,10 +648,139 @@
    ]
   },
   {
+   "nom": "IFU du client connu : imprimé tel quel",
+   "regime": "exonere",
+   "facture": {
+    "id": "FACxmvwbzpqyqcneu",
+    "statut": "actif",
+    "numero": "FN-2099-00006",
+    "patientId": "P6",
+    "patient": "TEST Fiscal",
+    "patientCode": "CNT/6/26",
+    "date": "2026-12-31",
+    "type": "Consultation",
+    "montantTTC": 10000,
+    "lignes": [
+     {
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 10000
+     }
+    ],
+    "statutMecef": "valide",
+    "numeroMecef": "MECEF1234568",
+    "statutPaiement": "soldee",
+    "montantPaye": 10000,
+    "ifuClient": "3201912345678",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-31T11:42:02.266Z"
+   },
+   "titre": "Facture de vente — normalisée",
+   "sousTitre": "FN-2099-00006 — MECEF1234568",
+   "cartouche": [
+    [
+     "Facture n°",
+     "FN-2099-00006"
+    ],
+    [
+     "Date",
+     "31/12/2026"
+    ],
+    [
+     "Client",
+     "TEST Fiscal"
+    ],
+    [
+     "Dossier client",
+     "CNT/6/26"
+    ],
+    [
+     "IFU client",
+     "3201912345678"
+    ],
+    [
+     "Nature",
+     "Consultation"
+    ]
+   ],
+   "tables": [
+    [
+     [
+      "Désignation",
+      "Qté",
+      "P.U. HT",
+      "P.U. TTC",
+      "Montant HT",
+      "Montant TTC"
+     ],
+     [
+      "Consultation",
+      "1",
+      "10 000",
+      "10 000",
+      "10 000",
+      "10 000"
+     ],
+     [
+      "TOTAL",
+      "",
+      "",
+      "",
+      "10 000",
+      "10 000"
+     ]
+    ],
+    [
+     [
+      "Taxe",
+      "Montant"
+     ],
+     [
+      "TVA 18 %",
+      "0"
+     ],
+     [
+      "AIB 1 % (AIB2)",
+      "100"
+     ]
+    ],
+    [
+     [
+      "Rubrique",
+      "Montant"
+     ],
+     [
+      "TOTAL HT",
+      "10 000"
+     ],
+     [
+      "TOTAL TTC",
+      "10 000"
+     ],
+     [
+      "NET À PAYER",
+      "10 100"
+     ]
+    ]
+   ],
+   "paragraphes": [
+    "Opérations exonérées de TVA — produits et actes de santé.",
+    "Devise : FCFA",
+    "Arrêté la présente facture à la somme de :",
+    "dix mille cent francs CFA",
+    "Code MECeF / DGI",
+    "KC6P-LKT9-JCVJ-QR0B-CAM3-WZD6",
+    "MECeF NIM : MECEF1234568",
+    "MECeF Compteurs : 4591/04711",
+    "IFU émetteur : 3201642748214 — RCCM : RB/NAT/2016-B-268",
+    "Facture normalisée émise conformément au dispositif de facturation électronique en vigueur en République du Bénin. Toute facture non revêtue du code MECeF/DGI et du code à barres de vérification est réputée non conforme."
+   ]
+  },
+  {
    "nom": "une ligne",
    "regime": "normal",
    "facture": {
-    "id": "FACxmvuzqzh3kp317",
+    "id": "FACxmvwbzpswu3hmc",
     "statut": "actif",
     "numero": "FN-2099-00001",
     "patientId": "P1",
@@ -672,7 +801,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 10000,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.399Z"
+    "_creeLe": "2026-10-31T11:42:02.336Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00001 — MECEF1234567",
@@ -695,7 +824,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -778,7 +907,7 @@
    "nom": "plusieurs lignes, quantités",
    "regime": "normal",
    "facture": {
-    "id": "FACxmvuzqzhbp7w1t",
+    "id": "FACxmvwbzpt2i8ps4",
     "statut": "actif",
     "numero": "FN-2099-00002",
     "patientId": "P2",
@@ -804,7 +933,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 18000,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.407Z"
+    "_creeLe": "2026-10-31T11:42:02.342Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00002 — MECEF7654321",
@@ -827,7 +956,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -918,7 +1047,7 @@
    "nom": "montant impair (arrondis HT / AIB)",
    "regime": "normal",
    "facture": {
-    "id": "FACxmvuzqzhkdnspx",
+    "id": "FACxmvwbzpt7x99lt",
     "statut": "actif",
     "numero": "FN-2099-00003",
     "patientId": "P3",
@@ -939,7 +1068,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 7777,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.416Z"
+    "_creeLe": "2026-10-31T11:42:02.347Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00003 — MECEF1000001",
@@ -962,7 +1091,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -1045,7 +1174,7 @@
    "nom": "pièce sans détail par ligne et non transmise",
    "regime": "normal",
    "facture": {
-    "id": "FACxmvuzqzhr2iy8a",
+    "id": "FACxmvwbzptd73gy3",
     "statut": "actif",
     "numero": "FN-2099-00004",
     "patientId": "P4",
@@ -1059,7 +1188,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 5000,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.423Z"
+    "_creeLe": "2026-10-31T11:42:02.353Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00004",
@@ -1082,7 +1211,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -1165,7 +1294,7 @@
    "nom": "grand montant",
    "regime": "normal",
    "facture": {
-    "id": "FACxmvuzqzhz42qlz",
+    "id": "FACxmvwbzptidnbl4",
     "statut": "actif",
     "numero": "FN-2099-00005",
     "patientId": "P5",
@@ -1186,7 +1315,7 @@
     "statutPaiement": "soldee",
     "montantPaye": 184552,
     "_creePar": "BASSONGUI Chabi Séko",
-    "_creeLe": "2026-10-30T13:11:33.431Z"
+    "_creeLe": "2026-10-31T11:42:02.358Z"
    },
    "titre": "Facture de vente — normalisée",
    "sousTitre": "FN-2099-00005 — MECEF9999999",
@@ -1209,7 +1338,7 @@
     ],
     [
      "IFU client",
-     "3201642748214"
+     ""
     ],
     [
      "Nature",
@@ -1287,419 +1416,547 @@
     "IFU émetteur : 3201642748214 — RCCM : RB/NAT/2016-B-268",
     "Facture normalisée émise conformément au dispositif de facturation électronique en vigueur en République du Bénin. Toute facture non revêtue du code MECeF/DGI et du code à barres de vérification est réputée non conforme."
    ]
+  },
+  {
+   "nom": "IFU du client connu : imprimé tel quel",
+   "regime": "normal",
+   "facture": {
+    "id": "FACxmvwbzptpkn8my",
+    "statut": "actif",
+    "numero": "FN-2099-00006",
+    "patientId": "P6",
+    "patient": "TEST Fiscal",
+    "patientCode": "CNT/6/26",
+    "date": "2026-12-31",
+    "type": "Consultation",
+    "montantTTC": 10000,
+    "lignes": [
+     {
+      "designation": "Consultation",
+      "quantite": 1,
+      "prixUnitaire": 10000
+     }
+    ],
+    "statutMecef": "valide",
+    "numeroMecef": "MECEF1234568",
+    "statutPaiement": "soldee",
+    "montantPaye": 10000,
+    "ifuClient": "3201912345678",
+    "_creePar": "BASSONGUI Chabi Séko",
+    "_creeLe": "2026-10-31T11:42:02.365Z"
+   },
+   "titre": "Facture de vente — normalisée",
+   "sousTitre": "FN-2099-00006 — MECEF1234568",
+   "cartouche": [
+    [
+     "Facture n°",
+     "FN-2099-00006"
+    ],
+    [
+     "Date",
+     "31/12/2026"
+    ],
+    [
+     "Client",
+     "TEST Fiscal"
+    ],
+    [
+     "Dossier client",
+     "CNT/6/26"
+    ],
+    [
+     "IFU client",
+     "3201912345678"
+    ],
+    [
+     "Nature",
+     "Consultation"
+    ]
+   ],
+   "tables": [
+    [
+     [
+      "Désignation",
+      "Qté",
+      "P.U. HT",
+      "P.U. TTC",
+      "Montant HT",
+      "Montant TTC"
+     ],
+     [
+      "Consultation",
+      "1",
+      "8 475",
+      "10 000",
+      "8 475",
+      "10 000"
+     ],
+     [
+      "TOTAL",
+      "",
+      "",
+      "",
+      "8 475",
+      "10 000"
+     ]
+    ],
+    [
+     [
+      "Taxe",
+      "Montant"
+     ],
+     [
+      "TVA 18 %",
+      "1 525"
+     ],
+     [
+      "AIB 1 % (AIB2)",
+      "85"
+     ]
+    ],
+    [
+     [
+      "Rubrique",
+      "Montant"
+     ],
+     [
+      "TOTAL HT",
+      "8 475"
+     ],
+     [
+      "TOTAL TTC",
+      "10 000"
+     ],
+     [
+      "NET À PAYER",
+      "10 085"
+     ]
+    ]
+   ],
+   "paragraphes": [
+    "Devise : FCFA",
+    "Arrêté la présente facture à la somme de :",
+    "dix mille quatre-vingt-cinq francs CFA",
+    "Code MECeF / DGI",
+    "KC6P-LKT9-JCVJ-QR0B-CAM3-WZD6",
+    "MECeF NIM : MECEF1234568",
+    "MECeF Compteurs : 4591/04711",
+    "IFU émetteur : 3201642748214 — RCCM : RB/NAT/2016-B-268",
+    "Facture normalisée émise conformément au dispositif de facturation électronique en vigueur en République du Bénin. Toute facture non revêtue du code MECeF/DGI et du code à barres de vérification est réputée non conforme."
+   ]
   }
  ],
  "synchronisations": [
   {
    "nb": 1,
-   "jour": "2026-10-30",
+   "jour": "2026-10-31",
    "resultats": [
     {
      "numero": "FN-2098-00001",
      "statutMecef": "rejete",
      "numeroMecef": null,
      "codeRetour": "E-307",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     }
    ]
   },
   {
    "nb": 2,
-   "jour": "2026-10-30",
+   "jour": "2026-10-31",
    "resultats": [
     {
      "numero": "FN-2098-00001",
      "statutMecef": "rejete",
      "numeroMecef": null,
      "codeRetour": "E-307",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00002",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3510841",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     }
    ]
   },
   {
    "nb": 3,
-   "jour": "2026-10-30",
+   "jour": "2026-10-31",
    "resultats": [
     {
      "numero": "FN-2098-00001",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2933487",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00002",
      "statutMecef": "valide",
      "numeroMecef": "MECEF1446836",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00003",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2173148",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     }
    ]
   },
   {
    "nb": 5,
-   "jour": "2026-10-30",
+   "jour": "2026-10-31",
    "resultats": [
     {
      "numero": "FN-2098-00001",
      "statutMecef": "valide",
      "numeroMecef": "MECEF7055478",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00002",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3041049",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00003",
      "statutMecef": "valide",
      "numeroMecef": "MECEF1906250",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00004",
      "statutMecef": "valide",
      "numeroMecef": "MECEF1539969",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00005",
      "statutMecef": "valide",
      "numeroMecef": "MECEF8497762",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     }
    ]
   },
   {
    "nb": 8,
-   "jour": "2026-10-30",
+   "jour": "2026-10-31",
    "resultats": [
     {
      "numero": "FN-2098-00001",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2044020",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00002",
      "statutMecef": "valide",
      "numeroMecef": "MECEF9404591",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00003",
      "statutMecef": "valide",
      "numeroMecef": "MECEF7644791",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00004",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3653510",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00005",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3986304",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00006",
      "statutMecef": "rejete",
      "numeroMecef": null,
      "codeRetour": "E-307",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00007",
      "statutMecef": "valide",
      "numeroMecef": "MECEF6179668",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00008",
      "statutMecef": "valide",
      "numeroMecef": "MECEF4484683",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     }
    ]
   },
   {
    "nb": 13,
-   "jour": "2026-10-30",
+   "jour": "2026-10-31",
    "resultats": [
     {
      "numero": "FN-2098-00001",
      "statutMecef": "valide",
      "numeroMecef": "MECEF1358256",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00002",
      "statutMecef": "valide",
      "numeroMecef": "MECEF8677160",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00003",
      "statutMecef": "valide",
      "numeroMecef": "MECEF7875694",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00004",
      "statutMecef": "valide",
      "numeroMecef": "MECEF8842746",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00005",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3133873",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00006",
      "statutMecef": "valide",
      "numeroMecef": "MECEF7971296",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00007",
      "statutMecef": "valide",
      "numeroMecef": "MECEF8243904",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00008",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3507253",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00009",
      "statutMecef": "valide",
      "numeroMecef": "MECEF6983564",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00010",
      "statutMecef": "valide",
      "numeroMecef": "MECEF5561728",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00011",
      "statutMecef": "valide",
      "numeroMecef": "MECEF6797299",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00012",
      "statutMecef": "valide",
      "numeroMecef": "MECEF1912500",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00013",
      "statutMecef": "valide",
      "numeroMecef": "MECEF6796219",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     }
    ]
   },
   {
    "nb": 21,
-   "jour": "2026-10-30",
+   "jour": "2026-10-31",
    "resultats": [
     {
      "numero": "FN-2098-00001",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2031404",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00002",
      "statutMecef": "valide",
      "numeroMecef": "MECEF7794753",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00003",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3771064",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00004",
      "statutMecef": "valide",
      "numeroMecef": "MECEF3849228",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00005",
      "statutMecef": "valide",
      "numeroMecef": "MECEF6584799",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00006",
      "statutMecef": "rejete",
      "numeroMecef": null,
      "codeRetour": "E-204",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00007",
      "statutMecef": "valide",
      "numeroMecef": "MECEF9583719",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00008",
      "statutMecef": "valide",
      "numeroMecef": "MECEF5291512",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00009",
      "statutMecef": "valide",
      "numeroMecef": "MECEF4545601",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00010",
      "statutMecef": "valide",
      "numeroMecef": "MECEF7234876",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00011",
      "statutMecef": "valide",
      "numeroMecef": "MECEF9914891",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00012",
      "statutMecef": "valide",
      "numeroMecef": "MECEF4807870",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00013",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2802700",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00014",
      "statutMecef": "valide",
      "numeroMecef": "MECEF8454938",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00015",
      "statutMecef": "valide",
      "numeroMecef": "MECEF9986805",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00016",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2287191",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00017",
      "statutMecef": "valide",
      "numeroMecef": "MECEF6911651",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00018",
      "statutMecef": "rejete",
      "numeroMecef": null,
      "codeRetour": "E-412",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00019",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2688348",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00020",
      "statutMecef": "valide",
      "numeroMecef": "MECEF2285030",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     },
     {
      "numero": "FN-2098-00021",
      "statutMecef": "valide",
      "numeroMecef": "MECEF5094675",
      "codeRetour": "OK-200",
-     "dateTransmission": "2026-10-30"
+     "dateTransmission": "2026-10-31"
     }
    ]
   }
@@ -1709,7 +1966,7 @@
    "entree": {
     "nom": "avoir partiel : transmis et validé d'office",
     "facture": {
-     "id": "FACxmvuzr0ijlxiid",
+     "id": "FACxmvwbzrj5wu7et",
      "statut": "actif",
      "numero": "FN-2097-00001",
      "patientId": "R1",
@@ -1722,7 +1979,7 @@
      "statutMecef": "valide",
      "statutPaiement": "soldee",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:11:34.747Z"
+     "_creeLe": "2026-10-31T11:42:04.577Z"
     },
     "saisie": {
      "date": "2026-10-30",
@@ -1733,16 +1990,28 @@
    },
    "avoirs": [
     {
-     "factureId": "FACxmvuzr0ijlxiid",
+     "reference": "AV-2026-0001",
      "date": "2026-10-30",
+     "factureId": "FACxmvwbzrj5wu7et",
+     "factureNumero": "FN-2097-00001",
+     "patientId": "R1",
+     "patient": "TEST Avoir MECeF",
+     "patientCode": "CNT/1/26",
      "montant": 4000,
      "motif": "Erreur de facturation",
      "observations": "",
-     "factureNumero": "FN-2097-00001",
-     "patient": "TEST Avoir MECeF",
-     "patientCode": "CNT/1/26",
-     "reference": "AV-2026-0001",
+     "lignesAnnulees": [
+      {
+       "designation": "Rectification de la facture FN-2097-00001 : Erreur de facturation",
+       "montant": 4000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "mecef",
      "statutMecef": "valide",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:42:04.628Z",
      "mecef": true
     }
    ]
@@ -1751,7 +2020,7 @@
    "entree": {
     "nom": "avoir égal à la facture",
     "facture": {
-     "id": "FACxmvuzr0lvv33x7",
+     "id": "FACxmvwbzrm4hld4d",
      "statut": "actif",
      "numero": "FN-2097-00002",
      "patientId": "R2",
@@ -1764,7 +2033,7 @@
      "statutMecef": "valide",
      "statutPaiement": "soldee",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:11:34.867Z"
+     "_creeLe": "2026-10-31T11:42:04.684Z"
     },
     "saisie": {
      "date": "2026-10-30",
@@ -1773,22 +2042,36 @@
     },
     "avoirs": [
      {
-      "reference": "AV-2026-0001"
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwbzrj5wu7et",
+      "montant": 4000
      }
     ]
    },
    "avoirs": [
     {
-     "factureId": "FACxmvuzr0lvv33x7",
+     "reference": "AV-2026-0002",
      "date": "2026-10-30",
+     "factureId": "FACxmvwbzrm4hld4d",
+     "factureNumero": "FN-2097-00002",
+     "patientId": "R2",
+     "patient": "TEST Avoir MECeF",
+     "patientCode": "CNT/2/26",
      "montant": 10000,
      "motif": "Erreur de facturation",
      "observations": "",
-     "factureNumero": "FN-2097-00002",
-     "patient": "TEST Avoir MECeF",
-     "patientCode": "CNT/2/26",
-     "reference": "AV-2026-0002",
+     "lignesAnnulees": [
+      {
+       "designation": "Rectification de la facture FN-2097-00002 : Erreur de facturation",
+       "montant": 10000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "mecef",
      "statutMecef": "valide",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:42:04.790Z",
      "mecef": true
     }
    ]
@@ -1797,7 +2080,7 @@
    "entree": {
     "nom": "avoir supérieur à la facture : refusé, rien n'est écrit",
     "facture": {
-     "id": "FACxmvuzr0ob3ymvx",
+     "id": "FACxmvwbzrqxwo86w",
      "statut": "actif",
      "numero": "FN-2097-00003",
      "patientId": "R3",
@@ -1810,7 +2093,7 @@
      "statutMecef": "valide",
      "statutPaiement": "soldee",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:11:34.955Z"
+     "_creeLe": "2026-10-31T11:42:04.857Z"
     },
     "saisie": {
      "date": "2026-10-30",
@@ -1819,10 +2102,14 @@
     },
     "avoirs": [
      {
-      "reference": "AV-2026-0002"
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwbzrm4hld4d",
+      "montant": 10000
      },
      {
-      "reference": "AV-2026-0001"
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwbzrj5wu7et",
+      "montant": 4000
      }
     ]
    },
@@ -1832,7 +2119,7 @@
    "entree": {
     "nom": "observations portées sur l'avoir",
     "facture": {
-     "id": "FACxmvuzr0qovmlty",
+     "id": "FACxmvwbzsa9lvfet",
      "statut": "actif",
      "numero": "FN-2097-00004",
      "patientId": "R4",
@@ -1845,7 +2132,7 @@
      "statutMecef": "valide",
      "statutPaiement": "soldee",
      "_creePar": "BASSONGUI Chabi Séko",
-     "_creeLe": "2026-10-30T13:11:35.040Z"
+     "_creeLe": "2026-10-31T11:42:05.553Z"
     },
     "saisie": {
      "date": "2026-10-30",
@@ -1855,25 +2142,226 @@
     },
     "avoirs": [
      {
-      "reference": "AV-2026-0002"
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwbzrm4hld4d",
+      "montant": 10000
      },
      {
-      "reference": "AV-2026-0001"
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwbzrj5wu7et",
+      "montant": 4000
      }
     ]
    },
    "avoirs": [
     {
-     "factureId": "FACxmvuzr0qovmlty",
+     "reference": "AV-2026-0003",
      "date": "2026-10-30",
+     "factureId": "FACxmvwbzsa9lvfet",
+     "factureNumero": "FN-2097-00004",
+     "patientId": "R4",
+     "patient": "TEST Avoir MECeF",
+     "patientCode": "CNT/4/26",
      "montant": 4000,
      "motif": "Erreur de facturation",
      "observations": "Patient évacué",
-     "factureNumero": "FN-2097-00004",
-     "patient": "TEST Avoir MECeF",
-     "patientCode": "CNT/4/26",
-     "reference": "AV-2026-0003",
+     "lignesAnnulees": [
+      {
+       "designation": "Rectification de la facture FN-2097-00004 : Erreur de facturation",
+       "montant": 4000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "mecef",
      "statutMecef": "valide",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:42:05.848Z",
+     "mecef": true
+    }
+   ]
+  },
+  {
+   "entree": {
+    "nom": "montant nul : refusé en nommant le défaut (E10), rien n'est écrit",
+    "facture": {
+     "id": "FACxmvwbzsypg7gbl",
+     "statut": "actif",
+     "numero": "FN-2097-00005",
+     "patientId": "R5",
+     "patient": "TEST Avoir MECeF",
+     "patientCode": "CNT/5/26",
+     "date": "2026-12-31",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "lignes": [],
+     "statutMecef": "valide",
+     "statutPaiement": "soldee",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:42:06.433Z"
+    },
+    "saisie": {
+     "date": "2026-10-30",
+     "montant": 0,
+     "motif": "Erreur de facturation"
+    },
+    "avoirs": [
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwbzsa9lvfet",
+      "montant": 4000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwbzrm4hld4d",
+      "montant": 10000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwbzrj5wu7et",
+      "montant": 4000
+     }
+    ]
+   },
+   "avoirs": []
+  },
+  {
+   "entree": {
+    "nom": "cumul : 6 000 déjà émis (caisse), 4 001 MECeF refusé (E15)",
+    "facture": {
+     "id": "FACxmvwbzt5w4ebjz",
+     "statut": "actif",
+     "numero": "FN-2097-00006",
+     "patientId": "R6",
+     "patient": "TEST Avoir MECeF",
+     "patientCode": "CNT/6/26",
+     "date": "2026-12-31",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "lignes": [],
+     "statutMecef": "valide",
+     "statutPaiement": "soldee",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:42:06.693Z",
+     "avoirIds": [
+      "AVRxmvwbzt5x1qzsk"
+     ],
+     "montantAvoirs": 6000,
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:42:06.694Z"
+    },
+    "saisie": {
+     "date": "2026-10-30",
+     "montant": 4001,
+     "motif": "Erreur de facturation"
+    },
+    "avoirs": [
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvwbzt5w4ebjz",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwbzsa9lvfet",
+      "montant": 4000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwbzrm4hld4d",
+      "montant": 10000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwbzrj5wu7et",
+      "montant": 4000
+     }
+    ]
+   },
+   "avoirs": []
+  },
+  {
+   "entree": {
+    "nom": "cumul : 6 000 déjà émis (caisse), 4 000 MECeF soldent exactement",
+    "facture": {
+     "id": "FACxmvwbzttqfjekq",
+     "statut": "actif",
+     "numero": "FN-2097-00007",
+     "patientId": "R7",
+     "patient": "TEST Avoir MECeF",
+     "patientCode": "CNT/7/26",
+     "date": "2026-12-31",
+     "type": "Consultation",
+     "montantTTC": 10000,
+     "lignes": [],
+     "statutMecef": "valide",
+     "statutPaiement": "soldee",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-31T11:42:07.550Z",
+     "avoirIds": [
+      "AVRxmvwbzttqsqlbv"
+     ],
+     "montantAvoirs": 6000,
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:42:07.551Z"
+    },
+    "saisie": {
+     "date": "2026-10-30",
+     "montant": 4000,
+     "motif": "Erreur de facturation"
+    },
+    "avoirs": [
+     {
+      "reference": "AV-2026-0005",
+      "factureId": "FACxmvwbzttqfjekq",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0004",
+      "factureId": "FACxmvwbzt5w4ebjz",
+      "montant": 6000
+     },
+     {
+      "reference": "AV-2026-0003",
+      "factureId": "FACxmvwbzsa9lvfet",
+      "montant": 4000
+     },
+     {
+      "reference": "AV-2026-0002",
+      "factureId": "FACxmvwbzrm4hld4d",
+      "montant": 10000
+     },
+     {
+      "reference": "AV-2026-0001",
+      "factureId": "FACxmvwbzrj5wu7et",
+      "montant": 4000
+     }
+    ]
+   },
+   "avoirs": [
+    {
+     "reference": "AV-2026-0006",
+     "date": "2026-10-30",
+     "factureId": "FACxmvwbzttqfjekq",
+     "factureNumero": "FN-2097-00007",
+     "patientId": "R7",
+     "patient": "TEST Avoir MECeF",
+     "patientCode": "CNT/7/26",
+     "montant": 4000,
+     "motif": "Erreur de facturation",
+     "observations": "",
+     "lignesAnnulees": [
+      {
+       "designation": "Rectification de la facture FN-2097-00007 : Erreur de facturation",
+       "montant": 4000
+      }
+     ],
+     "remboursement": "creance",
+     "origine": "mecef",
+     "statutMecef": "valide",
+     "emisPar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-31T11:42:07.733Z",
      "mecef": true
     }
    ]

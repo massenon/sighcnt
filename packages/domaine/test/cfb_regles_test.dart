@@ -342,9 +342,11 @@ void main() {
       for (final f in Directory(jeuDir).listSync().whereType<File>().map((f) => f.uri.pathSegments.last).where((n) => n.endsWith('.json') && n != 'referentiels.json'))
         f.replaceAll('.json', '')
     ].where((n) => !techniques.contains(n)).toList();
-    final fiches = {for (final n in noms) n: jeu(n)};
+    // Le vecteur date du moment où le jeu comptait ses collections d'alors : les collections ajoutées depuis (support, appels…) ne font pas partie du bilan mesuré.
+    final connues = {for (final x in (sy['collections'] as List).cast<List>()) x[0] as String};
+    final fiches = {for (final n in noms.where(connues.contains)) n: jeu(n)};
     test('contenu du jeu : collections, enregistrements, actifs, archivés', () {
-      final stats = [for (final n in noms) cfbStatCollection(n, fiches[n]!)];
+      final stats = [for (final n in fiches.keys) cfbStatCollection(n, fiches[n]!)];
       final att = {for (final x in (sy['collections'] as List).cast<List>()) x[0] as String: x};
       expect(stats.length, att.length);
       // Le vecteur a créé deux centres de coûts avant de mesurer : +2 sur cette seule collection.
@@ -356,18 +358,18 @@ void main() {
     });
     test('bilan d’un vidage : 103 tables d’activité, 9 549 fiches ; 44 tables de paramétrage préservées', () {
       final conservees = {...cfbEssentielles, ...techniques};
-      final plan = cfbPlanVidage({for (final n in noms) n: fiches[n]!.length}, conservees);
+      final plan = cfbPlanVidage({for (final n in fiches.keys) n: fiches[n]!.length}, conservees);
       final vd = obj(obj(sy['reinit'])['vider']);
       expect(plan.tables, vd['attenduTables']);
       expect(plan.enregistrements, vd['attenduLignes']);
       expect(plan.collections.toSet(), (vd['videes'] as List).cast<String>().toSet().difference(techniques));
       expect(cfbToastVidage(plan), ((vd['toasts'] as List).first as List).first);
-      expect(noms.length - plan.tables, 44);
+      expect(fiches.length - plan.tables, 44);
     });
     test('corbeille : le libellé d’un élément, l’ordre par date d’archivage décroissante', () {
       final brute = liste(sy['corbeilleBrute']);
       final lignes = <CfbLigneCorbeille>[];
-      for (final n in noms) {
+      for (final n in fiches.keys) {
         for (final f in fiches[n]!.where((f) => f['statut'] == 'archive')) {
           final (mod, ent) = cfbLibelleCollection(n);
           lignes.add(CfbLigneCorbeille(collection: n, module: mod, entite: ent, libelle: cfbLibelleElement(f), refId: '${f['id']}'));

@@ -90,7 +90,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         const avant = new Set(colFac.all().map((f) => f.id));
         const entree = {
           nom, patient: propre(colPat.get(pat.id)), saisie: resolue, reglement, mode: mode.value, proforma: !!o.proforma,
-          date: C.iso(C.aujourdhui()), rangDebut: colFac.all().length,
+          date: C.iso(C.aujourdhui()), rangDebut: SIGH.parcours.rangSerieFactures((o.proforma ? 'PRO-' : 'FN-') + C.iso(C.aujourdhui()).slice(0, 4) + '-') - 1,
           souscripteurs: propre(colSous.all().filter((s) => s.id === pat.souscripteurId)),
           garanties: propre(colGar.all().filter((g) => g.souscripteurId === pat.souscripteurId)),
           couvertures: propre(colCou.all().filter((c) => c.patientId === pat.id)),
@@ -147,6 +147,15 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       await jouer('catégories : hospitalisation, ligne libre « ambulance », ligne libre « consultation »', pAss, [{ nature: 'hospitalisation', index: 0, qte: 2 }, libre('Transfert ambulance', 15000), libre('Consultation à domicile', 4000)], null);
       await jouer('médicament, pro-forma : aucune sortie de stock', pNA, [{ nature: 'medicament', index: 0, qte: 2 }], null, { proforma: true });
       await jouer('assuré + médicament + non couvert : trois lignes, deux pièces, sortie de stock', pAss, [{ nature: 'medicament', index: 0, qte: 1 }, cons, libre('Certificat hors convention', 2000)], null);
+      /* E6 (corrigé le 31/10/2026) : le millésime est lu sur la DATE de la pièce et le rang est celui de la série de l'année. L'horloge passe au
+         4 janvier 2027 : la série repart à 00001 (plus le nombre total de factures). */
+      const aujourdhuiReel = C.aujourdhui;
+      C.aujourdhui = () => new Date(2027, 0, 4, 10, 0, 0);
+      try {
+        await jouer('nouvelle année (4 janvier 2027) : millésime 2027 et série repartie à 00001', pNA, [libre('Soin', 1000)], null);
+        await jouer('nouvelle année : la 2e pièce de 2027 suit (00002), pro-forma dans SA série PRO-2027-', pNA, [libre('Soin', 1000)], null);
+        await jouer('nouvelle année : pro-forma, série PRO-2027- indépendante', pNA, [libre('Soin', 1000)], 1000, { proforma: true });
+      } finally { C.aujourdhui = aujourdhuiReel; }
       return sortie;
     });
     cas.forEach((c) => console.log('  ' + c.entree.nom + ' → ' + c.pieces.map((p) => p.numero + ' ' + p.statutPaiement + ' payé ' + p.montantPaye + ' base ' + p.baseMecef + (p.mecef ? ' MECeF' : '')).join(' | ') + (c.sorties.length ? ' [stock ' + c.sorties.length + ']' : '')));

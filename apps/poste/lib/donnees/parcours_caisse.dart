@@ -66,6 +66,8 @@ ResultatCaisse encaisserFacture(
     utilisateur: m.utilisateur,
     ecritures: m.collection('ecritures').actives,
   );
+  // E2 (corrigé le 31/10/2026) : un versement au-delà du dû d'une pièce sans lignes est REFUSÉ en nommant le défaut ; rien n'est écrit.
+  if (r.refus != null) throw RefusCaisse('VERSEMENT_REFUSE', r.refus!);
   if (r.deja) {
     return ResultatCaisse(
         facture: fac,

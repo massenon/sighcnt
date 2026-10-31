@@ -251,10 +251,10 @@ void main() {
     cas('la conservation échue : badge rouge, KPI rouge, note sur la destruction encadrée', (t) async {
       final b = m_(ar.firstWhere((x) => x['nom'].toString().startsWith('bords')));
       await ouvrir(t, magasinGed(docsDe(b['entrees'])), 'ged-archives');
-      expect(kpi(t, 'Conservation échue'), '5');
-      expect(find.textContaining('5 document(s) ont atteint leur durée légale de conservation.'), findsOneWidget);
-      expect(find.text('Échue le 16/08/2026'), findsOneWidget);
-      expect(find.text('Échue le 11/08/2026'), findsOneWidget);
+      expect(kpi(t, 'Conservation échue'), '4');
+      expect(find.textContaining('4 document(s) ont atteint leur durée légale de conservation.'), findsOneWidget);
+      expect(find.text('Échue le 16/08/2026'), findsNWidgets(3));
+      expect(find.text('Échue le 15/08/2026'), findsOneWidget);
       final echu = t.widget<KpiSigh>(find.byWidgetPredicate((w) => w is KpiSigh && w.libelle == 'Conservation échue'));
       expect(echu.ton, TonSigh.danger);
     });

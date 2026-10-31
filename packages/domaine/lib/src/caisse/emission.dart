@@ -11,8 +11,8 @@
 ///   · la base MECeF ne porte que la part réglée par le patient (exigence écrite du cahier de charge).
 /// Un patient non assuré, ou dont toutes les lignes sont du même côté, reçoit UNE pièce sans suffixe.
 ///
-/// Reste porté fidèlement et signalé (docs/architecture/ECARTS-MAQUETTE.md, E6) : le millésime du numéro est écrit en dur
-/// (« FN-2026- ») et le rang compte toutes les factures, non celles de l'année.
+/// Corrigé dans la maquette PUIS porté le 31/10/2026 (docs/architecture/ECARTS-MAQUETTE.md, E6, décision B10) : le millésime du numéro est lu sur la
+/// DATE de la pièce (plus de « FN-2026- » en dur) et le rang est celui de la série de l'année, non le nombre total de factures.
 library;
 
 import '../format/js.dart';
@@ -182,10 +182,29 @@ class ResultatEmission {
   final List<SortieStock> sorties;
 }
 
+/// Le préfixe de la SÉRIE ANNUELLE d'une pièce de caisse : `FN-AAAA-` (`PRO-AAAA-` en pro-forma), le millésime étant celui de la DATE de la pièce.
+/// Écart E6, corrigé dans la maquette le 31/10/2026 : il était écrit en dur (`FN-2026-`).
+String prefixeSerieFacture({required bool proforma, required String dateFacture}) =>
+    '${proforma ? 'PRO-' : 'FN-'}${dateFacture.substring(0, 4)}-';
+
+/// Rang suivant d'une série annuelle (`PR.rangSerieFactures`) : le plus grand rang déjà porté par les factures du même [prefixe]
+/// (archivées comprises : une pièce archivée garde son numéro, RG-14), plus un. Les volets `-A` / `-B` d'une même émission portent deux rangs consécutifs (E6b).
+int rangSerieFactures(String prefixe, Iterable<Map<String, Object?>> factures) {
+  var max = 0;
+  for (final f in factures) {
+    final n = '${f['numero'] ?? ''}';
+    if (!n.startsWith(prefixe)) continue;
+    final r = int.tryParse(RegExp(r'^\d+').stringMatch(n.substring(prefixe.length)) ?? '') ?? 0;
+    if (r > max) max = r;
+  }
+  return max + 1;
+}
+
 /// `enregistrer(proforma)` : une pièce pour un patient non assuré, DEUX pour un assuré dont les lignes se partagent.
 ///
 /// [lignes] : lignes de [ligneSaisie] ; [reglement] : montant saisi (`null` = la part patient proposée par l'écran) ;
-/// [rangDebut] : nombre de factures actives avant l'émission ; [produits] : `{id, stockDetail, stock}` des médicaments.
+/// [rangDebut] : le plus grand rang DÉJÀ porté par la série de l'année (`rangSerieFactures(...) - 1`, E6) ; [produits] : `{id, stockDetail, stock}`
+/// des médicaments.
 ResultatEmission emettreFacture({
   required Map<String, Object?> patient,
   required List<Map<String, Object?>> lignes,
@@ -276,7 +295,7 @@ ResultatEmission emettreFacture({
     final normalisee = !(proforma || patPiece == 0);
     pieces.add({
       'numero':
-          '${proforma ? 'PRO-2026-' : 'FN-2026-'}${(rangDebut + 1 + rang).toString().padLeft(5, '0')}$suffixe',
+          '${prefixeSerieFacture(proforma: proforma, dateFacture: dateFacture)}${(rangDebut + 1 + rang).toString().padLeft(5, '0')}$suffixe',
       'mecef': normalisee,
       'baseMecef': proforma ? 0.0 : reglePiece,
       'patientId': patient['id'],

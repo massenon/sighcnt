@@ -369,13 +369,18 @@ void main() {
       final b = ar.firstWhere((x) => x['nom'].toString().startsWith('bords'));
       final rows = {for (final d in fl(b['entrees'])) d['reference']: d};
       bool echu(String r) => qualGedExpire(rows[r]!, aujourdhui);
-      expect(echu('DOC-A-1'), isTrue); // échéance du 15/08/2026
-      expect(echu('DOC-A-2'), isTrue); // échéance du 16/08/2026 à 00 h, avant 10 h
+      expect(echu('DOC-A-3'), isTrue); // 15/08/2021 + 5 ans : échéance du 15/08/2026, la veille
+      expect(echu('DOC-A-1'), isTrue); // 16/08/2021 + 5 ans : échéance du 16/08/2026 à 00 h, avant 10 h
+      expect(echu('DOC-A-2'), isFalse); // 17/08/2021 + 5 ans : le lendemain
       expect(echu('DOC-A-6'), isFalse);
     });
-    test('la conservation compte 365 jours par an : 20 ans écoulés tombent 5 jours AVANT l’anniversaire (écart consigné)', () {
+    test('l’échéance est CALENDAIRE : 20 ans écoulés tombent le jour de l’anniversaire (écart E565 levé)', () {
       final d = {'date': '2025-04-13', 'conservation': 20};
-      expect(dateFR(qualGedEcheance(d)!), '08/04/2045');
+      expect(dateFR(qualGedEcheance(d)!), '13/04/2045');
+      // Un 29 février retombe, hors année bissextile, au 1er mars : la conservation n'est jamais écourtée.
+      expect(dateFR(qualGedEcheance({'date': '2024-02-29', 'conservation': 1})!), '01/03/2025');
+      expect(dateFR(qualGedEcheance({'date': '2024-02-29', 'conservation': 4})!), '29/02/2028');
+      expect(dateFR(qualGedEcheance({'date': '2020-12-31', 'conservation': 5})!), '31/12/2025');
     });
     test('modifier un document écrit les cinq champs du formulaire, que l’écran n’affiche pas', () {
       final m = obj(obj(ar.firstWhere((x) => x['nom'] == 'modifier un document')['modif']));

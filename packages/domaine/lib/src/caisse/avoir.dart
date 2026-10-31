@@ -9,7 +9,12 @@
 /// (`test/vecteurs/avoir.json`) sont engendrés par la maquette.
 ///
 /// Corrigé dans la maquette PUIS porté (docs/architecture/ECARTS-MAQUETTE.md, E8) : la référence est une SÉRIE ANNUELLE lue sur les avoirs déjà émis.
-/// Porté fidèlement et signalé (E9) : une facture mère qui n'est qu'en BROUILLON bloque l'avoir comme une mère émise — le moteur ne regarde pas son statut.
+/// Porté fidèlement et signalé (E9) : une facture mère qui n'est qu'en BROUILLON bloque l'avoir comme une mère émise : le moteur ne regarde pas son statut.
+///
+/// Décision de la Direction du 31/10/2026 (B10), corrigée dans la maquette PUIS portée : ce moteur est le CANAL UNIQUE de l'avoir. L'écran de
+/// facturation (nature « Facture avoir », E12) et l'avoir MECeF (E15) l'APPELLENT, sur la même collection `avoirs` ; le plafond est CUMULÉ partout ;
+/// un montant est strictement supérieur à 0 FCFA (E10) ; on ne rectifie pas un avoir ; la DATE d'une pièce est un JOUR, l'instant d'émission est
+/// porté à part (`horodatage`, E4).
 ///
 /// L'équilibre de la contre-passation (RG-10) est CONSTRUIT, non contrôlé après coup : deux lignes de même montant, l'une au débit, l'autre au crédit.
 library;
@@ -43,6 +48,12 @@ class AvoirEmis {
 
 double _n(Object? v) => nombreOuZero(v);
 
+/// Le JOUR (`AAAA-MM-JJ`) d'une date : celui qui est ÉCRIT quand la valeur commence par une date (un instant ISO garde son jour écrit).
+String jourEcrit(String date) {
+  final m = RegExp(r'^(\d{4}-\d{2}-\d{2})').firstMatch(date);
+  return m == null ? date : m.group(1)!;
+}
+
 /// `referenceAvoir(date)` : `AV-AAAA-NNNN`, la série repartant à 1 chaque année, lue sur les avoirs ACTIFS déjà émis.
 String referenceAvoir(String date, Iterable<Map<String, Object?>> avoirs) {
   final prefixe = 'AV-${date.length >= 4 ? date.substring(0, 4) : date}-';
@@ -69,10 +80,16 @@ AvoirEmis emettreAvoir({
   String? remboursement,
   String? observations,
   String? date,
+  String? origine,
+  String? horodatage,
   List<Map<String, Object?>> facturesMere = const [],
   List<Map<String, Object?>> avoirs = const [],
 }) {
   if (facture == null) throw const RefusAvoir('Facture introuvable.');
+  if (facture['type'] == 'Avoir' || _n(facture['montantTTC']) < 0) {
+    throw RefusAvoir(
+        'La pièce ${facture['numero']} est elle-même un avoir : on ne rectifie pas un avoir.');
+  }
 
   // UNE FILLE CONSOLIDÉE EST FIGÉE : la mère porte son numéro et la compagnie détient la pièce. L'avoir est refusé EN NOMMANT la mère.
   for (final m in facturesMere) {
@@ -91,7 +108,8 @@ AvoirEmis emettreAvoir({
   }
   final montant = lignes.fold(0.0, (a, l) => a + _n(l['montant']));
   if (!(montant > 0)) {
-    throw const RefusAvoir('Le montant de l’avoir doit être positif.');
+    throw const RefusAvoir(
+        'Le montant de l’avoir doit être strictement supérieur à 0 FCFA.');
   }
 
   final deja = avoirs
@@ -102,12 +120,13 @@ AvoirEmis emettreAvoir({
         'Le cumul des avoirs (${money(montant + deja)}) excéderait la facture (${money(facture['montantTTC'])}).');
   }
 
-  final jourAvoir = (date == null || date.isEmpty) ? jour : date;
+  final jourAvoir = (date == null || date.isEmpty) ? jour : jourEcrit(date);
   final reference = referenceAvoir(jourAvoir, avoirs);
   final suite = remboursement == null || remboursement.isEmpty ? 'creance' : remboursement;
   final fiche = <String, Object?>{
     'reference': reference,
     'date': jourAvoir,
+    if (horodatage != null) 'horodatage': horodatage,
     'factureId': facture['id'],
     'factureNumero': facture['numero'],
     'patientId': facture['patientId'],
@@ -118,7 +137,7 @@ AvoirEmis emettreAvoir({
     'observations': observations ?? '',
     'lignesAnnulees': lignes,
     'remboursement': suite,
-    'origine': 'caisse',
+    'origine': origine == null || origine.isEmpty ? 'caisse' : origine,
     // Le registre fiscal : une facture normalisée validée exige la régularisation MECeF ; une pièce non transmise n'en relève pas.
     'statutMecef': facture['statutMecef'] == 'valide' ? 'en_attente' : 'sans_objet',
     'emisPar': utilisateur,

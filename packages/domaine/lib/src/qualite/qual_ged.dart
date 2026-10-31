@@ -96,11 +96,12 @@ QualGedBibliotheque qualGedBibliotheque(List<QualFiche> rows) => QualGedBiblioth
 
 DateTime? _date(Object? v) => DateTime.tryParse('$v');
 
-/// `echeance(d)` : la date du document + la durée de conservation × 365 jours.
+/// `echeance(d)` : la date du document + la durée de conservation en ANNÉES CIVILES (E565 levé : l'ancien calcul comptait 365 jours par an et
+/// tombait 5 jours avant l'anniversaire sur 20 ans). Un 29 février retombe, hors année bissextile, au 1er mars : la conservation n'est jamais écourtée.
 DateTime? qualGedEcheance(QualFiche d) {
   final x = _date(d['date']);
   if (x == null) return null;
-  return DateTime(x.year, x.month, x.day + (_num(d['conservation']) * 365).round());
+  return DateTime(x.year + _num(d['conservation']).round(), x.month, x.day);
 }
 
 /// `expire(d)` : la conservation légale est échue à [aujourdhui].

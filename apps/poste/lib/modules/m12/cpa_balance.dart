@@ -7,15 +7,19 @@ import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../m6/points_commun.dart' show champUnique, commande;
 import 'cpa_commun.dart';
 
 /// `m12-balance` — « Balance générale & âgée » : écran en LECTURE SEULE. La balance est calculée depuis les écritures de l'exercice (une ligne par
 /// numéro de compte, E725) ; elle ne se saisit pas — on corrige l'écriture concernée.
 ///
-/// Écart E718 : le bandeau de la maquette dit « calculée à partir des écritures validées » ; elle compte en réalité TOUTES les écritures de l'exercice,
-/// brouillons compris. Porté fidèlement (un total qui ignorerait les brouillons ne se rapprocherait plus du journal) et dit ici.
-class EcranBalance extends StatelessWidget with EcranMaquette {
+/// E718 levé : le filtre « Écritures retenues » est EXPLICITE (validées seulement par défaut, ou toutes, brouillons compris) et le bandeau dit ce qui est
+/// compté, au lieu d'annoncer des écritures validées tout en comptant les brouillons.
+class EcranBalance extends StatefulWidget with EcranMaquette {
   const EcranBalance({super.key});
+
+  @override
+  State<EcranBalance> createState() => _EtatBalance();
 
   @override
   String get titre => 'Balance générale & âgée';
@@ -26,9 +30,9 @@ class EcranBalance extends StatelessWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Écran en lecture seule. La balance est calculée à partir des écritures validées. Elle ne se saisit pas : corriger l’écriture concernée pour la faire évoluer.';
+      'Écran en lecture seule. La balance est calculée à partir des écritures validées par défaut ; le filtre « Écritures retenues » permet d’y compter aussi les brouillons, et le bandeau dit ce qui est compté. Elle ne se saisit pas : corriger l’écriture concernée pour la faire évoluer.';
 
-  static void _imprimerBalance(BuildContext ctx, ContexteEcran c, List<CpaLigneBalance> l, double td, double tc) {
+  static void _imprimerBalance(BuildContext ctx, ContexteEcran c, List<CpaLigneBalance> l, double td, double tc, bool toutes) {
     final eq = td == tc;
     afficherApercu(
         ctx,
@@ -41,6 +45,7 @@ class EcranBalance extends StatelessWidget with EcranMaquette {
               ('Total crédit', money(tc)),
               ('Équilibre', eq ? 'Équilibrée' : 'Écart de ${money((td - tc).abs())}'),
               ('Exercice', '${exerciceChoisi(c)}'),
+              ('Écritures retenues', toutes ? 'Toutes, brouillons compris' : 'Validées seulement'),
               ('Date d’édition', dateFR(c.aujourdhui)),
             ],
             tableaux: [
@@ -81,15 +86,32 @@ class EcranBalance extends StatelessWidget with EcranMaquette {
           style: const TextStyle(color: JetonsShell.slate800, fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, fontFeatures: [FontFeature.tabularFigures()]))
       : const Text('—', style: TextStyle(color: JetonsShell.slate400, fontSize: 14, height: 20 / 14));
 
+}
+
+class _EtatBalance extends State<EcranBalance> {
+  late final ControleurFormulaire _mode = champUnique(
+      const ChampDef(
+          nom: 'ecritures',
+          libelle: 'Écritures retenues',
+          type: TypeChamp.select,
+          options: [OptionChamp('validees', 'Validées seulement'), OptionChamp('toutes', 'Toutes (brouillons compris)')]),
+      'validees')
+    ..addListener(() {
+      if (mounted) setState(() {});
+    });
+
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     return ListenableBuilder(
       listenable: ecouteCompta(c, const ['factures']),
       builder: (context, _) {
-        final e = ecrituresExercice(c);
+        final tous = ecrituresExercice(c);
+        final toutes = '${_mode['ecritures']}' == 'toutes';
+        final e = toutes ? tous : [for (final x in tous) if (x['statut'] == 'validee') x];
+        final nbBrouillons = tous.where((x) => x['statut'] == 'brouillon').length;
         final b = cpaBalance(c.magasin.collection('comptes').actives, e);
-        final lignes = [for (final x in b) _fiche(x)];
+        final lignes = [for (final x in b) EcranBalance._fiche(x)];
         final td = b.fold<double>(0, (a, x) => a + x.debit);
         final tc = b.fold<double>(0, (a, x) => a + x.credit);
         final eq = td == tc;
@@ -107,6 +129,18 @@ class EcranBalance extends StatelessWidget with EcranMaquette {
             }
         ];
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Align(alignment: Alignment.centerLeft, child: commande(_mode, largeur: 280)),
+          const SizedBox(height: 12),
+          toutes
+              ? NoteSigh(
+                  'Balance calculée sur toutes les écritures de l’exercice ${exerciceChoisi(c)}, brouillons compris (${nombre(nbBrouillons)} ligne(s) en brouillon). Un brouillon n’est pas un fait comptable : choisir « Validées seulement » pour la balance opposable.',
+                  ton: TonSigh.attention,
+                  icone: LucideIcons.fileClock)
+              : NoteSigh(
+                  'Balance calculée sur les écritures validées de l’exercice ${exerciceChoisi(c)}. ${nbBrouillons > 0 ? '${nombre(nbBrouillons)} ligne(s) en brouillon sont écartées.' : 'Aucun brouillon à écarter.'}',
+                  ton: TonSigh.info,
+                  icone: LucideIcons.scale),
+          const SizedBox(height: 16),
           KpiGrilleSigh(kpis: [
             KpiSigh(libelle: 'Comptes mouvementés', valeur: nombre(lignes.length), icone: LucideIcons.list),
             KpiSigh(libelle: 'Total débit', valeur: money(td), icone: LucideIcons.arrowDownLeft, ton: TonSigh.attention),
@@ -150,7 +184,7 @@ class EcranBalance extends StatelessWidget with EcranMaquette {
                             icone: LucideIcons.printer,
                             taille: TailleBouton.sm,
                             variante: VarianteBouton.secondaire,
-                            onPressed: () => _imprimerBalance(context, c, b, td, tc)),
+                            onPressed: () => EcranBalance._imprimerBalance(context, c, b, td, tc, toutes)),
                       ],
                       colonnes: [
                         ColonneTableau(
@@ -173,13 +207,13 @@ class EcranBalance extends StatelessWidget with EcranMaquette {
                             libelle: 'Solde débiteur',
                             droite: true,
                             texte: (l) => n(l['soldeDebiteur']) != 0 ? m(l['soldeDebiteur']) : '',
-                            rendu: (_, l) => _solde(l['soldeDebiteur'])),
+                            rendu: (_, l) => EcranBalance._solde(l['soldeDebiteur'])),
                         ColonneTableau(
                             cle: 'soldeCrediteur',
                             libelle: 'Solde créditeur',
                             droite: true,
                             texte: (l) => n(l['soldeCrediteur']) != 0 ? m(l['soldeCrediteur']) : '',
-                            rendu: (_, l) => _solde(l['soldeCrediteur'])),
+                            rendu: (_, l) => EcranBalance._solde(l['soldeCrediteur'])),
                       ],
                     )),
             OngletDef(

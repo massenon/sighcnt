@@ -147,7 +147,7 @@ String rhbFonctionLabel(Object? id) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// NS 131 — barème d'évaluation et de sanction (statique : c'est lui que lisent les évaluations, voir E650)
+// NS 131 : barème d'évaluation et de sanction (la note d'origine ; les évaluations lisent le barème EN VIGUEUR À LEUR DATE, voir rhbCriteresALaDate)
 // ---------------------------------------------------------------------------------------------------------------------
 
 const rhbNs131Reference = 'NS 131/07/DM/DA/CNT/2026';
@@ -171,13 +171,13 @@ const rhbNiveaux = <RhbNiveau>[
 ];
 
 class RhbCritere {
-  const RhbCritere(this.num, this.id, this.label, this.criteres, this.moyenne, this.faible);
+  const RhbCritere(this.num, this.id, this.label, this.criteres, this.moyenne, this.faible, {this.bonne = 0});
   final String num, id, label;
   final List<String> criteres;
-  final int moyenne, faible;
+  final int moyenne, faible, bonne;
 
-  /// `sanctions[niveau]` : « bonne » vaut toujours 0.
-  int sanction(Object? niveau) => niveau == 'moyenne' ? moyenne : niveau == 'faible' ? faible : 0;
+  /// `sanctions[niveau]` : « bonne » vaut 0 au barème d'origine (le barème administrable peut en porter une autre).
+  int sanction(Object? niveau) => niveau == 'moyenne' ? moyenne : niveau == 'faible' ? faible : niveau == 'bonne' ? bonne : 0;
 }
 
 const rhbCriteres = <RhbCritere>[
@@ -189,10 +189,71 @@ const rhbCriteres = <RhbCritere>[
   RhbCritere('04', 'hierarchie', 'Respect de la hiérarchie', ['Manque de courtoisie', 'Indiscrétion', 'Manque d’intégrité'], 6, 10),
 ];
 
-/// `D.NS131.prelevement(evaluation)` : total (% du brut) pour `{critereId: niveauId}`. Lit le barème d'ORIGINE de la note, jamais la collection
-/// `baremeNS131` que l'écran du barème modifie (écart E650, porté fidèlement).
+/// Le total (% du brut) pour `{critereId: niveauId}` sur le barème d'ORIGINE de la note. Les évaluations n'utilisent plus que
+/// [rhbPrelevementALaDate] (écart E650 levé) ; celui-ci reste le repli d'un magasin sans barème.
 int rhbPrelevement(Map<String, Object?> criteres) =>
     rhbCriteres.fold<int>(0, (t, c) => t + c.sanction(criteres[c.id]));
+
+int _entierRhb(Object? v) => nombreOuZero(v).toInt();
+
+/// `criteresBaremeALaDate(date)` (E650) : le barème EN VIGUEUR à [date] (ISO). [bareme] et [historique] sont les fiches ACTIVES de `baremeNS131`
+/// (version courante, `dateEffet`) et `historiqueBareme` (versions sorties, `dateEffet` à `dateFin`). Antérieure à la version courante : la version
+/// sortante qui couvrait la date, à défaut la note d'origine. Un critère retiré reste en vigueur aux dates que sa version couvre. Sans aucune fiche,
+/// la note d'origine. Triés par numéro.
+List<RhbCritere> rhbCriteresALaDate(List<FicheRhb> bareme, List<FicheRhb> historique, String date) {
+  RhbCritere entree(FicheRhb b, String id) {
+    final sa = (b['sanctions'] as Map?) ?? const {};
+    return RhbCritere('${b['num']}', id, '${b['label']}', [for (final x in (b['criteres'] as List?) ?? const []) '$x'], _entierRhb(sa['moyenne']),
+        _entierRhb(sa['faible']),
+        bonne: _entierRhb(sa['bonne']));
+  }
+
+  bool vide(Object? v) => v == null || v == '';
+  final out = <RhbCritere>[];
+  final vus = <String>{};
+  for (final b in bareme) {
+    final id = '${b['critereId']}';
+    vus.add(id);
+    if (vide(b['dateEffet']) || date.compareTo('${b['dateEffet']}') >= 0) {
+      out.add(entree(b, id));
+      continue;
+    }
+    final v = trierPar([
+      for (final x in historique)
+        if (x['critereId'] == b['critereId'] &&
+            (vide(x['dateEffet']) || date.compareTo('${x['dateEffet']}') >= 0) &&
+            (vide(x['dateFin']) || date.compareTo('${x['dateFin']}') <= 0))
+          x
+    ], (x) => '${x['dateEffet']}', descendant: true);
+    if (v.isNotEmpty) {
+      out.add(entree(v.first, id));
+      continue;
+    }
+    final o = rhbCriteres.where((c) => c.id == id).firstOrNull;
+    if (o != null) out.add(o);
+  }
+  for (final x in historique) {
+    final id = '${x['critereId']}';
+    if (vus.contains(id)) continue;
+    if ((vide(x['dateEffet']) || date.compareTo('${x['dateEffet']}') >= 0) && (vide(x['dateFin']) || date.compareTo('${x['dateFin']}') <= 0)) {
+      vus.add(id);
+      out.add(entree(x, id));
+    }
+  }
+  if (bareme.isEmpty && historique.isEmpty) out.addAll(rhbCriteres);
+  out.sort((a, b) => a.num.compareTo(b.num));
+  return out;
+}
+
+/// `prelevementALaDate(criteres, date)` (E650) : le total (% du brut) pour `{critereId: niveauId}` sous le barème de [date].
+int rhbPrelevementALaDate(Map<String, Object?> criteres, List<FicheRhb> bareme, List<FicheRhb> historique, String date) =>
+    rhbCriteresALaDate(bareme, historique, date).fold<int>(0, (t, c) => t + c.sanction(criteres[c.id]));
+
+/// La date du barème d'une évaluation : celle qu'elle porte (`dateBareme`), sinon la date d'effet de la note d'origine.
+String rhbDateBaremeDe(Map<String, Object?>? evaluation) {
+  final d = evaluation?['dateBareme'];
+  return d == null || d == '' ? rhbNs131DateEffet : '$d';
+}
 
 /// `Math.round(salaire * pct / 100)`.
 int rhbMontantPrelevement(Object? salaire, Object? pct) => arrondiJs(nombreOuZero(salaire) * nombreOuZero(pct) / 100).toInt();
@@ -249,8 +310,8 @@ num rhbMontantOrigine(String primeId, String fonction) {
 /// `D.NS132.montant(primeId, fonction, date)` — [grille] et [historique] sont les fiches ACTIVES des collections `grillePrimes` et `historiquePrimes`.
 ///
 /// Sans date, ou si la version courante était déjà en vigueur : la grille du jour. Sinon on remonte l'historique jusqu'à la version en vigueur ce
-/// jour-là ; faute d'en trouver, le barème d'origine. UNE PRIME RETIRÉE (archivée) n'est plus au magasin : le moteur retombe sur le barème
-/// d'origine et la calcule encore (écart E651, porté fidèlement).
+/// jour-là ; faute d'en trouver, le barème d'origine. UNE PRIME RETIRÉE (archivée) reçoit une DATE DE FIN (E651) : la version sortante s'applique
+/// jusqu'à elle (incluse), la paie ne la lit plus après ni sans date.
 num rhbMontantPrime(List<FicheRhb> grille, List<FicheRhb> historique, String primeId, String fonction, [String? date]) {
   FicheRhb? courant;
   for (final x in grille) {
@@ -259,7 +320,24 @@ num rhbMontantPrime(List<FicheRhb> grille, List<FicheRhb> historique, String pri
       break;
     }
   }
-  if (courant == null) return rhbMontantOrigine(primeId, fonction);
+  if (courant == null) {
+    final traces = [for (final v in historique) if (v['primeId'] == primeId) v];
+    if (traces.isEmpty) return rhbMontantOrigine(primeId, fonction);
+    if (date != null && date.isNotEmpty) {
+      final couvrantes = trierPar([
+        for (final v in traces)
+          if ((v['dateEffet'] == null || v['dateEffet'] == '' || date.compareTo('${v['dateEffet']}') >= 0) &&
+              (v['dateFin'] == null || v['dateFin'] == '' || date.compareTo('${v['dateFin']}') <= 0))
+            v
+      ], (v) => '${v['dateEffet']}', descendant: true);
+      if (couvrantes.isNotEmpty) return _montantDe(couvrantes.first['montants'], fonction);
+    }
+    if (traces.any((v) => v['retiree'] == true)) {
+      final debuts = [for (final v in traces) '${v['dateEffet'] ?? ''}']..sort();
+      if (date == null || date.isEmpty || date.compareTo(debuts.first) >= 0) return 0;
+    }
+    return rhbMontantOrigine(primeId, fonction);
+  }
   final effet = courant['dateEffet'];
   if (date == null || date.isEmpty || effet == null || effet == '' || date.compareTo('$effet') >= 0) {
     return _montantDe(courant['montants'], fonction);
@@ -274,6 +352,52 @@ num rhbMontantPrime(List<FicheRhb> grille, List<FicheRhb> historique, String pri
   final tri = trierPar(versions, (v) => '${v['dateEffet']}', descendant: true);
   if (tri.isNotEmpty) return _montantDe(tri.first['montants'], fonction);
   return rhbMontantOrigine(primeId, fonction);
+}
+
+class RhbPrimeDef {
+  const RhbPrimeDef(this.id, this.label, this.mode);
+  final String id, label, mode;
+}
+
+/// `D.NS132.primesALaDate()` (E651) : le barème d'origine PLUS les primes créées à l'écran (grille ou historique) : une prime créée entre ainsi
+/// dans les primes fixes du mois.
+List<RhbPrimeDef> rhbPrimesALaDate(List<FicheRhb> grille, List<FicheRhb> historique) {
+  final out = [for (final p in rhbPrimesOrigine) RhbPrimeDef(p.id, p.label, p.mode)];
+  final ids = {for (final p in out) p.id};
+  for (final x in [...grille, ...historique]) {
+    final id = '${x['primeId'] ?? ''}';
+    if (id.isEmpty || ids.contains(id)) continue;
+    ids.add(id);
+    out.add(RhbPrimeDef(id, '${x['label']}', '${x['mode']}'));
+  }
+  return out;
+}
+
+/// `D.NS132.beneficiaires(primeId, date)` (E654) : `null` tant que la prime fixe n'a AUCUNE désignation (règle d'attente : tous les agents de la
+/// fonction) ; sinon les identifiants des agents désignés à [date] (`debut` à `fin`). [designations] : fiches ACTIVES de `beneficiairesPrimes`.
+List<String>? rhbBeneficiaires(List<FicheRhb> designations, String primeId, [String? date]) {
+  final l = [for (final x in designations) if (x['primeId'] == primeId) x];
+  if (l.isEmpty) return null;
+  final sans = date == null || date.isEmpty;
+  return [
+    for (final x in l)
+      if ((sans || x['debut'] == null || x['debut'] == '' || date.compareTo('${x['debut']}') >= 0) &&
+          (sans || x['fin'] == null || x['fin'] == '' || date.compareTo('${x['fin']}') <= 0))
+        '${x['agentId']}'
+  ];
+}
+
+/// `D.NS132.montantAgent(primeId, agent, date)` (E654) : le montant pour UN agent ; un forfait désigné ne revient qu'à ses bénéficiaires.
+num rhbMontantAgent(List<FicheRhb> grille, List<FicheRhb> historique, List<FicheRhb> designations, String primeId, Object? agentId, String fonction,
+    [String? date]) {
+  final m = rhbMontantPrime(grille, historique, primeId, fonction, date);
+  if (m == 0) return 0;
+  final def = rhbPrimesALaDate(grille, historique).where((p) => p.id == primeId).firstOrNull;
+  if (def != null && def.mode == 'fixe') {
+    final liste = rhbBeneficiaires(designations, primeId, date);
+    if (liste != null && !liste.contains('$agentId')) return 0;
+  }
+  return m;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -590,13 +714,15 @@ class RhbPrimeAcquise {
   final num primeGarde, primePermanence, primesFixes, total;
 }
 
-/// RG-11 : les primes du mois calculées depuis le planning et la grille en vigueur (sans date : la grille du jour, comme la maquette). Les primes
-/// FIXES sont celles du barème d'origine (`D.NS132.primes`) lues au moteur : une prime créée à l'écran n'y figure pas (écart E651).
+/// RG-11 : les primes du mois calculées depuis le planning et la grille en vigueur. Les primes FIXES sont celles du barème d'origine PLUS les primes
+/// créées à l'écran (E651), retirées exclues après leur date de fin, et un forfait désigné ne revient qu'à ses [designations] (E654) à la date [date].
 List<RhbPrimeAcquise> rhbPrimesAcquises(
     {required List<FicheRhb> personnelActif,
     required List<FicheRhb> planningActif,
     required List<FicheRhb> grille,
     required List<FicheRhb> historique,
+    List<FicheRhb> designations = const [],
+    String? date,
     required int annee,
     required int mois}) {
   final out = <RhbPrimeAcquise>[];
@@ -606,7 +732,9 @@ List<RhbPrimeAcquise> rhbPrimesAcquises(
     final perm = rhbCompter(planningActif, e['id'], annee, mois, 'permanence');
     final pg = rhbMontantPrime(grille, historique, 'garde', f) * gardes;
     final pp = rhbMontantPrime(grille, historique, 'permanence', f) * perm;
-    final fixes = rhbPrimesOrigine.where((p) => p.mode == 'fixe').fold<num>(0, (s, p) => s + rhbMontantPrime(grille, historique, p.id, f));
+    final fixes = rhbPrimesALaDate(grille, historique)
+        .where((p) => p.mode == 'fixe')
+        .fold<num>(0, (s, p) => s + rhbMontantAgent(grille, historique, designations, p.id, e['id'], f, date));
     final total = pg + pp + fixes;
     if (total > 0) {
       out.add(RhbPrimeAcquise('${e['id']}', '${e['matricule']}', '${e['nomComplet']}', e['fonction'] as String?, '${e['service']}', gardes, perm, pg, pp, fixes, total));

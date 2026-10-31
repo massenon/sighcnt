@@ -181,7 +181,7 @@ void main() {
       expect(m.collection('facturesMere').actives.length, avant - 1);
     });
 
-    cas('règlement : le montant saisi REMPLACE le précédent (E501) ; seule une pièce réglée EN ENTIER est soldée', (t) async {
+    cas('règlement (B5, E501 levé) : les règlements S\'ADDITIONNENT, datés ; soldée à zéro ; jamais plus que le dû ; une écriture 521 / 411 par règlement', (t) async {
       final m = magasin();
       await ouvrir(t, m, 'm9-facture-mere');
       await toucher(t, find.text('Émettre la facture mère'));
@@ -191,6 +191,7 @@ void main() {
       await t.tap(find.text('Fermer').last);
       await t.pumpAndSettle();
       final id = m.collection('facturesMere').actives.first['id'];
+      final ecrituresAvant = m.collection('ecritures').toutes.length;
 
       Future<void> regler(String montant, String ref) async {
         await toucher(t, find.text('Factures mères émises').first);
@@ -207,16 +208,34 @@ void main() {
       var f = m.collection('facturesMere').parId(id)!;
       expect(f['reliquat'], 29140);
       expect(f['etat'], 'transmise');
-      expect(find.textContaining('Règlement partiel enregistré — ${money(29140)} restent en créance.'), findsOneWidget);
+      expect(find.textContaining('Règlement partiel enregistré : ${money(29140)} restent en créance.'), findsOneWidget);
+      // Un règlement de plus que le dû est REFUSÉ en nommant le plafond : rien n'est écrit.
+      await regler('29141', 'VIR-X');
+      f = m.collection('facturesMere').parId(id)!;
+      expect((f['reglements'] as List).length, 1);
+      expect(m.collection('ecritures').toutes.length, ecrituresAvant + 2);
+      expect(find.textContaining('dépasseraient le dû'), findsWidgets);
+      await t.tap(find.widgetWithText(BoutonSigh, 'Annuler').first);
+      await t.pumpAndSettle();
+      expect(find.widgetWithText(BoutonSigh, 'Enregistrer'), findsNothing, reason: 'la modale est refermée');
+      // Le second règlement s'AJOUTE au premier : 1 000 + 29 140 SOLDENT la pièce.
       await regler('29140', 'VIR-002');
       f = m.collection('facturesMere').parId(id)!;
-      expect(f['montantRegle'], 29140, reason: 'le second règlement remplace le premier');
-      expect(f['reliquat'], 1000);
-      expect(f['etat'], 'transmise', reason: 'comme la maquette : 1 000 + 29 140 ne solde pas');
-      await regler('30140', 'VIR-003');
-      f = m.collection('facturesMere').parId(id)!;
+      expect(f['montantRegle'], 30140, reason: 'les règlements se cumulent');
+      expect(f['reliquat'], 0);
       expect(f['etat'], 'reglee');
+      expect((f['reglements'] as List).map((x) => (x as Map)['montant']), [1000, 29140]);
       expect(find.text('Facture mère soldée.'), findsOneWidget);
+      // Une écriture PAR règlement : débit 521000 Banque, crédit 411110, brouillon, équilibrée (RG-10).
+      final ecr = m.collection('ecritures').toutes.where((e) => e['pieceId'] == id).toList();
+      expect(ecr.length, 4);
+      expect(ecr.every((e) => e['statut'] == 'brouillon' && e['journal'] == 'BQ'), isTrue);
+      expect(ecr.where((e) => e['compte'] == '521000').fold<num>(0, (a, e) => a + (e['debit'] as num)), 30140);
+      expect(ecr.where((e) => e['compte'] == '411110').fold<num>(0, (a, e) => a + (e['credit'] as num)), 30140);
+      // Soldée : la commande disparaît.
+      await toucher(t, find.text('Factures mères émises').first);
+      await t.pumpAndSettle();
+      expect(find.text('Enregistrer le règlement'), findsNothing);
     });
 
     cas('droits : sans le droit d’écrire (direction), ni émission ni règlement ; l’aperçu reste offert', (t) async {

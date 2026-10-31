@@ -45,6 +45,15 @@ void main() {
               'journal': e['journal']
             }));
         final raison = 'versement $i';
+        // E2 (corrigé le 31/10/2026) : un versement refusé NOMME le défaut, ne change rien et n'écrit rien.
+        expect(r.refus, etape['refus'], reason: '$raison : refus');
+        if (r.refus != null) {
+          expect(r.montantRegle, 0, reason: raison);
+          expect(r.ecritures, isEmpty, reason: raison);
+          expect(r.lignesReglees, isEmpty, reason: raison);
+          expect(r.restantDu, (etape['restantDu'] as num).toDouble(), reason: raison);
+          continue;
+        }
         expect(r.deja, etape['deja'], reason: raison);
         expect(r.lignesReglees, etape['lignesReglees'], reason: raison);
         expect(r.montantRegle, (etape['montantRegle'] as num?)?.toDouble(),

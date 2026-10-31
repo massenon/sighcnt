@@ -70,9 +70,21 @@ void main() {
     test('indicateurs sur les courriers ACTIFS', () {
       kpisEgaux(admKpisCourriers(actives(jeu)), obj(c['ecran'])['kpis']);
     });
-    test('référence : sens + millésime écrit en dur + effectif (archivés compris) + 1', () {
-      expect(admReferenceCourrier('arrivee', liste(jeu).length), (obj(obj(c['creation'])['arrivee'])['fiche'] as M)['reference']);
-      expect(admReferenceCourrier('depart', liste(jeu).length + 1), (obj(obj(c['creation'])['depart'])['fiche'] as M)['reference']);
+    test('référence : série annuelle ARR/DEP-AAAA-NNNN, millésime = année de la date, rang par sens et par année (E538 levé)', () {
+      final arr = obj(obj(c['creation'])['arrivee'])['fiche'] as M, dep = obj(obj(c['creation'])['depart'])['fiche'] as M;
+      expect(admReferenceCourrier('arrivee', arr['date'], liste(jeu)), arr['reference']);
+      expect(admReferenceCourrier('depart', dep['date'], liste(jeu)), dep['reference']);
+      final serie = [
+        {'reference': 'ARR-2026-0007', 'statut': 'archive'},
+        {'reference': 'ARR-2027-0002'},
+        {'reference': 'DEP-2026-0003'}
+      ];
+      expect(admReferenceCourrier('arrivee', '2026-12-31', serie), 'ARR-2026-0008');
+      expect(admReferenceCourrier('arrivee', '2027-01-02', serie), 'ARR-2027-0003');
+      expect(admReferenceCourrier('depart', '2026-05-05', serie), 'DEP-2026-0004');
+      expect(admReferenceCourrier('depart', '2028-01-01', serie), 'DEP-2028-0001');
+      expect(admExercicesCourriers(serie.map((x) => {...x, 'date': '2026-01-01'}), 2030), '2026');
+      expect(admExercicesCourriers(const [], 2030), '2030');
     });
     test('traitements : libellé et ton', () {
       expect(admTraitementCourrier('traite'), ('Traité', 'success'));

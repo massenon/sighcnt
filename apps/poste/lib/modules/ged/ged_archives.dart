@@ -12,8 +12,7 @@ import 'ged_commun.dart';
 
 /// `ged-archives` — « Archivage & conservation » : le cycle de vie documentaire (archives actives, archives définitives) et les durées légales de
 /// conservation — 20 ans pour les documents patients, 10 ans pour les documents RH, 5 ans pour les documents administratifs et fournisseurs.
-///
-/// Portés fidèlement et signalés : l'échéance compte 365 jours par an (E565, 20 ans tombent 5 jours avant l'anniversaire) ; le formulaire
+/// L'échéance est CALENDAIRE (E565 levé : date + N années civiles, un 29 février retombe au 1er mars). Portés fidèlement et signalés : le formulaire
 /// « Modifier » écrit cinq champs (`titre`, `categorie` en texte libre, `dureeConservation`, `emplacement`, `observations`) que ni le tableau ni
 /// l'échéance ne lisent (E566) ; la conservation échue n'entraîne aucune destruction — l'écran le rappelle et renvoie à une procédure encadrée.
 class EcranArchivesGed extends StatelessWidget with EcranMaquette {

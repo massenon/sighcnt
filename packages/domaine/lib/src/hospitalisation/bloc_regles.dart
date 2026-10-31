@@ -334,13 +334,14 @@ List<BlocFiche> blocBonsPansement(Iterable<BlocFiche> ordonnances) => [
   return (facture: fac, total: lignes.length, reglees: lignes.where((l) => l['statutPaiement'] == 'paye').length);
 }
 
-/// « Séances en attente de règlement » : la maquette compte les BONS dont des séances restent dues (écart E413 — le libellé parle de séances).
+/// « Séances en attente de règlement » (C4, corrigé dans la maquette le 31/10/2026 puis porté, écart E413) : l'indicateur compte les SÉANCES
+/// (lignes payables restantes), non les bons dont des séances restent dues : un bon de 5 séances dont 2 sont réglées pèse 3, pas 1.
 ({int bons, int attente}) blocKpisPansements(Iterable<BlocFiche> bons, Iterable<BlocFiche> facturesActives) => (
       bons: bons.length,
-      attente: bons.where((o) {
+      attente: bons.fold<int>(0, (n, o) {
         final s = blocSeancesDe(o, facturesActives);
-        return s.total > 0 && s.reglees < s.total;
-      }).length,
+        return n + (s.total > 0 ? s.total - s.reglees : 0);
+      }),
     );
 
 /// Le nombre de séances saisi, borné à 1–12 (`Math.max(1, Math.min(12, Number(v) || 1))`).

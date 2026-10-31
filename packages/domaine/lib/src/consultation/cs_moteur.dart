@@ -530,6 +530,19 @@ FicheCs _creerTache(StockCs s, String type, FicheCs ord, FicheCs? facture,
   return (montant: e['prixAssure'] as num?, tarif: 'assuré', motif: null, entree: e);
 }
 
+/// Rang suivant d'une SÉRIE ANNUELLE de pièces de caisse (`FP-2026-`) : le plus grand rang déjà porté par les factures du même préfixe
+/// (archivées comprises, RG-14), plus un. Port de `PR.rangSerieFactures`.
+int csRangSerieFactures(StockCs s, String prefixe) {
+  var max = 0;
+  for (final f in s.toutes('factures')) {
+    final n = '${f['numero'] ?? ''}';
+    if (!n.startsWith(prefixe)) continue;
+    final r = int.tryParse(RegExp(r'^\d+').stringMatch(n.substring(prefixe.length)) ?? '') ?? 0;
+    if (r > max) max = r;
+  }
+  return max + 1;
+}
+
 bool _carteValide(StockCs s, FicheCs p, String date) =>
     carteValide(p, s.toutes('couverturesAssurance'), date);
 
@@ -672,17 +685,26 @@ ResultatPrescription csPrescrire(
       }()
   ];
 
+  // C3 (corrigé dans la maquette le 31/10/2026, puis porté) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées)
+  // s'applique réellement quand la carte est valide à la date (RG-09). Seule la colonne assurée change le prix (`prixAssure` de l'acte du catalogue) :
+  // sans carte valide, ou pour un acte que la grille exclut de l'assurance, le catalogue administrable reste la référence.
+  final assureActes = csVrai(p['assureur']) && _carteValide(s, p, date);
   final actes = <FicheCs>[
     for (final code in (v['actes'] as List? ?? const []))
       () {
         final a = s.actives('actes').where((x) => x['code'] == code).firstOrNull ??
             const <String, Object?>{};
+        final tarifAssure = assureActes &&
+            a['assurable'] == true &&
+            !csVrai(a['nonCouvert']) &&
+            a['prixAssure'] != null;
+        final Object? prixActe = tarifAssure ? a['prixAssure'] : a['prix'];
         return <String, Object?>{
           'code': code,
           'libelle': _ou(a['libelle'], code),
           'secteur': _ou(a['secteur'], ''),
-          'prix': _ou(a['prix'], 0),
-          'tarifValide': a['prix'] != null,
+          'prix': csVrai(prixActe) ? prixActe : 0,
+          'tarifValide': prixActe != null,
         };
       }()
   ];
@@ -798,7 +820,8 @@ ResultatPrescription csPrescrire(
 
   final facture = s.inserer('factures', {
     'lignes': lignesFacture,
-    'numero': 'FP-$annee-${_pad(s.toutes('factures').length + 1, 5)}',
+    // E6 (corrigé dans la maquette le 31/10/2026) : le rang est celui de la série de l'année, plus le nombre total de factures.
+    'numero': 'FP-$annee-${_pad(csRangSerieFactures(s, 'FP-$annee-'), 5)}',
     'numeroMecef': null,
     'patientId': p['id'],
     'patient': '${p['nom']} ${p['prenom']}',
