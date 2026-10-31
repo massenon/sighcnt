@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'tba_infirmier.dart';
+import 'tba_laborantin.dart';
 import 'tba_medecin.dart';
 import 'tba_pharmacien.dart';
 
@@ -14,4 +15,5 @@ final Map<String, ConstruireEcran> ecransDASH = {
   'dash-medecin': (c, cfg) => const EcranDashMedecin(),
   'dash-infirmier': (c, cfg) => const EcranDashInfirmier(),
   'dash-pharmacien': (c, cfg) => const EcranDashPharmacien(),
+  'dash-laborantin': (c, cfg) => const EcranDashLaborantin(),
 };

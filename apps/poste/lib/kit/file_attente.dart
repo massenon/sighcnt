@@ -12,6 +12,14 @@ import 'tableau.dart';
 import 'toast.dart';
 import 'ton.dart';
 
+List<Fiche> _stable(List<Fiche> l, int Function(Fiche, Fiche) cmp) {
+  final i = [for (var k = 0; k < l.length; k++) k]..sort((a, b) {
+      final c = cmp(l[a], l[b]);
+      return c != 0 ? c : a.compareTo(b);
+    });
+  return [for (final k in i) l[k]];
+}
+
 /// `K.fileAttente(type, cfg)` : la file des tâches d'un poste. L'ORDRE EST CELUI DU TERRAIN : ce qui est PAYÉ d'abord (les plus anciennes en tête),
 /// puis ce qui attend encore la caisse — visible (le laboratoire doit savoir ce qui arrive) mais après. Une tâche bloquée n'est pas exécutable ;
 /// un profil qui LIT l'écran sans pouvoir écrire voit la file mais ne l'exécute pas (commande verrouillée et NOMMÉE, pas retirée).
@@ -42,26 +50,29 @@ class FileAttenteSigh extends StatelessWidget {
     return ListenableBuilder(
       listenable: col,
       builder: (context, _) {
-        final taches = [
+        // L'ordre est celui de PR.aFaire puis de la file : TRI STABLE (Array.sort), l'urgence d'abord, puis la date (une date absente s'écrit
+        // « undefined » et passe après les datées), puis — dans la file — la date vide AVANT les datées. Le List.sort de Dart n'est pas stable :
+        // sur les tâches sans date il rangeait les ex æquo autrement que la maquette (écart E924, corrigé au kit).
+        final taches = _stable([
           for (final t in col.actives)
             if (t['statut'] != 'fait' && t['type'] == type) t
-        ]..sort((a, b) => (b['urgent'] == true ? 1 : 0)
-                    .compareTo(a['urgent'] == true ? 1 : 0) !=
-                0
-            ? (b['urgent'] == true ? 1 : -1)
-            : _date(a).compareTo(_date(b)));
+        ], (a, b) {
+          final ua = a['urgent'] == true, ub = b['urgent'] == true;
+          if (ua != ub) return ub ? 1 : -1;
+          return '${a['date']}'.compareTo('${b['date']}');
+        });
         if (taches.isEmpty)
           return CarteSigh(
               titre: titre,
               child: VideSigh(vide, icone: LucideIcons.circleCheck));
-        final pretes = [
+        final pretes = _stable([
           for (final t in taches)
             if (t['statut'] == 'en_attente') t
-        ]..sort((a, b) => _date(a).compareTo(_date(b)));
-        final bloquees = [
+        ], (a, b) => _date(a).compareTo(_date(b)));
+        final bloquees = _stable([
           for (final t in taches)
             if (t['statut'] == 'bloque') t
-        ]..sort((a, b) => _date(a).compareTo(_date(b)));
+        ], (a, b) => _date(a).compareTo(_date(b)));
         final ordonnees = [...pretes, ...bloquees];
         return CarteSigh(
           titre:
