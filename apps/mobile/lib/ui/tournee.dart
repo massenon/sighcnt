@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../moteur/moteur_mobile.dart';
+import 'commun.dart';
+import 'dossier.dart';
 
-/// Liste des dossiers du lot de la tournée ; un dossier s'ouvre sur la saisie des constantes.
+/// Liste des dossiers du lot de la tournée ; un dossier s'ouvre en LECTURE, d'où partent les gestes que la fonction autorise.
 class Tournee extends StatefulWidget {
   const Tournee({super.key, required this.moteur});
   final MoteurMobile moteur;
@@ -34,10 +37,10 @@ class _TourneeState extends State<Tournee> {
               key: Key('patient-${p.id}'),
               title: Text(p.nom.isEmpty ? p.code : p.nom),
               subtitle: Text('${p.code}${p.champs['quartier'] != null ? ' · ${p.champs['quartier']}' : ''}'),
-              trailing: const Icon(Icons.monitor_heart_outlined),
+              trailing: const Icon(Icons.folder_open_outlined),
               onTap: () async {
-                await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => SaisieConstantes(moteur: widget.moteur, patient: p)));
-                _rafraichir();
+                await ouvrirDossier(context, widget.moteur, p.id);
+                if (mounted) _rafraichir();
               },
             ),
         ]);
@@ -46,48 +49,56 @@ class _TourneeState extends State<Tournee> {
   }
 }
 
+/// Saisie des constantes : les bornes et les messages sont ceux de l'écran de la maquette (`mobReglesConstantes`), une valeur improbable est
+/// REFUSÉE EN LA NOMMANT. La saisie est visible aussitôt et part à la première occasion.
 class SaisieConstantes extends StatefulWidget {
-  const SaisieConstantes({super.key, required this.moteur, required this.patient});
-  final MoteurMobile moteur;
-  final FichePatient patient;
+  const SaisieConstantes({super.key, required this.service, required this.patientId, required this.titre});
+  final ServiceSoignant service;
+  final String patientId;
+  final String titre;
 
   @override
   State<SaisieConstantes> createState() => _SaisieConstantesState();
 }
 
 class _SaisieConstantesState extends State<SaisieConstantes> {
-  final _c = {for (final k in ['temperature', 'tension', 'pouls', 'poids']) k: TextEditingController()};
-  String? _erreur;
+  static const _libelles = {
+    'temperature': 'Température (°C)',
+    'sys': 'Tension, systolique',
+    'dia': 'Tension, diastolique',
+    'pouls': 'Pouls (/min)',
+    'fr': 'FR (/min)',
+    'spo2': 'SpO₂ (%)',
+    'poids': 'Poids (kg)',
+  };
+  final _c = {for (final k in _libelles.keys) k: TextEditingController()};
+  RefusMobile? _refus;
 
   Future<void> _enregistrer() async {
-    final saisie = {for (final e in _c.entries) if (e.value.text.trim().isNotEmpty) e.key: e.value.text.trim().replaceAll(',', '.')};
-    if (saisie.isEmpty) {
-      setState(() => _erreur = 'Saisissez au moins une constante.');
+    final saisie = {for (final e in _c.entries) e.key: e.value.text};
+    try {
+      await widget.service.enregistrerConstantes(widget.patientId, saisie);
+    } on RefusMobile catch (r) {
+      setState(() => _refus = r);
       return;
     }
-    // Un champ numérique mal saisi est refusé en le NOMMANT : mieux vaut une erreur ici qu'une valeur absurde au dossier.
-    for (final k in ['temperature', 'pouls', 'poids']) {
-      if (saisie.containsKey(k) && double.tryParse(saisie[k]!) == null) {
-        setState(() => _erreur = '« $k » doit être un nombre.');
-        return;
-      }
-    }
-    await widget.moteur.enregistrerConstantes(widget.patient.id, {
-      for (final e in saisie.entries) e.key: ['temperature', 'pouls', 'poids'].contains(e.key) ? double.parse(e.value) : e.value,
-    });
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enregistré sur le téléphone — part dès que le réseau revient.')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(mobFievre(saisie)
+            ? 'Fièvre (${saisie['temperature']!.trim()} °C), signalée au médecin avec la saisie. $messageEnregistre'
+            : messageEnregistre)));
     Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
-    const libelles = {'temperature': 'Température (°C)', 'tension': 'Tension (ex. 12/8)', 'pouls': 'Pouls (/min)', 'poids': 'Poids (kg)'};
+    final erreurs = _refus?.champs ?? const <String, String>{};
     return Scaffold(
-      appBar: AppBar(title: Text(widget.patient.nom.isEmpty ? widget.patient.code : widget.patient.nom)),
+      appBar: AppBar(title: Text('Constantes, ${widget.titre}')),
       body: ListView(padding: const EdgeInsets.all(16), children: [
-        for (final e in _c.entries) Padding(padding: const EdgeInsets.only(bottom: 12), child: TextField(key: Key('champ-${e.key}'), controller: e.value, decoration: InputDecoration(labelText: libelles[e.key]), keyboardType: TextInputType.text)),
-        if (_erreur != null) Text(_erreur!, key: const Key('erreur'), style: TextStyle(color: Theme.of(context).colorScheme.error)),
+        for (final e in _libelles.entries)
+          champSaisie(cle: e.key, libelle: e.value, controleur: _c[e.key]!, erreurs: erreurs, requis: e.key == 'temperature', clavier: const TextInputType.numberWithOptions(decimal: true)),
+        if (_refus != null && _refus!.champs.isEmpty) CarteRefus(_refus!),
         const SizedBox(height: 8),
         FilledButton(key: const Key('enregistrer'), onPressed: _enregistrer, child: const Text('Enregistrer')),
       ]),

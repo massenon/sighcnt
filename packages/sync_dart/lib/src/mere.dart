@@ -9,6 +9,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:sigh_domaine/sigh_domaine.dart' show mobLibelleFonction, mobLibelleNature, mobPeutPrescrire;
+
 import 'commun.dart';
 import 'depot.dart';
 import 'pont.dart';
@@ -19,7 +21,7 @@ import 'supervision.dart';
 const familles = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
   'constantes': 'B', 'notes': 'B',
-  'factures': 'C',
+  'factures': 'C', 'prescriptions': 'C',
   'stock': 'D',
   'tarifs': 'R', 'chambres': 'R',
 };
@@ -28,8 +30,25 @@ const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
   'reception': {'patients', 'rendezvous', 'constantes'},
-  'soignant': {'patients', 'constantes', 'notes', 'rendezvous'},
+  'soignant': {'patients', 'constantes', 'notes', 'rendezvous', 'prescriptions'},
 };
+
+/// La prescription d'un mobile est une pièce ÉMISE : la mère REFAIT le contrôle d'habilitation (un bouton absent sur le téléphone ne protège rien).
+/// La règle est celle du domaine (`PR.peutPrescrire` de la maquette, vecteurs de `mobile.json`), jamais recopiée ici. La fonction est celle que le
+/// téléphone déclare : la mère ne la connaît pas encore par le code d'appairage (limite consignée, ECARTS E1553).
+Map<String, Object?>? refusPrescriptionMobile(Map op) {
+  final champs = ((op['champs'] ?? {}) as Map).cast<String, Object?>();
+  final fonction = '${champs['fonction'] ?? ''}';
+  final nature = '${champs['nature'] ?? ''}';
+  if (mobPeutPrescrire(fonction, nature)) return null;
+  return {
+    'id': op['id'], 'statut': 'refusee', 'code': 'droit_refuse',
+    'motif': fonction.isEmpty
+        ? 'Prescription sans fonction déclarée : aucune habilitation ne peut être vérifiée.'
+        : '${mobLibelleFonction(fonction)} : la prescription de « ${mobLibelleNature(nature)} » n’est pas dans ses habilitations.',
+    'geste': 'Demander la prescription à un médecin',
+  };
+}
 
 const _ddl = '''
   CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT);
@@ -344,6 +363,8 @@ class Mere {
             'id': op['id'], 'statut': 'refusee', 'code': 'droit_refuse',
             'motif': 'Le profil « ${app.profil} » ne couvre pas la collection ${op['collection']}.', 'geste': 'Utiliser un poste',
           };
+        } else if (app.role == 'mobile' && op['collection'] == 'prescriptions' && op['type'] == 'creer' && refusPrescriptionMobile(op) != null) {
+          r = refusPrescriptionMobile(op)!;
         } else {
           r = await traiter(op, app);
         }

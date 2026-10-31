@@ -571,6 +571,45 @@ const scenarios = {
     verifier('sans le secret de la mère, la liste des appareils est fermée', sansMere.status === 403, sansMere);
     await m.fermer();
   },
+  async R25() {
+    courant = 'SYNC-R25 · mobile soignant : agenda et dossier du lot, note de consultation, prescription selon droits, par le relais';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const a = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'DOSSOU', prenom: 'Aline', assureur: 'NSIA', carteExpiration: '2026-12-31', allergies: ['Pénicilline'] } });
+    const b = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'HORS', prenom: 'Tournée' } });
+    const r = await f1.ecrire({ type: 'creer', collection: 'rendezvous', champs: { patientId: a.fiche, date: '2026-10-31T09:30', statut: 'planifiee', type: 'Domicile', motif: 'Suivi HTA' } });
+    const c = await f1.ecrire({ type: 'creer', collection: 'constantes', champs: { patientId: a.fiche, dateHeure: '2026-10-31T08:00', temperature: 38.5, pouls: 96 } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 2 && (await m.mere.admin('GET', '/admin/compte?collection=rendezvous')).json.n === 1
+      && (await m.mere.admin('GET', '/admin/compte?collection=constantes')).json.n === 1);
+    const mob = await m.mobile('MEDECIN', { profil: 'soignant' });
+    await m.mere.admin('POST', '/admin/lot', { uuid: mob.uuid, fiches: [{ collection: 'patients', id: a.fiche }, { collection: 'rendezvous', id: r.fiche }, { collection: 'constantes', id: c.fiche }], ttl_ms: 60000 });
+    verifier('le lot porte le dossier, le rendez-vous du jour et la dernière constante, pas le patient hors tournée',
+      await attendre(async () => (await mob.liste('patients')).length === 1 && (await mob.liste('rendezvous')).length === 1 && (await mob.liste('constantes')).length === 1)
+      && !(await mob.liste('patients')).some((p) => p.id === b.fiche));
+    m.reseauMobile.regler('ferme');
+    const note = await mob.ecrire({ type: 'creer', collection: 'notes', champs: { patientId: a.fiche, date: '2026-10-31T10:00', type: 'Domicile', motif: 'Suivi HTA', diagnostic: 'Hypertension artérielle', orientation: 'domicile', redigePar: 'Dr YENI', fonction: 'medecin', origine: 'mobile' } });
+    const ordo = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, noteId: note.fiche, lignes: [{ medicament: 'Paracétamol 500 mg', posologie: '1 cp x 3/j', dureeJours: 5 }], prescripteur: 'Dr YENI', fonction: 'medecin', emise: true, origine: 'mobile' } });
+    const ana = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'analyse', patientId: a.fiche, noteId: note.fiche, examens: ['NFS'], urgence: 'Non urgent', prescripteur: 'Dr YENI', fonction: 'medecin', emise: true, origine: 'mobile' } });
+    const inf = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, noteId: note.fiche, lignes: [{ medicament: 'X', posologie: 'Y', dureeJours: 1 }], prescripteur: 'Infirmière', fonction: 'infirmier', emise: true, origine: 'mobile' } });
+    const sans = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [], emise: true } });
+    verifier('hors ligne, la note et les prescriptions sont visibles aussitôt sur le mobile', (await mob.liste('notes')).length === 1 && (await mob.liste('prescriptions')).length === 4);
+    m.reseauMobile.regler('ouvert');
+    verifier('retour réseau : tout est parti et accusé', await attendre(async () => mob.vide(), 15000));
+    const e = await mob.etat(); const res = (id) => e.resultats.find((x) => x.id === id) || {};
+    verifier('la note (journal) et l\'ordonnance du médecin sont ACCEPTÉES', res(note.id).etat === 'acceptee' && res(ordo.id).etat === 'acceptee' && res(ana.id).etat === 'acceptee', e.resultats);
+    const ri = res(inf.id);
+    verifier('la prescription d\'une fonction non habilitée est REFUSÉE, nommée (code, motif, geste)', ri.etat === 'refusee' && ri.code === 'droit_refuse' && /Infirmier/.test(ri.motif) && /m[ée]decin/.test(ri.geste), ri);
+    const rs = res(sans.id);
+    verifier('une prescription sans fonction déclarée est refusée en le disant', rs.etat === 'refusee' && rs.code === 'droit_refuse' && /sans fonction/.test(rs.motif), rs);
+    verifier('les deux refus attendent dans « À traiter » (rien n\'est rejoué tel quel)', e.a_traiter.length === 2, e.a_traiter);
+    verifier('la mère tient 1 note et 2 prescriptions (les refusées n\'y sont pas)', (await m.mere.admin('GET', '/admin/compte?collection=notes')).json.n === 1 && (await m.mere.admin('GET', '/admin/compte?collection=prescriptions')).json.n === 2);
+    verifier('le poste de la clinique reçoit la note et les ordonnances par la mère', await attendre(async () => (await f1.liste('notes')).length === 1 && (await f1.liste('prescriptions')).length === 2, 15000));
+    const modif = await mob.ecrire({ type: 'modifier', collection: 'prescriptions', fiche: ordo.fiche, champs: { lignes: [] } });
+    verifier('une ordonnance émise ne se réécrit pas : refus nommé', await attendre(async () => (await mob.etat()).resultats.some((x) => x.id === modif.id && x.code === 'piece_emise_immuable'), 15000));
+    const rec = await m.mobile('ACCUEIL', { profil: 'reception' });
+    const interdit = await rec.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', fonction: 'medecin', emise: true } });
+    verifier('la réception de secours ne prescrit pas : le profil ne couvre pas la collection', await attendre(async () => (await rec.etat()).resultats.some((x) => x.id === interdit.id && x.code === 'droit_refuse'), 15000));
+    await m.fermer();
+  },
   async R8r() {
     courant = 'SYNC-R8 · la mère est DÉTRUITE : restauration depuis le relais avec la clé de clinique';
     const m = await monde({ relais: true }); const f1 = await m.fileul('F1');

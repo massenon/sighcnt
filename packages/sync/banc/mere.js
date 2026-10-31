@@ -10,6 +10,8 @@
  *
  * Lancement : node mere.js --port=9000 --db=mere.sqlite --admin=secret
  * ========================================================================== */
+const fs = require('node:fs');
+const path = require('node:path');
 const http = require('node:http');
 const crypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
@@ -30,7 +32,7 @@ const RESTAURER = arg('restaurer', '0') === '1'; const CLE_ARG = arg('cle', '');
 const FAMILLES = {
   patients: 'A', rendezvous: 'A',
   constantes: 'B', notes: 'B',
-  factures: 'C',
+  factures: 'C', prescriptions: 'C',
   stock: 'D',
   tarifs: 'R', chambres: 'R',
 };
@@ -217,7 +219,21 @@ function emettreJetons(uuid) {
 }
 
 /* --- l'envoi d'un lot, commun aux postes (P1) et aux mobiles (P2/P3) ------------------------- */
-const AUTORISE = { reception: new Set(['patients', 'rendezvous', 'constantes']), soignant: new Set(['patients', 'constantes', 'notes', 'rendezvous']) };
+const AUTORISE = { reception: new Set(['patients', 'rendezvous', 'constantes']), soignant: new Set(['patients', 'constantes', 'notes', 'rendezvous', 'prescriptions']) };
+/* La prescription d'un mobile est une pièce ÉMISE : la mère REFAIT le contrôle d'habilitation. La règle n'est pas recopiée : elle est LUE dans les
+   vecteurs de la maquette (PR.peutPrescrire, `mobile.json`), comme le fait le test du domaine Dart. La fonction est celle que le téléphone déclare. */
+const PRESCRIPTION = (() => {
+  try { return JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'domaine', 'test', 'vecteurs', 'mobile.json'), 'utf8')).droitsPrescription; } catch (e) { return null; }
+})();
+function refusPrescriptionMobile(op) {
+  const fonction = String((op.champs || {}).fonction || ''), nature = String((op.champs || {}).nature || '');
+  const ligne = PRESCRIPTION && PRESCRIPTION.lignes.find((l) => l.fonction === fonction && l.nature === nature);
+  if (ligne && ligne.autorise) return null;
+  const libelle = PRESCRIPTION && PRESCRIPTION.labels[fonction];
+  return { id: op.id, statut: 'refusee', code: 'droit_refuse',
+    motif: !fonction ? 'Prescription sans fonction déclarée : aucune habilitation ne peut être vérifiée.' : `${libelle || fonction} : la prescription de « ${nature} » n’est pas dans ses habilitations.`,
+    geste: 'Demander la prescription à un médecin' };
+}
 function pousser(app, b) {
   if (b.epoch !== +meta('epoch')) throw new Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', { epoch_mere: +meta('epoch') });
   const derive = Math.abs(Date.now() - (b.horloge || Date.now()));
@@ -228,6 +244,8 @@ function pousser(app, b) {
     let r;
     if (app.role === 'mobile' && !(AUTORISE[app.profil] || new Set()).has(op.collection)) {
       r = { id: op.id, statut: 'refusee', code: 'droit_refuse', motif: `Le profil « ${app.profil} » ne couvre pas la collection ${op.collection}.`, geste: 'Utiliser un poste' };
+    } else if (app.role === 'mobile' && op.collection === 'prescriptions' && op.type === 'creer' && refusPrescriptionMobile(op)) {
+      r = refusPrescriptionMobile(op);
     } else r = traiter(op, app);
     if (app.role === 'mobile' && r.statut === 'acceptee' && op.type === 'creer') db.prepare('INSERT OR IGNORE INTO portee(appareil,collection,fiche) VALUES(?,?,?)').run(app.uuid, op.collection, op.fiche);
     db.prepare('INSERT INTO resultats(id,json) VALUES(?,?)').run(op.id, JSON.stringify(r));

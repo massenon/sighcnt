@@ -100,3 +100,4 @@ export 'src/acces/acc_support.dart';
 export 'src/mere/mra_regles.dart';
 export 'src/mere/mrb_regles.dart';
 export 'src/mere/mrc_regles.dart';
+export 'src/mobile/mob_regles.dart';

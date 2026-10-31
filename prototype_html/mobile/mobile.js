@@ -83,7 +83,7 @@
     var ok = true;
     regles.forEach(function (r) {
       var v = valeur(r.id), m = '';
-      if (r.requis && !v) m = r.libelle + ' obligatoire.';
+      if (r.requis && !v) m = r.libelle + ' est obligatoire.';
       else if (v && r.nombre) {
         var n = Number(v.replace(',', '.'));
         if (isNaN(n)) m = r.libelle + ' doit être un nombre.';
