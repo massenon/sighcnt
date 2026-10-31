@@ -4,6 +4,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Monorepo (initialisé le 17/10/2026)
 
+**Vague 71 (31/10/2026) : `VERSION` 68.** Le 31/10, la Direction a validé l'inventaire `docs/architecture/LIMITES-ET-SOLUTIONS.md` (« je valide et j'accepte tout »). Vague 1 appliquée, maquette d'abord : règlements de facture mère cumulatifs et canal d'avoir unique (B5, B10), paie comptabilisée en brouillon avec heures sup, prêts et participations lus, séparation des tâches (B6, A2), barème NS 131 et primes datés, bénéficiaires désignés (B7), balance validées/toutes, journal BQE, plan sans doublons, millésimes lus sur la pièce (B8), accueil qui tient le répertoire des ambulances. Les fiches RBAC et le semis des participations étant SEMÉS, l'incrément de `VERSION` s'impose. Côté poste : session nominative, authentification Argon2id, droits à chaud (activités fermées), écrans autonomes sans coquille.
+
 **Règle de rédaction (31/10/2026)** : ne pas employer de tiret cadratin (—), de demi-cadratin (–) ni de trait d'union comme ponctuation dans le code, les commentaires, les textes d'interface et les paragraphes `text-xs text-info-900` (règles d'écran) ; utiliser la virgule, les deux-points, les parenthèses ou le point. Les identifiants (ids, noms de fichiers, intervalles, dates) restent de la syntaxe. L'existant n'est repris qu'à la pièce, quand on retouche un texte (la parité N1 compare les libellés).
 
 
