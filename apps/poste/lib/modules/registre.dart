@@ -15,6 +15,7 @@ import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
 import 'm9/registre_m9.dart';
 import 'pil/registre_pil.dart';
+import 'rap/registre_rap.dart';
 import 'm2/registre_m2.dart';
 import 'm3/registre_m3.dart';
 import 'm4/registre_m4.dart';
@@ -59,6 +60,7 @@ Map<String, ConstruireEcran> ecransPortes(
     ...ecransGED,
     ...ecransM13,
     ...ecransPIL,
+    ...ecransRAP,
     ...ecransM14,
     ...ecransCFG,
     ...ecransM9,

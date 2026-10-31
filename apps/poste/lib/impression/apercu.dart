@@ -6,6 +6,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../kit/kit.dart';
+import '../shell/contexte_ecran.dart';
 import 'feuilles.dart';
 import 'pdf.dart';
 import 'piece.dart';
@@ -60,8 +61,10 @@ class ImpressionPoste {
 }
 
 /// Aperçu commun (`afficher()` de print.js) : la feuille dans une modale large, « Fermer » et « Imprimer / PDF ».
-Future<void> afficherApercu(BuildContext context, PieceA4 piece) =>
-    afficherModale<void>(
+Future<void> afficherApercu(BuildContext context, PieceA4 piece) {
+  // « Archiver » (`afficher(…, archivable)` de print.js) : l'édition est journalisée (RG-12, module RAP) — c'est ce journal que lit l'historique des éditions.
+  final magasin = ContexteEcran.maybeOf(context)?.magasin;
+  return afficherModale<void>(
       context,
       titre: piece.titre,
       sousTitre: piece.reference,
@@ -91,8 +94,18 @@ Future<void> afficherApercu(BuildContext context, PieceA4 piece) =>
                 ToastsSigh.afficher(context, 'PDF enregistré.',
                     type: TypeToast.succes, detail: chemin);
             }),
+        if (magasin != null)
+          BoutonSigh(
+              libelle: 'Archiver',
+              icone: LucideIcons.archive,
+              variante: VarianteBouton.secondaire,
+              onPressed: () {
+                magasin.journaliser('Impression', 'RAP', 'Document', piece.reference, null, {'titre': piece.titre});
+                ToastsSigh.afficher(context, 'Édition archivée au journal des éditions (RG-12).', type: TypeToast.succes, detail: 'Réf. ${piece.reference}');
+              }),
       ],
     );
+}
 
 /// Aperçu du ROULEAU de caisse 80 mm (`P.ticket`) : gabarit distinct du A4, même modale, même enregistrement PDF.
 Future<void> afficherApercuTicket(
