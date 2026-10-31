@@ -162,5 +162,13 @@
  "m14-sessions": "porté",
  "m14-audit": "porté",
  "m14-sauvegardes": "porté",
- "m14-taches": "porté"
+ "m14-taches": "porté",
+ "m10-fiches-poste": "porté",
+ "m10-dashboard": "porté",
+ "m10-personnel": "porté",
+ "m10-employe-profil": "porté",
+ "m10-contrats": "porté",
+ "m10-conges": "porté",
+ "m10-missions": "porté",
+ "m10-prestataires": "porté"
 }
