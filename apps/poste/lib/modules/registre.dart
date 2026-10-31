@@ -4,6 +4,7 @@ import '../core/config_poste.dart';
 import '../core/controleur_poste.dart';
 import '../mere/client_mere.dart';
 import '../mere/console.dart';
+import 'cfg/registre_cfg.dart';
 import 'ged/registre_ged.dart';
 import 'm1/registre_m1.dart';
 import 'm10/registre_m10.dart';
@@ -55,6 +56,7 @@ Map<String, ConstruireEcran> ecransPortes(
     ...ecransGED,
     ...ecransM13,
     ...ecransM14,
+    ...ecransCFG,
     ...ecransM9,
     ...ecransM1,
     ...ecransM10,
