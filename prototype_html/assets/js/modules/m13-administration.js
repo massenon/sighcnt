@@ -21,6 +21,12 @@
     terminee: ['Terminée', 'success'],
   };
 
+  /* E540 : « AUJ » porte l'HEURE de l'horloge. Comparer une date (minuit) à AUJ rangeait parmi le PASSÉ tout ce qui a lieu aujourd'hui, et
+     Math.round((minuit demain − maintenant) / 1 jour) lisait « Aujourd'hui » pour demain dès midi. Les événements se comparent par JOUR ; une réunion,
+     qui a une heure, par son DÉBUT. */
+  function evenementAVenir(e) { return String(e.date).slice(0, 10) >= C.iso(AUJ); }
+  function reunionAVenir(r) { return C.toDate(String(r.date).slice(0, 10) + 'T' + (r.heure || '00:00')) >= AUJ; }
+
   function personnel() { return S.collection('personnel').active(); }
   function optionsAgents() {
     return C.sortBy(personnel(), 'nomComplet').map(function (e) { return { value: e.nomComplet, label: e.nomComplet + ' — ' + e.poste }; });
@@ -173,9 +179,9 @@
           { key: 'participants', label: 'Participants', align: 'right' },
           {
             key: 'statutReunion', label: 'Statut', sortable: false,
-            value: function (r) { return C.toDate(r.date) >= AUJ ? 'À venir' : 'Tenue'; },
+            value: function (r) { return reunionAVenir(r) ? 'À venir' : 'Tenue'; },
             render: function (r) {
-              return C.toDate(r.date) >= AUJ ? U.badge('À venir', 'info') : U.badge('Tenue', 'success');
+              return reunionAVenir(r) ? U.badge('À venir', 'info') : U.badge('Tenue', 'success');
             },
           },
           {
@@ -206,13 +212,13 @@
         kpis: function (rows) {
           return [
             { label: 'Réunions enregistrées', value: C.num(rows.length), icon: 'users', tone: 'navy' },
-            { label: 'À venir', value: C.num(rows.filter(function (r) { return C.toDate(r.date) >= AUJ; }).length), icon: 'calendar-clock', tone: 'info' },
-            { label: 'Comptes rendus à rédiger', value: C.num(rows.filter(function (r) { return !r.compteRendu && C.toDate(r.date) < AUJ; }).length), icon: 'file-clock', tone: 'warning' },
+            { label: 'À venir', value: C.num(rows.filter(reunionAVenir).length), icon: 'calendar-clock', tone: 'info' },
+            { label: 'Comptes rendus à rédiger', value: C.num(rows.filter(function (r) { return !r.compteRendu && !reunionAVenir(r); }).length), icon: 'file-clock', tone: 'warning' },
             { label: 'Participants cumulés', value: C.num(C.sum(rows, 'participants')), icon: 'user-check', tone: 'success' },
           ];
         },
         etat: function (r) {
-          var futur = C.toDate(r.date) >= AUJ;
+          var futur = reunionAVenir(r);
           P.etat({
             titre: futur ? 'Convocation à une réunion' : 'Compte rendu de réunion',
             sousTitre: r.type + ' — ' + C.dateFR(r.date),
@@ -300,17 +306,17 @@
 
       host.appendChild(U.kpiGrid([
         { label: 'Événements planifiés', value: C.num(rows.length), icon: 'calendar-heart', tone: 'navy' },
-        { label: 'À venir', value: C.num(rows.filter(function (e) { return C.toDate(e.date) >= AUJ; }).length), icon: 'calendar-clock', tone: 'info' },
+        { label: 'À venir', value: C.num(rows.filter(evenementAVenir).length), icon: 'calendar-clock', tone: 'info' },
         { label: 'Avec notification', value: C.num(rows.filter(function (e) { return e.notifier; }).length), icon: 'bell', tone: 'warning' },
         { label: 'Catégories', value: C.num(Object.keys(C.groupBy(rows, 'categorie')).length), icon: 'layers', tone: 'neutral' },
       ]));
 
       /* Prochains événements */
-      var prochains = C.sortBy(rows.filter(function (e) { return C.toDate(e.date) >= AUJ; }), 'date').slice(0, 6);
+      var prochains = C.sortBy(rows.filter(evenementAVenir), 'date').slice(0, 6);
       if (prochains.length) {
         var grille = el('div.grid.gap-3.sm\\:grid-cols-2.lg\\:grid-cols-3');
         prochains.forEach(function (e) {
-          var j = C.daysBetween(AUJ, e.date);
+          var j = C.daysBetween(C.iso(AUJ), String(e.date).slice(0, 10));
           var carte = el('div.rounded-xl.border.border-slate-200.bg-white.p-4.shadow-card');
           carte.appendChild(el('div.mb-2.flex.items-start.justify-between.gap-2', null, [
             U.badge(e.categorie, 'navy'),
@@ -800,7 +806,7 @@
       }
       function joursDepuis(iso) {
         if (!iso) return null;
-        return Math.round((Date.now() - C.toDate(iso).getTime()) / 86400000);
+        return C.daysBetween(String(iso).slice(0, 10), C.iso(new Date()));   /* E540 : par JOUR — vérifié ce matin, « 1 j » dès midi */
       }
       function perime(r) {
         var j = joursDepuis(r.verifieLe);

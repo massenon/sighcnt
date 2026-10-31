@@ -102,7 +102,7 @@ void main() {
     });
     test('référence : série du registre (E531), archivés compris — plus RU-2026-001 en doublon', () {
       expect(admReferenceSuivante('RU-2026-', 3, liste(r['jeu'])), (obj(obj(r['creation'])['creee'])['fiche'] as M)['reference']);
-      expect(admReferenceSuivante('RU-2026-', 3, liste(r['jeu'])), 'RU-2026-008');
+      expect(admReferenceSuivante('RU-2026-', 3, liste(r['jeu'])), 'RU-2026-009');
     });
   });
 
@@ -291,6 +291,52 @@ void main() {
         }
         expect(f['telephone'], att[i]['telephone'], reason: '${att[i]['libelle']} téléphone');
         expect(f['verifieLe'], att[i]['verifieLe'], reason: '${att[i]['libelle']} vérifié');
+      }
+    });
+  });
+
+  group('l’après-midi (15 h) : tout se compte PAR JOUR et par DÉBUT (E540)', () {
+    final am = obj(v['apresMidi']);
+    final quinzeHeures = DateTime(2026, 10, 30, 15);
+    test('événements : demain se lit « Dans 1 j » (jamais « Aujourd’hui »), ceux du jour restent à venir et en tête', () {
+      final e = obj(am['evenements']);
+      final rows = actives(e['jeu']);
+      kpisEgaux(admKpisEvenements(rows, quinzeHeures), e['kpis']);
+      final p = admProchainsEvenements(rows, quinzeHeures);
+      final brut = (e['prochainsBrut'] as List).cast<String>();
+      final rouges = (e['prochainsRouges'] as List).cast<bool>();
+      expect(p.length, brut.length);
+      for (var i = 0; i < p.length; i++) {
+        final j = admJoursAvant(quinzeHeures, p[i]['date']);
+        expect(brut[i], contains(admDelaiEvenement(j)), reason: '${p[i]['libelle']}');
+        expect(admDelaiUrgent(j), rouges[i]);
+      }
+      expect(admJoursAvant(quinzeHeures, '2026-10-31'), 1);
+      expect(admJoursAvant(quinzeHeures, '2026-10-30'), 0);
+      expect(admJoursAvant(DateTime(2026, 10, 30, 23, 59), '2026-10-31'), 1);
+    });
+    test('réunions : une réunion du jour est « À venir » jusqu’à son heure de début, « Tenue » une minute après', () {
+      final r = obj(am['reunions']);
+      kpisEgaux(admKpisReunions(actives(r['jeu']), quinzeHeures), r['kpis']);
+      final lignes = (obj(r['tableau'])['lignes'] as List).cast<List>();
+      for (final f in actives(r['jeu'])) {
+        final ligne = lignes.firstWhere((l) => l[0] == f['reference']);
+        expect(admReunionAVenir(f, quinzeHeures) ? 'À venir' : 'Tenue', ligne[7], reason: '${f['reference']}');
+      }
+      final seize = {'date': '2026-10-30', 'heure': '16:00'};
+      expect(admReunionAVenir(seize, quinzeHeures), isTrue);
+      expect(admReunionAVenir(seize, DateTime(2026, 10, 30, 16)), isTrue, reason: 'à l’heure dite, elle commence');
+      expect(admReunionAVenir(seize, DateTime(2026, 10, 30, 16, 1)), isFalse);
+      expect(admHeure('9:05'), '09:05');
+    });
+    test('répertoire : vérifié ce matin = « 0 j » même l’après-midi', () {
+      final r = obj(am['repertoire']);
+      kpisEgaux(admKpisRepertoire(actives(r['jeu']), quinzeHeures), r['kpis']);
+      final t = (obj(r['tableau'])['lignes'] as List).cast<List>();
+      for (final f in admTrierRepertoire(actives(r['jeu']))) {
+        final ligne = t.firstWhere((l) => l[0] == f['libelle']);
+        final j = admJoursDepuis(f['verifieLe'], quinzeHeures);
+        expect(j == null ? 'jamais' : '${admDateFR(f['verifieLe'])} ($j j)', ligne[6], reason: '${f['libelle']}');
       }
     });
   });

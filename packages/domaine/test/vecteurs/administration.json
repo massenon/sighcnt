@@ -1185,7 +1185,7 @@
      ]
     ],
     "fiche": {
-     "id": "COUxmvuswn40bru9l",
+     "id": "COUxmvuswn40d15e6",
      "statut": "actif",
      "sens": "arrivee",
      "date": "2026-10-30",
@@ -1209,7 +1209,7 @@
      ]
     ],
     "fiche": {
-     "id": "COUxmvuswn40bcjss",
+     "id": "COUxmvuswn40jyhd8",
      "statut": "actif",
      "sens": "depart",
      "date": "2026-10-30",
@@ -1575,6 +1575,19 @@
     "_archivePar": "BASSONGUI Chabi Séko",
     "_archiveLe": "2026-10-30T10:00:00.000Z",
     "_motifArchivage": "test"
+   },
+   {
+    "id": "REU8",
+    "statut": "actif",
+    "reference": "RU-2026-008",
+    "date": "2026-10-30",
+    "heure": "15:00",
+    "type": "Réunion de service",
+    "lieu": "Salle de réunion",
+    "president": "BASSONGUI Chabi Séko",
+    "participants": 9,
+    "ordreDuJour": "Ordre du jour 8",
+    "compteRendu": false
    }
   ],
   "president": "BASSONGUI Chabi Séko",
@@ -1582,12 +1595,12 @@
    "kpis": [
     {
      "libelle": "Réunions enregistrées",
-     "valeur": "6",
+     "valeur": "7",
      "indice": null
     },
     {
      "libelle": "À venir",
-     "valeur": "2",
+     "valeur": "3",
      "indice": null
     },
     {
@@ -1597,12 +1610,12 @@
     },
     {
      "libelle": "Participants cumulés",
-     "valeur": "71",
+     "valeur": "80",
      "indice": null
     }
    ],
    "onglets": [
-    "Tous les réunions6",
+    "Tous les réunions7",
     "Archivés1"
    ],
    "cartes": [],
@@ -1658,6 +1671,18 @@
        ""
       ],
       [
+       "RU-2026-008",
+       "30/10/2026",
+       "15:00",
+       "Réunion de service",
+       "Salle de réunion",
+       "BASSONGUI Chabi Séko",
+       "9",
+       "À venir",
+       "À rédiger",
+       ""
+      ],
+      [
        "RU-2026-003",
        "28/10/2026",
        "14:00",
@@ -1698,7 +1723,7 @@
    ],
    "notes": [],
    "boutons": [
-    "Tous les réunions6",
+    "Tous les réunions7",
     "Archivés1",
     "Colonnes",
     "Exporter",
@@ -1956,17 +1981,17 @@
       "Le formulaire comporte des erreurs."
      ]
     ],
-    "total": 7
+    "total": 8
    },
    "creee": {
     "toasts": [
      [
       "Nouveau réunion créé.",
-      "RU-2026-008"
+      "RU-2026-009"
      ]
     ],
     "fiche": {
-     "id": "REUxmvuswn40em7vg",
+     "id": "REUxmvuswn4053fki",
      "statut": "actif",
      "type": "Réunion de direction",
      "date": "2026-10-30",
@@ -1977,20 +2002,20 @@
      "ordreDuJour": "Budget 2027",
      "compteRendu": false,
      "resolutions": "",
-     "reference": "RU-2026-008"
+     "reference": "RU-2026-009"
     },
-    "total": 8
+    "total": 9
    },
    "apres": {
     "kpis": [
      {
       "libelle": "Réunions enregistrées",
-      "valeur": "7",
+      "valeur": "8",
       "indice": null
      },
      {
       "libelle": "À venir",
-      "valeur": "2",
+      "valeur": "3",
       "indice": null
      },
      {
@@ -2000,12 +2025,12 @@
      },
      {
       "libelle": "Participants cumulés",
-      "valeur": "79",
+      "valeur": "88",
       "indice": null
      }
     ],
     "onglets": [
-     "Tous les réunions6",
+     "Tous les réunions7",
      "Archivés1"
     ],
     "cartes": [],
@@ -2049,7 +2074,7 @@
         ""
        ],
        [
-        "RU-2026-008",
+        "RU-2026-009",
         "30/10/2026",
         "09:00",
         "Réunion de direction",
@@ -2069,6 +2094,18 @@
         "BASSONGUI Chabi Séko",
         "10",
         "Tenue",
+        "À rédiger",
+        ""
+       ],
+       [
+        "RU-2026-008",
+        "30/10/2026",
+        "15:00",
+        "Réunion de service",
+        "Salle de réunion",
+        "BASSONGUI Chabi Séko",
+        "9",
+        "À venir",
         "À rédiger",
         ""
        ],
@@ -2113,7 +2150,7 @@
     ],
     "notes": [],
     "boutons": [
-     "Tous les réunions6",
+     "Tous les réunions7",
      "Archivés1",
      "Colonnes",
      "Exporter",
@@ -2148,12 +2185,12 @@
    "kpis": [
     {
      "libelle": "Réunions enregistrées",
-     "valeur": "7",
+     "valeur": "8",
      "indice": null
     },
     {
      "libelle": "À venir",
-     "valeur": "2",
+     "valeur": "3",
      "indice": null
     },
     {
@@ -2163,7 +2200,7 @@
     },
     {
      "libelle": "Participants cumulés",
-     "valeur": "79",
+     "valeur": "88",
      "indice": null
     }
    ]
@@ -2330,7 +2367,7 @@
     },
     {
      "libelle": "À venir",
-     "valeur": "8",
+     "valeur": "9",
      "indice": null
     },
     {
@@ -2556,6 +2593,14 @@
   },
   "prochains": [
    [
+    "Qualité",
+    "Aujourd’hui",
+    "Audit qualité interne",
+    "vendredi 30 octobre 2026 à 09:00",
+    "Clinique — KASSA Augustin",
+    "In-app"
+   ],
+   [
     "Formation",
     "Dans 1 j",
     "Formation aux gestes d’urgence",
@@ -2595,28 +2640,20 @@
     "Maintenance de l’échographe",
     "dimanche 29 novembre 2026 à 09:00",
     "Clinique — KINNOU A. Ganiou"
-   ],
-   [
-    "Santé publique",
-    "Dans 45 j",
-    "Campagne de dépistage du diabète",
-    "lundi 14 décembre 2026 à 09:00",
-    "Clinique — AGOSSOU Yahouza",
-    "In-app"
    ]
   ],
   "prochainsBrut": [
+   "Qualité Aujourd’hui Audit qualité interne vendredi 30 octobre 2026 à 09:00 Clinique — KASSA Augustin In-app",
    "Formation Dans 1 j Formation aux gestes d’urgence samedi 31 octobre 2026 à 09:00 Clinique — GBEDJI Hervé In-app SMS Courriel",
    "Logistique Dans 5 j Inventaire annuel mercredi 4 novembre 2026 à 09:00 Clinique — YENI M’PO Florent",
    "Sécurité Dans 8 j Contrôle des extincteurs samedi 7 novembre 2026 à 09:00 Clinique — TAKI Orou In-app",
    "Communication Dans 20 j Journée portes ouvertes jeudi 19 novembre 2026 à 09:00 Clinique — AHOHOU Rodrigue In-app Courriel",
-   "Technique Dans 30 j Maintenance de l’échographe dimanche 29 novembre 2026 à 09:00 Clinique — KINNOU A. Ganiou",
-   "Santé publique Dans 45 j Campagne de dépistage du diabète lundi 14 décembre 2026 à 09:00 Clinique — AGOSSOU Yahouza In-app"
+   "Technique Dans 30 j Maintenance de l’échographe dimanche 29 novembre 2026 à 09:00 Clinique — KINNOU A. Ganiou"
   ],
   "prochainsRouges": [
    true,
    true,
-   false,
+   true,
    false,
    false,
    false
@@ -2810,7 +2847,7 @@
      }
     ],
     "fiche": {
-     "id": "EVExmvuswn40uc0t7",
+     "id": "EVExmvuswn40rkbq7",
      "statut": "actif",
      "libelle": "Dépistage du cancer du sein",
      "categorie": "Santé publique",
@@ -2829,7 +2866,7 @@
    },
    "sansNotif": {
     "fiche": {
-     "id": "EVExmvuswn40ypdwi",
+     "id": "EVExmvuswn40xfth2",
      "statut": "actif",
      "libelle": "Réunion sans annonce",
      "categorie": "Santé publique",
@@ -4104,7 +4141,7 @@
      ]
     ],
     "fiche": {
-     "id": "AMBxmvuswn404brvq",
+     "id": "AMBxmvuswn40r733x",
      "statut": "actif",
      "patientCode": "CNT/8/25",
      "dateHeure": "2026-10-30T09:30",
@@ -4146,7 +4183,7 @@
    },
    "tarifSaisi": {
     "fiche": {
-     "id": "AMBxmvuswn40rr8a1",
+     "id": "AMBxmvuswn40g3bx3",
      "statut": "actif",
      "patientCode": "CNT/9/26",
      "dateHeure": "2026-11-02T16:00",
@@ -4233,7 +4270,7 @@
   "amorcage": {
    "fiches": [
     {
-     "id": "AMBxmvuswn407slad",
+     "id": "AMBxmvuswn40trwo8",
      "statut": "actif",
      "libelle": "Sapeurs-pompiers",
      "type": "publique",
@@ -4246,7 +4283,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn409f46k",
+     "id": "AMBxmvuswn4068jhl",
      "statut": "actif",
      "libelle": "Zone sanitaire de Natitingou",
      "type": "publique",
@@ -4259,7 +4296,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn40czqur",
+     "id": "AMBxmvuswn402s0g0",
      "statut": "actif",
      "libelle": "CHD Atacora — ambulance",
      "type": "publique",
@@ -4272,7 +4309,7 @@
      "source": "Structure à contacter — numéro à renseigner"
     },
     {
-     "id": "AMBxmvuswn40fyt6j",
+     "id": "AMBxmvuswn40ta85w",
      "statut": "actif",
      "libelle": "Ambulance CNT 02",
      "type": "clinique",
@@ -4285,7 +4322,7 @@
      "source": "En-tête officiel de la clinique"
     },
     {
-     "id": "AMBxmvuswn402zqy9",
+     "id": "AMBxmvuswn40v3a1d",
      "statut": "actif",
      "libelle": "Ambulance CNT 01",
      "type": "clinique",
@@ -5059,7 +5096,7 @@
     ],
     "total": 9,
     "derniere": {
-     "id": "AMBxmvuswn40skcw8",
+     "id": "AMBxmvuswn40l0x4s",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": true,
@@ -5084,7 +5121,7 @@
     ],
     "total": 10,
     "derniere": {
-     "id": "AMBxmvuswn40qzlwv",
+     "id": "AMBxmvuswn40wrof4",
      "statut": "actif",
      "verifieLe": "2026-10-30",
      "aCompleter": false,
@@ -6368,7 +6405,7 @@
      ]
     ],
     "fiche": {
-     "id": "MATxmvuswn40t5r5l",
+     "id": "MATxmvuswn40e09pb",
      "statut": "actif",
      "libelle": "Autoclave 2",
      "categorie": "Bloc opératoire",
@@ -6408,7 +6445,7 @@
    },
    "complet": {
     "fiche": {
-     "id": "MATxmvuswn40big58",
+     "id": "MATxmvuswn408rhc3",
      "statut": "actif",
      "libelle": "Réfrigérateur 3",
      "categorie": "Énergie & froid",
@@ -6498,6 +6535,779 @@
       "valeur": "6",
       "indice": "marque, n° de série et mise en service non relevés"
      }
+    ]
+   }
+  }
+ },
+ "apresMidi": {
+  "evenements": {
+   "jeu": [
+    {
+     "id": "EVExmvuswn40xfth2",
+     "statut": "actif",
+     "libelle": "Réunion sans annonce",
+     "categorie": "Santé publique",
+     "date": "2026-11-02",
+     "heure": "09:00",
+     "lieu": "",
+     "responsable": "",
+     "notifier": false,
+     "observations": "",
+     "reference": "EVT-0012",
+     "canaux": [],
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "EVExmvuswn40rkbq7",
+     "statut": "actif",
+     "libelle": "Dépistage du cancer du sein",
+     "categorie": "Santé publique",
+     "date": "2026-10-30",
+     "heure": "09:00",
+     "lieu": "Salle de réunion",
+     "responsable": "",
+     "notifier": true,
+     "observations": "",
+     "reference": "EVT-0011",
+     "canaux": [
+      "In-app"
+     ],
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "EVT001",
+     "statut": "actif",
+     "reference": "EV-2026-001",
+     "libelle": "Journée de vaccination",
+     "categorie": "Santé publique",
+     "date": "2026-09-30",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "TAKI Alimatou",
+     "notifier": true,
+     "canaux": [
+      "In-app",
+      "SMS"
+     ]
+    },
+    {
+     "id": "EVT002",
+     "statut": "actif",
+     "reference": "EV-2026-002",
+     "libelle": "Audit qualité interne",
+     "categorie": "Qualité",
+     "date": "2026-10-30",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "KASSA Augustin",
+     "notifier": true,
+     "canaux": [
+      "In-app"
+     ]
+    },
+    {
+     "id": "EVT003",
+     "statut": "actif",
+     "reference": "EV-2026-003",
+     "libelle": "Formation aux gestes d’urgence",
+     "categorie": "Formation",
+     "date": "2026-10-31",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "GBEDJI Hervé",
+     "notifier": true,
+     "canaux": [
+      "In-app",
+      "SMS",
+      "Courriel"
+     ]
+    },
+    {
+     "id": "EVT004",
+     "statut": "actif",
+     "reference": "EV-2026-004",
+     "libelle": "Inventaire annuel",
+     "categorie": "Logistique",
+     "date": "2026-11-04",
+     "heure": "09:00",
+     "lieu": "Extérieur",
+     "responsable": "YENI M’PO Florent",
+     "notifier": true,
+     "canaux": [
+      "In-app"
+     ],
+     "observations": "",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "EVT005",
+     "statut": "actif",
+     "reference": "EV-2026-005",
+     "libelle": "Contrôle des extincteurs",
+     "categorie": "Sécurité",
+     "date": "2026-11-07",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "TAKI Orou",
+     "notifier": true,
+     "canaux": [
+      "In-app"
+     ]
+    },
+    {
+     "id": "EVT006",
+     "statut": "actif",
+     "reference": "EV-2026-006",
+     "libelle": "Journée portes ouvertes",
+     "categorie": "Communication",
+     "date": "2026-11-19",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "AHOHOU Rodrigue",
+     "notifier": true,
+     "canaux": [
+      "In-app",
+      "Courriel"
+     ]
+    },
+    {
+     "id": "EVT007",
+     "statut": "actif",
+     "reference": "EV-2026-007",
+     "libelle": "Maintenance de l’échographe",
+     "categorie": "Technique",
+     "date": "2026-11-29",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "KINNOU A. Ganiou",
+     "notifier": false,
+     "canaux": []
+    },
+    {
+     "id": "EVT008",
+     "statut": "actif",
+     "reference": "EV-2026-008",
+     "libelle": "Campagne de dépistage du diabète",
+     "categorie": "Santé publique",
+     "date": "2026-12-14",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "AGOSSOU Yahouza",
+     "notifier": true,
+     "canaux": [
+      "In-app"
+     ]
+    },
+    {
+     "id": "EVT009",
+     "statut": "actif",
+     "reference": "EV-2026-009",
+     "libelle": "Réception des nouveaux équipements",
+     "categorie": "Logistique",
+     "date": "2026-12-29",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "GARBA Yahouza",
+     "notifier": true,
+     "canaux": [
+      "In-app",
+      "SMS"
+     ]
+    },
+    {
+     "id": "EVT010",
+     "statut": "actif",
+     "reference": "EV-2026-010",
+     "libelle": "Formation au nouveau logiciel SIGH",
+     "categorie": "Formation",
+     "date": "2027-01-28",
+     "heure": "09:00",
+     "lieu": "Clinique",
+     "responsable": "IDRISSOU ANIKI Baba-Toundé",
+     "notifier": false,
+     "canaux": []
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Événements planifiés",
+     "valeur": "12",
+     "indice": null
+    },
+    {
+     "libelle": "À venir",
+     "valeur": "11",
+     "indice": null
+    },
+    {
+     "libelle": "Avec notification",
+     "valeur": "9",
+     "indice": null
+    },
+    {
+     "libelle": "Catégories",
+     "valeur": "7",
+     "indice": null
+    }
+   ],
+   "prochainsBrut": [
+    "Santé publique Aujourd’hui Dépistage du cancer du sein vendredi 30 octobre 2026 à 09:00 Salle de réunion — In-app",
+    "Qualité Aujourd’hui Audit qualité interne vendredi 30 octobre 2026 à 09:00 Clinique — KASSA Augustin In-app",
+    "Formation Dans 1 j Formation aux gestes d’urgence samedi 31 octobre 2026 à 09:00 Clinique — GBEDJI Hervé In-app SMS Courriel",
+    "Santé publique Dans 3 j Réunion sans annonce lundi 2 novembre 2026 à 09:00 —",
+    "Logistique Dans 5 j Inventaire annuel mercredi 4 novembre 2026 à 09:00 Extérieur — YENI M’PO Florent In-app",
+    "Sécurité Dans 8 j Contrôle des extincteurs samedi 7 novembre 2026 à 09:00 Clinique — TAKI Orou In-app"
+   ],
+   "prochainsRouges": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false
+   ]
+  },
+  "reunions": {
+   "jeu": [
+    {
+     "id": "REUxmvuswn4053fki",
+     "statut": "actif",
+     "type": "Réunion de direction",
+     "date": "2026-10-30",
+     "heure": "09:00",
+     "lieu": "Salle de réunion",
+     "president": "ADAM Alimatou",
+     "participants": 8,
+     "ordreDuJour": "Budget 2027",
+     "compteRendu": false,
+     "resolutions": "",
+     "reference": "RU-2026-009",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "REU1",
+     "statut": "actif",
+     "reference": "RU-2026-001",
+     "date": "2026-08-31",
+     "heure": "09:00",
+     "type": "Réunion de direction",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 8,
+     "ordreDuJour": "Ordre du jour 1",
+     "compteRendu": true
+    },
+    {
+     "id": "REU2",
+     "statut": "actif",
+     "reference": "RU-2026-002",
+     "date": "2026-10-10",
+     "heure": "10:30",
+     "type": "Comité d’hygiène",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 12,
+     "ordreDuJour": "Ordre du jour 2",
+     "compteRendu": false,
+     "resolutions": "Renforcer le lavage des mains"
+    },
+    {
+     "id": "REU3",
+     "statut": "actif",
+     "reference": "RU-2026-003",
+     "date": "2026-10-28",
+     "heure": "14:00",
+     "type": "Réunion de service",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 6,
+     "ordreDuJour": "Ordre du jour 3",
+     "compteRendu": true,
+     "resolutions": "RAS",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "REU4",
+     "statut": "actif",
+     "reference": "RU-2026-004",
+     "date": "2026-10-30",
+     "heure": "08:00",
+     "type": "Revue mensuelle d’activité",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 10,
+     "ordreDuJour": "Ordre du jour 4",
+     "compteRendu": false
+    },
+    {
+     "id": "REU5",
+     "statut": "actif",
+     "reference": "RU-2026-005",
+     "date": "2026-10-31",
+     "heure": "15:00",
+     "type": "Réunion du personnel",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 30,
+     "ordreDuJour": "Ordre du jour 5",
+     "compteRendu": false
+    },
+    {
+     "id": "REU6",
+     "statut": "actif",
+     "reference": "RU-2026-006",
+     "date": "2026-11-14",
+     "heure": "11:00",
+     "type": "Comité de gestion des stocks",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 5,
+     "ordreDuJour": "Ordre du jour 6",
+     "compteRendu": false
+    },
+    {
+     "id": "REU7",
+     "statut": "archive",
+     "reference": "RU-2026-007",
+     "date": "2026-08-01",
+     "heure": "09:00",
+     "type": "Réunion de direction",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 7,
+     "ordreDuJour": "Ordre du jour 7",
+     "compteRendu": true,
+     "_archivePar": "BASSONGUI Chabi Séko",
+     "_archiveLe": "2026-10-30T10:00:00.000Z",
+     "_motifArchivage": "test"
+    },
+    {
+     "id": "REU8",
+     "statut": "actif",
+     "reference": "RU-2026-008",
+     "date": "2026-10-30",
+     "heure": "15:00",
+     "type": "Réunion de service",
+     "lieu": "Salle de réunion",
+     "president": "BASSONGUI Chabi Séko",
+     "participants": 9,
+     "ordreDuJour": "Ordre du jour 8",
+     "compteRendu": false
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Réunions enregistrées",
+     "valeur": "8",
+     "indice": null
+    },
+    {
+     "libelle": "À venir",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Comptes rendus à rédiger",
+     "valeur": "3",
+     "indice": null
+    },
+    {
+     "libelle": "Participants cumulés",
+     "valeur": "88",
+     "indice": null
+    }
+   ],
+   "tableau": {
+    "entetes": [
+     "N°",
+     "DATE",
+     "HEURE",
+     "TYPE",
+     "LIEU",
+     "PRÉSIDÉE PAR",
+     "PARTICIPANTS",
+     "STATUT",
+     "COMPTE RENDU",
+     "ACTIONS"
+    ],
+    "lignes": [
+     [
+      "RU-2026-006",
+      "14/11/2026",
+      "11:00",
+      "Comité de gestion des stocks",
+      "Salle de réunion",
+      "BASSONGUI Chabi Séko",
+      "5",
+      "À venir",
+      "À rédiger",
+      ""
+     ],
+     [
+      "RU-2026-005",
+      "31/10/2026",
+      "15:00",
+      "Réunion du personnel",
+      "Salle de réunion",
+      "BASSONGUI Chabi Séko",
+      "30",
+      "À venir",
+      "À rédiger",
+      ""
+     ],
+     [
+      "RU-2026-009",
+      "30/10/2026",
+      "09:00",
+      "Réunion de direction",
+      "Salle de réunion",
+      "ADAM Alimatou",
+      "8",
+      "Tenue",
+      "À rédiger",
+      ""
+     ],
+     [
+      "RU-2026-004",
+      "30/10/2026",
+      "08:00",
+      "Revue mensuelle d’activité",
+      "Salle de réunion",
+      "BASSONGUI Chabi Séko",
+      "10",
+      "Tenue",
+      "À rédiger",
+      ""
+     ],
+     [
+      "RU-2026-008",
+      "30/10/2026",
+      "15:00",
+      "Réunion de service",
+      "Salle de réunion",
+      "BASSONGUI Chabi Séko",
+      "9",
+      "À venir",
+      "À rédiger",
+      ""
+     ],
+     [
+      "RU-2026-003",
+      "28/10/2026",
+      "14:00",
+      "Réunion de service",
+      "Salle de réunion",
+      "BASSONGUI Chabi Séko",
+      "6",
+      "Tenue",
+      "Rédigé",
+      ""
+     ],
+     [
+      "RU-2026-002",
+      "10/10/2026",
+      "10:30",
+      "Comité d’hygiène",
+      "Salle de réunion",
+      "BASSONGUI Chabi Séko",
+      "12",
+      "Tenue",
+      "À rédiger",
+      ""
+     ],
+     [
+      "RU-2026-001",
+      "31/08/2026",
+      "09:00",
+      "Réunion de direction",
+      "Salle de réunion",
+      "BASSONGUI Chabi Séko",
+      "8",
+      "Tenue",
+      "Rédigé",
+      ""
+     ]
+    ]
+   }
+  },
+  "repertoire": {
+   "jeu": [
+    {
+     "id": "AMBxmvuswn40wrof4",
+     "statut": "actif",
+     "verifieLe": "2026-10-30",
+     "aCompleter": false,
+     "source": "Saisie à l’accueil",
+     "libelle": "Sapeurs-pompiers 2",
+     "type": "publique",
+     "telephone": "+229 90 00 00 09",
+     "telephone2": "",
+     "contact": "",
+     "base": "Natitingou",
+     "disponibilite": "disponible",
+     "capacite": "",
+     "observations": "",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "AMBxmvuswn40l0x4s",
+     "statut": "actif",
+     "verifieLe": "2026-10-30",
+     "aCompleter": true,
+     "source": "Saisie à l’accueil",
+     "libelle": "Sapeurs-pompiers",
+     "type": "clinique",
+     "telephone": "",
+     "telephone2": "",
+     "contact": "",
+     "base": "",
+     "disponibilite": "disponible",
+     "capacite": "",
+     "observations": "",
+     "_creePar": "BASSONGUI Chabi Séko",
+     "_creeLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "AMBR1",
+     "statut": "actif",
+     "libelle": "Ambulance CNT 01",
+     "type": "clinique",
+     "telephone": "+229 01 23 45 67",
+     "contact": "Chauffeur de garde",
+     "base": "Natitingou — clinique",
+     "disponibilite": "en_course",
+     "verifieLe": "2026-10-28",
+     "aCompleter": false
+    },
+    {
+     "id": "AMBR2",
+     "statut": "actif",
+     "libelle": "Ambulance CNT 02",
+     "type": "clinique",
+     "telephone": "+229 01 23 45 68",
+     "telephone2": "+229 97 00 00 02",
+     "contact": "Chauffeur de garde",
+     "base": "Natitingou — clinique",
+     "disponibilite": "en_course",
+     "verifieLe": "2026-10-30",
+     "aCompleter": false,
+     "observations": "Sortie à Tanguiéta",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "AMBR3",
+     "statut": "actif",
+     "libelle": "CHD Atacora — ambulance",
+     "type": "publique",
+     "contact": "Régulation du CHD",
+     "base": "Natitingou",
+     "disponibilite": "indisponible",
+     "aCompleter": true
+    },
+    {
+     "id": "AMBR4",
+     "statut": "actif",
+     "libelle": "Ambulance Alpha",
+     "type": "prive",
+     "telephone": "+229 96 00 00 01",
+     "contact": "M. Alpha",
+     "base": "Tanguiéta",
+     "disponibilite": "disponible",
+     "verifieLe": "2026-10-30",
+     "aCompleter": false,
+     "capacite": "Brancard, oxygène",
+     "verifiePar": "BASSONGUI Chabi Séko",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "AMBR5",
+     "statut": "actif",
+     "libelle": "Hôpital partenaire",
+     "type": "partenaire",
+     "telephone": "+229 95 00 00 05",
+     "contact": "Standard",
+     "base": "Boukoumbé",
+     "disponibilite": "disponible",
+     "verifieLe": "2026-08-02",
+     "aCompleter": false,
+     "observations": "Appeler avant 20 h"
+    },
+    {
+     "id": "AMBR6",
+     "statut": "actif",
+     "libelle": "Ambulance Bravo",
+     "type": "prive",
+     "telephone": "+229 96 11 11 11",
+     "telephone2": "",
+     "contact": "M. Bravo",
+     "base": "Natitingou",
+     "disponibilite": "disponible",
+     "verifieLe": "2026-08-01",
+     "aCompleter": false,
+     "capacite": "",
+     "observations": "",
+     "_modifiePar": "BASSONGUI Chabi Séko",
+     "_modifieLe": "2026-10-30T10:00:00.000Z"
+    },
+    {
+     "id": "AMBR7",
+     "statut": "archive",
+     "libelle": "Ambulance Charlie",
+     "type": "prive",
+     "telephone": "+229 96 00 00 07",
+     "contact": "",
+     "base": "Natitingou",
+     "disponibilite": "disponible",
+     "verifieLe": "2026-07-31",
+     "aCompleter": false,
+     "_archivePar": "BASSONGUI Chabi Séko",
+     "_archiveLe": "2026-10-30T10:00:00.000Z",
+     "_motifArchivage": "Doublon"
+    },
+    {
+     "id": "AMBR8",
+     "statut": "actif",
+     "libelle": "Ambulance Delta",
+     "type": "inconnu",
+     "telephone": "+229 96 00 00 08",
+     "contact": "",
+     "base": "",
+     "disponibilite": "inconnue",
+     "aCompleter": false
+    }
+   ],
+   "kpis": [
+    {
+     "libelle": "Moyens répertoriés",
+     "valeur": "9",
+     "indice": null
+    },
+    {
+     "libelle": "Disponibles maintenant",
+     "valeur": "4",
+     "indice": null
+    },
+    {
+     "libelle": "Numéros à renseigner",
+     "valeur": "2",
+     "indice": null
+    },
+    {
+     "libelle": "Non vérifiés depuis 90 j",
+     "valeur": "1",
+     "indice": null
+    }
+   ],
+   "tableau": {
+    "entetes": [
+     "DÉSIGNATION",
+     "TYPE",
+     "TÉLÉPHONE",
+     "DEMANDER",
+     "BASE",
+     "DISPONIBILITÉ",
+     "VÉRIFIÉ LE",
+     "ACTIONS"
+    ],
+    "lignes": [
+     [
+      "Ambulance Alpha",
+      "Transporteur privé",
+      "+229 96 00 00 01",
+      "M. Alpha",
+      "Tanguiéta",
+      "Disponible",
+      "30/10/2026 (0 j)",
+      ""
+     ],
+     [
+      "Ambulance Bravo",
+      "Transporteur privé",
+      "+229 96 11 11 11",
+      "M. Bravo",
+      "Natitingou",
+      "Disponible",
+      "01/08/2026 (90 j)",
+      ""
+     ],
+     [
+      "Ambulance CNT 01",
+      "Ambulance de la clinique",
+      "+229 01 23 45 67",
+      "Chauffeur de garde",
+      "Natitingou — clinique",
+      "En course",
+      "28/10/2026 (2 j)",
+      ""
+     ],
+     [
+      "Ambulance CNT 02",
+      "Ambulance de la clinique",
+      "+229 01 23 45 68",
+      "Chauffeur de garde",
+      "Natitingou — clinique",
+      "En course",
+      "30/10/2026 (0 j)",
+      ""
+     ],
+     [
+      "Ambulance Delta",
+      "Transporteur privé",
+      "+229 96 00 00 08",
+      "—",
+      "—",
+      "Indisponible",
+      "jamais",
+      ""
+     ],
+     [
+      "CHD Atacora — ambulance",
+      "Service public",
+      "à renseigner",
+      "Régulation du CHD",
+      "Natitingou",
+      "Indisponible",
+      "jamais",
+      ""
+     ],
+     [
+      "Hôpital partenaire",
+      "Structure partenaire",
+      "+229 95 00 00 05",
+      "Standard",
+      "Boukoumbé",
+      "Disponible",
+      "02/08/2026 (89 j)",
+      ""
+     ],
+     [
+      "Sapeurs-pompiers",
+      "Ambulance de la clinique",
+      "à renseigner",
+      "—",
+      "—",
+      "Disponible",
+      "30/10/2026 (0 j)",
+      ""
+     ],
+     [
+      "Sapeurs-pompiers 2",
+      "Service public",
+      "+229 90 00 00 09",
+      "—",
+      "Natitingou",
+      "Disponible",
+      "30/10/2026 (0 j)",
+      ""
+     ]
     ]
    }
   }

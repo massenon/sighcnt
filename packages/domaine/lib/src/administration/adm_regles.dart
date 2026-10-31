@@ -102,10 +102,22 @@ const List<String> admTypesReunion = [
 ];
 const List<String> admLieuxReunion = ['Salle de réunion', 'Bureau de la Direction', 'Salle de garde'];
 
-/// `C.toDate(r.date) >= AUJ` : `AUJ` porte l'HEURE (c'est l'horloge, non minuit) — une réunion datée d'aujourd'hui est donc « Tenue » dès que la journée a commencé.
+DateTime _jour(DateTime d) => DateTime(d.year, d.month, d.day);
+
+/// « HH:MM » (le champ HTML `time` rend toujours deux chiffres) : « 9:00 » devient « 09:00 ».
+String admHeure(Object? v) {
+  final m = RegExp(r'^\s*(\d{1,2}):(\d{2})').firstMatch('${v ?? ''}');
+  return m == null ? '${v ?? ''}'.trim() : '${m.group(1)!.padLeft(2, '0')}:${m.group(2)}';
+}
+
+/// Une réunion a un DÉBUT (date + heure) : « À venir » tant qu'il n'est pas atteint (écart E540 — comparer la date à l'horloge rangeait parmi le passé
+/// toute réunion du jour, même celle de 15 h).
 bool admReunionAVenir(AdmFiche r, DateTime maintenant) {
   final d = admDate(r['date']);
-  return d != null && !d.isBefore(maintenant);
+  if (d == null) return false;
+  final m = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch('${r['heure'] ?? '00:00'}');
+  final debut = DateTime(d.year, d.month, d.day, m == null ? 0 : int.parse(m.group(1)!), m == null ? 0 : int.parse(m.group(2)!));
+  return !debut.isBefore(maintenant);
 }
 
 List<AdmKpi> admKpisReunions(List<AdmFiche> rows, DateTime maintenant) => [
@@ -122,18 +134,22 @@ List<AdmKpi> admKpisReunions(List<AdmFiche> rows, DateTime maintenant) => [
 
 const List<String> admCategoriesEvenement = ['Santé publique', 'Formation', 'Qualité', 'Technique', 'Logistique', 'Communication', 'Sécurité', 'Réunion'];
 
-/// `Math.round((date − maintenant) / 86 400 000)`.
+/// Jours entre AUJOURD'HUI et la date, comptés PAR JOUR (écart E540 : à 15 h, « demain » valait 0,4 jour et se lisait « Aujourd’hui »).
 int admJoursAvant(DateTime maintenant, Object? date) {
   final d = admDate(date);
   if (d == null) return 0;
-  return arrondiJs(d.difference(maintenant).inMilliseconds / 86400000).toInt();
+  return arrondiJs(_jour(d).difference(_jour(maintenant)).inMilliseconds / 86400000).toInt();
 }
 
-/// Les six prochains événements (date ≥ maintenant), du plus proche au plus lointain.
-List<AdmFiche> admProchainsEvenements(List<AdmFiche> rows, DateTime maintenant) => trierPar(
-        [for (final e in rows) if (admDate(e['date']) != null && !admDate(e['date'])!.isBefore(maintenant)) e], (e) => e['date'])
-    .take(6)
-    .toList();
+/// Un événement du jour est « à venir » toute la journée (il se compare par JOUR).
+bool admEvenementAVenir(AdmFiche e, DateTime maintenant) {
+  final d = admDate(e['date']);
+  return d != null && !_jour(d).isBefore(_jour(maintenant));
+}
+
+/// Les six prochains événements (aujourd'hui compris), du plus proche au plus lointain.
+List<AdmFiche> admProchainsEvenements(List<AdmFiche> rows, DateTime maintenant) =>
+    trierPar([for (final e in rows) if (admEvenementAVenir(e, maintenant)) e], (e) => e['date']).take(6).toList();
 
 String admDelaiEvenement(int jours) => jours == 0 ? 'Aujourd’hui' : 'Dans $jours j';
 
@@ -156,7 +172,7 @@ List<String> admCategoriesPresentes(List<AdmFiche> rows) {
 
 List<AdmKpi> admKpisEvenements(List<AdmFiche> rows, DateTime maintenant) => [
       AdmKpi('Événements planifiés', nombre(rows.length), 'calendar-heart', 'navy'),
-      AdmKpi('À venir', nombre(_compter(rows, (e) => admDate(e['date']) != null && !admDate(e['date'])!.isBefore(maintenant))), 'calendar-clock', 'info'),
+      AdmKpi('À venir', nombre(_compter(rows, (e) => admEvenementAVenir(e, maintenant))), 'calendar-clock', 'info'),
       AdmKpi('Avec notification', nombre(_compter(rows, (e) => admVrai(e['notifier']))), 'bell', 'warning'),
       AdmKpi('Catégories', nombre({for (final r in rows) '${r['categorie']}'}.length), 'layers', 'neutral'),
     ];
@@ -382,12 +398,12 @@ AdmDisponibilite admDisponibilite(Object? code) => admDisponibilites.firstWhere(
 /// Un numéro non vérifié depuis plus de ce nombre de jours est SIGNALÉ (jamais masqué).
 const int admJoursVerification = 90;
 
-/// `Math.round((Date.now() − toDate(iso)) / 86 400 000)` ; `null` quand la fiche n'a jamais été vérifiée.
+/// Jours écoulés depuis la vérification, comptés PAR JOUR (E540 : vérifié ce matin, « 1 j » dès midi) ; `null` quand la fiche n'a jamais été vérifiée.
 int? admJoursDepuis(Object? iso, DateTime maintenant) {
   if (!admVrai(iso)) return null;
   final d = admDate(iso);
   if (d == null) return null;
-  return arrondiJs(maintenant.difference(d).inMilliseconds / 86400000).toInt();
+  return arrondiJs(_jour(maintenant).difference(_jour(d)).inMilliseconds / 86400000).toInt();
 }
 
 bool admPerime(AdmFiche r, DateTime maintenant) {

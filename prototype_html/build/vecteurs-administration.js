@@ -40,8 +40,8 @@ function ecrireDartNotes(n) {
   try {
     await m.page.evaluate(() => {
       const Vrai = Date;
-      const FIXE = new Vrai(2026, 9, 30, 10, 0, 0).getTime();
-      class Faux extends Vrai { constructor(...a) { if (a.length === 0) super(FIXE); else super(...a); } static now() { return FIXE; } }
+      window.__FIXE = new Vrai(2026, 9, 30, 10, 0, 0).getTime(); window.__Vrai = Vrai;
+      class Faux extends Vrai { constructor(...a) { if (a.length === 0) super(window.__FIXE); else super(...a); } static now() { return window.__FIXE; } }
       window.Date = Faux;
       SIGH.core.aujourdhui = () => new Faux();
       window.__etats = []; window.__erreurs = []; window.addEventListener('error', (e) => window.__erreurs.push(String(e.message)));
@@ -233,7 +233,7 @@ function ecrireDartNotes(n) {
       [r(1, -60, 'Réunion de direction', '09:00', true, 8), r(2, -20, 'Comité d’hygiène', '10:30', false, 12, { resolutions: 'Renforcer le lavage des mains' }),
         r(3, -2, 'Réunion de service', '14:00', false, 6), r(4, 0, 'Revue mensuelle d’activité', '08:00', false, 10),
         r(5, 1, 'Réunion du personnel', '15:00', false, 30), r(6, 15, 'Comité de gestion des stocks', '11:00', false, 5),
-        r(7, -90, 'Réunion de direction', '09:00', true, 7)].forEach((x) => col.all().push(x));
+        r(7, -90, 'Réunion de direction', '09:00', true, 7), r(8, 0, 'Réunion de service', '15:00', false, 9)].forEach((x) => col.all().push(x));
       col.archive('REU7', 'test');
       const out = { jeu: H.propre(col.all()), president: pres };
       const racine = await H.monter('m13-reunions');
@@ -547,6 +547,26 @@ function ecrireDartNotes(n) {
       H.viderToasts(); H.cliquer('Enregistrer'); await H.dormir(300);
       out.modification.enregistre = { fiche: H.net(col.all().find((x) => x.id === 'MAT002')), kpis: H.kpis(racine) };
       H.retirer(racine);
+      return out;
+    });
+
+    /* ------------------------------------------------------------------ L'APRÈS-MIDI (15 h) : tout se compte PAR JOUR (E540) */
+    sortie.apresMidi = await m.page.evaluate(async () => {
+      const S = SIGH.store;
+      window.__FIXE = new window.__Vrai(2026, 9, 30, 15, 0, 0).getTime();
+      const out = {};
+      let racine = await H.monter('m13-evenements');
+      const grille = [...racine.querySelectorAll('.grid.gap-3')].find((g) => /sm:grid-cols-2/.test(g.className) && g.querySelector('.rounded-xl'));
+      out.evenements = { jeu: H.propre(S.collection('evenementsEtablissement').all()), kpis: H.kpis(racine), prochainsBrut: grille ? [...grille.children].map((c) => H.norm(c.innerText)) : [],
+        prochainsRouges: grille ? [...grille.children].map((c) => !!c.querySelector('.text-danger-600')) : [] };
+      H.retirer(racine);
+      racine = await H.monter('m13-reunions');
+      out.reunions = { jeu: H.propre(S.collection('reunions').all()), kpis: H.kpis(racine), tableau: H.tableaux(racine)[0] };
+      H.retirer(racine);
+      racine = await H.monter('m13-repertoire-ambulances');
+      out.repertoire = { jeu: H.propre(S.collection('ambulances').all()), kpis: H.kpis(racine), tableau: H.tableaux(racine).slice(-1)[0] };
+      H.retirer(racine);
+      window.__FIXE = new window.__Vrai(2026, 9, 30, 10, 0, 0).getTime();
       return out;
     });
 
