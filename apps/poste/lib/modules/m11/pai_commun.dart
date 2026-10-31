@@ -34,10 +34,12 @@ PaiEntrees entreesPaie(Magasin mag) => PaiEntrees(
       participations: mag.collection('participations').actives,
       grille: mag.collection('grillePrimes').actives,
       historique: mag.collection('historiquePrimes').actives,
+      heuresSup: mag.collection('heuresSup').actives,
+      prets: mag.collection('pretsEtudes').actives,
     );
 
 /// Les collections que le calcul de la paie lit : un écran se redessine quand l'une d'elles bouge.
-const collectionsPaie = ['personnel', 'planning', 'evaluations', 'avances', 'participations', 'grillePrimes', 'historiquePrimes'];
+const collectionsPaie = ['personnel', 'planning', 'evaluations', 'avances', 'participations', 'grillePrimes', 'historiquePrimes', 'heuresSup', 'pretsEtudes'];
 
 Listenable ecoutePaie(ContexteEcran c, [List<String> enPlus = const []]) => ecoute(c, [...collectionsPaie, ...enPlus]);
 

@@ -188,6 +188,7 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         personnel: propre(db().personnel), planning: propre(db().planning).map((p) => ({ employeId: p.employeId, type: p.type, date: p.date })),
         evaluations: propre(db().evaluations), avances: propre(db().avances), participations: propre(db().participations),
         grillePrimes: propre(db().grillePrimes), historiquePrimes: propre(db().historiquePrimes),
+        heuresSup: propre(db().heuresSup), pretsEtudes: propre(db().pretsEtudes),
       });
       const mat = (i) => db().personnel[i].matricule;
       const tiroirs = [mat(0), mat(2), mat(5), mat(8), mat(12), mat(20), mat(30), mat(43)];
@@ -226,6 +227,20 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         av.push({ id: 'AV-S1-1', employeId: agents[5].id, montant: 100000, mensualite: 25000, rembourse: 25000, statutAvance: 'en_cours', statut: 'actif' });
         av.push({ id: 'AV-S1-2', employeId: agents[5].id, montant: 60000, mensualite: 20000, rembourse: 60000, statutAvance: 'solde', statut: 'actif' });
         av.push({ id: 'AV-S1-3', employeId: agents[5].id, montant: 60000, mensualite: 10000, rembourse: 0, statutAvance: 'en_cours', statut: 'archive' });
+        // B6 / E691 : heures supplémentaires, validée du mois (compte), validée d'un autre mois, en attente, archivée, d'un autre agent
+        const hs = db().heuresSup;
+        hs.length = 0;
+        [[agents[0], 'Octobre 2026', 12, 2400, true, 'actif'], [agents[0], 'Octobre 2026', 3, 800, true, 'actif'], [agents[0], 'Mars 2026', 5, 1000, true, 'actif'],
+          [agents[1], 'Octobre 2026', 8, 1900, false, 'actif'], [agents[2], 'Octobre 2026', 6, 1500, true, 'archive'], [agents[4], 'Mars 2026', 10, 3100, true, 'actif']].forEach(([a, periode, heures, taux, valide, statut], i) => {
+          hs.push({ id: 'HS-S1-' + i, statut, reference: 'HS-S1-' + i, periode, employeId: a.id, employe: a.nomComplet, heures, tauxHoraire: taux, majoration: 25, montant: heures * taux, valide });
+        });
+        // B6 / E689 : prêts, une échéance au SEUL mois de l'échéance (reliquat sur la dernière), prêt archivé, prêt d'un autre agent, prêt déjà retenu par le jeu
+        const pr = db().pretsEtudes;
+        pr.length = 0;
+        [['PRT-S1-A', agents[0], 'pret_etudes', 100001, '2026-09', 3, []], ['PRT-S1-B', agents[0], 'avance', 60000, '2026-10', 2, []], ['PRT-S1-C', agents[1], 'pret_social', 90000, '2026-03', 3, ['2026-03']],
+          ['PRT-S1-D', agents[2], 'pret_etudes', 50000, '2026-10', 1, [], 'archive'], ['PRT-S1-E', agents[5], 'pret_etudes', 300000, '2026-08', 12, ['2026-08', '2026-09']]].forEach(([reference, a, nature, montant, premiereEcheance, nbEcheances, retenues, statut], i) => {
+          pr.push({ id: 'PRT-S1-' + i, statut: statut || 'actif', reference, employeId: a.id, agent: a.nomComplet, nature, objet: 'Objet ' + reference, montant, dateAccord: '2026-02-01', premiereEcheance, nbEcheances, autorisePar: 'TAKI Alimatou', retenues });
+        });
         // grille de primes DATÉE : la version courante prend effet le 15/10/2026 ; l'historique garde celle de juillet (jusqu'au 14/10) et une plus ancienne
         const gr = db().grillePrimes;
         db().historiquePrimes = [];
@@ -264,6 +279,8 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
       {
         poserJeu(); fermerDialogues(); viderToasts();
         const g = {};
+        const SESSION = localStorage.getItem('sigh-cnt:session');
+        const sous = (nom) => { const s0 = JSON.parse(SESSION); s0.nom = nom; localStorage.setItem('sigh-cnt:session', JSON.stringify(s0)); };
         { const root = await monter('m11-validation'); g.validationVide = releve(root); root.remove(); }
         { const root = await monter('m11-bulletins'); g.bulletinsVide = releve(root); root.remove(); }
         for (const mo of [9, 4]) {
@@ -293,16 +310,67 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
           const n0 = pieces.length;
           btnTitre(root.querySelector('table tbody tr'), /Journal de paie/).click(); await dormir(150);
           r.journal = pieces.length > n0 ? derniere() : null;
-          const avant = instantane(['bulletins']);
+          sous('TAKI Alimatou');   // A2 : la validation se fait sous une AUTRE session que la génération
+          const avant = instantane(['bulletins', 'ecritures']);
           const trAValider = [...root.querySelectorAll('table tbody tr')].find((x) => /à valider/.test(texte(x)));
           r.ligneValidee = texte(trAValider.querySelector('td'));
           await cliquer(trAValider, /Valider le lot/);
           const dlg = dialogue(); r.confirmation = texte(dlg);
           await cliquer(dlg, /^Valider la paie$/);
           r.toasts = lesToasts(); r.apres = releve(root); r.apres.table = await tableComplet(root, 0);
-          r.ecart = ecart(avant, instantane(['bulletins'])); r.nbModifs = (r.ecart.modifs.bulletins || []).length;
+          r.ecart = ecart(avant, instantane(['bulletins', 'ecritures'])); r.nbModifs = (r.ecart.modifs.bulletins || []).length;
           r.ecart.modifs = { bulletins: (r.ecart.modifs.bulletins || []).slice(0, 2) };
-          viderToasts(); g.validation = r; root.remove(); }
+          r.bulletinsDuLot = propre(db().bulletins.filter((b) => b.periode === r.ligneValidee)).map(net);
+          viderToasts(); g.validation = r; root.remove(); sous(JSON.parse(SESSION).nom); }
+
+        /* A2 / B6 : la séparation des tâches, l'écriture de paie, la diffusion. On GÉNÈRE sous une session, puis on tente de VALIDER sous
+           la même (refus nommé, rien d'écrit), puis sous une AUTRE (validée, validePar = l'agent connecté, pièce SAL en brouillon). */
+        {
+          poserJeu(); fermerDialogues(); viderToasts();
+          const ligneDe = (root, re) => [...root.querySelectorAll('table tbody tr')].find((x) => re.test(texte(x)));
+          const r = { generateur: JSON.parse(SESSION).nom };
+          { const root = await monter('m11-calcul'); selectMois(root, 8); await dormir(200);
+            await cliquer(root, /Générer les bulletins/); await cliquer(dialogue(), /^Générer$/); viderToasts(); root.remove(); }
+          r.bulletinsGeneres = propre(db().bulletins.filter((b) => b.periode === 'Septembre 2026')).map(net);
+          { const root = await monter('m11-validation');
+            const avant = instantane(['bulletins', 'ecritures']);
+            const tr = ligneDe(root, /Septembre 2026/);
+            await cliquer(tr, /Valider le lot/); await cliquer(dialogue(), /^Valider la paie$/);
+            r.memePersonne = { toasts: lesToasts(), ecart: ecart(avant, instantane(['bulletins', 'ecritures'])) }; viderToasts();
+            sous('TAKI Alimatou');
+            const avant2 = instantane(['bulletins', 'ecritures']);
+            await cliquer(ligneDe(root, /Septembre 2026/), /Valider le lot/); const dlg = dialogue(); r.confirmation = texte(dlg); await cliquer(dlg, /^Valider la paie$/);
+            r.autrePersonne = { toasts: lesToasts(), ecart: ecart(avant2, instantane(['bulletins', 'ecritures'])) }; viderToasts();
+            r.apresValidation = releve(root); r.apresValidation.table = await tableComplet(root, 0);
+            // diffusion
+            const avant3 = instantane(['bulletins', 'ecritures']);
+            await cliquer(ligneDe(root, /Septembre 2026/), /^Diffuser$/); const dlg2 = dialogue(); r.confirmationDiffusion = texte(dlg2); await cliquer(dlg2, /^Diffuser$/);
+            r.diffusion = { toasts: lesToasts(), ecart: ecart(avant3, instantane(['bulletins', 'ecritures'])) }; viderToasts();
+            r.apresDiffusion = releve(root); r.apresDiffusion.table = await tableComplet(root, 0);
+            root.remove(); }
+          // un second lot de la même période : la pièce existe déjà, refus nommé
+          { sous(JSON.parse(SESSION).nom);
+            { const root = await monter('m11-calcul'); selectMois(root, 8); await dormir(200);
+              await cliquer(root, /Générer les bulletins/); await cliquer(dialogue(), /^Générer$/); viderToasts(); root.remove(); }
+            sous('TAKI Alimatou');
+            const root = await monter('m11-validation');
+            const avant = instantane(['bulletins', 'ecritures']);
+            await cliquer(ligneDe(root, /à valider/), /Valider le lot/); await cliquer(dialogue(), /^Valider la paie$/);
+            r.secondLot = { toasts: lesToasts(), ecart: ecart(avant, instantane(['bulletins', 'ecritures'])) }; viderToasts(); root.remove(); }
+          // un lot déséquilibré (net trafiqué) : RG-10 refuse AVANT toute écriture
+          { poserJeu(); sous(JSON.parse(SESSION).nom);
+            { const rc = await monter('m11-calcul'); selectMois(rc, 6); await dormir(200);
+              await cliquer(rc, /Générer les bulletins/); await cliquer(dialogue(), /^Générer$/); viderToasts(); rc.remove(); }
+            const per = 'Juillet 2026';
+            db().bulletins.filter((b) => b.periode === per && b.statutBulletin === 'a_valider')[0].net += 777;
+            sous('TAKI Alimatou');
+            const root = await monter('m11-validation');
+            const avant = instantane(['bulletins', 'ecritures']);
+            await cliquer(ligneDe(root, new RegExp(per)), /Valider le lot/); await cliquer(dialogue(), /^Valider la paie$/);
+            r.desequilibre = { periode: per, bulletins: propre(db().bulletins.filter((b) => b.periode === per)).map(net), toasts: lesToasts(), ecart: ecart(avant, instantane(['bulletins', 'ecritures'])) }; viderToasts(); root.remove(); }
+          localStorage.setItem('sigh-cnt:session', SESSION);
+          g.separation = r;
+        }
         gestes.paie = g;
       }
 

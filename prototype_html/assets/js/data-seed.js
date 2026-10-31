@@ -1148,15 +1148,22 @@
       agents.forEach(function (ag) {
         if (ag.id === ben.id) return;
         var comptant = evt.modeParDefaut === 'comptant' || rnd() > 0.75;
+        /* E742 : la forme est CELLE QUE L'ÉCRAN DES ÉVÉNEMENTS ÉCRIT (employeId, statutPaiement, datePaiement, fonction, service), celle que le
+           calcul de la paie lit. Le semis écrivait agentId / regle / dateReglement : aucune participation n'était jamais retenue. Les tirages
+           aléatoires gardent EXACTEMENT leur ordre (règlement, puis date) : rien d'autre du jeu ne bouge. */
+        var reglee = comptant ? rnd() > 0.2 : rnd() > 0.35;
+        var dateReglee = comptant ? C.iso(C.addDays(dte, C.between(rnd, 0, 10))) : null;
         parts.insert({
           reference: 'PAR-' + C.uid().slice(0, 6),
           evenementId: evt.id, evenementLibelle: evt.libelle,
-          agentId: ag.id, agent: ag.nomComplet, matricule: ag.matricule,
+          nature: evt.nature, dateEvenement: evt.date,
+          employeId: ag.id, agent: ag.nomComplet, matricule: ag.matricule,
+          fonction: ag.fonction, service: ag.service,
           montant: 1000,
           mode: comptant ? 'comptant' : 'salaire',
           periodeRetenue: comptant ? null : mp,
-          regle: comptant ? rnd() > 0.2 : rnd() > 0.35,
-          dateReglement: comptant ? C.iso(C.addDays(dte, C.between(rnd, 0, 10))) : null,
+          statutPaiement: reglee ? 'paye' : 'du',
+          datePaiement: dateReglee,
         });
       });
     }

@@ -67,7 +67,9 @@ class _EtatCalcul extends State<EcranCalculPaie> {
     for (final x in calc) {
       // La série suit le registre (archivés compris), pas un compteur de page — et chaque bulletin voit ceux qu'on vient d'écrire.
       final ref = paiReferenceSuivante('BP-', 5, col.toutes);
-      annulations.add(col.inserer({'statut': 'actif', ...paiBulletinDe(x, ref), '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'BUL').annuler);
+      // A2 : celui qui génère est nommé sur la pièce ; la validation exige une AUTRE personne.
+      final fiche = paiBulletinDe(x, ref, genereePar: c.utilisateur, dateGeneration: iso(c.aujourdhui));
+      annulations.add(col.inserer({'statut': 'actif', ...fiche, '_creePar': c.utilisateur, '_creeLe': c.aujourdhui.toIso8601String()}, prefixe: 'BUL').annuler);
     }
     ToastsSigh.afficher(ctx, '${annulations.length} bulletin(s) généré(s).', type: TypeToast.succes, detail: 'En attente de validation par la Direction.', annuler: () {
       for (final u in annulations) {
@@ -194,6 +196,7 @@ class _EtatCalcul extends State<EcranCalculPaie> {
                 {'k': 'Prime d’ancienneté', 'b': '${x.anciennete} ans', 'm': money(x.primeAnciennete, avecDevise: false)},
                 for (final p in x.lignesPrimes)
                   {'k': 'Prime — ${p.libelle}', 'b': '${p.nombre} × ${money(p.unitaire, avecDevise: false)}', 'm': money(p.total, avecDevise: false)},
+                if (x.heuresSupMontant != 0) {'k': 'Heures supplémentaires', 'b': '${nombre(x.heuresSupNb)} h', 'm': money(x.heuresSupMontant, avecDevise: false)},
                 {'k': 'TOTAL BRUT', 'b': '', 'm': money(x.brut, avecDevise: false)},
               ])),
           const SizedBox(height: 16),
@@ -205,6 +208,12 @@ class _EtatCalcul extends State<EcranCalculPaie> {
                 {'k': 'ITS', 'b': 'Barème progressif', 'm': money(x.its, avecDevise: false)},
                 for (final l in paiLignesOrtb(x.detailOrtb)) {'k': l.libelle, 'b': l.base, 'm': l.montant},
                 if (x.avances != 0) {'k': 'Remboursement d’avance', 'b': '', 'm': money(x.avances, avecDevise: false)},
+                if (x.prets != 0)
+                  {
+                    'k': 'Échéance de prêt',
+                    'b': x.pretsDetail.map((p) => '${p['reference']} ${p['rang']}/${p['nbEcheances']}').join(' · '),
+                    'm': money(x.prets, avecDevise: false)
+                  },
                 if (x.participations != 0)
                   {
                     'k': 'Participation aux événements',

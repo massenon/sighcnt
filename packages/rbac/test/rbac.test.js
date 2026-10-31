@@ -36,6 +36,10 @@ test('assistant de direction : pas de résultats de laboratoire, mais l\'inventa
   assert.ok(droit('assistant_comptable', 'm5-reactifs'));
 });
 test('la Direction signe la paie (surcharge d\'écran), signer n\'est pas saisir', () => { assert.equal(droit('direction', 'm11-validation')[1], 1); });
+test('A2 : le comptable génère les bulletins, il ne valide pas la paie (lecture seule de m11-validation)', () => {
+  assert.deepEqual(droit('comptable', 'm11-validation'), [1, 0, 0]);
+  assert.equal(droit('comptable', 'm11-calcul')[1], 1, 'il garde la génération');
+});
 test('écran universel : exprimer un besoin est ouvert à tout rôle actif, mais jamais annulable par le passant', () => {
   for (const r of rbac.roles.filter((x) => !x.archive)) { const d = droit(r.id, 'm7-besoins'); assert.ok(d && d[0] === 1 && d[1] === 1, r.id); }
   for (const r of ['medecin', 'caissier', 'reception']) assert.equal(droit(r, 'm7-besoins')[2], 0, r);

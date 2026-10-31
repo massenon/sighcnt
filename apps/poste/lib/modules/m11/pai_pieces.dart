@@ -41,12 +41,20 @@ class PaiBulletinVue {
       required this.participations,
       required this.participationsDetail,
       required this.totalRetenues,
-      required this.net});
+      required this.net,
+      this.heuresSupMontant = 0,
+      this.heuresSupNb = 0,
+      this.prets = 0,
+      this.pretsDetail = const []});
   final String reference, periode, employe, matricule, fonction, service, categorie, cnss, situation, telephone;
   final num salaireBase, primeAnciennete, totalPrimes, brut, pctSanction, sanction, cnssOuvriere, cnssPatronale, vps, its, ortb, avances, participations, totalRetenues, net;
   final List<PaiLignePrime> lignesPrimes;
   final PaiOrtb? detailOrtb;
   final List<String> participationsDetail;
+
+  /// Heures supplémentaires validées (comprises dans le brut) et échéances de prêt retenues ce mois ; [pretsDetail] : « PRT-0001 2/3 ».
+  final num heuresSupMontant, heuresSupNb, prets;
+  final List<String> pretsDetail;
 }
 
 String _t(Object? v) => '${v ?? ''}';
@@ -80,7 +88,11 @@ PaiBulletinVue vueDeCalcul(PaiCalcul c) => PaiBulletinVue(
     participations: c.participations,
     participationsDetail: [for (final x in c.participationsDetail) _t(x['evenementLibelle'])],
     totalRetenues: c.totalRetenues,
-    net: c.net);
+    net: c.net,
+    heuresSupMontant: c.heuresSupMontant,
+    heuresSupNb: c.heuresSupNb,
+    prets: c.prets,
+    pretsDetail: [for (final x in c.pretsDetail) '${x['reference']} ${x['rang']}/${x['nbEcheances']}']);
 
 /// Un bulletin STOCKÉ : le détail ORTB et les participations voyagent avec la pièce (E682) ; un bulletin antérieur n'en porte pas — il retombe sur
 /// « Non applicable », comme la maquette.
@@ -117,7 +129,11 @@ PaiBulletinVue vueDeFiche(Fiche b) {
       participations: v('participations'),
       participationsDetail: [for (final x in (b['participationsDetail'] as List? ?? const []).whereType<Map>()) _t(x['evenementLibelle'])],
       totalRetenues: v('totalRetenues'),
-      net: v('net'));
+      net: v('net'),
+      heuresSupMontant: v('heuresSupMontant'),
+      heuresSupNb: v('heuresSupNb'),
+      prets: v('prets'),
+      pretsDetail: [for (final x in (b['pretsDetail'] as List? ?? const []).whereType<Map>()) '${x['reference']} ${x['rang']}/${x['nbEcheances']}']);
 }
 
 String _mf(num v) => money(v, avecDevise: false);
@@ -138,6 +154,9 @@ PieceA4 pieceBulletin(ContexteEcran c, PaiBulletinVue b) {
       'montant': _mf(p.total)
     });
   }
+  if (b.heuresSupMontant != 0) {
+    gains.add({'rub': (gains.length + 1).toString().padLeft(2, '0'), 'libelle': 'Heures supplémentaires', 'base': nombre(b.heuresSupNb), 'taux': '', 'montant': _mf(b.heuresSupMontant)});
+  }
   gains.add({'rub': '', 'libelle': 'TOTAL BRUT', 'base': '', 'taux': '', 'montant': _mf(b.brut)});
 
   final retenues = <Map<String, Object?>>[
@@ -147,6 +166,7 @@ PieceA4 pieceBulletin(ContexteEcran c, PaiBulletinVue b) {
     {'rub': '', 'libelle': 'Impôt sur les traitements et salaires (ITS)', 'base': '', 'taux': 'Barème', 'montant': _mf(b.its)},
     for (final l in paiLignesOrtb(b.detailOrtb)) {'rub': '', 'libelle': l.libelle, 'base': l.base, 'taux': 'Forfait annuel', 'montant': l.montant},
     if (b.avances != 0) {'rub': '', 'libelle': 'Remboursement d’avance sur salaire', 'base': '', 'taux': '', 'montant': _mf(b.avances)},
+    if (b.prets != 0) {'rub': '', 'libelle': 'Échéance de prêt', 'base': b.pretsDetail.join(' ; '), 'taux': '', 'montant': _mf(b.prets)},
     if (b.participations != 0)
       {
         'rub': '',

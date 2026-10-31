@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
 
 import 'aide_polices.dart';
@@ -312,6 +313,66 @@ void main() {
       await toucher(t, find.text('Obligations'));
       await t.pumpAndSettle();
       expect(find.textContaining('obligations'), findsWidgets);
+    });
+  });
+
+  group('m11-calcul : heures supplémentaires validées et échéances de prêt du mois (scénario S1 de la maquette)', () {
+    final s1 = mm(mm(v['scenarios'])['S1']);
+    final e1 = mm(s1['entrees']);
+    Magasin avecS1() {
+      final m = magasin();
+      for (final (nom, cle) in [
+        ('evaluations', 'evaluations'),
+        ('participations', 'participations'),
+        ('avances', 'avances'),
+        ('heuresSup', 'heuresSup'),
+        ('pretsEtudes', 'pretsEtudes'),
+        ('grillePrimes', 'grillePrimes'),
+        ('historiquePrimes', 'historiquePrimes'),
+      ]) {
+        m.collection(nom).remplacerContenu(lm(e1[cle]));
+      }
+      return m;
+    }
+
+    cas('le tiroir d’octobre : « Heures supplémentaires » dans les gains, « Échéance de prêt » dans les retenues = l’écran réel', (t) async {
+      await ouvrir(t, avecS1(), 'm11-calcul');
+      final c = mm(mm(mm(s1['mois'])['9'])['calcul']);
+      expect(kpisAffiches(t), kpisVecteur(c['kpis']));
+      await toucher(t, find.text('BASSONGUI Chabi Séko').first);
+      await t.pumpAndSettle();
+      final tt = textes(t);
+      final tiroir = mm(mm(c['tiroirs'])['1']);
+      for (final tb in lm(tiroir['tables'])) {
+        for (final l in tb['lignes'] as List) {
+          for (final cel in (l as List)) {
+            if ('$cel'.isEmpty) continue;
+            expect(tt, contains('$cel'), reason: 'cellule « $cel » du tiroir de la maquette');
+          }
+        }
+      }
+      expect(tt, contains('Heures supplémentaires'));
+      expect(tt, contains('Échéance de prêt'));
+      expect(tt, contains('PRT-S1-A 2/3 · PRT-S1-B 1/2'));
+    });
+
+    cas('le bulletin imprimé porte les deux rubriques, et son total retombe sur celui du tiroir', (t) async {
+      await ouvrir(t, avecS1(), 'm11-calcul');
+      await toucher(t, find.text('BASSONGUI Chabi Séko').first);
+      await t.pumpAndSettle();
+      await toucher(t, find.text('Éditer le bulletin'));
+      await t.pumpAndSettle();
+      final piece = mm(mm(mm(mm(s1['mois'])['9'])['calcul'])['tiroirs'])['1'] as Map;
+      final tt = textes(t);
+      for (final tb in lm(mm(piece['piece'])['tables'])) {
+        for (final l in tb['lignes'] as List) {
+          for (final cel in (l as List)) {
+            if ('$cel'.isEmpty) continue;
+            expect(tt, contains('$cel'), reason: 'cellule « $cel » du bulletin imprimé');
+          }
+        }
+      }
+      expect(tt, contains('PRT-S1-A 2/3 ; PRT-S1-B 1/2'));
     });
   });
 }

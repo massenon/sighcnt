@@ -113,7 +113,7 @@ void main() {
       expect(find.text('Calcul de la paie'), findsWidgets);
     });
 
-    cas('deux lots : KPI et tableau = écran réel ; « Valider le lot » demande confirmation, écrit validePar / dateValidation, et s’annule', (t) async {
+    cas('deux lots : KPI et tableau = écran réel ; « Valider le lot » demande confirmation, écrit l’agent connecté (E687), pose l’écriture de paie et s’annule', (t) async {
       final m = magasin();
       poserBulletins(m);
       await ouvrir(t, m, 'm11-validation');
@@ -130,23 +130,111 @@ void main() {
       await toucher(t, find.text('Valider le lot').first);
       await t.pumpAndSettle();
       expect(find.text('Valider la paie de Mai 2026 ?'), findsOneWidget);
-      expect(textes(t), contains(sp(mm(val)['confirmation'].toString().split('? ')[1].split(' Annuler')[0])));
+      expect(find.textContaining('journalisée au nom de l’agent connecté'), findsOneWidget);
       await toucher(t, find.text('Valider la paie'));
       await t.pumpAndSettle();
       final col = m.collection('bulletins');
       final mai = col.actives.where((b) => b['periode'] == 'Mai 2026').toList();
+      final agent = m.utilisateur;
+      expect(agent, isNotEmpty);
       expect(mai.length, 44);
-      expect(mai.every((b) => b['statutBulletin'] == 'valide' && b['validePar'] == 'BASSONGUI Chabi Séko' && b['dateValidation'] == '2026-10-30'), true);
+      expect(mai.every((b) => b['statutBulletin'] == 'valide' && b['validePar'] == agent && b['dateValidation'] == '2026-10-30' && b['ecritureNumero'] == 'SAL-2026-00128'), true,
+          reason: 'validePar est l’agent connecté, plus un nom écrit en dur');
       expect(col.actives.where((b) => b['periode'] == 'Octobre 2026').every((b) => b['statutBulletin'] == 'a_valider'), true, reason: 'l’autre lot reste à valider');
-      expect(find.text('Paie de Mai 2026 validée par la Direction.'), findsOneWidget);
-      expect(find.text('44 bulletin(s) autorisé(s) à la diffusion.'), findsOneWidget);
+      expect(find.text('Paie de Mai 2026 validée par $agent.'), findsOneWidget);
+      expect(find.text('44 bulletin(s) autorisé(s) à la diffusion ; écriture SAL-2026-00128 posée en brouillon.'), findsOneWidget);
       expect(find.text('Valider le lot'), findsOneWidget, reason: 'le lot validé n’offre plus la commande');
+      expect(find.text('Diffuser'), findsOneWidget, reason: 'le lot validé offre la diffusion');
       expect(kpisAffiches(t)['Bulletins validés'], '44');
       expect(kpisAffiches(t)['Bulletins à valider'], '44');
-      // « Annuler » du message : l'état d'avant revient
+      // l'écriture de paie : les lignes de la maquette (compte, libellé, montants), en brouillon, équilibrées
+      final posees = m.collection('ecritures').actives.where((e) => e['pieceId'] == 'PAIE-Mai 2026').toList();
+      final attendues = lm(mm(mm(mm(paie['validation'])['ecart'])['inserts'])['ecritures']);
+      String cle(Map<String, Object?> f) => '${f['numero']}|${f['compte']}|${f['libelle']}|${nombreOuZero(f['debit']).round()}|${nombreOuZero(f['credit']).round()}|${f['statut']}|${f['centreCout']}';
+      expect({for (final f in posees) cle(f)}, {for (final a in attendues) cle(a)});
+      expect(posees.fold<num>(0, (a, f) => a + nombreOuZero(f['debit'])), posees.fold<num>(0, (a, f) => a + nombreOuZero(f['credit'])), reason: 'RG-10');
+      // « Annuler » du message : l'état d'avant revient, l'écriture sort du journal (archivée, jamais supprimée)
       await toucher(t, find.text('Annuler').last);
       expect(col.actives.where((b) => b['periode'] == 'Mai 2026').every((b) => b['statutBulletin'] == 'a_valider'), true);
+      expect(m.collection('ecritures').actives.where((e) => e['pieceId'] == 'PAIE-Mai 2026'), isEmpty);
+      expect(m.collection('ecritures').toutes.where((e) => e['pieceId'] == 'PAIE-Mai 2026').length, attendues.length, reason: 'rien n’est supprimé (RG-14)');
       expect(col.actives.length, 88, reason: 'rien n’est supprimé');
+    });
+
+    cas('A2 : celui qui a généré ne valide pas (refus nommé, rien d’écrit) ; un lot déséquilibré est refusé avant toute écriture (RG-10) ; un second lot de la même période aussi', (t) async {
+      final m = magasin();
+      poserBulletins(m);
+      await ouvrir(t, m, 'm11-validation');
+      final sep = mm(paie['separation']);
+      String toast(Object? x) => sp((mm(x)['toasts'] as List).single as String);
+      // le lot de mai a été généré par la personne connectée : refus nommé
+      final col = m.collection('bulletins');
+      for (final b in col.actives.where((b) => b['periode'] == 'Mai 2026').toList()) {
+        col.mettreAJour(b['id'], {'genereePar': m.utilisateur});
+      }
+      await toucher(t, find.text('Valider le lot').first);
+      await t.pumpAndSettle();
+      await toucher(t, find.text('Valider la paie'));
+      await t.pumpAndSettle();
+      expect(find.text('Validation refusée.'), findsOneWidget);
+      expect(find.textContaining('Séparation des tâches : la paie de Mai 2026 a été générée par ${m.utilisateur}'), findsOneWidget);
+      expect(toast(sep['memePersonne']), startsWith('Validation refusée. Séparation des tâches : la paie de Septembre 2026 a été générée par'));
+      expect(col.actives.where((b) => b['periode'] == 'Mai 2026').every((b) => b['statutBulletin'] == 'a_valider'), true);
+      expect(m.collection('ecritures').actives.where((e) => '${e['pieceId']}'.startsWith('PAIE-')), isEmpty);
+      await t.pump(const Duration(seconds: 10));
+      // un lot dont le net a été trafiqué : l'écart est dit, rien n'est validé
+      for (final b in col.actives.where((b) => b['periode'] == 'Mai 2026').toList()) {
+        col.mettreAJour(b['id'], {'genereePar': 'Autre agent'});
+      }
+      final premier = col.actives.firstWhere((b) => b['periode'] == 'Mai 2026');
+      col.mettreAJour(premier['id'], {'net': nombreOuZero(premier['net']) + 777});
+      await toucher(t, find.text('Valider le lot').first);
+      await t.pumpAndSettle();
+      await toucher(t, find.text('Valider la paie'));
+      await t.pumpAndSettle();
+      expect(find.textContaining('n’est pas équilibrée (RG-10)'), findsOneWidget);
+      expect(textes(t).any((x) => x.contains('écart ${sp(money(777))}')), true);
+      expect(col.actives.where((b) => b['periode'] == 'Mai 2026').every((b) => b['statutBulletin'] == 'a_valider'), true);
+      expect(m.collection('ecritures').toutes.where((e) => '${e['pieceId']}'.startsWith('PAIE-')), isEmpty);
+      await t.pump(const Duration(seconds: 10));
+      // un lot de la même période a déjà son écriture : refus nommé
+      col.mettreAJour(premier['id'], {'net': premier['net']});
+      m.collection('ecritures').inserer({'statut': 'brouillon', 'pieceId': 'PAIE-Mai 2026', 'numero': 'SAL-2026-00128', 'compte': '422000', 'debit': 0, 'credit': 1, 'date': '2026-10-30'}, prefixe: 'ECR');
+      await toucher(t, find.text('Valider le lot').first);
+      await t.pumpAndSettle();
+      await toucher(t, find.text('Valider la paie'));
+      await t.pumpAndSettle();
+      expect(find.textContaining('La paie de Mai 2026 a déjà son écriture (SAL-2026-00128)'), findsOneWidget);
+      expect(col.actives.where((b) => b['periode'] == 'Mai 2026').every((b) => b['statutBulletin'] == 'a_valider'), true);
+    });
+
+    cas('B6 : « Diffuser » rend un lot validé aux agents (statut Diffusé), annulable ; la commande est ABSENTE sans le droit d’écrire', (t) async {
+      final m = magasin();
+      poserBulletins(m);
+      final col = m.collection('bulletins');
+      for (final b in col.actives.where((b) => b['periode'] == 'Mai 2026').toList()) {
+        col.mettreAJour(b['id'], {'statutBulletin': 'valide'});
+      }
+      await ouvrir(t, m, 'm11-validation');
+      expect(find.text('Diffuser'), findsOneWidget);
+      expect(find.text('Valider le lot'), findsOneWidget, reason: 'octobre reste à valider');
+      expect(textes(t), contains('Validé'));
+      await toucher(t, find.text('Diffuser'));
+      await t.pumpAndSettle();
+      expect(find.text('Diffuser la paie de Mai 2026 ?'), findsOneWidget);
+      await toucher(t, find.text('Diffuser').last);
+      await t.pumpAndSettle();
+      final mai = col.actives.where((b) => b['periode'] == 'Mai 2026').toList();
+      expect(mai.every((b) => b['statutBulletin'] == 'diffuse' && b['diffusePar'] == m.utilisateur && b['dateDiffusion'] == '2026-10-30'), true);
+      expect(find.text('Paie de Mai 2026 diffusée.'), findsOneWidget);
+      expect(find.text('Diffuser'), findsNothing);
+      expect(textes(t), contains('Diffusé'));
+      await toucher(t, find.text('Annuler').last);
+      expect(col.actives.where((b) => b['periode'] == 'Mai 2026').every((b) => b['statutBulletin'] == 'valide'), true);
+      // sans le droit d'écrire sur l'écran, la commande n'existe pas
+      await ouvrir(t, m, 'm11-validation', role: 'direction', nav: navAvecDroit('direction', 'm11-validation', [1, 0, 0]));
+      expect(find.text('Diffuser'), findsNothing);
+      expect(find.text('Valider le lot'), findsNothing);
     });
 
     cas('« Valider la paie » refusé au dialogue : rien ne change', (t) async {
@@ -166,7 +254,10 @@ void main() {
       await ouvrir(t, m, 'm11-validation', role: 'direction');
       expect(find.text('Valider le lot'), findsNWidgets(2), reason: 'la validation de la paie est le geste de la Direction : signer n’est pas saisir, l’écran lui est accordé nommément');
       await ouvrir(t, m, 'm11-validation', role: 'comptable');
-      expect(find.text('Valider le lot'), findsNWidgets(2), reason: 'le comptable a M11 en écriture dans la matrice de la maquette');
+      expect(find.text('Valider le lot'), findsNothing, reason: 'A2 : le comptable génère, il ne valide pas (écran en lecture sur sa fiche RBAC)');
+      expect(find.byTooltip('Journal de paie'), findsWidgets, reason: 'il lit le lot et imprime le journal');
+      await ouvrir(t, m, 'm11-calcul', role: 'comptable');
+      expect(find.text('Générer les bulletins'), findsOneWidget, reason: 'le comptable garde la génération des bulletins');
       // la même Direction, réduite à la LECTURE de l'écran (matrice modifiée) : la commande disparaît, le journal reste offert
       await ouvrir(t, m, 'm11-validation', role: 'direction', nav: navAvecDroit('direction', 'm11-validation', [1, 0, 0]));
       expect(find.text('Valider le lot'), findsNothing);
