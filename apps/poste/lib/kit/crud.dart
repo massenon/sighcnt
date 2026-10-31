@@ -35,7 +35,11 @@ class CrudSigh extends StatefulWidget {
     this.sensInitial = 'asc',
     this.taillePage = 12,
     this.largeurTiroir = 672,
+    this.intro,
   });
+
+  /// `cfg.intro` : l'encadré d'explication posé APRÈS les indicateurs et avant les onglets (un écran en lecture seule dit pourquoi).
+  final Widget Function(BuildContext)? intro;
 
   final CollectionMagasin collection;
   final String entite;
@@ -224,6 +228,8 @@ class _CrudSighState extends State<CrudSigh> {
         Padding(
             padding: const EdgeInsets.only(bottom: 16),
             child: KpiGrilleSigh(kpis: widget.kpis!(actives))),
+      if (widget.intro != null)
+        Padding(padding: const EdgeInsets.only(bottom: 16), child: widget.intro!(context)),
       OngletsSigh(onglets: [
         OngletDef(
             id: 'liste',
