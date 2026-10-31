@@ -145,5 +145,15 @@
  "adm-satisfaction": "porté",
  "ged-bibliotheque": "porté",
  "ged-workflow": "porté",
- "ged-archives": "porté"
+ "ged-archives": "porté",
+ "m9-dashboard": "porté",
+ "m9-compagnies": "porté",
+ "m9-assures": "porté",
+ "m9-conventions": "porté",
+ "m9-prises-en-charge": "porté",
+ "m9-factures-assureur": "porté",
+ "m9-facture-mere": "porté",
+ "m9-historique": "porté",
+ "m9-creances": "porté",
+ "m9-relances": "porté"
 }

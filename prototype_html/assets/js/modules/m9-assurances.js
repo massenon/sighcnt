@@ -1849,13 +1849,21 @@
       var col = S.collection('relances', { module: 'M9', entite: 'Relance' });
       var host = el('div.space-y-4');
       var table;
-
-      host.appendChild(U.kpiGrid([
+      /* LES INDICATEURS SUIVENT LE REGISTRE (30/10/2026) : ils étaient construits UNE fois à l'ouverture — une relance créée, corrigée ou
+         archivée rafraîchissait le tableau et laissait les quatre compteurs à leur valeur d'origine (constaté en pilotant l'écran). */
+      var kpiHost = el('div');
+      host.appendChild(kpiHost);
+      function peindreKpis() {
+        C.clear(kpiHost);
+        kpiHost.appendChild(U.kpiGrid([
         { label: 'Relances émises', value: C.num(col.active().length), icon: 'send', tone: 'navy' },
         { label: 'En attente de réponse', value: C.num(col.active().filter(function (r) { return r.statutRelance === 'en_attente'; }).length), icon: 'clock', tone: 'warning' },
         { label: 'Régularisées', value: C.num(col.active().filter(function (r) { return r.statutRelance === 'regularisee'; }).length), icon: 'check-circle-2', tone: 'success' },
         { label: 'Montant relancé', value: C.money(C.sum(col.active(), 'montant')), icon: 'hand-coins', tone: 'info' },
       ]));
+        U.icons(kpiHost);
+      }
+      peindreKpis();
 
       table = U.dataTable({
         title: 'Registre des relances',
@@ -1898,12 +1906,12 @@
             /* Une relance se corrige : montant réévalué, niveau qui monte,
                suite donnée par la compagnie. */
             K.iconBtn('pencil', 'Modifier la relance', function () {
-              K.modifier(col, champsRelance(), r, function () { table.refresh(); });
+              K.modifier(col, champsRelance(), r, function () { table.refresh(); peindreKpis(); });
             }),
             K.iconBtn('archive', 'Archiver', function () {
               var res = col.archive(r.id);
-              table.refresh();
-              U.toast('Relance archivée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+              table.refresh(); peindreKpis();
+              U.toast('Relance archivée.', { type: 'success', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
             }, 'ghost'),
           ];
         },
@@ -1966,8 +1974,8 @@
                 v.reference = C.nextRef('REL-', 4);
                 v.statutRelance = 'en_attente';
                 var res = col.insert(v);
-                m.close(); table.refresh();
-                U.toast('Relance ' + v.reference + ' enregistrée.', { type: 'success', undo: function () { res.undo(); table.refresh(); } });
+                m.close(); table.refresh(); peindreKpis();
+                U.toast('Relance ' + v.reference + ' enregistrée.', { type: 'success', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
                 etat(res.record);
               },
             }),

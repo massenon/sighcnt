@@ -233,6 +233,8 @@ class Magasin {
     'reponsesEnquetes': 'M13',
     'jetonsEnquete': 'M13',
     'echeancesFiscales': 'M12',
+    'assureurs': 'M9',
+    'relances': 'M9',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
@@ -390,6 +392,8 @@ class Magasin {
     'enquetes',
     'reponsesEnquetes',
     'jetonsEnquete',
-    'echeancesFiscales'
+    'echeancesFiscales',
+    'assureurs',
+    'relances'
   ];
 }
