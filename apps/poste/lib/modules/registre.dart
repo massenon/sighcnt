@@ -15,6 +15,8 @@ import 'm12/registre_m12.dart';
 import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
 import 'm9/registre_m9.dart';
+import 'mere/mrc_commun.dart' show Mrc;
+import 'mere/registre_mere.dart';
 import 'pil/registre_pil.dart';
 import 'rap/registre_rap.dart';
 import 'm2/registre_m2.dart';
@@ -51,6 +53,7 @@ const rolesAdminMere = {'admin', 'da'};
 Map<String, ConstruireEcran> ecransPortes(
     {ControleurPoste? controleur, ClientMere? client}) {
   Widget console(SectionMere s) => ConsoleMere(client: client!, section: s);
+  Mrc.brancher(client: client, controleur: controleur);
   return {
     // Tranche 1 — Caisse, MECeF, impression.
     'm8-dashboard': (c, cfg) => const EcranDashboardFacturation(),
@@ -76,6 +79,7 @@ Map<String, ConstruireEcran> ecransPortes(
     ...ecransM5,
     ...ecransM6,
     ...ecransM7,
+    ...ecransMERE,
     'mecef-dashboard': (c, cfg) => const EcranMecefTableauDeBord(),
     'mecef-factures': (c, cfg) => const EcranMecefFactures(),
     'mecef-transmission': (c, cfg) => const EcranMecefTransmission(),
