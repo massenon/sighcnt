@@ -541,9 +541,18 @@ void main() {
       await t.pump(const Duration(seconds: 10));
     });
 
-    testWidgets('droits : l’agent qui ne peut qu’ouvrir le répertoire n’a AUCUNE commande d’écriture (absentes, jamais grisées)', (t) async {
+    testWidgets('droits (arbitrage du 31/10/2026) : l’ACCUEIL tient le répertoire à jour — il crée, vérifie, change la disponibilité', (t) async {
       final m = poste({'ambulances': liste(r['jeu'])});
       await ouvrir(t, m, 'm13-repertoire-ambulances', role: 'reception');
+      expect(find.widgetWithText(BoutonSigh, 'Ajouter une ambulance'), findsOneWidget);
+      expect(find.byTooltip('Changer la disponibilité'), findsWidgets);
+      expect(find.textContaining('Lecture seule'), findsNothing);
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    testWidgets('droits : l’agent qui ne peut qu’ouvrir le répertoire n’a AUCUNE commande d’écriture (absentes, jamais grisées)', (t) async {
+      final m = poste({'ambulances': liste(r['jeu'])});
+      await ouvrir(t, m, 'm13-repertoire-ambulances', role: 'ambulancier');
       expect(find.widgetWithText(BoutonSigh, 'Ajouter une ambulance'), findsNothing);
       expect(find.byTooltip('Confirmer que ce numéro est à jour'), findsNothing);
       expect(find.byTooltip('Changer la disponibilité'), findsNothing);

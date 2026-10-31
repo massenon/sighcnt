@@ -86,7 +86,7 @@
      la vague 67 a bougé les deux premiers et laissé le troisième à 61, si
      bien qu'un poste hydraté depuis la base ne se ré-amorçait jamais.
      Incrémenter ce nombre, et lui seul, à toute modification de forme. */
-  var VERSION = 66;
+  var VERSION = 67;
   var db = null;
   var listeners = {};
 
@@ -2117,6 +2117,10 @@
             M13: { editer: false, annuler: false },
           },
           droitsEcrans: {
+            /* Arbitrage de la Direction (31/10/2026) : L'ACCUEIL TIENT le répertoire des ambulances à jour — c'est lui qui recueille et
+               vérifie les numéros. Écriture accordée sur CET écran seulement : le reste de M13 (secrétariat) reste fermé à l'accueil.
+               Sans cette surcharge d'écran, M13 en lecture lui rendait le répertoire consultable mais non modifiable. */
+            'm13-repertoire-ambulances': { voir: true, editer: true, annuler: false },
             /* ZONE 1 — identification, coordonnées, couverture, constantes.
                La zone clinique ne lui est pas ouverte (RG-13), et chacune de
                ses consultations du dossier est journalisée. */
