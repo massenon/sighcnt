@@ -1,0 +1,5988 @@
+{
+ "amorcage": {
+  "exercices": [
+   {
+    "id": "EXO-2026",
+    "annee": 2026,
+    "debut": "2026-01-01",
+    "fin": "2026-12-31",
+    "statut": "actif",
+    "etat": "ouvert",
+    "source": "journal",
+    "valideLe": null,
+    "validePar": null,
+    "motif": null
+   },
+   {
+    "id": "EXO-2025",
+    "annee": 2025,
+    "debut": "2025-01-01",
+    "fin": "2025-12-31",
+    "statut": "actif",
+    "etat": "clos",
+    "source": "liasse",
+    "valideLe": "2026-05-15",
+    "validePar": "Liasse déposée à la DGI",
+    "motif": "Exercice antérieur à la mise en service : fait par la liasse déposée."
+   },
+   {
+    "id": "EXO-2024",
+    "annee": 2024,
+    "debut": "2024-01-01",
+    "fin": "2024-12-31",
+    "statut": "actif",
+    "etat": "clos",
+    "source": "liasse",
+    "valideLe": "2026-05-15",
+    "validePar": "Liasse déposée à la DGI",
+    "motif": "Exercice antérieur à la mise en service : fait par la liasse déposée."
+   }
+  ],
+  "liste": [
+   2026,
+   2025,
+   2024
+  ]
+ },
+ "liste": [
+  {
+   "id": "EXO-2026",
+   "annee": 2026,
+   "debut": "2026-01-01",
+   "fin": "2026-12-31",
+   "statut": "actif",
+   "etat": "ouvert",
+   "source": "journal"
+  },
+  {
+   "id": "EXO-2025",
+   "annee": 2025,
+   "debut": "2025-01-01",
+   "fin": "2025-12-31",
+   "statut": "actif",
+   "etat": "clos",
+   "source": "liasse",
+   "valideLe": "2026-05-15",
+   "validePar": "Liasse déposée à la DGI",
+   "motif": "Exercice antérieur à la mise en service : fait par la liasse déposée."
+  },
+  {
+   "id": "EXO-2024",
+   "annee": 2024,
+   "debut": "2024-01-01",
+   "fin": "2024-12-31",
+   "statut": "actif",
+   "etat": "clos",
+   "source": "liasse",
+   "valideLe": "2026-05-15",
+   "validePar": "Liasse déposée à la DGI",
+   "motif": "Exercice antérieur à la mise en service : fait par la liasse déposée."
+  }
+ ],
+ "choisi": 2026,
+ "etats": {
+  "2022": "ouvert",
+  "2023": "ouvert",
+  "2024": "clos",
+  "2025": "clos",
+  "2026": "ouvert",
+  "2027": "ouvert"
+ },
+ "garde": {
+  "inserer-2025": {
+   "toast": [
+    "Exercice 2025 clos le 15/05/2026 — lecture seule. La correction passe par une écriture de l’exercice en cours."
+   ],
+   "nbApres": 0,
+   "rendu": null
+  },
+  "inserer-2026": {
+   "toast": [],
+   "nbApres": 1,
+   "rendu": "object"
+  },
+  "inserer-2024": {
+   "toast": [
+    "Exercice 2024 clos le 15/05/2026 — lecture seule. La correction passe par une écriture de l’exercice en cours."
+   ],
+   "nbApres": 0,
+   "rendu": null
+  },
+  "inserer-sans-date": {
+   "toast": [],
+   "nbApres": 1,
+   "rendu": "object"
+  },
+  "modifier-date-vers-2025": {
+   "toast": [
+    "Exercice 2025 clos le 15/05/2026 — lecture seule. La correction passe par une écriture de l’exercice en cours."
+   ],
+   "nbApres": 0,
+   "rendu": null
+  },
+  "modifier-2026": {
+   "toast": [],
+   "nbApres": 0,
+   "rendu": "object"
+  }
+ },
+ "nbEcrituresBrut": {
+  "validees": 410,
+  "avecBrouillons": 502,
+  "resultat": -24350456
+ },
+ "preCloture": {
+  "jeu2026": {
+   "annee": 2026,
+   "controles": [
+    {
+     "id": "brouillons",
+     "bloquant": true,
+     "ok": false,
+     "libelle": "Aucune écriture en brouillon",
+     "ecran": "m12-ecritures",
+     "detail": "92 ligne(s) en brouillon, dont CAI-2026-00247, CAI-2026-00246."
+    },
+    {
+     "id": "equilibre",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Journal équilibré (RG-10)",
+     "ecran": "m12-balance",
+     "detail": ""
+    },
+    {
+     "id": "pieces",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Chaque pièce validée est équilibrée",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "an-existants",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+     "ecran": "m12-ouverture",
+     "detail": ""
+    },
+    {
+     "id": "compte-47",
+     "bloquant": false,
+     "ok": true,
+     "libelle": "Comptes d’attente (47x) soldés",
+     "ecran": "m12-grand-livre",
+     "detail": ""
+    },
+    {
+     "id": "ecritures",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "L’exercice porte des écritures validées",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    }
+   ],
+   "nbBloquants": 1,
+   "resultat": -24350456,
+   "nbEcritures": 410
+  },
+  "jeu2025": {
+   "annee": 2025,
+   "controles": [
+    {
+     "id": "brouillons",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucune écriture en brouillon",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "equilibre",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Journal équilibré (RG-10)",
+     "ecran": "m12-balance",
+     "detail": ""
+    },
+    {
+     "id": "pieces",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Chaque pièce validée est équilibrée",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "an-existants",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucun à-nouveau déjà écrit sur 2026",
+     "ecran": "m12-ouverture",
+     "detail": ""
+    },
+    {
+     "id": "compte-47",
+     "bloquant": false,
+     "ok": true,
+     "libelle": "Comptes d’attente (47x) soldés",
+     "ecran": "m12-grand-livre",
+     "detail": ""
+    },
+    {
+     "id": "ecritures",
+     "bloquant": true,
+     "ok": false,
+     "libelle": "L’exercice porte des écritures validées",
+     "ecran": "m12-ecritures",
+     "detail": "Aucune écriture validée en 2025."
+    }
+   ],
+   "nbBloquants": 1,
+   "resultat": 0,
+   "nbEcritures": 0
+  },
+  "valide2026": {
+   "annee": 2026,
+   "controles": [
+    {
+     "id": "brouillons",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucune écriture en brouillon",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "equilibre",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Journal équilibré (RG-10)",
+     "ecran": "m12-balance",
+     "detail": ""
+    },
+    {
+     "id": "pieces",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Chaque pièce validée est équilibrée",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "an-existants",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+     "ecran": "m12-ouverture",
+     "detail": ""
+    },
+    {
+     "id": "compte-47",
+     "bloquant": false,
+     "ok": true,
+     "libelle": "Comptes d’attente (47x) soldés",
+     "ecran": "m12-grand-livre",
+     "detail": ""
+    },
+    {
+     "id": "ecritures",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "L’exercice porte des écritures validées",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    }
+   ],
+   "nbBloquants": 0,
+   "resultat": -23087218,
+   "nbEcritures": 502
+  },
+  "desequilibre2026": {
+   "annee": 2026,
+   "controles": [
+    {
+     "id": "brouillons",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucune écriture en brouillon",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "equilibre",
+     "bloquant": true,
+     "ok": false,
+     "libelle": "Journal équilibré (RG-10)",
+     "ecran": "m12-balance",
+     "detail": "Écart de 5 000 FCFA entre débit et crédit."
+    },
+    {
+     "id": "pieces",
+     "bloquant": true,
+     "ok": false,
+     "libelle": "Chaque pièce validée est équilibrée",
+     "ecran": "m12-ecritures",
+     "detail": "1 pièce(s) déséquilibrée(s) : ODX."
+    },
+    {
+     "id": "an-existants",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+     "ecran": "m12-ouverture",
+     "detail": ""
+    },
+    {
+     "id": "compte-47",
+     "bloquant": false,
+     "ok": true,
+     "libelle": "Comptes d’attente (47x) soldés",
+     "ecran": "m12-grand-livre",
+     "detail": ""
+    },
+    {
+     "id": "ecritures",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "L’exercice porte des écritures validées",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    }
+   ],
+   "nbBloquants": 2,
+   "resultat": -23092218,
+   "nbEcritures": 503
+  },
+  "anExistant2026": {
+   "annee": 2026,
+   "controles": [
+    {
+     "id": "brouillons",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucune écriture en brouillon",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "equilibre",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Journal équilibré (RG-10)",
+     "ecran": "m12-balance",
+     "detail": ""
+    },
+    {
+     "id": "pieces",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Chaque pièce validée est équilibrée",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "an-existants",
+     "bloquant": true,
+     "ok": false,
+     "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+     "ecran": "m12-ouverture",
+     "detail": "Des à-nouveaux existent (AN-2027-00001) : les archiver avant de clôturer, la clôture écrit les définitifs."
+    },
+    {
+     "id": "compte-47",
+     "bloquant": false,
+     "ok": true,
+     "libelle": "Comptes d’attente (47x) soldés",
+     "ecran": "m12-grand-livre",
+     "detail": ""
+    },
+    {
+     "id": "ecritures",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "L’exercice porte des écritures validées",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    }
+   ],
+   "nbBloquants": 1,
+   "resultat": -23087218,
+   "nbEcritures": 502
+  },
+  "compte47": {
+   "annee": 2026,
+   "controles": [
+    {
+     "id": "brouillons",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucune écriture en brouillon",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "equilibre",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Journal équilibré (RG-10)",
+     "ecran": "m12-balance",
+     "detail": ""
+    },
+    {
+     "id": "pieces",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Chaque pièce validée est équilibrée",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "an-existants",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+     "ecran": "m12-ouverture",
+     "detail": ""
+    },
+    {
+     "id": "compte-47",
+     "bloquant": false,
+     "ok": false,
+     "libelle": "Comptes d’attente (47x) soldés",
+     "ecran": "m12-grand-livre",
+     "detail": "Solde de 7 000 FCFA à régulariser."
+    },
+    {
+     "id": "ecritures",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "L’exercice porte des écritures validées",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    }
+   ],
+   "nbBloquants": 0,
+   "resultat": -23087218,
+   "nbEcritures": 504
+  }
+ },
+ "provisoires2027": [
+  {
+   "compte": "521000",
+   "compteLibelle": "Banque",
+   "debit": 0,
+   "credit": 3220000,
+   "lettrable": false,
+   "id": "PROV-2027-521000-S",
+   "libelle": "À-nouveau provisoire"
+  },
+  {
+   "compte": "571000",
+   "compteLibelle": "Caisse",
+   "debit": 0,
+   "credit": 1879218,
+   "lettrable": false,
+   "id": "PROV-2027-571000-S",
+   "libelle": "À-nouveau provisoire"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 523000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00045",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 101000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00023",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 291000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00005",
+   "libelle": "Report — Produits d’entretien"
+  },
+  {
+   "compte": "411200",
+   "compteLibelle": "Clients — Compagnies d’assurance",
+   "debit": 264000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411200-VTE-2026-00022",
+   "libelle": "Report — Facture compagnie d’assurance"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 217000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00118",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 649000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00034",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 696000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00089",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 580000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00003",
+   "libelle": "Report — Achat de marchandises — Médicaments"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 553000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00048",
+   "libelle": "Report — Maintenance des automates"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 199000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00103",
+   "libelle": "Report — Analyses facturées"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 589000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00031",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "422000",
+   "compteLibelle": "Personnel — Rémunérations dues",
+   "debit": 0,
+   "credit": 172000,
+   "lettrable": true,
+   "id": "PROV-2027-422000-SAL-2026-00102",
+   "libelle": "Report — Salaires du mois"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 393000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00044",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 557000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00073",
+   "libelle": "Report — Maintenance des automates"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 177000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00069",
+   "libelle": "Report — Entretien et réparations"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 172000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00017",
+   "libelle": "Report — Fournitures de bureau"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 615000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00111",
+   "libelle": "Report — Entretien et réparations"
+  },
+  {
+   "compte": "431000",
+   "compteLibelle": "Caisse de sécurité social",
+   "debit": 0,
+   "credit": 34000,
+   "lettrable": true,
+   "id": "PROV-2027-431000-SAL-2026-00070",
+   "libelle": "Report — Cotisations CNSS"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 719000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00013",
+   "libelle": "Report — Entretien et réparations"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 8000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00094",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 624000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00108",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "431000",
+   "compteLibelle": "Caisse de sécurité social",
+   "debit": 0,
+   "credit": 718000,
+   "lettrable": true,
+   "id": "PROV-2027-431000-SAL-2026-00047",
+   "libelle": "Report — Cotisations CNSS"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 270000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00119",
+   "libelle": "Report — Facturation patient"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 91000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00050",
+   "libelle": "Report — Facturation patient"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 206000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00124",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 175000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00027",
+   "libelle": "Report — Achat de marchandises — Médicaments"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 16000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00030",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 438000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00128",
+   "libelle": "Report — Consommables de soins"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 169000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00053",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "442100",
+   "compteLibelle": "Etat impôts et taxes",
+   "debit": 0,
+   "credit": 458000,
+   "lettrable": true,
+   "id": "PROV-2027-442100-SAL-2026-00117",
+   "libelle": "Report — Taxe sur salaires (VPS)"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 463000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00107",
+   "libelle": "Report — Achat de réactifs"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 225000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00081",
+   "libelle": "Report — Produits d’entretien"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 209000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00012",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 109000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-401000-BQ-2026-00065",
+   "libelle": "Report — Règlement fournisseur"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 509000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00093",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 283000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00101",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 562000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00046",
+   "libelle": "Report — Consommables de maternité"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 124000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00082",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 783000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00115",
+   "libelle": "Report — Consommables de maternité"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 525000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00062",
+   "libelle": "Report — Achat de marchandises — Médicaments"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 556000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00009",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 371000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00087",
+   "libelle": "Report — Achat de marchandises — Médicaments"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 318000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-401000-BQ-2026-00109",
+   "libelle": "Report — Règlement fournisseur"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 223000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00056",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "411200",
+   "compteLibelle": "Clients — Compagnies d’assurance",
+   "debit": 312000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411200-VTE-2026-00061",
+   "libelle": "Report — Facture compagnie d’assurance"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 591000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00039",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "431000",
+   "compteLibelle": "Caisse de sécurité social",
+   "debit": 0,
+   "credit": 338000,
+   "lettrable": true,
+   "id": "PROV-2027-431000-SAL-2026-00075",
+   "libelle": "Report — Cotisations CNSS"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 537000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00114",
+   "libelle": "Report — Maintenance des automates"
+  },
+  {
+   "compte": "411200",
+   "compteLibelle": "Clients — Compagnies d’assurance",
+   "debit": 115000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411200-VTE-2026-00020",
+   "libelle": "Report — Facture compagnie d’assurance"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 0,
+   "credit": 558000,
+   "lettrable": true,
+   "id": "PROV-2027-411000-CAI-2026-00042",
+   "libelle": "Report — Encaissement caisse"
+  },
+  {
+   "compte": "422000",
+   "compteLibelle": "Personnel — Rémunérations dues",
+   "debit": 0,
+   "credit": 100000,
+   "lettrable": true,
+   "id": "PROV-2027-422000-SAL-2026-00057",
+   "libelle": "Report — Salaires du mois"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 727000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00077",
+   "libelle": "Report — Consommables de soins"
+  },
+  {
+   "compte": "442100",
+   "compteLibelle": "Etat impôts et taxes",
+   "debit": 0,
+   "credit": 595000,
+   "lettrable": true,
+   "id": "PROV-2027-442100-SAL-2026-00085",
+   "libelle": "Report — Taxe sur salaires (VPS)"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 600000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-401000-BQ-2026-00038",
+   "libelle": "Report — Règlement fournisseur"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 163000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00125",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 589000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00080",
+   "libelle": "Report — Consommables de soins"
+  },
+  {
+   "compte": "442100",
+   "compteLibelle": "Etat impôts et taxes",
+   "debit": 0,
+   "credit": 574000,
+   "lettrable": true,
+   "id": "PROV-2027-442100-SAL-2026-00112",
+   "libelle": "Report — Taxe sur salaires (VPS)"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 520000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-401000-BQ-2026-00116",
+   "libelle": "Report — Règlement fournisseur"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 499000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00105",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 588000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00098",
+   "libelle": "Report — Achat de réactifs"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 219000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00104",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 23000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00043",
+   "libelle": "Report — Achat de réactifs"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 244000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00096",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 181000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00032",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 255000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00060",
+   "libelle": "Report — Entretien et réparations"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 418000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00019",
+   "libelle": "Report — Maintenance des automates"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 560000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00123",
+   "libelle": "Report — Achat de marchandises — Médicaments"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 443000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00120",
+   "libelle": "Report — Consommables de maternité"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 723000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00072",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 680000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00078",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 285000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00110",
+   "libelle": "Report — Produits d’entretien"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 68000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00071",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 147000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00011",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 0,
+   "credit": 10000,
+   "lettrable": true,
+   "id": "PROV-2027-411000-CAI-2026-00063",
+   "libelle": "Report — Encaissement caisse"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 547000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00113",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 40000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00007",
+   "libelle": "Report — Honoraires du comptable"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 204000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00100",
+   "libelle": "Report — Achat de marchandises — Médicaments"
+  },
+  {
+   "compte": "411200",
+   "compteLibelle": "Clients — Compagnies d’assurance",
+   "debit": 204000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411200-VTE-2026-00035",
+   "libelle": "Report — Facture compagnie d’assurance"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 319000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00059",
+   "libelle": "Report — Analyses facturées"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 277000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00130",
+   "libelle": "Report — Entretien et réparations"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 730000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00068",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 556000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00036",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 129000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00067",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "411200",
+   "compteLibelle": "Clients — Compagnies d’assurance",
+   "debit": 692000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411200-VTE-2026-00097",
+   "libelle": "Report — Facture compagnie d’assurance"
+  },
+  {
+   "compte": "442100",
+   "compteLibelle": "Etat impôts et taxes",
+   "debit": 0,
+   "credit": 713000,
+   "lettrable": true,
+   "id": "PROV-2027-442100-SAL-2026-00051",
+   "libelle": "Report — Taxe sur salaires (VPS)"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 471000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00091",
+   "libelle": "Report — Produits d’entretien"
+  },
+  {
+   "compte": "431000",
+   "compteLibelle": "Caisse de sécurité social",
+   "debit": 0,
+   "credit": 196000,
+   "lettrable": true,
+   "id": "PROV-2027-431000-SAL-2026-00026",
+   "libelle": "Report — Cotisations CNSS"
+  },
+  {
+   "compte": "411200",
+   "compteLibelle": "Clients — Compagnies d’assurance",
+   "debit": 660000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411200-VTE-2026-00122",
+   "libelle": "Report — Facture compagnie d’assurance"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 227000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00066",
+   "libelle": "Report — Fournitures de bureau"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 654000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00129",
+   "libelle": "Report — Consommables de maternité"
+  },
+  {
+   "compte": "411000",
+   "compteLibelle": "Clients — Patients",
+   "debit": 774000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-411000-VTE-2026-00064",
+   "libelle": "Report — Accouchement facturé"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 790000,
+   "credit": 0,
+   "lettrable": true,
+   "id": "PROV-2027-401000-BQ-2026-00015",
+   "libelle": "Report — Règlement fournisseur"
+  },
+  {
+   "compte": "442100",
+   "compteLibelle": "Etat impôts et taxes",
+   "debit": 0,
+   "credit": 99000,
+   "lettrable": true,
+   "id": "PROV-2027-442100-SAL-2026-00127",
+   "libelle": "Report — Taxe sur salaires (VPS)"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 204000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00014",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 746000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00106",
+   "libelle": "Report — Achat de réactifs"
+  },
+  {
+   "compte": "442100",
+   "compteLibelle": "Etat impôts et taxes",
+   "debit": 0,
+   "credit": 171000,
+   "lettrable": true,
+   "id": "PROV-2027-442100-SAL-2026-00006",
+   "libelle": "Report — Taxe sur salaires (VPS)"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 735000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-OD-2026-00010",
+   "libelle": "Report — Maintenance de l’échographe"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 466000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00029",
+   "libelle": "Report — Consommables de maternité"
+  },
+  {
+   "compte": "401000",
+   "compteLibelle": "Fournisseurs",
+   "debit": 0,
+   "credit": 392000,
+   "lettrable": true,
+   "id": "PROV-2027-401000-ACH-2026-00049",
+   "libelle": "Report — Petit matériel de consultation"
+  },
+  {
+   "compte": "139000",
+   "compteLibelle": "Résultat net : perte",
+   "debit": 23087218,
+   "credit": 0,
+   "lettrable": false,
+   "id": "PROV-2027-139000-S",
+   "libelle": "À-nouveau provisoire"
+  }
+ ],
+ "provisoires2026": [],
+ "soldes2026": [
+  {
+   "compte": "401000",
+   "libelle": "Fournisseurs",
+   "debit": 2337000,
+   "credit": 23554000,
+   "solde": -21217000
+  },
+  {
+   "compte": "411000",
+   "libelle": "Clients — Patients",
+   "debit": 5718000,
+   "credit": 568000,
+   "solde": 5150000
+  },
+  {
+   "compte": "411200",
+   "libelle": "Clients — Compagnies d’assurance",
+   "debit": 2247000,
+   "credit": 0,
+   "solde": 2247000
+  },
+  {
+   "compte": "422000",
+   "libelle": "Personnel — Rémunérations dues",
+   "debit": 0,
+   "credit": 272000,
+   "solde": -272000
+  },
+  {
+   "compte": "431000",
+   "libelle": "Caisse de sécurité social",
+   "debit": 0,
+   "credit": 1286000,
+   "solde": -1286000
+  },
+  {
+   "compte": "442100",
+   "libelle": "Etat impôts et taxes",
+   "debit": 0,
+   "credit": 2610000,
+   "solde": -2610000
+  },
+  {
+   "compte": "521000",
+   "libelle": "Banque",
+   "debit": 1071000,
+   "credit": 4291000,
+   "solde": -3220000
+  },
+  {
+   "compte": "571000",
+   "libelle": "Caisse",
+   "debit": 5388782,
+   "credit": 7268000,
+   "solde": -1879218
+  },
+  {
+   "compte": "601100",
+   "libelle": "Achats de marchandises",
+   "debit": 2415000,
+   "credit": 0,
+   "solde": 2415000
+  },
+  {
+   "compte": "604100",
+   "libelle": "Matieres consommables",
+   "debit": 6482000,
+   "credit": 0,
+   "solde": 6482000
+  },
+  {
+   "compte": "604300",
+   "libelle": "Produit d'entretien",
+   "debit": 1272000,
+   "credit": 0,
+   "solde": 1272000
+  },
+  {
+   "compte": "604700",
+   "libelle": "fournitures de bureau",
+   "debit": 399000,
+   "credit": 0,
+   "solde": 399000
+  },
+  {
+   "compte": "605100",
+   "libelle": "Eau",
+   "debit": 1167000,
+   "credit": 0,
+   "solde": 1167000
+  },
+  {
+   "compte": "605200",
+   "libelle": "Eléctricité",
+   "debit": 2674000,
+   "credit": 0,
+   "solde": 2674000
+  },
+  {
+   "compte": "605600",
+   "libelle": "Achats de petit matériel et outillages",
+   "debit": 2157000,
+   "credit": 0,
+   "solde": 2157000
+  },
+  {
+   "compte": "624100",
+   "libelle": "Entretiens & réparations",
+   "debit": 2043000,
+   "credit": 0,
+   "solde": 2043000
+  },
+  {
+   "compte": "624300",
+   "libelle": "Maintenance",
+   "debit": 5945000,
+   "credit": 0,
+   "solde": 5945000
+  },
+  {
+   "compte": "628100",
+   "libelle": "Frais de téléphone",
+   "debit": 2356000,
+   "credit": 0,
+   "solde": 2356000
+  },
+  {
+   "compte": "631810",
+   "libelle": "Frais bancaire BOA",
+   "debit": 1954000,
+   "credit": 0,
+   "solde": 1954000
+  },
+  {
+   "compte": "632400",
+   "libelle": "Honoraires comptable",
+   "debit": 2841000,
+   "credit": 0,
+   "solde": 2841000
+  },
+  {
+   "compte": "641300",
+   "libelle": "Taxe sur appointements salaire(VPS)",
+   "debit": 2610000,
+   "credit": 0,
+   "solde": 2610000
+  },
+  {
+   "compte": "661100",
+   "libelle": "Salaires bruts nationaux",
+   "debit": 272000,
+   "credit": 0,
+   "solde": 272000
+  },
+  {
+   "compte": "664120",
+   "libelle": "Charge sociales sur remunerations du personnel national",
+   "debit": 1286000,
+   "credit": 0,
+   "solde": 1286000
+  },
+  {
+   "compte": "701000",
+   "libelle": "Ventes de marchandises — Médicaments",
+   "debit": 0,
+   "credit": 533000,
+   "solde": -533000
+  },
+  {
+   "compte": "706000",
+   "libelle": "Services vendus — prestations de soins",
+   "debit": 0,
+   "credit": 2258782,
+   "solde": -2258782
+  },
+  {
+   "compte": "706100",
+   "libelle": "Prestations — Actes et hospitalisation",
+   "debit": 0,
+   "credit": 9476000,
+   "solde": -9476000
+  },
+  {
+   "compte": "706200",
+   "libelle": "Prestations — Analyses de laboratoire",
+   "debit": 0,
+   "credit": 518000,
+   "solde": -518000
+  }
+ ],
+ "resultat2026": -23087218,
+ "nbEcritures2026": {
+  "validees": 502,
+  "avecBrouillons": 502
+ },
+ "sha": {
+  "abc": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+  "vide": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "accents": "a36558fa64645f973fe4f2109646707b64032353db80f17a20343af590b08fef",
+  "long": "41edece42d63e8d9bf515a9ba6932e1c20cbc9f5a5d134645adb5db1b9737ea3"
+ },
+ "lettrage": {
+  "nonLettrable": {
+   "ok": false,
+   "motif": "Le compte 571000 n’est pas lettrable (comptes de tiers seulement)."
+  },
+  "uneLigne": {
+   "ok": false,
+   "motif": "Sélection invalide : au moins deux lignes, du même compte, non encore lettrées."
+  },
+  "autreCompte": {
+   "ok": false,
+   "motif": "Sélection invalide : au moins deux lignes, du même compte, non encore lettrées."
+  },
+  "nonNul": {
+   "ok": false,
+   "motif": "Lettrage refusé — l’ensemble ne s’annule pas (écart 2 000 FCFA)."
+  },
+  "inconnue": {
+   "ok": false,
+   "motif": "Sélection invalide : au moins deux lignes, du même compte, non encore lettrées."
+  },
+  "valide": {
+   "ok": true,
+   "code": "A",
+   "lignes": 2
+  },
+  "dejaLettree": {
+   "ok": false,
+   "motif": "Sélection invalide : au moins deux lignes, du même compte, non encore lettrées."
+  },
+  "lignesApres": [
+   {
+    "id": "L2",
+    "lettrage": "A"
+   },
+   {
+    "id": "L1",
+    "lettrage": "A"
+   }
+  ],
+  "delettrerSansMotif": {
+   "ok": false,
+   "motif": "Un motif est obligatoire pour dé-lettrer."
+  },
+  "delettrerCourt": {
+   "ok": false,
+   "motif": "Un motif est obligatoire pour dé-lettrer."
+  },
+  "delettrerInconnu": {
+   "ok": false,
+   "motif": "Aucune ligne lettrée « Z » sur ce compte."
+  },
+  "delettrer": {
+   "ok": true,
+   "lignes": 2
+  },
+  "lignesDelettrees": [
+   {
+    "id": "L2",
+    "lettrage": null,
+    "motif": "Erreur de saisie"
+   },
+   {
+    "id": "L1",
+    "lettrage": null,
+    "motif": "Erreur de saisie"
+   }
+  ],
+  "premier": {
+   "ok": true,
+   "code": "A",
+   "lignes": 2
+  },
+  "second": {
+   "ok": true,
+   "code": "B",
+   "lignes": 2
+  }
+ },
+ "cloture": {
+  "demandeSansDroitDirection": null,
+  "inconnue": {
+   "ok": false,
+   "motif": "Exercice 2031 inconnu."
+  },
+  "dejaClos": {
+   "ok": false,
+   "motif": "Exercice 2025 déjà clos."
+  },
+  "refusBrouillon": {
+   "ok": false,
+   "motif": "Pré-clôture refusée — Aucune écriture en brouillon (1 ligne(s) en brouillon, dont BR1.)",
+   "pre": {
+    "annee": 2026,
+    "controles": [
+     {
+      "id": "brouillons",
+      "bloquant": true,
+      "ok": false,
+      "libelle": "Aucune écriture en brouillon",
+      "ecran": "m12-ecritures",
+      "detail": "1 ligne(s) en brouillon, dont BR1."
+     },
+     {
+      "id": "equilibre",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "Journal équilibré (RG-10)",
+      "ecran": "m12-balance",
+      "detail": ""
+     },
+     {
+      "id": "pieces",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "Chaque pièce validée est équilibrée",
+      "ecran": "m12-ecritures",
+      "detail": ""
+     },
+     {
+      "id": "an-existants",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+      "ecran": "m12-ouverture",
+      "detail": ""
+     },
+     {
+      "id": "compte-47",
+      "bloquant": false,
+      "ok": true,
+      "libelle": "Comptes d’attente (47x) soldés",
+      "ecran": "m12-grand-livre",
+      "detail": ""
+     },
+     {
+      "id": "ecritures",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "L’exercice porte des écritures validées",
+      "ecran": "m12-ecritures",
+      "detail": ""
+     }
+    ],
+    "bloquants": [
+     {
+      "id": "brouillons",
+      "bloquant": true,
+      "ok": false,
+      "libelle": "Aucune écriture en brouillon",
+      "ecran": "m12-ecritures",
+      "detail": "1 ligne(s) en brouillon, dont BR1."
+     }
+    ],
+    "resultat": -23087218,
+    "nbEcritures": 502
+   }
+  },
+  "demande": {
+   "ok": true,
+   "pre": {
+    "annee": 2026,
+    "controles": [
+     {
+      "id": "brouillons",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "Aucune écriture en brouillon",
+      "ecran": "m12-ecritures",
+      "detail": ""
+     },
+     {
+      "id": "equilibre",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "Journal équilibré (RG-10)",
+      "ecran": "m12-balance",
+      "detail": ""
+     },
+     {
+      "id": "pieces",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "Chaque pièce validée est équilibrée",
+      "ecran": "m12-ecritures",
+      "detail": ""
+     },
+     {
+      "id": "an-existants",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+      "ecran": "m12-ouverture",
+      "detail": ""
+     },
+     {
+      "id": "compte-47",
+      "bloquant": false,
+      "ok": true,
+      "libelle": "Comptes d’attente (47x) soldés",
+      "ecran": "m12-grand-livre",
+      "detail": ""
+     },
+     {
+      "id": "ecritures",
+      "bloquant": true,
+      "ok": true,
+      "libelle": "L’exercice porte des écritures validées",
+      "ecran": "m12-ecritures",
+      "detail": ""
+     }
+    ],
+    "bloquants": [],
+    "resultat": -23087218,
+    "nbEcritures": 502
+   }
+  },
+  "ecartDemande": {
+   "inserts": {
+    "notifications": [
+     {
+      "id": "NOTxmvuswncu8dc5i",
+      "statut": "actif",
+      "type": "cloture",
+      "poste": "direction",
+      "destinataire": null,
+      "libelle": "Clôture 2026 à valider",
+      "detail": "Le comptable a demandé la clôture de l’exercice 2026.",
+      "priorite": "haute",
+      "demandeId": null,
+      "factureId": null,
+      "ordonnanceId": null,
+      "patientId": null,
+      "reference": "2026",
+      "lue": false,
+      "creeLe": "2026-10-30T10:00:00.318Z"
+     }
+    ]
+   },
+   "modifs": {
+    "exercices": [
+     {
+      "cle": "EXO-2026",
+      "id": "EXO-2026",
+      "patch": {
+       "etat": "en_attente_cloture",
+       "demandeLe": "2026-10-30T10:00:00.318Z",
+       "demandePar": "KASSA Augustin",
+       "resultatPrevu": -23087218
+      }
+     }
+    ]
+   }
+  },
+  "secondeDemande": {
+   "ok": false,
+   "motif": "La clôture de 2026 attend déjà la validation de la Direction."
+  },
+  "validerTropTot": null,
+  "validerMemePersonne": {
+   "ok": false,
+   "motif": "La clôture est validée par la Direction ou la Directrice Administrative."
+  },
+  "validerDemandeur": {
+   "ok": false,
+   "motif": "Signer n’est pas saisir : la validation doit venir d’une autre personne que le demandeur (KASSA Augustin)."
+  },
+  "validerSansMotif": {
+   "ok": false,
+   "motif": "Un motif est obligatoire pour valider une clôture."
+  },
+  "validerMotifCourt": {
+   "ok": false,
+   "motif": "Un motif est obligatoire pour valider une clôture."
+  },
+  "validerInconnue": {
+   "ok": false,
+   "motif": "Aucune demande de clôture en attente pour 2030."
+  },
+  "valider": {
+   "ok": true,
+   "resultat": -23087218,
+   "empreinte": "1178de188fd29956cbbc8c7dc56b34efdb81efc754736544908c02015d022dc5",
+   "lignesAN": 102,
+   "archive": "DOC-2026-00221"
+  },
+  "ecartValidation": {
+   "inserts": {
+    "ecritures": [
+     {
+      "id": "ECRxmvuswnetxsriq",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 392000,
+      "pieceOrigine": "ACH-2026-00049"
+     },
+     {
+      "id": "ECRxmvuswnes6g97z",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de maternité",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 466000,
+      "pieceOrigine": "ACH-2026-00029"
+     },
+     {
+      "id": "ECRxmvuswnes10cbo",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 735000,
+      "pieceOrigine": "OD-2026-00010"
+     },
+     {
+      "id": "ECRxmvuswnerddyvz",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Taxe sur salaires (VPS)",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "442100",
+      "compteLibelle": "Etat impôts et taxes",
+      "debit": 0,
+      "credit": 171000,
+      "pieceOrigine": "SAL-2026-00006"
+     },
+     {
+      "id": "ECRxmvuswnerlzods",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de réactifs",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 746000,
+      "pieceOrigine": "ACH-2026-00106"
+     },
+     {
+      "id": "ECRxmvuswnermjt2d",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 204000,
+      "pieceOrigine": "ACH-2026-00014"
+     },
+     {
+      "id": "ECRxmvuswnequwxjf",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Taxe sur salaires (VPS)",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "442100",
+      "compteLibelle": "Etat impôts et taxes",
+      "debit": 0,
+      "credit": 99000,
+      "pieceOrigine": "SAL-2026-00127"
+     },
+     {
+      "id": "ECRxmvuswneqs6mnv",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Règlement fournisseur",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 790000,
+      "credit": 0,
+      "pieceOrigine": "BQ-2026-00015"
+     },
+     {
+      "id": "ECRxmvuswnep882et",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 774000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00064"
+     },
+     {
+      "id": "ECRxmvuswnep4nnck",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de maternité",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 654000,
+      "pieceOrigine": "ACH-2026-00129"
+     },
+     {
+      "id": "ECRxmvuswneoaojlg",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Fournitures de bureau",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 227000,
+      "pieceOrigine": "ACH-2026-00066"
+     },
+     {
+      "id": "ECRxmvuswneowigsx",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facture compagnie d’assurance",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411200",
+      "compteLibelle": "Clients — Compagnies d’assurance",
+      "debit": 660000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00122"
+     },
+     {
+      "id": "ECRxmvuswneohi1ss",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Cotisations CNSS",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "431000",
+      "compteLibelle": "Caisse de sécurité social",
+      "debit": 0,
+      "credit": 196000,
+      "pieceOrigine": "SAL-2026-00026"
+     },
+     {
+      "id": "ECRxmvuswnenqcs1c",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Produits d’entretien",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 471000,
+      "pieceOrigine": "ACH-2026-00091"
+     },
+     {
+      "id": "ECRxmvuswnenxmptq",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Taxe sur salaires (VPS)",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "442100",
+      "compteLibelle": "Etat impôts et taxes",
+      "debit": 0,
+      "credit": 713000,
+      "pieceOrigine": "SAL-2026-00051"
+     },
+     {
+      "id": "ECRxmvuswnem86slf",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facture compagnie d’assurance",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411200",
+      "compteLibelle": "Clients — Compagnies d’assurance",
+      "debit": 692000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00097"
+     },
+     {
+      "id": "ECRxmvuswnemtxjbh",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 129000,
+      "pieceOrigine": "OD-2026-00067"
+     },
+     {
+      "id": "ECRxmvuswnemhp0t0",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 556000,
+      "pieceOrigine": "ACH-2026-00036"
+     },
+     {
+      "id": "ECRxmvuswnelp1o4d",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 730000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00068"
+     },
+     {
+      "id": "ECRxmvuswnelj4xn0",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Entretien et réparations",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 277000,
+      "pieceOrigine": "OD-2026-00130"
+     },
+     {
+      "id": "ECRxmvuswneks5r57",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Analyses facturées",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 319000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00059"
+     },
+     {
+      "id": "ECRxmvuswnekphcxk",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facture compagnie d’assurance",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411200",
+      "compteLibelle": "Clients — Compagnies d’assurance",
+      "debit": 204000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00035"
+     },
+     {
+      "id": "ECRxmvuswneknxs7f",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de marchandises — Médicaments",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 204000,
+      "pieceOrigine": "ACH-2026-00100"
+     },
+     {
+      "id": "ECRxmvuswnej8c0vh",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 40000,
+      "pieceOrigine": "OD-2026-00007"
+     },
+     {
+      "id": "ECRxmvuswnej8w2pt",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 547000,
+      "pieceOrigine": "OD-2026-00113"
+     },
+     {
+      "id": "ECRxmvuswneiond6p",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Encaissement caisse",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 0,
+      "credit": 10000,
+      "pieceOrigine": "CAI-2026-00063"
+     },
+     {
+      "id": "ECRxmvuswneia4660",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 147000,
+      "pieceOrigine": "OD-2026-00011"
+     },
+     {
+      "id": "ECRxmvuswneivtuwb",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 68000,
+      "pieceOrigine": "OD-2026-00071"
+     },
+     {
+      "id": "ECRxmvuswneh5jrxa",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Produits d’entretien",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 285000,
+      "pieceOrigine": "ACH-2026-00110"
+     },
+     {
+      "id": "ECRxmvuswneh57fi8",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 680000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00078"
+     },
+     {
+      "id": "ECRxmvuswnegcebwq",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 723000,
+      "pieceOrigine": "OD-2026-00072"
+     },
+     {
+      "id": "ECRxmvuswneg4rw6y",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de maternité",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 443000,
+      "pieceOrigine": "ACH-2026-00120"
+     },
+     {
+      "id": "ECRxmvuswnefx8crw",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de marchandises — Médicaments",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 560000,
+      "pieceOrigine": "ACH-2026-00123"
+     },
+     {
+      "id": "ECRxmvuswnefpoeaf",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance des automates",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 418000,
+      "pieceOrigine": "OD-2026-00019"
+     },
+     {
+      "id": "ECRxmvuswnefvomwx",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Entretien et réparations",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 255000,
+      "pieceOrigine": "OD-2026-00060"
+     },
+     {
+      "id": "ECRxmvuswneeguspb",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 181000,
+      "pieceOrigine": "OD-2026-00032"
+     },
+     {
+      "id": "ECRxmvuswneeneobf",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 244000,
+      "pieceOrigine": "ACH-2026-00096"
+     },
+     {
+      "id": "ECRxmvuswneb31zv9",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de réactifs",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 23000,
+      "pieceOrigine": "ACH-2026-00043"
+     },
+     {
+      "id": "ECRxmvuswneaz7hdj",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 219000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00104"
+     },
+     {
+      "id": "ECRxmvuswneaqezfh",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de réactifs",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 588000,
+      "pieceOrigine": "ACH-2026-00098"
+     },
+     {
+      "id": "ECRxmvuswne9dvoou",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 499000,
+      "pieceOrigine": "OD-2026-00105"
+     },
+     {
+      "id": "ECRxmvuswne8vb8qv",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Règlement fournisseur",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 520000,
+      "credit": 0,
+      "pieceOrigine": "BQ-2026-00116"
+     },
+     {
+      "id": "ECRxmvuswne8j2153",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Taxe sur salaires (VPS)",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "442100",
+      "compteLibelle": "Etat impôts et taxes",
+      "debit": 0,
+      "credit": 574000,
+      "pieceOrigine": "SAL-2026-00112"
+     },
+     {
+      "id": "ECRxmvuswne7kfvsb",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de soins",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 589000,
+      "pieceOrigine": "ACH-2026-00080"
+     },
+     {
+      "id": "ECRxmvuswne7dxgmk",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 163000,
+      "pieceOrigine": "ACH-2026-00125"
+     },
+     {
+      "id": "ECRxmvuswne7s5zwk",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Règlement fournisseur",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 600000,
+      "credit": 0,
+      "pieceOrigine": "BQ-2026-00038"
+     },
+     {
+      "id": "ECRxmvuswne6e51iu",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Taxe sur salaires (VPS)",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "442100",
+      "compteLibelle": "Etat impôts et taxes",
+      "debit": 0,
+      "credit": 595000,
+      "pieceOrigine": "SAL-2026-00085"
+     },
+     {
+      "id": "ECRxmvuswne6frazc",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de soins",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 727000,
+      "pieceOrigine": "ACH-2026-00077"
+     },
+     {
+      "id": "ECRxmvuswne5vcjdh",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Salaires du mois",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "422000",
+      "compteLibelle": "Personnel — Rémunérations dues",
+      "debit": 0,
+      "credit": 100000,
+      "pieceOrigine": "SAL-2026-00057"
+     },
+     {
+      "id": "ECRxmvuswne5cb24f",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Encaissement caisse",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 0,
+      "credit": 558000,
+      "pieceOrigine": "CAI-2026-00042"
+     },
+     {
+      "id": "ECRxmvuswne4gyutp",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facture compagnie d’assurance",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411200",
+      "compteLibelle": "Clients — Compagnies d’assurance",
+      "debit": 115000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00020"
+     },
+     {
+      "id": "ECRxmvuswne46h1r2",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance des automates",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 537000,
+      "pieceOrigine": "OD-2026-00114"
+     },
+     {
+      "id": "ECRxmvuswne3cia3k",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Cotisations CNSS",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "431000",
+      "compteLibelle": "Caisse de sécurité social",
+      "debit": 0,
+      "credit": 338000,
+      "pieceOrigine": "SAL-2026-00075"
+     },
+     {
+      "id": "ECRxmvuswne3elq1p",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 591000,
+      "pieceOrigine": "OD-2026-00039"
+     },
+     {
+      "id": "ECRxmvuswne2ts989",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facture compagnie d’assurance",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411200",
+      "compteLibelle": "Clients — Compagnies d’assurance",
+      "debit": 312000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00061"
+     },
+     {
+      "id": "ECRxmvuswne2yfpgg",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 223000,
+      "pieceOrigine": "ACH-2026-00056"
+     },
+     {
+      "id": "ECRxmvuswne1mo6ls",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Règlement fournisseur",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 318000,
+      "credit": 0,
+      "pieceOrigine": "BQ-2026-00109"
+     },
+     {
+      "id": "ECRxmvuswne1kl92o",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de marchandises — Médicaments",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 371000,
+      "pieceOrigine": "ACH-2026-00087"
+     },
+     {
+      "id": "ECRxmvuswne0yght4",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 556000,
+      "pieceOrigine": "OD-2026-00009"
+     },
+     {
+      "id": "ECRxmvuswne0pi4tf",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de marchandises — Médicaments",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 525000,
+      "pieceOrigine": "ACH-2026-00062"
+     },
+     {
+      "id": "ECRxmvuswndz3kxje",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de maternité",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 783000,
+      "pieceOrigine": "ACH-2026-00115"
+     },
+     {
+      "id": "ECRxmvuswndze282v",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 124000,
+      "pieceOrigine": "OD-2026-00082"
+     },
+     {
+      "id": "ECRxmvuswndzqq222",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de maternité",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 562000,
+      "pieceOrigine": "ACH-2026-00046"
+     },
+     {
+      "id": "ECRxmvuswndycgxvz",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 283000,
+      "pieceOrigine": "OD-2026-00101"
+     },
+     {
+      "id": "ECRxmvuswndywvpzn",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 509000,
+      "pieceOrigine": "OD-2026-00093"
+     },
+     {
+      "id": "ECRxmvuswndxe2u0z",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Règlement fournisseur",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 109000,
+      "credit": 0,
+      "pieceOrigine": "BQ-2026-00065"
+     },
+     {
+      "id": "ECRxmvuswndxehnyn",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 209000,
+      "pieceOrigine": "OD-2026-00012"
+     },
+     {
+      "id": "ECRxmvuswndwpst4z",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Produits d’entretien",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 225000,
+      "pieceOrigine": "ACH-2026-00081"
+     },
+     {
+      "id": "ECRxmvuswndwfrr2t",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de réactifs",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 463000,
+      "pieceOrigine": "ACH-2026-00107"
+     },
+     {
+      "id": "ECRxmvuswndvbgdd8",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Taxe sur salaires (VPS)",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "442100",
+      "compteLibelle": "Etat impôts et taxes",
+      "debit": 0,
+      "credit": 458000,
+      "pieceOrigine": "SAL-2026-00117"
+     },
+     {
+      "id": "ECRxmvuswndvo2v0m",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 169000,
+      "pieceOrigine": "ACH-2026-00053"
+     },
+     {
+      "id": "ECRxmvuswndumoiu4",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Consommables de soins",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 438000,
+      "pieceOrigine": "ACH-2026-00128"
+     },
+     {
+      "id": "ECRxmvuswnduibz90",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 16000,
+      "pieceOrigine": "OD-2026-00030"
+     },
+     {
+      "id": "ECRxmvuswndtrd0r9",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de marchandises — Médicaments",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 175000,
+      "pieceOrigine": "ACH-2026-00027"
+     },
+     {
+      "id": "ECRxmvuswndt7qxrm",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Petit matériel de consultation",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 206000,
+      "pieceOrigine": "ACH-2026-00124"
+     },
+     {
+      "id": "ECRxmvuswndsvbahz",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facturation patient",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 91000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00050"
+     },
+     {
+      "id": "ECRxmvuswndsm2glz",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facturation patient",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 270000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00119"
+     },
+     {
+      "id": "ECRxmvuswnds9fec5",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Cotisations CNSS",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "431000",
+      "compteLibelle": "Caisse de sécurité social",
+      "debit": 0,
+      "credit": 718000,
+      "pieceOrigine": "SAL-2026-00047"
+     },
+     {
+      "id": "ECRxmvuswndrd5chy",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 624000,
+      "pieceOrigine": "OD-2026-00108"
+     },
+     {
+      "id": "ECRxmvuswndr7ayr9",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 8000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00094"
+     },
+     {
+      "id": "ECRxmvuswndq4q9gh",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Entretien et réparations",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 719000,
+      "pieceOrigine": "OD-2026-00013"
+     },
+     {
+      "id": "ECRxmvuswndqgny19",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Cotisations CNSS",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "431000",
+      "compteLibelle": "Caisse de sécurité social",
+      "debit": 0,
+      "credit": 34000,
+      "pieceOrigine": "SAL-2026-00070"
+     },
+     {
+      "id": "ECRxmvuswndpnz22x",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Entretien et réparations",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 615000,
+      "pieceOrigine": "OD-2026-00111"
+     },
+     {
+      "id": "ECRxmvuswndpmnx7a",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Fournitures de bureau",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 172000,
+      "pieceOrigine": "ACH-2026-00017"
+     },
+     {
+      "id": "ECRxmvuswndpvt60g",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Entretien et réparations",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 177000,
+      "pieceOrigine": "OD-2026-00069"
+     },
+     {
+      "id": "ECRxmvuswndogrfix",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance des automates",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 557000,
+      "pieceOrigine": "OD-2026-00073"
+     },
+     {
+      "id": "ECRxmvuswndo8gw2o",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 393000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00044"
+     },
+     {
+      "id": "ECRxmvuswndn3662a",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Salaires du mois",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "422000",
+      "compteLibelle": "Personnel — Rémunérations dues",
+      "debit": 0,
+      "credit": 172000,
+      "pieceOrigine": "SAL-2026-00102"
+     },
+     {
+      "id": "ECRxmvuswndn8l8br",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 589000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00031"
+     },
+     {
+      "id": "ECRxmvuswndm7wgz6",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Analyses facturées",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 199000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00103"
+     },
+     {
+      "id": "ECRxmvuswndmqwjlw",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance des automates",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 553000,
+      "pieceOrigine": "OD-2026-00048"
+     },
+     {
+      "id": "ECRxmvuswndl9yjmn",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Achat de marchandises — Médicaments",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 580000,
+      "pieceOrigine": "ACH-2026-00003"
+     },
+     {
+      "id": "ECRxmvuswndla2bfk",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 696000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00089"
+     },
+     {
+      "id": "ECRxmvuswndkqb5po",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 649000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00034"
+     },
+     {
+      "id": "ECRxmvuswndk8axw2",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Maintenance de l’échographe",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 217000,
+      "pieceOrigine": "OD-2026-00118"
+     },
+     {
+      "id": "ECRxmvuswndkhkayw",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Facture compagnie d’assurance",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411200",
+      "compteLibelle": "Clients — Compagnies d’assurance",
+      "debit": 264000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00022"
+     },
+     {
+      "id": "ECRxmvuswndj8jkye",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Produits d’entretien",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 291000,
+      "pieceOrigine": "ACH-2026-00005"
+     },
+     {
+      "id": "ECRxmvuswndjhanyq",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Accouchement facturé",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 101000,
+      "credit": 0,
+      "pieceOrigine": "VTE-2026-00023"
+     },
+     {
+      "id": "ECRxmvuswndipnbow",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Report — Honoraires du comptable",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 523000,
+      "pieceOrigine": "OD-2026-00045"
+     },
+     {
+      "id": "ECRxmvuswndi3gp6l",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "debit": 0,
+      "credit": 1879218,
+      "pieceOrigine": null
+     },
+     {
+      "id": "ECRxmvuswndhlmt0p",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "521000",
+      "compteLibelle": "Banque",
+      "debit": 0,
+      "credit": 3220000,
+      "pieceOrigine": null
+     },
+     {
+      "id": "ECRxmvuswndh3l41e",
+      "statut": "validee",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Clôture — à-nouveaux",
+      "origineCloture": "an",
+      "centreCout": null,
+      "compte": "139000",
+      "compteLibelle": "Résultat net : perte",
+      "debit": 23087218,
+      "credit": 0,
+      "pieceOrigine": null
+     },
+     {
+      "id": "ECRxmvuswndg2fito",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "139000",
+      "compteLibelle": "Résultat net : perte",
+      "debit": 23087218,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswndfa0rld",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "706200",
+      "compteLibelle": "Prestations — Analyses de laboratoire",
+      "debit": 518000,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswndfw6fyg",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "706100",
+      "compteLibelle": "Prestations — Actes et hospitalisation",
+      "debit": 9476000,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswndeq4s5r",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "706000",
+      "compteLibelle": "Services vendus — prestations de soins",
+      "debit": 2258782,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswndera45e",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "701000",
+      "compteLibelle": "Ventes de marchandises — Médicaments",
+      "debit": 533000,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswnddjnk3c",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "664120",
+      "compteLibelle": "Charge sociales sur remunerations du personnel national",
+      "debit": 0,
+      "credit": 1286000
+     },
+     {
+      "id": "ECRxmvuswndderhvo",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "661100",
+      "compteLibelle": "Salaires bruts nationaux",
+      "debit": 0,
+      "credit": 272000
+     },
+     {
+      "id": "ECRxmvuswnddlfwrl",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "641300",
+      "compteLibelle": "Taxe sur appointements salaire(VPS)",
+      "debit": 0,
+      "credit": 2610000
+     },
+     {
+      "id": "ECRxmvuswndc6gdhg",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "632400",
+      "compteLibelle": "Honoraires comptable",
+      "debit": 0,
+      "credit": 2841000
+     },
+     {
+      "id": "ECRxmvuswndctoqxj",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "631810",
+      "compteLibelle": "Frais bancaire BOA",
+      "debit": 0,
+      "credit": 1954000
+     },
+     {
+      "id": "ECRxmvuswndb1bafy",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "628100",
+      "compteLibelle": "Frais de téléphone",
+      "debit": 0,
+      "credit": 2356000
+     },
+     {
+      "id": "ECRxmvuswndb86kj6",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "624300",
+      "compteLibelle": "Maintenance",
+      "debit": 0,
+      "credit": 5945000
+     },
+     {
+      "id": "ECRxmvuswndbn2f6v",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "624100",
+      "compteLibelle": "Entretiens & réparations",
+      "debit": 0,
+      "credit": 2043000
+     },
+     {
+      "id": "ECRxmvuswndakrmhh",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "605600",
+      "compteLibelle": "Achats de petit matériel et outillages",
+      "debit": 0,
+      "credit": 2157000
+     },
+     {
+      "id": "ECRxmvuswnda4stco",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "605200",
+      "compteLibelle": "Eléctricité",
+      "debit": 0,
+      "credit": 2674000
+     },
+     {
+      "id": "ECRxmvuswnd9zwuqm",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "605100",
+      "compteLibelle": "Eau",
+      "debit": 0,
+      "credit": 1167000
+     },
+     {
+      "id": "ECRxmvuswnd9jvi71",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "604700",
+      "compteLibelle": "fournitures de bureau",
+      "debit": 0,
+      "credit": 399000
+     },
+     {
+      "id": "ECRxmvuswnd9ejhhd",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "604300",
+      "compteLibelle": "Produit d'entretien",
+      "debit": 0,
+      "credit": 1272000
+     },
+     {
+      "id": "ECRxmvuswnd858f1r",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "604100",
+      "compteLibelle": "Matieres consommables",
+      "debit": 0,
+      "credit": 6482000
+     },
+     {
+      "id": "ECRxmvuswnd8ogy6i",
+      "statut": "validee",
+      "numero": "OD-2026-RES",
+      "date": "2026-12-31",
+      "journal": "OD",
+      "journalLibelle": "Journal des opérations diverses",
+      "libelle": "Détermination du résultat 2026",
+      "origine": "Clôture — résultat",
+      "origineCloture": "resultat",
+      "centreCout": null,
+      "compte": "601100",
+      "compteLibelle": "Achats de marchandises",
+      "debit": 0,
+      "credit": 2415000
+     }
+    ],
+    "exercices": [
+     {
+      "id": "EXO-2027",
+      "annee": 2027,
+      "debut": "2027-01-01",
+      "fin": "2027-12-31",
+      "statut": "actif",
+      "etat": "ouvert",
+      "source": "journal",
+      "valideLe": null,
+      "validePar": null,
+      "motif": null
+     }
+    ],
+    "documents": [
+     {
+      "id": "DOCxmvuswnf0vuv72",
+      "statut": "actif",
+      "reference": "DOC-2026-00221",
+      "libelle": "Clôture de l’exercice 2026 — balance générale (empreinte 1178de188fd2…)",
+      "categorie": "cloture_exercice",
+      "rattachement": "Administration",
+      "rattacheA": "Exercice 2026",
+      "codeRattachement": "EX2026",
+      "format": "CSV",
+      "taille": 1320,
+      "version": 1,
+      "signe": true,
+      "archive": true,
+      "etatValidation": "valide",
+      "conservation": 10,
+      "consultations": 0,
+      "date": "2026-10-30",
+      "deposePar": "BASSONGUI Chabi Séko",
+      "empreinte": "1178de188fd29956cbbc8c7dc56b34efdb81efc754736544908c02015d022dc5",
+      "empreinteBalance": "ab650b8176fa2a8efbcdff730a83382f816765cefd9f0bf8a7e80540edb7a711",
+      "resultat": -23087218,
+      "contenu": "Compte;Intitulé;Débit;Crédit\n139000;Résultat net : perte;23087218;0\n401000;Fournisseurs;2337000;23554000\n411000;Clients — Patients;5718000;568000\n411200;Clients — Compagnies d’assurance;2247000;0\n422000;Personnel — Rémunérations dues;0;272000\n431000;Caisse de sécurité social;0;1286000\n442100;Etat impôts et taxes;0;2610000\n521000;Banque;1071000;4291000\n571000;Caisse;5388782;7268000\n601100;Achats de marchandises;2415000;2415000\n604100;Matieres consommables;6482000;6482000\n604300;Produit d'entretien;1272000;1272000\n604700;fournitures de bureau;399000;399000\n605100;Eau;1167000;1167000\n605200;Eléctricité;2674000;2674000\n605600;Achats de petit matériel et outillages;2157000;2157000\n624100;Entretiens & réparations;2043000;2043000\n624300;Maintenance;5945000;5945000\n628100;Frais de téléphone;2356000;2356000\n631810;Frais bancaire BOA;1954000;1954000\n632400;Honoraires comptable;2841000;2841000\n641300;Taxe sur appointements salaire(VPS);2610000;2610000\n661100;Salaires bruts nationaux;272000;272000\n664120;Charge sociales sur remunerations du personnel national;1286000;1286000\n701000;Ventes de marchandises — Médicaments;533000;533000\n706000;Services vendus — prestations de soins;2258782;2258782\n706100;Prestations — Actes et hospitalisation;9476000;9476000\n706200;Prestations — Analyses de laboratoire;518000;518000"
+     }
+    ],
+    "notifications": [
+     {
+      "id": "NOTxmvuswneycbqn4",
+      "statut": "actif",
+      "type": "cloture",
+      "poste": "comptable",
+      "destinataire": null,
+      "libelle": "Exercice 2026 clos",
+      "detail": "Résultat -23 087 218 FCFA ; à-nouveaux 2027 écrits.",
+      "priorite": "normale",
+      "demandeId": null,
+      "factureId": null,
+      "ordonnanceId": null,
+      "patientId": null,
+      "reference": "2026",
+      "lue": false,
+      "creeLe": "2026-10-30T10:00:00.394Z"
+     }
+    ]
+   },
+   "modifs": {
+    "exercices": [
+     {
+      "cle": "EXO-2026",
+      "id": "EXO-2026",
+      "patch": {
+       "etat": "clos",
+       "valideLe": "2026-10-30T10:00:00.393Z",
+       "validePar": "BASSONGUI Chabi Séko",
+       "motif": "Exercice 2026 conforme",
+       "resultat": -23087218,
+       "empreinte": "1178de188fd29956cbbc8c7dc56b34efdb81efc754736544908c02015d022dc5",
+       "nbEcrituresArchivees": 522,
+       "anNumero": "AN-2027-00001"
+      }
+     }
+    ]
+   }
+  },
+  "etatApres": "clos",
+  "fiche": {
+   "id": "EXO-2026",
+   "annee": 2026,
+   "debut": "2026-01-01",
+   "fin": "2026-12-31",
+   "statut": "actif",
+   "etat": "clos",
+   "source": "journal",
+   "demandeLe": "2026-10-30T10:00:00.318Z",
+   "demandePar": "KASSA Augustin",
+   "resultatPrevu": -23087218,
+   "_modifiePar": "BASSONGUI Chabi Séko",
+   "_modifieLe": "2026-10-30T10:00:00.393Z",
+   "valideLe": "2026-10-30T10:00:00.393Z",
+   "validePar": "BASSONGUI Chabi Séko",
+   "motif": "Exercice 2026 conforme",
+   "resultat": -23087218,
+   "empreinte": "1178de188fd29956cbbc8c7dc56b34efdb81efc754736544908c02015d022dc5",
+   "nbEcrituresArchivees": 522,
+   "anNumero": "AN-2027-00001"
+  },
+  "fiche2027": {
+   "id": "EXO-2027",
+   "annee": 2027,
+   "debut": "2027-01-01",
+   "fin": "2027-12-31",
+   "statut": "actif",
+   "etat": "ouvert",
+   "source": "journal",
+   "valideLe": null,
+   "validePar": null,
+   "motif": null
+  },
+  "provisoires2027": 0,
+  "ecritureApresCloture": {
+   "rendu": null,
+   "toast": [
+    "Exercice 2026 clos le 30/10/2026 — lecture seule. La correction passe par une écriture de l’exercice en cours."
+   ]
+  },
+  "seconde": {
+   "ok": false,
+   "motif": "Aucune demande de clôture en attente pour 2026."
+  },
+  "demandeApres": {
+   "ok": false,
+   "motif": "Exercice 2026 déjà clos."
+  },
+  "preApres": {
+   "annee": 2026,
+   "controles": [
+    {
+     "id": "brouillons",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Aucune écriture en brouillon",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "equilibre",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Journal équilibré (RG-10)",
+     "ecran": "m12-balance",
+     "detail": ""
+    },
+    {
+     "id": "pieces",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "Chaque pièce validée est équilibrée",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    },
+    {
+     "id": "an-existants",
+     "bloquant": true,
+     "ok": false,
+     "libelle": "Aucun à-nouveau déjà écrit sur 2027",
+     "ecran": "m12-ouverture",
+     "detail": "Des à-nouveaux existent (AN-2027-00001) : les archiver avant de clôturer, la clôture écrit les définitifs."
+    },
+    {
+     "id": "compte-47",
+     "bloquant": false,
+     "ok": true,
+     "libelle": "Comptes d’attente (47x) soldés",
+     "ecran": "m12-grand-livre",
+     "detail": ""
+    },
+    {
+     "id": "ecritures",
+     "bloquant": true,
+     "ok": true,
+     "libelle": "L’exercice porte des écritures validées",
+     "ecran": "m12-ecritures",
+     "detail": ""
+    }
+   ],
+   "nbBloquants": 1,
+   "resultat": 0,
+   "nbEcritures": 522
+  },
+  "journal": [
+   {
+    "action": "Écriture refusée",
+    "entite": "ecritures",
+    "reference": "T-9",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Document",
+    "reference": "DOCxmvuswnf0vuv72",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "notification",
+    "reference": "NOTxmvuswneycbqn4",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Clôture d’exercice",
+    "entite": "Exercice",
+    "reference": "2026",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Modification",
+    "entite": "exercices",
+    "reference": "EXO-2026",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Écriture",
+    "reference": "ECRxmvuswnetxsriq",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Écriture",
+    "reference": "ECRxmvuswnes6g97z",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Écriture",
+    "reference": "ECRxmvuswnes10cbo",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Écriture",
+    "reference": "ECRxmvuswnerddyvz",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Écriture",
+    "reference": "ECRxmvuswnerlzods",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Écriture",
+    "reference": "ECRxmvuswnermjt2d",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   },
+   {
+    "action": "Création",
+    "entite": "Écriture",
+    "reference": "ECRxmvuswnequwxjf",
+    "utilisateur": "BASSONGUI Chabi Séko"
+   }
+  ],
+  "nbOD": 20,
+  "nbAN": 102,
+  "ecritureArchive": [
+   {
+    "libelle": "Clôture de l’exercice 2026 — balance générale (empreinte 1178de188fd2…)",
+    "categorie": "cloture_exercice",
+    "conservation": 10,
+    "contenu": "Compte;Intitulé;Débit;Crédit\n139000;Résultat net : perte;23087218;0\n401000;Fournisseurs;2337000;23554000\n411000;Clients — Patients;5718000;568000\n411200;Clients — Compagnies d’assurance;2247000;0\n422000;Personnel — Rémunérations dues;0;272000\n431000;Caisse de sécurité social;0;1286000\n442100;Etat impôts et taxes;0;2610000\n521000;Banque;1071000;4291000\n571000;Caisse;5388782;7268000\n601100;Achats de marchandises;2415000;2415000\n604100;Matieres consommables;6482000;6482000\n604300;Produit d'entretien;1272000;1272000\n604700;fournitures de bureau;399000;399000\n605100;Eau;1167000;1167000\n605200;Eléctricité;2674000;2674000\n605600;Achats de petit matériel et outillages;2157000;2157000\n624100;Entretiens & réparations;2043000;2043000\n624300;Maintenance;5945000;5945000\n628100;Frais de téléphone;2356000;2356000\n631810;Frais bancaire BOA;1954000;1954000\n632400;Honoraires comptable;2841000;2841000\n641300;Taxe sur appointements salaire(VPS);2610000;2610000\n661100;Salaires bruts nationaux;272000;272000\n664120;Charge sociales sur remunerations du personnel national;1286000;1286000\n701000;Ventes de marchandises — Médicaments;533000;533000\n706000;Services vendus — prestations de soins;2258782;2258782\n706100;Prestations — Actes et hospitalisation;9476000;9476000\n706200;Prestations — Analyses de laboratoire;518000;518000"
+   }
+  ],
+  "toasts": [
+   {
+    "message": "Écriture refusée.",
+    "type": "error",
+    "detail": "Exercice 2026 clos le 30/10/2026 — lecture seule. La correction passe par une écriture de l’exercice en cours."
+   }
+  ]
+ },
+ "ecranCloture": {
+  "admin": {
+   "kpis": [
+    {
+     "label": "Exercice affiché",
+     "valeur": "2026",
+     "indice": null
+    },
+    {
+     "label": "État",
+     "valeur": "Ouvert",
+     "indice": null
+    },
+    {
+     "label": "Résultat provisoire",
+     "valeur": "-23 087 218 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Contrôles bloquants en échec",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      "EXERCICE",
+      "PÉRIODE",
+      "ÉTAT",
+      "RÉSULTAT NET",
+      "VALIDÉE PAR",
+      "EMPREINTE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Exercice 2026",
+        "01/01/2026 → 31/12/2026",
+        "Ouvert",
+        "—",
+        "—",
+        "—",
+        "Pré-clôture"
+       ],
+       "boutons": [
+        "Pré-clôture"
+       ]
+      },
+      {
+       "cellules": [
+        "Exercice 2025",
+        "01/01/2025 → 31/12/2025",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Exercice 2024",
+        "01/01/2024 → 31/12/2024",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers",
+    "Colonnes affichées",
+    "Exporter",
+    "Tout désélectionner",
+    "Pré-clôture"
+   ],
+   "notes": [],
+   "lignes": [
+    [
+     "Exercice 2026",
+     "01/01/2026 → 31/12/2026",
+     "Ouvert",
+     "—",
+     "—",
+     "—",
+     "Pré-clôture"
+    ],
+    [
+     "Exercice 2025",
+     "01/01/2025 → 31/12/2025",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ],
+    [
+     "Exercice 2024",
+     "01/01/2024 → 31/12/2024",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ]
+   ]
+  },
+  "comptable": {
+   "kpis": [
+    {
+     "label": "Exercice affiché",
+     "valeur": "2026",
+     "indice": null
+    },
+    {
+     "label": "État",
+     "valeur": "Ouvert",
+     "indice": null
+    },
+    {
+     "label": "Résultat provisoire",
+     "valeur": "-23 087 218 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Contrôles bloquants en échec",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      "EXERCICE",
+      "PÉRIODE",
+      "ÉTAT",
+      "RÉSULTAT NET",
+      "VALIDÉE PAR",
+      "EMPREINTE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Exercice 2026",
+        "01/01/2026 → 31/12/2026",
+        "Ouvert",
+        "—",
+        "—",
+        "—",
+        "Pré-clôture"
+       ],
+       "boutons": [
+        "Pré-clôture"
+       ]
+      },
+      {
+       "cellules": [
+        "Exercice 2025",
+        "01/01/2025 → 31/12/2025",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Exercice 2024",
+        "01/01/2024 → 31/12/2024",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers",
+    "Colonnes affichées",
+    "Exporter",
+    "Tout désélectionner",
+    "Pré-clôture"
+   ],
+   "notes": [],
+   "lignes": [
+    [
+     "Exercice 2026",
+     "01/01/2026 → 31/12/2026",
+     "Ouvert",
+     "—",
+     "—",
+     "—",
+     "Pré-clôture"
+    ],
+    [
+     "Exercice 2025",
+     "01/01/2025 → 31/12/2025",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ],
+    [
+     "Exercice 2024",
+     "01/01/2024 → 31/12/2024",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ]
+   ]
+  },
+  "directionAvantDemande": {
+   "kpis": [
+    {
+     "label": "Exercice affiché",
+     "valeur": "2026",
+     "indice": null
+    },
+    {
+     "label": "État",
+     "valeur": "Ouvert",
+     "indice": null
+    },
+    {
+     "label": "Résultat provisoire",
+     "valeur": "-23 087 218 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Contrôles bloquants en échec",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      "EXERCICE",
+      "PÉRIODE",
+      "ÉTAT",
+      "RÉSULTAT NET",
+      "VALIDÉE PAR",
+      "EMPREINTE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Exercice 2026",
+        "01/01/2026 → 31/12/2026",
+        "Ouvert",
+        "—",
+        "—",
+        "—",
+        "Pré-clôture"
+       ],
+       "boutons": [
+        "Pré-clôture"
+       ]
+      },
+      {
+       "cellules": [
+        "Exercice 2025",
+        "01/01/2025 → 31/12/2025",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Exercice 2024",
+        "01/01/2024 → 31/12/2024",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers",
+    "Colonnes affichées",
+    "Exporter",
+    "Tout désélectionner",
+    "Pré-clôture"
+   ],
+   "notes": [],
+   "lignes": [
+    [
+     "Exercice 2026",
+     "01/01/2026 → 31/12/2026",
+     "Ouvert",
+     "—",
+     "—",
+     "—",
+     "Pré-clôture"
+    ],
+    [
+     "Exercice 2025",
+     "01/01/2025 → 31/12/2025",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ],
+    [
+     "Exercice 2024",
+     "01/01/2024 → 31/12/2024",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ]
+   ]
+  },
+  "aideComptable": {
+   "kpis": [
+    {
+     "label": "Exercice affiché",
+     "valeur": "2026",
+     "indice": null
+    },
+    {
+     "label": "État",
+     "valeur": "Ouvert",
+     "indice": null
+    },
+    {
+     "label": "Résultat provisoire",
+     "valeur": "-23 087 218 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Contrôles bloquants en échec",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      "EXERCICE",
+      "PÉRIODE",
+      "ÉTAT",
+      "RÉSULTAT NET",
+      "VALIDÉE PAR",
+      "EMPREINTE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Exercice 2026",
+        "01/01/2026 → 31/12/2026",
+        "Ouvert",
+        "—",
+        "—",
+        "—",
+        "Pré-clôture"
+       ],
+       "boutons": [
+        "Pré-clôture"
+       ]
+      },
+      {
+       "cellules": [
+        "Exercice 2025",
+        "01/01/2025 → 31/12/2025",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Exercice 2024",
+        "01/01/2024 → 31/12/2024",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers",
+    "Colonnes affichées",
+    "Exporter",
+    "Tout désélectionner",
+    "Pré-clôture"
+   ],
+   "notes": [],
+   "lignes": [
+    [
+     "Exercice 2026",
+     "01/01/2026 → 31/12/2026",
+     "Ouvert",
+     "—",
+     "—",
+     "—",
+     "Pré-clôture"
+    ],
+    [
+     "Exercice 2025",
+     "01/01/2025 → 31/12/2025",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ],
+    [
+     "Exercice 2024",
+     "01/01/2024 → 31/12/2024",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ]
+   ]
+  },
+  "preModale": {
+   "texte": "Pré-clôture — exercice 2026 Résultat provisoire de l’exercice 2026 : -23 087 218 FCFA sur 502 ligne(s) validée(s). CONTRÔLE NATURE ÉTAT DÉTAIL / OÙ CORRIGER Aucune écriture en brouillon Bloquant Conforme — Journal équilibré (RG-10) Bloquant Conforme — Chaque pièce validée est équilibrée Bloquant Conforme — Aucun à-nouveau déjà écrit sur 2027 Bloquant Conforme — Comptes d’attente (47x) soldés Signalé Conforme — L’exercice porte des écritures validées Bloquant Conforme — Fermer Demander la clôture",
+   "boutons": [
+    "Fermer",
+    "Demander la clôture"
+   ],
+   "lignes": [
+    [
+     "Aucune écriture en brouillon",
+     "Bloquant",
+     "Conforme",
+     "—"
+    ],
+    [
+     "Journal équilibré (RG-10)",
+     "Bloquant",
+     "Conforme",
+     "—"
+    ],
+    [
+     "Chaque pièce validée est équilibrée",
+     "Bloquant",
+     "Conforme",
+     "—"
+    ],
+    [
+     "Aucun à-nouveau déjà écrit sur 2027",
+     "Bloquant",
+     "Conforme",
+     "—"
+    ],
+    [
+     "Comptes d’attente (47x) soldés",
+     "Signalé",
+     "Conforme",
+     "—"
+    ],
+    [
+     "L’exercice porte des écritures validées",
+     "Bloquant",
+     "Conforme",
+     "—"
+    ]
+   ]
+  },
+  "confirmationDemande": {
+   "texte": "Demander la clôture de l’exercice 2026 ? Les contrôles bloquants sont rejoués. Si tout est conforme, la demande part à la Direction pour validation : tant qu’elle n’est pas validée, rien n’est figé. Annuler Demander la clôture",
+   "boutons": [
+    "Annuler",
+    "Demander la clôture"
+   ]
+  },
+  "directionEnAttente": {
+   "kpis": [
+    {
+     "label": "Exercice affiché",
+     "valeur": "2026",
+     "indice": null
+    },
+    {
+     "label": "État",
+     "valeur": "En attente",
+     "indice": null
+    },
+    {
+     "label": "Résultat provisoire",
+     "valeur": "-23 087 218 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Contrôles bloquants en échec",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      "EXERCICE",
+      "PÉRIODE",
+      "ÉTAT",
+      "RÉSULTAT NET",
+      "VALIDÉE PAR",
+      "EMPREINTE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Exercice 2026",
+        "01/01/2026 → 31/12/2026",
+        "En attente de clôture",
+        "—",
+        "—",
+        "—",
+        "Valider la clôture"
+       ],
+       "boutons": [
+        "Valider la clôture"
+       ]
+      },
+      {
+       "cellules": [
+        "Exercice 2025",
+        "01/01/2025 → 31/12/2025",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Exercice 2024",
+        "01/01/2024 → 31/12/2024",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers",
+    "Colonnes affichées",
+    "Exporter",
+    "Tout désélectionner",
+    "Valider la clôture"
+   ],
+   "notes": [],
+   "lignes": [
+    [
+     "Exercice 2026",
+     "01/01/2026 → 31/12/2026",
+     "En attente de clôture",
+     "—",
+     "—",
+     "—",
+     "Valider la clôture"
+    ],
+    [
+     "Exercice 2025",
+     "01/01/2025 → 31/12/2025",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ],
+    [
+     "Exercice 2024",
+     "01/01/2024 → 31/12/2024",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ]
+   ]
+  },
+  "comptableEnAttente": {
+   "kpis": [
+    {
+     "label": "Exercice affiché",
+     "valeur": "2026",
+     "indice": null
+    },
+    {
+     "label": "État",
+     "valeur": "En attente",
+     "indice": null
+    },
+    {
+     "label": "Résultat provisoire",
+     "valeur": "-23 087 218 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Contrôles bloquants en échec",
+     "valeur": "0",
+     "indice": null
+    }
+   ],
+   "tables": [
+    {
+     "titre": null,
+     "entetes": [
+      "EXERCICE",
+      "PÉRIODE",
+      "ÉTAT",
+      "RÉSULTAT NET",
+      "VALIDÉE PAR",
+      "EMPREINTE",
+      "ACTIONS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "Exercice 2026",
+        "01/01/2026 → 31/12/2026",
+        "En attente de clôture",
+        "—",
+        "—",
+        "—",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Exercice 2025",
+        "01/01/2025 → 31/12/2025",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "Exercice 2024",
+        "01/01/2024 → 31/12/2024",
+        "Clos",
+        "—",
+        "Liasse déposée à la DGI — 15/05/2026",
+        "—",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers"
+   ],
+   "cartes": [],
+   "boutons": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers",
+    "Colonnes affichées",
+    "Exporter",
+    "Tout désélectionner"
+   ],
+   "notes": [],
+   "lignes": [
+    [
+     "Exercice 2026",
+     "01/01/2026 → 31/12/2026",
+     "En attente de clôture",
+     "—",
+     "—",
+     "—",
+     ""
+    ],
+    [
+     "Exercice 2025",
+     "01/01/2025 → 31/12/2025",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ],
+    [
+     "Exercice 2024",
+     "01/01/2024 → 31/12/2024",
+     "Clos",
+     "—",
+     "Liasse déposée à la DGI — 15/05/2026",
+     "—",
+     ""
+    ]
+   ]
+  },
+  "modaleValidation": {
+   "texte": "Valider la clôture de l’exercice 2026 Demandée par KASSA Augustin. Cette validation est définitive : les classes 6, 7 et 8 seront soldées, les à-nouveaux de 2027 écrits, l’exercice figé. Il ne se rouvre pas. Annuler Valider et clôturer",
+   "boutons": [
+    "Annuler",
+    "Valider et clôturer"
+   ]
+  },
+  "validationSansMotif": [
+   {
+    "message": "Clôture refusée.",
+    "detail": "Un motif est obligatoire pour valider une clôture."
+   }
+  ],
+  "periodes": {
+   "lignes": [
+    [
+     "Janvier 2026",
+     "22",
+     "4 618 000",
+     "4 618 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Février 2026",
+     "20",
+     "4 891 000",
+     "4 891 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Mars 2026",
+     "44",
+     "7 918 000",
+     "7 918 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Avril 2026",
+     "32",
+     "6 097 000",
+     "6 097 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Mai 2026",
+     "46",
+     "9 715 000",
+     "9 715 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Juin 2026",
+     "44",
+     "6 559 000",
+     "6 559 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Juillet 2026",
+     "36",
+     "7 618 000",
+     "7 618 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Août 2026",
+     "16",
+     "3 321 000",
+     "3 321 000",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Septembre 2026",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "Octobre 2026",
+     "242",
+     "1 897 782",
+     "1 897 782",
+     "Équilibrée",
+     "—"
+    ],
+    [
+     "Novembre 2026",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "Décembre 2026",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ]
+   ],
+   "titre": ""
+  },
+  "lettrage": {
+   "texte": "Exercice affiché 2026 État En attente Résultat provisoire -23 087 218 FCFA Contrôles bloquants en échec 0 Exercices Périodes de l’exercice Lettrage des tiers Un lettrage rapproche des lignes d’un même compte de tiers dont le total s’annule (une facture et son règlement). À la clôture, seules les lignes non lettrées sont reprises une à une aux à-nouveaux. Compte 401000 — Fournisseurs 411000 — Clients — Patients 411100 — 411100 411200 — Clients — Compagnies d’assurance 422000 — Personnel — Rémunérations dues 431000 — Caisse de sécurité social 442100 — Etat impôts et taxes Lignes du compte 401000 Colonnes Exporter PIÈCE DATE LIBELLÉ DÉBIT CRÉDIT LETTRAGE OD-2026-00045 15/08/2026 Honoraires du comptable 0 523 000 non lettrée ACH-2026-00005 10/08/2026 Produits d’entretien 0 291 000 non lettrée OD-2026-00118 09/08/2026 Maintenance de l’échographe 0 217 000 non lettrée ACH-2026-00003 01/08/2026 Achat de marchandises — Médicaments 0 580 000 non lettrée OD-2026-00048 28/07/2026 Maintenance des automates 0 553 000 non lettrée OD-2026-00073 18/07/2026 Maintenance des automates 0 557 000 non lettrée OD-2026-00069 17/07/2026 Entretien et réparations 0 177 000 non lettrée ACH-2026-00017 16/07/2026 Fournitures de bureau 0 172 000 non lettrée OD-2026-00111 16/07/2026 Entretien et réparations 0 615 000 non lettrée OD-2026-00013 09/07/2026 Entretien et réparations 0 719 000 non lettrée Affichage de 1 à 10 sur 65 enregistrements 1 2 3 4 5 Lettrer la sélection Dé-lettrer un code…",
+   "boutons": [
+    "Exercices",
+    "Périodes de l’exercice",
+    "Lettrage des tiers",
+    "Colonnes",
+    "Exporter",
+    "Tout désélectionner",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "Lettrer la sélection",
+    "Dé-lettrer un code…"
+   ],
+   "options": [
+    [
+     "401000",
+     "401000 — Fournisseurs"
+    ],
+    [
+     "411000",
+     "411000 — Clients — Patients"
+    ],
+    [
+     "411100",
+     "411100 — 411100"
+    ],
+    [
+     "411200",
+     "411200 — Clients — Compagnies d’assurance"
+    ],
+    [
+     "422000",
+     "422000 — Personnel — Rémunérations dues"
+    ],
+    [
+     "431000",
+     "431000 — Caisse de sécurité social"
+    ],
+    [
+     "442100",
+     "442100 — Etat impôts et taxes"
+    ]
+   ],
+   "lignes": [
+    [
+     "",
+     "OD-2026-00045",
+     "15/08/2026",
+     "Honoraires du comptable",
+     "0",
+     "523 000",
+     "non lettrée"
+    ],
+    [
+     "",
+     "ACH-2026-00005",
+     "10/08/2026",
+     "Produits d’entretien",
+     "0",
+     "291 000",
+     "non lettrée"
+    ],
+    [
+     "",
+     "OD-2026-00118",
+     "09/08/2026",
+     "Maintenance de l’échographe",
+     "0",
+     "217 000",
+     "non lettrée"
+    ],
+    [
+     "",
+     "ACH-2026-00003",
+     "01/08/2026",
+     "Achat de marchandises — Médicaments",
+     "0",
+     "580 000",
+     "non lettrée"
+    ],
+    [
+     "",
+     "OD-2026-00048",
+     "28/07/2026",
+     "Maintenance des automates",
+     "0",
+     "553 000",
+     "non lettrée"
+    ]
+   ],
+   "nbLignes": 10
+  }
+ },
+ "ecranOuverture": {
+  "initial": {
+   "kpis": [
+    {
+     "label": "Comptes à reporter",
+     "valeur": "8",
+     "indice": "Classes 1 à 5 seulement"
+    },
+    {
+     "label": "Total des soldes débiteurs",
+     "valeur": "7 397 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Total des soldes créditeurs",
+     "valeur": "31 747 456 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Résultat de l’exercice 2026",
+     "valeur": "-24 350 456 FCFA",
+     "indice": "Compte 13 — il équilibre le report"
+    }
+   ],
+   "tables": [
+    {
+     "titre": "Bilan d’ouverture au 1ᵉʳ janvier 2027 — à-nouveaux des classes 1 à 5",
+     "entetes": [
+      "COMPTE",
+      "INTITULÉ",
+      "DÉBIT",
+      "CRÉDIT"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "401000",
+        "Fournisseurs",
+        "",
+        "21 217 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "411000",
+        "Clients — Patients",
+        "5 150 000",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "411200",
+        "Clients — Compagnies d’assurance",
+        "2 247 000",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "422000",
+        "Personnel — Rémunérations dues",
+        "",
+        "272 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "431000",
+        "Caisse de sécurité social",
+        "",
+        "1 286 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "442100",
+        "Etat impôts et taxes",
+        "",
+        "2 610 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "521000",
+        "Banque",
+        "",
+        "3 220 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "571000",
+        "Caisse",
+        "",
+        "3 142 456"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "13",
+        "Résultat net de l’exercice 2026",
+        "24 350 456",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Exercice à reporter",
+    "Bilan d’ouverture au 1ᵉʳ janvier 2027 — à-nouveaux des classes 1 à 5"
+   ],
+   "boutons": [
+    "Écrire les à-nouveaux",
+    "Imprimer le bilan d’ouverture"
+   ],
+   "notes": [
+    "Le report s’équilibre : soldes débiteurs 7 397 000 FCFA = soldes créditeurs 31 747 456 FCFA + résultat -24 350 456 FCFA. L’à-nouveau peut être écrit.",
+    "Seules les classes 1 à 5 se reportent. Un compte de charge (classe 6) ou de produit (classe 7) ne passe jamais à l’exercice suivant : il est soldé par le résultat, qui s’inscrit au compte 13 du passif. Le reporter reviendrait à compter deux fois la même dépense."
+   ]
+  },
+  "selecteur": [
+   [
+    "2026",
+    "Exercice 2026"
+   ]
+  ],
+  "lignes": [
+   [
+    "401000",
+    "Fournisseurs",
+    "",
+    "21 217 000"
+   ],
+   [
+    "411000",
+    "Clients — Patients",
+    "5 150 000",
+    ""
+   ],
+   [
+    "411200",
+    "Clients — Compagnies d’assurance",
+    "2 247 000",
+    ""
+   ],
+   [
+    "422000",
+    "Personnel — Rémunérations dues",
+    "",
+    "272 000"
+   ],
+   [
+    "431000",
+    "Caisse de sécurité social",
+    "",
+    "1 286 000"
+   ],
+   [
+    "442100",
+    "Etat impôts et taxes",
+    "",
+    "2 610 000"
+   ],
+   [
+    "521000",
+    "Banque",
+    "",
+    "3 220 000"
+   ],
+   [
+    "571000",
+    "Caisse",
+    "",
+    "3 142 456"
+   ],
+   [
+    "13",
+    "Résultat net de l’exercice 2026",
+    "24 350 456",
+    ""
+   ]
+  ],
+  "boutons": [
+   "Écrire les à-nouveaux",
+   "Imprimer le bilan d’ouverture"
+  ],
+  "piece": {
+   "titre": "Bilan d’ouverture — à-nouveaux",
+   "sousTitre": "Au 1ᵉʳ janvier 2027, report de l’exercice 2026",
+   "cartouche": [
+    [
+     "Exercice clos",
+     "2026"
+    ],
+    [
+     "Ouverture au",
+     "1ᵉʳ janvier 2027"
+    ],
+    [
+     "Journal",
+     "AN — Journal des à-nouveaux"
+    ],
+    [
+     "Comptes reportés",
+     "8"
+    ],
+    [
+     "Résultat reporté",
+     "-24 350 456 FCFA"
+    ],
+    [
+     "Référentiel",
+     "Plan comptable SYSCOHADA révisé"
+    ]
+   ],
+   "contenu": "CompteIntituléDébitCrédit401000Fournisseurs21 217 000411000Clients — Patients5 150 000411200Clients — Compagnies d’assurance2 247 000422000Personnel — Rémunérations dues272 000431000Caisse de sécurité social1 286 000442100Etat impôts et taxes2 610 000521000Banque3 220 000571000Caisse3 142 456130000Résultat net de l’exercice 202624 350 456TOTAUX DU REPORT31 747 45631 747 456Seules les classes 1 à 5 sont reportées : un compte de charge ou de produit ne passe jamais à l’exercice suivant, il est soldé par le résultat. Les deux totaux doivent être égaux (RG-10).",
+   "tables": [
+    {
+     "entetes": [
+      "Compte",
+      "Intitulé",
+      "Débit",
+      "Crédit"
+     ],
+     "lignes": [
+      [
+       "401000",
+       "Fournisseurs",
+       "",
+       "21 217 000"
+      ],
+      [
+       "411000",
+       "Clients — Patients",
+       "5 150 000",
+       ""
+      ],
+      [
+       "411200",
+       "Clients — Compagnies d’assurance",
+       "2 247 000",
+       ""
+      ],
+      [
+       "422000",
+       "Personnel — Rémunérations dues",
+       "",
+       "272 000"
+      ],
+      [
+       "431000",
+       "Caisse de sécurité social",
+       "",
+       "1 286 000"
+      ],
+      [
+       "442100",
+       "Etat impôts et taxes",
+       "",
+       "2 610 000"
+      ],
+      [
+       "521000",
+       "Banque",
+       "",
+       "3 220 000"
+      ],
+      [
+       "571000",
+       "Caisse",
+       "",
+       "3 142 456"
+      ],
+      [
+       "130000",
+       "Résultat net de l’exercice 2026",
+       "24 350 456",
+       ""
+      ]
+     ],
+     "pied": [
+      "TOTAUX DU REPORT",
+      "",
+      "31 747 456",
+      "31 747 456"
+     ]
+    }
+   ],
+   "signatures": [
+    {
+     "role": "Le Comptable",
+     "nom": "KASSA Augustin"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    }
+   ]
+  },
+  "confirmation": {
+   "texte": "Écrire les à-nouveaux du 1ᵉʳ janvier 2027 ? 8 compte(s) de bilan seront reportés, plus le résultat de l’exercice 2026 (-24 350 456 FCFA) au compte 13. La pièce naît en brouillon : la validation reste un geste humain. Annuler Écrire le report",
+   "boutons": [
+    "Annuler",
+    "Écrire le report"
+   ]
+  },
+  "ecart": {
+   "inserts": {
+    "ecritures": [
+     {
+      "id": "ECRxmvuswqaz8a6ma",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "130000",
+      "compteLibelle": "Résultat net de l’exercice 2026",
+      "debit": 24350456,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswqay17dse",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "debit": 0,
+      "credit": 3142456
+     },
+     {
+      "id": "ECRxmvuswqay29dah",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "521000",
+      "compteLibelle": "Banque",
+      "debit": 0,
+      "credit": 3220000
+     },
+     {
+      "id": "ECRxmvuswqaxxgyex",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "442100",
+      "compteLibelle": "Etat impôts et taxes",
+      "debit": 0,
+      "credit": 2610000
+     },
+     {
+      "id": "ECRxmvuswqax934ig",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "431000",
+      "compteLibelle": "Caisse de sécurité social",
+      "debit": 0,
+      "credit": 1286000
+     },
+     {
+      "id": "ECRxmvuswqaxbiw5p",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "422000",
+      "compteLibelle": "Personnel — Rémunérations dues",
+      "debit": 0,
+      "credit": 272000
+     },
+     {
+      "id": "ECRxmvuswqawhzidk",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "411200",
+      "compteLibelle": "Clients — Compagnies d’assurance",
+      "debit": 2247000,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswqawf34c8",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "411000",
+      "compteLibelle": "Clients — Patients",
+      "debit": 5150000,
+      "credit": 0
+     },
+     {
+      "id": "ECRxmvuswqavfs5zj",
+      "statut": "brouillon",
+      "numero": "AN-2027-00001",
+      "date": "2027-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "À-nouveaux au 1er janvier 2027",
+      "origine": "Automatique — report d’exercice",
+      "centreCout": null,
+      "compte": "401000",
+      "compteLibelle": "Fournisseurs",
+      "debit": 0,
+      "credit": 21217000
+     }
+    ]
+   },
+   "modifs": {}
+  },
+  "toast": [
+   {
+    "message": "À-nouveaux écrits — 9 ligne(s) au journal AN.",
+    "type": "success",
+    "detail": "Pièce AN-2027-00001, en brouillon."
+   }
+  ],
+  "apres": {
+   "kpis": [
+    {
+     "label": "Comptes à reporter",
+     "valeur": "8",
+     "indice": "Classes 1 à 5 seulement"
+    },
+    {
+     "label": "Total des soldes débiteurs",
+     "valeur": "7 397 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Total des soldes créditeurs",
+     "valeur": "31 747 456 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Résultat de l’exercice 2026",
+     "valeur": "-24 350 456 FCFA",
+     "indice": "Compte 13 — il équilibre le report"
+    }
+   ],
+   "tables": [
+    {
+     "titre": "Bilan d’ouverture au 1ᵉʳ janvier 2027 — à-nouveaux des classes 1 à 5",
+     "entetes": [
+      "COMPTE",
+      "INTITULÉ",
+      "DÉBIT",
+      "CRÉDIT"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "401000",
+        "Fournisseurs",
+        "",
+        "21 217 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "411000",
+        "Clients — Patients",
+        "5 150 000",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "411200",
+        "Clients — Compagnies d’assurance",
+        "2 247 000",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "422000",
+        "Personnel — Rémunérations dues",
+        "",
+        "272 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "431000",
+        "Caisse de sécurité social",
+        "",
+        "1 286 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "442100",
+        "Etat impôts et taxes",
+        "",
+        "2 610 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "521000",
+        "Banque",
+        "",
+        "3 220 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "571000",
+        "Caisse",
+        "",
+        "3 142 456"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "13",
+        "Résultat net de l’exercice 2026",
+        "24 350 456",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Exercice à reporter",
+    "Bilan d’ouverture au 1ᵉʳ janvier 2027 — à-nouveaux des classes 1 à 5"
+   ],
+   "boutons": [
+    "Écrire les à-nouveaux",
+    "Imprimer le bilan d’ouverture"
+   ],
+   "notes": [
+    "Le report s’équilibre : soldes débiteurs 7 397 000 FCFA = soldes créditeurs 31 747 456 FCFA + résultat -24 350 456 FCFA. L’à-nouveau peut être écrit.",
+    "Les à-nouveaux du 1ᵉʳ janvier 2027 sont DÉJÀ écrits : 9 ligne(s) au journal AN. Les réécrire créerait un double report — la pièce existante fait foi.",
+    "Seules les classes 1 à 5 se reportent. Un compte de charge (classe 6) ou de produit (classe 7) ne passe jamais à l’exercice suivant : il est soldé par le résultat, qui s’inscrit au compte 13 du passif. Le reporter reviendrait à compter deux fois la même dépense."
+   ]
+  },
+  "notesApres": [
+   "Le report s’équilibre : soldes débiteurs 7 397 000 FCFA = soldes créditeurs 31 747 456 FCFA + résultat -24 350 456 FCFA. L’à-nouveau peut être écrit.",
+   "Les à-nouveaux du 1ᵉʳ janvier 2027 sont DÉJÀ écrits : 9 ligne(s) au journal AN. Les réécrire créerait un double report — la pièce existante fait foi.",
+   "Seules les classes 1 à 5 se reportent. Un compte de charge (classe 6) ou de produit (classe 7) ne passe jamais à l’exercice suivant : il est soldé par le résultat, qui s’inscrit au compte 13 du passif. Le reporter reviendrait à compter deux fois la même dépense."
+  ],
+  "secondReport": [
+   {
+    "message": "Les à-nouveaux du 1ᵉʳ janvier 2027 existent déjà.",
+    "type": "error",
+    "detail": "Les réécrire créerait un double report."
+   }
+  ],
+  "deseq": {
+   "kpis": [
+    {
+     "label": "Comptes à reporter",
+     "valeur": "8",
+     "indice": "Classes 1 à 5 seulement"
+    },
+    {
+     "label": "Total des soldes débiteurs",
+     "valeur": "7 397 000 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Total des soldes créditeurs",
+     "valeur": "31 742 456 FCFA",
+     "indice": null
+    },
+    {
+     "label": "Résultat de l’exercice 2026",
+     "valeur": "-24 350 456 FCFA",
+     "indice": "Compte 13 — il équilibre le report"
+    }
+   ],
+   "tables": [
+    {
+     "titre": "Bilan d’ouverture au 1ᵉʳ janvier 2027 — à-nouveaux des classes 1 à 5",
+     "entetes": [
+      "COMPTE",
+      "INTITULÉ",
+      "DÉBIT",
+      "CRÉDIT"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "401000",
+        "Fournisseurs",
+        "",
+        "21 217 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "411000",
+        "Clients — Patients",
+        "5 150 000",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "411200",
+        "Clients — Compagnies d’assurance",
+        "2 247 000",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "422000",
+        "Personnel — Rémunérations dues",
+        "",
+        "272 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "431000",
+        "Caisse de sécurité social",
+        "",
+        "1 286 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "442100",
+        "Etat impôts et taxes",
+        "",
+        "2 610 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "521000",
+        "Banque",
+        "",
+        "3 220 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "571000",
+        "Caisse",
+        "",
+        "3 137 456"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "13",
+        "Résultat net de l’exercice 2026",
+        "24 350 456",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [],
+   "cartes": [
+    "Exercice à reporter",
+    "Bilan d’ouverture au 1ᵉʳ janvier 2027 — à-nouveaux des classes 1 à 5"
+   ],
+   "boutons": [
+    "Écrire les à-nouveaux",
+    "Imprimer le bilan d’ouverture"
+   ],
+   "notes": [
+    "Le report NE S’ÉQUILIBRE PAS — écart de 5 000 FCFA. L’à-nouveau est refusé : un report boiteux propagerait le déséquilibre à toutes les années suivantes (RG-10). Vérifier les écritures de l’exercice 2026 avant de reporter.",
+    "Seules les classes 1 à 5 se reportent. Un compte de charge (classe 6) ou de produit (classe 7) ne passe jamais à l’exercice suivant : il est soldé par le résultat, qui s’inscrit au compte 13 du passif. Le reporter reviendrait à compter deux fois la même dépense."
+   ]
+  },
+  "deseqRefus": [
+   {
+    "message": "Report refusé — écart de 5 000 FCFA (RG-10).",
+    "type": "error",
+    "detail": "Un à-nouveau boiteux propagerait le déséquilibre à toutes les années suivantes."
+   }
+  ],
+  "parRole": {
+   "direction": [
+    "Écrire les à-nouveaux",
+    "Imprimer le bilan d’ouverture"
+   ],
+   "comptable": [
+    "Écrire les à-nouveaux",
+    "Imprimer le bilan d’ouverture"
+   ],
+   "aide_comptable": [
+    "Écrire les à-nouveaux",
+    "Imprimer le bilan d’ouverture"
+   ]
+  }
+ },
+ "toastsTotal": 8
+}

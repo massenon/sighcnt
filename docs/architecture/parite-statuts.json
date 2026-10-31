@@ -211,5 +211,12 @@
  "m12-banques": "porté",
  "m12-compte-resultat": "porté",
  "m12-flux-tresorerie": "porté",
- "m12-seuil-rentabilite": "porté"
+ "m12-seuil-rentabilite": "porté",
+ "m12-etats-financiers": "porté",
+ "m12-baseline-2025": "porté",
+ "m12-echeances": "porté",
+ "m12-cloture": "porté",
+ "m12-ouverture": "porté",
+ "m12-bfr": "porté",
+ "m12-cout-activite": "porté"
 }

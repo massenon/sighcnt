@@ -14,6 +14,13 @@ import 'cpb_budgets.dart';
 import 'cpb_feuillets.dart';
 import 'cpb_immobilisations.dart';
 import 'cpb_seuil.dart';
+import 'cpc_baseline.dart';
+import 'cpc_bfr.dart';
+import 'cpc_cloture.dart';
+import 'cpc_cout_activite.dart';
+import 'cpc_etats.dart';
+import 'cpc_echeances.dart';
+import 'cpc_ouverture.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -34,4 +41,11 @@ final Map<String, ConstruireEcran> ecransM12 = {
   'm12-compte-resultat': (c, cfg) => const EcranCompteResultat(),
   'm12-flux-tresorerie': (c, cfg) => const EcranFluxTresorerie(),
   'm12-seuil-rentabilite': (c, cfg) => const EcranSeuilRentabilite(),
+  'm12-cloture': (c, cfg) => const EcranCloture(),
+  'm12-ouverture': (c, cfg) => const EcranOuverture(),
+  'm12-echeances': (c, cfg) => const EcranEcheances(),
+  'm12-baseline-2025': (c, cfg) => const EcranBaseline2025(),
+  'm12-bfr': (c, cfg) => const EcranBfr(),
+  'm12-etats-financiers': (c, cfg) => const EcranEtatsFinanciers(),
+  'm12-cout-activite': (c, cfg) => const EcranCoutActivite(),
 };

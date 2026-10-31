@@ -3,8 +3,20 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:sigh_domaine/sigh_domaine.dart' show cpcGardeEcritures;
 
 typedef Fiche = Map<String, Object?>;
+
+/// Refus NOMMÉ d'une écriture par une GARDE posée sur la collection (`S.garder` de la maquette) : un exercice clos refuse toute écriture, d'où
+/// qu'elle vienne. Rien n'a été écrit ; le refus est journalisé (RG-12).
+class EcritureRefusee implements Exception {
+  const EcritureRefusee(this.collection, this.operation, this.motif);
+  final String collection;
+  final String operation;
+  final String motif;
+  @override
+  String toString() => motif;
+}
 
 /// Une collection du magasin (`S.collection(nom)` de la maquette) : fiches actives / archivées, archivage LOGIQUE annulable (RG-14 : jamais de
 /// suppression physique). Lecture SYNCHRONE — c'est ce qui permet aux écrans de se composer comme ceux de la maquette.
@@ -26,6 +38,24 @@ class CollectionMagasin extends ChangeNotifier {
   final String module;
   final String? entite;
 
+  /// POINT D'EXTENSION (additif) : des gardes de lecture seule posées SUR la collection — `garde(operation, fiche)` rend le motif du refus ou
+  /// `null`. Opérations : `inserer`, `modifier` (la fiche telle qu'elle serait après la mise à jour), `archiver`. Une garde refusée journalise et lève
+  /// [EcritureRefusee] AVANT toute écriture : masquer un bouton ne protège rien.
+  final List<String? Function(String operation, Fiche fiche)> _gardes = [];
+  void garder(String? Function(String operation, Fiche fiche) garde) =>
+      _gardes.add(garde);
+
+  void _controler(String operation, Fiche fiche) {
+    for (final g in _gardes) {
+      final motif = g(operation, fiche);
+      if (motif != null) {
+        journal?.call('Écriture refusée', '—', nom,
+            '${fiche['id'] ?? fiche['numero'] ?? ''}', null, {'op': operation, 'motif': motif});
+        throw EcritureRefusee(nom, operation, motif);
+      }
+    }
+  }
+
   static String _ref(Fiche f) =>
       '${f['numero'] ?? f['reference'] ?? f['code'] ?? f['id']}';
 
@@ -34,6 +64,7 @@ class CollectionMagasin extends ChangeNotifier {
   ({Fiche fiche, VoidCallback annuler}) inserer(Fiche f,
       {String prefixe = 'ID'}) {
     final nouvelle = {...f};
+    if (_gardes.isNotEmpty) _controler('inserer', nouvelle);
     nouvelle['id'] ??=
         '$prefixe${(_fiches.length + 1).toString().padLeft(5, '0')}';
     // La maquette insère EN TÊTE (`db[name].unshift`) : l'ordre d'une collection se voit (tris à égalité, ordre d'un lot transmis à la MECeF).
@@ -67,6 +98,7 @@ class CollectionMagasin extends ChangeNotifier {
   VoidCallback mettreAJour(Object? id, Fiche patch) {
     final f = parId(id);
     if (f == null) return () {};
+    if (_gardes.isNotEmpty) _controler('modifier', {...f, ...patch});
     final avant = <String, Object?>{for (final k in patch.keys) k: f[k]};
     final existait = {for (final k in patch.keys) k: f.containsKey(k)};
     f.addAll(patch);
@@ -87,6 +119,7 @@ class CollectionMagasin extends ChangeNotifier {
   VoidCallback archiver(Object? id) {
     final f = parId(id);
     if (f == null || estArchivee(f)) return () {};
+    if (_gardes.isNotEmpty) _controler('archiver', f);
     f['statutAvantArchivage'] = f['statut'];
     f['statut'] = 'archive';
     journal?.call('Archivage', module, entite ?? nom, _ref(f),
@@ -277,14 +310,22 @@ class Magasin {
     'avances': 'M11',
     'heuresSup': 'M11',
     'bulletins': 'M11',
+    'exercices': 'M12',
+    'objectifsPilotage': 'M12',
   };
 
   /// Une collection absente est VIDE, jamais une erreur : l'écran dit « aucun enregistrement » (état vide), comme la maquette.
-  CollectionMagasin collection(String nom) => _c.putIfAbsent(
-      nom,
-      () => CollectionMagasin(nom, _jeux[nom] ?? const [],
-          journal: nom == 'audit' ? null : journaliser,
-          module: _modules[nom] ?? '—'));
+  CollectionMagasin collection(String nom) => _c.putIfAbsent(nom, () {
+        final c = CollectionMagasin(nom, _jeux[nom] ?? const [],
+            journal: nom == 'audit' ? null : journaliser,
+            module: _modules[nom] ?? '—');
+        // `S.garder('ecritures', …)` de la maquette : la lecture seule d'un exercice clos est tenue AU MOTEUR, sur la collection — masquer un bouton ne
+        // protège rien. La garde relit les exercices À CHAQUE écriture (une clôture validée ferme aussitôt).
+        if (nom == 'ecritures') {
+          c.garder((op, f) => cpcGardeEcritures(collection('exercices').toutes, f['date']));
+        }
+        return c;
+      });
 
   /// Journal d'audit (RG-12), plafonné à 400 entrées comme la maquette ; les anciennes sont écartées du tampon, jamais réécrites.
   void journaliser(String action, String module, String entite,
@@ -478,6 +519,8 @@ class Magasin {
     'pretsEtudes',
     'avances',
     'heuresSup',
-    'bulletins'
+    'bulletins',
+    'exercices',
+    'objectifsPilotage'
   ];
 }

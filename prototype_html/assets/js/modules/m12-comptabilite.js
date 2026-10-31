@@ -3281,10 +3281,14 @@
             }).join(' · '), null));
         }
         if (!retard.length && !aPayer.length && !declarations.length) {
+          /* E804 — la date de la prochaine obligation se formate comme toutes les autres, et quand TOUT est réglé on le dit
+             au lieu d'écrire « undefined » : le message se lisait « La prochaine obligation tombe le undefined ». */
+          var prochaine = rows.filter(function (e) { return e.jours >= 0 && !e.paye; })
+            .sort(function (a, b) { return a.jours - b.jours; })[0];
           barre.appendChild(alerte('success', 'check-circle-2',
             'Aucune échéance en attente immédiate',
-            'La prochaine obligation tombe le ' + (rows.filter(function (e) { return e.jours >= 0 && !e.paye; })
-              .sort(function (a, b) { return a.jours - b.jours; })[0] || {}).echeance, null));
+            prochaine ? 'La prochaine obligation tombe le ' + C.dateFR(prochaine.echeance)
+              : 'Toutes les échéances de l’exercice sont réglées.', null));
         }
         host.appendChild(barre);
 

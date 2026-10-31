@@ -1,0 +1,5537 @@
+{
+ "jeu": {
+  "entete": {
+   "kpis": [
+    {
+     "label": "Chiffre d’affaires déposé",
+     "valeur": "190 830 994 FCFA",
+     "indice": "Exercice 2025 — liasse du 15/05/2026"
+    },
+    {
+     "label": "Résultat net déposé",
+     "valeur": "4 561 200 FCFA",
+     "indice": "N-1 : 4 472 283 FCFA"
+    },
+    {
+     "label": "Total du bilan",
+     "valeur": "112 937 495 FCFA",
+     "indice": "Actif = Passif — le bilan s’équilibre"
+    },
+    {
+     "label": "Écarts internes du document",
+     "valeur": "6",
+     "indice": "Signalés, jamais arbitrés"
+    }
+   ],
+   "tables": [
+    {
+     "titre": "BILAN — ACTIF (feuillet 5/51)",
+     "entetes": [
+      "RÉF.",
+      "ACTIF",
+      "NOTE",
+      "BRUT 2025",
+      "AMORT. ET DÉPRÉC.",
+      "NET 2025",
+      "NET 2024",
+      "EXERCICE EN COURS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "AD",
+        "IMMOBILISATIONS INCORPORELLES",
+        "3",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AE",
+        "Frais de développement et de prospection",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AF",
+        "Brevets, licences, logiciels, et droits similaires",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AG",
+        "Fonds commercial et droit au bail",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AH",
+        "Autres immobilisations incorporelles",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AI",
+        "IMMOBILISATIONS CORPORELLES",
+        "3",
+        "180 151 372",
+        "80 084 841",
+        "100 066 531",
+        "103 700 289",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AJ",
+        "Terrains",
+        "",
+        "9 250 000",
+        "0",
+        "9 250 000",
+        "9 250 000",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AK",
+        "Bâtiments",
+        "",
+        "100 889 000",
+        "20 177 800",
+        "80 711 200",
+        "85 755 650",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AL",
+        "Aménagements, agencements et installations",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AM",
+        "Matériel, mobilier et actifs biologiques",
+        "",
+        "66 256 372",
+        "56 151 041",
+        "10 105 331",
+        "8 694 639",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AN",
+        "Matériel de transport",
+        "",
+        "3 756 000",
+        "3 756 000",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AP",
+        "AVANCES ET ACOMPTES VERSÉS SUR IMMOBILISATIONS",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AQ",
+        "IMMOBILISATIONS FINANCIÈRES",
+        "4",
+        "6 570 325",
+        "0",
+        "6 570 325",
+        "6 570 325",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AR",
+        "Titres de participation",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AS",
+        "Autres immobilisations financières",
+        "",
+        "6 570 325",
+        "0",
+        "6 570 325",
+        "6 570 325",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "AZ",
+        "TOTAL ACTIF IMMOBILISÉ",
+        "",
+        "186 721 697",
+        "80 084 841",
+        "106 636 856",
+        "110 270 614",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BA",
+        "ACTIF CIRCULANT HAO",
+        "5",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BB",
+        "STOCKS ET ENCOURS",
+        "6",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BG",
+        "CRÉANCES ET EMPLOIS ASSIMILÉS",
+        "",
+        "0",
+        "0",
+        "0",
+        "15 327 350",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BH",
+        "Fournisseurs avances versées",
+        "17",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BI",
+        "Clients",
+        "7",
+        "0",
+        "0",
+        "0",
+        "15 327 350",
+        "7 397 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BJ",
+        "Autres créances",
+        "8",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BK",
+        "TOTAL ACTIF CIRCULANT",
+        "",
+        "0",
+        "0",
+        "0",
+        "15 327 350",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BQ",
+        "Titres de placement",
+        "9",
+        "4 000 000",
+        "0",
+        "4 000 000",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BR",
+        "Valeurs à encaisser",
+        "10",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BS",
+        "Banques, chèques postaux, caisse et assimilés",
+        "11",
+        "2 300 639",
+        "0",
+        "2 300 639",
+        "875 686",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BT",
+        "TOTAL TRÉSORERIE-ACTIF",
+        "",
+        "6 300 639",
+        "0",
+        "6 300 639",
+        "875 686",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BU",
+        "Écart de conversion-Actif",
+        "12",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "BZ",
+        "TOTAL GÉNÉRAL",
+        "",
+        "193 022 336",
+        "80 084 841",
+        "112 937 495",
+        "126 473 650",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    },
+    {
+     "titre": "BILAN — PASSIF (feuillet 6/51)",
+     "entetes": [
+      "RÉF.",
+      "PASSIF",
+      "NOTE",
+      "NET 2025",
+      "NET 2024",
+      "EXERCICE EN COURS"
+     ],
+     "lignes": [
+      {
+       "cellules": [
+        "CA",
+        "Capital",
+        "13",
+        "7 000 000",
+        "7 000 000",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CB",
+        "Apporteurs capital non appelé (-)",
+        "13",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CD",
+        "Primes liées au capital social",
+        "14",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CE",
+        "Écarts de réévaluation",
+        "3e",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CF",
+        "Réserves indisponibles",
+        "14",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CG",
+        "Réserves libres",
+        "14",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CH",
+        "Report à nouveau (+ ou -)",
+        "14",
+        "40 530 945",
+        "36 058 662",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CJ",
+        "Résultat net de l’exercice (bénéfice + ou perte -)",
+        "",
+        "4 561 200",
+        "4 472 283",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CL",
+        "Subventions d’investissement",
+        "15",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CM",
+        "Provisions réglementées",
+        "15",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "CP",
+        "TOTAL CAPITAUX PROPRES ET RESSOURCES ASSIMILÉES",
+        "",
+        "52 092 145",
+        "47 530 945",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DA",
+        "Emprunts et dettes financières diverses",
+        "16",
+        "17 508 248",
+        "53 564 678",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DB",
+        "Dettes de location-acquisition",
+        "16",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DC",
+        "Provisions pour risques et charges",
+        "16",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DD",
+        "TOTAL DETTES FINANCIÈRES ET RESSOURCES ASSIMILÉES",
+        "",
+        "17 508 248",
+        "53 564 678",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DF",
+        "TOTAL RESSOURCES STABLES",
+        "",
+        "69 600 393",
+        "101 095 623",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DH",
+        "Dettes circulantes HAO",
+        "5",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DI",
+        "Clients, avances reçues",
+        "7",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DJ",
+        "Fournisseurs d’exploitation",
+        "17",
+        "12 155 234",
+        "11 000 467",
+        "21 217 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DK",
+        "Dettes fiscales et sociales",
+        "18",
+        "31 182 318",
+        "13 723 560",
+        "4 168 000"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DM",
+        "Autres dettes",
+        "19",
+        "0",
+        "654 000",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DN",
+        "Provisions pour risques et charges à court terme",
+        "19",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DP",
+        "TOTAL PASSIF CIRCULANT",
+        "",
+        "43 337 552",
+        "25 378 027",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DQ",
+        "Banques, crédits d’escompte",
+        "20",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DR",
+        "Banques, établissements financiers et crédits de trésorerie",
+        "20",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DT",
+        "TOTAL TRÉSORERIE-PASSIF",
+        "",
+        "0",
+        "0",
+        ""
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DV",
+        "Écart de conversion-Passif",
+        "12",
+        "0",
+        "0",
+        "—"
+       ],
+       "boutons": []
+      },
+      {
+       "cellules": [
+        "DZ",
+        "TOTAL GÉNÉRAL",
+        "",
+        "112 937 495",
+        "126 473 650",
+        ""
+       ],
+       "boutons": []
+      }
+     ],
+     "pied": []
+    }
+   ],
+   "onglets": [
+    "Bilan",
+    "Compte de résultat",
+    "Tableau des flux de trésorerie",
+    "Disponibilités",
+    "Fiche de synthèse"
+   ],
+   "cartes": [
+    "BILAN — ACTIF (feuillet 5/51)",
+    "BILAN — PASSIF (feuillet 6/51)"
+   ],
+   "boutons": [
+    "Bilan",
+    "Compte de résultat",
+    "Tableau des flux de trésorerie",
+    "Disponibilités",
+    "Fiche de synthèse",
+    "Imprimer le bilan",
+    "Compte de résultat",
+    "Flux de trésorerie",
+    "Disponibilités",
+    "Fiche de synthèse",
+    "Immobilisations"
+   ],
+   "notes": [
+    "Liasse CLINIQUE NASSIERA SARL, IFU 3201642748214, déposée le 15/05/2026 — code BK505416. Ministère de l’Économie et des Finances — Direction Générale des Impôts, République du Bénin. Référentiel : plan comptable SYSCOHADA révisé (AUDCIF, applicable depuis le 1ᵉʳ janvier 2018).",
+    "Le bilan déposé s’équilibre : total général de l’actif 112 937 495 FCFA = total général du passif 112 937 495 FCFA.",
+    "La colonne « Exercice en cours » est calculée depuis les écritures VALIDÉES du journal, par les préfixes de comptes SYSCOHADA que chaque ligne déclare. Elle reste vide là où le journal ne porte rien — le prototype ne tient pas encore tous les comptes de la liasse. Un compte de tiers y paraît du côté où son solde le place : débiteur à l’actif, créditeur au passif — le plan SYSCOHADA emploie les mêmes comptes de classe 4 pour les créances et pour les dettes."
+   ]
+  },
+  "onglets": {
+   "Bilan": {
+    "tables": [
+     {
+      "titre": "BILAN — ACTIF (feuillet 5/51)",
+      "entetes": [
+       "RÉF.",
+       "ACTIF",
+       "NOTE",
+       "BRUT 2025",
+       "AMORT. ET DÉPRÉC.",
+       "NET 2025",
+       "NET 2024",
+       "EXERCICE EN COURS"
+      ],
+      "lignes": [
+       [
+        "AD",
+        "IMMOBILISATIONS INCORPORELLES",
+        "3",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       [
+        "AE",
+        "Frais de développement et de prospection",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "AF",
+        "Brevets, licences, logiciels, et droits similaires",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "AG",
+        "Fonds commercial et droit au bail",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "AH",
+        "Autres immobilisations incorporelles",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "AI",
+        "IMMOBILISATIONS CORPORELLES",
+        "3",
+        "180 151 372",
+        "80 084 841",
+        "100 066 531",
+        "103 700 289",
+        ""
+       ],
+       [
+        "AJ",
+        "Terrains",
+        "",
+        "9 250 000",
+        "0",
+        "9 250 000",
+        "9 250 000",
+        "—"
+       ],
+       [
+        "AK",
+        "Bâtiments",
+        "",
+        "100 889 000",
+        "20 177 800",
+        "80 711 200",
+        "85 755 650",
+        "—"
+       ],
+       [
+        "AL",
+        "Aménagements, agencements et installations",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "AM",
+        "Matériel, mobilier et actifs biologiques",
+        "",
+        "66 256 372",
+        "56 151 041",
+        "10 105 331",
+        "8 694 639",
+        "—"
+       ],
+       [
+        "AN",
+        "Matériel de transport",
+        "",
+        "3 756 000",
+        "3 756 000",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "AP",
+        "AVANCES ET ACOMPTES VERSÉS SUR IMMOBILISATIONS",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       [
+        "AQ",
+        "IMMOBILISATIONS FINANCIÈRES",
+        "4",
+        "6 570 325",
+        "0",
+        "6 570 325",
+        "6 570 325",
+        ""
+       ],
+       [
+        "AR",
+        "Titres de participation",
+        "",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "AS",
+        "Autres immobilisations financières",
+        "",
+        "6 570 325",
+        "0",
+        "6 570 325",
+        "6 570 325",
+        "—"
+       ],
+       [
+        "AZ",
+        "TOTAL ACTIF IMMOBILISÉ",
+        "",
+        "186 721 697",
+        "80 084 841",
+        "106 636 856",
+        "110 270 614",
+        ""
+       ],
+       [
+        "BA",
+        "ACTIF CIRCULANT HAO",
+        "5",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       [
+        "BB",
+        "STOCKS ET ENCOURS",
+        "6",
+        "0",
+        "0",
+        "0",
+        "0",
+        ""
+       ],
+       [
+        "BG",
+        "CRÉANCES ET EMPLOIS ASSIMILÉS",
+        "",
+        "0",
+        "0",
+        "0",
+        "15 327 350",
+        ""
+       ],
+       [
+        "BH",
+        "Fournisseurs avances versées",
+        "17",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "BI",
+        "Clients",
+        "7",
+        "0",
+        "0",
+        "0",
+        "15 327 350",
+        "7 397 000"
+       ],
+       [
+        "BJ",
+        "Autres créances",
+        "8",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "BK",
+        "TOTAL ACTIF CIRCULANT",
+        "",
+        "0",
+        "0",
+        "0",
+        "15 327 350",
+        ""
+       ],
+       [
+        "BQ",
+        "Titres de placement",
+        "9",
+        "4 000 000",
+        "0",
+        "4 000 000",
+        "0",
+        "—"
+       ],
+       [
+        "BR",
+        "Valeurs à encaisser",
+        "10",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "BS",
+        "Banques, chèques postaux, caisse et assimilés",
+        "11",
+        "2 300 639",
+        "0",
+        "2 300 639",
+        "875 686",
+        "—"
+       ],
+       [
+        "BT",
+        "TOTAL TRÉSORERIE-ACTIF",
+        "",
+        "6 300 639",
+        "0",
+        "6 300 639",
+        "875 686",
+        ""
+       ],
+       [
+        "BU",
+        "Écart de conversion-Actif",
+        "12",
+        "0",
+        "0",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "BZ",
+        "TOTAL GÉNÉRAL",
+        "",
+        "193 022 336",
+        "80 084 841",
+        "112 937 495",
+        "126 473 650",
+        ""
+       ]
+      ]
+     },
+     {
+      "titre": "BILAN — PASSIF (feuillet 6/51)",
+      "entetes": [
+       "RÉF.",
+       "PASSIF",
+       "NOTE",
+       "NET 2025",
+       "NET 2024",
+       "EXERCICE EN COURS"
+      ],
+      "lignes": [
+       [
+        "CA",
+        "Capital",
+        "13",
+        "7 000 000",
+        "7 000 000",
+        "—"
+       ],
+       [
+        "CB",
+        "Apporteurs capital non appelé (-)",
+        "13",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "CD",
+        "Primes liées au capital social",
+        "14",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "CE",
+        "Écarts de réévaluation",
+        "3e",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "CF",
+        "Réserves indisponibles",
+        "14",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "CG",
+        "Réserves libres",
+        "14",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "CH",
+        "Report à nouveau (+ ou -)",
+        "14",
+        "40 530 945",
+        "36 058 662",
+        "—"
+       ],
+       [
+        "CJ",
+        "Résultat net de l’exercice (bénéfice + ou perte -)",
+        "",
+        "4 561 200",
+        "4 472 283",
+        "—"
+       ],
+       [
+        "CL",
+        "Subventions d’investissement",
+        "15",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "CM",
+        "Provisions réglementées",
+        "15",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "CP",
+        "TOTAL CAPITAUX PROPRES ET RESSOURCES ASSIMILÉES",
+        "",
+        "52 092 145",
+        "47 530 945",
+        ""
+       ],
+       [
+        "DA",
+        "Emprunts et dettes financières diverses",
+        "16",
+        "17 508 248",
+        "53 564 678",
+        "—"
+       ],
+       [
+        "DB",
+        "Dettes de location-acquisition",
+        "16",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DC",
+        "Provisions pour risques et charges",
+        "16",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DD",
+        "TOTAL DETTES FINANCIÈRES ET RESSOURCES ASSIMILÉES",
+        "",
+        "17 508 248",
+        "53 564 678",
+        ""
+       ],
+       [
+        "DF",
+        "TOTAL RESSOURCES STABLES",
+        "",
+        "69 600 393",
+        "101 095 623",
+        ""
+       ],
+       [
+        "DH",
+        "Dettes circulantes HAO",
+        "5",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DI",
+        "Clients, avances reçues",
+        "7",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DJ",
+        "Fournisseurs d’exploitation",
+        "17",
+        "12 155 234",
+        "11 000 467",
+        "21 217 000"
+       ],
+       [
+        "DK",
+        "Dettes fiscales et sociales",
+        "18",
+        "31 182 318",
+        "13 723 560",
+        "4 168 000"
+       ],
+       [
+        "DM",
+        "Autres dettes",
+        "19",
+        "0",
+        "654 000",
+        "—"
+       ],
+       [
+        "DN",
+        "Provisions pour risques et charges à court terme",
+        "19",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DP",
+        "TOTAL PASSIF CIRCULANT",
+        "",
+        "43 337 552",
+        "25 378 027",
+        ""
+       ],
+       [
+        "DQ",
+        "Banques, crédits d’escompte",
+        "20",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DR",
+        "Banques, établissements financiers et crédits de trésorerie",
+        "20",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DT",
+        "TOTAL TRÉSORERIE-PASSIF",
+        "",
+        "0",
+        "0",
+        ""
+       ],
+       [
+        "DV",
+        "Écart de conversion-Passif",
+        "12",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "DZ",
+        "TOTAL GÉNÉRAL",
+        "",
+        "112 937 495",
+        "126 473 650",
+        ""
+       ]
+      ]
+     }
+    ],
+    "cartes": [
+     "BILAN — ACTIF (feuillet 5/51)",
+     "BILAN — PASSIF (feuillet 6/51)"
+    ],
+    "notes": [
+     "Liasse CLINIQUE NASSIERA SARL, IFU 3201642748214, déposée le 15/05/2026 — code BK505416. Ministère de l’Économie et des Finances — Direction Générale des Impôts, République du Bénin. Référentiel : plan comptable SYSCOHADA révisé (AUDCIF, applicable depuis le 1ᵉʳ janvier 2018).",
+     "Le bilan déposé s’équilibre : total général de l’actif 112 937 495 FCFA = total général du passif 112 937 495 FCFA.",
+     "La colonne « Exercice en cours » est calculée depuis les écritures VALIDÉES du journal, par les préfixes de comptes SYSCOHADA que chaque ligne déclare. Elle reste vide là où le journal ne porte rien — le prototype ne tient pas encore tous les comptes de la liasse. Un compte de tiers y paraît du côté où son solde le place : débiteur à l’actif, créditeur au passif — le plan SYSCOHADA emploie les mêmes comptes de classe 4 pour les créances et pour les dettes."
+    ],
+    "listes": [],
+    "badges": []
+   },
+   "Compte de résultat": {
+    "tables": [
+     {
+      "titre": "COMPTE DE RÉSULTAT (feuillet 7/51)",
+      "entetes": [
+       "RÉF.",
+       "LIBELLÉS",
+       "(2)",
+       "NOTE",
+       "EXERCICE 2025",
+       "EXERCICE 2024",
+       "EXERCICE EN COURS"
+      ],
+      "lignes": [
+       [
+        "TA",
+        "Ventes de marchandises",
+        "+",
+        "21",
+        "0",
+        "0",
+        "533 000"
+       ],
+       [
+        "RA",
+        "Achats de marchandises",
+        "-",
+        "22",
+        "0",
+        "0",
+        "-2 415 000"
+       ],
+       [
+        "RB",
+        "Variation de stocks de marchandises",
+        "-/+",
+        "6",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "XA",
+        "MARGE COMMERCIALE (Somme TA à RB)",
+        "",
+        "",
+        "0",
+        "0",
+        ""
+       ],
+       [
+        "TB",
+        "Ventes de produits fabriqués",
+        "+",
+        "21",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TC",
+        "Travaux, services vendus",
+        "+",
+        "21",
+        "190 830 994",
+        "177 153 094",
+        "10 989 544"
+       ],
+       [
+        "TD",
+        "Produits accessoires",
+        "+",
+        "21",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "XB",
+        "CHIFFRE D’AFFAIRES (A + B + C + D)",
+        "",
+        "",
+        "190 830 994",
+        "177 153 094",
+        ""
+       ],
+       [
+        "TE",
+        "Production stockée (ou déstockage)",
+        "-/+",
+        "6",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TF",
+        "Production immobilisée",
+        "+",
+        "21",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TG",
+        "Subventions d’exploitation",
+        "+",
+        "21",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TH",
+        "Autres produits",
+        "+",
+        "21",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TI",
+        "Transferts de charges d’exploitation",
+        "+",
+        "12",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RC",
+        "Achats de matières premières et fournitures liées",
+        "-",
+        "22",
+        "-30 226 188",
+        "-40 656 095",
+        "—"
+       ],
+       [
+        "RD",
+        "Variation de stocks de matières premières et fournitures liées",
+        "-/+",
+        "6",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RE",
+        "Autres achats",
+        "-",
+        "22",
+        "-34 823 421",
+        "-27 861 825",
+        "-14 151 000"
+       ],
+       [
+        "RF",
+        "Variation de stocks d’autres approvisionnements",
+        "-/+",
+        "6",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RG",
+        "Transports",
+        "-",
+        "23",
+        "-88 000",
+        "-94 000",
+        "—"
+       ],
+       [
+        "RH",
+        "Services extérieurs",
+        "-",
+        "24",
+        "-56 648 919",
+        "-56 608 270",
+        "-15 139 000"
+       ],
+       [
+        "RI",
+        "Impôts et taxes",
+        "-",
+        "25",
+        "-10 063 357",
+        "-6 456 990",
+        "-2 610 000"
+       ],
+       [
+        "RJ",
+        "Autres charges",
+        "-",
+        "26",
+        "-7 345 614",
+        "-2 025 522",
+        "—"
+       ],
+       [
+        "XC",
+        "VALEUR AJOUTÉE (XB + RA + RB) + (somme TE à RJ)",
+        "",
+        "",
+        "51 635 495",
+        "43 450 392",
+        ""
+       ],
+       [
+        "RK",
+        "Charges de personnel",
+        "-",
+        "27",
+        "-27 546 978",
+        "-17 072 782",
+        "-1 558 000"
+       ],
+       [
+        "XD",
+        "EXCÉDENT BRUT D’EXPLOITATION (XC + RK)",
+        "",
+        "",
+        "24 088 517",
+        "26 377 610",
+        ""
+       ],
+       [
+        "TJ",
+        "Reprises d’amortissements, provisions et dépréciations",
+        "+",
+        "28",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RL",
+        "Dotations aux amortissements, aux provisions et dépréciations",
+        "-",
+        "3C&28",
+        "-10 617 358",
+        "-11 203 158",
+        "—"
+       ],
+       [
+        "XE",
+        "RÉSULTAT D’EXPLOITATION (XD + TJ + RL)",
+        "",
+        "",
+        "13 471 159",
+        "15 174 452",
+        ""
+       ],
+       [
+        "TK",
+        "Revenus financiers et assimilés",
+        "+",
+        "29",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TL",
+        "Reprises de provisions et dépréciations financières",
+        "+",
+        "28",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TM",
+        "Transferts de charges financières",
+        "+",
+        "12",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RM",
+        "Frais financiers et charges assimilées",
+        "-",
+        "29",
+        "-6 955 159",
+        "-8 785 769",
+        "—"
+       ],
+       [
+        "RN",
+        "Dotations aux provisions et aux dépréciations financières",
+        "-",
+        "3C&28",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "XF",
+        "RÉSULTAT FINANCIER (somme TK à RN)",
+        "",
+        "",
+        "-6 955 159",
+        "-8 785 769",
+        ""
+       ],
+       [
+        "XG",
+        "RÉSULTAT DES ACTIVITÉS ORDINAIRES (XE + XF)",
+        "",
+        "",
+        "6 516 000",
+        "6 388 683",
+        ""
+       ],
+       [
+        "TN",
+        "Produits des cessions d’immobilisations",
+        "+",
+        "3D",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "TO",
+        "Autres Produits HAO",
+        "+",
+        "30",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RO",
+        "Valeurs comptables des cessions d’immobilisations",
+        "-",
+        "3D",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RP",
+        "Autres Charges HAO",
+        "-",
+        "30",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "XH",
+        "RÉSULTAT HORS ACTIVITÉS ORDINAIRES (somme TN à RP)",
+        "",
+        "",
+        "0",
+        "0",
+        ""
+       ],
+       [
+        "RQ",
+        "Participation des travailleurs",
+        "-",
+        "30",
+        "0",
+        "0",
+        "—"
+       ],
+       [
+        "RS",
+        "Impôts sur le résultat",
+        "-",
+        "37",
+        "-1 954 800",
+        "-1 916 400",
+        "—"
+       ],
+       [
+        "XI",
+        "RÉSULTAT NET (XG + XH + RQ + RS)",
+        "",
+        "",
+        "4 561 200",
+        "4 472 283",
+        ""
+       ]
+      ]
+     }
+    ],
+    "cartes": [
+     "COMPTE DE RÉSULTAT (feuillet 7/51)"
+    ],
+    "notes": [
+     "Liasse CLINIQUE NASSIERA SARL, IFU 3201642748214, déposée le 15/05/2026 — code BK505416. Ministère de l’Économie et des Finances — Direction Générale des Impôts, République du Bénin. Référentiel : plan comptable SYSCOHADA révisé (AUDCIF, applicable depuis le 1ᵉʳ janvier 2018).",
+     "La marge commerciale est nulle à la liasse déposée — et c’est la confirmation documentaire de RG-02 : les médicaments sont facturés au prix d’achat, sans marge. Si elle cessait de l’être, ce serait un signal, pas une bonne nouvelle."
+    ],
+    "listes": [],
+    "badges": []
+   },
+   "Tableau des flux de trésorerie": {
+    "tables": [
+     {
+      "titre": "TABLEAU DES FLUX DE TRÉSORERIE (feuillet 8/51)",
+      "entetes": [
+       "RÉF.",
+       "LIBELLÉS",
+       "EXERCICE 2025",
+       "EXERCICE 2024"
+      ],
+      "lignes": [
+       [
+        "ZA",
+        "Trésorerie nette au 1er janvier (Trésorerie actif N-1 - Trésorerie passif N-1)",
+        "A",
+        "875 686",
+        "1 963 014"
+       ],
+       [
+        "FLUX DE TRÉSORERIE PROVENANT DES ACTIVITÉS OPÉRATIONNELLES"
+       ],
+       [
+        "FA",
+        "Capacité d’Autofinancement Globale (CAFG)",
+        "",
+        "15 178 558",
+        "43 450 392"
+       ],
+       [
+        "FB",
+        "- Variation d’actif circulant HAO (1)",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FC",
+        "- Variation des stocks",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FD",
+        "- Variation des créances",
+        "",
+        "15 327 350",
+        "-1 589 906"
+       ],
+       [
+        "FE",
+        "+ Variation du passif circulant (1)",
+        "",
+        "-17 959 525",
+        "6 123 760"
+       ],
+       [
+        "",
+        "Variation du BF lié aux activités opérationnelles (FB+FC+FD+FE)écart du document",
+        "",
+        "31 359 405",
+        "-47 984 246"
+       ],
+       [
+        "ZB",
+        "Flux de trésorerie provenant des activités opérationnelles (Somme FA à FE)écart du document",
+        "B",
+        "-18 108 317",
+        "47 984 246"
+       ],
+       [
+        "FLUX DE TRÉSORERIE PROVENANT DES ACTIVITÉS D’INVESTISSEMENTS"
+       ],
+       [
+        "FF",
+        "- Décaissements liés aux acquisitions d’immobilisations incorporelles",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FG",
+        "- Décaissements liés aux acquisitions d’immobilisations corporelles",
+        "",
+        "-6 983 600",
+        "-8 000 000"
+       ],
+       [
+        "FH",
+        "- Décaissements liés aux acquisitions d’immobilisations financières",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FI",
+        "+ Encaissements liés aux cessions d’immobilisations incorporelles et corporelles",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FJ",
+        "+ Encaissements liés aux cessions d’immobilisations financières",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "ZC",
+        "Flux de trésorerie provenant des activités d’Investissement (somme FF à FJ)",
+        "C",
+        "-6 983 600",
+        "-8 000 000"
+       ],
+       [
+        "FLUX DE TRÉSORERIE PROVENANT DU FINANCEMENT PAR LES CAPITAUX PROPRES"
+       ],
+       [
+        "FK",
+        "+ Augmentations de capital par apports nouveaux",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FL",
+        "+ Subventions d’investissement reçues",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FM",
+        "- Prélèvements sur le capital",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FN",
+        "- Dividendes versés",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "ZD",
+        "Flux de trésorerie provenant des capitaux propres (somme FK à FN)",
+        "D",
+        "0",
+        "0"
+       ],
+       [
+        "TRÉSORERIE PROVENANT DU FINANCEMENT PAR LES CAPITAUX ÉTRANGERS"
+       ],
+       [
+        "FO",
+        "+ Emprunts (2)",
+        "",
+        "71 118 761",
+        "0"
+       ],
+       [
+        "FP",
+        "+ Autres dettes financières diverses (3)",
+        "",
+        "0",
+        "0"
+       ],
+       [
+        "FQ",
+        "- Remboursements des emprunts et autres dettes financières",
+        "",
+        "-40 601 891",
+        "-40 764 003"
+       ],
+       [
+        "ZE",
+        "Flux de trésorerie provenant des capitaux étrangers (somme FO à FQ)",
+        "E",
+        "30 516 870",
+        "-40 764 003"
+       ],
+       [
+        "ZF",
+        "Flux de trésorerie provenant des activités de financement (D+E)",
+        "F",
+        "30 516 870",
+        "-40 764 003"
+       ],
+       [
+        "ZG",
+        "VARIATION DE LA TRÉSORERIE NETTE DE LA PÉRIODE (B+C+F)",
+        "G",
+        "5 424 953",
+        "-779 757"
+       ],
+       [
+        "ZH",
+        "Trésorerie nette au 31 Décembre (G+A)",
+        "H",
+        "6 300 639",
+        "1 183 257"
+       ]
+      ]
+     },
+     {
+      "titre": "Écarts internes du document déposé — conservés, non arbitrés",
+      "entetes": [
+       "LIGNE",
+       "CONSTAT",
+       "LECTURE"
+      ],
+      "lignes": [
+       [
+        "CAFG de l’exercice N-1",
+        "Le tableau des flux porte 43 450 392 en N-1 (FA), la note 34 porte 15 675 441. La valeur du tableau des flux est celle de la VALEUR AJOUTÉE N-1 du compte de résultat.",
+        "La note 34 paraît juste ; le tableau des flux semble avoir reçu la mauvaise ligne."
+       ],
+       [
+        "Variation du besoin de financement (FB+FC+FD+FE)",
+        "La ligne porte 31 359 405 alors que FB+FC+FD+FE vaut −2 632 175.",
+        "La somme annoncée ne se retrouve pas à partir de ses composantes déposées."
+       ],
+       [
+        "Flux des activités opérationnelles (ZB)",
+        "ZB porte −18 108 317, quand FA + (FB à FE) donne 12 546 383. En revanche ZB se recoupe en aval : ZB + ZC + ZF = 5 424 953 = ZG, et ZG + ZA = 6 300 639 = ZH.",
+        "Le bas du tableau est cohérent ; c’est le bloc opérationnel qui ne l’est pas."
+       ]
+      ]
+     }
+    ],
+    "cartes": [
+     "TABLEAU DES FLUX DE TRÉSORERIE (feuillet 8/51)",
+     "Écarts internes du document déposé — conservés, non arbitrés"
+    ],
+    "notes": [
+     "Liasse CLINIQUE NASSIERA SARL, IFU 3201642748214, déposée le 15/05/2026 — code BK505416. Ministère de l’Économie et des Finances — Direction Générale des Impôts, République du Bénin. Référentiel : plan comptable SYSCOHADA révisé (AUDCIF, applicable depuis le 1ᵉʳ janvier 2018).",
+     "Le formulaire déposé ne se recoupe pas partout. Ces écarts sont ceux du document remis à l’administration : les corriger ici ferait diverger le logiciel de ce que la clinique a réellement déposé — précisément ce qu’un contrôle vient comparer."
+    ],
+    "listes": [],
+    "badges": [
+     {
+      "titre": "La ligne porte 31 359 405 alors que FB+FC+FD+FE vaut −2 632 175.",
+      "texte": "écart du document"
+     },
+     {
+      "titre": "ZB porte −18 108 317, quand FA + (FB à FE) donne 12 546 383. En revanche ZB se recoupe en aval : ZB + ZC + ZF = 5 424 953 = ZG, et ZG + ZA = 6 300 639 = ZH.",
+      "texte": "écart du document"
+     }
+    ]
+   },
+   "Disponibilités": {
+    "tables": [
+     {
+      "titre": "NOTE 11 : DISPONIBILITÉS (feuillet 25/51)",
+      "entetes": [
+       "LIBELLÉS",
+       "ANNÉE 2025",
+       "ANNÉE 2024",
+       "VARIATION EN %",
+       "EXERCICE EN COURS"
+      ],
+      "lignes": [
+       [
+        "Banques locales",
+        "1 659 914",
+        "875 686",
+        "89.56 %",
+        "-3 220 000"
+       ],
+       [
+        "Banques autres états région",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Banques, dépôt à terme",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Autres Banques",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Banques intérêts courus",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Chèques postaux",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Autres établissement financiers",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Etablissement financiers intérêts courus",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Instruments de trésorerie",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Instruments de monnaie électronique",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "Caisse",
+        "640 725",
+        "0",
+        "",
+        "-3 142 456"
+       ],
+       [
+        "Régies d’avances et virements accréditifs",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "TOTAL BRUT DISPONIBILITÉS",
+        "2 300 639",
+        "875 686",
+        "162.72 %",
+        ""
+       ],
+       [
+        "Dépréciations",
+        "",
+        "",
+        "",
+        "—"
+       ],
+       [
+        "TOTAL NET DE DÉPRÉCIATIONS",
+        "2 300 639",
+        "875 686",
+        "162.72 %",
+        ""
+       ]
+      ]
+     }
+    ],
+    "cartes": [
+     "NOTE 11 : DISPONIBILITÉS (feuillet 25/51)",
+     "Commentaires demandés par le formulaire"
+    ],
+    "notes": [
+     "Liasse CLINIQUE NASSIERA SARL, IFU 3201642748214, déposée le 15/05/2026 — code BK505416. Ministère de l’Économie et des Finances — Direction Générale des Impôts, République du Bénin. Référentiel : plan comptable SYSCOHADA révisé (AUDCIF, applicable depuis le 1ᵉʳ janvier 2018).",
+     "Banques et intérêts courus et Établissements financiers intérêts courus figurent dans cette rubrique en négatif si le compte principal attaché est débiteur."
+    ],
+    "listes": [
+     [
+      "Indiquer la date de rapprochement des comptes bancaires.",
+      "Indiquer la date d’inventaire de la caisse et des instruments de monnaie électronique.",
+      "Justifier toute variation significative.",
+      "Détailler les instruments de monnaie électronique si le montant est significatif.",
+      "Indiquer les événements et circonstances qui ont conduit à la dépréciation et à la reprise."
+     ]
+    ],
+    "badges": []
+   },
+   "Fiche de synthèse": {
+    "tables": [
+     {
+      "titre": "NOTE 34 : FICHE DE SYNTHÈSE DES PRINCIPAUX INDICATEURS FINANCIERS (feuillet 51/51)",
+      "entetes": [
+       "LIBELLÉS",
+       "ANNÉE 2025",
+       "ANNÉE 2024",
+       "VARIATION EN %"
+      ],
+      "lignes": [
+       [
+        "ANALYSE DE L’ACTIVITÉ"
+       ],
+       [
+        "SOLDES INTERMÉDIAIRES DE GESTION"
+       ],
+       [
+        "CHIFFRE D’AFFAIRES",
+        "190 830 994",
+        "177 153 094",
+        "7.72 %"
+       ],
+       [
+        "MARGE COMMERCIALE",
+        "",
+        "",
+        ""
+       ],
+       [
+        "VALEUR AJOUTÉE",
+        "51 635 495",
+        "43 450 392",
+        "18.84 %"
+       ],
+       [
+        "EXCÉDENT BRUT D’EXPLOITATION (EBE)",
+        "24 088 517",
+        "26 377 610",
+        "-8.68 %"
+       ],
+       [
+        "RÉSULTAT D’EXPLOITATION",
+        "13 471 159",
+        "15 174 452",
+        "-11.22 %"
+       ],
+       [
+        "RÉSULTAT FINANCIER",
+        "-6 955 159",
+        "-8 785 769",
+        "-20.84 %"
+       ],
+       [
+        "RÉSULTAT DES ACTIVITÉS ORDINAIRES",
+        "6 516 000",
+        "6 388 683",
+        "1.99 %"
+       ],
+       [
+        "RÉSULTAT HORS ACTIVITÉS ORDINAIRES",
+        "",
+        "",
+        ""
+       ],
+       [
+        "RÉSULTAT NET",
+        "4 561 200",
+        "4 472 283",
+        "1.99 %"
+       ],
+       [
+        "DÉTERMINATION DE LA CAPACITÉ D’AUTOFINANCEMENT"
+       ],
+       [
+        "Excédent brut d’exploitation (EBE)",
+        "24 088 517",
+        "26 377 610",
+        ""
+       ],
+       [
+        "+ Valeurs comptables des cessions courantes d’immobilisation (compte 654)",
+        "",
+        "",
+        ""
+       ],
+       [
+        "- Produits des cessions courantes d’immobilisation (compte 754)",
+        "",
+        "",
+        ""
+       ],
+       [
+        "= CAPACITÉ D’AUTOFINANCEMENT D’EXPLOITATION",
+        "24 088 517",
+        "26 377 610",
+        "-8.68 %"
+       ],
+       [
+        "+ Revenus financiers",
+        "",
+        "",
+        ""
+       ],
+       [
+        "+ Gains de change financiers",
+        "",
+        "",
+        ""
+       ],
+       [
+        "+ Transferts de charges financières",
+        "",
+        "",
+        ""
+       ],
+       [
+        "+ Produits HAO",
+        "",
+        "",
+        ""
+       ],
+       [
+        "+ Transferts de charges HAO",
+        "",
+        "",
+        ""
+       ],
+       [
+        "- Frais financiers",
+        "-6 955 159",
+        "-8 785 769",
+        ""
+       ],
+       [
+        "- Pertes de change financières",
+        "",
+        "",
+        ""
+       ],
+       [
+        "- Charges HAO",
+        "",
+        "",
+        ""
+       ],
+       [
+        "- Participations",
+        "",
+        "",
+        ""
+       ],
+       [
+        "- Impôts sur les résultats",
+        "-1 954 800",
+        "-1 916 400",
+        ""
+       ],
+       [
+        "= CAPACITÉ D’AUTOFINANCEMENT GLOBALE (C.A.F.G.)écart du document",
+        "15 178 558",
+        "15 675 441",
+        "-3.17 %"
+       ],
+       [
+        "- Distributions de dividendes opérées durant l’exercice",
+        "",
+        "",
+        ""
+       ],
+       [
+        "= AUTOFINANCEMENT",
+        "15 178 558",
+        "15 675 441",
+        "-3.17 %"
+       ],
+       [
+        "ANALYSE DE LA RENTABILITÉ"
+       ],
+       [
+        "Rentabilité économique = Résultat d’exploitation (a) / Capitaux propres + dettes financières",
+        "Points",
+        "Points",
+        ""
+       ],
+       [
+        "Rentabilité financière = Résultat net / Capitaux propres",
+        "Points",
+        "Points",
+        ""
+       ],
+       [
+        "ANALYSE DE LA STRUCTURE FINANCIÈRE"
+       ],
+       [
+        "+ Capitaux propres et ressources assimilées",
+        "52 092 145",
+        "47 530 945",
+        "9.60 %"
+       ],
+       [
+        "+ Dettes financières* et autres ressources assimilées (b)",
+        "17 508 248",
+        "53 564 678",
+        "-67.31 %"
+       ],
+       [
+        "= ressources stables",
+        "69 600 393",
+        "101 095 623",
+        "-31.15 %"
+       ],
+       [
+        "- Actif Immobilisé (b)",
+        "-106 636 856",
+        "-110 270 614",
+        "-3.30 %"
+       ],
+       [
+        "= FONDS DE ROULEMENT (1)",
+        "-37 036 463",
+        "-9 174 991",
+        "303.67 %"
+       ],
+       [
+        "+ Actif circulant d’exploitation (b)",
+        "0",
+        "15 327 350",
+        "-100.00 %"
+       ],
+       [
+        "- Passif circulant d’exploitation (b)",
+        "-43 337 552",
+        "-25 378 027",
+        "70.77 %"
+       ],
+       [
+        "= BESOIN DE FINANCEMENT D’EXPLOITATION (2)",
+        "-43 337 552",
+        "-10 050 677",
+        "331.19 %"
+       ],
+       [
+        "+ Actif circulant HAO (b)",
+        "",
+        "",
+        ""
+       ],
+       [
+        "- Passif circulant HAO (b)",
+        "",
+        "",
+        ""
+       ],
+       [
+        "= BESOIN DE FINANCEMENT HAO (3)",
+        "0",
+        "0",
+        "0.00 %"
+       ],
+       [
+        "BESOIN DE FINANCEMENT GLOBAL (4) = (2) + (3)",
+        "-43 337 552",
+        "-10 050 677",
+        "331.19 %"
+       ],
+       [
+        "TRÉSORERIE NETTE (5) = (1) - (4)écart du document",
+        "6 301 089",
+        "875 686",
+        "619.56 %"
+       ],
+       [
+        "CONTRÔLE : TRÉSORERIE NETTE = (TRÉSORERIE-ACTIF) - (TRÉSORERIE-PASSIF)",
+        "",
+        "",
+        ""
+       ],
+       [
+        "ANALYSE DE LA VARIATION DE LA TRÉSORERIE"
+       ],
+       [
+        "+ Flux de trésorerie des activités opérationnellesécart du document",
+        "-14 253 827",
+        "1 181 202",
+        "-1 306.72 %"
+       ],
+       [
+        "- Flux de trésorerie des activités d’investissement",
+        "-6 983 600",
+        "-6 366 800",
+        "9.69 %"
+       ],
+       [
+        "+ Flux de trésorerie des activités de financementécart du document",
+        "27 538 065",
+        "6 061 284",
+        "354.33 %"
+       ],
+       [
+        "= VARIATION de LA TRÉSORERIE NETTE de LA PÉRIODE",
+        "6 300 638",
+        "875 686",
+        "619.51 %"
+       ],
+       [
+        "ANALYSE DE LA VARIATION DE L’ENDETTEMENT FINANCIER NET"
+       ],
+       [
+        "Endettement financier brut (Dettes financières* + Trésorerie – passif)",
+        "17 508 248",
+        "53 564 678",
+        "-67.31 %"
+       ],
+       [
+        "- Trésorerie - actif",
+        "-2 300 639",
+        "-875 686",
+        "162.72 %"
+       ],
+       [
+        "= ENDETTEMENT FINANCIER NET",
+        "15 207 609",
+        "52 688 992",
+        "-71.14 %"
+       ]
+      ]
+     },
+     {
+      "titre": "Écarts internes du document déposé — conservés, non arbitrés",
+      "entetes": [
+       "LIGNE",
+       "CONSTAT",
+       "LECTURE"
+      ],
+      "lignes": [
+       [
+        "CAFG de l’exercice N-1",
+        "Le tableau des flux porte 43 450 392 en N-1 (FA), la note 34 porte 15 675 441. La valeur du tableau des flux est celle de la VALEUR AJOUTÉE N-1 du compte de résultat.",
+        "La note 34 paraît juste ; le tableau des flux semble avoir reçu la mauvaise ligne."
+       ],
+       [
+        "Flux opérationnels — flux vs note 34",
+        "Le tableau des flux porte −18 108 317 (ZB), la note 34 porte −14 253 827.",
+        "Les deux feuillets d’une même liasse ne disent pas la même chose."
+       ],
+       [
+        "Flux de financement — flux vs note 34",
+        "Le tableau des flux porte 30 516 870 (ZF), la note 34 porte 27 538 065.",
+        "Même divergence, sur la ligne suivante."
+       ],
+       [
+        "Trésorerie nette",
+        "La note 34 porte 6 301 089, le bilan (BT) et le tableau des flux (ZH) portent 6 300 639 — 450 F d’écart.",
+        "Un écart d’arrondi de report, sans incidence sur la lecture."
+       ]
+      ]
+     }
+    ],
+    "cartes": [
+     "NOTE 34 : FICHE DE SYNTHÈSE DES PRINCIPAUX INDICATEURS FINANCIERS (feuillet 51/51)",
+     "Notes du formulaire",
+     "Écarts internes du document déposé — conservés, non arbitrés"
+    ],
+    "notes": [
+     "Liasse CLINIQUE NASSIERA SARL, IFU 3201642748214, déposée le 15/05/2026 — code BK505416. Ministère de l’Économie et des Finances — Direction Générale des Impôts, République du Bénin. Référentiel : plan comptable SYSCOHADA révisé (AUDCIF, applicable depuis le 1ᵉʳ janvier 2018).",
+     "Le formulaire déposé ne se recoupe pas partout. Ces écarts sont ceux du document remis à l’administration : les corriger ici ferait diverger le logiciel de ce que la clinique a réellement déposé — précisément ce qu’un contrôle vient comparer."
+    ],
+    "listes": [
+     [
+      "(a) Résultat d’exploitation après impôt théorique sur le bénéfice. Les variations des taux de rentabilité doivent être exprimées en nombre de points (par exemple de 2 % à 5 % = 3 points).",
+      "(b) Les écarts de conversion doivent être éliminés afin de ramener les créances et les dettes concernées à leur valeur initiale.",
+      "Dettes financières* = emprunts et dettes financières diverses + dettes de location acquisition."
+     ]
+    ],
+    "badges": [
+     {
+      "titre": "Le tableau des flux porte 43 450 392 en N-1 (FA), la note 34 porte 15 675 441. La valeur du tableau des flux est celle de la VALEUR AJOUTÉE N-1 du compte de résultat.",
+      "texte": "écart du document"
+     },
+     {
+      "titre": "La note 34 porte 6 301 089, le bilan (BT) et le tableau des flux (ZH) portent 6 300 639 — 450 F d’écart.",
+      "texte": "écart du document"
+     },
+     {
+      "titre": "Le tableau des flux porte −18 108 317 (ZB), la note 34 porte −14 253 827.",
+      "texte": "écart du document"
+     },
+     {
+      "titre": "Le tableau des flux porte 30 516 870 (ZF), la note 34 porte 27 538 065.",
+      "texte": "écart du document"
+     }
+    ]
+   }
+  },
+  "texteSource": "4 pour les créances et pour les dettes. Imprimer le bilan Compte de résultat Flux de trésorerie Disponibilités Fiche de synthèse Immobilisations Source : Liasse fiscale déposée le 15/05/2026 (code BK505416) — transcrite feuillet par feuillet. La colonne « exercice en cours » est calculée depuis les écritures validées du journal.",
+  "boutons": [
+   "Imprimer le bilan",
+   "Compte de résultat",
+   "Flux de trésorerie",
+   "Disponibilités",
+   "Fiche de synthèse",
+   "Immobilisations"
+  ]
+ },
+ "pieces": {
+  "bilan": {
+   "titre": "Bilan",
+   "sousTitre": "Exercice au 31/12/2025",
+   "cartouche": [
+    [
+     "Dénomination sociale",
+     "CLINIQUE NASSIERA SARL"
+    ],
+    [
+     "IFU",
+     "3201642748214"
+    ],
+    [
+     "Date de dépôt",
+     "15/05/2026"
+    ],
+    [
+     "Code de dépôt",
+     "BK505416"
+    ],
+    [
+     "Exercice",
+     "2025 (N) — comparé à 2024 (N-1)"
+    ],
+    [
+     "Référentiel",
+     "Plan comptable SYSCOHADA révisé (AUDCIF)"
+    ]
+   ],
+   "contenu": "ActifRéf.ActifNoteBrutAmort. et dépréc.Net 2025Net 2024ADIMMOBILISATIONS INCORPORELLES30000AEFrais de développement et de prospection0000AFBrevets, licences, logiciels, et droits similaires0000AGFonds commercial et droit au bail0000AHAutres immobilisations incorporelles0000AIIMMOBILISATIONS CORPORELLES3180 151 37280 084 841100 066 531103 700 289AJTerrains9 250 00009 250 0009 250 000AKBâtiments100 889 00020 177 80080 711 20085 755 650ALAménagements, agencements et installations0000AMMatériel, mobilier et actifs biologiques66 256 37256 151 04110 105 3318 694 639ANMatériel de transport3 756 0003 756 00000APAVANCES ET ACOMPTES VERSÉS SUR IMMOBILISATIONS0000AQIMMOBILISATIONS FINANCIÈRES46 570 32506 570 3256 570 325ARTitres de participation0000ASAutres immobilisations financières6 570 32506 570 3256 570 325AZTOTAL ACTIF IMMOBILISÉ186 721 69780 084 841106 636 856110 270 614BAACTIF CIRCULANT HAO50000BBSTOCKS ET ENCOURS60000BGCRÉANCES ET EMPLOIS ASSIMILÉS00015 327 350BHFournisseurs avances versées170000BIClients700015 327 350BJAutres créances80000BKTOTAL ACTIF CIRCULANT00015 327 350BQTitres de placement94 000 00004 000 0000BRValeurs à encaisser100000BSBanques, chèques postaux, caisse et assimilés112 300 63902 300 639875 686BTTOTAL TRÉSORERIE-ACTIF6 300 63906 300 639875 686BUÉcart de conversion-Actif120000BZTOTAL GÉNÉRAL193 022 33680 084 841112 937 495126 473 650PassifRéf.PassifNoteNet 2025Net 2024CACapital137 000 0007 000 000CBApporteurs capital non appelé (-)1300CDPrimes liées au capital social1400CEÉcarts de réévaluation3e00CFRéserves indisponibles1400CGRéserves libres1400CHReport à nouveau (+ ou -)1440 530 94536 058 662CJRésultat net de l’exercice (bénéfice + ou perte -)4 561 2004 472 283CLSubventions d’investissement1500CMProvisions réglementées1500CPTOTAL CAPITAUX PROPRES ET RESSOURCES ASSIMILÉES52 092 14547 530 945DAEmprunts et dettes financières diverses1617 508 24853 564 678DBDettes de location-acquisition1600DCProvisions pour risques et charges1600DDTOTAL DETTES FINANCIÈRES ET RESSOURCES ASSIMILÉES17 508 24853 564 678DFTOTAL RESSOURCES STABLES69 600 393101 095 623DHDettes circulantes HAO500DIClients, avances reçues700DJFournisseurs d’exploitation1712 155 23411 000 467DKDettes fiscales et sociales1831 182 31813 723 560DMAutres dettes190654 000DNProvisions pour risques et charges à court terme1900DPTOTAL PASSIF CIRCULANT43 337 55225 378 027DQBanques, crédits d’escompte2000DRBanques, établissements financiers et crédits de trésorerie2000DTTOTAL TRÉSORERIE-PASSIF00DVÉcart de conversion-Passif1200DZTOTAL GÉNÉRAL112 937 495126 473 650Contrôle : total général de l’actif 112 937 495 FCFA = total général du passif 112 937 495 FCFA.",
+   "tables": [
+    {
+     "entetes": [
+      "Réf.",
+      "Actif",
+      "Note",
+      "Brut",
+      "Amort. et dépréc.",
+      "Net 2025",
+      "Net 2024"
+     ],
+     "lignes": [
+      [
+       "AD",
+       "IMMOBILISATIONS INCORPORELLES",
+       "3",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AE",
+       "Frais de développement et de prospection",
+       "",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AF",
+       "Brevets, licences, logiciels, et droits similaires",
+       "",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AG",
+       "Fonds commercial et droit au bail",
+       "",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AH",
+       "Autres immobilisations incorporelles",
+       "",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AI",
+       "IMMOBILISATIONS CORPORELLES",
+       "3",
+       "180 151 372",
+       "80 084 841",
+       "100 066 531",
+       "103 700 289"
+      ],
+      [
+       "AJ",
+       "Terrains",
+       "",
+       "9 250 000",
+       "0",
+       "9 250 000",
+       "9 250 000"
+      ],
+      [
+       "AK",
+       "Bâtiments",
+       "",
+       "100 889 000",
+       "20 177 800",
+       "80 711 200",
+       "85 755 650"
+      ],
+      [
+       "AL",
+       "Aménagements, agencements et installations",
+       "",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AM",
+       "Matériel, mobilier et actifs biologiques",
+       "",
+       "66 256 372",
+       "56 151 041",
+       "10 105 331",
+       "8 694 639"
+      ],
+      [
+       "AN",
+       "Matériel de transport",
+       "",
+       "3 756 000",
+       "3 756 000",
+       "0",
+       "0"
+      ],
+      [
+       "AP",
+       "AVANCES ET ACOMPTES VERSÉS SUR IMMOBILISATIONS",
+       "",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AQ",
+       "IMMOBILISATIONS FINANCIÈRES",
+       "4",
+       "6 570 325",
+       "0",
+       "6 570 325",
+       "6 570 325"
+      ],
+      [
+       "AR",
+       "Titres de participation",
+       "",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "AS",
+       "Autres immobilisations financières",
+       "",
+       "6 570 325",
+       "0",
+       "6 570 325",
+       "6 570 325"
+      ],
+      [
+       "AZ",
+       "TOTAL ACTIF IMMOBILISÉ",
+       "",
+       "186 721 697",
+       "80 084 841",
+       "106 636 856",
+       "110 270 614"
+      ],
+      [
+       "BA",
+       "ACTIF CIRCULANT HAO",
+       "5",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "BB",
+       "STOCKS ET ENCOURS",
+       "6",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "BG",
+       "CRÉANCES ET EMPLOIS ASSIMILÉS",
+       "",
+       "0",
+       "0",
+       "0",
+       "15 327 350"
+      ],
+      [
+       "BH",
+       "Fournisseurs avances versées",
+       "17",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "BI",
+       "Clients",
+       "7",
+       "0",
+       "0",
+       "0",
+       "15 327 350"
+      ],
+      [
+       "BJ",
+       "Autres créances",
+       "8",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "BK",
+       "TOTAL ACTIF CIRCULANT",
+       "",
+       "0",
+       "0",
+       "0",
+       "15 327 350"
+      ],
+      [
+       "BQ",
+       "Titres de placement",
+       "9",
+       "4 000 000",
+       "0",
+       "4 000 000",
+       "0"
+      ],
+      [
+       "BR",
+       "Valeurs à encaisser",
+       "10",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "BS",
+       "Banques, chèques postaux, caisse et assimilés",
+       "11",
+       "2 300 639",
+       "0",
+       "2 300 639",
+       "875 686"
+      ],
+      [
+       "BT",
+       "TOTAL TRÉSORERIE-ACTIF",
+       "",
+       "6 300 639",
+       "0",
+       "6 300 639",
+       "875 686"
+      ],
+      [
+       "BU",
+       "Écart de conversion-Actif",
+       "12",
+       "0",
+       "0",
+       "0",
+       "0"
+      ],
+      [
+       "BZ",
+       "TOTAL GÉNÉRAL",
+       "",
+       "193 022 336",
+       "80 084 841",
+       "112 937 495",
+       "126 473 650"
+      ]
+     ],
+     "pied": []
+    },
+    {
+     "entetes": [
+      "Réf.",
+      "Passif",
+      "Note",
+      "Net 2025",
+      "Net 2024"
+     ],
+     "lignes": [
+      [
+       "CA",
+       "Capital",
+       "13",
+       "7 000 000",
+       "7 000 000"
+      ],
+      [
+       "CB",
+       "Apporteurs capital non appelé (-)",
+       "13",
+       "0",
+       "0"
+      ],
+      [
+       "CD",
+       "Primes liées au capital social",
+       "14",
+       "0",
+       "0"
+      ],
+      [
+       "CE",
+       "Écarts de réévaluation",
+       "3e",
+       "0",
+       "0"
+      ],
+      [
+       "CF",
+       "Réserves indisponibles",
+       "14",
+       "0",
+       "0"
+      ],
+      [
+       "CG",
+       "Réserves libres",
+       "14",
+       "0",
+       "0"
+      ],
+      [
+       "CH",
+       "Report à nouveau (+ ou -)",
+       "14",
+       "40 530 945",
+       "36 058 662"
+      ],
+      [
+       "CJ",
+       "Résultat net de l’exercice (bénéfice + ou perte -)",
+       "",
+       "4 561 200",
+       "4 472 283"
+      ],
+      [
+       "CL",
+       "Subventions d’investissement",
+       "15",
+       "0",
+       "0"
+      ],
+      [
+       "CM",
+       "Provisions réglementées",
+       "15",
+       "0",
+       "0"
+      ],
+      [
+       "CP",
+       "TOTAL CAPITAUX PROPRES ET RESSOURCES ASSIMILÉES",
+       "",
+       "52 092 145",
+       "47 530 945"
+      ],
+      [
+       "DA",
+       "Emprunts et dettes financières diverses",
+       "16",
+       "17 508 248",
+       "53 564 678"
+      ],
+      [
+       "DB",
+       "Dettes de location-acquisition",
+       "16",
+       "0",
+       "0"
+      ],
+      [
+       "DC",
+       "Provisions pour risques et charges",
+       "16",
+       "0",
+       "0"
+      ],
+      [
+       "DD",
+       "TOTAL DETTES FINANCIÈRES ET RESSOURCES ASSIMILÉES",
+       "",
+       "17 508 248",
+       "53 564 678"
+      ],
+      [
+       "DF",
+       "TOTAL RESSOURCES STABLES",
+       "",
+       "69 600 393",
+       "101 095 623"
+      ],
+      [
+       "DH",
+       "Dettes circulantes HAO",
+       "5",
+       "0",
+       "0"
+      ],
+      [
+       "DI",
+       "Clients, avances reçues",
+       "7",
+       "0",
+       "0"
+      ],
+      [
+       "DJ",
+       "Fournisseurs d’exploitation",
+       "17",
+       "12 155 234",
+       "11 000 467"
+      ],
+      [
+       "DK",
+       "Dettes fiscales et sociales",
+       "18",
+       "31 182 318",
+       "13 723 560"
+      ],
+      [
+       "DM",
+       "Autres dettes",
+       "19",
+       "0",
+       "654 000"
+      ],
+      [
+       "DN",
+       "Provisions pour risques et charges à court terme",
+       "19",
+       "0",
+       "0"
+      ],
+      [
+       "DP",
+       "TOTAL PASSIF CIRCULANT",
+       "",
+       "43 337 552",
+       "25 378 027"
+      ],
+      [
+       "DQ",
+       "Banques, crédits d’escompte",
+       "20",
+       "0",
+       "0"
+      ],
+      [
+       "DR",
+       "Banques, établissements financiers et crédits de trésorerie",
+       "20",
+       "0",
+       "0"
+      ],
+      [
+       "DT",
+       "TOTAL TRÉSORERIE-PASSIF",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "DV",
+       "Écart de conversion-Passif",
+       "12",
+       "0",
+       "0"
+      ],
+      [
+       "DZ",
+       "TOTAL GÉNÉRAL",
+       "",
+       "112 937 495",
+       "126 473 650"
+      ]
+     ],
+     "pied": []
+    }
+   ],
+   "signatures": [
+    {
+     "role": "Le Comptable",
+     "nom": "KASSA Augustin"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "La Direction",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ]
+  },
+  "resultat": {
+   "titre": "Compte de résultat",
+   "sousTitre": "Exercice au 31/12/2025",
+   "cartouche": [
+    [
+     "Dénomination sociale",
+     "CLINIQUE NASSIERA SARL"
+    ],
+    [
+     "IFU",
+     "3201642748214"
+    ],
+    [
+     "Date de dépôt",
+     "15/05/2026"
+    ],
+    [
+     "Code de dépôt",
+     "BK505416"
+    ],
+    [
+     "Exercice",
+     "2025 (N) — comparé à 2024 (N-1)"
+    ],
+    [
+     "Référentiel",
+     "Plan comptable SYSCOHADA révisé (AUDCIF)"
+    ]
+   ],
+   "contenu": "Réf.Libellés(2)NoteExercice 2025Exercice 2024TAVentes de marchandises+2100RAAchats de marchandises-2200RBVariation de stocks de marchandises-/+600XAMARGE COMMERCIALE (Somme TA à RB)00TBVentes de produits fabriqués+2100TCTravaux, services vendus+21190 830 994177 153 094TDProduits accessoires+2100XBCHIFFRE D’AFFAIRES (A + B + C + D)190 830 994177 153 094TEProduction stockée (ou déstockage)-/+600TFProduction immobilisée+2100TGSubventions d’exploitation+2100THAutres produits+2100TITransferts de charges d’exploitation+1200RCAchats de matières premières et fournitures liées-22-30 226 188-40 656 095RDVariation de stocks de matières premières et fournitures liées-/+600REAutres achats-22-34 823 421-27 861 825RFVariation de stocks d’autres approvisionnements-/+600RGTransports-23-88 000-94 000RHServices extérieurs-24-56 648 919-56 608 270RIImpôts et taxes-25-10 063 357-6 456 990RJAutres charges-26-7 345 614-2 025 522XCVALEUR AJOUTÉE (XB + RA + RB) + (somme TE à RJ)51 635 49543 450 392RKCharges de personnel-27-27 546 978-17 072 782XDEXCÉDENT BRUT D’EXPLOITATION (XC + RK)24 088 51726 377 610TJReprises d’amortissements, provisions et dépréciations+2800RLDotations aux amortissements, aux provisions et dépréciations-3C&28-10 617 358-11 203 158XERÉSULTAT D’EXPLOITATION (XD + TJ + RL)13 471 15915 174 452TKRevenus financiers et assimilés+2900TLReprises de provisions et dépréciations financières+2800TMTransferts de charges financières+1200RMFrais financiers et charges assimilées-29-6 955 159-8 785 769RNDotations aux provisions et aux dépréciations financières-3C&2800XFRÉSULTAT FINANCIER (somme TK à RN)-6 955 159-8 785 769XGRÉSULTAT DES ACTIVITÉS ORDINAIRES (XE + XF)6 516 0006 388 683TNProduits des cessions d’immobilisations+3D00TOAutres Produits HAO+3000ROValeurs comptables des cessions d’immobilisations-3D00RPAutres Charges HAO-3000XHRÉSULTAT HORS ACTIVITÉS ORDINAIRES (somme TN à RP)00RQParticipation des travailleurs-3000RSImpôts sur le résultat-37-1 954 800-1 916 400XIRÉSULTAT NET (XG + XH + RQ + RS)4 561 2004 472 283La marge commerciale est nulle : les médicaments sont facturés au prix d’achat, sans marge (RG-02). Résultat net de l’exercice : 4 561 200 FCFA.",
+   "tables": [
+    {
+     "entetes": [
+      "Réf.",
+      "Libellés",
+      "(2)",
+      "Note",
+      "Exercice 2025",
+      "Exercice 2024"
+     ],
+     "lignes": [
+      [
+       "TA",
+       "Ventes de marchandises",
+       "+",
+       "21",
+       "0",
+       "0"
+      ],
+      [
+       "RA",
+       "Achats de marchandises",
+       "-",
+       "22",
+       "0",
+       "0"
+      ],
+      [
+       "RB",
+       "Variation de stocks de marchandises",
+       "-/+",
+       "6",
+       "0",
+       "0"
+      ],
+      [
+       "XA",
+       "MARGE COMMERCIALE (Somme TA à RB)",
+       "",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "TB",
+       "Ventes de produits fabriqués",
+       "+",
+       "21",
+       "0",
+       "0"
+      ],
+      [
+       "TC",
+       "Travaux, services vendus",
+       "+",
+       "21",
+       "190 830 994",
+       "177 153 094"
+      ],
+      [
+       "TD",
+       "Produits accessoires",
+       "+",
+       "21",
+       "0",
+       "0"
+      ],
+      [
+       "XB",
+       "CHIFFRE D’AFFAIRES (A + B + C + D)",
+       "",
+       "",
+       "190 830 994",
+       "177 153 094"
+      ],
+      [
+       "TE",
+       "Production stockée (ou déstockage)",
+       "-/+",
+       "6",
+       "0",
+       "0"
+      ],
+      [
+       "TF",
+       "Production immobilisée",
+       "+",
+       "21",
+       "0",
+       "0"
+      ],
+      [
+       "TG",
+       "Subventions d’exploitation",
+       "+",
+       "21",
+       "0",
+       "0"
+      ],
+      [
+       "TH",
+       "Autres produits",
+       "+",
+       "21",
+       "0",
+       "0"
+      ],
+      [
+       "TI",
+       "Transferts de charges d’exploitation",
+       "+",
+       "12",
+       "0",
+       "0"
+      ],
+      [
+       "RC",
+       "Achats de matières premières et fournitures liées",
+       "-",
+       "22",
+       "-30 226 188",
+       "-40 656 095"
+      ],
+      [
+       "RD",
+       "Variation de stocks de matières premières et fournitures liées",
+       "-/+",
+       "6",
+       "0",
+       "0"
+      ],
+      [
+       "RE",
+       "Autres achats",
+       "-",
+       "22",
+       "-34 823 421",
+       "-27 861 825"
+      ],
+      [
+       "RF",
+       "Variation de stocks d’autres approvisionnements",
+       "-/+",
+       "6",
+       "0",
+       "0"
+      ],
+      [
+       "RG",
+       "Transports",
+       "-",
+       "23",
+       "-88 000",
+       "-94 000"
+      ],
+      [
+       "RH",
+       "Services extérieurs",
+       "-",
+       "24",
+       "-56 648 919",
+       "-56 608 270"
+      ],
+      [
+       "RI",
+       "Impôts et taxes",
+       "-",
+       "25",
+       "-10 063 357",
+       "-6 456 990"
+      ],
+      [
+       "RJ",
+       "Autres charges",
+       "-",
+       "26",
+       "-7 345 614",
+       "-2 025 522"
+      ],
+      [
+       "XC",
+       "VALEUR AJOUTÉE (XB + RA + RB) + (somme TE à RJ)",
+       "",
+       "",
+       "51 635 495",
+       "43 450 392"
+      ],
+      [
+       "RK",
+       "Charges de personnel",
+       "-",
+       "27",
+       "-27 546 978",
+       "-17 072 782"
+      ],
+      [
+       "XD",
+       "EXCÉDENT BRUT D’EXPLOITATION (XC + RK)",
+       "",
+       "",
+       "24 088 517",
+       "26 377 610"
+      ],
+      [
+       "TJ",
+       "Reprises d’amortissements, provisions et dépréciations",
+       "+",
+       "28",
+       "0",
+       "0"
+      ],
+      [
+       "RL",
+       "Dotations aux amortissements, aux provisions et dépréciations",
+       "-",
+       "3C&28",
+       "-10 617 358",
+       "-11 203 158"
+      ],
+      [
+       "XE",
+       "RÉSULTAT D’EXPLOITATION (XD + TJ + RL)",
+       "",
+       "",
+       "13 471 159",
+       "15 174 452"
+      ],
+      [
+       "TK",
+       "Revenus financiers et assimilés",
+       "+",
+       "29",
+       "0",
+       "0"
+      ],
+      [
+       "TL",
+       "Reprises de provisions et dépréciations financières",
+       "+",
+       "28",
+       "0",
+       "0"
+      ],
+      [
+       "TM",
+       "Transferts de charges financières",
+       "+",
+       "12",
+       "0",
+       "0"
+      ],
+      [
+       "RM",
+       "Frais financiers et charges assimilées",
+       "-",
+       "29",
+       "-6 955 159",
+       "-8 785 769"
+      ],
+      [
+       "RN",
+       "Dotations aux provisions et aux dépréciations financières",
+       "-",
+       "3C&28",
+       "0",
+       "0"
+      ],
+      [
+       "XF",
+       "RÉSULTAT FINANCIER (somme TK à RN)",
+       "",
+       "",
+       "-6 955 159",
+       "-8 785 769"
+      ],
+      [
+       "XG",
+       "RÉSULTAT DES ACTIVITÉS ORDINAIRES (XE + XF)",
+       "",
+       "",
+       "6 516 000",
+       "6 388 683"
+      ],
+      [
+       "TN",
+       "Produits des cessions d’immobilisations",
+       "+",
+       "3D",
+       "0",
+       "0"
+      ],
+      [
+       "TO",
+       "Autres Produits HAO",
+       "+",
+       "30",
+       "0",
+       "0"
+      ],
+      [
+       "RO",
+       "Valeurs comptables des cessions d’immobilisations",
+       "-",
+       "3D",
+       "0",
+       "0"
+      ],
+      [
+       "RP",
+       "Autres Charges HAO",
+       "-",
+       "30",
+       "0",
+       "0"
+      ],
+      [
+       "XH",
+       "RÉSULTAT HORS ACTIVITÉS ORDINAIRES (somme TN à RP)",
+       "",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "RQ",
+       "Participation des travailleurs",
+       "-",
+       "30",
+       "0",
+       "0"
+      ],
+      [
+       "RS",
+       "Impôts sur le résultat",
+       "-",
+       "37",
+       "-1 954 800",
+       "-1 916 400"
+      ],
+      [
+       "XI",
+       "RÉSULTAT NET (XG + XH + RQ + RS)",
+       "",
+       "",
+       "4 561 200",
+       "4 472 283"
+      ]
+     ],
+     "pied": []
+    }
+   ],
+   "signatures": [
+    {
+     "role": "Le Comptable",
+     "nom": "KASSA Augustin"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "La Direction",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ]
+  },
+  "flux": {
+   "titre": "Tableau des flux de trésorerie",
+   "sousTitre": "Exercice au 31/12/2025",
+   "cartouche": [
+    [
+     "Dénomination sociale",
+     "CLINIQUE NASSIERA SARL"
+    ],
+    [
+     "IFU",
+     "3201642748214"
+    ],
+    [
+     "Date de dépôt",
+     "15/05/2026"
+    ],
+    [
+     "Code de dépôt",
+     "BK505416"
+    ],
+    [
+     "Exercice",
+     "2025 (N) — comparé à 2024 (N-1)"
+    ],
+    [
+     "Référentiel",
+     "Plan comptable SYSCOHADA révisé (AUDCIF)"
+    ]
+   ],
+   "contenu": "Réf.LibellésExercice 2025Exercice 2024ZATrésorerie nette au 1er janvier (Trésorerie actif N-1 - Trésorerie passif N-1)A875 6861 963 014Flux de trésorerie provenant des activités opérationnellesFACapacité d’Autofinancement Globale (CAFG)15 178 55843 450 392FB- Variation d’actif circulant HAO (1)00FC- Variation des stocks00FD- Variation des créances15 327 350-1 589 906FE+ Variation du passif circulant (1)-17 959 5256 123 760Variation du BF lié aux activités opérationnelles (FB+FC+FD+FE)31 359 405-47 984 246ZBFlux de trésorerie provenant des activités opérationnelles (Somme FA à FE)B-18 108 31747 984 246Flux de trésorerie provenant des activités d’InvestissementsFF- Décaissements liés aux acquisitions d’immobilisations incorporelles00FG- Décaissements liés aux acquisitions d’immobilisations corporelles-6 983 600-8 000 000FH- Décaissements liés aux acquisitions d’immobilisations financières00FI+ Encaissements liés aux cessions d’immobilisations incorporelles et corporelles00FJ+ Encaissements liés aux cessions d’immobilisations financières00ZCFlux de trésorerie provenant des activités d’Investissement (somme FF à FJ)C-6 983 600-8 000 000Flux de trésorerie provenant du financement par les capitaux propresFK+ Augmentations de capital par apports nouveaux00FL+ Subventions d’investissement reçues00FM- Prélèvements sur le capital00FN- Dividendes versés00ZDFlux de trésorerie provenant des capitaux propres (somme FK à FN)D00Trésorerie provenant du financement par les capitaux étrangersFO+ Emprunts (2)71 118 7610FP+ Autres dettes financières diverses (3)00FQ- Remboursements des emprunts et autres dettes financières-40 601 891-40 764 003ZEFlux de trésorerie provenant des capitaux étrangers (somme FO à FQ)E30 516 870-40 764 003ZFFlux de trésorerie provenant des activités de financement (D+E)F30 516 870-40 764 003ZGVARIATION DE LA TRÉSORERIE NETTE DE LA PÉRIODE (B+C+F)G5 424 953-779 757ZHTrésorerie nette au 31 Décembre (G+A)H6 300 6391 183 257Écarts internes du document déposé, conservés et non arbitrés : CAFG de l’exercice N-1 — Le tableau des flux porte 43 450 392 en N-1 (FA), la note 34 porte 15 675 441. La valeur du tableau des flux est celle de la VALEUR AJOUTÉE N-1 du compte de résultat. ; Variation du besoin de financement (FB+FC+FD+FE) — La ligne porte 31 359 405 alors que FB+FC+FD+FE vaut −2 632 175. ; Flux des activités opérationnelles (ZB) — ZB porte −18 108 317, quand FA + (FB à FE) donne 12 546 383. En revanche ZB se recoupe en aval : ZB + ZC + ZF = 5 424 953 = ZG, et ZG + ZA = 6 300 639 = ZH.",
+   "tables": [
+    {
+     "entetes": [
+      "Réf.",
+      "Libellés",
+      "",
+      "Exercice 2025",
+      "Exercice 2024"
+     ],
+     "lignes": [
+      [
+       "ZA",
+       "Trésorerie nette au 1er janvier (Trésorerie actif N-1 - Trésorerie passif N-1)",
+       "A",
+       "875 686",
+       "1 963 014"
+      ],
+      [
+       "",
+       "Flux de trésorerie provenant des activités opérationnelles",
+       "",
+       "",
+       ""
+      ],
+      [
+       "FA",
+       "Capacité d’Autofinancement Globale (CAFG)",
+       "",
+       "15 178 558",
+       "43 450 392"
+      ],
+      [
+       "FB",
+       "- Variation d’actif circulant HAO (1)",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FC",
+       "- Variation des stocks",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FD",
+       "- Variation des créances",
+       "",
+       "15 327 350",
+       "-1 589 906"
+      ],
+      [
+       "FE",
+       "+ Variation du passif circulant (1)",
+       "",
+       "-17 959 525",
+       "6 123 760"
+      ],
+      [
+       "",
+       "Variation du BF lié aux activités opérationnelles (FB+FC+FD+FE)",
+       "",
+       "31 359 405",
+       "-47 984 246"
+      ],
+      [
+       "ZB",
+       "Flux de trésorerie provenant des activités opérationnelles (Somme FA à FE)",
+       "B",
+       "-18 108 317",
+       "47 984 246"
+      ],
+      [
+       "",
+       "Flux de trésorerie provenant des activités d’Investissements",
+       "",
+       "",
+       ""
+      ],
+      [
+       "FF",
+       "- Décaissements liés aux acquisitions d’immobilisations incorporelles",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FG",
+       "- Décaissements liés aux acquisitions d’immobilisations corporelles",
+       "",
+       "-6 983 600",
+       "-8 000 000"
+      ],
+      [
+       "FH",
+       "- Décaissements liés aux acquisitions d’immobilisations financières",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FI",
+       "+ Encaissements liés aux cessions d’immobilisations incorporelles et corporelles",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FJ",
+       "+ Encaissements liés aux cessions d’immobilisations financières",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "ZC",
+       "Flux de trésorerie provenant des activités d’Investissement (somme FF à FJ)",
+       "C",
+       "-6 983 600",
+       "-8 000 000"
+      ],
+      [
+       "",
+       "Flux de trésorerie provenant du financement par les capitaux propres",
+       "",
+       "",
+       ""
+      ],
+      [
+       "FK",
+       "+ Augmentations de capital par apports nouveaux",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FL",
+       "+ Subventions d’investissement reçues",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FM",
+       "- Prélèvements sur le capital",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FN",
+       "- Dividendes versés",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "ZD",
+       "Flux de trésorerie provenant des capitaux propres (somme FK à FN)",
+       "D",
+       "0",
+       "0"
+      ],
+      [
+       "",
+       "Trésorerie provenant du financement par les capitaux étrangers",
+       "",
+       "",
+       ""
+      ],
+      [
+       "FO",
+       "+ Emprunts (2)",
+       "",
+       "71 118 761",
+       "0"
+      ],
+      [
+       "FP",
+       "+ Autres dettes financières diverses (3)",
+       "",
+       "0",
+       "0"
+      ],
+      [
+       "FQ",
+       "- Remboursements des emprunts et autres dettes financières",
+       "",
+       "-40 601 891",
+       "-40 764 003"
+      ],
+      [
+       "ZE",
+       "Flux de trésorerie provenant des capitaux étrangers (somme FO à FQ)",
+       "E",
+       "30 516 870",
+       "-40 764 003"
+      ],
+      [
+       "ZF",
+       "Flux de trésorerie provenant des activités de financement (D+E)",
+       "F",
+       "30 516 870",
+       "-40 764 003"
+      ],
+      [
+       "ZG",
+       "VARIATION DE LA TRÉSORERIE NETTE DE LA PÉRIODE (B+C+F)",
+       "G",
+       "5 424 953",
+       "-779 757"
+      ],
+      [
+       "ZH",
+       "Trésorerie nette au 31 Décembre (G+A)",
+       "H",
+       "6 300 639",
+       "1 183 257"
+      ]
+     ],
+     "pied": []
+    }
+   ],
+   "signatures": [
+    {
+     "role": "Le Comptable",
+     "nom": "KASSA Augustin"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "La Direction",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ]
+  },
+  "disponibilites": {
+   "titre": "NOTE 11 : DISPONIBILITÉS",
+   "sousTitre": "Exercice au 31/12/2025",
+   "cartouche": [
+    [
+     "Dénomination sociale",
+     "CLINIQUE NASSIERA SARL"
+    ],
+    [
+     "IFU",
+     "3201642748214"
+    ],
+    [
+     "Date de dépôt",
+     "15/05/2026"
+    ],
+    [
+     "Code de dépôt",
+     "BK505416"
+    ],
+    [
+     "Exercice",
+     "2025 (N) — comparé à 2024 (N-1)"
+    ],
+    [
+     "Référentiel",
+     "Plan comptable SYSCOHADA révisé (AUDCIF)"
+    ]
+   ],
+   "contenu": "LibellésAnnée 2025Année 2024Banques locales1 659 914875 686Banques autres états régionBanques, dépôt à termeAutres BanquesBanques intérêts courusChèques postauxAutres établissement financiersEtablissement financiers intérêts courusInstruments de trésorerieInstruments de monnaie électroniqueCaisse640 7250Régies d’avances et virements accréditifsTOTAL BRUT DISPONIBILITÉS2 300 639875 686DépréciationsTOTAL NET DE DÉPRÉCIATIONS2 300 639875 686Banques et intérêts courus et Établissements financiers intérêts courus figurent dans cette rubrique en négatif si le compte principal attaché est débiteur.",
+   "tables": [
+    {
+     "entetes": [
+      "Libellés",
+      "Année 2025",
+      "Année 2024"
+     ],
+     "lignes": [
+      [
+       "Banques locales",
+       "1 659 914",
+       "875 686"
+      ],
+      [
+       "Banques autres états région",
+       "",
+       ""
+      ],
+      [
+       "Banques, dépôt à terme",
+       "",
+       ""
+      ],
+      [
+       "Autres Banques",
+       "",
+       ""
+      ],
+      [
+       "Banques intérêts courus",
+       "",
+       ""
+      ],
+      [
+       "Chèques postaux",
+       "",
+       ""
+      ],
+      [
+       "Autres établissement financiers",
+       "",
+       ""
+      ],
+      [
+       "Etablissement financiers intérêts courus",
+       "",
+       ""
+      ],
+      [
+       "Instruments de trésorerie",
+       "",
+       ""
+      ],
+      [
+       "Instruments de monnaie électronique",
+       "",
+       ""
+      ],
+      [
+       "Caisse",
+       "640 725",
+       "0"
+      ],
+      [
+       "Régies d’avances et virements accréditifs",
+       "",
+       ""
+      ],
+      [
+       "TOTAL BRUT DISPONIBILITÉS",
+       "2 300 639",
+       "875 686"
+      ],
+      [
+       "Dépréciations",
+       "",
+       ""
+      ],
+      [
+       "TOTAL NET DE DÉPRÉCIATIONS",
+       "2 300 639",
+       "875 686"
+      ]
+     ],
+     "pied": []
+    }
+   ],
+   "signatures": [
+    {
+     "role": "Le Comptable",
+     "nom": "KASSA Augustin"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "La Direction",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ]
+  },
+  "synthese": {
+   "titre": "Fiche de synthèse des principaux indicateurs financiers",
+   "sousTitre": "Note 34 — exercice au 31/12/2025",
+   "cartouche": [
+    [
+     "Dénomination sociale",
+     "CLINIQUE NASSIERA SARL"
+    ],
+    [
+     "IFU",
+     "3201642748214"
+    ],
+    [
+     "Date de dépôt",
+     "15/05/2026"
+    ],
+    [
+     "Code de dépôt",
+     "BK505416"
+    ],
+    [
+     "Exercice",
+     "2025 (N) — comparé à 2024 (N-1)"
+    ],
+    [
+     "Référentiel",
+     "Plan comptable SYSCOHADA révisé (AUDCIF)"
+    ]
+   ],
+   "contenu": "LibellésAnnée 2025Année 2024Variation en %ANALYSE DE L’ACTIVITÉSOLDES INTERMÉDIAIRES DE GESTIONCHIFFRE D’AFFAIRES190 830 994177 153 0947.72 %MARGE COMMERCIALEVALEUR AJOUTÉE51 635 49543 450 39218.84 %EXCÉDENT BRUT D’EXPLOITATION (EBE)24 088 51726 377 610-8.68 %RÉSULTAT D’EXPLOITATION13 471 15915 174 452-11.22 %RÉSULTAT FINANCIER-6 955 159-8 785 769-20.84 %RÉSULTAT DES ACTIVITÉS ORDINAIRES6 516 0006 388 6831.99 %RÉSULTAT HORS ACTIVITÉS ORDINAIRESRÉSULTAT NET4 561 2004 472 2831.99 %DÉTERMINATION DE LA CAPACITÉ D’AUTOFINANCEMENTExcédent brut d’exploitation (EBE)24 088 51726 377 610+ Valeurs comptables des cessions courantes d’immobilisation (compte 654)- Produits des cessions courantes d’immobilisation (compte 754)= CAPACITÉ D’AUTOFINANCEMENT D’EXPLOITATION24 088 51726 377 610-8.68 %+ Revenus financiers+ Gains de change financiers+ Transferts de charges financières+ Produits HAO+ Transferts de charges HAO- Frais financiers-6 955 159-8 785 769- Pertes de change financières- Charges HAO- Participations- Impôts sur les résultats-1 954 800-1 916 400= CAPACITÉ D’AUTOFINANCEMENT GLOBALE (C.A.F.G.)15 178 55815 675 441-3.17 %- Distributions de dividendes opérées durant l’exercice= AUTOFINANCEMENT15 178 55815 675 441-3.17 %ANALYSE DE LA RENTABILITÉRentabilité économique = Résultat d’exploitation (a) / Capitaux propres + dettes financièresRentabilité financière = Résultat net / Capitaux propresANALYSE DE LA STRUCTURE FINANCIÈRE+ Capitaux propres et ressources assimilées52 092 14547 530 9459.60 %+ Dettes financières* et autres ressources assimilées (b)17 508 24853 564 678-67.31 %= ressources stables69 600 393101 095 623-31.15 %- Actif Immobilisé (b)-106 636 856-110 270 614-3.30 %= FONDS DE ROULEMENT (1)-37 036 463-9 174 991303.67 %+ Actif circulant d’exploitation (b)015 327 350-100.00 %- Passif circulant d’exploitation (b)-43 337 552-25 378 02770.77 %= BESOIN DE FINANCEMENT D’EXPLOITATION (2)-43 337 552-10 050 677331.19 %+ Actif circulant HAO (b)- Passif circulant HAO (b)= BESOIN DE FINANCEMENT HAO (3)000.00 %BESOIN DE FINANCEMENT GLOBAL (4) = (2) + (3)-43 337 552-10 050 677331.19 %TRÉSORERIE NETTE (5) = (1) - (4)6 301 089875 686619.56 %CONTRÔLE : TRÉSORERIE NETTE = (TRÉSORERIE-ACTIF) - (TRÉSORERIE-PASSIF)ANALYSE DE LA VARIATION DE LA TRÉSORERIE+ Flux de trésorerie des activités opérationnelles-14 253 8271 181 202-1 306.72 %- Flux de trésorerie des activités d’investissement-6 983 600-6 366 8009.69 %+ Flux de trésorerie des activités de financement27 538 0656 061 284354.33 %= VARIATION de LA TRÉSORERIE NETTE de LA PÉRIODE6 300 638875 686619.51 %ANALYSE DE LA VARIATION DE L’ENDETTEMENT FINANCIER NETEndettement financier brut (Dettes financières* + Trésorerie – passif)17 508 24853 564 678-67.31 %- Trésorerie - actif-2 300 639-875 686162.72 %= ENDETTEMENT FINANCIER NET15 207 60952 688 992-71.14 %(a) Résultat d’exploitation après impôt théorique sur le bénéfice. Les variations des taux de rentabilité doivent être exprimées en nombre de points (par exemple de 2 % à 5 % = 3 points). (b) Les écarts de conversion doivent être éliminés afin de ramener les créances et les dettes concernées à leur valeur initiale. Dettes financières* = emprunts et dettes financières diverses + dettes de location acquisition.",
+   "tables": [
+    {
+     "entetes": [
+      "Libellés",
+      "Année 2025",
+      "Année 2024",
+      "Variation en %"
+     ],
+     "lignes": [
+      [
+       "ANALYSE DE L’ACTIVITÉ",
+       "",
+       "",
+       ""
+      ],
+      [
+       "SOLDES INTERMÉDIAIRES DE GESTION",
+       "",
+       "",
+       ""
+      ],
+      [
+       "CHIFFRE D’AFFAIRES",
+       "190 830 994",
+       "177 153 094",
+       "7.72 %"
+      ],
+      [
+       "MARGE COMMERCIALE",
+       "",
+       "",
+       ""
+      ],
+      [
+       "VALEUR AJOUTÉE",
+       "51 635 495",
+       "43 450 392",
+       "18.84 %"
+      ],
+      [
+       "EXCÉDENT BRUT D’EXPLOITATION (EBE)",
+       "24 088 517",
+       "26 377 610",
+       "-8.68 %"
+      ],
+      [
+       "RÉSULTAT D’EXPLOITATION",
+       "13 471 159",
+       "15 174 452",
+       "-11.22 %"
+      ],
+      [
+       "RÉSULTAT FINANCIER",
+       "-6 955 159",
+       "-8 785 769",
+       "-20.84 %"
+      ],
+      [
+       "RÉSULTAT DES ACTIVITÉS ORDINAIRES",
+       "6 516 000",
+       "6 388 683",
+       "1.99 %"
+      ],
+      [
+       "RÉSULTAT HORS ACTIVITÉS ORDINAIRES",
+       "",
+       "",
+       ""
+      ],
+      [
+       "RÉSULTAT NET",
+       "4 561 200",
+       "4 472 283",
+       "1.99 %"
+      ],
+      [
+       "DÉTERMINATION DE LA CAPACITÉ D’AUTOFINANCEMENT",
+       "",
+       "",
+       ""
+      ],
+      [
+       "Excédent brut d’exploitation (EBE)",
+       "24 088 517",
+       "26 377 610",
+       ""
+      ],
+      [
+       "+ Valeurs comptables des cessions courantes d’immobilisation (compte 654)",
+       "",
+       "",
+       ""
+      ],
+      [
+       "- Produits des cessions courantes d’immobilisation (compte 754)",
+       "",
+       "",
+       ""
+      ],
+      [
+       "= CAPACITÉ D’AUTOFINANCEMENT D’EXPLOITATION",
+       "24 088 517",
+       "26 377 610",
+       "-8.68 %"
+      ],
+      [
+       "+ Revenus financiers",
+       "",
+       "",
+       ""
+      ],
+      [
+       "+ Gains de change financiers",
+       "",
+       "",
+       ""
+      ],
+      [
+       "+ Transferts de charges financières",
+       "",
+       "",
+       ""
+      ],
+      [
+       "+ Produits HAO",
+       "",
+       "",
+       ""
+      ],
+      [
+       "+ Transferts de charges HAO",
+       "",
+       "",
+       ""
+      ],
+      [
+       "- Frais financiers",
+       "-6 955 159",
+       "-8 785 769",
+       ""
+      ],
+      [
+       "- Pertes de change financières",
+       "",
+       "",
+       ""
+      ],
+      [
+       "- Charges HAO",
+       "",
+       "",
+       ""
+      ],
+      [
+       "- Participations",
+       "",
+       "",
+       ""
+      ],
+      [
+       "- Impôts sur les résultats",
+       "-1 954 800",
+       "-1 916 400",
+       ""
+      ],
+      [
+       "= CAPACITÉ D’AUTOFINANCEMENT GLOBALE (C.A.F.G.)",
+       "15 178 558",
+       "15 675 441",
+       "-3.17 %"
+      ],
+      [
+       "- Distributions de dividendes opérées durant l’exercice",
+       "",
+       "",
+       ""
+      ],
+      [
+       "= AUTOFINANCEMENT",
+       "15 178 558",
+       "15 675 441",
+       "-3.17 %"
+      ],
+      [
+       "ANALYSE DE LA RENTABILITÉ",
+       "",
+       "",
+       ""
+      ],
+      [
+       "Rentabilité économique = Résultat d’exploitation (a) / Capitaux propres + dettes financières",
+       "",
+       "",
+       ""
+      ],
+      [
+       "Rentabilité financière = Résultat net / Capitaux propres",
+       "",
+       "",
+       ""
+      ],
+      [
+       "ANALYSE DE LA STRUCTURE FINANCIÈRE",
+       "",
+       "",
+       ""
+      ],
+      [
+       "+ Capitaux propres et ressources assimilées",
+       "52 092 145",
+       "47 530 945",
+       "9.60 %"
+      ],
+      [
+       "+ Dettes financières* et autres ressources assimilées (b)",
+       "17 508 248",
+       "53 564 678",
+       "-67.31 %"
+      ],
+      [
+       "= ressources stables",
+       "69 600 393",
+       "101 095 623",
+       "-31.15 %"
+      ],
+      [
+       "- Actif Immobilisé (b)",
+       "-106 636 856",
+       "-110 270 614",
+       "-3.30 %"
+      ],
+      [
+       "= FONDS DE ROULEMENT (1)",
+       "-37 036 463",
+       "-9 174 991",
+       "303.67 %"
+      ],
+      [
+       "+ Actif circulant d’exploitation (b)",
+       "0",
+       "15 327 350",
+       "-100.00 %"
+      ],
+      [
+       "- Passif circulant d’exploitation (b)",
+       "-43 337 552",
+       "-25 378 027",
+       "70.77 %"
+      ],
+      [
+       "= BESOIN DE FINANCEMENT D’EXPLOITATION (2)",
+       "-43 337 552",
+       "-10 050 677",
+       "331.19 %"
+      ],
+      [
+       "+ Actif circulant HAO (b)",
+       "",
+       "",
+       ""
+      ],
+      [
+       "- Passif circulant HAO (b)",
+       "",
+       "",
+       ""
+      ],
+      [
+       "= BESOIN DE FINANCEMENT HAO (3)",
+       "0",
+       "0",
+       "0.00 %"
+      ],
+      [
+       "BESOIN DE FINANCEMENT GLOBAL (4) = (2) + (3)",
+       "-43 337 552",
+       "-10 050 677",
+       "331.19 %"
+      ],
+      [
+       "TRÉSORERIE NETTE (5) = (1) - (4)",
+       "6 301 089",
+       "875 686",
+       "619.56 %"
+      ],
+      [
+       "CONTRÔLE : TRÉSORERIE NETTE = (TRÉSORERIE-ACTIF) - (TRÉSORERIE-PASSIF)",
+       "",
+       "",
+       ""
+      ],
+      [
+       "ANALYSE DE LA VARIATION DE LA TRÉSORERIE",
+       "",
+       "",
+       ""
+      ],
+      [
+       "+ Flux de trésorerie des activités opérationnelles",
+       "-14 253 827",
+       "1 181 202",
+       "-1 306.72 %"
+      ],
+      [
+       "- Flux de trésorerie des activités d’investissement",
+       "-6 983 600",
+       "-6 366 800",
+       "9.69 %"
+      ],
+      [
+       "+ Flux de trésorerie des activités de financement",
+       "27 538 065",
+       "6 061 284",
+       "354.33 %"
+      ],
+      [
+       "= VARIATION de LA TRÉSORERIE NETTE de LA PÉRIODE",
+       "6 300 638",
+       "875 686",
+       "619.51 %"
+      ],
+      [
+       "ANALYSE DE LA VARIATION DE L’ENDETTEMENT FINANCIER NET",
+       "",
+       "",
+       ""
+      ],
+      [
+       "Endettement financier brut (Dettes financières* + Trésorerie – passif)",
+       "17 508 248",
+       "53 564 678",
+       "-67.31 %"
+      ],
+      [
+       "- Trésorerie - actif",
+       "-2 300 639",
+       "-875 686",
+       "162.72 %"
+      ],
+      [
+       "= ENDETTEMENT FINANCIER NET",
+       "15 207 609",
+       "52 688 992",
+       "-71.14 %"
+      ]
+     ],
+     "pied": []
+    }
+   ],
+   "signatures": [
+    {
+     "role": "Le Comptable",
+     "nom": "KASSA Augustin"
+    },
+    {
+     "role": "La Directrice de l’Administration et des Finances",
+     "nom": "TAKI Alimatou"
+    },
+    {
+     "role": "La Direction",
+     "nom": "BASSONGUI Chabi Séko"
+    }
+   ]
+  }
+ },
+ "navigation": "m12-immobilisations",
+ "avecN1": {
+  "entetes": [
+   [
+    "RÉF.",
+    "ACTIF",
+    "NOTE",
+    "BRUT 2025",
+    "AMORT. ET DÉPRÉC.",
+    "NET 2025",
+    "NET 2024",
+    "EXERCICE EN COURS",
+    "EXERCICE 2025 (JOURNAL)"
+   ],
+   [
+    "RÉF.",
+    "PASSIF",
+    "NOTE",
+    "NET 2025",
+    "NET 2024",
+    "EXERCICE EN COURS",
+    "EXERCICE 2025 (JOURNAL)"
+   ]
+  ],
+  "tables": [
+   [
+    [
+     "AD",
+     "IMMOBILISATIONS INCORPORELLES",
+     "3",
+     "0",
+     "0",
+     "0",
+     "0",
+     "",
+     ""
+    ],
+    [
+     "AE",
+     "Frais de développement et de prospection",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "AF",
+     "Brevets, licences, logiciels, et droits similaires",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "AG",
+     "Fonds commercial et droit au bail",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "AH",
+     "Autres immobilisations incorporelles",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "AI",
+     "IMMOBILISATIONS CORPORELLES",
+     "3",
+     "180 151 372",
+     "80 084 841",
+     "100 066 531",
+     "103 700 289",
+     "",
+     ""
+    ],
+    [
+     "AJ",
+     "Terrains",
+     "",
+     "9 250 000",
+     "0",
+     "9 250 000",
+     "9 250 000",
+     "—",
+     "—"
+    ],
+    [
+     "AK",
+     "Bâtiments",
+     "",
+     "100 889 000",
+     "20 177 800",
+     "80 711 200",
+     "85 755 650",
+     "—",
+     "—"
+    ],
+    [
+     "AL",
+     "Aménagements, agencements et installations",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "AM",
+     "Matériel, mobilier et actifs biologiques",
+     "",
+     "66 256 372",
+     "56 151 041",
+     "10 105 331",
+     "8 694 639",
+     "—",
+     "—"
+    ],
+    [
+     "AN",
+     "Matériel de transport",
+     "",
+     "3 756 000",
+     "3 756 000",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "AP",
+     "AVANCES ET ACOMPTES VERSÉS SUR IMMOBILISATIONS",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "",
+     ""
+    ],
+    [
+     "AQ",
+     "IMMOBILISATIONS FINANCIÈRES",
+     "4",
+     "6 570 325",
+     "0",
+     "6 570 325",
+     "6 570 325",
+     "",
+     ""
+    ],
+    [
+     "AR",
+     "Titres de participation",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "AS",
+     "Autres immobilisations financières",
+     "",
+     "6 570 325",
+     "0",
+     "6 570 325",
+     "6 570 325",
+     "—",
+     "—"
+    ],
+    [
+     "AZ",
+     "TOTAL ACTIF IMMOBILISÉ",
+     "",
+     "186 721 697",
+     "80 084 841",
+     "106 636 856",
+     "110 270 614",
+     "",
+     ""
+    ],
+    [
+     "BA",
+     "ACTIF CIRCULANT HAO",
+     "5",
+     "0",
+     "0",
+     "0",
+     "0",
+     "",
+     ""
+    ],
+    [
+     "BB",
+     "STOCKS ET ENCOURS",
+     "6",
+     "0",
+     "0",
+     "0",
+     "0",
+     "",
+     ""
+    ],
+    [
+     "BG",
+     "CRÉANCES ET EMPLOIS ASSIMILÉS",
+     "",
+     "0",
+     "0",
+     "0",
+     "15 327 350",
+     "",
+     ""
+    ],
+    [
+     "BH",
+     "Fournisseurs avances versées",
+     "17",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "BI",
+     "Clients",
+     "7",
+     "0",
+     "0",
+     "0",
+     "15 327 350",
+     "7 397 000",
+     "—"
+    ],
+    [
+     "BJ",
+     "Autres créances",
+     "8",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "BK",
+     "TOTAL ACTIF CIRCULANT",
+     "",
+     "0",
+     "0",
+     "0",
+     "15 327 350",
+     "",
+     ""
+    ],
+    [
+     "BQ",
+     "Titres de placement",
+     "9",
+     "4 000 000",
+     "0",
+     "4 000 000",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "BR",
+     "Valeurs à encaisser",
+     "10",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "BS",
+     "Banques, chèques postaux, caisse et assimilés",
+     "11",
+     "2 300 639",
+     "0",
+     "2 300 639",
+     "875 686",
+     "—",
+     "1 300 000"
+    ],
+    [
+     "BT",
+     "TOTAL TRÉSORERIE-ACTIF",
+     "",
+     "6 300 639",
+     "0",
+     "6 300 639",
+     "875 686",
+     "",
+     ""
+    ],
+    [
+     "BU",
+     "Écart de conversion-Actif",
+     "12",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "BZ",
+     "TOTAL GÉNÉRAL",
+     "",
+     "193 022 336",
+     "80 084 841",
+     "112 937 495",
+     "126 473 650",
+     "",
+     ""
+    ]
+   ],
+   [
+    [
+     "CA",
+     "Capital",
+     "13",
+     "7 000 000",
+     "7 000 000",
+     "—",
+     "—"
+    ],
+    [
+     "CB",
+     "Apporteurs capital non appelé (-)",
+     "13",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "CD",
+     "Primes liées au capital social",
+     "14",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "CE",
+     "Écarts de réévaluation",
+     "3e",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "CF",
+     "Réserves indisponibles",
+     "14",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "CG",
+     "Réserves libres",
+     "14",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "CH",
+     "Report à nouveau (+ ou -)",
+     "14",
+     "40 530 945",
+     "36 058 662",
+     "—",
+     "—"
+    ],
+    [
+     "CJ",
+     "Résultat net de l’exercice (bénéfice + ou perte -)",
+     "",
+     "4 561 200",
+     "4 472 283",
+     "—",
+     "—"
+    ],
+    [
+     "CL",
+     "Subventions d’investissement",
+     "15",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "CM",
+     "Provisions réglementées",
+     "15",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "CP",
+     "TOTAL CAPITAUX PROPRES ET RESSOURCES ASSIMILÉES",
+     "",
+     "52 092 145",
+     "47 530 945",
+     "",
+     ""
+    ],
+    [
+     "DA",
+     "Emprunts et dettes financières diverses",
+     "16",
+     "17 508 248",
+     "53 564 678",
+     "—",
+     "—"
+    ],
+    [
+     "DB",
+     "Dettes de location-acquisition",
+     "16",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DC",
+     "Provisions pour risques et charges",
+     "16",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DD",
+     "TOTAL DETTES FINANCIÈRES ET RESSOURCES ASSIMILÉES",
+     "",
+     "17 508 248",
+     "53 564 678",
+     "",
+     ""
+    ],
+    [
+     "DF",
+     "TOTAL RESSOURCES STABLES",
+     "",
+     "69 600 393",
+     "101 095 623",
+     "",
+     ""
+    ],
+    [
+     "DH",
+     "Dettes circulantes HAO",
+     "5",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DI",
+     "Clients, avances reçues",
+     "7",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DJ",
+     "Fournisseurs d’exploitation",
+     "17",
+     "12 155 234",
+     "11 000 467",
+     "21 217 000",
+     "250 000"
+    ],
+    [
+     "DK",
+     "Dettes fiscales et sociales",
+     "18",
+     "31 182 318",
+     "13 723 560",
+     "4 168 000",
+     "—"
+    ],
+    [
+     "DM",
+     "Autres dettes",
+     "19",
+     "0",
+     "654 000",
+     "—",
+     "—"
+    ],
+    [
+     "DN",
+     "Provisions pour risques et charges à court terme",
+     "19",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DP",
+     "TOTAL PASSIF CIRCULANT",
+     "",
+     "43 337 552",
+     "25 378 027",
+     "",
+     ""
+    ],
+    [
+     "DQ",
+     "Banques, crédits d’escompte",
+     "20",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DR",
+     "Banques, établissements financiers et crédits de trésorerie",
+     "20",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DT",
+     "TOTAL TRÉSORERIE-PASSIF",
+     "",
+     "0",
+     "0",
+     "",
+     ""
+    ],
+    [
+     "DV",
+     "Écart de conversion-Passif",
+     "12",
+     "0",
+     "0",
+     "—",
+     "—"
+    ],
+    [
+     "DZ",
+     "TOTAL GÉNÉRAL",
+     "",
+     "112 937 495",
+     "126 473 650",
+     "",
+     ""
+    ]
+   ]
+  ],
+  "dispo": [
+   {
+    "entetes": [
+     "LIBELLÉS",
+     "ANNÉE 2025",
+     "ANNÉE 2024",
+     "VARIATION EN %",
+     "EXERCICE EN COURS"
+    ],
+    "lignes": [
+     [
+      "Banques locales",
+      "1 659 914",
+      "875 686",
+      "89.56 %",
+      "-3 220 000"
+     ],
+     [
+      "Banques autres états région",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Banques, dépôt à terme",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Autres Banques",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Banques intérêts courus",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Chèques postaux",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Autres établissement financiers",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Etablissement financiers intérêts courus",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Instruments de trésorerie",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Instruments de monnaie électronique",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "Caisse",
+      "640 725",
+      "0",
+      "",
+      "-3 142 456"
+     ],
+     [
+      "Régies d’avances et virements accréditifs",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "TOTAL BRUT DISPONIBILITÉS",
+      "2 300 639",
+      "875 686",
+      "162.72 %",
+      ""
+     ],
+     [
+      "Dépréciations",
+      "",
+      "",
+      "",
+      "—"
+     ],
+     [
+      "TOTAL NET DE DÉPRÉCIATIONS",
+      "2 300 639",
+      "875 686",
+      "162.72 %",
+      ""
+     ]
+    ]
+   }
+  ]
+ },
+ "tiers": {
+  "tables": [
+   [
+    [
+     "AD",
+     "IMMOBILISATIONS INCORPORELLES",
+     "3",
+     "0",
+     "0",
+     "0",
+     "0",
+     ""
+    ],
+    [
+     "AE",
+     "Frais de développement et de prospection",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "AF",
+     "Brevets, licences, logiciels, et droits similaires",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "AG",
+     "Fonds commercial et droit au bail",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "AH",
+     "Autres immobilisations incorporelles",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "AI",
+     "IMMOBILISATIONS CORPORELLES",
+     "3",
+     "180 151 372",
+     "80 084 841",
+     "100 066 531",
+     "103 700 289",
+     ""
+    ],
+    [
+     "AJ",
+     "Terrains",
+     "",
+     "9 250 000",
+     "0",
+     "9 250 000",
+     "9 250 000",
+     "—"
+    ],
+    [
+     "AK",
+     "Bâtiments",
+     "",
+     "100 889 000",
+     "20 177 800",
+     "80 711 200",
+     "85 755 650",
+     "—"
+    ],
+    [
+     "AL",
+     "Aménagements, agencements et installations",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "AM",
+     "Matériel, mobilier et actifs biologiques",
+     "",
+     "66 256 372",
+     "56 151 041",
+     "10 105 331",
+     "8 694 639",
+     "—"
+    ],
+    [
+     "AN",
+     "Matériel de transport",
+     "",
+     "3 756 000",
+     "3 756 000",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "AP",
+     "AVANCES ET ACOMPTES VERSÉS SUR IMMOBILISATIONS",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     ""
+    ],
+    [
+     "AQ",
+     "IMMOBILISATIONS FINANCIÈRES",
+     "4",
+     "6 570 325",
+     "0",
+     "6 570 325",
+     "6 570 325",
+     ""
+    ],
+    [
+     "AR",
+     "Titres de participation",
+     "",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "AS",
+     "Autres immobilisations financières",
+     "",
+     "6 570 325",
+     "0",
+     "6 570 325",
+     "6 570 325",
+     "—"
+    ],
+    [
+     "AZ",
+     "TOTAL ACTIF IMMOBILISÉ",
+     "",
+     "186 721 697",
+     "80 084 841",
+     "106 636 856",
+     "110 270 614",
+     ""
+    ],
+    [
+     "BA",
+     "ACTIF CIRCULANT HAO",
+     "5",
+     "0",
+     "0",
+     "0",
+     "0",
+     ""
+    ],
+    [
+     "BB",
+     "STOCKS ET ENCOURS",
+     "6",
+     "0",
+     "0",
+     "0",
+     "0",
+     ""
+    ],
+    [
+     "BG",
+     "CRÉANCES ET EMPLOIS ASSIMILÉS",
+     "",
+     "0",
+     "0",
+     "0",
+     "15 327 350",
+     ""
+    ],
+    [
+     "BH",
+     "Fournisseurs avances versées",
+     "17",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "BI",
+     "Clients",
+     "7",
+     "0",
+     "0",
+     "0",
+     "15 327 350",
+     "7 274 000"
+    ],
+    [
+     "BJ",
+     "Autres créances",
+     "8",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "BK",
+     "TOTAL ACTIF CIRCULANT",
+     "",
+     "0",
+     "0",
+     "0",
+     "15 327 350",
+     ""
+    ],
+    [
+     "BQ",
+     "Titres de placement",
+     "9",
+     "4 000 000",
+     "0",
+     "4 000 000",
+     "0",
+     "—"
+    ],
+    [
+     "BR",
+     "Valeurs à encaisser",
+     "10",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "BS",
+     "Banques, chèques postaux, caisse et assimilés",
+     "11",
+     "2 300 639",
+     "0",
+     "2 300 639",
+     "875 686",
+     "—"
+    ],
+    [
+     "BT",
+     "TOTAL TRÉSORERIE-ACTIF",
+     "",
+     "6 300 639",
+     "0",
+     "6 300 639",
+     "875 686",
+     ""
+    ],
+    [
+     "BU",
+     "Écart de conversion-Actif",
+     "12",
+     "0",
+     "0",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "BZ",
+     "TOTAL GÉNÉRAL",
+     "",
+     "193 022 336",
+     "80 084 841",
+     "112 937 495",
+     "126 473 650",
+     ""
+    ]
+   ],
+   [
+    [
+     "CA",
+     "Capital",
+     "13",
+     "7 000 000",
+     "7 000 000",
+     "—"
+    ],
+    [
+     "CB",
+     "Apporteurs capital non appelé (-)",
+     "13",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "CD",
+     "Primes liées au capital social",
+     "14",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "CE",
+     "Écarts de réévaluation",
+     "3e",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "CF",
+     "Réserves indisponibles",
+     "14",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "CG",
+     "Réserves libres",
+     "14",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "CH",
+     "Report à nouveau (+ ou -)",
+     "14",
+     "40 530 945",
+     "36 058 662",
+     "—"
+    ],
+    [
+     "CJ",
+     "Résultat net de l’exercice (bénéfice + ou perte -)",
+     "",
+     "4 561 200",
+     "4 472 283",
+     "—"
+    ],
+    [
+     "CL",
+     "Subventions d’investissement",
+     "15",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "CM",
+     "Provisions réglementées",
+     "15",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "CP",
+     "TOTAL CAPITAUX PROPRES ET RESSOURCES ASSIMILÉES",
+     "",
+     "52 092 145",
+     "47 530 945",
+     ""
+    ],
+    [
+     "DA",
+     "Emprunts et dettes financières diverses",
+     "16",
+     "17 508 248",
+     "53 564 678",
+     "—"
+    ],
+    [
+     "DB",
+     "Dettes de location-acquisition",
+     "16",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DC",
+     "Provisions pour risques et charges",
+     "16",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DD",
+     "TOTAL DETTES FINANCIÈRES ET RESSOURCES ASSIMILÉES",
+     "",
+     "17 508 248",
+     "53 564 678",
+     ""
+    ],
+    [
+     "DF",
+     "TOTAL RESSOURCES STABLES",
+     "",
+     "69 600 393",
+     "101 095 623",
+     ""
+    ],
+    [
+     "DH",
+     "Dettes circulantes HAO",
+     "5",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DI",
+     "Clients, avances reçues",
+     "7",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DJ",
+     "Fournisseurs d’exploitation",
+     "17",
+     "12 155 234",
+     "11 000 467",
+     "21 162 000"
+    ],
+    [
+     "DK",
+     "Dettes fiscales et sociales",
+     "18",
+     "31 182 318",
+     "13 723 560",
+     "4 168 000"
+    ],
+    [
+     "DM",
+     "Autres dettes",
+     "19",
+     "0",
+     "654 000",
+     "—"
+    ],
+    [
+     "DN",
+     "Provisions pour risques et charges à court terme",
+     "19",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DP",
+     "TOTAL PASSIF CIRCULANT",
+     "",
+     "43 337 552",
+     "25 378 027",
+     ""
+    ],
+    [
+     "DQ",
+     "Banques, crédits d’escompte",
+     "20",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DR",
+     "Banques, établissements financiers et crédits de trésorerie",
+     "20",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DT",
+     "TOTAL TRÉSORERIE-PASSIF",
+     "",
+     "0",
+     "0",
+     ""
+    ],
+    [
+     "DV",
+     "Écart de conversion-Passif",
+     "12",
+     "0",
+     "0",
+     "—"
+    ],
+    [
+     "DZ",
+     "TOTAL GÉNÉRAL",
+     "",
+     "112 937 495",
+     "126 473 650",
+     ""
+    ]
+   ]
+  ]
+ },
+ "ecarts": [
+  {
+   "cle": "cafg",
+   "titre": "CAFG de l’exercice N-1",
+   "constat": "Le tableau des flux porte 43 450 392 en N-1 (FA), la note 34 porte 15 675 441. La valeur du tableau des flux est celle de la VALEUR AJOUTÉE N-1 du compte de résultat.",
+   "lecture": "La note 34 paraît juste ; le tableau des flux semble avoir reçu la mauvaise ligne."
+  },
+  {
+   "cle": "bf",
+   "titre": "Variation du besoin de financement (FB+FC+FD+FE)",
+   "constat": "La ligne porte 31 359 405 alors que FB+FC+FD+FE vaut −2 632 175.",
+   "lecture": "La somme annoncée ne se retrouve pas à partir de ses composantes déposées."
+  },
+  {
+   "cle": "zb",
+   "titre": "Flux des activités opérationnelles (ZB)",
+   "constat": "ZB porte −18 108 317, quand FA + (FB à FE) donne 12 546 383. En revanche ZB se recoupe en aval : ZB + ZC + ZF = 5 424 953 = ZG, et ZG + ZA = 6 300 639 = ZH.",
+   "lecture": "Le bas du tableau est cohérent ; c’est le bloc opérationnel qui ne l’est pas."
+  },
+  {
+   "cle": "fluxOp",
+   "titre": "Flux opérationnels — flux vs note 34",
+   "constat": "Le tableau des flux porte −18 108 317 (ZB), la note 34 porte −14 253 827.",
+   "lecture": "Les deux feuillets d’une même liasse ne disent pas la même chose."
+  },
+  {
+   "cle": "fluxFin",
+   "titre": "Flux de financement — flux vs note 34",
+   "constat": "Le tableau des flux porte 30 516 870 (ZF), la note 34 porte 27 538 065.",
+   "lecture": "Même divergence, sur la ligne suivante."
+  },
+  {
+   "cle": "tresorerie",
+   "titre": "Trésorerie nette",
+   "constat": "La note 34 porte 6 301 089, le bilan (BT) et le tableau des flux (ZH) portent 6 300 639 — 450 F d’écart.",
+   "lecture": "Un écart d’arrondi de report, sans incidence sur la lecture."
+  }
+ ],
+ "toastsTotal": 0
+}
