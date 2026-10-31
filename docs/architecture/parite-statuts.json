@@ -204,5 +204,12 @@
  "cfg-types-piece": "porté",
  "cfg-certificats": "porté",
  "cfg-rappels": "porté",
- "cfg-imagerie-catalogue": "porté"
+ "cfg-imagerie-catalogue": "porté",
+ "m12-analytique": "porté",
+ "m12-budgets": "porté",
+ "m12-immobilisations": "porté",
+ "m12-banques": "porté",
+ "m12-compte-resultat": "porté",
+ "m12-flux-tresorerie": "porté",
+ "m12-seuil-rentabilite": "porté"
 }

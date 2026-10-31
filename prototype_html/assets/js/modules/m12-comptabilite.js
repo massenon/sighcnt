@@ -1221,9 +1221,11 @@
           { name: 'nature', label: 'Nature budgétaire', type: 'select', required: true, options: ['Charges de fonctionnement', 'Investissements', 'Charges de personnel', 'Achats de marchandises'] },
           { name: 'prevu', label: 'Montant prévisionnel (FCFA)', type: 'money', required: true, min: 0 },
         ],
-        transform: function (v) {
+        /* E772/E773 : la référence vient des budgets EXISTANTS (le compteur de page redonnait « BG-2026-001 », déjà attribuée), et une MODIFICATION
+           la conserve — recalculée à chaque enregistrement, elle renumérotait le budget. */
+        transform: function (v, record) {
           v.centre = centreLabel(v.centreCout);
-          if (!v.reference) v.reference = C.nextRef('BG-2026-', 3);
+          if (!v.reference) v.reference = record && record.reference ? record.reference : C.referenceSuivante('BG-2026-', 3, col.all());
           return v;
         },
         kpis: function (rows) {
@@ -1526,7 +1528,11 @@
           { name: 'motifSortie', label: 'Motif de la sortie', type: 'select',
             options: ['Cession', 'Réforme', 'Destruction', 'Vol ou perte', 'Don'] },
         ],
-        transform: function (v) { if (!v.reference) v.reference = C.nextRef('IM-', 3); return v; },
+        /* E772/E773 : même défaut que les budgets — référence tirée des biens existants, conservée à la modification. */
+        transform: function (v, record) {
+          if (!v.reference) v.reference = record && record.reference ? record.reference : C.referenceSuivante('IM-', 3, col.all());
+          return v;
+        },
         onCreate: function () { return { dateAcquisition: C.iso(AUJ), dureeAmortissement: 5, etat: 'En service', compte: '241000' }; },
         filters: [
           { name: 'categorie', label: 'Catégorie', options: ['Matériel médical', 'Matériel de laboratoire', 'Matériel technique', 'Matériel de transport', 'Mobilier médical', 'Matériel informatique', 'Installations'] },
