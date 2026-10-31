@@ -276,5 +276,14 @@
  "aide-apropos": "porté",
  "contact-editeur": "porté",
  "m5-banque-sang": "porté",
- "m5-donneurs": "porté"
+ "m5-donneurs": "porté",
+ "index": "porté",
+ "auth-forgot": "porté",
+ "auth-reset": "porté",
+ "auth-2fa": "porté",
+ "auth-lock": "porté",
+ "error-404": "porté",
+ "error-403": "porté",
+ "plan-du-site": "porté",
+ "enquete-publique": "porté"
 }
