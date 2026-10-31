@@ -66,7 +66,7 @@ String texteDe(Element e) {
 }
 
 List<String> textesSous(WidgetTester t, Finder f) => [
-      for (final e in find.descendant(of: f, matching: find.byType(Text)).evaluate()) sp(texteDe(e as Element))
+      for (final e in find.descendant(of: f, matching: find.byType(Text)).evaluate()) sp(texteDe(e))
     ].where((s) => s.isNotEmpty).toList();
 
 String ligneRegard(WidgetTester t) => sp(texteDe(find.byKey(const Key('tbb:regard-ligne')).evaluate().single as Element));
@@ -78,7 +78,7 @@ List<(String, String, String?)> kpisAffiches(WidgetTester t) {
   for (final k in find.byKey(const Key('kit:kpi')).evaluate()) {
     final textes = [
       for (final e in find.descendant(of: find.byElementPredicate((x) => identical(x, k)), matching: find.byType(Text)).evaluate())
-        sp(texteDe(e as Element))
+        sp(texteDe(e))
     ].where((s) => s.isNotEmpty).toList();
     out.add((textes[0], textes[1], textes.length > 2 ? textes[2] : null));
   }
