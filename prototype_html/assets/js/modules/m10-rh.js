@@ -3542,7 +3542,7 @@
             type: 'success',
             detail: C.num(archivees) + ' participation(s) non réglée(s) archivée(s).',
             /* L'annulation restitue l'événement ET ses participations : ne restaurer que l'événement laissait ses participations archivées,
-               donc un événement vivant dont le montant attendu avait fondu (E743). */
+               donc un événement vivant dont le montant attendu avait fondu (E741). */
             undo: function () { res.undo(); annulations.forEach(function (u) { u(); }); afficher(); },
           });
         });

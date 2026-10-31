@@ -493,7 +493,7 @@ void main() {
       final grille = obj(s['grille']);
       // 14 jours, de J-3 à J+10 : « ma27 » … « lu9 ».
       for (final h in (grille['entetes'] as List).skip(2)) {
-        expect(find.byTooltip('${h}'.replaceAll(' ', '').toLowerCase()), findsWidgets, reason: '$h');
+        expect(find.byTooltip('$h'.replaceAll(' ', '').toLowerCase()), findsWidgets, reason: '$h');
       }
       for (final l in (grille['lignes'] as List)) {
         expect(find.text('${(l as List)[0]}'), findsWidgets, reason: '${l[0]}');
@@ -512,7 +512,7 @@ void main() {
     });
 
     Future<void> ouvrirCase(WidgetTester t, String agent, DateTime jour) async {
-      final f = find.byKey(Key('rhc:cellule:${'$agent'}:${jour.toIso8601String().substring(0, 10)}'));
+      final f = find.byKey(Key('rhc:cellule:$agent:${jour.toIso8601String().substring(0, 10)}'));
       await t.ensureVisible(f);
       await t.tap(f);
       await t.pump(const Duration(milliseconds: 400));

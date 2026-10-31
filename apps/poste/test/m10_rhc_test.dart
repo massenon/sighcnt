@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_domaine/sigh_domaine.dart';
+import 'package:sigh_poste/impression/pdf.dart' show PolicesPdf;
 import 'package:sigh_poste/kit/kit.dart';
+import 'package:sigh_poste/modules/m10/rhc_badge_pdf.dart';
 
 import 'aide_polices.dart';
 import 'm10_aide.dart';
@@ -369,6 +374,27 @@ void main() {
       // La planche ne porte pas l'identité fiscale sur les cartes, mais le pied normalisé sur la feuille.
       expect(find.textContaining('Document généré par'), findsNWidgets(2));
       await fermerToasts(t);
+    });
+
+    testWidgets('PDF : la carte CR80 sur deux pages (recto, verso) aux cotes exactes, la planche A4 sur autant de feuilles que de dizaines', (t) async {
+      final badges = jeu('badges');
+      final modeles = jeu('modelesBadge');
+      final modele = rhcModeleNormalise(modeles.first, modeles);
+      final carte = await t.runAsync(() async => pdfBadge(badge: badges.first, modele: modele, reference: 'CNT-TEST-0001', polices: await PolicesPdf.charger()));
+      final txt = latin1.decode(carte!);
+      expect(txt.startsWith('%PDF'), isTrue);
+      expect(RegExp(r'/Type\s*/Page(?![s])').allMatches(txt).length, 2, reason: 'recto et verso');
+      expect(RegExp(r'/MediaBox\s*\[\s*0\s+0\s+242\.6\d*\s+153\.0\d*').hasMatch(txt), isTrue, reason: 'CR80 = 85,6 × 54 mm = 242,65 × 153,07 pt');
+      final planche = await t.runAsync(() async => pdfPlanche(
+          modele: modele,
+          badges: [for (final b in badges) (badge: b, agent: null)],
+          reference: 'CNT-TEST-0002',
+          utilisateur: utilisateurTest,
+          edite: auj,
+          polices: await PolicesPdf.charger()));
+      final tp = latin1.decode(planche!);
+      expect(RegExp(r'/Type\s*/Page(?![s])').allMatches(tp).length, 2, reason: 'quatorze cartes, dix par feuille');
+      expect(RegExp(r'/MediaBox\s*\[\s*0\s+0\s+595\.27\d*\s+841\.8\d*').hasMatch(tp), isTrue, reason: 'A4');
     });
 
     testWidgets('carte seule : recto ET verso, avec les mentions du modèle ; un badge retiré n’est jamais proposé', (t) async {

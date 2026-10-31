@@ -344,7 +344,7 @@ class EcranEvenements extends StatelessWidget with EcranMaquette {
     ToastsSigh.afficher(ctx, 'Événement annulé.',
         type: TypeToast.succes,
         detail: '${nombre(annulations.length - 1)} participation(s) non réglée(s) archivée(s).',
-        // L'annulation restitue l'événement ET ses participations (E743 : la maquette ne restaurait que l'événement).
+        // L'annulation restitue l'événement ET ses participations (E741 : la maquette ne restaurait que l'événement).
         annuler: () {
           for (final u in annulations) {
             u();

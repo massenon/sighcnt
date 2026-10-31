@@ -11,7 +11,9 @@ import '../../impression/piece.dart';
 import '../../impression/feuilles.dart' show mm;
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../impression/pdf.dart' show PolicesPdf;
 import '../m13/qual_qr.dart';
+import 'rhc_badge_pdf.dart';
 
 /// LE BADGE, TROISIÈME GABARIT D'IMPRESSION (à côté du A4 et du rouleau 80 mm) : la carte CR80, 85,6 × 54 mm — le format des imprimantes à cartes et des porte-badges
 /// du commerce. Composée en MILLIMÈTRES, pas en pixels : c'est ce qui permet de l'imprimer telle quelle sur une carte.
@@ -207,7 +209,18 @@ Future<void> afficherApercuBadge(BuildContext ctx, ContexteEcran c, {required Fi
           ]),
         )),
       ),
-      pied: (fermer) => [BoutonSigh(libelle: 'Fermer', variante: VarianteBouton.secondaire, onPressed: fermer)]);
+      pied: (fermer) => [
+            BoutonSigh(libelle: 'Fermer', variante: VarianteBouton.secondaire, onPressed: fermer),
+            BoutonSigh(
+                libelle: 'Enregistrer en PDF',
+                icone: LucideIcons.fileDown,
+                variante: VarianteBouton.secondaire,
+                onPressed: () async {
+                  final octets = await pdfBadge(badge: badge, modele: modele, agent: agent, reference: ref, polices: await PolicesPdf.charger());
+                  final chemin = await ImpressionPoste.enregistrer(octets, ref);
+                  if (ctx.mounted) ToastsSigh.afficher(ctx, 'PDF enregistré.', type: TypeToast.succes, detail: chemin);
+                }),
+          ]);
 }
 
 /// `P.planche` — la feuille A4 pour les cliniques SANS imprimante à cartes : dix badges par feuille (2 × 5), avec des repères de découpe. Le pied normalisé
@@ -285,5 +298,17 @@ Future<void> afficherApercuPlanche(BuildContext ctx, ContexteEcran c, {required 
           color: const Color(0xFFE2E8F0),
           padding: const EdgeInsets.all(16),
           child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Column(children: [for (final (i, l) in feuilles.indexed) feuille(i, l)]))),
-      pied: (fermer) => [BoutonSigh(libelle: 'Fermer', icone: LucideIcons.x, variante: VarianteBouton.secondaire, onPressed: fermer)]);
+      pied: (fermer) => [
+            BoutonSigh(libelle: 'Fermer', icone: LucideIcons.x, variante: VarianteBouton.secondaire, onPressed: fermer),
+            BoutonSigh(
+                libelle: 'Enregistrer en PDF',
+                icone: LucideIcons.fileDown,
+                variante: VarianteBouton.secondaire,
+                onPressed: () async {
+                  final ref = PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero());
+                  final octets = await pdfPlanche(modele: modele, badges: badges, reference: ref, utilisateur: c.utilisateur, edite: c.aujourdhui, polices: await PolicesPdf.charger());
+                  final chemin = await ImpressionPoste.enregistrer(octets, ref);
+                  if (ctx.mounted) ToastsSigh.afficher(ctx, 'PDF enregistré.', type: TypeToast.succes, detail: chemin);
+                }),
+          ]);
 }
