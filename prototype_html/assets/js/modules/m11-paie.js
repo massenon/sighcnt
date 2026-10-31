@@ -113,6 +113,49 @@
     });
   }
 
+  /* Les déclarations d'heures supplémentaires : amorcées ici (et non par le seul écran) puisque le CALCUL de la paie les lit (E691). */
+  function heuresSupCol() { return S.collection('heuresSup', { module: 'M11', entite: 'HeureSupplementaire' }); }
+  function amorcerHeuresSup() {
+    var col = heuresSupCol();
+    if (!col.all().length && S.amorcable('heuresSup')) {
+      var rnd = C.seeded(1949);
+      personnel().slice(0, 20).forEach(function (e, i) {
+        var h = C.between(rnd, 2, 24);
+        var taux = Math.round(e.salaireBase / 173.33 * 1.25);
+        col.all().push({
+          id: 'HS' + C.pad(i + 1, 4), statut: 'actif',
+          reference: 'HS-' + C.pad(i + 1, 4),
+          periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' ' + AUJ.getFullYear(),
+          employeId: e.id, employe: e.nomComplet, matricule: e.matricule, service: e.service,
+          heures: h, tauxHoraire: taux, majoration: 25, montant: h * taux,
+          motif: C.pick(rnd, ['Renfort de garde', 'Urgence', 'Remplacement', 'Surcroît d’activité']),
+          valide: rnd() > 0.3,
+        });
+      });
+      S.save();
+    }
+  }
+
+  /* L'échéancier d'un prêt, calculé et jamais saisi : le total des échéances doit valoir exactement le montant accordé, au franc près.
+     Hissé au module : le calcul de la paie (E689) et l'écran des prêts lisent LA MÊME fonction. */
+  function echeancierPret(p2) {
+    var n = Number(p2.nbEcheances) || 1;
+    var base = Math.floor((Number(p2.montant) || 0) / n);
+    var out = [];
+    var an = Number(String(p2.premiereEcheance).slice(0, 4));
+    var mo = Number(String(p2.premiereEcheance).slice(5, 7)) - 1;
+    for (var i = 0; i < n; i++) {
+      var d = new Date(an, mo + i, 1);
+      var mois = d.getFullYear() + '-' + C.pad(d.getMonth() + 1, 2);
+      /* Le reliquat d'arrondi tombe sur la DERNIÈRE échéance : sans cela, la somme des retenues serait inférieure au prêt et le solde ne
+         se fermerait jamais. */
+      var montant = i === n - 1 ? (Number(p2.montant) || 0) - base * (n - 1) : base;
+      out.push({ rang: i + 1, mois: mois, montant: montant,
+        retenue: (p2.retenues || []).indexOf(mois) !== -1 });
+    }
+    return out;
+  }
+
   function calculer(employe, annee, mois) {
     var gardes = compter(employe.id, annee, mois, 'garde');
     var permanences = compter(employe.id, annee, mois, 'permanence');
@@ -137,10 +180,18 @@
     var primeAnciennete = ans >= 2 ? Math.round(employe.salaireBase * 0.02 * ans) : 0;
 
     var salaireBase = employe.salaireBase;
-    var brut = salaireBase + primeAnciennete + totalPrimes;
+    var periode = C.MOIS[mois].charAt(0).toUpperCase() + C.MOIS[mois].slice(1) + ' ' + annee;
+
+    /* E691 : les heures supplémentaires VALIDÉES de la période entrent au brut. Une déclaration en attente ou archivée ne compte pas :
+       la payer avant sa validation reviendrait à valider par le calcul. Le montant est celui de la déclaration (heures × taux majoré). */
+    var heuresSupDetail = heuresSupCol().active().filter(function (h) {
+      return h.employeId === employe.id && h.valide && h.periode === periode;
+    });
+    var heuresSupMontant = C.sum(heuresSupDetail, 'montant');
+    var heuresSupNb = C.sum(heuresSupDetail, 'heures');
+    var brut = salaireBase + primeAnciennete + totalPrimes + heuresSupMontant;
 
     /* Sanction NS 131 issue de l'évaluation de la période */
-    var periode = C.MOIS[mois].charAt(0).toUpperCase() + C.MOIS[mois].slice(1) + ' ' + annee;
     var evaluation = evaluations().filter(function (e) {
       return e.employeId === employe.id && e.periode === periode;
     })[0];
@@ -182,7 +233,20 @@
     });
     var totalParticipations = C.sum(participationsMois, 'montant');
 
-    var totalRetenues = cnssOuvriere + its + ortb + totalAvances + totalParticipations;
+    /* E689 : UNE échéance de prêt par mois, au SEUL mois de son échéance (même règle que les participations). L'échéancier est calculé,
+       jamais saisi ; le champ `retenues` de la fiche n'entre pas dans le calcul, qui reste une fonction du mois. */
+    var pretsDetail = [];
+    colPrets().active().forEach(function (pr) {
+      if (pr.employeId !== employe.id) return;
+      echeancierPret(pr).forEach(function (ech) {
+        if (ech.mois === moisRetenue) {
+          pretsDetail.push({ pretId: pr.id, reference: pr.reference, nature: pr.nature, objet: pr.objet, rang: ech.rang, nbEcheances: Number(pr.nbEcheances) || 1, mois: ech.mois, montant: ech.montant });
+        }
+      });
+    });
+    var totalPrets = C.sum(pretsDetail, 'montant');
+
+    var totalRetenues = cnssOuvriere + its + ortb + totalAvances + totalParticipations + totalPrets;
     var net = brutApresSanction - totalRetenues;
 
     return {
@@ -190,12 +254,14 @@
       gardes: gardes, permanences: permanences,
       salaireBase: salaireBase, primeAnciennete: primeAnciennete,
       lignesPrimes: lignesPrimes, totalPrimes: totalPrimes,
+      heuresSupMontant: heuresSupMontant, heuresSupNb: heuresSupNb, heuresSupDetail: heuresSupDetail,
       brut: brut, pctSanction: pctSanction, sanction: sanction, brutApresSanction: brutApresSanction,
       cnssOuvriere: cnssOuvriere, cnssPatronale: cnssPatronale,
       vps: vps, its: its, ortb: ortb, detailOrtb: detailOrtb,
       ortbRadio: ortbRadio, ortbTele: ortbTele,
       avances: totalAvances, avancesDetail: avancesEnCours,
       participations: totalParticipations, participationsDetail: participationsMois,
+      prets: totalPrets, pretsDetail: pretsDetail,
       totalRetenues: totalRetenues,
       net: net,
       coutEmployeur: brutApresSanction + cnssPatronale + vps,
@@ -203,6 +269,7 @@
   }
 
   function calculerTous(annee, mois) {
+    amorcerHeuresSup();
     return personnel().map(function (e) { return calculer(e, annee, mois); });
   }
 
@@ -430,7 +497,10 @@
               { k: 'Prime d’ancienneté', b: anciennete(c.employe) + ' ans', m: C.money(c.primeAnciennete, false) },
             ].concat(c.lignesPrimes.map(function (p) {
               return { k: 'Prime — ' + p.label, b: p.nombre + ' × ' + C.money(p.unitaire, false), m: C.money(p.total, false) };
-            })).concat([{ k: 'TOTAL BRUT', b: '', m: C.money(c.brut, false) }]))),
+            })).concat([
+              c.heuresSupMontant ? { k: 'Heures supplémentaires', b: C.num(c.heuresSupNb) + ' h', m: C.money(c.heuresSupMontant, false) } : null,
+              { k: 'TOTAL BRUT', b: '', m: C.money(c.brut, false) },
+            ].filter(Boolean)))),
             U.card('Retenues', K.miniTable([
               { label: 'Rubrique', key: 'k' },
               { label: 'Taux / base', align: 'right', key: 'b' },
@@ -443,6 +513,7 @@
               return { k: l.libelle, b: l.base, m: l.montant };
             })).concat([
               c.avances ? { k: 'Remboursement d’avance', b: '', m: C.money(c.avances, false) } : null,
+              c.prets ? { k: 'Échéance de prêt', b: (c.pretsDetail || []).map(function (x) { return x.reference + ' ' + x.rang + '/' + x.nbEcheances; }).join(' · '), m: C.money(c.prets, false) } : null,
               c.participations ? {
                 k: 'Participation aux événements',
                 b: (c.participationsDetail || []).map(function (x) { return x.evenementLibelle; }).join(' · '),
@@ -485,6 +556,7 @@
               cnss: c.employe.cnss, situation: c.employe.situation, telephone: c.employe.telephone,
               salaireBase: c.salaireBase, primeAnciennete: c.primeAnciennete,
               lignesPrimes: c.lignesPrimes, totalPrimes: c.totalPrimes,
+              heuresSupMontant: c.heuresSupMontant, heuresSupNb: c.heuresSupNb,   /* E691 */
               brut: c.brut, pctSanction: c.pctSanction, sanction: c.sanction,
               cnssOuvriere: c.cnssOuvriere, cnssPatronale: c.cnssPatronale,
               vps: c.vps, its: c.its, ortb: c.ortb, avances: c.avances,
@@ -492,8 +564,11 @@
                  figuraient dans le total des retenues — le détail voyage désormais avec la pièce. */
               detailOrtb: c.detailOrtb, participations: c.participations,
               participationsDetail: (c.participationsDetail || []).map(function (x) { return { evenementLibelle: x.evenementLibelle, montant: x.montant }; }),
+              prets: c.prets, pretsDetail: c.pretsDetail,   /* E689 */
               totalRetenues: c.totalRetenues, net: c.net, coutEmployeur: c.coutEmployeur,
               statutBulletin: 'a_valider',
+              /* A2 : celui qui génère est nommé sur la pièce ; la validation exige une AUTRE personne. */
+              genereePar: S.currentUser(), dateGeneration: C.iso(C.aujourdhui()),
             }));
           });
           U.toast(crees.length + ' bulletin(s) généré(s).', {
@@ -512,10 +587,12 @@
           cnss: c.employe.cnss, situation: c.employe.situation, telephone: c.employe.telephone,
           salaireBase: c.salaireBase, primeAnciennete: c.primeAnciennete,
           lignesPrimes: c.lignesPrimes, totalPrimes: c.totalPrimes,
+          heuresSupMontant: c.heuresSupMontant, heuresSupNb: c.heuresSupNb,
           brut: c.brut, pctSanction: c.pctSanction, sanction: c.sanction,
           cnssOuvriere: c.cnssOuvriere, cnssPatronale: c.cnssPatronale,
           vps: c.vps, its: c.its, ortb: c.ortb, avances: c.avances,
           detailOrtb: c.detailOrtb, participations: c.participations, participationsDetail: c.participationsDetail,   /* E682 */
+          prets: c.prets, pretsDetail: c.pretsDetail,
           totalRetenues: c.totalRetenues, net: c.net,
         });
       }
@@ -571,6 +648,9 @@
         base: String(p.nombre), taux: C.money(p.unitaire, false), montant: C.money(p.total, false),
       });
     });
+    if (b.heuresSupMontant) {
+      gains.push({ rub: C.pad(gains.length + 1, 2), libelle: 'Heures supplémentaires', base: C.num(b.heuresSupNb || 0), taux: '', montant: C.money(b.heuresSupMontant, false) });
+    }
     gains.push({ rub: '', libelle: 'TOTAL BRUT', base: '', taux: '', montant: C.money(b.brut, false) });
 
     var retenues = [
@@ -581,6 +661,11 @@
       return { rub: '', libelle: l.libelle, base: l.base, taux: 'Forfait annuel', montant: l.montant };
     })).concat([
       b.avances ? { rub: '', libelle: 'Remboursement d’avance sur salaire', base: '', taux: '', montant: C.money(b.avances, false) } : null,
+      b.prets ? {
+        rub: '', libelle: 'Échéance de prêt',
+        base: (b.pretsDetail || []).map(function (x) { return x.reference + ' ' + x.rang + '/' + x.nbEcheances; }).join(' ; '),
+        taux: '', montant: C.money(b.prets, false),
+      } : null,
       b.participations ? {
         rub: '', libelle: 'Participation aux événements du personnel',
         base: (b.participationsDetail || []).map(function (x) { return x.evenementLibelle; }).join(' ; '),
@@ -712,8 +797,9 @@
             { k: 'Salaire de base', m: C.money(b.salaireBase, false) },
             { k: 'Prime d’ancienneté', m: C.money(b.primeAnciennete || 0, false) },
             { k: 'Primes NS 132', m: C.money(b.totalPrimes || 0, false) },
+            b.heuresSupMontant ? { k: 'Heures supplémentaires', m: C.money(b.heuresSupMontant, false) } : null,
             { k: 'TOTAL BRUT', m: C.money(b.brut, false) },
-          ])),
+          ].filter(Boolean))),
           U.card('Retenues', K.miniTable([
             { label: 'Rubrique', key: 'k' }, { label: 'Montant', align: 'right', key: 'm' },
           ], [
@@ -724,6 +810,7 @@
             return { k: l.libelle, m: l.montant };
           })).concat([
             b.avances ? { k: 'Avance sur salaire', m: C.money(b.avances, false) } : null,
+            b.prets ? { k: 'Échéance de prêt', m: C.money(b.prets, false) } : null,
             b.participations ? { k: 'Participation aux événements', m: C.money(b.participations, false) } : null,
           ].filter(Boolean)))),
         ]);
@@ -884,24 +971,8 @@
     title: 'Heures supplémentaires',
     description: 'Déclaration et valorisation des heures effectuées au-delà de l’horaire contractuel.',
     render: function (root) {
-      var col = S.collection('heuresSup', { module: 'M11', entite: 'HeureSupplementaire' });
-      if (!col.all().length && S.amorcable('heuresSup')) {
-        var rnd = C.seeded(1949);
-        personnel().slice(0, 20).forEach(function (e, i) {
-          var h = C.between(rnd, 2, 24);
-          var taux = Math.round(e.salaireBase / 173.33 * 1.25);
-          col.all().push({
-            id: 'HS' + C.pad(i + 1, 4), statut: 'actif',
-            reference: 'HS-' + C.pad(i + 1, 4),
-            periode: C.MOIS[AUJ.getMonth()].charAt(0).toUpperCase() + C.MOIS[AUJ.getMonth()].slice(1) + ' ' + AUJ.getFullYear(),
-            employeId: e.id, employe: e.nomComplet, matricule: e.matricule, service: e.service,
-            heures: h, tauxHoraire: taux, majoration: 25, montant: h * taux,
-            motif: C.pick(rnd, ['Renfort de garde', 'Urgence', 'Remplacement', 'Surcroît d’activité']),
-            valide: rnd() > 0.3,
-          });
-        });
-        S.save();
-      }
+      var col = heuresSupCol();
+      amorcerHeuresSup();
 
       return K.crud({
         collection: 'heuresSup', entite: 'déclaration', entiteP: 'déclarations', module: 'M11',
@@ -1092,6 +1163,117 @@
   /* ==========================================================================
    * VALIDATION DIRECTION
    * ======================================================================== */
+  /* ==========================================================================
+   * ÉCRITURE DE PAIE (B6) ET SÉPARATION DES TÂCHES (A2)
+   * --------------------------------------------------------------------------
+   * La validation d'un lot produit UNE pièce comptable en BROUILLON (journal SAL) : la validation comptable reste un geste humain.
+   * Lignes plates de même numéro, un compte et un sens chacune, centre de coûts porté par la pièce. Le centre est « direction » : aucun
+   * document ne donne la clé qui répartirait la masse salariale entre les six secteurs, et en inventer une fausserait l'analytique.
+   *   débit  661100  rémunérations du personnel   = brut après sanction
+   *   débit  664120  charges sociales             = CNSS part patronale
+   *   débit  641300  VPS                          = VPS
+   *   crédit 422000  rémunérations dues           = net à payer, puis participations retenues (à reverser au bénéficiaire)
+   *   crédit 431000  CNSS                         = parts ouvrière et patronale
+   *   crédit 447000  État                         = ITS, redevances ORTB retenues, VPS
+   *   crédit 423000  avances et acomptes          = remboursements d'avances et échéances de prêts
+   * Les comptes sont ceux du plan de la clinique (la fiche de paie parle de 421 ; le plan porte 422000 pour les rémunérations dues).
+   * RG-10 est contrôlé AVANT toute écriture : un déséquilibre refuse la validation en nommant l'écart.
+   * ======================================================================== */
+  var COMPTES_PAIE = {
+    remuneration: '661100', chargesSociales: '664120', vps: '641300',
+    personnelDu: '422000', cnss: '431000', etat: '447000', avances: '423000',
+  };
+  function libelleCompte(num) {
+    var c = D.PLAN_COMPTABLE.filter(function (x) { return String(x.num) === String(num); })[0];
+    return c ? c.libelle : num;
+  }
+
+  function lignesEcriturePaie(bulletinsLot) {
+    function tot(k) { return C.sum(bulletinsLot, function (b) { return Number(b[k]) || 0; }); }
+    var charge = tot('brut') - tot('sanction');
+    var brutes = [
+      ['remuneration', 'debit', charge, 'Rémunérations du personnel'],
+      ['chargesSociales', 'debit', tot('cnssPatronale'), 'CNSS part patronale'],
+      ['vps', 'debit', tot('vps'), 'VPS'],
+      ['personnelDu', 'credit', tot('net'), 'Net à payer aux agents'],
+      ['personnelDu', 'credit', tot('participations'), 'Participations aux événements retenues, à reverser'],
+      ['cnss', 'credit', tot('cnssOuvriere') + tot('cnssPatronale'), 'CNSS parts ouvrière et patronale'],
+      ['etat', 'credit', tot('its'), 'ITS retenu'],
+      ['etat', 'credit', tot('ortb'), 'Redevances ORTB retenues'],
+      ['etat', 'credit', tot('vps'), 'VPS à reverser'],
+      ['avances', 'credit', tot('avances'), 'Remboursements d’avances sur salaire'],
+      ['avances', 'credit', tot('prets'), 'Échéances de prêts retenues'],
+    ];
+    return brutes.filter(function (l) { return l[2] > 0; }).map(function (l) {
+      return { compte: COMPTES_PAIE[l[0]], sens: l[1], montant: l[2], libelle: l[3] };
+    });
+  }
+
+  function numeroPiecePaie(date) {
+    var prefixe = 'SAL-' + String(date).slice(0, 4) + '-';
+    var max = 0;
+    S.collection('ecritures').all().forEach(function (e) {
+      if (typeof e.numero === 'string' && e.numero.indexOf(prefixe) === 0) {
+        var n = parseInt(e.numero.slice(prefixe.length), 10);
+        if (n > max) max = n;
+      }
+    });
+    return prefixe + C.pad(max + 1, 5);
+  }
+
+  /** Écrit la pièce de paie d'un lot en brouillon. Rend { ok, numero, lignes, annuler } ou { ok: false, motif } (refus nommé, rien d'écrit). */
+  function ecrirePaie(periode, bulletinsLot) {
+    var pieceId = 'PAIE-' + periode;
+    var existante = S.collection('ecritures').active().filter(function (e) { return e.pieceId === pieceId; })[0];
+    if (existante) {
+      return { ok: false, motif: 'La paie de ' + periode + ' a déjà son écriture (' + existante.numero + '). Archiver cette pièce avant de valider un second lot de la même période.' };
+    }
+    var lignes = lignesEcriturePaie(bulletinsLot);
+    var debit = C.sum(lignes.filter(function (l) { return l.sens === 'debit'; }), 'montant');
+    var credit = C.sum(lignes.filter(function (l) { return l.sens === 'credit'; }), 'montant');
+    if (debit !== credit) {
+      S.log('Écriture de paie refusée, déséquilibre', 'M12', 'Ecriture', pieceId, null, { debit: debit, credit: credit });
+      return { ok: false, motif: 'L’écriture de paie de ' + periode + ' n’est pas équilibrée (RG-10) : débit ' + C.money(debit) + ', crédit ' + C.money(credit)
+        + ', écart ' + C.money(Math.abs(debit - credit)) + '. Vérifier les bulletins du lot avant de valider.' };
+    }
+    var date = C.iso(C.aujourdhui());
+    var numero = numeroPiecePaie(date);
+    var journal = D.JOURNAUX.filter(function (x) { return x.code === 'SAL'; })[0] || { code: 'SAL', libelle: 'Journal des salaires' };
+    var col = S.collection('ecritures');
+    var posees = [];
+    for (var i = 0; i < lignes.length; i++) {
+      var l = lignes[i];
+      var r = col.insert({
+        numero: numero, date: date, journal: journal.code, journalLibelle: journal.libelle,
+        libelle: 'Paie de ' + periode + ' : ' + l.libelle,
+        centreCout: 'direction', origine: 'Automatique — Paie', statut: 'brouillon',
+        pieceId: pieceId, pieceNumero: periode,
+        compte: l.compte, compteLibelle: libelleCompte(l.compte),
+        debit: l.sens === 'debit' ? l.montant : 0, credit: l.sens === 'credit' ? l.montant : 0,
+      });
+      if (!r) {
+        posees.forEach(function (x) { x.undo(); });
+        return { ok: false, motif: 'L’écriture de paie de ' + periode + ' est refusée par le journal (exercice clos).' };
+      }
+      posees.push(r);
+    }
+    S.log('Écriture de paie', 'M12', 'Ecriture', numero, null, { periode: periode, debit: debit, credit: credit, lignes: posees.length });
+    return { ok: true, numero: numero, lignes: posees.length, debit: debit, credit: credit, annuler: function () { posees.forEach(function (x) { x.undo(); }); } };
+  }
+
+  function normaliserNom(n) { return String(n == null ? '' : n).replace(/\s+/g, ' ').trim().toLowerCase(); }
+
+  /** A2 : le validateur ne peut pas être celui qui a généré. Rend un motif de refus, ou null. Une pièce sans `genereePar` (antérieure au
+      contrôle) n'est pas contestée : on ne devine pas son auteur. */
+  function controleSeparation(bulletinsLot, validateur) {
+    var v = normaliserNom(validateur);
+    if (!v) return 'Validation refusée : l’agent connecté n’est pas identifié (RG-12).';
+    var meme = bulletinsLot.filter(function (b) { return normaliserNom(b.genereePar) === v; })[0];
+    if (!meme) return null;
+    return 'Séparation des tâches : la paie de ' + meme.periode + ' a été générée par ' + meme.genereePar
+      + ' ; elle doit être validée par une autre personne.';
+  }
+
   global.SIGH.screen('m11-validation', {
     title: 'Validation de la paie',
     description: 'Soumission des bulletins à la Direction pour validation avant diffusion aux agents.',
@@ -1111,6 +1293,7 @@
             cnss: C.sum(b, 'cnssOuvriere') + C.sum(b, 'cnssPatronale'),
             aValider: b.filter(function (x) { return x.statutBulletin === 'a_valider'; }).length,
             valides: b.filter(function (x) { return x.statutBulletin !== 'a_valider'; }).length,
+            aDiffuser: b.filter(function (x) { return x.statutBulletin === 'valide'; }).length,
           };
         });
       }
@@ -1145,16 +1328,21 @@
           {
             key: 'aValider', label: 'Statut',
             render: function (l) {
-              return l.aValider
-                ? U.badge(l.aValider + ' à valider', 'warning')
-                : U.badge('Validé', 'success');
+              if (l.aValider) return U.badge(l.aValider + ' à valider', 'warning');
+              return l.aDiffuser ? U.badge('Validé', 'success') : U.badge('Diffusé', 'navy');
             },
           },
         ],
         rowActions: function (l) {
           var acts = [K.iconBtn('printer', 'Journal de paie', function () { journal(l); })];
           if (l.aValider) {
-            acts.push(K.btn('Valider le lot', { size: 'sm', variant: 'success', icon: 'badge-check', onclick: function () { valider(l); } }));
+            /* A2 : « signer n'est pas saisir » : la commande est ABSENTE sans le droit d'écrire de l'écran (E685). */
+            var v = K.commande('Valider le lot', { size: 'sm', variant: 'success', icon: 'badge-check', onclick: function () { valider(l); } });
+            if (v) acts.push(v);
+          } else if (l.aDiffuser) {
+            /* B6 : le statut « Diffusé » n'était atteint par aucune commande. */
+            var d = K.commande('Diffuser', { size: 'sm', variant: 'primary', icon: 'send', onclick: function () { diffuser(l); } });
+            if (d) acts.push(d);
           }
           return acts;
         },
@@ -1167,19 +1355,46 @@
         U.confirm({
           title: 'Valider la paie de ' + l.periode + ' ?',
           message: 'Cette validation autorise la diffusion de ' + l.nb + ' bulletin(s) pour un net à payer total de '
-            + C.money(l.net) + '. L’opération est journalisée au nom de la Direction.',
+            + C.money(l.net) + '. L’opération est journalisée au nom de l’agent connecté, et l’écriture de paie est posée en brouillon.',
           confirmLabel: 'Valider la paie',
         }).then(function (ok) {
           if (!ok) return;
+          var lot = col.active().filter(function (b) { return b.periode === l.periode && b.statutBulletin === 'a_valider'; });
+          /* A2 : le validateur est l'agent CONNECTÉ (E687), jamais un nom écrit en dur, et il n'est pas celui qui a généré. */
+          var validateur = S.currentUser();
+          var refus = controleSeparation(lot, validateur);
+          if (refus) { S.log('Validation de paie refusée', 'M11', 'BulletinPaie', l.periode, null, { motif: refus }); U.toast('Validation refusée.', { type: 'error', detail: refus }); return; }
+          /* B6 : la pièce comptable d'abord (RG-10 contrôlé) ; refusée, rien n'est validé. */
+          var ecr = ecrirePaie(l.periode, lot);
+          if (!ecr.ok) { U.toast('Validation refusée.', { type: 'error', detail: ecr.motif }); return; }
           var majs = [];
-          col.active().filter(function (b) { return b.periode === l.periode && b.statutBulletin === 'a_valider'; })
-            .forEach(function (b) {
-              majs.push(col.update(b.id, { statutBulletin: 'valide', validePar: 'BASSONGUI Chabi Séko', dateValidation: C.iso(C.aujourdhui()) }));
-            });
+          lot.forEach(function (b) {
+            majs.push(col.update(b.id, { statutBulletin: 'valide', validePar: validateur, dateValidation: C.iso(C.aujourdhui()), ecritureNumero: ecr.numero }));
+          });
           table.refresh();
-          U.toast('Paie de ' + l.periode + ' validée par la Direction.', {
+          U.toast('Paie de ' + l.periode + ' validée par ' + validateur + '.', {
             type: 'success',
-            detail: majs.length + ' bulletin(s) autorisé(s) à la diffusion.',
+            detail: majs.length + ' bulletin(s) autorisé(s) à la diffusion ; écriture ' + ecr.numero + ' posée en brouillon.',
+            undo: function () { majs.forEach(function (m) { m.undo(); }); ecr.annuler(); table.refresh(); },
+          });
+        });
+      }
+
+      function diffuser(l) {
+        U.confirm({
+          title: 'Diffuser la paie de ' + l.periode + ' ?',
+          message: 'Les bulletins validés (' + l.aDiffuser + ') seront remis aux agents. La diffusion est journalisée au nom de l’agent connecté.',
+          confirmLabel: 'Diffuser',
+        }).then(function (ok) {
+          if (!ok) return;
+          var majs = [];
+          col.active().filter(function (b) { return b.periode === l.periode && b.statutBulletin === 'valide'; }).forEach(function (b) {
+            majs.push(col.update(b.id, { statutBulletin: 'diffuse', diffusePar: S.currentUser(), dateDiffusion: C.iso(C.aujourdhui()) }));
+          });
+          table.refresh();
+          U.toast('Paie de ' + l.periode + ' diffusée.', {
+            type: 'success',
+            detail: majs.length + ' bulletin(s) remis aux agents.',
             undo: function () { majs.forEach(function (m) { m.undo(); }); table.refresh(); },
           });
         });
@@ -1493,26 +1708,7 @@
         ];
       }
 
-      /* L'échéancier, calculé et jamais saisi : le total des échéances doit
-         valoir exactement le montant accordé, au franc près. */
-      function echeancier(p2) {
-        var n = Number(p2.nbEcheances) || 1;
-        var base = Math.floor((Number(p2.montant) || 0) / n);
-        var out = [];
-        var an = Number(String(p2.premiereEcheance).slice(0, 4));
-        var mo = Number(String(p2.premiereEcheance).slice(5, 7)) - 1;
-        for (var i = 0; i < n; i++) {
-          var d = new Date(an, mo + i, 1);
-          var mois = d.getFullYear() + '-' + C.pad(d.getMonth() + 1, 2);
-          /* Le reliquat d'arrondi tombe sur la DERNIÈRE échéance : sans cela,
-             la somme des retenues serait inférieure au prêt et le solde ne se
-             fermerait jamais. */
-          var montant = i === n - 1 ? (Number(p2.montant) || 0) - base * (n - 1) : base;
-          out.push({ rang: i + 1, mois: mois, montant: montant,
-            retenue: (p2.retenues || []).indexOf(mois) !== -1 });
-        }
-        return out;
-      }
+      function echeancier(p2) { return echeancierPret(p2); }
 
       function solde(p2) {
         return echeancier(p2).filter(function (e) { return !e.retenue; })

@@ -290,27 +290,28 @@ class EcranRemboursements extends StatelessWidget with EcranMaquette {
                           facture: fac,
                           remboursements:
                               m.collection('remboursements').actives,
-                          rangFactures: m.collection('factures').actives.length);
+                          avoirs: m.collection('avoirs').actives,
+                          facturesMere: m.collection('facturesMere').actives,
+                          idAvoir: idAvoirSuivant(m),
+                          jour: iso(c.aujourdhui),
+                          utilisateur: c.utilisateur);
                     } on RefusOperation catch (e) {
                       ToastsSigh.afficher(ctx, e.motif, type: TypeToast.erreur);
                       return;
                     }
                     final annulations = <VoidCallback>[];
+                    // B10 : la nature « Facture avoir » n'écrit plus une pièce négative dans `factures` ; elle passe par le MOTEUR UNIQUE
+                    // (collection `avoirs`, contre-passation en brouillon, cumul porté par la facture). L'opération garde le lien.
+                    if (op.avoir != null && fac != null) {
+                      final ecrit = ecrireAvoirEmis(
+                          m, fac, op.avoir!, '${op.remboursement['avoirId']}');
+                      annulations.addAll(ecrit.annulations);
+                    }
                     annulations.add(m
                         .collection('remboursements')
                         .inserer({...op.remboursement, 'statut': 'actif'},
                             prefixe: 'RBT')
                         .annuler);
-                    if (op.factureAvoir != null) {
-                      final piece = {...op.factureAvoir!}..remove('mecef');
-                      piece['numeroMecef'] = numeroMecefSimule(
-                          c.aujourdhui.millisecondsSinceEpoch % 90000);
-                      piece['statut'] = 'actif';
-                      annulations.add(m
-                          .collection('factures')
-                          .inserer(piece, prefixe: 'FAC')
-                          .annuler);
-                    }
                     if (op.patchFacture != null && fac != null) {
                       annulations.add(m
                           .collection('factures')

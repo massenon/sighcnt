@@ -868,17 +868,155 @@ AssFiche assEmettreMere({
   };
 }
 
-/// Le règlement d'une facture mère : le montant saisi REMPLACE le précédent (le règlement n'est pas cumulatif — E501) ; la pièce n'est « réglée »
-/// que si elle l'est entièrement, un règlement partiel laisse la créance ouverte.
-AssFiche assReglerMere(AssFiche mere, {required String date, required num montant, required String reference}) {
-  final reste = _n(mere['montantReclame']) - _n(montant);
-  return {
-    'dateReglement': date,
-    'montantRegle': montant,
-    'referenceReglement': reference,
-    'reliquat': reste,
-    'etat': reste <= 0 ? 'reglee' : 'transmise',
+/// Refus NOMMÉ d'un règlement de facture mère : rien n'est écrit.
+class RefusReglementMere implements Exception {
+  const RefusReglementMere(this.motif);
+  final String motif;
+  @override
+  String toString() => motif;
+}
+
+/// Ce qu'un règlement de facture mère écrit : le patch de la mère, la ligne de règlement et ses DEUX écritures (banque / créance), en brouillon.
+class ReglementMere {
+  const ReglementMere(
+      {required this.patch,
+      required this.reglement,
+      required this.ecritures,
+      required this.solde});
+
+  /// Ce qu'il faut écrire sur la facture mère (`reglements`, `montantRegle`, `reliquat`, `dateReglement`, `referenceReglement`, `etat`).
+  final AssFiche patch;
+
+  /// La ligne de règlement ajoutée (l'appelant renseigne `ecritureIds` après avoir inséré les écritures).
+  final AssFiche reglement;
+
+  /// Les deux lignes plates : débit 521000 Banque, crédit 411110 Clients compagnie d'assurance (RG-10 contrôlé avant écriture).
+  final List<AssFiche> ecritures;
+  final bool solde;
+}
+
+/// Les règlements d'une mère : la liste `reglements`, ou, pour une pièce de l'ancienne génération (un seul `montantRegle`), UN règlement.
+List<AssFiche> assReglementsDe(AssFiche mere) {
+  final l = mere['reglements'];
+  if (l is List) return [for (final x in l) (x as Map).cast<String, Object?>()];
+  return _vrai(mere['montantRegle'])
+      ? [
+          {
+            'date': mere['dateReglement'],
+            'montant': mere['montantRegle'],
+            'reference': mere['referenceReglement'] ?? '',
+            'ancien': true,
+          }
+        ]
+      : <AssFiche>[];
+}
+
+double assTotalRegle(AssFiche mere) => assSomme(assReglementsDe(mere), 'montant');
+
+/// Le reste dû : la facture moins la SOMME des règlements, jamais négatif.
+double assResteDuMere(AssFiche mere) {
+  final r = _n(mere['montantReclame']) - assTotalRegle(mere);
+  return r > 0 ? r : 0.0;
+}
+
+/// Le règlement d'une facture mère (`reglerFactureMere`). Décision de la Direction du 31/10/2026 (B5, écart E501), corrigée dans la maquette PUIS portée :
+/// les règlements sont CUMULATIFS et DATÉS (lignes de règlement) ; le solde est la facture moins la somme des règlements ; la pièce est soldée à zéro ;
+/// un règlement ne dépasse jamais le dû ; chaque règlement pose sa propre écriture (débit 521000 Banque, crédit 411110, brouillon).
+/// [ecritures] : celles déjà au journal (série annuelle `BQ-AAAA-NNNNN`). Lève [RefusReglementMere].
+ReglementMere assReglerMere(
+  AssFiche mere, {
+  required String date,
+  required num montant,
+  required String reference,
+  List<AssFiche> ecritures = const [],
+  String utilisateur = '',
+  String horodatage = '',
+}) {
+  final reste = assResteDuMere(mere);
+  if (mere['etat'] == 'reglee' || reste <= 0) {
+    throw RefusReglementMere(
+        'La facture mère ${mere['numero']} est déjà soldée : aucun règlement de plus.');
+  }
+  final m = montant.toDouble();
+  if (!(m > 0)) {
+    throw const RefusReglementMere(
+        'Le montant d’un règlement doit être strictement supérieur à 0 FCFA.');
+  }
+  if (m > reste) {
+    throw RefusReglementMere(
+        'Règlement refusé : ${money(m)} dépasseraient le dû de ${mere['numero']} (${money(reste)} restent à régler sur ${money(mere['montantReclame'])}).');
+  }
+  final jour = date.length >= 10 ? date.substring(0, 10) : date;
+  if (jour.isEmpty) {
+    throw const RefusReglementMere('La date du règlement est obligatoire.');
+  }
+  final ref = reference.trim();
+  if (ref.isEmpty) {
+    throw const RefusReglementMere(
+        'La référence du virement ou du chèque est obligatoire.');
+  }
+
+  final prefixe = 'BQ-${jour.substring(0, 4)}-';
+  var max = 0;
+  for (final e in ecritures) {
+    final n = e['numero'];
+    if (n is String && n.startsWith(prefixe)) {
+      final k = int.tryParse(n.substring(prefixe.length)) ?? 0;
+      if (k > max) max = k;
+    }
+  }
+  final numero = '$prefixe${(max + 1).toString().padLeft(5, '0')}';
+  final base = <String, Object?>{
+    'numero': numero,
+    'date': jour,
+    'journal': 'BQ',
+    'journalLibelle': 'Journal de banque',
+    'libelle':
+        'Règlement facture mère ${mere['numero']}, ${mere['compagnie'] ?? ''} (réf. $ref)',
+    'pieceId': mere['id'],
+    'pieceNumero': mere['numero'],
+    'origine': 'Règlement de facture mère',
+    'statut': 'brouillon',
   };
+  final lignes = <AssFiche>[
+    {...base, 'compte': '521000', 'compteLibelle': 'Banque', 'debit': m, 'credit': 0},
+    {
+      ...base,
+      'compte': '411110',
+      'compteLibelle': 'Clients compagnie d’assurance',
+      'debit': 0,
+      'credit': m
+    },
+  ];
+
+  final deja = assReglementsDe(mere);
+  final reglement = <String, Object?>{
+    'id': 'RGL${(deja.length + 1).toString().padLeft(3, '0')}',
+    'date': jour,
+    'montant': m,
+    'reference': ref,
+    'numeroEcriture': numero,
+    'saisiPar': utilisateur,
+    'horodatage': horodatage,
+  };
+  final tous = [...deja, reglement];
+  final regle = assSomme(tous, 'montant');
+  final nouveauReste = (_n(mere['montantReclame']) - regle) > 0
+      ? _n(mere['montantReclame']) - regle
+      : 0.0;
+  return ReglementMere(
+    patch: {
+      'reglements': tous,
+      'montantRegle': regle,
+      'reliquat': nouveauReste,
+      'dateReglement': jour,
+      'referenceReglement': ref,
+      'etat': nouveauReste <= 0 ? 'reglee' : 'transmise',
+    },
+    reglement: reglement,
+    ecritures: lignes,
+    solde: nouveauReste <= 0,
+  );
 }
 
 /// Ce que l'enregistrement d'une convention écrit sur le souscripteur : la grille est saisie, et les exclusions / accords du barème sont repris.

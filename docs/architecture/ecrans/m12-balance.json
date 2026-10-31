@@ -18,7 +18,8 @@
   "Comptabilité SYSCOHADA"
  ],
  "regle": [
-  "Balance déséquilibrée — écart de 1 954 000 FCFA. Ce contrôle doit être régularisé avant toute clôture (RG-10)."
+  "Balance calculée sur les écritures validées de l’exercice 2026. 94 ligne(s) en brouillon sont écartées.",
+  "La balance est équilibrée : le total des débits est égal au total des crédits (RG-10)."
  ],
  "onglets": [
   "Balance générale",
@@ -52,7 +53,9 @@
   "1",
   "2"
  ],
- "champs": [],
+ "champs": [
+  "Écritures retenues"
+ ],
  "nbTableaux": 1,
  "nbKpis": 4
 }

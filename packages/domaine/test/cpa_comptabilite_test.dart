@@ -29,6 +29,8 @@ void main() {
   final toutes = jeu('ecritures').where((e) => e['statut'] != 'archive').toList();
   final comptes = jeu('comptes').where((e) => e['statut'] != 'archive').toList();
   final e26 = cpaEcrituresExercice(toutes, 2026);
+  // E718 levé : la balance retient les écritures VALIDÉES par défaut.
+  final e26v = [for (final x in e26) if (x['statut'] == 'validee') x];
   final auj = DateTime(2026, 10, 30, 10);
 
   group('référentiels : ce que la maquette porte', () {
@@ -67,14 +69,23 @@ void main() {
     final cr = carte(r['creations']);
     String? refus(String nom) => carte((carte(cr[nom])['toasts'] as List).first)['message'] as String?;
 
-    test('les refus de numéro sont ceux de la maquette : six chiffres, puis unicité à la création seulement', () {
+    test('les refus de numéro sont ceux de la maquette : six chiffres, puis unicité (création, modification, comptes archivés)', () {
       expect(cpaVerifierNumeroCompte('12345', comptes, edition: false), refus('numeroCourt'));
       expect(cpaVerifierNumeroCompte('60A900', comptes, edition: false), refus('numeroLettres'));
       expect(cpaVerifierNumeroCompte('601100', comptes, edition: false), refus('doublon'));
       expect(cpaVerifierNumeroCompte('605900', comptes, edition: false), isNull);
-      // à la modification, un numéro déjà pris n'est pas contrôlé (porté fidèlement) ; six chiffres le restent
-      expect(cpaVerifierNumeroCompte('601100', comptes, edition: true), isNull);
-      expect(cpaVerifierNumeroCompte('1234567', comptes, edition: true), isNotNull);
+      // E724 levé : à la modification, le compte garde son propre numéro mais ne peut en prendre un autre déjà pris ; six chiffres le restent
+      final doc = comptes.firstWhere((c) => c['num'] == '601100');
+      expect(cpaVerifierNumeroCompte('601100', comptes, edition: true, idEnEdition: doc['id']), isNull);
+      expect(cpaVerifierNumeroCompte('1234567', comptes, edition: true, idEnEdition: doc['id']), isNotNull);
+      final prise = carte(carte(r['editionNumeroPris'])['toasts'] is List ? (carte(r['editionNumeroPris'])['toasts'] as List).first : null);
+      expect(cpaVerifierNumeroCompte('604100', comptes, edition: true, idEnEdition: doc['id']), prise['message']);
+      expect(carte(r['editionNumeroPris'])['modaleOuverte'], true, reason: 'le refus laisse la modale ouverte');
+      // un compte ARCHIVÉ garde son numéro (RG-14) : le recréer est refusé en disant où le restaurer
+      final arch = {'id': 'CPT-ARCH', 'num': '605901', 'statut': 'archive'};
+      final msgArch = carte((carte(r['creationNumeroArchive'])['toasts'] as List).first)['message'];
+      expect(cpaVerifierNumeroCompte('605901', comptes, edition: false, archives: [arch]), msgArch);
+      expect(msgArch, contains('archivé'));
     });
     test('la création écrit un « Complément » de classe numérique, comme la maquette', () {
       final a = liste(carte(carte(carte(cr['valide'])['ecart'])['inserts'])['comptes']).single;
@@ -90,7 +101,28 @@ void main() {
       final p = (carte(carte(r['editionDocument'])['ecart'])['modifs'] as Map)['comptes'] as List;
       expect(carte(carte(p.single)['patch']).containsKey('source'), isFalse);
     });
-    test('la balance et le tiroir : 112 comptes au jeu', () => expect(comptes.length, 112));
+    test('le plan du jeu : 112 fiches dont 2 doublons, ARCHIVÉS au chargement avec leur motif, la fiche du document conservée (E724/E725 levés)', () {
+      expect(comptes.length, 112, reason: 'le jeu du poste porte encore les deux doublons : l\'assainissement se fait au chargement du magasin');
+      // La règle du domaine retrouve les deux doublons de la maquette (mêmes fiches, mêmes motifs) ; la fiche conservée est la première du classeur.
+      final dbl = cpaDoublonsDuPlan(comptes);
+      final att = (r['assainissement'] as List).cast<List>();
+      expect(dbl.length, 2);
+      expect([for (final d in dbl) d.$2], [for (final a in att) a[2]]);
+      expect([for (final d in dbl) [comptes.firstWhere((c) => c['id'] == d.$1)['num'], comptes.firstWhere((c) => c['id'] == d.$1)['libelle']]], [for (final a in att) [a[0], a[1]]]);
+      expect(r['numerosActifsUniques'], true);
+      final restants = [for (final c in comptes) if (!dbl.any((d) => d.$1 == c['id'])) c];
+      expect(restants.length, 110);
+      expect(restants.map((c) => c['num']).toSet().length, restants.length);
+      expect(cpaDoublonsDuPlan(restants), isEmpty, reason: 'idempotent');
+    });
+    test('libellé et comptes de charge lus en COLLECTION d\'abord : un compte créé à l\'écran est proposable (E715 levé)', () {
+      final cree = [...comptes, {'id': 'CPT-NEW', 'num': '605900', 'libelle': 'Petit outillage essai', 'classe': 6, 'statut': 'actif'}];
+      expect(cpaCompteLibelle('605900'), '605900', reason: 'le plan statique ne le connaît pas');
+      expect(cpaCompteLibelle('605900', comptes: cree), 'Petit outillage essai');
+      expect(cpaComptesCharge(comptes: cree).any((c) => c.$1 == '605900'), isTrue);
+      expect(cpaComptesCharge().any((c) => c.$1 == '605900'), isFalse);
+      expect(cpaComptesCharge(comptes: comptes).every((c) => c.$1.startsWith('6')), isTrue);
+    });
   });
 
   group('m12-dashboard', () {
@@ -163,7 +195,30 @@ void main() {
 
   group('m12-balance', () {
     final r = carte(ecrans['m12-balance']);
-    final b = cpaBalance(comptes, e26);
+    final b = cpaBalance(comptes, e26v);
+    test('le filtre « Écritures retenues » : validées par défaut, toutes sur demande, le bandeau dit ce qui est compté (E718 levé)', () {
+      expect(r['modeDefaut'], 'validees');
+      final m = carte(r['modes']);
+      for (final mode in ['validees', 'toutes']) {
+        final x = carte(m[mode]);
+        final src = mode == 'toutes' ? e26 : e26v;
+        final bm = cpaBalance(comptes, src);
+        final k = {for (final y in liste(x['kpis'])) y['label']: nt(y['valeur'])};
+        expect(k['Comptes mouvementés'], '${bm.length}', reason: mode);
+        expect(k['Total débit'], mof(bm.fold<double>(0, (a, y) => a + y.debit)), reason: mode);
+        expect(k['Total crédit'], mof(bm.fold<double>(0, (a, y) => a + y.credit)), reason: mode);
+        expect(x['valeur'], mode);
+        final note = nt((x['notes'] as List).join(' '));
+        final nbBrouillons = e26.length - e26v.length;
+        expect(note, contains(mode == 'toutes' ? 'brouillons compris' : 'écritures validées'), reason: mode);
+        expect(note, contains(mode == 'toutes' ? '(${nombre(nbBrouillons)} ligne(s) en brouillon)' : '${nombre(nbBrouillons)} ligne(s) en brouillon sont écartées'), reason: mode);
+        expect(nt(carte(x['piece'])['cartouche']), contains(mode == 'toutes' ? 'Toutes, brouillons compris' : 'Validées seulement'), reason: mode);
+        final td = bm.fold<double>(0, (a, y) => a + y.debit), tc = bm.fold<double>(0, (a, y) => a + y.credit);
+        expect(nt(carte(x['piece'])['contenu']).replaceAll(' ', ''), contains('TOTAUX${mo(td)}${mo(tc)}'.replaceAll(' ', '')), reason: mode);
+      }
+      expect(r['brouillonsExercice'], e26.length - e26v.length);
+      expect(e26.length - e26v.length, greaterThan(0), reason: 'le jeu porte des brouillons : le filtre a un effet');
+    });
     test('les KPI et l\'équilibre', () {
       final k = {for (final x in liste(r['kpis'])) x['label']: nt(x['valeur'])};
       expect(k['Comptes mouvementés'], '${b.length}');
@@ -188,14 +243,14 @@ void main() {
         }
       }
     });
-    test('E725 : le plan porte deux fiches au même numéro (244100, 631810) — la balance ne compte pas deux fois, elle est équilibrée comme le journal', () {
+    test('E725 : le plan porte des doublons, la balance ne compte pas deux fois et est équilibrée comme le journal validé', () {
       final doubles = <String, int>{};
       for (final c in comptes) {
         doubles['${c['num']}'] = (doubles['${c['num']}'] ?? 0) + 1;
       }
       expect(doubles.values.any((n) => n > 1), isTrue, reason: 'le jeu porte bien des numéros en double');
       expect(b.map((x) => x.num).toSet().length, b.length, reason: 'une ligne par numéro');
-      expect(b.fold<double>(0, (a, x) => a + x.debit), e26.fold<double>(0, (a, x) => a + (x['debit'] as num)));
+      expect(b.fold<double>(0, (a, x) => a + x.debit), e26v.fold<double>(0, (a, x) => a + (x['debit'] as num)));
       expect(b.fold<double>(0, (a, x) => a + x.debit), b.fold<double>(0, (a, x) => a + x.credit), reason: 'RG-10');
     });
     test('la balance âgée des tiers, tranche par tranche', () {
@@ -370,13 +425,13 @@ void main() {
       List<String> cle(List<F> l) => [for (final x in l) '${x['compte']}|${nb(x['debit'])}|${nb(x['credit'])}|${x['libelle']}|${x['compteLibelle']}|${x['journal']}']..sort();
       expect(cle(e), cle(attendu));
     });
-    test('le reçu n\'est pas bloquant ; une ligne sur banque : journal BQE (absent de D.JOURNAUX, E719), compte 5xx de la fiche', () {
+    test('le reçu n\'est pas bloquant ; une ligne sur banque : journal BQE (au référentiel depuis E719), compte 5xx de la fiche', () {
       final attendu = liste(carte(carte(carte(carte(r['nouvelles'])['uneLigneBanque'])['ecart'])['inserts'])['ecritures']);
       final e = cpaEcrituresDepense({'id': 'D', 'reference': 'DEP-2026-0192', 'date': '2026-10-29', 'libelle': 'Droits de timbre — essai', 'montant': 3000, 'lignes': [{'libelle': 'Timbres fiscaux', 'compteCharge': '646210', 'montant': 3000}]},
           banques.firstWhere((b) => b['id'] == 'BQ01'));
       expect({for (final x in e) x['compte']: x['journal']}, {for (final x in attendu) x['compte']: x['journal']});
       expect(e.first['journal'], 'BQE');
-      expect(cpaJournaux.any((j) => j.$1 == 'BQE'), isFalse);
+      expect(cpaJournaux.any((j) => j.$1 == 'BQE'), isTrue, reason: 'E719 levé : le journal BQE est au référentiel');
       expect([for (final x in e) x['libelle']]..sort(), [for (final x in attendu) x['libelle']]..sort());
     });
     test('refus nommés : aucune ligne ; exercice clos refusé AVANT toute écriture (E714)', () {

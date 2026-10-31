@@ -9,6 +9,7 @@ library;
 
 import '../format/format_fr.dart';
 import '../format/js.dart';
+import '../comptabilite/cpa_referentiels.dart' show cpaCompteLibelle, cpaJournalLibelle;
 import '../referentiels/regles.dart' show joursEntre;
 
 typedef PaiFiche = Map<String, Object?>;
@@ -340,11 +341,19 @@ String paiReferenceSuivante(String prefixe, int largeur, Iterable<PaiFiche> fich
 }
 
 // --- le moteur de calcul de la paie ----------------------------------------------------------------------------------------------------------
-/// Ce que le moteur lit au magasin : planning validé, évaluations NS 131, avances, participations imputées sur salaire, grille des primes et son historique.
+/// Ce que le moteur lit au magasin : planning validé, évaluations NS 131, avances, participations imputées sur salaire, grille des primes et son historique,
+/// heures supplémentaires (seules les VALIDÉES de la période entrent au brut, E691) et prêts (une échéance au seul mois de son échéance, E689).
 class PaiEntrees {
   const PaiEntrees(
-      {this.planning = const [], this.evaluations = const [], this.avances = const [], this.participations = const [], this.grille = const [], this.historique = const []});
-  final List<PaiFiche> planning, evaluations, avances, participations, grille, historique;
+      {this.planning = const [],
+      this.evaluations = const [],
+      this.avances = const [],
+      this.participations = const [],
+      this.grille = const [],
+      this.historique = const [],
+      this.heuresSup = const [],
+      this.prets = const []});
+  final List<PaiFiche> planning, evaluations, avances, participations, grille, historique, heuresSup, prets;
 }
 
 class PaiLignePrime {
@@ -387,7 +396,12 @@ class PaiCalcul {
       required this.participationsDetail,
       required this.totalRetenues,
       required this.net,
-      required this.coutEmployeur});
+      required this.coutEmployeur,
+      this.heuresSupMontant = 0,
+      this.heuresSupNb = 0,
+      this.heuresSupDetail = const [],
+      this.prets = 0,
+      this.pretsDetail = const []});
   final PaiFiche employe;
   final String periode;
   final int annee, mois, gardes, permanences, anciennete;
@@ -396,6 +410,10 @@ class PaiCalcul {
   final num cnssOuvriere, cnssPatronale, vps, its, ortb, ortbRadio, ortbTele, avances, participations, totalRetenues, net, coutEmployeur;
   final PaiOrtb detailOrtb;
   final List<PaiFiche> avancesDetail, participationsDetail;
+
+  /// Heures supplémentaires validées de la période (montant et nombre d'heures, déjà comprises dans le brut) et échéances de prêt retenues ce mois.
+  final num heuresSupMontant, heuresSupNb, prets;
+  final List<PaiFiche> heuresSupDetail, pretsDetail;
 
   String get matricule => '${employe['matricule'] ?? ''}';
   String get nomComplet => '${employe['nomComplet'] ?? ''}';
@@ -433,9 +451,13 @@ PaiCalcul paiCalculer(PaiFiche employe, int annee, int mois, PaiEntrees e, DateT
   final ans = paiAnciennete(employe, aujourdhui);
   final salaireBase = _n(employe['salaireBase']);
   final primeAnciennete = ans >= 2 ? arrondiJs(salaireBase * 0.02 * ans) : 0.0;
-  final brut = salaireBase + primeAnciennete + totalPrimes;
 
   final periode = paiPeriodeLibelle(annee, mois);
+  final heuresSupDetail = e.heuresSup.where(_actif).where((h) => h['employeId'] == id && _vrai(h['valide']) && h['periode'] == periode).toList();
+  final heuresSupMontant = _somme(heuresSupDetail, 'montant');
+  final heuresSupNb = _somme(heuresSupDetail, 'heures');
+  final brut = salaireBase + primeAnciennete + totalPrimes + heuresSupMontant;
+
   final evaluation = e.evaluations.where(_actif).where((x) => x['employeId'] == id && x['periode'] == periode).firstOrNull;
   final pctSanction = evaluation == null ? 0 : _n(evaluation['prelevementPct']);
   final sanction = arrondiJs(brut * pctSanction / 100);
@@ -455,7 +477,23 @@ PaiCalcul paiCalculer(PaiFiche employe, int annee, int mois, PaiEntrees e, DateT
   final participationsMois = e.participations.where(_actif).where((x) => x['employeId'] == id && x['mode'] == 'salaire' && x['periodeRetenue'] == moisRetenue).toList();
   final totalParticipations = _somme(participationsMois, 'montant');
 
-  final totalRetenues = cnssOuvriere + its + ortb + totalAvances + totalParticipations;
+  final pretsDetail = <PaiFiche>[
+    for (final pr in e.prets.where(_actif).where((x) => x['employeId'] == id))
+      for (final ech in paiEcheancier(pr).where((x) => x.mois == moisRetenue))
+        {
+          'pretId': pr['id'],
+          'reference': pr['reference'],
+          'nature': pr['nature'],
+          'objet': pr['objet'],
+          'rang': ech.rang,
+          'nbEcheances': _n(pr['nbEcheances']) == 0 ? 1 : _n(pr['nbEcheances']).toInt(),
+          'mois': ech.mois,
+          'montant': ech.montant,
+        }
+  ];
+  final totalPrets = _somme(pretsDetail, 'montant');
+
+  final totalRetenues = cnssOuvriere + its + ortb + totalAvances + totalParticipations + totalPrets;
   return PaiCalcul(
       employe: employe,
       periode: periode,
@@ -486,7 +524,12 @@ PaiCalcul paiCalculer(PaiFiche employe, int annee, int mois, PaiEntrees e, DateT
       participationsDetail: participationsMois,
       totalRetenues: totalRetenues,
       net: brutApresSanction - totalRetenues,
-      coutEmployeur: brutApresSanction + cnssPatronale + vps);
+      coutEmployeur: brutApresSanction + cnssPatronale + vps,
+      heuresSupMontant: heuresSupMontant,
+      heuresSupNb: heuresSupNb,
+      heuresSupDetail: heuresSupDetail,
+      prets: totalPrets,
+      pretsDetail: pretsDetail);
 }
 
 /// `calculerTous(annee, mois)` : tout le personnel ACTIF, dans l'ordre de la collection.
@@ -505,7 +548,8 @@ num paiResteAvances(Iterable<PaiFiche> avances) => avances.fold<num>(0, (a, x) {
 // --- le bulletin STOCKÉ --------------------------------------------------------------------------------------------------------------------
 /// La fiche que « Générer les bulletins » insère, un bulletin par agent : AUCUN montant n'est saisi, tout découle du calcul. Statut `a_valider` :
 /// aucun bulletin ne se diffuse sans la validation formelle de la Direction. Le détail ORTB et les participations voyagent avec la pièce (E682).
-PaiFiche paiBulletinDe(PaiCalcul c, String reference) => {
+/// [genereePar] est l'agent qui génère (A2 : le validateur sera un AUTRE), [dateGeneration] la date du jour au format `AAAA-MM-JJ`.
+PaiFiche paiBulletinDe(PaiCalcul c, String reference, {String? genereePar, String? dateGeneration}) => {
       'reference': reference,
       'periode': c.periode,
       'annee': c.annee,
@@ -525,6 +569,8 @@ PaiFiche paiBulletinDe(PaiCalcul c, String reference) => {
         for (final l in c.lignesPrimes) {'id': l.id, 'label': l.libelle, 'unitaire': l.unitaire, 'nombre': l.nombre, 'total': l.total}
       ],
       'totalPrimes': c.totalPrimes,
+      'heuresSupMontant': c.heuresSupMontant,
+      'heuresSupNb': c.heuresSupNb,
       'brut': c.brut,
       'pctSanction': c.pctSanction,
       'sanction': c.sanction,
@@ -539,17 +585,23 @@ PaiFiche paiBulletinDe(PaiCalcul c, String reference) => {
       'participationsDetail': [
         for (final x in c.participationsDetail) {'evenementLibelle': x['evenementLibelle'], 'montant': x['montant']}
       ],
+      'prets': c.prets,
+      'pretsDetail': c.pretsDetail,
       'totalRetenues': c.totalRetenues,
       'net': c.net,
       'coutEmployeur': c.coutEmployeur,
       'statutBulletin': 'a_valider',
+      'genereePar': genereePar,
+      'dateGeneration': dateGeneration,
     };
 
 /// Un lot de paie par période (`parPeriode` de la validation) : l'ordre est celui de la PREMIÈRE apparition de la période dans la collection.
 class PaiLot {
-  const PaiLot(this.periode, this.nb, this.brut, this.net, this.cnss, this.aValider, this.valides);
+  const PaiLot(this.periode, this.nb, this.brut, this.net, this.cnss, this.aValider, this.valides, [this.aDiffuser = 0]);
   final String periode;
-  final int nb, aValider, valides;
+
+  /// [aDiffuser] : les bulletins VALIDES et pas encore DIFFUSES. Un lot sans bulletin à valider ni à diffuser est entièrement diffusé.
+  final int nb, aValider, valides, aDiffuser;
   final num brut, net, cnss;
 }
 
@@ -561,8 +613,132 @@ List<PaiLot> paiLots(Iterable<PaiFiche> bulletinsActifs) {
   return [
     for (final k in g.keys)
       PaiLot(k, g[k]!.length, _somme(g[k]!, 'brut'), _somme(g[k]!, 'net'), _somme(g[k]!, 'cnssOuvriere') + _somme(g[k]!, 'cnssPatronale'),
-          g[k]!.where((x) => x['statutBulletin'] == 'a_valider').length, g[k]!.where((x) => x['statutBulletin'] != 'a_valider').length)
+          g[k]!.where((x) => x['statutBulletin'] == 'a_valider').length, g[k]!.where((x) => x['statutBulletin'] != 'a_valider').length,
+          g[k]!.where((x) => x['statutBulletin'] == 'valide').length)
   ];
+}
+
+// --- l'écriture de paie (B6) et la séparation des tâches (A2) ---------------------------------------------------------------------------------
+/// Les comptes du plan de la clinique. La fiche de paie parle de 421 ; le plan porte 422000 pour les rémunérations dues.
+const paiComptes = {
+  'remuneration': '661100',
+  'chargesSociales': '664120',
+  'vps': '641300',
+  'personnelDu': '422000',
+  'cnss': '431000',
+  'etat': '447000',
+  'avances': '423000',
+};
+
+/// Une ligne de la pièce de paie : [debit] vrai = sens débit.
+class PaiLigneEcriture {
+  const PaiLigneEcriture(this.compte, this.debit, this.montant, this.libelle);
+  final String compte, libelle;
+  final bool debit;
+  final num montant;
+}
+
+/// Les lignes plates de la pièce de paie d'un lot, dans l'ordre de la maquette (débits puis crédits), sans les lignes nulles. Débit : rémunérations
+/// (brut après sanction), CNSS patronale, VPS. Crédit : net, participations retenues (à reverser), CNSS (deux parts), ITS, ORTB, VPS, avances, prêts.
+List<PaiLigneEcriture> paiLignesEcriturePaie(Iterable<PaiFiche> lot) {
+  num tot(String k) => lot.fold<num>(0, (a, b) => a + _n(b[k]));
+  final charge = tot('brut') - tot('sanction');
+  final lignes = <PaiLigneEcriture>[
+    PaiLigneEcriture(paiComptes['remuneration']!, true, charge, 'Rémunérations du personnel'),
+    PaiLigneEcriture(paiComptes['chargesSociales']!, true, tot('cnssPatronale'), 'CNSS part patronale'),
+    PaiLigneEcriture(paiComptes['vps']!, true, tot('vps'), 'VPS'),
+    PaiLigneEcriture(paiComptes['personnelDu']!, false, tot('net'), 'Net à payer aux agents'),
+    PaiLigneEcriture(paiComptes['personnelDu']!, false, tot('participations'), 'Participations aux événements retenues, à reverser'),
+    PaiLigneEcriture(paiComptes['cnss']!, false, tot('cnssOuvriere') + tot('cnssPatronale'), 'CNSS parts ouvrière et patronale'),
+    PaiLigneEcriture(paiComptes['etat']!, false, tot('its'), 'ITS retenu'),
+    PaiLigneEcriture(paiComptes['etat']!, false, tot('ortb'), 'Redevances ORTB retenues'),
+    PaiLigneEcriture(paiComptes['etat']!, false, tot('vps'), 'VPS à reverser'),
+    PaiLigneEcriture(paiComptes['avances']!, false, tot('avances'), 'Remboursements d’avances sur salaire'),
+    PaiLigneEcriture(paiComptes['avances']!, false, tot('prets'), 'Échéances de prêts retenues'),
+  ];
+  return [
+    for (final l in lignes)
+      if (l.montant > 0) l
+  ];
+}
+
+/// Le prochain numéro de pièce `SAL-AAAA-NNNNN` : le plus grand numéro de l'année sur TOUTES les écritures (archivées comprises) plus un.
+String paiNumeroPiecePaie(String date, Iterable<PaiFiche> ecritures) {
+  final prefixe = 'SAL-${date.substring(0, 4)}-';
+  var max = 0;
+  for (final e in ecritures) {
+    final nu = e['numero'];
+    if (nu is String && nu.startsWith(prefixe)) {
+      final n = int.tryParse(RegExp(r'^\d+').firstMatch(nu.substring(prefixe.length))?.group(0) ?? '') ?? 0;
+      if (n > max) max = n;
+    }
+  }
+  return '$prefixe${(max + 1).toString().padLeft(5, '0')}';
+}
+
+/// La pièce de paie d'un lot : [fiches] à insérer dans `ecritures` (statut brouillon), ou [refus] nommé (rien n'est à écrire).
+class PaiPiece {
+  const PaiPiece({this.numero, this.fiches = const [], this.debit = 0, this.credit = 0, this.refus});
+  final String? numero, refus;
+  final List<PaiFiche> fiches;
+  final num debit, credit;
+  bool get ok => refus == null;
+}
+
+/// Construit la pièce de paie d'un lot (RG-10 contrôlé AVANT toute écriture). Refus nommés : une pièce existe déjà pour la période (active), ou la
+/// pièce n'est pas équilibrée (l'écart est dit). Centre de coûts « direction » : aucun document ne donne la clé qui répartirait la masse salariale
+/// entre les six secteurs. [date] : `AAAA-MM-JJ`. [montantTexte] formate un montant pour le message de refus (la maquette emploie `C.money`).
+PaiPiece paiPieceDePaie(String periode, Iterable<PaiFiche> lot,
+    {required String date, required Iterable<PaiFiche> ecritures, required String Function(num) montantTexte}) {
+  final pieceId = 'PAIE-$periode';
+  final existante = ecritures.where(_actif).where((e) => e['pieceId'] == pieceId).firstOrNull;
+  if (existante != null) {
+    return PaiPiece(
+        refus: 'La paie de $periode a déjà son écriture (${existante['numero']}). Archiver cette pièce avant de valider un second lot de la même période.');
+  }
+  final lignes = paiLignesEcriturePaie(lot);
+  final debit = lignes.where((l) => l.debit).fold<num>(0, (a, l) => a + l.montant);
+  final credit = lignes.where((l) => !l.debit).fold<num>(0, (a, l) => a + l.montant);
+  if (debit != credit) {
+    final ecart = debit > credit ? debit - credit : credit - debit;
+    return PaiPiece(
+        debit: debit,
+        credit: credit,
+        refus: 'L’écriture de paie de $periode n’est pas équilibrée (RG-10) : débit ${montantTexte(debit)}, crédit ${montantTexte(credit)}, '
+            'écart ${montantTexte(ecart)}. Vérifier les bulletins du lot avant de valider.');
+  }
+  final numero = paiNumeroPiecePaie(date, ecritures);
+  return PaiPiece(numero: numero, debit: debit, credit: credit, fiches: [
+    for (final l in lignes)
+      {
+        'numero': numero,
+        'date': date,
+        'journal': 'SAL',
+        'journalLibelle': cpaJournalLibelle('SAL'),
+        'libelle': 'Paie de $periode : ${l.libelle}',
+        'centreCout': 'direction',
+        'origine': 'Automatique — Paie',
+        'statut': 'brouillon',
+        'pieceId': pieceId,
+        'pieceNumero': periode,
+        'compte': l.compte,
+        'compteLibelle': cpaCompteLibelle(l.compte),
+        'debit': l.debit ? l.montant : 0,
+        'credit': l.debit ? 0 : l.montant,
+      }
+  ]);
+}
+
+String _nomNormalise(Object? n) => '${n ?? ''}'.replaceAll(RegExp(r'\s+'), ' ').trim().toLowerCase();
+
+/// A2 : le validateur ne peut pas être celui qui a généré le lot. Rend le motif de refus, ou `null`. Une pièce sans `genereePar` (antérieure au
+/// contrôle) n'est pas contestée : on ne devine pas son auteur. Un validateur non identifié est refusé (RG-12, aucune action anonyme).
+String? paiControleSeparation(Iterable<PaiFiche> lot, String validateur) {
+  final v = _nomNormalise(validateur);
+  if (v.isEmpty) return 'Validation refusée : l’agent connecté n’est pas identifié (RG-12).';
+  final meme = lot.where((b) => _nomNormalise(b['genereePar']) == v).firstOrNull;
+  if (meme == null) return null;
+  return 'Séparation des tâches : la paie de ${meme['periode']} a été générée par ${meme['genereePar']} ; elle doit être validée par une autre personne.';
 }
 
 // --- heures supplémentaires ---------------------------------------------------------------------------------------------------------------

@@ -1462,7 +1462,7 @@
     "ouvertPar": "BASSONGUI Chabi Séko"
    },
    "formatJeton": true,
-   "lienGabarit": "http://127.0.0.1:9374/enquete-publique.php?jeton=<jeton>",
+   "lienGabarit": "http://127.0.0.1:15731/enquete-publique.php?jeton=<jeton>",
    "lienSansIdEnquete": true,
    "tiroir": "Lien de partageSatisfaction des patientsOuvertAdresse à communiquerEn exploitation, c’est l’adresse du serveur sur le réseau de la clinique qu’il faut communiquer (http://<serveur>/…) — celle-ci est celle du poste courant.À afficher en salle d’attenteLe patient scanne avec son téléphone et remplit sur place. C’est là qu’on obtient des réponses : à chaud, avant de partir.Recueil ANONYME : ni identité, ni adresse réseau, ni lien vers un dossier patient.EnquêteSatisfaction des patientsOuvert le16/08/2026 par BASSONGUI Chabi SékoExpire le15/09/2026Réponses reçues0Note interneSalle d’attenteOuvrir la page publiqueCopier l’adresse",
    "qrPresent": true
@@ -17512,7 +17512,7 @@
       "Ordonnances",
       "13/04/2025",
       "20 ans",
-      "08/04/2045",
+      "13/04/2045",
       "Archive active",
       ""
      ],
@@ -17522,7 +17522,7 @@
       "Résultats de laboratoire",
       "14/04/2025",
       "20 ans",
-      "09/04/2045",
+      "14/04/2045",
       "Archive active",
       ""
      ],
@@ -17532,7 +17532,7 @@
       "Clôtures d’exercice",
       "19/04/2025",
       "5 ans",
-      "18/04/2030",
+      "19/04/2030",
       "Archive active",
       ""
      ],
@@ -17542,7 +17542,7 @@
       "Résultats de laboratoire",
       "20/04/2025",
       "20 ans",
-      "15/04/2045",
+      "20/04/2045",
       "Archive active",
       ""
      ],
@@ -17552,7 +17552,7 @@
       "Contrats RH",
       "21/04/2025",
       "10 ans",
-      "19/04/2035",
+      "21/04/2035",
       "Archive active",
       ""
      ],
@@ -17562,7 +17562,7 @@
       "Factures fournisseurs",
       "21/04/2025",
       "5 ans",
-      "20/04/2030",
+      "21/04/2030",
       "Archive active",
       ""
      ],
@@ -17572,7 +17572,7 @@
       "Rapports médicaux",
       "22/04/2025",
       "20 ans",
-      "17/04/2045",
+      "22/04/2045",
       "Archive active",
       ""
      ],
@@ -17582,7 +17582,7 @@
       "Courriers administratifs",
       "23/04/2025",
       "5 ans",
-      "22/04/2030",
+      "23/04/2030",
       "Archive active",
       ""
      ],
@@ -17592,7 +17592,7 @@
       "Courriers administratifs",
       "23/04/2025",
       "5 ans",
-      "22/04/2030",
+      "23/04/2030",
       "Archive définitive",
       ""
      ],
@@ -17602,7 +17602,7 @@
       "Bulletins de paie",
       "24/04/2025",
       "10 ans",
-      "22/04/2035",
+      "24/04/2035",
       "Archive active",
       ""
      ],
@@ -17612,7 +17612,7 @@
       "Clôtures d’exercice",
       "03/05/2025",
       "5 ans",
-      "02/05/2030",
+      "03/05/2030",
       "Archive définitive",
       ""
      ],
@@ -17622,7 +17622,7 @@
       "Bulletins de paie",
       "03/05/2025",
       "10 ans",
-      "01/05/2035",
+      "03/05/2035",
       "Archive active",
       ""
      ],
@@ -17632,7 +17632,7 @@
       "Factures patients",
       "03/05/2025",
       "20 ans",
-      "28/04/2045",
+      "03/05/2045",
       "Archive définitive",
       ""
      ],
@@ -17642,7 +17642,7 @@
       "Rapports médicaux",
       "04/05/2025",
       "20 ans",
-      "29/04/2045",
+      "04/05/2045",
       "Archive définitive",
       ""
      ],
@@ -17652,7 +17652,7 @@
       "Rapports médicaux",
       "04/05/2025",
       "20 ans",
-      "29/04/2045",
+      "04/05/2045",
       "Archive définitive",
       ""
      ],
@@ -17662,7 +17662,7 @@
       "Courriers administratifs",
       "07/05/2025",
       "5 ans",
-      "06/05/2030",
+      "07/05/2030",
       "Archive définitive",
       ""
      ],
@@ -17672,7 +17672,7 @@
       "Factures patients",
       "11/05/2025",
       "20 ans",
-      "06/05/2045",
+      "11/05/2045",
       "Archive active",
       ""
      ],
@@ -17682,7 +17682,7 @@
       "Courriers administratifs",
       "11/05/2025",
       "5 ans",
-      "10/05/2030",
+      "11/05/2030",
       "Archive définitive",
       ""
      ],
@@ -17692,7 +17692,7 @@
       "Courriers administratifs",
       "17/05/2025",
       "5 ans",
-      "16/05/2030",
+      "17/05/2030",
       "Archive active",
       ""
      ],
@@ -17702,7 +17702,7 @@
       "Factures fournisseurs",
       "21/05/2025",
       "5 ans",
-      "20/05/2030",
+      "21/05/2030",
       "Archive active",
       ""
      ]
@@ -17766,7 +17766,7 @@
           "Ordonnances",
           "13/04/2025",
           "20 ans",
-          "08/04/2045",
+          "13/04/2045",
           "Archive active"
          ],
          [
@@ -17775,7 +17775,7 @@
           "Résultats de laboratoire",
           "14/04/2025",
           "20 ans",
-          "09/04/2045",
+          "14/04/2045",
           "Archive active"
          ],
          [
@@ -17784,7 +17784,7 @@
           "Clôtures d’exercice",
           "19/04/2025",
           "5 ans",
-          "18/04/2030",
+          "19/04/2030",
           "Archive active"
          ],
          [
@@ -17793,7 +17793,7 @@
           "Résultats de laboratoire",
           "20/04/2025",
           "20 ans",
-          "15/04/2045",
+          "20/04/2045",
           "Archive active"
          ],
          [
@@ -17802,7 +17802,7 @@
           "Contrats RH",
           "21/04/2025",
           "10 ans",
-          "19/04/2035",
+          "21/04/2035",
           "Archive active"
          ]
         ],
@@ -17923,7 +17923,7 @@
       "Contrats RH",
       "13/04/2025",
       "20 ans",
-      "08/04/2045",
+      "13/04/2045",
       "Archive active",
       ""
      ]
@@ -18070,7 +18070,7 @@
      },
      {
       "label": "Conservation échue",
-      "valeur": "5",
+      "valeur": "4",
       "indice": ""
      },
      {
@@ -18130,7 +18130,7 @@
       "Courriers administratifs",
       "16/08/2006",
       "20 ans",
-      "Échue le 11/08/2026",
+      "Échue le 16/08/2026",
       "Archive définitive",
       ""
      ],
@@ -18140,7 +18140,7 @@
       "Contrats RH",
       "16/08/2016",
       "10 ans",
-      "Échue le 14/08/2026",
+      "Échue le 16/08/2026",
       "Archive active",
       ""
      ],
@@ -18150,7 +18150,7 @@
       "Courriers administratifs",
       "15/08/2021",
       "5 ans",
-      "Échue le 14/08/2026",
+      "Échue le 15/08/2026",
       "Archive active",
       ""
      ],
@@ -18160,7 +18160,7 @@
       "Courriers administratifs",
       "16/08/2021",
       "5 ans",
-      "Échue le 15/08/2026",
+      "Échue le 16/08/2026",
       "Archive active",
       ""
      ],
@@ -18170,7 +18170,7 @@
       "Courriers administratifs",
       "17/08/2021",
       "5 ans",
-      "Échue le 16/08/2026",
+      "17/08/2026",
       "Archive active",
       ""
      ],
@@ -18180,12 +18180,12 @@
       "Ordonnances",
       "16/08/2026",
       "10 ans",
-      "13/08/2036",
+      "16/08/2036",
       "Archive active",
       ""
      ]
     ],
-    "noteEchus": "5 document(s) ont atteint leur durée légale de conservation. Leur destruction doit faire l’objet d’une procédure encadrée et d’un procès-verbal signé."
+    "noteEchus": "4 document(s) ont atteint leur durée légale de conservation. Leur destruction doit faire l’objet d’une procédure encadrée et d’un procès-verbal signé."
    },
    {
     "nom": "aucun document",

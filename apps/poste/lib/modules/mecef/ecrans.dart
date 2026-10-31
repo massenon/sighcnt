@@ -8,6 +8,7 @@ import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../m8/commun.dart' show ecrireAvoirEmis, idAvoirSuivant;
 import 'commun.dart';
 
 // =====================================================================================================================
@@ -892,28 +893,43 @@ class EcranMecefAvoirs extends StatelessWidget with EcranMaquette {
                     final fac = valides
                         .where((x) => '${x['id']}' == '${v['factureId']}')
                         .firstOrNull;
-                    final Fiche a;
+                    // B10 : l'avoir MECeF APPELLE le moteur unique (plafond cumulé, montant > 0, ligne nommée, contre-passation) ;
+                    // la transmission (simulation) en est la SUITE : le moteur écrit la pièce, ce geste lui pose l'identifiant MECeF.
+                    final AvoirMecefEmis a;
+                    final idAvoir = idAvoirSuivant(mag);
                     try {
                       a = avoirMecef(
                           facture: fac,
                           saisie: v,
-                          avoirs: mag.collection('avoirs').actives);
+                          avoirs: mag.collection('avoirs').actives,
+                          facturesMere: mag.collection('facturesMere').actives,
+                          idAvoir: idAvoir,
+                          jour: iso(c.aujourdhui),
+                          utilisateur: c.utilisateur);
                     } on RefusAvoirMecef catch (e) {
-                      ToastsSigh.afficher(ctx, e.motif, type: TypeToast.erreur);
+                      ToastsSigh.afficher(ctx, 'Avoir refusé.',
+                          type: TypeToast.erreur,
+                          detail: e.motif,
+                          duree: const Duration(seconds: 9));
                       return;
                     }
-                    final fiche = {...a}..remove('mecef');
-                    fiche['numeroMecef'] = numeroMecefSimule(
-                        c.aujourdhui.millisecondsSinceEpoch % 77777);
-                    fiche['statut'] = 'actif';
-                    final ins = mag
-                        .collection('avoirs')
-                        .inserer(fiche, prefixe: 'AVR');
+                    final complement = <String, Object?>{
+                      'numeroMecef': numeroMecefSimule(
+                          c.aujourdhui.millisecondsSinceEpoch % 77777),
+                      'statutMecef': 'valide',
+                      'dateTransmission': c.aujourdhui.toUtc().toIso8601String(),
+                    };
+                    final ecrit =
+                        ecrireAvoirEmis(mag, fac!, a.emission, idAvoir, complement: complement);
                     fermer();
-                    ToastsSigh.afficher(
-                        ctx, 'Avoir ${fiche['reference']} émis et transmis.',
-                        type: TypeToast.succes, annuler: ins.annuler);
-                    _imprimer(ctx, ins.fiche, paramFiscal(mag));
+                    ToastsSigh.afficher(ctx,
+                        'Avoir ${a.fiche['reference']} émis et transmis.',
+                        type: TypeToast.succes, annuler: () {
+                      for (final u in ecrit.annulations.reversed) {
+                        u();
+                      }
+                    });
+                    _imprimer(ctx, ecrit.fiche, paramFiscal(mag));
                   }),
             ]);
   }

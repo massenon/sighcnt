@@ -15,6 +15,8 @@ const List<(String, String, String?)> cpaJournaux = [
   ('VTE', 'Journal des ventes', '411000'),
   ('CAI', 'Journal de caisse-dépenses', '571000'),
   ('BQ', 'Journal de banque', '521000'),
+  // E719 levé : une dépense réglée par banque s'écrit au journal BQE ; le code manquait au référentiel.
+  ('BQE', 'Journal de banque, dépenses', '521000'),
   ('SAL', 'Journal des salaires', '422000'),
   ('IMM', 'Journal des immobilisations', '241000'),
   ('OD', 'Journal des opérations diverses', null),
@@ -57,8 +59,12 @@ String cpaClasseLibelle(Object? n) =>
     }[n is num ? n.toInt() : int.tryParse('$n')] ??
     'Classe $n';
 
-/// `compteLibelle(num)` : le plan STATIQUE `D.PLAN_COMPTABLE` ; un numéro inconnu s'affiche tel quel.
-String cpaCompteLibelle(Object? num) {
+/// `compteLibelle(num)` : la collection `comptes` fait foi quand [comptes] est donnée (E715 levé : un compte créé à l'écran prime sur le plan
+/// statique), puis le plan STATIQUE `D.PLAN_COMPTABLE` ; un numéro inconnu s'affiche tel quel.
+String cpaCompteLibelle(Object? num, {Iterable<CpaFiche> comptes = const []}) {
+  for (final c in comptes) {
+    if ('${c['num']}' == '$num') return '${c['libelle']}';
+  }
   for (final c in cpaPlanComptable) {
     if (c.$1 == '$num') return c.$2;
   }
@@ -81,11 +87,38 @@ String cpaCategorieDepenseLibelle(Object? id) {
   return id == null || id == '' ? '—' : '$id';
 }
 
-/// `comptesCharge()` : les comptes de CHARGE du plan statique (tout numéro commençant par 6).
-List<(String, String)> cpaComptesCharge() => [
-      for (final c in cpaPlanComptable)
-        if (c.$1.startsWith('6')) (c.$1, c.$2)
+/// `comptesCharge()` : les comptes de CHARGE (tout numéro commençant par 6). E715 levé : la collection `comptes` ([comptes], actifs) fait foi, de sorte
+/// qu'un compte créé à l'écran est proposable en dépense ; le plan statique ne sert que si la collection est vide.
+List<(String, String)> cpaComptesCharge({Iterable<CpaFiche> comptes = const []}) {
+  final l = comptes.toList();
+  if (l.isNotEmpty) {
+    return [
+      for (final c in l)
+        if ('${c['num']}'.startsWith('6')) ('${c['num']}', '${c['libelle']}')
     ];
+  }
+  return [
+    for (final c in cpaPlanComptable)
+      if (c.$1.startsWith('6')) (c.$1, c.$2)
+  ];
+}
+
+/// E724/E725 levés : le plan du jeu portait DEUX fiches au même numéro (244100, 631810). On garde la première fiche (celle du document) et on archive le
+/// doublon avec son motif (RG-14). Renvoie (identifiant du doublon, motif) pour chaque fiche à archiver parmi [comptesActifs], dans l'ordre du plan.
+List<(String, String)> cpaDoublonsDuPlan(Iterable<CpaFiche> comptesActifs) {
+  final vus = <String, CpaFiche>{};
+  final out = <(String, String)>[];
+  for (final c in comptesActifs) {
+    final n = '${c['num']}';
+    final premier = vus[n];
+    if (premier == null) {
+      vus[n] = c;
+      continue;
+    }
+    out.add(('${c['id']}', 'Doublon du plan comptable (numéro $n): la fiche conservée est « ${premier['libelle']} » (${premier['id']}).'));
+  }
+  return out;
+}
 
 /// `D.PLAN_COMPTABLE` vu comme fiches : pour comparer le plan engendré à celui que la maquette porte.
 List<CpaFiche> cpaPlanEnFiches() => [
@@ -96,11 +129,18 @@ List<CpaFiche> cpaPlanEnFiches() => [
 /// Aide d'affichage : `C.money(v, false)`.
 String cpaMontant(Object? v) => money(v, avecDevise: false);
 
-/// `beforeSave` du plan comptable : un message de refus, ou `null`. Le numéro compte six chiffres ; à la CRÉATION, il ne doit pas déjà exister parmi
-/// les comptes actifs (à la modification, la maquette ne contrôle pas l'unicité — porté fidèlement).
-String? cpaVerifierNumeroCompte(Object? num, Iterable<CpaFiche> comptesActifs, {required bool edition}) {
+/// `beforeSave` du plan comptable : un message de refus, ou `null`. Le numéro compte six chiffres et il est UNIQUE (E724 levé), à la création comme
+/// quand une modification change le numéro : [comptes] (actifs) et [archives] sont contrôlés, la fiche en cours d'édition ([idEnEdition]) exceptée. Un compte
+/// archivé garde son numéro (RG-14) : il se restaure, il ne se recrée pas.
+String? cpaVerifierNumeroCompte(Object? num, Iterable<CpaFiche> comptes,
+    {required bool edition, Object? idEnEdition, Iterable<CpaFiche> archives = const []}) {
   if (!RegExp(r'^\d{6}$').hasMatch('$num')) return 'Le numéro de compte doit comporter 6 chiffres.';
-  if (!edition && comptesActifs.any((c) => c['num'] == '$num')) return 'Ce numéro de compte existe déjà.';
+  final pris = [...comptes, ...archives].where((c) => c['num'] == '$num' && (idEnEdition == null || c['id'] != idEnEdition)).firstOrNull;
+  if (pris != null) {
+    return pris['statut'] == 'archive'
+        ? 'Ce numéro de compte existe déjà (compte archivé : le restaurer depuis la corbeille).'
+        : 'Ce numéro de compte existe déjà.';
+  }
   return null;
 }
 

@@ -257,14 +257,16 @@ void main() {
       expect(rhaStatutMission('a_valider').$2, 'En attente de validation DA');
     });
 
-    test('création : référence OM-2026-0015 (effectif TOTAL + 1), agent et poste repris du dossier', () {
+    test('création : référence OM-AAAA-NNNN (année de la date de départ, rang par année), agent et poste repris du dossier', () {
       final e = obj(v['missions']);
       final nouv = obj(obj(obj(e['creation'])['creee'])['fiche']);
-      expect(rhaReferenceMission(jeu('missions').length), nouv['reference']);
-      final f = rhaMissionEnregistrable({}, jeu('personnel').firstWhere((x) => x['id'] == 'EMP37'), effectifTotal: jeu('missions').length);
+      expect(rhaReferenceMission(nouv['dateDepart'], jeu('missions')), nouv['reference']);
+      expect(rhaReferenceMission('2027-02-01', [...jeu('missions'), {'reference': 'OM-2027-0004', 'statut': 'archive'}]), 'OM-2027-0005');
+      expect(rhaReferenceMission('2031-02-01', jeu('missions')), 'OM-2031-0001');
+      final f = rhaMissionEnregistrable({'dateDepart': nouv['dateDepart']}, jeu('personnel').firstWhere((x) => x['id'] == 'EMP37'), toutes: jeu('missions'));
       expect(f['agent'], nouv['agent']);
       expect(f['fonction'], nouv['fonction']);
-      expect(rhaMissionEnregistrable({}, null, effectifTotal: 0)['agent'], '—');
+      expect(rhaMissionEnregistrable({}, null, toutes: const [])['agent'], '—');
     });
   });
 

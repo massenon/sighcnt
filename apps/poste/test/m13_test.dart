@@ -139,7 +139,7 @@ void main() {
       await t.pump(const Duration(seconds: 10));
     });
 
-    testWidgets('création : référence ARR-2026-0010 (effectif + 1), valeurs par défaut, refus nommé si le formulaire est vide', (t) async {
+    testWidgets('création : référence de la série annuelle ARR-AAAA-NNNN (E538 levé), valeurs par défaut, refus nommé si le formulaire est vide', (t) async {
       final m = poste({'courriers': liste(c['jeu'])});
       await ouvrir(t, m, 'm13-courriers');
       final col = m.collection('courriers');
@@ -158,8 +158,8 @@ void main() {
       await t.tap(find.widgetWithText(BoutonSigh, 'Créer'));
       await t.pump(const Duration(milliseconds: 400));
       expect(col.toutes.length, n0 + 1);
-      fichesEgales(col.toutes.first, obj(obj(c['creation'])['arrivee'])['fiche'] as M, ignores: {'reference'});
-      expect(col.toutes.first['reference'], 'ARR-2026-0010');
+      fichesEgales(col.toutes.first, obj(obj(c['creation'])['arrivee'])['fiche'] as M);
+      expect(col.toutes.first['reference'], (obj(obj(c['creation'])['arrivee'])['fiche'] as M)['reference']);
       await t.pump(const Duration(seconds: 10));
     });
 

@@ -67,4 +67,17 @@ void main() {
           reason: '${(c['entree']! as Map)['nom']}');
     }
   });
+
+  group('E4 : une date de pièce est un JOUR (corrigé le 31/10/2026)', () {
+    final patient = {'assureur': 'NSIA', 'carteExpiration': '2026-08-16'};
+    test('la carte qui expire LE JOUR même est valide, que la date soit un jour ou un instant', () {
+      expect(carteValide(patient, const [], '2026-08-16'), isTrue);
+      expect(carteValide(patient, const [], '2026-08-16T12:00:00Z'), isTrue);
+      expect(carteValide(patient, const [], '2026-08-16T23:59:59.000Z'), isTrue);
+    });
+    test('le lendemain, elle ne l\'est plus, jour ou instant', () {
+      expect(carteValide(patient, const [], '2026-08-17'), isFalse);
+      expect(carteValide(patient, const [], '2026-08-17T00:00:01Z'), isFalse);
+    });
+  });
 }

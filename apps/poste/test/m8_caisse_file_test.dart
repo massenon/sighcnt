@@ -286,4 +286,35 @@ void main() {
     expect(find.text('État de caisse journalier'), findsWidgets);
     expect(find.text('La Directrice Administrative'), findsOneWidget);
   });
+
+  test('E2 (corrigé le 31/10/2026) : une pièce SANS lignes refuse un versement au-delà du dû, en nommant le défaut ; rien n\'est écrit', () {
+    final m = Magasin({
+      'factures': [
+        {
+          'id': 'FS1', 'numero': 'FN-2026-09999', 'patient': 'KOTO A.', 'date': '2026-10-30', 'type': 'Consultation',
+          'montantTTC': 8000, 'partAssurance': 0, 'partPatient': 8000, 'montantPaye': 0, 'reliquat': 8000,
+          'statutPaiement': 'impayee', 'statutMecef': 'en_attente', 'lignes': <Object?>[], 'statut': 'actif',
+        }
+      ],
+      'ecritures': <Fiche>[],
+      'taches': <Fiche>[],
+      'audit': <Fiche>[],
+    });
+    encaisserFacture(m, 'FS1', montant: 3000, maintenant: auj);
+    expect(m.collection('factures').parId('FS1')!['montantPaye'], 3000);
+    final ecrituresAvant = m.collection('ecritures').toutes.length;
+    expect(
+        () => encaisserFacture(m, 'FS1', montant: 99999, maintenant: auj),
+        throwsA(isA<RefusCaisse>()
+            .having((e) => e.code, 'code', 'VERSEMENT_REFUSE')
+            .having((e) => e.motif, 'motif', contains('ne porte aucune ligne'))
+            .having((e) => e.motif, 'motif', contains(money(5000)))));
+    final f = m.collection('factures').parId('FS1')!;
+    expect(f['montantPaye'], 3000, reason: 'la pièce n\'a pas bougé');
+    expect(f['reliquat'], 5000);
+    expect(m.collection('ecritures').toutes.length, ecrituresAvant);
+    // Le solde exact passe.
+    encaisserFacture(m, 'FS1', montant: 5000, maintenant: auj);
+    expect(m.collection('factures').parId('FS1')!['statutPaiement'], 'soldee');
+  });
 }

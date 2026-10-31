@@ -20,13 +20,18 @@ String mf(num v) => sp(money(v, avecDevise: false));
 List<int> entiers(String s) => [for (final x in RegExp(r'\d+(?: \d{3})*').allMatches(s)) int.parse(x.group(0)!.replaceAll(' ', ''))];
 int premier(String s) => s == '—' ? 0 : entiers(s).first;
 
+/// Un montant dont le signe compte (le net d'un agent peut être négatif quand les échéances de prêt dépassent sa paie).
+int signe(String s) => RegExp(r'^[-−]\s*\d').hasMatch(s.trim()) ? -entiers(s).first : entiers(s).first;
+
 PaiEntrees entreesDe(M e) => PaiEntrees(
     planning: liste(e['planning']),
     evaluations: liste(e['evaluations']),
     avances: liste(e['avances']),
     participations: liste(e['participations']),
     grille: liste(e['grillePrimes']),
-    historique: liste(e['historiquePrimes']));
+    historique: liste(e['historiquePrimes']),
+    heuresSup: liste(e['heuresSup']),
+    prets: liste(e['pretsEtudes']));
 
 void main() {
   final v = lireVecteurs('paie');
@@ -149,7 +154,7 @@ void main() {
               expect(cel[10].contains('avances ·'), c.avancesDetail.length > 1, reason: '$ctx : « N avances · reste »');
             }
             expect(premier(cel[11]), c.participations, reason: '$ctx : participations');
-            expect(premier(cel[12]), c.net, reason: '$ctx : net à payer');
+            expect(signe(cel[12]), c.net, reason: '$ctx : net à payer');
           }
           final kc = {for (final k in liste(m(lu['calcul'])['kpis'])) '${k['label']}': sp('${k['valeur']}')};
           expect(kc['Agents concernés'], '${calc.length}');
@@ -246,7 +251,7 @@ void main() {
       expect(c.pctSanction, 10);
       expect(c.sanction, arrondiJs(c.brut * 10 / 100));
       expect(c.brutApresSanction, c.brut - c.sanction);
-      expect(c.totalRetenues, c.cnssOuvriere + c.its + c.ortb + c.avances + c.participations, reason: 'la sanction n’est pas une retenue');
+      expect(c.totalRetenues, c.cnssOuvriere + c.its + c.ortb + c.avances + c.participations + c.prets, reason: 'la sanction n’est pas une retenue');
       expect(calc(agents[3], 9).sanction, 0, reason: 'l’évaluation archivée (50 %) est ignorée');
       expect(calc(agents[2], 9).sanction, 0);
     });
@@ -262,6 +267,133 @@ void main() {
       final c = calc(agents[5], 9);
       expect(c.avances, 25000 + 10000 * 0, reason: 'en cours (25 000) seule : la soldée (20 000) et l’archivée (10 000) sont écartées');
       expect(c.avancesDetail.length, 1);
+    });
+  });
+
+  group('B6 : le calcul lit les heures supplémentaires VALIDÉES et les échéances de PRÊT du mois (S1)', () {
+    final s = m(scenarios['S1']);
+    final e = m(s['entrees']);
+    final entrees = entreesDe(e);
+    final personnel = liste(e['personnel']);
+    final agents = (s['agents'] as List).cast<String>();
+    PaiCalcul calc(String mat, int mo) => paiCalculer(personnel.firstWhere((p) => p['matricule'] == mat), 2026, mo, entrees, auj);
+
+    test('seules les heures validées de la période entrent au brut (E691) : ni en attente, ni archivées, ni d’un autre mois', () {
+      final c = calc(agents[0], 9);
+      expect(c.heuresSupMontant, 12 * 2400 + 3 * 800, reason: 'deux déclarations validées d’octobre');
+      expect(c.heuresSupNb, 15);
+      expect(c.heuresSupDetail.length, 2);
+      expect(c.brut, c.salaireBase + c.primeAnciennete + c.totalPrimes + c.heuresSupMontant);
+      expect(calc(agents[0], 2).heuresSupMontant, 5 * 1000, reason: 'la déclaration de mars suit SON mois');
+      expect(calc(agents[1], 9).heuresSupMontant, 0, reason: 'en attente de validation : rien à payer');
+      expect(calc(agents[2], 9).heuresSupMontant, 0, reason: 'déclaration archivée');
+      expect(calc(agents[4], 9).heuresSupMontant, 0);
+    });
+
+    test('une échéance de prêt n’est retenue qu’au SEUL mois de son échéance ; reliquat sur la dernière ; archivé et autre agent écartés (E689)', () {
+      // PRT-S1-A : 100 001 en 3 échéances dès 2026-09 (33 333, 33 333, 33 335) ; PRT-S1-B : 60 000 en 2 dès 2026-10 (30 000, 30 000)
+      expect(calc(agents[0], 8).prets, 33333);
+      expect(calc(agents[0], 9).prets, 33333 + 30000, reason: 'deux prêts, une échéance chacun en octobre');
+      expect((calc(agents[0], 9).pretsDetail.map((d) => '${d['reference']} ${d['rang']}/${d['nbEcheances']}')).toList(), ['PRT-S1-A 2/3', 'PRT-S1-B 1/2']);
+      expect(calc(agents[0], 10).prets, 33335 + 30000);
+      expect(calc(agents[0], 11).prets, 0, reason: 'plus rien après la dernière échéance');
+      expect(calc(agents[0], 7).prets, 0, reason: 'avant la première échéance');
+      expect(calc(agents[2], 9).prets, 0, reason: 'prêt archivé');
+      final c = calc(agents[0], 9);
+      expect(c.totalRetenues, c.cnssOuvriere + c.its + c.ortb + c.avances + c.participations + c.prets);
+      expect(c.net, c.brutApresSanction - c.totalRetenues);
+    });
+
+    test('le champ `retenues` de la fiche n’entre pas dans le calcul : la retenue est une fonction du MOIS', () {
+      // PRT-S1-C : 90 000 en 3 échéances dès 2026-03, mars déjà inscrit « retenu » : le calcul de mars la porte quand même
+      expect(calc(agents[1], 2).prets, 30000);
+      expect(calc(agents[1], 3).prets, 30000);
+    });
+  });
+
+  group('A2 et B6 : séparation des tâches, écriture de paie, diffusion (écrans réels de la maquette)', () {
+    final g = m(m(v['gestes'])['paie']);
+    final sep = m(g['separation']);
+    final bulletins = liste(sep['bulletinsGeneres']);
+    String texteToast(Object? t) => sp('$t');
+    String refusDe(Object? ecart) => texteToast((m(ecart)['toasts'] as List).single);
+
+    test('le validateur ne peut pas être celui qui a généré (refus nommé, rien d’écrit) ; une autre personne valide', () {
+      final refus = paiControleSeparation(bulletins, '${sep['generateur']}');
+      expect('Validation refusée. ${sp(refus!)}', refusDe(sep['memePersonne']));
+      expect(paiControleSeparation(bulletins, '  basSONGUI   Chabi Séko '), isNotNull, reason: 'casse et espaces ne contournent pas le contrôle');
+      expect(paiControleSeparation(bulletins, 'TAKI Alimatou'), isNull);
+      expect(paiControleSeparation(bulletins, ''), contains('RG-12'), reason: 'aucune action anonyme');
+      expect(paiControleSeparation([{'periode': 'Mai 2026'}], 'quelqu’un'), isNull, reason: 'une pièce sans auteur n’est pas contestée');
+      expect(m(m(sep['memePersonne'])['ecart']), {'inserts': {}, 'modifs': {}});
+    });
+
+    test('l’écriture de paie : lignes plates de même numéro, débit = crédit, brouillon, centre porté', () {
+      final autre = m(sep['autrePersonne']);
+      final attendues = liste(m(m(autre['ecart'])['inserts'])['ecritures']);
+      final piece = paiPieceDePaie('Septembre 2026', bulletins,
+          date: '2026-10-30', ecritures: [for (final n in [128, 126, 3]) {'numero': 'SAL-2026-${n.toString().padLeft(5, '0')}'}], montantTexte: mo);
+      expect(piece.ok, true, reason: piece.refus ?? '');
+      expect(piece.numero, attendues.first['numero'], reason: 'le plus grand numéro SAL de l’année plus un');
+      expect(piece.numero, 'SAL-2026-00129');
+      expect(piece.debit, piece.credit, reason: 'RG-10');
+      expect(piece.fiches.length, attendues.length);
+      String cle(M f) => '${f['compte']}|${f['libelle']}|${(f['debit'] as num).round()}|${(f['credit'] as num).round()}';
+      expect({for (final f in piece.fiches) cle(f)}, {for (final a in attendues) cle(a)});
+      for (final a in attendues) {
+        expect([a['journal'], a['journalLibelle'], a['centreCout'], a['origine'], a['statut'], a['pieceId'], a['pieceNumero'], a['date']],
+            ['SAL', 'Journal des salaires', 'direction', 'Automatique — Paie', 'brouillon', 'PAIE-Septembre 2026', 'Septembre 2026', '2026-10-30']);
+      }
+      final fa = {for (final f in piece.fiches) cle(f): f};
+      for (final a in attendues) {
+        expect(fa[cle(a)]!['compteLibelle'], a['compteLibelle'], reason: 'libellé du compte ${a['compte']}');
+        expect(fa[cle(a)]!['journalLibelle'], a['journalLibelle']);
+      }
+      // la somme des lignes retrouve le net, les retenues et les charges du lot
+      num tot(String k) => bulletins.fold<num>(0, (a, b) => a + (b[k] as num? ?? 0));
+      final debits = piece.fiches.fold<num>(0, (a, f) => a + (f['debit'] as num));
+      expect(debits, tot('brut') - tot('sanction') + tot('cnssPatronale') + tot('vps'));
+      expect(m(m(autre['ecart'])['modifs']).keys, contains('bulletins'));
+      for (final mod in liste(m(m(autre['ecart'])['modifs'])['bulletins'])) {
+        expect(m(mod['patch']).keys.toSet(), {'statutBulletin', 'validePar', 'dateValidation', 'ecritureNumero'});
+        expect(m(mod['patch'])['validePar'], 'TAKI Alimatou', reason: 'E687 : l’agent connecté, plus un nom écrit en dur');
+      }
+    });
+
+    test('un second lot de la même période est refusé (la pièce existe), un lot déséquilibré aussi (RG-10, écart dit)', () {
+      final existantes = liste(m(m(m(sep['autrePersonne'])['ecart'])['inserts'])['ecritures']);
+      final second = paiPieceDePaie('Septembre 2026', bulletins, date: '2026-10-30', ecritures: existantes, montantTexte: mo);
+      expect(second.ok, false);
+      expect('Validation refusée. ${sp(second.refus!)}', refusDe(sep['secondLot']));
+      final d = m(sep['desequilibre']);
+      final piece = paiPieceDePaie('${d['periode']}', liste(d['bulletins']), date: '2026-10-30', ecritures: const [], montantTexte: mo);
+      expect(piece.ok, false);
+      expect(piece.fiches, isEmpty);
+      expect(piece.credit - piece.debit, 777);
+      expect('Validation refusée. ${sp(piece.refus!)}', refusDe(d));
+      expect(m(m(d['ecart'])['inserts']), isEmpty);
+      // une pièce archivée n'empêche pas de revalider
+      final archivee = [for (final e in existantes) {...e, 'statut': 'archive'}];
+      expect(paiPieceDePaie('Septembre 2026', bulletins, date: '2026-10-30', ecritures: archivee, montantTexte: mo).ok, true);
+    });
+
+    test('le statut « Diffusé » : un lot validé offre « Diffuser », un lot diffusé n’offre plus rien', () {
+      final val = ligneUnique(m(sep['apresValidation'])['table']);
+      expect(val[5], 'Validé');
+      expect(val[6], 'Diffuser');
+      final dif = ligneUnique(m(sep['apresDiffusion'])['table']);
+      expect(dif[5], 'Diffusé');
+      expect(dif[6], '');
+      final lot = [for (final b in bulletins) {...b, 'statutBulletin': 'valide'}];
+      expect(paiLots(lot).single.aDiffuser, bulletins.length);
+      expect(paiLots(lot).single.aValider, 0);
+      final diffuses = [for (final b in bulletins) {...b, 'statutBulletin': 'diffuse'}];
+      expect(paiLots(diffuses).single.aDiffuser, 0);
+      expect(paiLots(diffuses).single.valides, bulletins.length, reason: '« validés » compte aussi les diffusés (KPI de la maquette)');
+      for (final mod in liste(m(m(m(sep['diffusion'])['ecart'])['modifs'])['bulletins'])) {
+        expect(m(mod['patch']).keys.toSet(), {'statutBulletin', 'diffusePar', 'dateDiffusion'});
+        expect(m(mod['patch'])['statutBulletin'], 'diffuse');
+      }
     });
   });
 
@@ -283,7 +415,7 @@ void main() {
         final produits = <M>[];
         for (final p in personnel) {
           final c = paiCalculer(p, 2026, mo, entrees, auj);
-          final b = paiBulletinDe(c, paiReferenceSuivante('BP-', 5, existants));
+          final b = paiBulletinDe(c, paiReferenceSuivante('BP-', 5, existants), genereePar: 'BASSONGUI Chabi Séko', dateGeneration: '2026-10-30');
           existants.add(b);
           produits.add(b);
         }
@@ -389,3 +521,5 @@ void main() {
 }
 
 String mo2(num v) => sp(money(v));
+
+List<String> ligneUnique(Object? table) => [for (final c in ((m(table)['lignes'] as List).single as List)) '$c'];

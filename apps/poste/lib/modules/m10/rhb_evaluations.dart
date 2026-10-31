@@ -58,10 +58,14 @@ class EcranEvaluations extends StatelessWidget with EcranMaquette {
 const _mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 String _cap(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 
-/// Les périodes proposées : les douze mois de 2026 (l'année est écrite en dur dans la maquette, écart E661).
-List<String> rhbPeriodesEvaluation() => [for (final m in _mois) '${_cap(m)} 2026'];
+/// Les périodes proposées : les douze mois de l'année en cours (l'année était écrite en dur dans la maquette, écart E661, levé).
+List<String> rhbPeriodesEvaluation(int annee) => [for (final m in _mois) '${_cap(m)} $annee'];
 
-String _periodeDe(DateTime d) => '${_cap(_mois[d.month - 1])} 2026';
+String _periodeDe(DateTime d) => '${_cap(_mois[d.month - 1])} ${d.year}';
+
+/// Le barème en vigueur à [date] (E650 levé) : les critères de la collection versionnée, à défaut la note d'origine.
+List<RhbCritere> rhbCriteresDe(ContexteEcran c, String date) =>
+    rhbCriteresALaDate(rhbActives(c, 'baremeNS131'), rhbActives(c, 'historiqueBareme'), date);
 
 (String, TonSigh) _niveau(Object? n) => switch (n) {
       'bonne' => ('Bonne', TonSigh.succes),
@@ -83,7 +87,7 @@ class _TableEvaluations extends StatelessWidget {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('evaluations');
     final lignes = [
-      for (final e in col.actives) {...e, for (final k in rhbCriteres) 'crit_${k.id}': (e['criteres'] as Map?)?[k.id]}
+      for (final e in col.actives) {...e, for (final k in rhbCriteresDe(c, iso(c.aujourdhui))) 'crit_${k.id}': (e['criteres'] as Map?)?[k.id]}
     ];
     return TableauSigh(
       titre: 'Évaluations mensuelles',
@@ -110,7 +114,7 @@ class _TableEvaluations extends StatelessWidget {
         const ColonneTableau(cle: 'matricule', libelle: 'Mat.', droite: true, sansCoupure: true),
         const ColonneTableau(cle: 'employe', libelle: 'Agent'),
         const ColonneTableau(cle: 'service', libelle: 'Service'),
-        for (final k in rhbCriteres)
+        for (final k in rhbCriteresDe(c, iso(c.aujourdhui)))
           ColonneTableau(
               cle: 'crit_${k.id}',
               libelle: k.label.split(' ').first,
@@ -139,13 +143,16 @@ class _TableEvaluations extends StatelessWidget {
 
 void ouvrirEvaluation(BuildContext ctx, ContexteEcran c, {Fiche? existante}) {
   final col = c.magasin.collection('evaluations');
+  // Le barème en vigueur à la date de l'évaluation (E650 levé) : celle de la fiche existante, ou le jour de la saisie.
+  final dateB = existante != null ? rhbDateBaremeDe(existante) : iso(c.aujourdhui);
+  final critsB = rhbCriteresDe(c, dateB);
   final champs = <ChampDef>[
     ChampDef(nom: 'employeId', libelle: 'Agent', type: TypeChamp.select, requis: true, col: ColChamp.plein, options: [
       for (final e in rhbPersonnelTrie(c)) OptionChamp('${e['id']}', '${e['matricule']} — ${e['nomComplet']} (${e['poste']})')
     ]),
-    ChampDef(nom: 'periode', libelle: 'Période évaluée', type: TypeChamp.select, requis: true, options: [for (final p in rhbPeriodesEvaluation()) OptionChamp(p)]),
+    ChampDef(nom: 'periode', libelle: 'Période évaluée', type: TypeChamp.select, requis: true, options: [for (final p in rhbPeriodesEvaluation(c.aujourdhui.year)) OptionChamp(p)]),
     const ChampDef.section('Éléments d’évaluation — barème $rhbNs131Reference'),
-    for (final k in rhbCriteres)
+    for (final k in critsB)
       ChampDef(
           nom: 'crit_${k.id}',
           libelle: '${k.num} — ${k.label}',
@@ -160,18 +167,19 @@ void ouvrirEvaluation(BuildContext ctx, ContexteEcran c, {Fiche? existante}) {
   ];
   final initial = <String, Object?>{
     if (existante != null) ...existante else 'periode': _periodeDe(c.aujourdhui),
-    for (final k in rhbCriteres) 'crit_${k.id}': (existante?['criteres'] as Map?)?[k.id] ?? 'bonne',
+    for (final k in critsB) 'crit_${k.id}': (existante?['criteres'] as Map?)?[k.id] ?? 'bonne',
   };
   final ctl = ControleurFormulaire(champs, initial);
 
-  Map<String, Object?> criteresDe() => {for (final k in rhbCriteres) k.id: '${ctl['crit_${k.id}']}'};
+  Map<String, Object?> criteresDe() => {for (final k in critsB) k.id: '${ctl['crit_${k.id}']}'};
+  int prelevementDe(Map<String, Object?> cr) => rhbPrelevementALaDate(cr, rhbActives(c, 'baremeNS131'), rhbActives(c, 'historiqueBareme'), dateB);
 
   Widget apercu() => ListenableBuilder(
       listenable: ctl,
       builder: (_, __) {
         final emp = rhbActives(c, 'personnel').where((x) => x['id'] == ctl['employeId']).firstOrNull;
         final brut = (emp?['salaireBase'] as num?) ?? 0;
-        final pct = rhbPrelevement(criteresDe());
+        final pct = prelevementDe(criteresDe());
         final m = rhbMontantPrelevement(brut, pct);
         return KpiGrilleSigh(colonnes: 4, kpis: [
           KpiSigh(libelle: 'Salaire brut de référence', valeur: money(brut), icone: LucideIcons.banknote, ton: TonSigh.navy),
@@ -203,7 +211,7 @@ void ouvrirEvaluation(BuildContext ctx, ContexteEcran c, {Fiche? existante}) {
                   }
                   final emp = rhbActives(c, 'personnel').where((x) => x['id'] == v['employeId']).firstOrNull;
                   final criteres = criteresDe();
-                  final pct = rhbPrelevement(criteres);
+                  final pct = prelevementDe(criteres);
                   final enr = <String, Object?>{
                     'employeId': v['employeId'],
                     'employe': emp?['nomComplet'] ?? '',
@@ -217,6 +225,7 @@ void ouvrirEvaluation(BuildContext ctx, ContexteEcran c, {Fiche? existante}) {
                     'prelevementMontant': emp != null ? rhbMontantPrelevement(emp['salaireBase'], pct) : 0,
                     'salaireBrut': emp?['salaireBase'] ?? 0,
                     'observations': v['observations'] ?? '',
+                    'dateBareme': dateB,
                     // `C.nextRef('EV-', 4)` de la maquette repartait de 1 à chaque chargement : « EV-0001 » doublonnait la série « EV-AAAA-NNNN » du jeu.
                     // Corrigé dans la maquette (E663) : la série de l'année, lue sur les fiches EXISTANTES.
                     'reference': existante?['reference'] ?? rhbReferenceSuivante('EV-${c.aujourdhui.year}-', 4, col.toutes),
@@ -275,13 +284,13 @@ void _consulter(BuildContext ctx, ContexteEcran c, Fiche e) {
                 return BadgeSigh(t.$1, ton: t.$2);
               }),
               ColonneMini('Prélèvement', (k) => '', droite: true, rendu: (k) {
-                final p = rhbCriteres.firstWhere((x) => x.id == k['id']).sanction((e['criteres'] as Map?)?[k['id']]);
+                final p = rhbCriteresDe(c, rhbDateBaremeDe(e)).firstWhere((x) => x.id == k['id']).sanction((e['criteres'] as Map?)?[k['id']]);
                 return p > 0
                     ? Text('− $p %', style: const TextStyle(color: JetonsShell.danger600, fontSize: 14, fontWeight: FontWeight.w600))
                     : const Text('—');
               }),
             ], lignes: [
-              for (final k in rhbCriteres) {'num': k.num, 'label': k.label, 'id': k.id}
+              for (final k in rhbCriteresDe(c, rhbDateBaremeDe(e))) {'num': k.num, 'label': k.label, 'id': k.id}
             ])),
         if ('${e['observations'] ?? ''}'.isNotEmpty) ...[
           const SizedBox(height: 16),
@@ -321,7 +330,7 @@ void imprimerFiche(BuildContext ctx, ContexteEcran c, Fiche e) {
   final cr = (e['criteres'] as Map?) ?? const {};
   String lib(Object? n) => switch (n) { 'bonne' => 'Bonne', 'moyenne' => 'Moyenne', 'faible' => 'Faible à mauvaise', _ => '' };
   final gauche = [
-    for (final k in rhbCriteres)
+    for (final k in rhbCriteresDe(c, rhbDateBaremeDe(e)))
       {
         'num': k.num,
         'label': k.label,

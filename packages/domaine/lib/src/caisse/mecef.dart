@@ -7,15 +7,17 @@
 ///
 /// Rejoué sur `test/vecteurs/mecef.json`, engendré en pilotant le module réel de la maquette pour chaque régime de TVA.
 ///
-/// Portés fidèlement et signalés (docs/architecture/ECARTS-MAQUETTE.md) : E13 (l'enregistrement de la configuration fiscale n'est pas relu : les
-/// taux restent ceux du référentiel) ; E14 (« IFU client » imprime l'IFU de la clinique pour tous les clients) ; E15 (l'avoir MECeF ne contrôle que
-/// « montant ≤ facture », jamais le cumul des avoirs, et s'ajoute aux deux autres canaux d'avoir).
+/// Porté fidèlement et signalé (docs/architecture/ECARTS-MAQUETTE.md) : E13 (l'enregistrement de la configuration fiscale n'est pas relu : les
+/// taux restent ceux du référentiel).
+///
+/// Corrigés dans la maquette PUIS portés (décision de la Direction du 31/10/2026, B10) : E14 (« IFU client » = l'IFU du CLIENT, vide si inconnu, jamais
+/// celui de la clinique) ; E15 (l'avoir MECeF APPELLE le moteur unique `emettreAvoir` : plafond cumulé, montant strictement positif, ligne nommée).
 library;
 
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../impression/etat.dart';
-import '../impression/identite.dart';
+import 'avoir.dart';
 
 /// Un régime de TVA du référentiel `PARAM_FISCAL.regimesTva`.
 class RegimeTva {
@@ -226,8 +228,13 @@ FactureNormalisee factureNormalisee(Map<String, Object?> f, ParamFiscal p) {
   );
 }
 
-/// `IFU client` imprimé : celui de la CLINIQUE, pour tous les clients (écart E14).
-const ifuClientImprime = IdentiteClinique.ifu;
+/// `IFU client` imprimé (E14, corrigé le 31/10/2026) : celui du CLIENT, porté par la pièce (`ifuClient`) ou par son dossier (`ifu`), et VIDE s'il est
+/// inconnu. Jamais celui de la clinique : une pièce fiscale qui désigne le mauvais identifiant est un défaut réel.
+String ifuClientDe(Map<String, Object?> facture, [Map<String, Object?>? patient]) {
+  final pce = '${facture['ifuClient'] ?? ''}';
+  if (pce.isNotEmpty) return pce;
+  return '${patient?['ifu'] ?? ''}';
+}
 
 // --- synchronisation --------------------------------------------------------------------------------------------------
 const codesRejet = [
@@ -293,42 +300,64 @@ const motifsAvoirMecef = [
   'Erreur de tarif',
 ];
 
-/// La fiche `avoirs` d'un avoir MECeF : transmis et validé d'office (simulation). [graine] : tirée de l'horloge par l'appelant.
-/// `mecef: true` dit qu'un identifiant est attribué (l'appelant le pose via [numeroMecefSimule]).
-Map<String, Object?> avoirMecef({
+/// Un avoir MECeF émis : l'avoir du moteur unique (fiche, contre-passation, cumul de la facture) et la fiche telle que la maquette la relit après la
+/// transmission d'office (`statutMecef: valide`, `mecef: true` : l'identifiant est posé par l'appelant via [numeroMecefSimule]).
+class AvoirMecefEmis {
+  const AvoirMecefEmis({required this.emission, required this.fiche});
+  final AvoirEmis emission;
+  final Map<String, Object?> fiche;
+}
+
+/// L'avoir MECeF : il APPELLE le moteur unique `emettreAvoir` (collection `avoirs`, origine `mecef`) ; la transmission au dispositif (simulation) en
+/// est la SUITE. Le formulaire porte `factureId, date, montant, motif, observations`. Lève [RefusAvoirMecef] (un refus du moteur est repris, nommé).
+AvoirMecefEmis avoirMecef({
   required Map<String, Object?>? facture,
   required Map<String, Object?> saisie,
   required List<Map<String, Object?>> avoirs,
+  List<Map<String, Object?>> facturesMere = const [],
+  String idAvoir = 'AVR-NOUVEAU',
+  String jour = '',
+  String utilisateur = '',
+  String? horodatage,
 }) {
   bool vide(String k) => '${saisie[k] ?? ''}'.trim().isEmpty;
   if (['factureId', 'date', 'montant', 'motif'].any(vide)) {
     throw const RefusAvoirMecef('Le formulaire comporte des erreurs.');
   }
   final montant = nombreOuZero(saisie['montant']);
-  if (facture != null && montant > nombreOuZero(facture['montantTTC'])) {
+  if (!(montant > 0)) {
     throw const RefusAvoirMecef(
-        'Le montant de l’avoir ne peut excéder celui de la facture.');
+        'Le montant doit être strictement supérieur à 0 FCFA.');
   }
-  final date = '${saisie['date']}';
-  final prefixe = 'AV-${date.length >= 4 ? date.substring(0, 4) : date}-';
-  var max = 0;
-  for (final a in avoirs) {
-    final r = '${a['reference'] ?? ''}';
-    if (r.startsWith(prefixe)) {
-      final k = int.tryParse(r.substring(prefixe.length)) ?? 0;
-      if (k > max) max = k;
-    }
+  if (facture == null) {
+    throw const RefusAvoirMecef('Choisir la facture à rectifier.');
   }
-  return {
-    ...saisie,
-    'montant': montant,
-    if (facture != null) ...{
-      'factureNumero': facture['numero'],
-      'patient': facture['patient'],
-      'patientCode': facture['patientCode'],
-    },
-    'reference': '$prefixe${(max + 1).toString().padLeft(4, '0')}',
-    'mecef': true,
-    'statutMecef': 'valide',
-  };
+  try {
+    final e = emettreAvoir(
+      facture: facture,
+      idAvoir: idAvoir,
+      lignes: [
+        {
+          'designation':
+              'Rectification de la facture ${facture['numero']} : ${saisie['motif']}',
+          'montant': montant,
+        }
+      ],
+      motif: '${saisie['motif']}',
+      observations: '${saisie['observations'] ?? ''}',
+      remboursement: 'creance',
+      origine: 'mecef',
+      date: '${saisie['date']}',
+      horodatage: horodatage,
+      jour: jour.isEmpty ? '${saisie['date']}' : jour,
+      utilisateur: utilisateur,
+      facturesMere: facturesMere,
+      avoirs: avoirs,
+    );
+    return AvoirMecefEmis(
+        emission: e, fiche: {...e.avoir, 'mecef': true, 'statutMecef': 'valide'});
+  } on RefusAvoir catch (r) {
+    throw RefusAvoirMecef(r.motif);
+  }
 }
+

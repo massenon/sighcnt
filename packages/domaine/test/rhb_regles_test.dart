@@ -27,6 +27,7 @@ void main() {
   final evaluations = actives(dossier('evaluations'));
   final grille = actives(dossier('grillePrimes'));
   final historique = actives(dossier('historiquePrimes'));
+  final baremeJeu = actives(dossier('baremeNS131'));
   final regimes = actives(dossier('regimesTravail'));
   final auj16 = DateTime(2026, 8, 16, 12);
   final auj30 = DateTime(2026, 10, 30, 10);
@@ -345,6 +346,41 @@ void main() {
       expect(s3.prelevement, 10000);
     });
 
+    // E650 levé : le barème EN VIGUEUR À LA DATE de l'évaluation, versionné (baremeNS131 courant, historiqueBareme sorti).
+    test('le barème en vigueur à une date : les échantillons de la maquette, rejoués après les deux modifications de critère', () {
+      final cas = liste(f(b['bareme'])['cas']);
+      var bar = [for (final x in baremeJeu) {...x}];
+      var hist = <F>[];
+      for (final c in cas) {
+        final fiche = f(c['critere']);
+        bar = [for (final x in bar) x['id'] == fiche['id'] ? fiche : x];
+        hist = [...liste(c['historique']), ...hist];
+      }
+      const niveaux = <String, Object?>{'ponctualite': 'moyenne', 'execution': 'faible', 'attitude': 'bonne', 'hierarchie': 'bonne'};
+      for (final m in liste(f(b['bareme'])['moteur'])) {
+        final date = m['date'] as String? ?? '2026-08-16';
+        expect(rhbPrelevementALaDate(niveaux, bar, hist, date), m['prelevement'], reason: '${m['date']}');
+        expect([for (final c in rhbCriteresALaDate(bar, hist, date)) [c.num, c.id, c.moyenne, c.faible]], m['criteres'], reason: '${m['date']}');
+      }
+      // Une évaluation prononcée le 15/08 garde le barème d'alors ; celle du 16/08 prend le barème relevé.
+      expect(rhbPrelevementALaDate(niveaux, bar, hist, '2026-08-15'), 26);
+      expect(rhbPrelevementALaDate(niveaux, bar, hist, '2026-08-16'), 27);
+    });
+
+    test('la nouvelle évaluation de la maquette porte la date de son barème et le prélèvement du barème modifié', () {
+      final n = f(f(f(b['bareme'])['evaluationApres'])['nouvelle']);
+      expect(n['dateBareme'], '2026-08-16');
+      expect(n['prelevementPct'], 27);
+      expect((f(b['bareme'])['optionsCritere'] as List).map(norm), ['Bonne (aucune sanction)', 'Moyenne (− 7 %)', 'Faible à mauvaise (− 12 %)']);
+    });
+
+    test('sans fiche au magasin, ou pour une évaluation sans date de barème : la note d\'origine', () {
+      expect(rhbCriteresALaDate([], [], '2026-08-16').map((c) => c.id), rhbCriteres.map((c) => c.id));
+      expect(rhbDateBaremeDe({}), rhbNs131DateEffet);
+      expect(rhbDateBaremeDe({'dateBareme': '2026-09-01'}), '2026-09-01');
+      expect(rhbPrelevementALaDate({'ponctualite': 'moyenne', 'execution': 'faible'}, baremeJeu, [], '2026-08-16'), rhbPrelevement({'ponctualite': 'moyenne', 'execution': 'faible'}));
+    });
+
     test('le prélèvement s\'applique au brut recomposé : base + primes de garde, de permanence et d\'accueil', () {
       final s = rhbSolde(salaireBrut: 200000, prelevementPct: 10, gardes: 3, permanences: 2, montantGarde: 1500, montantPermanence: 800, montantAccueil: 0, ans: 0);
       expect(s.brut, 200000 + 4500 + 1600);
@@ -429,7 +465,7 @@ void main() {
       expect(f(c['fiche'])['dateEffet'], '2026-07-13');
     });
 
-    test('une prime créée porte son identifiant en tirets, mais n\'entre pas dans les primes fixes du mois (écart E651)', () {
+    test('une prime créée porte son identifiant en tirets (occurrence : hors des primes fixes)', () {
       final c = f(ecr['creation']);
       final fiche = f(c['fiche']);
       expect(fiche['primeId'], 'prime-de-nuit');
@@ -437,16 +473,93 @@ void main() {
       expect(rhbMontantPrime([...grille, fiche], historique, 'prime-de-nuit', 'sage_femme'), 1300);
       expect(rhbMontantPrime([...grille, fiche], historique, 'prime-de-nuit', 'tsl'), 0);
       expect((c['echantillons'] as List), [1200, 1300, 0]);
-      // Elle ne figure pas parmi les primes d'origine : les primes fixes ne la lisent jamais.
       expect(rhbPrimesOrigine.any((x) => x.id == 'prime-de-nuit'), isFalse);
+      final def = rhbPrimesALaDate([...grille, fiche], historique).firstWhere((x) => x.id == 'prime-de-nuit');
+      expect(def.mode, 'occurrence');
     });
 
-    test('une prime RETIRÉE est encore calculée : le moteur retombe sur le barème d\'origine (écart E651)', () {
+    // E651 levé (a) : une prime créée à l'écran entre dans les primes fixes du mois.
+    test('une prime FIXE créée à l\'écran entre dans les primes fixes du mois', () {
+      final c = f(ecr['primeFixeCreee']);
+      final fiche = f(c['fiche']);
+      final g = [...grille, fiche];
+      expect(rhbPrimesALaDate(g, historique).where((p) => p.mode == 'fixe').map((p) => p.id), c['parmiLesFixes']);
+      final inf = personnel.firstWhere((x) => x['fonction'] == 'infirmier');
+      expect(rhbMontantAgent(g, historique, const [], '${fiche['primeId']}', inf['id'], 'infirmier', '2026-08-16'), c['montantAgent']);
+      expect(c['montantAgent'], 4000);
+      final sans = rhbPrimesAcquises(personnelActif: personnel, planningActif: planning, grille: grille, historique: historique, date: '2026-08-16', annee: 2026, mois: 8);
+      final avec = rhbPrimesAcquises(personnelActif: personnel, planningActif: planning, grille: g, historique: historique, date: '2026-08-16', annee: 2026, mois: 8);
+      final nbInf = personnel.where((x) => x['fonction'] == 'infirmier').length;
+      expect(avec.fold<num>(0, (a, x) => a + x.primesFixes) - sans.fold<num>(0, (a, x) => a + x.primesFixes), 4000 * nbInf);
+    });
+
+    // E651 levé (b) : une prime retirée reçoit une date de fin, la paie ne la lit plus après.
+    test('une prime RETIRÉE reçoit une date de fin : lue jusqu\'à elle, plus après (écart E651 levé)', () {
       final r = f(ecr['retrait']);
-      expect(r['montantCaisse'], 10000);
+      expect(r['montantCaisse'], 0);
+      expect(r['dateFin'], '2026-08-15');
+      final hv = f(liste(r['historique']).first);
+      expect(hv['retiree'], isTrue);
       final sansCaisse = [for (final x in grille) if (x['primeId'] != 'caisse') x];
+      final h = [hv, ...historique];
+      for (final x in (r['aLaDate'] as List).cast<List>()) {
+        expect(rhbMontantPrime(sansCaisse, h, 'caisse', 'caissiere', x[0] as String?), x[1], reason: '$x');
+      }
+      expect(rhbMontantPrime(sansCaisse, h, 'caisse', 'caissiere', '2026-08-15'), 10000);
+      expect(rhbMontantPrime(sansCaisse, h, 'caisse', 'caissiere', '2026-08-16'), 0);
+      expect(rhbMontantPrime(sansCaisse, h, 'caisse', 'caissiere'), 0);
+      expect(rhbMontantPrime(sansCaisse, h, 'caisse', 'infirmier'), 0);
+      // Une prime inconnue du magasin sans aucune trace : le barème d'origine reste le repli.
       expect(rhbMontantPrime(sansCaisse, historique, 'caisse', 'caissiere'), 10000);
-      expect(rhbMontantPrime(sansCaisse, historique, 'caisse', 'infirmier'), 0);
+    });
+
+    // E654 levé : un forfait se désigne par une liste datée d'agents.
+    test('un forfait désigné ne revient qu\'à ses bénéficiaires, aux dates indiquées', () {
+      final r = f(ecr['beneficiaires']);
+      final fiches = liste(f(r['designe'])['fiches']);
+      expect(fiches, hasLength(1));
+      final avant = (r['avant'] as List).cast<List>(), apres = (r['apres'] as List).cast<List>();
+      expect(avant.every((x) => x[1] == 7000), isTrue);
+      for (final x in apres) {
+        final att = x[0] == fiches.first['agentId'] ? 7000 : 0;
+        expect(x[1], att);
+        expect(rhbMontantAgent(grille, historique, fiches, 'accueil', x[0], 'accueil', '2026-08-16'), att, reason: '$x');
+      }
+      // Aucune désignation : règle d'attente, tout agent de la fonction.
+      expect(rhbBeneficiaires(const [], 'accueil'), isNull);
+      expect(rhbMontantAgent(grille, historique, const [], 'accueil', 'EMPX', 'accueil', '2026-08-16'), 7000);
+      // La désignation est datée : avant son début ou après sa fin, plus de forfait.
+      final d = [
+        {'primeId': 'accueil', 'agentId': 'A1', 'debut': '2026-08-16', 'fin': '2026-09-30'}
+      ];
+      expect(rhbBeneficiaires(d, 'accueil', '2026-08-15'), isEmpty);
+      expect(rhbBeneficiaires(d, 'accueil', '2026-08-16'), ['A1']);
+      expect(rhbBeneficiaires(d, 'accueil', '2026-10-01'), isEmpty);
+      // Un forfait par occurrence n'est pas concerné par les désignations.
+      expect(rhbMontantAgent(grille, historique, [{'primeId': 'garde', 'agentId': 'A1'}], 'garde', 'A2', 'infirmier', '2026-08-16'), 1500);
+    });
+
+    test('les primes acquises avec la désignation : mêmes lignes que l\'écran', () {
+      final r = f(ecr['beneficiaires']);
+      final fiches = liste(f(r['designe'])['fiches']);
+      final calc = trierPar(
+          rhbPrimesAcquises(
+              personnelActif: personnel, planningActif: planning, grille: grille, historique: historique, designations: fiches, date: '2026-08-16', annee: 2026, mois: 8),
+          (x) => x.total,
+          descendant: true);
+      // La désignation est faite en fin de séance de la maquette : la grille y a changé (garde, permanence relevées, primes créée et retirée).
+      // On compare donc l'effet de la désignation, pas les totaux : les agents de l'accueil non désignés ne touchent plus le forfait de 7 000.
+      final lignes = (f(r['acquises'])['lignes'] as List).cast<List>();
+      final accueil = [for (final l in lignes) if ('${l[2]}'.contains('Accueil')) l];
+      expect(accueil, isNotEmpty);
+      final desi = '${fiches.first['matricule']}';
+      for (final l in accueil) {
+        expect(norm(l[7]), l[0] == desi ? norm(money(7000, avecDevise: false)) : '0', reason: '${l[1]}');
+      }
+      final kp = [for (final x in (r['kpis'] as List)) f(x)];
+      expect(int.parse(norm(kp[0]['valeur'])), lignes.length + 4, reason: 'vingt lignes par page, 24 agents primés');
+      final sans = calc.where((x) => x.fonction == 'accueil' && x.matricule != desi).map((x) => x.primesFixes).toSet();
+      expect(sans, anyOf(isEmpty, {0}));
     });
 
     test('un montant « 0 » de la grille n\'est pas un montant', () {

@@ -2688,6 +2688,8 @@
             /* La configuration fiscale engage la clinique devant la DGI :
                elle se décide, elle ne se retouche pas au fil des saisies. */
             'mecef-config': { voir: true, editer: false, annuler: false },
+            /* A2 (31/10/2026) : le comptable GÉNÈRE les bulletins, il ne les VALIDE pas. Voir seulement : celui qui calcule ne signe pas. */
+            'm11-validation': { voir: true, editer: false, annuler: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'La comptabilité, la caisse (avoirs compris), les créances, la paie et le fiscal. '
@@ -3590,7 +3592,7 @@
     /* Comptes, droits et activation des modules */
     'utilisateurs', 'rbac', 'modulesActifs',
     /* Règles datées — régimes, primes, barème */
-    'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme',
+    'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -3883,7 +3885,7 @@
     examensLabo: 'M5|Catalogue des examens', unitesLabo: 'M5|Unités de mesure',
     variablesLabo: 'M5|Variables et valeurs de référence',
     evenements: 'M10|Événements du personnel', participations: 'M10|Participations aux événements',
-    grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes',
+    grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes', beneficiairesPrimes: 'M10|Bénéficiaires des primes fixes',
     rbac: 'M14|Rôles et permissions', tentativesConnexion: 'M14|Tentatives de connexion refusées',
     courriers: 'M13|Courriers', reunions: 'M13|Réunions',
     /* Une clé déclarée deux fois dans un littéral écrase la première EN

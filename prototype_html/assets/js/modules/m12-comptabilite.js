@@ -35,9 +35,30 @@
     var X = global.SIGH.exercice, a = X.choisi();
     return ecrituresToutes().filter(function (e) { return X.anneeDe(e.date) === a; }).concat(X.provisoires(a));
   }
-  function comptes() { return S.collection('comptes').active(); }
+  /* E724/E725 : le plan du jeu portait deux fiches au même numéro (244100, 631810). On GARDE la première fiche
+     du document (celle qui précède dans le classeur) et on ARCHIVE le doublon avec son motif (RG-14). Une seule
+     règle, appliquée une fois par chargement de page, aux magasins anciens comme aux neufs. */
+  var planAssaini = false;
+  function assainirPlan() {
+    planAssaini = true;
+    var col = S.collection('comptes');
+    var vus = {};
+    col.active().slice().forEach(function (c) {
+      var n = String(c.num);
+      if (!vus[n]) { vus[n] = c; return; }
+      col.archive(c.id, 'Doublon du plan comptable (numéro ' + n + '): la fiche conservée est « ' + vus[n].libelle + ' » (' + vus[n].id + ').');
+    });
+  }
+  function avecAssainissement(rendre) { return function (root) { assainirPlan(); return rendre(root); }; }
+  function comptes() {
+    if (!planAssaini) assainirPlan();
+    return S.collection('comptes').active();
+  }
 
+  /* E715 : un compte créé à l'écran fait foi pour son libellé (le plan statique n'est que le repli). */
   function compteLibelle(num) {
+    var cr = S.collection('comptes').all().filter(function (x) { return String(x.num) === String(num); })[0];
+    if (cr) return cr.libelle;
     var c = D.PLAN_COMPTABLE.filter(function (x) { return x.num === num; })[0];
     return c ? c.libelle : num;
   }
@@ -60,8 +81,8 @@
       6: 'Classe 6 — Charges', 7: 'Classe 7 — Produits', 8: 'Classe 8 — Autres charges et produits',
     }[n] || 'Classe ' + n;
   }
-  function soldeCompte(num) {
-    var e = ecritures().filter(function (x) { return x.compte === num; });
+  function soldeCompte(num, source) {
+    var e = (source || ecritures()).filter(function (x) { return x.compte === num; });
     return { debit: C.sum(e, 'debit'), credit: C.sum(e, 'credit'), solde: C.sum(e, 'debit') - C.sum(e, 'credit'), nb: e.length };
   }
 
@@ -240,7 +261,7 @@
     title: 'Plan comptable OHADA',
     description: 'Référentiel des comptes du plan SYSCOHADA utilisés par la clinique, par classe.',
     regle: 'Les comptes marqués « document » proviennent du classeur comptable SYSCOHADA transmis lors du cadrage ; les autres complètent le plan pour permettre le bouclage des schémas d’écriture.',
-    render: K.crud({
+    render: avecAssainissement(K.crud({
       collection: 'comptes', entite: 'compte', entiteP: 'comptes', module: 'M12',
       defaultSort: 'num', pageSize: 20,
       source: 'Classeur comptable SYSCOHADA — journal des comptes par mois.',
@@ -279,7 +300,13 @@
       transform: function (v, record) { v.classe = Number(v.classe); if (!v.source && !record) v.source = 'CDCT'; return v; },
       beforeSave: function (v, record) {
         if (!/^\d{6}$/.test(String(v.num))) return 'Le numéro de compte doit comporter 6 chiffres.';
-        if (!record && comptes().some(function (c) { return c.num === v.num; })) return 'Ce numéro de compte existe déjà.';
+        /* Unicité du numéro : à la création ET quand la modification change le numéro ; un compte archivé garde son numéro (RG-14). */
+        var pris = S.collection('comptes').all().concat(S.collection('comptes').archived()).filter(function (c) {
+          return c.num === v.num && (!record || c.id !== record.id);
+        })[0];
+        if (pris) return pris.statut === 'archive'
+          ? 'Ce numéro de compte existe déjà (compte archivé : le restaurer depuis la corbeille).'
+          : 'Ce numéro de compte existe déjà.';
         return null;
       },
       filters: [
@@ -311,7 +338,7 @@
           return wrap;
         },
       }],
-    }),
+    })),
     actions: function () {
       return [K.btn('Imprimer le plan comptable', {
         variant: 'primary', icon: 'printer',
@@ -882,12 +909,36 @@
   global.SIGH.screen('m12-balance', {
     title: 'Balance générale & âgée',
     description: 'Balance des comptes, contrôle d’équilibre et balance âgée des comptes de tiers.',
-    regle: 'Écran en lecture seule. La balance est <strong>calculée à partir des écritures validées</strong>. Elle ne se saisit pas : corriger l’écriture concernée pour la faire évoluer.',
-    render: function (root) {
+    regle: 'Écran en lecture seule. La balance est <strong>calculée à partir des écritures validées</strong> par défaut ; le filtre « Écritures retenues » permet d’y compter aussi les brouillons, et le bandeau dit ce qui est compté. Elle ne se saisit pas : corriger l’écriture concernée pour la faire évoluer.',
+    render: function rendreBalance(root, modeBalance) {
       var host = el('div.space-y-4');
 
+      /* E718 : la balance ne mentionnait que les écritures « validées » et comptait tout.
+         Le filtre est EXPLICITE (défaut : validées) et le bandeau dit la vérité. */
+      var mode = modeBalance === 'toutes' ? 'toutes' : 'validees';
+      var toutesEcr = ecritures();
+      var retenues = mode === 'toutes' ? toutesEcr : toutesEcr.filter(function (x) { return x.statut === 'validee'; });
+      var nbBrouillons = toutesEcr.filter(function (x) { return x.statut === 'brouillon'; }).length;
+      var selMode = el('select.select', { id: 'balance-ecritures', 'aria-label': 'Écritures retenues' });
+      [['validees', 'Validées seulement'], ['toutes', 'Toutes (brouillons compris)']].forEach(function (o) {
+        var opt = el('option', { value: o[0] }, o[1]);
+        if (o[0] === mode) opt.selected = true;
+        selMode.appendChild(opt);
+      });
+      selMode.addEventListener('change', function () { C.clear(root); rendreBalance(root, selMode.value); });
+      host.appendChild(el('div.flex.flex-wrap.items-center.gap-2', null, [
+        el('label.label.mb-0', { for: 'balance-ecritures', text: 'Écritures retenues' }), selMode,
+      ]));
+      host.appendChild(mode === 'toutes'
+        ? K.note('Balance calculée sur <strong>toutes les écritures</strong> de l’exercice ' + exo() + ', <strong>brouillons compris</strong> ('
+          + C.num(nbBrouillons) + ' ligne(s) en brouillon). Un brouillon n’est pas un fait comptable : choisir « Validées seulement » pour la balance opposable.',
+        { tone: 'warning', icon: 'file-clock' })
+        : K.note('Balance calculée sur les <strong>écritures validées</strong> de l’exercice ' + exo() + '. '
+          + (nbBrouillons ? C.num(nbBrouillons) + ' ligne(s) en brouillon sont écartées.' : 'Aucun brouillon à écarter.'),
+        { tone: 'info', icon: 'scale' }));
+
       var lignes = comptes().map(function (c) {
-        var s = soldeCompte(c.num);
+        var s = soldeCompte(c.num, retenues);
         return {
           id: c.num, num: c.num, libelle: c.libelle, classe: c.classe,
           debit: s.debit, credit: s.credit,
@@ -1031,7 +1082,8 @@
           cartouche: [['Comptes mouvementés', C.num(lignes.length)],
             ['Total débit', C.money(totalDebit)], ['Total crédit', C.money(totalCredit)],
             ['Équilibre', equilibre ? 'Équilibrée' : 'Écart de ' + C.money(Math.abs(totalDebit - totalCredit))],
-            ['Exercice', String(exo())], ['Date d’édition', C.dateFR(AUJ)]],
+            ['Exercice', String(exo())], ['Écritures retenues', mode === 'toutes' ? 'Toutes, brouillons compris' : 'Validées seulement'],
+            ['Date d’édition', C.dateFR(AUJ)]],
           contenu: P.tableau([
             { label: 'Compte', key: 'num' },
             { label: 'Intitulé', key: 'libelle' },
@@ -1216,7 +1268,7 @@
           },
         ],
         fields: [
-          { name: 'exercice', label: 'Exercice', type: 'number', required: true, value: 2026 },
+          { name: 'exercice', label: 'Exercice', type: 'number', required: true, value: AUJ.getFullYear() },
           { name: 'centreCout', label: 'Centre de coûts', type: 'select', required: true, options: optionsCentres() },
           { name: 'nature', label: 'Nature budgétaire', type: 'select', required: true, options: ['Charges de fonctionnement', 'Investissements', 'Charges de personnel', 'Achats de marchandises'] },
           { name: 'prevu', label: 'Montant prévisionnel (FCFA)', type: 'money', required: true, min: 0 },
@@ -1225,7 +1277,8 @@
            la conserve — recalculée à chaque enregistrement, elle renumérotait le budget. */
         transform: function (v, record) {
           v.centre = centreLabel(v.centreCout);
-          if (!v.reference) v.reference = record && record.reference ? record.reference : C.referenceSuivante('BG-2026-', 3, col.all());
+          /* E777 : le millésime de la référence est l'exercice SAISI, le rang court par exercice (archivés compris). */
+          if (!v.reference) v.reference = record && record.reference ? record.reference : C.referenceSuivante('BG-' + v.exercice + '-', 3, col.all().concat(col.archived()));
           return v;
         },
         kpis: function (rows) {
@@ -2585,6 +2638,10 @@
 
     function annee() { return Number(anneeSel.value); }
     function suivante() { return annee() + 1; }
+    /* E813 : UN SEUL compte de résultat. Le report manuel écrit, comme la clôture en deux gestes,
+       au 131000 (bénéfice) ou au 139000 (perte). Le 130000 ne reste que pour les reports manuels
+       antérieurs, qui sont SIGNALÉS à l'écran (ils ne se réécrivent pas : RG-14). */
+    function compteResultat(resultat) { return resultat >= 0 ? '131000' : '139000'; }
     function dejaEcrit() {
       return ecrituresToutes().filter(function (x) {
         return x.journal === 'AN' && C.toDate(x.date).getFullYear() === suivante();
@@ -2621,6 +2678,13 @@
           + 'années suivantes (RG-10). Vérifier les écritures de l’exercice ' + annee() + ' avant de '
           + 'reporter.', { tone: 'danger', icon: 'alert-triangle' }));
 
+      var anciens130 = ecrituresToutes().filter(function (x) { return x.journal === 'AN' && x.compte === '130000'; });
+      if (anciens130.length) {
+        vue.appendChild(K.note('<strong>Report manuel antérieur au compte 130000</strong> : ' + C.num(anciens130.length)
+          + ' ligne(s) portent le résultat à l’ancien compte. Le résultat se porte désormais au 131000 (bénéfice) ou au 139000 (perte), '
+          + 'comme à la clôture ; le 130000 n’est réservé qu’à ces reports manuels signalés, qui ne se réécrivent pas.',
+        { tone: 'warning', icon: 'alert-triangle' }));
+      }
       if (deja.length) {
         vue.appendChild(K.note('Les à-nouveaux du <strong>1ᵉʳ janvier ' + suivante() + '</strong> sont '
           + 'DÉJÀ écrits : ' + C.num(deja.length) + ' ligne(s) au journal AN. Les réécrire créerait un '
@@ -2637,7 +2701,7 @@
           { label: 'Crédit', align: 'right',
             render: function (c) { return c.solde < 0 ? C.money(-c.solde, false) : ''; } },
         ], s.comptes.concat([
-          { compte: '13', libelle: 'Résultat net de l’exercice ' + annee(),
+          { compte: compteResultat(s.resultat), libelle: 'Résultat net de l’exercice ' + annee(),
             solde: -s.resultat },
         ]))));
 
@@ -2692,7 +2756,7 @@
           })));
         });
         ecrits.push(col.insert(Object.assign({}, base, {
-          compte: '130000', compteLibelle: 'Résultat net de l’exercice ' + annee(),
+          compte: compteResultat(s.resultat), compteLibelle: s.resultat >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
           debit: s.resultat < 0 ? -s.resultat : 0,
           credit: s.resultat > 0 ? s.resultat : 0,
         })));
@@ -2708,7 +2772,7 @@
     function imprimer() {
       var s = soldesDeCloture(annee());
       var lignes = s.comptes.concat([
-        { compte: '130000', libelle: 'Résultat net de l’exercice ' + annee(), solde: -s.resultat },
+        { compte: compteResultat(s.resultat), libelle: 'Résultat net de l’exercice ' + annee(), solde: -s.resultat },
       ]);
       P.etat({
         titre: 'Bilan d’ouverture — à-nouveaux',
@@ -3594,9 +3658,12 @@
     return S.collection('banques', { module: 'M12', entite: 'compte de trésorerie', prefix: 'BQ' });
   }
 
-  /** Les comptes de charge du plan réel de la clinique — classe 6 et 671. */
+  /** Les comptes de charge du plan de la clinique (classe 6 et 671). E715 : la COLLECTION fait foi (un compte créé à l'écran est
+   *  proposable en dépense) ; le plan statique ne sert que si la collection n'est pas amorcée. */
   function comptesCharge() {
-    return (D.PLAN_COMPTABLE || []).filter(function (c) {
+    var col = comptes();
+    var source = col.length ? col : (D.PLAN_COMPTABLE || []);
+    return source.filter(function (c) {
       return /^6/.test(String(c.num));
     });
   }

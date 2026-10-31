@@ -99,6 +99,21 @@
    * Un seul geste engendre l'ordonnance, les demandes d'analyses, la facture et
    * les trois files d'attente. Rien n'est laissé à une ressaisie.
    * ======================================================================== */
+  /** Rang suivant d'une SÉRIE ANNUELLE de pièces de caisse (`FN-2026-`, `PRO-2026-`, `FP-2026-`) : le plus grand rang déjà porté
+      par les factures du même préfixe, plus un. Les deux volets d'une même émission (-A, -B) portent deux rangs consécutifs. Les archivées comptent
+      (une pièce archivée garde son numéro, RG-14). Écart E6, corrigé le 31/10/2026 : le rang était le nombre TOTAL de factures. */
+  function rangSerieFactures(prefixe) {
+    var max = 0;
+    col('factures').all().forEach(function (f) {
+      var n = String(f.numero || '');
+      if (n.indexOf(prefixe) !== 0) return;
+      var r = parseInt(n.slice(prefixe.length), 10);
+      if (r > max) max = r;
+    });
+    return max + 1;
+  }
+  function numeroSerieFacture(prefixe) { return prefixe + C.pad(rangSerieFactures(prefixe), 5); }
+
   function prescrire(v) {
     var p = patientParCode(v.patientCode);
     if (!p) throw new Error('Patient introuvable : ' + v.patientCode);
@@ -126,10 +141,20 @@
         echantillon: a.echantillon || '', delai: a.delai || '', prix: a.prix || 0 };
     });
 
+    /* C3 (corrigé le 31/10/2026) : le tarif ASSURÉ d'un acte (pansement : 6 000 contre 9 000, colonnes inversées, décision du
+       26/08) s'applique réellement. Il était ANNONCÉ par l'écran des bons de pansement mais jamais appliqué : l'acte se facturait
+       au prix du catalogue (non assuré) et la garantie s'y appliquait. RG-09 décide, comme pour l'imagerie et les analyses :
+       carte valide à la date de la prescription => colonne assurée de la grille ; sinon colonne non assuré. */
+    var assureActes = !!(p.assureur && carteValide(p, date));
     var actes = (v.actes || []).map(function (code) {
       var a = acteParCode(code) || {};
-      return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: a.prix || 0,
-        tarifValide: a.prix != null };
+      /* Seule la colonne ASSURÉE de la grille change le prix : l'acte du catalogue la porte (`prixAssure`, rapprochée de la grille, SO09 => 6 000).
+         Sans carte valide, ou pour un acte que la grille exclut de l'assurance (`nonCouvert`, certificats `sos`), le prix du catalogue
+         administrable (cfg-tarifs) reste la référence. */
+      var tarifAssure = assureActes && a.assurable === true && !a.nonCouvert && a.prixAssure != null;
+      var prixActe = tarifAssure ? a.prixAssure : a.prix;
+      return { code: code, libelle: a.libelle || code, secteur: a.secteur || '', prix: prixActe || 0,
+        tarifValide: prixActe != null };
     });
 
     var mMed = C.sum(medicaments, 'total');
@@ -232,7 +257,7 @@
 
     var facture = col('factures').insert({
       lignes: lignesFacture,
-      numero: 'FP-' + String(new Date(date).getFullYear()) + '-' + C.pad(col('factures').all().length + 1, 5),
+      numero: numeroSerieFacture('FP-' + String(new Date(date).getFullYear()) + '-'),   /* E6 : rang de la série de l'année */
       numeroMecef: null,
       patientId: p.id, patient: p.nom + ' ' + p.prenom, patientCode: p.code,
       date: C.iso(new Date(date)), type: 'Prescription',
@@ -1364,8 +1389,20 @@
       });
     } else {
       /* Facture sans lignes — pièce antérieure au modèle. On conserve le
-         comportement par montant plutôt que de la rendre inencaissable. */
-      paye = opts.montant != null ? Number(opts.montant) : duTotal;
+         comportement par montant plutôt que de la rendre inencaissable, mais JAMAIS au-delà du dû
+         (écart E2, corrigé le 31/10/2026) : sans ligne pour borner le versement, 99 999 sur 5 000 dus
+         faisaient dépasser le TTC à `montantPaye` et à la base MECeF. Le refus NOMME le défaut. */
+      var restantPiece = Math.max(0, duTotal - (fac.montantPaye || 0));
+      var voulu = opts.montant != null ? Number(opts.montant) : restantPiece;
+      if (!(voulu >= 0) || voulu > restantPiece) {
+        return {
+          facture: fac, refus: 'Versement de ' + C.money(voulu) + ' refusé : la pièce ' + (fac.numero || fac.id)
+            + ' ne porte aucune ligne et ne doit plus que ' + C.money(restantPiece) + '. Un versement ne dépasse jamais le dû.',
+          debloquees: [], ecritures: [], lignesReglees: [], montantRegle: 0, restantDu: restantPiece,
+          demandesLiberees: [],
+        };
+      }
+      paye = voulu;
     }
 
     /* --- Report sur la facture ------------------------------------------- */
@@ -1481,6 +1518,134 @@
       lignesReglees: reglees, montantRegle: paye,
       restantDu: restantDu, demandesLiberees: demandesLiberees,
     };
+  }
+
+  /* ==========================================================================
+   * LE CANAL UNIQUE DE L'AVOIR (décision de la Direction du 31/10/2026, B10)
+   * --------------------------------------------------------------------------
+   * Une pièce émise ne se réécrit jamais : un seul mécanisme la corrige. Il vivait dans m8-facturation.js ; il vit AU SOCLE
+   * depuis le 31/10/2026 parce que l'écran de facturation (nature « Facture avoir »), l'avoir MECeF et l'écran des avoirs
+   * l'APPELLENT tous, et qu'une page ne charge que le module de son écran. Trois canaux (E12, E15) n'en font plus qu'un :
+   * la collection `avoirs`, plafond CUMULÉ partout, montant strictement positif, lignes nommées, contre-passation plate en
+   * brouillon (RG-10). La DATE d'une pièce est un JOUR ; l'instant d'émission est porté à part (`horodatage`, E4).
+   * ======================================================================== */
+  META.avoirs = { module: 'M8', entite: 'facture d’avoir', prefix: 'AVR' };
+  META.ecritures = { module: 'M12', entite: 'écriture' };
+
+  /** Référence d'un avoir : série annuelle lue sur les avoirs déjà émis (millésime de la DATE de l'avoir, rang de l'année). */
+  function referenceAvoir(date) {
+    return C.referenceSuivante('AV-' + String(date).slice(0, 4) + '-', 4, col('avoirs').all());
+  }
+
+  /** Émet un avoir. Retourne { record, ecritureIds } ou { erreur } : un refus se lit, il ne se devine pas.
+      params : { lignes:[{designation, montant}], motif, remboursement:'creance'|'especes', observations, date, origine }. */
+  function emettreAvoir(factureId, params) {
+    params = params || {};
+    var fac = col('factures').get(factureId);
+    if (!fac) return { erreur: 'Facture introuvable.' };
+    if (fac.type === 'Avoir' || (fac.montantTTC || 0) < 0) {
+      return { erreur: 'La pièce ' + fac.numero + ' est elle-même un avoir : on ne rectifie pas un avoir.' };
+    }
+
+    /* UNE FILLE CONSOLIDÉE EST FIGÉE : la mère émise porte son numéro, et la compagnie détient la pièce. */
+    var mere = S.collection('facturesMere').active().filter(function (m) {
+      return (m.piecesFilles || []).indexOf(fac.numero) !== -1;
+    })[0];
+    if (mere) {
+      return { erreur: 'La facture ' + fac.numero + ' est consolidée dans la facture mère '
+        + mere.numero + ' (' + (mere.compagnie || '') + '), déjà émise : la corriger passerait '
+        + 'derrière le dos de la compagnie. Émettre l’avoir au niveau de la mère, par avenant.' };
+    }
+
+    var lignes = params.lignes || [];
+    if (!lignes.length) return { erreur: 'Un avoir se rapporte à des LIGNES nommées — en cocher au moins une.' };
+    var montant = C.sum(lignes, 'montant');
+    if (!(montant > 0)) return { erreur: 'Le montant de l’avoir doit être strictement supérieur à 0 FCFA.' };
+
+    var dejaMontant = C.sum(col('avoirs').active().filter(function (a) { return a.factureId === fac.id; }), 'montant');
+    if (montant + dejaMontant > (fac.montantTTC || 0)) {
+      return { erreur: 'Le cumul des avoirs (' + C.money(montant + dejaMontant)
+        + ') excéderait la facture (' + C.money(fac.montantTTC) + ').' };
+    }
+
+    var date = jourDe(params.date || new Date());
+    var rec = col('avoirs').insert({
+      reference: referenceAvoir(date),
+      date: date,
+      horodatage: new Date().toISOString(),
+      factureId: fac.id, factureNumero: fac.numero,
+      patientId: fac.patientId, patient: fac.patient, patientCode: fac.patientCode,
+      montant: montant,
+      motif: params.motif,
+      observations: params.observations || '',
+      lignesAnnulees: lignes,
+      remboursement: params.remboursement || 'creance',
+      origine: params.origine || 'caisse',
+      /* Le registre fiscal : une facture normalisée validée exige la régularisation MECeF ; une pièce non transmise n'en relève pas. */
+      statutMecef: fac.statutMecef === 'valide' ? 'en_attente' : 'sans_objet',
+      emisPar: S.currentUser(),
+    }).record;
+
+    /* LA CONTRE-PASSATION : écritures PLATES en brouillon, débit 706 (la recette diminue), crédit 571 si l'on rembourse en
+       espèces, crédit 411 sinon (la créance diminue). */
+    var base = {
+      numero: rec.reference, date: rec.date,
+      journal: 'CAI', journalLibelle: 'Journal de caisse-dépenses',
+      pieceId: rec.id, pieceNumero: rec.reference,
+      origine: 'Facture d’avoir',
+      statut: 'brouillon',
+    };
+    var contre = rec.remboursement === 'especes'
+      ? { compte: '571000', libelle: 'Remboursement en espèces — avoir ' + rec.reference }
+      : { compte: '411000', libelle: 'Créance réduite — avoir ' + rec.reference };
+    var ecritures = [
+      Object.assign({}, base, {
+        compte: '706000', compteLibelle: 'Prestations de services',
+        libelle: 'Contre-passation — ' + fac.numero + ' (' + params.motif + ')',
+        debit: montant, credit: 0,
+      }),
+      Object.assign({}, base, {
+        compte: contre.compte, compteLibelle: contre.compte === '571000' ? 'Caisse' : 'Clients',
+        libelle: contre.libelle,
+        debit: 0, credit: montant,
+      }),
+    ];
+    var debit = C.sum(ecritures, 'debit'), credit = C.sum(ecritures, 'credit');
+    if (debit !== credit) {
+      col('avoirs').archive(rec.id);
+      return { erreur: 'RG-10 — contre-passation déséquilibrée (débit ' + C.money(debit)
+        + ', crédit ' + C.money(credit) + ') : rien n’est écrit.' };
+    }
+    var ids = ecritures.map(function (l) { return col('ecritures').insert(l).record.id; });
+    col('avoirs').update(rec.id, { ecritureIds: ids });
+
+    /* La facture PORTE ses avoirs, elle n'est jamais réécrite : la pièce d'origine et sa correction se lisent côte à côte. */
+    col('factures').update(fac.id, {
+      avoirIds: (fac.avoirIds || []).concat([rec.id]),
+      montantAvoirs: (fac.montantAvoirs || 0) + montant,
+    });
+
+    S.log('Facture d’avoir émise', 'M8', 'Avoir', rec.reference, null,
+      { facture: fac.numero, montant: montant, motif: params.motif, origine: rec.origine });
+    return { record: col('avoirs').get(rec.id), ecritureIds: ids };
+  }
+
+  /** Retire un avoir qu'on vient d'émettre (annulation visible d'un geste) : archivé avec ses écritures, jamais supprimé (RG-14),
+      et la facture rend le montant du plafond cumulé. */
+  function retirerAvoir(avoirId) {
+    var a = col('avoirs').get(avoirId);
+    if (!a) return false;
+    (a.ecritureIds || []).forEach(function (id) { col('ecritures').archive(id); });
+    col('avoirs').archive(a.id);
+    var fac = col('factures').get(a.factureId);
+    if (fac) {
+      col('factures').update(fac.id, {
+        avoirIds: (fac.avoirIds || []).filter(function (x) { return x !== a.id; }),
+        montantAvoirs: Math.max(0, (fac.montantAvoirs || 0) - (a.montant || 0)),
+      });
+    }
+    S.log('Facture d’avoir retirée', 'M8', 'Avoir', a.reference, null, { montant: a.montant });
+    return true;
   }
 
   /* ==========================================================================
@@ -1808,7 +1973,14 @@
     if (!patient) return false;
     var c = couvertureALaDate(patient, date);
     if (!c || !c.assureur || !c.carteExpiration) return false;
-    return C.toDate(c.carteExpiration).getTime() >= C.toDate(date || new Date()).getTime();
+    /* E4 (corrigé le 31/10/2026) : une date de pièce est un JOUR. Comparer des millisecondes rendait la même carte valide le
+       dernier jour pour une date « 2026-08-16 » et invalide pour l'instant « 2026-08-16T12:00:00Z » : les deux jours se comparent. */
+    return jourDe(c.carteExpiration) >= jourDe(date || new Date());
+  }
+  /** Le JOUR (AAAA-MM-JJ) d'une date : celui qui est ÉCRIT quand la valeur commence par une date, sinon le jour local. */
+  function jourDe(d) {
+    var m = typeof d === 'string' ? /^(\d{4}-\d{2}-\d{2})/.exec(d) : null;
+    return m ? m[1] : C.iso(d);
   }
 
   /* Nombre de mots significatifs partagés par deux libellés : « consultation
@@ -2683,6 +2855,8 @@
     administrer: administrer, soinsDuSecteur: soinsDuSecteur,
     rangSuivant: rangSuivant,
     ecrireEncaissement: ecrireEncaissement, alerterStock: alerterStock,
+    emettreAvoir: emettreAvoir, retirerAvoir: retirerAvoir, referenceAvoir: referenceAvoir,
+    rangSerieFactures: rangSerieFactures,
     construireLignes: construireLignes, lignesDues: lignesDues, lignesReglees: lignesReglees,
     facturerPiece: facturerPiece, statutPiece: statutPiece,
     ouvrirDemandeExterne: ouvrirDemandeExterne,

@@ -383,7 +383,11 @@ class _EtatFacturation extends State<EcranFacturation> {
       dateFacture: iso(c.aujourdhui),
       type: '${_nature['nature']}',
       mode: '${_reglement['mode']}',
-      rangDebut: _liste('factures').length,
+      // E6 (corrigé le 31/10/2026) : le rang est celui de la SÉRIE de l'année (millésime de la date de la pièce), archivées comprises.
+      rangDebut: rangSerieFactures(
+              prefixeSerieFacture(proforma: proforma, dateFacture: iso(c.aujourdhui)),
+              c.magasin.collection('factures').toutes) -
+          1,
       reglement: nombreOuZero(_reglement['regle']),
       proforma: proforma,
       dissocier: _reglement['dissocier'] == true,

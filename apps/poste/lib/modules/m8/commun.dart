@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../donnees/magasin.dart';
@@ -336,4 +337,42 @@ PieceA4 pieceEngagement(Fiche f,
       Signature('Le comptable', nom: '${e['recuPar'] ?? ''}')
     ],
   );
+}
+
+/// L'identifiant d'un avoir à émettre : la suite de la collection `avoirs` (les écritures de contre-passation le portent comme `pieceId`).
+String idAvoirSuivant(Magasin m) =>
+    'AVR${(m.collection('avoirs').toutes.length + 1).toString().padLeft(5, '0')}';
+
+/// Écrit un avoir émis par le MOTEUR UNIQUE (`emettreAvoir`, décision B10 du 31/10/2026) : la fiche dans `avoirs`, ses deux écritures de
+/// contre-passation en BROUILLON (RG-10), le cumul que la facture PORTE (elle n'est jamais réécrite), le journal (RG-12). [complement] s'ajoute à la
+/// fiche (la transmission MECeF y pose son identifiant). Rend la fiche écrite et les gestes d'annulation (archivage, jamais suppression, RG-14).
+({Fiche fiche, List<VoidCallback> annulations}) ecrireAvoirEmis(
+    Magasin m, Fiche fac, AvoirEmis r, String idAvoir,
+    {Fiche complement = const {}}) {
+  final avoirs = m.collection('avoirs');
+  final annulations = <VoidCallback>[];
+  final ins = avoirs.inserer(
+      {...r.avoir, ...complement, 'id': idAvoir, 'statut': 'actif'},
+      prefixe: 'AVR');
+  annulations.add(ins.annuler);
+  final ecr = m.collection('ecritures');
+  final ids = <String>[];
+  for (final e in r.ecritures) {
+    final x = ecr.inserer({...e, 'statut': 'brouillon'}, prefixe: 'ECR');
+    ids.add('${x.fiche['id']}');
+    annulations.add(x.annuler);
+  }
+  avoirs.mettreAJour(idAvoir, {'ecritureIds': ids});
+  annulations.add(m.collection('factures').mettreAJour(fac['id'], {
+    'avoirIds': [...((fac['avoirIds'] as List?) ?? const []), idAvoir],
+    'montantAvoirs': r.montantAvoirs,
+  }));
+  m.journaliser('Facture d’avoir émise', 'M8', 'Avoir',
+      '${r.avoir['reference']}', null, {
+    'facture': fac['numero'],
+    'montant': r.avoir['montant'],
+    'motif': r.avoir['motif'],
+    'origine': r.avoir['origine'],
+  });
+  return (fiche: ins.fiche, annulations: annulations);
 }

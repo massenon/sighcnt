@@ -83,6 +83,7 @@ async function pilote([jeu, complet]) {
       boutons: [...tb.querySelectorAll('tbody tr')].slice(0, 1).map((tr) => [...tr.querySelectorAll('button')].map((b) => b.getAttribute('title') || b.getAttribute('aria-label') || texte(b))),
     };
   };
+  const tableauTitre = (root, entete) => { const i = [...root.querySelectorAll('table')].findIndex((tb) => [...tb.querySelectorAll('thead th')].some((th) => texte(th).toUpperCase().startsWith(entete))); return i < 0 ? null : tableau(root, i); };
   const cartes = (root) => [...root.querySelectorAll('.card-title')].map(texte);
   const bouton = (portee, re) => [...portee.querySelectorAll('button')].find((b) => re.test(texte(b)) || re.test(b.getAttribute('title') || ''));
   async function cliquer(portee, re) { const b = bouton(portee, re); if (!b) throw new Error('bouton introuvable : ' + re); b.click(); await dormir(150); return b; }
@@ -400,6 +401,44 @@ async function pilote([jeu, complet]) {
       await cliquer(d, /^Retirer la prime/);
       const apres = await monter('m10-primes');
       r.retrait = { toast: toasts[toasts.length - 1], archivee: net(colG().find((x) => x.label === 'Caisse')), historique: net(colH().slice(0, colH().length - nh)), montantCaisse: D.NS132.montant('caisse', 'caissiere'), grilleLignes: tableau(apres, 0).lignes.length, acquises: tableau(apres, 1), kpis: kpis(apres) };
+      /* E651 : la prime retirée reçoit une date de fin ; la paie la lit jusqu'à elle, plus après. */
+      r.retrait.dateFin = (colH()[0] || {}).dateFin || null;
+      r.retrait.aLaDate = ['2026-07-12', '2026-07-13', '2026-08-01', '2026-08-15', '2026-08-16', '2026-09-01', null].map((dt) => [dt, D.NS132.montant('caisse', 'caissiere', dt || undefined)]);
+      r.retrait.primesDuMois = D.NS132.primesALaDate().map((p) => p.id);
+    }
+    /* E651 : une prime créée à l'écran entre dans les primes FIXES du mois. */
+    {
+      const root = await monter('m10-primes');
+      await cliquer(root, /^Nouvelle prime/);
+      const d = dialogue();
+      poser(d, 'label', 'Prime de sujétion'); poser(d, 'mode', 'fixe'); poser(d, 'm_infirmier', '4000');
+      await cliquer(d, /^Créer la prime/);
+      const apres = await monter('m10-primes');
+      const inf = db().personnel.find((x) => x.fonction === 'infirmier' && x.statut !== 'archive');
+      const fp = colG().find((x) => x.label === 'Prime de sujétion');
+      r.primeFixeCreee = { fiche: net(fp), montantAgent: D.NS132.montantAgent(fp.primeId, inf, C.iso(C.aujourdhui())), parmiLesFixes: D.NS132.primesALaDate().filter((p) => p.mode === 'fixe').map((p) => p.id), acquises: tableauTitre(apres, "PRIME DE GARDE"), kpis: kpis(apres) };
+    }
+    /* E654 : les primes fixes désignent leurs bénéficiaires par une liste datée. */
+    {
+      const accueils = db().personnel.filter((x) => x.fonction === 'accueil' && x.statut !== 'archive');
+      const avant = accueils.map((a) => [a.id, D.NS132.montantAgent('accueil', a, C.iso(C.aujourdhui()))]);
+      const root = await monter('m10-primes');
+      const tr = [...[...root.querySelectorAll('table')][0].querySelectorAll('tbody tr')].find((x) => texte(x).startsWith('Accueil'));
+      [...tr.querySelectorAll('button')].find((x) => x.getAttribute('title') === 'Bénéficiaires du forfait').click(); await dormir(120);
+      let d = dialogue();
+      const ouverture = texte(d).slice(0, 500);
+      toasts.length = 0;
+      await cliquer(d, /^Désigner$/); // sans agent : refus
+      const sansAgent = { toast: toasts[toasts.length - 1] || null, designations: (db().beneficiairesPrimes || []).length };
+      d = dialogue();
+      poser(d, 'agents', [accueils[0].id]); poser(d, 'debut', C.iso(C.aujourdhui()));
+      toasts.length = 0;
+      await cliquer(d, /^Désigner$/);
+      d = dialogue();
+      const designe = { toast: toasts[toasts.length - 1], fiches: net(db().beneficiairesPrimes), texte: texte(d).slice(0, 500), audit: net((db().audit || [])[0] || null) };
+      nettoyer();
+      const apres = await monter('m10-primes');
+      r.beneficiaires = { ouverture, sansAgent, designe, avant, apres: accueils.map((a) => [a.id, D.NS132.montantAgent('accueil', a, C.iso(C.aujourdhui()))]), acquises: tableauTitre(apres, "PRIME DE GARDE"), kpis: kpis(apres) };
     }
     sortie.primesEcritures = r;
   }
@@ -448,6 +487,12 @@ async function pilote([jeu, complet]) {
       b.optionsCritere = [...d.querySelector('#f_crit_ponctualite').options].map(texte);
       await cliquer(d, /^Valider l’évaluation/);
       b.evaluationApres = { nouvelle: net(db().evaluations[0]), bareme: net(colB().map((x) => ({ num: x.num, sanctions: x.sanctions }))) };
+      /* E650 : le barème en vigueur À LA DATE de l'évaluation (versionné, historiqueBareme). */
+      const jeuNiveaux = { ponctualite: 'moyenne', execution: 'faible', attitude: 'bonne', hierarchie: 'bonne' };
+      b.moteur = ['2026-07-12', '2026-07-13', '2026-08-01', '2026-08-15', '2026-08-16', '2026-09-01', null].map((dt) => ({
+        date: dt, prelevement: SIGH.bareme131.prelevement(jeuNiveaux, dt || undefined),
+        criteres: SIGH.bareme131.criteres(dt || undefined).map((c) => [c.num, c.id, c.sanctions.moyenne, c.sanctions.faible]),
+      }));
     }
     /* Un critère nouveau, puis retiré. */
     {

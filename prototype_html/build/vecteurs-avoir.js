@@ -66,6 +66,20 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       }, () => ({ lignes: [{ designation: 'Pansement', montant: 2000 }], motif: 'Erreur de facturation' }));
       cas('millésime : un avoir daté d\'une autre année ouvre SA série', () => ({ f: poser() }), () => ({ lignes: [{ designation: 'Pansement', montant: 2000 }], motif: 'Erreur de facturation', date: '2027-01-04' }));
 
+      /* B10 (31/10/2026) : UN SEUL canal. Les cas ci-dessous couvrent les origines (caisse, remboursements, MECeF), le jour contre l'instant (E4),
+         le plafond cumulé entre canaux (E15), le montant strictement positif (E10) et le refus d'un avoir sur un avoir. */
+      cas('date fournie AVEC HEURE : la date de la pièce est un JOUR (E4), l\'instant est porté à part', () => ({ f: poser() }), () => ({ lignes: [{ designation: 'Pansement', montant: 2000 }], motif: 'Erreur de facturation', date: '2026-03-15T23:30:00.000Z' }));
+      cas('origine MECeF : même moteur, même collection, plafond commun', () => ({ f: poser() }), () => ({ lignes: [{ designation: 'Rectification de la facture : Erreur de tarif', montant: 4000 }], motif: 'Erreur de tarif', remboursement: 'creance', origine: 'mecef' }));
+      cas('canal remboursements (nature « Facture avoir »), espèces', () => ({ f: poser() }), () => ({ lignes: [{ designation: 'Avoir sur facture : remboursement', montant: 2500 }], motif: 'Autre (préciser en observations)', observations: 'Remboursement au patient', remboursement: 'especes', origine: 'caisse' }));
+      cas('plafond CUMULÉ entre canaux : un avoir MECeF de 6 000 puis un avoir de caisse de 4 001 est refusé', () => {
+        const f = poser(); SIGH.emettreAvoir(f.id, { lignes: [{ designation: 'MECeF', montant: 6000 }], motif: 'Erreur de tarif', origine: 'mecef' }); return { f: colF.get(f.id) };
+      }, () => ({ lignes: [{ designation: 'Caisse', montant: 4001 }], motif: 'Erreur de facturation', origine: 'caisse' }));
+      cas('plafond cumulé entre canaux : 6 000 MECeF puis 4 000 caisse soldent exactement', () => {
+        const f = poser(); SIGH.emettreAvoir(f.id, { lignes: [{ designation: 'MECeF', montant: 6000 }], motif: 'Erreur de tarif', origine: 'mecef' }); return { f: colF.get(f.id) };
+      }, () => ({ lignes: [{ designation: 'Caisse', montant: 4000 }], motif: 'Erreur de facturation', origine: 'caisse' }));
+      cas('montant total des lignes nul (E10) : refusé en nommant le défaut', () => ({ f: poser() }), () => ({ lignes: [{ designation: 'A', montant: 0 }, { designation: 'B', montant: 0 }], motif: 'Erreur de facturation' }));
+      cas('on ne rectifie pas un avoir : refusé', () => ({ f: poser({ type: 'Avoir', montantTTC: -3000 }) }), () => ({ lignes: [{ designation: 'A', montant: 100 }], motif: 'Erreur de facturation' }));
+
       const out = [];
       for (const d of defs) {
         const ctx = d.preparer();
@@ -79,7 +93,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
         if (r.erreur) sortie.erreur = r.erreur;
         else {
           const rec = propre(r.record);
-          ['id', '_creePar', '_creeLe', 'statut', 'maj', 'majLe', 'ecritureIds'].forEach((k) => delete rec[k]);
+          ['id', '_creePar', '_creeLe', 'statut', 'maj', 'majLe', 'ecritureIds', 'horodatage'].forEach((k) => delete rec[k]);
           sortie.avoir = rec;
           sortie.ecritures = propre(colE.all().filter((e) => !ecrAvant.has(e.id)).map((e) => { const c = Object.assign({}, e); ['id', '_creePar', '_creeLe', 'statut2'].forEach((k) => delete c[k]); return c; }));
           const apres = colF.get(fac.id);

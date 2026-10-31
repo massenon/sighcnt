@@ -446,15 +446,46 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
             const t0 = ligneEmise();
             const b = [...t0.querySelectorAll('button')].find((x) => /Enregistrer le règlement/.test(texte(x))); b.click(); await dormir(150);
             const dd = dialogue(); const labels = [...dd.querySelectorAll('label')].map(texte);
-            const av = instantane(['facturesMere']);
+            const av = instantane(['facturesMere', 'ecritures']);
             poser(dd, 'dateReglement', '2026-08-20'); poser(dd, 'montantRegle', montant); poser(dd, 'reference', ref);
             await cliquer(dd, /^Enregistrer$/);
             await onglet(root, /Factures mères émises/);
-            const res = { labels, ecart: ecart(av, instantane(['facturesMere'])), table: releve(root).tables[0] };
+            const res = { labels, ecart: ecart(av, instantane(['facturesMere', 'ecritures'])), table: releve(root).tables[0] };
             fermerDialogues(); return res;
           };
           r.reglementPartiel = await reg(1000, 'VIR-001');
           r.reglementSolde = await reg(emise ? (emise.montantReclame - 1000) : 0, 'VIR-002');
+          /* B5 (31/10/2026) : le moteur des règlements CUMULATIFS, appelé directement sur une mère posée pour l'occasion (le jeu d'essai de la
+             modale ne suffit pas à tester les refus). Chaque appel : refus NOMMÉ, ou fiche après règlement + écritures posées. */
+          const colM = S.collection('facturesMere'), colE = S.collection('ecritures');
+          const mere = colM.insert({ numero: 'FM-2026-9001', compagnie: 'TEST Compagnie', compagnieCode: 'TST', montantReclame: 30140, etat: 'transmise', piecesFilles: [], souscripteurs: [] }).record;
+          const sequence = [];
+          const jouerMoteur = (nom, params) => {
+            const ecrAvant = new Set(colE.all().map((e) => e.id));
+            const res = SIGH.reglerFactureMere(mere.id, params);
+            const apres = colM.get(mere.id);
+            const ecr = colE.all().filter((e) => !ecrAvant.has(e.id)).map((e) => { const c = propre(e); ['id', '_creePar', '_creeLe', 'statut2', 'pieceId'].forEach((k) => delete c[k]); return c; });
+            const reglements = (apres.reglements || []).map((x) => { const c = propre(x); ['id', 'ecritureIds', 'horodatage', 'saisiPar'].forEach((k) => delete c[k]); return c; });
+            sequence.push({ nom, params, erreur: res.erreur || null, solde: res.solde === undefined ? null : res.solde,
+              fiche: { etat: apres.etat, montantRegle: apres.montantRegle === undefined ? null : apres.montantRegle, reliquat: apres.reliquat === undefined ? null : apres.reliquat,
+                dateReglement: apres.dateReglement || null, referenceReglement: apres.referenceReglement || null, reglements }, ecritures: ecr });
+          };
+          jouerMoteur('premier règlement partiel : 1 000 sur 30 140', { date: '2026-08-20', montant: 1000, reference: 'VIR-001' });
+          jouerMoteur('le second règlement S\'AJOUTE : 29 140 solde la pièce (E501 levé)', { date: '2026-08-21', montant: 29140, reference: 'VIR-002' });
+          jouerMoteur('pièce soldée : un règlement de plus est refusé', { date: '2026-08-22', montant: 1, reference: 'VIR-003' });
+          const mere2 = colM.insert({ numero: 'FM-2026-9002', compagnie: 'TEST Compagnie', compagnieCode: 'TST', montantReclame: 30140, etat: 'transmise', piecesFilles: [], souscripteurs: [] }).record;
+          mere.id = mere2.id;
+          jouerMoteur('plafond : jamais plus que le dû (30 141 sur 30 140)', { date: '2026-08-20', montant: 30141, reference: 'VIR-010' });
+          jouerMoteur('montant nul refusé', { date: '2026-08-20', montant: 0, reference: 'VIR-011' });
+          jouerMoteur('montant négatif refusé', { date: '2026-08-20', montant: -5, reference: 'VIR-012' });
+          jouerMoteur('date absente refusée', { date: '', montant: 100, reference: 'VIR-013' });
+          jouerMoteur('référence absente refusée', { date: '2026-08-20', montant: 100, reference: '  ' });
+          jouerMoteur('trois règlements cumulés : 10 000, 10 000, 5 000', { date: '2026-08-20', montant: 10000, reference: 'VIR-020' });
+          jouerMoteur('trois règlements cumulés (suite)', { date: '2026-08-25', montant: 10000, reference: 'VIR-021' });
+          jouerMoteur('trois règlements cumulés (fin) : reste 10 140, 5 000 laissent 5 140', { date: '2026-09-02', montant: 5000, reference: 'VIR-022' });
+          jouerMoteur('plafond sur le reste : 5 141 refusé quand 5 140 restent dus', { date: '2026-09-03', montant: 5141, reference: 'VIR-023' });
+          jouerMoteur('le solde exact', { date: '2026-09-03', montant: 5140, reference: 'VIR-024' });
+          r.moteurReglements = sequence;
         }
         ecrans['m9-facture-mere'] = r; root.remove(); poserJeu();
       }

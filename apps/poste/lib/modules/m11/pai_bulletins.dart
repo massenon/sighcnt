@@ -58,6 +58,7 @@ class EcranBulletins extends StatelessWidget with EcranMaquette {
             {'k': 'Salaire de base', 'm': mf(v.salaireBase)},
             {'k': 'Prime d’ancienneté', 'm': mf(v.primeAnciennete)},
             {'k': 'Primes NS 132', 'm': mf(v.totalPrimes)},
+            if (v.heuresSupMontant != 0) {'k': 'Heures supplémentaires', 'm': mf(v.heuresSupMontant)},
             {'k': 'TOTAL BRUT', 'm': mf(v.brut)},
           ])),
       const SizedBox(height: 16),
@@ -72,6 +73,7 @@ class EcranBulletins extends StatelessWidget with EcranMaquette {
             {'k': 'ITS', 'm': mf(v.its)},
             for (final l in paiLignesOrtb(v.detailOrtb)) {'k': l.libelle, 'm': l.montant},
             if (v.avances != 0) {'k': 'Avance sur salaire', 'm': mf(v.avances)},
+            if (v.prets != 0) {'k': 'Échéance de prêt', 'm': mf(v.prets)},
             if (v.participations != 0) {'k': 'Participation aux événements', 'm': mf(v.participations)},
           ])),
     ]);

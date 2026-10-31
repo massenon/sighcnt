@@ -10,17 +10,19 @@ List<Map<String, Object?>> liste(Object? v) => ((v ?? const []) as List)
     .toList();
 
 /// Le magasin ne garde pas les champs nuls : absent et vide-nul se valent ; les chaînes vides, elles, sont écrites.
-void memes(Object? obtenu, Object? attendu, String chemin) {
+void memes(Object? obtenu, Object? attendu, String chemin,
+    {Set<String> ignorer = const {}}) {
   if (attendu is Map) {
     final o = (obtenu as Map?) ?? const {};
     for (final k in {...attendu.keys, ...o.keys}) {
-      memes(o[k], attendu[k], '$chemin.$k');
+      if (ignorer.contains(k)) continue;
+      memes(o[k], attendu[k], '$chemin.$k', ignorer: ignorer);
     }
   } else if (attendu is List) {
     final o = obtenu as List;
     expect(o.length, attendu.length, reason: '$chemin : longueur');
     for (var i = 0; i < attendu.length; i++) {
-      memes(o[i], attendu[i], '$chemin[$i]');
+      memes(o[i], attendu[i], '$chemin[$i]', ignorer: ignorer);
     }
   } else if (attendu is num) {
     expect((obtenu as num).toDouble(), attendu.toDouble(), reason: chemin);
@@ -35,8 +37,8 @@ void main() {
     fail('vecteurs absents : lancer `node prototype_html/build/vecteurs-remboursements.js`');
   }
   final cas = liste((jsonDecode(f.readAsStringSync()) as Map)['cas']);
-  test('six situations ont été engendrées',
-      () => expect(cas.length, greaterThanOrEqualTo(6)));
+  test('au moins dix situations ont été engendrées',
+      () => expect(cas.length, greaterThanOrEqualTo(10)));
 
   for (final c in cas) {
     final e = (c['entree']! as Map).cast<String, Object?>();
@@ -49,25 +51,41 @@ void main() {
         ...(e['saisie']! as Map).cast<String, Object?>(),
       };
       final attendues = liste(c['remboursements']);
-      if (attendues.isEmpty) {
-        expect(
-            () => enregistrerOperation(
-                saisie: saisie,
-                facture: fac,
-                remboursements: liste(e['remboursements']),
-                rangFactures: e['rangFactures']! as int),
-            throwsA(isA<RefusOperation>()));
-        return;
-      }
-      final r = enregistrerOperation(
+      OperationEnregistree enregistrer() => enregistrerOperation(
           saisie: saisie,
           facture: fac,
           remboursements: liste(e['remboursements']),
-          rangFactures: e['rangFactures']! as int);
-      memes(r.remboursement, attendues.single, 'remboursement');
-      final creees = liste(c['facturesCreees']);
-      expect(r.factureAvoir == null, creees.isEmpty);
-      if (creees.isNotEmpty) memes(r.factureAvoir, creees.single, 'avoir');
+          avoirs: liste(e['avoirs']),
+          idAvoir: 'AVR-TEST',
+          jour: e['jour']! as String,
+          utilisateur: 'BASSONGUI Chabi Séko');
+      if (attendues.isEmpty) {
+        // Refus NOMMÉ (champ manquant, montant nul, plafond cumulé) : rien n'est écrit.
+        expect(enregistrer, throwsA(isA<RefusOperation>()));
+        return;
+      }
+      final r = enregistrer();
+      memes(r.remboursement, attendues.single, 'remboursement',
+          ignorer: const {'avoirId'});
+      // B10 : plus de pièce négative ; la nature « Facture avoir » écrit UN avoir dans la collection `avoirs`.
+      final avoirsCrees = liste(c['avoirsCrees']);
+      expect(r.avoir == null, avoirsCrees.isEmpty);
+      if (avoirsCrees.isNotEmpty) {
+        memes(r.avoir!.avoir, avoirsCrees.single, 'avoir');
+        final obtenues = [...r.avoir!.ecritures]
+          ..sort((a, b) => '${a['compte']}'.compareTo('${b['compte']}'));
+        final attEcr = liste(c['ecrituresCreees'])
+          ..sort((a, b) => '${a['compte']}'.compareTo('${b['compte']}'));
+        memes(obtenues, attEcr, 'ecritures', ignorer: const {'pieceId'});
+        expect(r.remboursement['avoirId'], 'AVR-TEST');
+        expect(r.remboursement['avoirNumero'], avoirsCrees.single['reference']);
+        expect(r.avoir!.montantAvoirs,
+            ((c['factureAvoirs']! as Map)['montantAvoirs']! as num).toDouble());
+      } else {
+        expect(r.remboursement.containsKey('avoirId'), isFalse);
+      }
+      expect(liste(c['facturesCreees']), isEmpty,
+          reason: 'B10 : aucune pièce négative dans `factures`');
       final patch = (c['facturePatch']! as Map).cast<String, Object?>();
       if (r.patchFacture != null) {
         memes(r.patchFacture, {
@@ -83,6 +101,23 @@ void main() {
       }
     });
   }
+
+  test('E10 : un montant nul est refusé en le nommant', () {
+    final cm = cas.firstWhere(
+        (c) => '${(c['entree']! as Map)['nom']}'.startsWith('montant nul'));
+    final e = (cm['entree']! as Map).cast<String, Object?>();
+    final fac = (e['facture']! as Map).cast<String, Object?>();
+    expect(
+        () => enregistrerOperation(
+            saisie: {
+              'factureId': fac['id'],
+              ...(e['saisie']! as Map).cast<String, Object?>()
+            },
+            facture: fac,
+            remboursements: const []),
+        throwsA(isA<RefusOperation>().having((r) => r.motif, 'motif',
+            'Le montant doit être strictement supérieur à 0 FCFA.')));
+  });
 
   test('les factures proposées sont les réglées, les plus récentes d\'abord', () {
     final l = facturesConcernables([
