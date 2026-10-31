@@ -1,8 +1,32 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 141,
+ "ecrans_portes": 173,
  "ecrans": [
+  {
+   "id": "adm-enquetes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "adm-satisfaction",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "adm-validations",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
   {
    "id": "cfg-poste",
    "mesure": true,
@@ -14,6 +38,35 @@
     "mode de ce poste",
     "service de synchronisation"
    ]
+  },
+  {
+   "id": "enquete-publique",
+   "mesure": false,
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+  },
+  {
+   "id": "ged-archives",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "ged-bibliotheque",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "ged-workflow",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "m1-antecedents",
@@ -124,6 +177,126 @@
    "mesure": true,
    "attendus": 18,
    "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-ambulance",
+   "mesure": true,
+   "attendus": 23,
+   "presents": 23,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-courriers",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-evenements",
+   "mesure": true,
+   "attendus": 25,
+   "presents": 25,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-maintenance",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-notes-service",
+   "mesure": true,
+   "attendus": 16,
+   "presents": 16,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-plan-annuel",
+   "mesure": true,
+   "attendus": 22,
+   "presents": 22,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-repertoire-ambulances",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m13-reunions",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-audit",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-roles",
+   "mesure": true,
+   "attendus": 35,
+   "presents": 35,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-sauvegardes",
+   "mesure": true,
+   "attendus": 29,
+   "presents": 29,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-sessions",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-soignants",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-taches",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m14-utilisateurs",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
@@ -1079,6 +1252,86 @@
   },
   {
    "id": "m8-remboursements",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-assures",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-compagnies",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-conventions",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-creances",
+   "mesure": true,
+   "attendus": 24,
+   "presents": 24,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-dashboard",
+   "mesure": true,
+   "attendus": 15,
+   "presents": 15,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-facture-mere",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-factures-assureur",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-historique",
+   "mesure": true,
+   "attendus": 21,
+   "presents": 21,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-prises-en-charge",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "m9-relances",
    "mesure": true,
    "attendus": 10,
    "presents": 10,
