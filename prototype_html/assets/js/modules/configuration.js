@@ -4060,11 +4060,14 @@
                     actes.push(K.iconBtn(v.actif === false ? 'eye' : 'eye-off',
                       v.actif === false ? 'Rouvrir la variable' : 'Fermer la variable',
                       function () {
-                        colVariablesIm().update(v.id, { actif: v.actif === false });
+                        /* E845 : l'état se lit AVANT l'écriture — `update` modifie la fiche en place, et le message
+                           disait « rouverte » au moment même de FERMER la variable. */
+                        var etaitFermee = v.actif === false;
+                        colVariablesIm().update(v.id, { actif: etaitFermee });
                         afficher();
-                        U.toast(v.actif === false ? 'Variable rouverte.' : 'Variable ferm\u00e9e.', {
+                        U.toast(etaitFermee ? 'Variable rouverte.' : 'Variable ferm\u00e9e.', {
                           type: 'success',
-                          detail: v.actif === false ? null : 'Les comptes rendus d\u00e9j\u00e0 rendus la conservent.',
+                          detail: etaitFermee ? null : 'Les comptes rendus d\u00e9j\u00e0 rendus la conservent.',
                         });
                       }));
                   }

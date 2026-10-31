@@ -60,6 +60,7 @@ export 'src/patients/pat_externe.dart';
 export 'src/patients/pat_fiche.dart';
 export 'src/maternite/mat_regles.dart';
 export 'src/administration/adm_regles.dart';
+export 'src/configuration/cfa_regles.dart';
 export 'src/qualite/qual_enquetes.dart';
 export 'src/qualite/qual_validations.dart';
 export 'src/qualite/qual_ged.dart';
