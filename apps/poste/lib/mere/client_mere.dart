@@ -205,6 +205,12 @@ class ClientMere {
     return decode is Map ? decode.cast<String, Object?>() : {'liste': decode};
   }
 
+  /// Appel d'une route d'administration dont la réponse n'a pas (encore) de type ici : les écrans du lot (b) lisent les champs que le moteur
+  /// annonce réellement (`rep_n`, `depot`, `nb_operations`…) sans dupliquer le client. Un tableau JSON revient sous la clé `liste`.
+  Future<Map<String, Object?>> brut(String methode, String chemin,
+          [Map<String, Object?>? corps]) =>
+      _appel(methode, chemin, corps);
+
   Future<EtatMere> etat() async =>
       EtatMere.depuis(await _appel('GET', '/admin/etat'));
 
