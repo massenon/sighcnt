@@ -582,15 +582,19 @@ List<CpaFiche> cpcLignesOuverture(CpcSoldesCloture s, int annee, {String compteR
     ];
 
 class CpcReport {
-  const CpcReport.refus(this.motif)
+  const CpcReport.refus(String this.message, String this.detail)
       : ok = false,
         lignes = const [],
         numero = null;
   const CpcReport.ok(this.numero, this.lignes)
       : ok = true,
-        motif = null;
+        message = null,
+        detail = null;
   final bool ok;
-  final String? motif;
+
+  /// Un refus se dit en deux temps, comme le toast de l'écran : ce qui est refusé, puis pourquoi.
+  final String? message, detail;
+  String? get motif => message == null ? null : '$message $detail';
   final String? numero;
   final List<CpaFiche> lignes; // dans l'ordre des insertions
 }
@@ -599,11 +603,11 @@ class CpcReport {
 /// naît en BROUILLON, au journal AN. [dejaEcrits] : les lignes du journal AN déjà portées sur N+1.
 CpcReport cpcReporterANouveaux(CpcSoldesCloture s, int annee, {required int dejaEcrits}) {
   if (!s.equilibre) {
-    return CpcReport.refus(
-        'Report refusé — écart de ${money(s.ecart)} (RG-10). Un à-nouveau boiteux propagerait le déséquilibre à toutes les années suivantes.');
+    return CpcReport.refus('Report refusé — écart de ${money(s.ecart)} (RG-10).',
+        'Un à-nouveau boiteux propagerait le déséquilibre à toutes les années suivantes.');
   }
   if (dejaEcrits > 0) {
-    return CpcReport.refus('Les à-nouveaux du 1ᵉʳ janvier ${annee + 1} existent déjà. Les réécrire créerait un double report.');
+    return CpcReport.refus('Les à-nouveaux du 1ᵉʳ janvier ${annee + 1} existent déjà.', 'Les réécrire créerait un double report.');
   }
   final numero = 'AN-${annee + 1}-00001';
   final base = <String, Object?>{

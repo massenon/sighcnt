@@ -308,12 +308,10 @@ void main() {
       final r = cpcReporterANouveaux(s, 2026, dejaEcrits: 0);
       expect(r.ok, false);
       final att = liste(o['deseqRefus']).first;
-      expect('${r.motif}'.startsWith('${att['message'].toString().replaceAll('.', '')}'), true);
-      expect(nt(r.motif), contains(nt(att['detail'])));
+      expect([r.message, r.detail], [att['message'], att['detail']]);
       final dbl = cpcReporterANouveaux(cpcSoldesDeCloture(actif, 2026), 2026, dejaEcrits: 9);
       expect(dbl.ok, false);
-      expect(nt(dbl.motif), contains(nt(liste(o['secondReport']).first['message'])));
-      expect(nt(dbl.motif), contains(nt(liste(o['secondReport']).first['detail'])));
+      expect([dbl.message, dbl.detail], [liste(o['secondReport']).first['message'], liste(o['secondReport']).first['detail']]);
     });
   });
 }
