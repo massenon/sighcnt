@@ -28,6 +28,7 @@ const ecransMesures = [
   'cfg-notifications',
   'cfg-compte',
   'cfg-modules',
+  'cfg-systeme',
   'cfg-poste',
 ];
 
