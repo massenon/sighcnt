@@ -644,6 +644,23 @@ class _FiltreListe extends StatelessWidget {
   final String valeur;
   final ValueChanged<String> alChangement;
 
+  /// `select.w-auto.min-w-[9rem]` : largeur du contenu le plus large (libellé du filtre ou option), plus le retrait
+  /// gauche (12), le chevron et la bordure (34), jamais sous 144 px. Sans largeur propre, le champ prend toute la
+  /// largeur offerte par le `Wrap` de la barre et chaque filtre se retrouve seul sur sa ligne.
+  double _largeur(BuildContext context) {
+    var texte = 0.0;
+    for (final t in [def.libelle, for (final o in def.options) o.libelle]) {
+      final p = TextPainter(
+          text: TextSpan(text: t, style: styleSaisie),
+          textDirection: TextDirection.ltr,
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: 1)
+        ..layout();
+      if (p.width > texte) texte = p.width;
+    }
+    return (texte + 12 + 34).clamp(144.0, 320.0).toDouble();
+  }
+
   @override
   Widget build(BuildContext context) {
     final courant = def.options.where((o) => o.valeur == valeur).firstOrNull;
@@ -659,8 +676,8 @@ class _FiltreListe extends StatelessWidget {
           for (final o in def.options)
             PopupMenuItem(value: o.valeur, child: Text(o.libelle)),
         ],
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 144),
+        child: SizedBox(
+          width: _largeur(context),
           child: InputDecorator(
             decoration: decorationChamp(
                 suffixe: const Padding(
