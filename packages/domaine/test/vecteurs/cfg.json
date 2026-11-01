@@ -465,7 +465,7 @@
     false
    ]
   ],
-  "jour": "2026-10-31"
+  "jour": "2026-11-01"
  },
  "organisation": {
   "kpis": [
@@ -640,7 +640,7 @@
     ],
     [
      "Date d’édition",
-     "31/10/2026"
+     "01/11/2026"
     ]
    ],
    "signatures": [
@@ -827,7 +827,7 @@
     ],
     [
      "Date d’édition",
-     "31/10/2026"
+     "01/11/2026"
     ]
    ],
    "signatures": [
@@ -863,35 +863,35 @@
      "1",
      "TAKI Alimatou épse BASSONGUI",
      "Directrice de l’Administration et des Finances (DAF)",
-     "M1M13CFGM1M6M7M8M9MECEFM12M10M11M13GEDRAPM14CFGMEREMEREMEREMEREMEREPILM12DASH"
+     "M1M13CFGM1M6M7M8M9MECEFM12M10M11M13GEDRAPM14CFGIMPMEREMEREMEREMEREMEREPILM12DASH"
     ],
     [
      "Comptable",
      "1",
      "KASSA Augustin",
      "Comptable",
-     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPPILM12DASH"
+     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPIMPPILM12DASH"
     ],
     [
      "Assistant Comptable",
      "1",
      "GBEDJI Hervé",
      "Comptable",
-     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPPILM12DASH"
+     "M1M13M1M6M7M8M9MECEFM12M11M13GEDRAPIMPPILM12DASH"
     ],
     [
      "Gestionnaire de Stock",
      "1",
      "MAMAN Zoukanéri",
      "Gestionnaire de Stock",
-     "M6M7M8RAPDASH"
+     "M6M7M8RAPIMPDASH"
     ],
     [
      "Secrétaires Médicaux",
      "4",
      "OROU YO Edmond",
      "Réception / Accueil",
-     "M2M1M13CFGM1M2M3M7M13RAPCFGDASH"
+     "M2M1M13CFGM1M2M3M7M13RAPCFGIMPDASH"
     ],
     [
      "Dispensatrices",
@@ -905,14 +905,14 @@
      "3",
      "OURTCHA TEREYAMA",
      "Agent Administratif",
-     "M1M13M1M7M13GEDRAPDASH"
+     "M1M13M1M7M13GEDRAPIMPDASH"
     ],
     [
      "Agents d’Entretien",
      "3",
      "ISSA Rabiatou",
      "Agent Administratif",
-     "M1M13M1M7M13GEDRAPDASH"
+     "M1M13M1M7M13GEDRAPIMPDASH"
     ],
     [
      "Chauffeur Coursier",
@@ -940,7 +940,7 @@
      "2",
      "KINNOU Addoul Ganiou",
      "Biologiste médical",
-     "M1M13M1M5M7RAPPILDASH"
+     "M1M13M1M5M7RAPIMPPILDASH"
     ],
     [
      "Infirmiers",
@@ -1073,7 +1073,7 @@
   "notes": [
    "Les états produits par le prototype reprennent déjà fidèlement l’entête réelle relevée sur les documents de la clinique."
   ],
-  "apercu": "CLINIQUE NASSIERA TOOBP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020IFU : 3201642748214 RCCM : RB/NAT/2016-B-268E-mail : cliniquenassiera@gmail.com— corps du document —CLINIQUE NASSIERA TOO SARL — RB/NAT/2016-B-268 — IFU 3201642748214 · Document généré par BASSONGUI Chabi Séko le 31/10/2026 à 02h05 · Réf. CNT-XXXXXXXX-0001",
+  "apercu": "CLINIQUE NASSIERA TOOBP : 507 NATITINGOU (Rép. du Bénin) TÉL. : 01 95 44 51 51 / 01 66 43 28 20AUTORISATION D’OUVERTURE N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020IFU : 3201642748214 RCCM : RB/NAT/2016-B-268E-mail : cliniquenassiera@gmail.com— corps du document —CLINIQUE NASSIERA TOO SARL — RB/NAT/2016-B-268 — IFU 3201642748214 · Document généré par BASSONGUI Chabi Séko le 01/11/2026 à 18h09 · Réf. CNT-XXXXXXXX-0001",
   "ressources": [
    "Logo principalUtilisé sur tous les états et dans l’applicationÀ fournir",
    "Logo monochromePour les impressions en noir et blancÀ fournir",
@@ -1102,8 +1102,8 @@
     }
    ],
    "audit": {
-    "id": "LOGmvvrej56",
-    "dateHeure": "2026-10-31T02:05:41.610Z",
+    "id": "LOGmvy59thm",
+    "dateHeure": "2026-11-01T18:09:28.714Z",
     "utilisateur": "BASSONGUI Chabi Séko",
     "action": "Modification",
     "module": "CFG",
@@ -3267,7 +3267,7 @@
      "Oui",
      ""
     ],
-    "tiroir": "Rappel de rendez-vousIntituléRappel de rendez-vousOccasionRappel de rendez-vousActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, nous vous rappelons votre rendez-vous à {{clinique}} le {{rdv}}. Pour toute modification, appelez le {{telephone}}.Aperçu, variables remplacéesBonjour OROU YO Marguerite, nous vous rappelons votre rendez-vous à CLINIQUE NASSIERA TOO SARL le 31/10/2026 à 09h00. Pour toute modification, appelez le 60 33 92 92."
+    "tiroir": "Rappel de rendez-vousIntituléRappel de rendez-vousOccasionRappel de rendez-vousActifOuiOrigineModèle proposé — à valider par la DirectionTexte du modèleBonjour {{nom}}, nous vous rappelons votre rendez-vous à {{clinique}} le {{rdv}}. Pour toute modification, appelez le {{telephone}}.Aperçu, variables remplacéesBonjour OROU YO Marguerite, nous vous rappelons votre rendez-vous à CLINIQUE NASSIERA TOO SARL le 01/11/2026 à 09h00. Pour toute modification, appelez le 60 33 92 92."
    },
    {
     "ligne": [
@@ -3337,17 +3337,17 @@
   ]
  },
  "rappelsAnniversaires": {
-  "jour": "2026-10-31",
+  "jour": "2026-11-01",
   "patients": [
    {
     "nom": "TCHANE Bertine",
     "tel": "0372398919",
-    "dateNaissance": "1990-10-31"
+    "dateNaissance": "1990-11-01"
    },
    {
     "nom": "BAKO Boukari",
     "tel": "0395837962",
-    "dateNaissance": "2001-10-31"
+    "dateNaissance": "2001-11-01"
    }
   ],
   "texteModele": "Bonjour {{nom}}, toute l’équipe de {{clinique}} vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre.",
@@ -3366,7 +3366,7 @@
      "patientId": "PAT0002",
      "destinataire": "BAKO Boukari",
      "telephone": "0395837962",
-     "dateEcheance": "2026-10-31",
+     "dateEcheance": "2026-11-01",
      "etat": "en_file",
      "message": "Bonjour BAKO Boukari, toute l’équipe de CLINIQUE NASSIERA TOO SARL vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre."
     },
@@ -3376,7 +3376,7 @@
      "patientId": "PAT0001",
      "destinataire": "TCHANE Bertine",
      "telephone": "0372398919",
-     "dateEcheance": "2026-10-31",
+     "dateEcheance": "2026-11-01",
      "etat": "en_file",
      "message": "Bonjour TCHANE Bertine, toute l’équipe de CLINIQUE NASSIERA TOO SARL vous souhaite un très joyeux anniversaire et une excellente santé. Votre santé, notre raison de vivre."
     }
@@ -3700,8 +3700,8 @@
     "texte": "Je soussigné(e), BASSONGUI Chabi Séko, certifie avoir examiné ce jour TCHANE Bertine, et atteste que son état de santé nécessite un repos de 3 jour(s) à compter du 17/08/2026.Certificat établi à la demande de l’intéressé(e) et remis en main propre pour servir et valoir ce que de droit."
    },
    "journal": {
-    "id": "LOGmvvrep7u",
-    "dateHeure": "2026-10-31T02:05:49.482Z",
+    "id": "LOGmvy59zfb",
+    "dateHeure": "2026-11-01T18:09:36.407Z",
     "utilisateur": "BASSONGUI Chabi Séko",
     "action": "Délivrance de certificat",
     "module": "CFG",

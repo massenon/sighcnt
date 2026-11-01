@@ -1,0 +1,52 @@
+{
+ "id": "imp-personnel",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Importation du personnel",
+ "acces": "ouvert",
+ "titre": "Importation du personnel",
+ "description": "Fiches des agents : matricule, identité, fonction, service, embauche. Aucune donnée de paie hors salaire de base.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Importation du personnel"
+ ],
+ "actions": [
+  "Jeux d’import et historique des lots",
+  "Importation du répertoire patients",
+  "Importation de données"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
+ ],
+ "cartes": [
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
+ ],
+ "tableaux": [
+  [
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
+  ]
+ ],
+ "commandes": [
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
+  "Colonnes",
+  "Exporter"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
+}

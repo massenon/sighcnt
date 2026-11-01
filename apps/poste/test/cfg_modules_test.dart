@@ -12,10 +12,10 @@ void main() {
   setUpAll(chargerPolices);
   tearDown(ToastsSigh.viderPourTests);
 
-  casM14('ouverture : 300 écrans au périmètre, 2 activités fermées (banque de sang, transfusion), 2 écrans retirés, 22 modules pilotables', (t) async {
+  casM14('ouverture : 311 écrans au périmètre, 2 activités fermées (banque de sang, transfusion), 2 écrans retirés, 23 modules pilotables', (t) async {
     final m = magasinM14();
     await ouvrirM14(t, m, 'cfg-modules');
-    for (final k in ['Écrans au périmètre', 'Activités fermées', 'Écrans retirés du menu', 'Écrans ouverts', '300', '298']) {
+    for (final k in ['Écrans au périmètre', 'Activités fermées', 'Écrans retirés du menu', 'Écrans ouverts', '311', '309']) {
       expect(find.text(k), findsWidgets, reason: k);
     }
     expect(find.text('Banque de sang'), findsWidgets);
@@ -46,7 +46,7 @@ void main() {
     expect([f['code'], f['actif'], f['motif'], f['fermeLe'], f['fermePar']], ['MODULE-M7', false, 'Pas de service d’achats pour le test', '2026-10-30', 'Administrateur système']);
     expect(find.text('Activité fermée.'), findsOneWidget);
     expect(find.text('11'), findsWidgets, reason: 'écrans retirés du menu : 2 + 9');
-    expect(find.text('289'), findsWidgets);
+    expect(find.text('300'), findsWidgets);
     expect(find.text('Bons de commande'), findsWidgets, reason: 'la liste des écrans retirés le montre');
     final j = m.collection('audit').toutes.firstWhere((a) => a['action'] == 'Fermeture d’une activité');
     expect([j['module'], j['entite'], j['reference']], ['CFG', 'Activité', 'MODULE-M7']);
@@ -68,7 +68,7 @@ void main() {
     final f = m.collection('modulesActifs').actives.firstWhere((x) => x['module'] == 'M7');
     expect([f['actif'], f['motif'], f['fermeLe'], f['rouvertLe'], f['rouvertPar']], [true, 'Essai', null, '2026-10-30', 'Administrateur système']);
     expect(find.text('Activité rouverte.'), findsOneWidget);
-    expect(find.text('298'), findsWidgets);
+    expect(find.text('309'), findsWidgets);
     expect(m.collection('modulesActifs').toutes.length, 3, reason: 'la fiche reste : fermer et rouvrir ne supprime rien');
   });
 
@@ -77,7 +77,7 @@ void main() {
     await ouvrirM14(t, m, 'cfg-modules');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Piloter une activité'));
     await saisir(t, 'libelle', 'Activité noyau test');
-    // 22 modules : la liste a sa recherche ; on y tape le nom avant de toucher l'option
+    // 23 modules : la liste a sa recherche ; on y tape le nom avant de toucher l'option
     await toucherM14(t, find.descendant(of: find.byKey(const Key('kit:champ:module')), matching: find.byType(InkWell)).first);
     await t.pump(const Duration(milliseconds: 400));
     await t.enterText(find.byType(TextField).last, 'Configuration');
@@ -101,7 +101,7 @@ void main() {
     m.collection('modulesActifs').archiver('MOD01');
     await ouvrirM14(t, m, 'cfg-modules');
     expect(find.text('Banque de sang'), findsNothing, reason: 'la fiche archivée n’est plus montrée par l’écran de pilotage');
-    expect(find.text('299'), findsWidgets);
+    expect(find.text('310'), findsWidgets);
     expect(find.text('Donneurs & transfusions'), findsWidgets);
   });
 

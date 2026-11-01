@@ -5,7 +5,7 @@
  "libelleManifeste": "Importation Grand Stock",
  "acces": "ouvert",
  "titre": "Importation Grand Stock",
- "description": "Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.",
+ "description": "Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »).",
  "fil": [
   "Accueil",
   "Logistique",
@@ -18,48 +18,35 @@
   "Pharmacie & Stocks"
  ],
  "regle": [],
- "onglets": [
-  "Articles repris",
-  "Points à traiter",
-  "Rapprochement au catalogue tarifaire"
- ],
+ "onglets": [],
  "kpis": [
-  "Articles repris",
-  "Unités en stock",
-  "Valeur reprise",
-  "Articles non valorisés",
-  "Valorisés par la clinique"
+  "Lots appliqués",
+  "Fiches importées",
+  "Fichiers refusés",
+  "Statut du jeu"
  ],
  "cartes": [
-  "Lot de migration"
+  "1. Télécharger le modèle",
+  "2. Téléverser et analyser",
+  "Historique des lots de ce jeu"
  ],
  "tableaux": [
   [
-   "Référence SAGE",
-   "Désignation",
-   "Catégorie affectée",
-   "Unité",
-   "Qté reprise",
-   "P.R. unitaire (CMUP)",
-   "P.R. global",
-   "Seuil proposé"
+   "Colonne",
+   "Obligatoire",
+   "Type",
+   "Valeurs permises",
+   "Exemple"
   ]
  ],
  "commandes": [
-  "Valider la reprise",
-  "Éditer le bordereau",
-  "Articles repris184",
-  "Points à traiter0",
-  "Rapprochement au catalogue tarifaire",
+  "Télécharger le modèle (.xlsx)",
+  "Modèle CSV",
+  "Téléverser un fichier (.xlsx ou .csv)",
   "Colonnes",
-  "Exporter",
-  "1",
-  "2",
-  "3",
-  "4",
-  "5"
+  "Exporter"
  ],
  "champs": [],
  "nbTableaux": 1,
- "nbKpis": 5
+ "nbKpis": 4
 }

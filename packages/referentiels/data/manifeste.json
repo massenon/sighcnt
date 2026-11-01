@@ -337,9 +337,9 @@
     "m6-pertes",
     "m6-dispensation",
     "m6-etiquetage",
-    "m6-import-grand-stock",
     "m6-point-ventes",
-    "m6-point-stock"
+    "m6-point-stock",
+    "m6-import-grand-stock"
    ]
   },
   {
@@ -668,6 +668,36 @@
     "cfg-modules",
     "cfg-systeme",
     "cfg-poste"
+   ]
+  },
+  {
+   "domaine": "Système",
+   "code": "IMP",
+   "label": "Importation de données",
+   "icone": "file-up",
+   "alias": false,
+   "secondaire": false,
+   "roles": [
+    "admin",
+    "da",
+    "direction",
+    "stock",
+    "reception",
+    "agentadmin",
+    "comptable",
+    "laborantin"
+   ],
+   "ecrans": [
+    "imp-accueil",
+    "imp-patients",
+    "imp-personnel",
+    "imp-actes",
+    "imp-analyses",
+    "imp-fournisseurs",
+    "imp-assureurs",
+    "imp-souscripteurs",
+    "imp-plan-comptable",
+    "imp-soldes-ouverture"
    ]
   },
   {
@@ -2823,27 +2853,6 @@
    ]
   },
   {
-   "id": "m6-import-grand-stock",
-   "label": "Importation Grand Stock",
-   "icone": "database",
-   "module": "M6",
-   "moduleLabel": "Pharmacie & Stocks",
-   "domaine": "Logistique",
-   "hub": false,
-   "standalone": false,
-   "universel": false,
-   "servant": null,
-   "roles": [
-    "pharmacien",
-    "stock",
-    "da",
-    "comptable",
-    "medecin",
-    "admin",
-    "direction"
-   ]
-  },
-  {
    "id": "m6-point-ventes",
    "label": "Suivi des ventes",
    "icone": "coins",
@@ -2885,6 +2894,27 @@
     "admin",
     "direction",
     "assistant_comptable"
+   ]
+  },
+  {
+   "id": "m6-import-grand-stock",
+   "label": "Importation Grand Stock",
+   "icone": "file-up",
+   "module": "M6",
+   "moduleLabel": "Pharmacie & Stocks",
+   "domaine": "Logistique",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "pharmacien",
+    "stock",
+    "da",
+    "comptable",
+    "medecin",
+    "admin",
+    "direction"
    ]
   },
   {
@@ -5557,6 +5587,204 @@
    "roles": [
     "admin",
     "da"
+   ]
+  },
+  {
+   "id": "hub-imp",
+   "label": "Importation de données",
+   "icone": "file-up",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": true,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction",
+    "stock",
+    "reception",
+    "agentadmin",
+    "comptable",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "imp-accueil",
+   "label": "Jeux d’import et historique des lots",
+   "icone": "files",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da",
+    "direction",
+    "stock",
+    "reception",
+    "agentadmin",
+    "comptable",
+    "laborantin"
+   ]
+  },
+  {
+   "id": "imp-patients",
+   "label": "Importation du répertoire patients",
+   "icone": "users",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "reception",
+    "agentadmin",
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "imp-personnel",
+   "label": "Importation du personnel",
+   "icone": "id-card",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "imp-actes",
+   "label": "Importation du catalogue des actes",
+   "icone": "list-ordered",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "admin",
+    "direction"
+   ]
+  },
+  {
+   "id": "imp-analyses",
+   "label": "Importation du catalogue des analyses",
+   "icone": "flask-conical",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "laborantin",
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "imp-fournisseurs",
+   "label": "Importation des fournisseurs",
+   "icone": "truck",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "admin"
+   ]
+  },
+  {
+   "id": "imp-assureurs",
+   "label": "Importation des compagnies d’assurance",
+   "icone": "shield",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "comptable",
+    "admin"
+   ]
+  },
+  {
+   "id": "imp-souscripteurs",
+   "label": "Importation des souscripteurs",
+   "icone": "building",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "da",
+    "comptable",
+    "admin"
+   ]
+  },
+  {
+   "id": "imp-plan-comptable",
+   "label": "Importation du plan comptable",
+   "icone": "book-open",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin"
+   ]
+  },
+  {
+   "id": "imp-soldes-ouverture",
+   "label": "Importation des soldes d’ouverture",
+   "icone": "scale",
+   "module": "IMP",
+   "moduleLabel": "Importation de données",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "comptable",
+    "da",
+    "admin"
    ]
   },
   {

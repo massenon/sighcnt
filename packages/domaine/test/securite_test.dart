@@ -263,7 +263,7 @@ void main() {
         final z = secZeroDroits(f(fiche['droits']).keys, ['m7-besoins']);
         memes(z.droits, fiche['droits'], 'droits');
         memes(z.droitsEcrans, fiche['droitsEcrans'], 'droitsEcrans');
-        expect(secDetailCreationRole(32), toasts.last['detail']);
+        expect(secDetailCreationRole((v['modules'] as List).length), toasts.last['detail']);
         // Le rôle créé figure aux rôles, part de zéro, et n'ouvre rien.
         final roles = secRoles(const [], secSurcharges(fiches));
         expect(roles.single.id, id);

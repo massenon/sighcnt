@@ -35,6 +35,8 @@
   <script src="../assets/js/data-seed.js"></script>
   <script src="../assets/js/modules/_kit.js"></script>
   <script src="../assets/js/modules/m6-stock.js"></script>
+  <script src="../assets/js/vendor/xlsx-mini.js"></script>
+  <script src="../assets/js/modules/import.js"></script>
   <script>SIGH.mount("m6-import-grand-stock");</script>
 </body>
 </html>

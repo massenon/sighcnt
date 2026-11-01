@@ -1940,6 +1940,18 @@
    ],
    "actes": [
     {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Importation du catalogue des actes",
+       "detail": "Importation de données",
+       "icone": "list-ordered",
+       "ecran": "imp-actes",
+       "onglet": null
+      }
+     ]
+    },
+    {
      "groupe": "Rubriques",
      "resultats": [
       {
@@ -3301,6 +3313,18 @@
     }
    ],
    "actes": [
+    {
+     "groupe": "Écrans",
+     "resultats": [
+      {
+       "label": "Importation du catalogue des actes",
+       "detail": "Importation de données",
+       "icone": "list-ordered",
+       "ecran": "imp-actes",
+       "onglet": null
+      }
+     ]
+    },
     {
      "groupe": "Rubriques",
      "resultats": [

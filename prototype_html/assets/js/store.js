@@ -3857,7 +3857,7 @@
   /* Libellé lisible de chaque collection : « module | entité ». Une collection
      absente de cette table reste listée sous son nom technique. */
   var LIBELLES = {
-    patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
+    lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
     documents: 'GED|Bibliothèque documentaire',
     consultations: 'M2|Consultations et rendez-vous', support: 'M2|Registre des appels',
     admissions: 'M3|Admissions', soins: 'M3|Soins', observations: 'M3|Mises en observation', sortiesAvisMedical: 'M3|Sorties contre avis médical',

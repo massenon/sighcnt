@@ -355,7 +355,6 @@
             { id: 'm6-pertes', label: 'Pertes, casses & rebuts', icon: 'trash-2' },
             { id: 'm6-dispensation', label: 'Dispensation', icon: 'package-open' },
             { id: 'm6-etiquetage', label: 'Étiquetage & emplacements', icon: 'tags' },
-            { id: 'm6-import-grand-stock', label: 'Importation Grand Stock', icon: 'database' },
             /* Les points du gestionnaire de stock. Ouverts aussi à la caisse,
                à la comptabilité et à la Direction : ce sont les mêmes chiffres
                que chacun recompose aujourd'hui à la main de son côté. */
@@ -363,6 +362,12 @@
               roles: ['stock', 'da', 'comptable', 'dm', 'caissier', 'admin', 'direction', 'assistant_comptable'] },
             { id: 'm6-point-stock', label: 'Point du stock valorisé', icon: 'warehouse',
               roles: ['stock', 'da', 'comptable', 'dm', 'pharmacien', 'admin', 'direction', 'assistant_comptable'] },
+            /* Premier jeu du module Importation (IMP) : il vit dans la rangée du Grand Stock, mais son moteur,
+               ses modèles .xlsx et son historique de lots sont ceux du module. `scripts` ajoute à la page les
+               fichiers dont elle a besoin en plus de celui de son module. */
+            { id: 'm6-import-grand-stock', label: 'Importation Grand Stock', icon: 'file-up',
+              roles: ['pharmacien', 'stock', 'da', 'comptable', 'medecin', 'admin', 'direction'],
+              scripts: ['vendor/xlsx-mini.js', 'modules/import.js'] },
           ],
         },
         {
@@ -664,6 +669,25 @@
             { id: 'cfg-modules', label: 'Activité des modules', icon: 'toggle-right' },
             { id: 'cfg-systeme', label: 'Paramètres système', icon: 'settings' },
             { id: 'cfg-poste', label: 'Ce poste (mode fileul / mère)', icon: 'server-cog', roles: ['admin', 'da'] },
+          ],
+        },
+        /* IMPORTATION DE DONNÉES (01/11/2026) : un moteur, dix jeux. Chaque jeu a son écran et ses rôles ;
+           le module s'ouvre à l'union de ces rôles et chaque écran se referme sur les siens (commande absente
+           sinon). Le Grand Stock vit dans la rangée M6 (m6-import-grand-stock) et partage ce moteur. */
+        {
+          code: 'IMP', label: 'Importation de données', icon: 'file-up',
+          roles: ['admin', 'da', 'direction', 'stock', 'reception', 'agentadmin', 'comptable', 'laborantin'],
+          items: [
+            { id: 'imp-accueil', label: 'Jeux d’import et historique des lots', icon: 'files' },
+            { id: 'imp-patients', label: 'Importation du répertoire patients', icon: 'users', roles: ['reception', 'agentadmin', 'da', 'admin'] },
+            { id: 'imp-personnel', label: 'Importation du personnel', icon: 'id-card', roles: ['da', 'admin'] },
+            { id: 'imp-actes', label: 'Importation du catalogue des actes', icon: 'list-ordered', roles: ['da', 'admin', 'direction'] },
+            { id: 'imp-analyses', label: 'Importation du catalogue des analyses', icon: 'flask-conical', roles: ['laborantin', 'da', 'admin'] },
+            { id: 'imp-fournisseurs', label: 'Importation des fournisseurs', icon: 'truck', roles: ['stock', 'da', 'comptable', 'admin'] },
+            { id: 'imp-assureurs', label: 'Importation des compagnies d’assurance', icon: 'shield', roles: ['da', 'comptable', 'admin'] },
+            { id: 'imp-souscripteurs', label: 'Importation des souscripteurs', icon: 'building', roles: ['da', 'comptable', 'admin'] },
+            { id: 'imp-plan-comptable', label: 'Importation du plan comptable', icon: 'book-open', roles: ['comptable', 'da', 'admin'] },
+            { id: 'imp-soldes-ouverture', label: 'Importation des soldes d’ouverture', icon: 'scale', roles: ['comptable', 'da', 'admin'] },
           ],
         },
       ],
@@ -1040,6 +1064,8 @@
       roles: item.roles || mod.roles || ALL,
       /* Un écran que TOUT poste peut ouvrir, quel que soit son module. */
       universel: !!item.universel,
+      /* Fichiers de script ajoutés à la page en plus de celui de son module. */
+      scripts: item.scripts || null,
     };
   }
 

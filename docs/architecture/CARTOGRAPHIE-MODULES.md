@@ -60,6 +60,7 @@
 |---|---|---|---|---|
 | Sécurité & Utilisateurs | M14 | canonique | 7 | admin, direction, da |
 | Configuration Clinique | CFG | canonique | 19 | admin, da, direction |
+| Importation de données | IMP | canonique | 10 | admin, da, direction, stock, reception, agentadmin, comptable, laborantin |
 
 ## Poste mère
 
@@ -89,27 +90,27 @@
 
 Cases : `V` voir · `E` éditer · `A` annuler (droits du MODULE ; un écran peut surcharger, voir `packages/rbac/data/rbac.json`).
 
-| Rôle | M2 | M1 | M3 | M4 | M5 | M6 | M7 | M8 | M9 | MECEF | M12 | M10 | M11 | M13 | GED | RAP | M14 | CFG | MERE | RLS | PIL | DASH | SUP |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Administrateur système | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | — |
-| Direction / Gérance | V | V | V | V | V | V | V | V | V | V | V | V | V | VEA | VE | VE | VEA | VE | · | · | VEA | VEA | — |
-| Directeur Médical | VEA | VE | VEA | VE | VE | V | · | V | · | · | · | · | · | VE | · | VE | · | · | · | · | VEA | VEA | — |
-| Directrice de l’Administration et des Finances (DAF) | · | VEA | · | · | · | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | · | VEA | VEA | — |
-| Médecin | VEA | VE | VEA | VE | VE | V | · | · | · | · | · | · | · | · | · | VEA | · | · | · | · | VEA | VEA | — |
-| Infirmier / Sage-femme | VE | VE | VEA | VEA | VEA | · | · | · | · | · | · | · | · | VEA | · | VEA | · | · | · | · | VEA | VEA | — |
-| Pharmacien (archivé) | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | — |
-| Biologiste médical | · | V | · | · | VEA | · | VEA | · | · | · | · | · | · | VEA | · | VEA | · | · | · | · | VEA | VEA | — |
-| Gestionnaire de Stock | · | · | · | · | · | VEA | VEA | V | · | · | · | · | · | · | · | VEA | · | · | · | · | · | VEA | — |
-| Caissier — Dispensaire (Pharmacie) | · | V | · | · | · | VEA | · | VE | VE | VE | VEA | · | · | · | · | VEA | · | · | · | · | · | VEA | — |
-| Comptable | · | V | · | · | · | V | V | VEA | VE | VE | VEA | · | VE | V | VE | VE | · | · | · | · | VEA | VEA | — |
-| Responsable RH (archivé) | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | — |
-| Réception / Accueil | VE | VE | V | · | · | · | · | · | · | · | · | · | · | V | · | VEA | · | · | · | · | · | VEA | — |
-| Agent Administratif | · | V | · | · | · | · | · | · | · | · | · | · | · | VEA | VE | VE | · | · | · | · | · | VEA | — |
-| Ambulancier | · | V | · | · | · | · | · | · | · | · | · | · | · | VE | · | V | · | · | · | · | · | VEA | — |
-| Aide-soignante | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | VEA | — |
-| Technicien d’échographie | V | V | · | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | VEA | VEA | — |
-| Surveillant | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | VEA | VEA | — |
-| Assistant de Direction | · | · | · | · | · | · | · | · | · | · | · | · | · | VE | VE | · | · | · | · | · | VEA | VEA | — |
-| Chirurgien | VE | VE | VE | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | VEA | VEA | — |
-| Anesthésiste — Réanimateur | · | V | VE | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | VEA | VEA | — |
-| Assistant Comptable | · | · | · | · | · | · | VE | V | VE | V | VE | · | · | · | · | V | · | · | · | · | · | VEA | — |
+| Rôle | M2 | M1 | M3 | M4 | M5 | M6 | M7 | M8 | M9 | MECEF | M12 | M10 | M11 | M13 | GED | RAP | M14 | CFG | IMP | MERE | RLS | PIL | DASH | SUP |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Administrateur système | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | — |
+| Direction / Gérance | V | V | V | V | V | V | V | V | V | V | V | V | V | VEA | VE | VE | VEA | VE | VEA | · | · | VEA | VEA | — |
+| Directeur Médical | VEA | VE | VEA | VE | VE | V | · | V | · | · | · | · | · | VE | · | VE | · | · | · | · | · | VEA | VEA | — |
+| Directrice de l’Administration et des Finances (DAF) | · | VEA | · | · | · | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | VEA | · | VEA | VEA | — |
+| Médecin | VEA | VE | VEA | VE | VE | V | · | · | · | · | · | · | · | · | · | VEA | · | · | · | · | · | VEA | VEA | — |
+| Infirmier / Sage-femme | VE | VE | VEA | VEA | VEA | · | · | · | · | · | · | · | · | VEA | · | VEA | · | · | · | · | · | VEA | VEA | — |
+| Pharmacien (archivé) | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | — |
+| Biologiste médical | · | V | · | · | VEA | · | VEA | · | · | · | · | · | · | VEA | · | VEA | · | · | VEA | · | · | VEA | VEA | — |
+| Gestionnaire de Stock | · | · | · | · | · | VEA | VEA | V | · | · | · | · | · | · | · | VEA | · | · | VEA | · | · | · | VEA | — |
+| Caissier — Dispensaire (Pharmacie) | · | V | · | · | · | VEA | · | VE | VE | VE | VEA | · | · | · | · | VEA | · | · | · | · | · | · | VEA | — |
+| Comptable | · | V | · | · | · | V | V | VEA | VE | VE | VEA | · | VE | V | VE | VE | · | · | VEA | · | · | VEA | VEA | — |
+| Responsable RH (archivé) | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | — |
+| Réception / Accueil | VE | VE | V | · | · | · | · | · | · | · | · | · | · | V | · | VEA | · | · | VEA | · | · | · | VEA | — |
+| Agent Administratif | · | V | · | · | · | · | · | · | · | · | · | · | · | VEA | VE | VE | · | · | VEA | · | · | · | VEA | — |
+| Ambulancier | · | V | · | · | · | · | · | · | · | · | · | · | · | VE | · | V | · | · | · | · | · | · | VEA | — |
+| Aide-soignante | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | VEA | — |
+| Technicien d’échographie | V | V | · | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | · | VEA | VEA | — |
+| Surveillant | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | · | VEA | VEA | — |
+| Assistant de Direction | · | · | · | · | · | · | · | · | · | · | · | · | · | VE | VE | · | · | · | · | · | · | VEA | VEA | — |
+| Chirurgien | VE | VE | VE | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | · | VEA | VEA | — |
+| Anesthésiste — Réanimateur | · | V | VE | · | V | · | · | · | · | · | · | · | · | · | · | V | · | · | · | · | · | VEA | VEA | — |
+| Assistant Comptable | · | · | · | · | · | · | VE | V | VE | V | VE | · | · | · | · | V | · | · | · | · | · | · | VEA | — |

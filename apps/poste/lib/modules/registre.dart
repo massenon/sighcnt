@@ -14,6 +14,7 @@ import 'm11/registre_m11.dart';
 import 'm12/registre_m12.dart';
 import 'm13/registre_m13.dart';
 import 'm14/registre_m14.dart';
+import 'imp/registre_imp.dart';
 import 'm9/registre_m9.dart';
 import 'mere/mrb_source.dart' show mrbClientMere;
 import 'mere/mrc_commun.dart' show Mrc;
@@ -74,6 +75,8 @@ Map<String, ConstruireEcran> ecransPortes(
     ...ecransPIL,
     ...ecransRAP,
     ...ecransM14,
+    // Module d'importation (IMP) : l'accueil et un écran par jeu d'import, dont m6-import-grand-stock (« Importation Grand Stock »).
+    ...ecransIMP,
     ...ecransCFG,
     ...ecransM9,
     ...ecransM1,

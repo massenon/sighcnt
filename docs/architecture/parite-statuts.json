@@ -341,5 +341,17 @@
  "hub-mere": "porté",
  "hub-rls": "porté",
  "hub-pil": "porté",
- "hub-dash": "porté"
+ "hub-dash": "porté",
+ "hub-imp": "porté",
+ "imp-accueil": "porté",
+ "imp-patients": "porté",
+ "imp-personnel": "porté",
+ "imp-actes": "porté",
+ "imp-analyses": "porté",
+ "imp-fournisseurs": "porté",
+ "imp-assureurs": "porté",
+ "imp-souscripteurs": "porté",
+ "imp-plan-comptable": "porté",
+ "imp-soldes-ouverture": "porté",
+ "m6-import-grand-stock": "porté"
 }

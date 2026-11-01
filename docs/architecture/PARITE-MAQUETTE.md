@@ -5,11 +5,11 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **321** |
-| Hubs de module (un par module, engendrés) | 22 |
-| Écrans nommés par au moins un scénario de la maquette | 206 (64 %) |
-| Écrans **sans** scénario (recette à écrire) | 115 |
-| Écrans portés | 321 |
+| Écrans du manifeste (hors hubs de module) | **331** |
+| Hubs de module (un par module, engendrés) | 23 |
+| Écrans nommés par au moins un scénario de la maquette | 206 (62 %) |
+| Écrans **sans** scénario (recette à écrire) | 125 |
+| Écrans portés | 331 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 75 |
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 21 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
 | 5 · assurances et comptabilité | 31 | 19 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 155 | 87 | 155 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 165 | 87 | 165 | 0 |
 
 ## Par écran
 
@@ -275,6 +275,16 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `ged-archives` | Archivage & conservation | GED | 6 | — | porté |
 | `ged-bibliotheque` | Bibliothèque documentaire | GED | 6 | 52 | porté |
 | `ged-workflow` | Workflow de validation | GED | 6 | — | porté |
+| `imp-accueil` | Jeux d’import et historique des lots | IMP | 8 | — | porté |
+| `imp-actes` | Importation du catalogue des actes | IMP | 3 | — | porté |
+| `imp-analyses` | Importation du catalogue des analyses | IMP | 3 | — | porté |
+| `imp-assureurs` | Importation des compagnies d’assurance | IMP | 3 | — | porté |
+| `imp-fournisseurs` | Importation des fournisseurs | IMP | 4 | — | porté |
+| `imp-patients` | Importation du répertoire patients | IMP | 4 | — | porté |
+| `imp-personnel` | Importation du personnel | IMP | 2 | — | porté |
+| `imp-plan-comptable` | Importation du plan comptable | IMP | 3 | — | porté |
+| `imp-soldes-ouverture` | Importation des soldes d’ouverture | IMP | 3 | — | porté |
+| `imp-souscripteurs` | Importation des souscripteurs | IMP | 3 | — | porté |
 | `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 26 | porté |
 | `m10-badges` | Badges du personnel | M10 | 5 | 55, 67 | porté |
 | `m10-badges-impression` | Planche d’impression des badges | M10 | 3 | 55 | porté |

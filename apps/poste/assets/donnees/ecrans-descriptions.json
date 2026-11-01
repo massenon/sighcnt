@@ -217,6 +217,10 @@
    "titre": "Gestion documentaire",
    "description": "Tous les écrans du module GED — Gestion documentaire."
   },
+  "hub-imp": {
+   "titre": "Importation de données",
+   "description": "Tous les écrans du module IMP — Importation de données."
+  },
   "hub-m1": {
    "titre": "Patients & Dossier médical",
    "description": "Tous les écrans du module M1 — Patients & Dossier médical."
@@ -292,6 +296,46 @@
   "hub-rls": {
    "titre": "Relais en ligne (apps/web)",
    "description": "Tous les écrans du module RLS — Relais en ligne (apps/web)."
+  },
+  "imp-accueil": {
+   "titre": "Importation de données",
+   "description": "Les jeux d’import de la clinique en démarrage : modèle .xlsx à télécharger, fichier à téléverser, analyse complète avant écriture, historique et annulation des lots."
+  },
+  "imp-actes": {
+   "titre": "Importation du catalogue des actes",
+   "description": "Actes et tarifs à deux prix (non assuré, assuré) avec les trois états de la colonne assurée : montant, NC (non couvert), tiret (valeur manquante)."
+  },
+  "imp-analyses": {
+   "titre": "Importation du catalogue des analyses",
+   "description": "Entrées du catalogue des examens (code, désignation, section). Les variables, unités et bornes ne se reprennent pas : le biologiste les valide."
+  },
+  "imp-assureurs": {
+   "titre": "Importation des compagnies d’assurance",
+   "description": "Compagnies d’assurance : code, raison sociale, contacts, état de la convention."
+  },
+  "imp-fournisseurs": {
+   "titre": "Importation des fournisseurs",
+   "description": "Fournisseurs de la clinique : identité fiscale, coordonnées, délai, banque."
+  },
+  "imp-patients": {
+   "titre": "Importation du répertoire patients",
+   "description": "Reprise du répertoire papier : identité, coordonnées, couverture. Jamais de dossier médical."
+  },
+  "imp-personnel": {
+   "titre": "Importation du personnel",
+   "description": "Fiches des agents : matricule, identité, fonction, service, embauche. Aucune donnée de paie hors salaire de base."
+  },
+  "imp-plan-comptable": {
+   "titre": "Importation du plan comptable",
+   "description": "Comptes SYSCOHADA : numéro, libellé, journal par défaut. La classe se déduit du premier chiffre."
+  },
+  "imp-soldes-ouverture": {
+   "titre": "Importation des soldes d’ouverture",
+   "description": "À-nouveaux d’un exercice : une pièce du journal AN, en brouillon, équilibrée (RG-10). Seules les classes 1 à 5 se reportent."
+  },
+  "imp-souscripteurs": {
+   "titre": "Importation des souscripteurs",
+   "description": "Souscripteurs rattachés à une compagnie : n° de police, catégorie, effectif, période."
   },
   "m1-antecedents": {
    "titre": "Antécédents & allergies",
@@ -987,7 +1031,7 @@
   },
   "m6-import-grand-stock": {
    "titre": "Importation Grand Stock",
-   "description": "Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock."
+   "description": "Situation initiale du magasin central : articles, lots, péremptions, quantités et prix de revient (inventaire SAGE « Grand Stock »)."
   },
   "m6-inventaire-feuille": {
    "titre": "Feuille d’inventaire",
