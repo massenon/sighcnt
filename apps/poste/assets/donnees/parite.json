@@ -2169,8 +2169,8 @@
    "statut": "porté"
   },
   {
-   "id": "m6-reprise",
-   "label": "Reprise SAGE 100",
+   "id": "m6-import-grand-stock",
+   "label": "Importation Grand Stock",
    "module": "M6",
    "domaine": "Logistique",
    "tranche": 2,
@@ -2184,7 +2184,8 @@
     "comptable"
    ],
    "scenarios": [
-    37
+    37,
+    75
    ],
    "statut": "porté"
   },
@@ -3411,7 +3412,9 @@
     "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    75
+   ],
    "statut": "porté"
   },
   {
@@ -3427,7 +3430,9 @@
     "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    75
+   ],
    "statut": "porté"
   },
   {
@@ -3446,7 +3451,8 @@
    "scenarios": [
     23,
     39,
-    54
+    54,
+    75
    ],
    "statut": "porté"
   },
@@ -3837,7 +3843,7 @@
   },
   {
    "id": "m11-prets-etudes",
-   "label": "Prêts-études et avances",
+   "label": "Prêts et avances",
    "module": "M11",
    "domaine": "RH",
    "tranche": 6,
@@ -3849,7 +3855,9 @@
     "da",
     "comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    75
+   ],
    "statut": "porté"
   },
   {
@@ -3866,7 +3874,9 @@
     "da",
     "comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    75
+   ],
    "statut": "porté"
   },
   {
@@ -3886,7 +3896,8 @@
    "scenarios": [
     23,
     26,
-    32
+    32,
+    75
    ],
    "statut": "porté"
   },
@@ -3907,7 +3918,8 @@
    "scenarios": [
     9,
     23,
-    54
+    54,
+    75
    ],
    "statut": "porté"
   },
@@ -3926,7 +3938,8 @@
     "comptable"
    ],
    "scenarios": [
-    23
+    23,
+    75
    ],
    "statut": "porté"
   },
@@ -3944,7 +3957,9 @@
     "da",
     "comptable"
    ],
-   "scenarios": [],
+   "scenarios": [
+    75
+   ],
    "statut": "porté"
   },
   {
@@ -3979,7 +3994,8 @@
     "comptable"
    ],
    "scenarios": [
-    23
+    23,
+    75
    ],
    "statut": "porté"
   },
@@ -4826,7 +4842,8 @@
    "scenarios": [
     16,
     23,
-    67
+    67,
+    75
    ],
    "statut": "porté"
   },
@@ -5569,7 +5586,8 @@
     "comptable"
    ],
    "scenarios": [
-    51
+    51,
+    75
    ],
    "statut": "porté"
   },

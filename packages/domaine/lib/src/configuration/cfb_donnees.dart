@@ -16,7 +16,7 @@ const cfbSourcesVerite = <CfbSource>[
   CfbSource('Fiche d’évaluation et de solde (juillet 2026)', 'Modèle d’état imprimable', 'M10 / RAP', 'm10-evaluations', 'Intégré'),
   CfbSource('Tarifs des analyses de laboratoire (48)', 'Catalogue laboratoire', 'M5', 'm5-catalogue', 'Intégré — tarifs à confirmer'),
   CfbSource('Tarifs des médicaments et accessoires (144)', 'Catalogue tarifaire pharmacie', 'M6', 'cfg-tarifs', 'Intégré — tarifs à confirmer'),
-  CfbSource('Inventaire « Grand Stock » (SAGE 100)', 'Stock initial — 175 articles repris', 'M6', 'm6-reprise', 'Intégré'),
+  CfbSource('Inventaire « Grand Stock » (SAGE 100)', 'Stock initial — 175 articles repris', 'M6', 'm6-import-grand-stock', 'Intégré'),
   CfbSource('Facture fournisseur SoBAPS (BL 26LNA00026)', 'Modèle du workflow achat', 'M7', 'm7-receptions', 'Intégré'),
   CfbSource('Bon d’expression de besoins (modèle vierge)', 'Workflow de demande interne', 'M7', 'm7-besoins', 'Intégré'),
   CfbSource('Classeur comptable SYSCOHADA', 'Plan comptable + journaux', 'M12', 'm12-plan-comptable', 'Intégré — partiel'),
@@ -189,7 +189,6 @@ const cfbEssentielles = <String>[
   'postes',
   'personnel',
   'soignants',
-  'fichesPoste',
   'ressources',
   'souscripteurs',
   'garanties',
@@ -208,6 +207,7 @@ const cfbEssentielles = <String>[
   'historiquePrimes',
   'baremeNS131',
   'historiqueBareme',
+  'beneficiairesPrimes',
   'examensLabo',
   'unitesLabo',
   'variablesLabo',
@@ -221,6 +221,11 @@ const cfbEssentielles = <String>[
   'emplacements',
   'audit',
 ];
+
+/// `S.CHAMPS_DE_TEST_CONSERVES` : les valeurs de démonstration que le vidage retire des collections CONSERVÉES (la rémunération du personnel).
+const cfbChampsDeTestConserves = <String, List<String>>{
+  'personnel': ['salaireBase', 'categorie', 'cnss'],
+};
 
 /// `S.libelleCollection` pour les collections du jeu du poste : (module, entité) — « — » / nom technique si la table de la maquette n'en porte pas.
 const cfbLibellesCollections = <String, (String, String)>{
@@ -261,6 +266,7 @@ const cfbLibellesCollections = <String, (String, String)>{
   'couverturesAssurance': ('M9', 'Couvertures d’assurance (historique)'),
   'cpa': ('M3', 'Consultations pré-anesthésiques'),
   'cpon': ('M4', 'Consultations post-natales'),
+  'crAnesthesie': ('M3', 'Comptes rendus d’anesthésie'),
   'crMaternite': ('M4', 'Comptes rendus de maternité'),
   'crOperatoires': ('M3', 'Comptes rendus opératoires'),
   'deces': ('M4', 'Décès'),
@@ -332,7 +338,7 @@ const cfbLibellesCollections = <String, (String, String)>{
   'prescriptions': ('M2', 'Prescriptions'),
   'presences': ('M10', 'Présences'),
   'prestataires': ('M10', 'Prestataires'),
-  'pretsEtudes': ('M11', 'Prêts-études et avances'),
+  'pretsEtudes': ('M11', 'Prêts et avances'),
   'produits': ('M6', 'Produits et médicaments'),
   'ptme': ('M4', 'Registre PTME'),
   'pvReceptions': ('M7', 'PV de réception'),
@@ -358,6 +364,7 @@ const cfbLibellesCollections = <String, (String, String)>{
   'soinsCuratifsMaternite': ('M4', 'Soins curatifs & urgences maternité'),
   'souscripteurs': ('M9', 'Souscripteurs'),
   'suiviMaternite': ('M4', 'Suivi maternité'),
+  'support': ('M2', 'Registre des appels'),
   'surveillancesTransfusion': ('M3', 'Surveillances transfusionnelles'),
   'taches': ('CFG', 'Files d’attente'),
   'tachesPlanifiees': ('—', 'tachesPlanifiees'),

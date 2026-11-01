@@ -233,9 +233,9 @@ void imprimerJournalCalcul(BuildContext ctx, int mois, List<PaiCalcul> calc) {
           cartouche: [
             ('Période', periodeBrute(mois)),
             ('Effectif', nombre(calc.length)),
-            ('Masse salariale brute', money(paiSomme(calc, (x) => x.brut))),
-            ('Net à payer', money(paiSomme(calc, (x) => x.net))),
-            ('CNSS totale', money(paiSomme(calc, (x) => x.cnssOuvriere) + paiSomme(calc, (x) => x.cnssPatronale))),
+            ('Masse salariale brute', paiMontant(calc, (x) => x.brut)),
+            ('Net à payer', paiMontant(calc, (x) => x.net)),
+            ('CNSS totale', paiMontant(calc, (x) => x.cnssOuvriere + x.cnssPatronale)),
             ('Date d’édition', dateFR(c.aujourdhui)),
           ],
           tableaux: [

@@ -518,6 +518,44 @@ void main() {
       expect(paiNaturePret('x'), 'x');
     });
   });
+
+  // Retour de la Direction du 01/11/2026 : le vidage des jeux de test retire les salaires de démonstration et garde l'effectif. Une paie ne se calcule
+  // pas sur un salaire inconnu, et « non calculable » n'est pas zéro.
+  group('agent sans salaire de base (jeu vidé de ses valeurs de démonstration)', () {
+    final e = m(m(scenarios['S0'])['entrees']);
+    final entrees = entreesDe(e);
+    final personnel = liste(e['personnel']);
+    final sans = [for (final p in personnel) {...p, 'salaireBase': null, 'cnss': null, 'categorie': null}];
+
+    test('personne n\'est calculable : ni calcul, ni redevance ORTB', () {
+      expect(paiCalculerTous(sans, 2026, 7, entrees, auj), isEmpty);
+      expect(paiLignesOrtbAgents(sans, 2026, 7, entrees, auj), isEmpty);
+    });
+    test('« Non calculable » et non « 0 FCFA » ; le bandeau nomme la cause', () {
+      expect(paiMontant(const <PaiCalcul>[], (x) => x.brut), 'Non calculable');
+      expect(paiAvisSansSalaire(sans), contains('Aucun salaire de base n’est renseigné'));
+      expect(paiAvisSansSalaire(personnel), isNull);
+    });
+    test('un agent sur deux sans salaire : seuls les salariés sont calculés, et le bandeau compte les exclus', () {
+      final moitie = [for (var i = 0; i < personnel.length; i++) i.isEven ? personnel[i] : sans[i]];
+      final calc = paiCalculerTous(moitie, 2026, 7, entrees, auj);
+      expect(calc.length, (personnel.length + 1) ~/ 2);
+      expect(paiAvisSansSalaire(moitie), '${personnel.length ~/ 2} agent(s) sans salaire de base sont exclus du calcul.');
+      expect(paiMontant(calc, (x) => x.brut), isNot('Non calculable'));
+    });
+    test('l\'avance n\'est pas plafonnée sur un salaire inconnu : le refus le dit', () {
+      expect(paiAvanceRefus(1000, sans.first), contains('n’est pas renseigné'));
+      expect(paiAvanceRefus(1000, personnel.first), isNull);
+    });
+    test('masses du personnel : « Non renseignée » sans salaire, la somme sinon', () {
+      expect(sommeOuNul(sans.map((p) => p['salaireBase'])), isNull);
+      expect(moneyOu(sommeOuNul(sans.map((p) => p['salaireBase'])), 'Non renseignée'), 'Non renseignée');
+      expect(moyenneOuNul(sans.map((p) => p['salaireBase'])), isNull);
+      expect(sommeOuNul([null, '', 'x', 5, '7']), 12);
+      expect(moyenneOuNul([null, 4, '6']), 5);
+      expect(sommeOuNul([0, null]), 0, reason: 'un salaire de zéro est une valeur, pas un inconnu');
+    });
+  });
 }
 
 String mo2(num v) => sp(money(v));

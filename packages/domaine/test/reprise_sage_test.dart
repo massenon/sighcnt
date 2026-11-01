@@ -1,4 +1,4 @@
-// Rejoue les vecteurs de m6-reprise (prototype_html/build/vecteurs-reprise.js) : le référentiel SAGE engendré, le rapprochement recalculé, les indicateurs
+// Rejoue les vecteurs de m6-import-grand-stock (prototype_html/build/vecteurs-reprise.js) : le référentiel SAGE engendré, le rapprochement recalculé, les indicateurs
 // avec et sans la surcouche de valorisation, la fiche de valorisation saisie.
 import 'dart:convert';
 import 'dart:io';

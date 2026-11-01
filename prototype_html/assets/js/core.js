@@ -496,6 +496,31 @@
   function sum(arr, key) {
     return arr.reduce(function (a, x) { return a + (Number(typeof key === 'function' ? key(x) : x[key]) || 0); }, 0);
   }
+  /* Somme qui DIT quand elle n'a rien à sommer : null si aucune ligne ne porte de nombre. Un total de zéro
+     et un total inconnu ne sont pas la même chose (masse salariale d'un jeu vidé de ses salaires). */
+  function sumOuNul(arr, key) {
+    var vu = false;
+    var t = arr.reduce(function (a, x) {
+      var v = typeof key === 'function' ? key(x) : x[key];
+      if (v === null || v === undefined || v === '' || !isFinite(Number(v))) return a;
+      vu = true; return a + Number(v);
+    }, 0);
+    return vu ? t : null;
+  }
+  /* Moyenne des seules lignes qui portent un nombre ; null s'il n'y en a aucune. */
+  function moyenneOuNul(arr, key) {
+    var n = 0;
+    var t = arr.reduce(function (a, x) {
+      var v = typeof key === 'function' ? key(x) : x[key];
+      if (v === null || v === undefined || v === '' || !isFinite(Number(v))) return a;
+      n++; return a + Number(v);
+    }, 0);
+    return n ? t / n : null;
+  }
+  /* Montant ou, à défaut, la mention donnée (« Non renseigné », « Non calculable »). */
+  function moneyOu(v, mention, withCurrency) {
+    return (v === null || v === undefined || v === '' || !isFinite(Number(v))) ? (mention || 'Non renseigné') : money(v, withCurrency);
+  }
   function sortBy(arr, key, dir) {
     var s = arr.slice(), d = dir === 'desc' ? -1 : 1;
     return s.sort(function (a, b) {
@@ -540,7 +565,7 @@
     nombreEnLettres: nombreEnLettres, montantEnLettres: montantEnLettres,
     slug: slug, initials: initials, escapeHtml: escapeHtml, norm: norm, matches: matches,
     $: $, $$: $$, el: el, append: append, clear: clear, icon: icon, qr: qr,
-    debounce: debounce, groupBy: groupBy, sum: sum, sortBy: sortBy,
+    debounce: debounce, groupBy: groupBy, sum: sum, sumOuNul: sumOuNul, moyenneOuNul: moyenneOuNul, moneyOu: moneyOu, sortBy: sortBy,
     seeded: seeded, pick: pick, between: between,
   };
 })(window);

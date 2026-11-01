@@ -41,5 +41,5 @@ final Map<String, ConstruireEcran> ecransM6 = {
   'm6-pharmacie-externe': (c, cfg) => const EcranPharmacieExterne(),
   'm6-dispensation': (c, cfg) => const EcranDispensation(),
   'm6-etiquetage': (c, cfg) => const EcranEtiquetage(),
-  'm6-reprise': (c, cfg) => const EcranReprise(),
+  'm6-import-grand-stock': (c, cfg) => const EcranReprise(),
 };

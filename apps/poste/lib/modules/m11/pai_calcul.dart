@@ -94,11 +94,12 @@ class _EtatCalcul extends State<EcranCalculPaie> {
             BoutonSigh(libelle: 'Éditer le journal de paie', icone: LucideIcons.printer, variante: VarianteBouton.secondaire, onPressed: () => imprimerJournalCalcul(context, _m, calc)),
           ]),
           const SizedBox(height: 16),
+          ...avisPaie(c),
           KpiGrilleSigh(kpis: [
             KpiSigh(libelle: 'Agents concernés', valeur: nombre(calc.length), icone: LucideIcons.usersRound),
-            KpiSigh(libelle: 'Masse salariale brute', valeur: money(paiSomme(calc, (x) => x.brut)), icone: LucideIcons.banknote, ton: TonSigh.info),
-            KpiSigh(libelle: 'Total des retenues', valeur: money(paiSomme(calc, (x) => x.totalRetenues)), icone: LucideIcons.trendingDown, ton: TonSigh.attention),
-            KpiSigh(libelle: 'Net à payer', valeur: money(paiSomme(calc, (x) => x.net)), icone: LucideIcons.wallet, ton: TonSigh.succes),
+            KpiSigh(libelle: 'Masse salariale brute', valeur: paiMontant(calc, (x) => x.brut), icone: LucideIcons.banknote, ton: TonSigh.info),
+            KpiSigh(libelle: 'Total des retenues', valeur: paiMontant(calc, (x) => x.totalRetenues), icone: LucideIcons.trendingDown, ton: TonSigh.attention),
+            KpiSigh(libelle: 'Net à payer', valeur: paiMontant(calc, (x) => x.net), icone: LucideIcons.wallet, ton: TonSigh.succes),
           ]),
           const SizedBox(height: 16),
           TableauSigh(

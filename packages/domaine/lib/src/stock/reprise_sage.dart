@@ -1,4 +1,4 @@
-/// REPRISE SAGE 100 (M6) — port de `SIGH.sage` (prototype_html/assets/js/data-sage.js) et des règles de `m6-reprise`.
+/// REPRISE SAGE 100 (M6) — port de `SIGH.sage` (prototype_html/assets/js/data-sage.js) et des règles de `m6-import-grand-stock`.
 ///
 /// Le stock initial n'a pas été saisi : il provient de l'import de l'inventaire « Grand Stock » (SAGE 100, arrêté au 15/07/2026). Le document FAIT FOI sur ce
 /// qu'il porte ; la valorisation que la clinique ajoute pour les références qu'il ne valorise pas vit à part (collection `valorisationsSage`, une SURCOUCHE

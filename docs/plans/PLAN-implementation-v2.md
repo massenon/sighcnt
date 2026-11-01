@@ -144,7 +144,7 @@ Le kit de composants est un **clone mesuré**, pas une ressemblance : `prototype
 ## Mise à jour du 30/10/2026 (tranche 2 — stocks et achats : 43 écrans portés sur 321)
 
 **26 écrans de plus portés à N1 = 100 % mesuré** (statuts « porté » verrouillés), par six agents en parallèle sur la méthode de `docs/plans/BRIEF-PORTAGE-ECRAN.md`, fusionnés ici :
-- **M6 (16)** : `m6-dashboard`, `m6-produits`, `m6-stock-gros`, `m6-stock-detail`, `m6-lots`, `m6-alertes`, `m6-mouvements`, `m6-inventaire`, `m6-inventaire-feuille`, `m6-pertes`, `m6-pharmacie-interne`, `m6-pharmacie-externe`, `m6-dispensation`, `m6-etiquetage`, `m6-reprise`, `m6-point-ventes`, `m6-point-stock`.
+- **M6 (16)** : `m6-dashboard`, `m6-produits`, `m6-stock-gros`, `m6-stock-detail`, `m6-lots`, `m6-alertes`, `m6-mouvements`, `m6-inventaire`, `m6-inventaire-feuille`, `m6-pertes`, `m6-pharmacie-interne`, `m6-pharmacie-externe`, `m6-dispensation`, `m6-etiquetage`, `m6-import-grand-stock`, `m6-point-ventes`, `m6-point-stock`.
 - **M7 (9)** : `m7-besoins`, `m7-commandes`, `m7-livraisons`, `m7-receptions`, `m7-ecarts`, `m7-pv-reception-consommables`, `m7-pv-reception-reactifs`, `m7-fournisseurs`, `m7-factures-fournisseurs`.
 - Chaque règle chiffrée est dans `packages/domaine` (domaine : 554 tests) et rejouée sur des vecteurs tirés des écrans réels de la maquette ; poste : 297 tests verts.
 

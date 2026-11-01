@@ -532,12 +532,29 @@ PaiCalcul paiCalculer(PaiFiche employe, int annee, int mois, PaiEntrees e, DateT
       pretsDetail: pretsDetail);
 }
 
-/// `calculerTous(annee, mois)` : tout le personnel ACTIF, dans l'ordre de la collection.
+/// Sans salaire de base, un agent ne se calcule pas (`agentPaye`) : le vidage des jeux de test retire les salaires de démonstration et garde l'effectif ;
+/// calculer une paie sur un salaire inconnu produirait des zéros qui se liraient comme des bulletins à zéro.
+bool paiAgentPaye(PaiFiche e) => nombreOuNul(e['salaireBase']) != null;
+
+/// `calculerTous(annee, mois)` : le personnel ACTIF DONT LE SALAIRE EST RENSEIGNÉ, dans l'ordre de la collection.
 List<PaiCalcul> paiCalculerTous(Iterable<PaiFiche> personnel, int annee, int mois, PaiEntrees e, DateTime aujourdhui) =>
-    [for (final p in personnel.where(_actif)) paiCalculer(p, annee, mois, e, aujourdhui)];
+    [for (final p in personnel.where(_actif).where(paiAgentPaye)) paiCalculer(p, annee, mois, e, aujourdhui)];
 
 /// `C.sum(calc, 'clé')` sur un champ numérique d'un calcul.
 num paiSomme(Iterable<PaiCalcul> l, num Function(PaiCalcul) f) => l.fold<num>(0, (a, c) => a + f(c));
+
+/// `montantPaie(calc, clé)` : le total d'une colonne du calcul, ou « Non calculable » quand aucun agent n'est calculable.
+String paiMontant(Iterable<PaiCalcul> l, num Function(PaiCalcul) f) => l.isEmpty ? 'Non calculable' : money(paiSomme(l, f));
+
+/// `avisSansSalaire()` : le bandeau qui nomme les agents exclus du calcul faute de salaire ; `null` s'ils sont tous calculables.
+String? paiAvisSansSalaire(Iterable<PaiFiche> personnel) {
+  final actifs = personnel.where(_actif).toList();
+  final sans = actifs.where((e) => !paiAgentPaye(e)).length;
+  if (sans == 0) return null;
+  return sans == actifs.length
+      ? 'Aucun salaire de base n’est renseigné : la paie n’est pas calculable. Renseigner les salaires à l’écran Personnel (M10), ou régénérer le jeu de démonstration.'
+      : '${nombre(sans)} agent(s) sans salaire de base sont exclus du calcul.';
+}
 
 /// Le « reste » d'une avance affiché au calcul : la somme des restes dus des avances en cours (jamais négatif).
 num paiResteAvances(Iterable<PaiFiche> avances) => avances.fold<num>(0, (a, x) {
@@ -766,7 +783,7 @@ PaiFiche paiHeuresSupTransform(PaiFiche v, PaiFiche? employe, {required String F
     r['employe'] = employe['nomComplet'];
     r['matricule'] = employe['matricule'];
     r['service'] = employe['service'];
-    r['tauxHoraire'] = paiTauxHoraire(_n(employe['salaireBase']), v['majoration']);
+    if (paiAgentPaye(employe)) r['tauxHoraire'] = paiTauxHoraire(_n(employe['salaireBase']), v['majoration']);
   }
   r['montant'] = _n(v['heures']) * _n(r['tauxHoraire']);
   if (!_vrai(r['reference'])) r['reference'] = reference();
@@ -777,6 +794,7 @@ PaiFiche paiHeuresSupTransform(PaiFiche v, PaiFiche? employe, {required String F
 /// `beforeSave` de l'avance : au plus TROIS mois de salaire. Un refus se nomme ; `null` = accepté (pile au plafond compris).
 String? paiAvanceRefus(num montant, PaiFiche? employe) {
   if (employe == null) return null;
+  if (!paiAgentPaye(employe)) return 'Le salaire de base de l’agent n’est pas renseigné : le plafond de trois mois de salaire ne peut pas être vérifié.';
   final plafond = _n(employe['salaireBase']) * 3;
   if (montant > plafond) return 'Le montant de l’avance ne peut excéder trois mois de salaire (${money(plafond)}).';
   return null;
@@ -870,7 +888,7 @@ class PaiLigneOrtbAgent {
 
 /// `lignes()` de l'écran ORTB : un agent, ses deux parts, son état sur l'exercice (ce qui est prélevé, dû ce mois, à prélever).
 List<PaiLigneOrtbAgent> paiLignesOrtbAgents(Iterable<PaiFiche> personnel, int annee, int mois, PaiEntrees e, DateTime aujourdhui) => [
-      for (final p in personnel.where(_actif))
+      for (final p in personnel.where(_actif).where(paiAgentPaye))
         () {
           final c = paiCalculer(p, annee, mois, e, aujourdhui);
           final d = c.detailOrtb;

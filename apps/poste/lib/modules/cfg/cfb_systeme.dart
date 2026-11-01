@@ -63,7 +63,25 @@ CfbPlanVidage cfbViderActivite(Magasin m, String motif) {
       col.remplacerContenu(const []);
     }
   }
-  m.journaliser('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null, {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'motif': motif});
+  // Les référentiels CONSERVÉS perdent leurs valeurs de démonstration (`S.CHAMPS_DE_TEST_CONSERVES`) : l'effectif reste, pas la rémunération tirée pour le jeu.
+  var valeursRetirees = 0;
+  cfbChampsDeTestConserves.forEach((nom, champs) {
+    final col = m.collection(nom);
+    for (final f in col.toutes) {
+      for (final ch in champs) {
+        if (f[ch] != null) valeursRetirees++;
+      }
+    }
+    col.remplacerContenu([
+      for (final f in col.toutes)
+        {
+          ...f,
+          for (final ch in champs) ch: null,
+        }
+    ]);
+  });
+  m.journaliser('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
+      {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'valeursRetirees': valeursRetirees, 'motif': motif});
   return plan;
 }
 

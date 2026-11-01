@@ -70,8 +70,8 @@
         var auj = planning().filter(function (x) { return x.date === C.iso(AUJ); });
         return [
           { label: 'Effectif total', value: C.num(p.length), icon: 'users-round', tone: 'navy', hint: 'Organigramme de la clinique' },
-          { label: 'Masse salariale (base)', value: C.money(C.sum(p, 'salaireBase')), icon: 'banknote', tone: 'info' },
-          { label: 'Salaire moyen', value: C.money(p.length ? C.sum(p, 'salaireBase') / p.length : 0), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale (base)', value: C.moneyOu(C.sumOuNul(p, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
+          { label: 'Salaire moyen', value: C.moneyOu(C.moyenneOuNul(p, 'salaireBase'), 'Non renseigné'), icon: 'calculator', tone: 'neutral' },
           { label: 'Ancienneté moyenne', value: (p.length ? Math.round(C.sum(p, function (e) { return anciennete(e).ans; }) / p.length * 10) / 10 : 0) + ' ans', icon: 'award', tone: 'success' },
           { label: 'De garde aujourd’hui', value: C.num(auj.filter(function (x) { return x.type === 'garde'; }).length), icon: 'moon', tone: 'danger' },
           { label: 'En permanence', value: C.num(auj.filter(function (x) { return x.type === 'permanence'; }).length), icon: 'sun', tone: 'warning' },
@@ -111,6 +111,9 @@
                 render: function () {
                   var g = C.groupBy(personnel(), 'service');
                   var keys = Object.keys(g);
+                  if (C.sumOuNul(personnel(), 'salaireBase') === null) {
+                    return el('p.text-sm.text-slate-500', { text: 'Aucun salaire de base renseigné : la masse salariale par service n’est pas calculable.' });
+                  }
                   return G.barres(keys, [{ label: 'Masse salariale', data: keys.map(function (k) { return C.sum(g[k], 'salaireBase'); }) }],
                     { horizontal: true, height: 320 });
                 },
@@ -188,7 +191,7 @@
             ['Ancienneté', a.ans + ' an(s) ' + a.mois + ' mois'],
             ['Numéro CNSS', e.cnss], ['Téléphone', e.telephone],
             ['Situation matrimoniale', e.situation],
-            ['Salaire de base', C.money(e.salaireBase)],
+            ['Salaire de base', C.moneyOu(e.salaireBase, 'Non renseigné')],
           ]);
         },
       },
@@ -386,8 +389,8 @@
         { key: 'cnss', label: 'N° CNSS', nowrap: true, render: function (e) { return el('span.font-mono.text-xs.text-slate-500', { text: e.cnss }); } },
         {
           key: 'salaireBase', label: 'Salaire de base', align: 'right',
-          text: function (e) { return C.money(e.salaireBase, false); },
-          render: function (e) { return el('span.font-semibold', { text: C.money(e.salaireBase, false) }); },
+          text: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); },
+          render: function (e) { return el('span.font-semibold', { text: C.moneyOu(e.salaireBase, 'Non renseigné', false) }); },
         },
       ],
       fields: [
@@ -418,8 +421,8 @@
       kpis: function (rows) {
         return [
           { label: 'Effectif', value: C.num(rows.length), icon: 'users-round', tone: 'navy' },
-          { label: 'Masse salariale', value: C.money(C.sum(rows, 'salaireBase')), icon: 'banknote', tone: 'info' },
-          { label: 'Salaire moyen', value: C.money(rows.length ? C.sum(rows, 'salaireBase') / rows.length : 0), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale', value: C.moneyOu(C.sumOuNul(rows, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
+          { label: 'Salaire moyen', value: C.moneyOu(C.moyenneOuNul(rows, 'salaireBase'), 'Non renseigné'), icon: 'calculator', tone: 'neutral' },
           { label: 'Femmes / Hommes', value: C.num(rows.filter(function (e) { return e.sexe === 'F'; }).length) + ' / ' + C.num(rows.filter(function (e) { return e.sexe === 'M'; }).length), icon: 'users', tone: 'success' },
         ];
       },
@@ -439,7 +442,7 @@
             { k: 'Date d’embauche', v: C.dateFR(e.dateEmbauche) },
             { k: 'Poste occupé', v: e.poste },
             { k: 'Numéro CNSS', v: e.cnss },
-            { k: 'Salaire de base', v: C.money(e.salaireBase) },
+            { k: 'Salaire de base', v: C.moneyOu(e.salaireBase, 'Non renseigné') },
           ]),
           signatures: [{ role: 'L’Agent', nom: e.nomComplet }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
         });
@@ -4634,7 +4637,7 @@
           { key: 'fonction', label: 'Fonction', text: fonctionLabel, render: function (e) { return U.badge(fonctionLabel(e.fonction), e.fonction === 'securite' ? 'navy' : 'info'); } },
           { key: 'poste', label: 'Poste' },
           { key: 'dateEmbauche', label: 'Embauche', nowrap: true, text: function (e) { return C.dateFR(e.dateEmbauche); }, render: function (e) { return C.dateFR(e.dateEmbauche); } },
-          { key: 'salaireBase', label: 'Salaire', align: 'right', text: function (e) { return C.money(e.salaireBase, false); }, render: function (e) { return C.money(e.salaireBase, false); } },
+          { key: 'salaireBase', label: 'Salaire', align: 'right', text: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); }, render: function (e) { return C.moneyOu(e.salaireBase, 'Non renseigné', false); } },
         ],
         }));
         U.icons(blocAgents);
@@ -5207,7 +5210,8 @@
       /* La collection est amorcée par CET écran : lui seul la lit. */
       function amorcer() {
         var col = colFichesPoste();
-        if (col.all().length) return;
+        /* Un jeu vidé ne recense plus les postes d'office : les fiches de démonstration ne renaissent pas. */
+        if (col.all().length || !S.amorcable('fichesPoste')) return;
         documentees().forEach(function (f) { col.insert(Object.assign({ redigee: true }, f)); });
         /* Les autres postes reçoivent une fiche VIDE, marquée : la clinique
            n'a remis que deux documents, en inventer douze donnerait des
@@ -5271,11 +5275,18 @@
             hint: 'ils rendent l’évaluation NS 131 mesurable' },
         ]));
 
-        vue.appendChild(K.note('Seules <strong>deux fiches</strong> proviennent d’un document remis par la '
-          + 'clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est '
-          + '<strong>vide, marquée « à rédiger »</strong> — les inventer donnerait à la clinique des missions '
-          + 'qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents.',
-        { tone: 'warning', icon: 'file-question' }));
+        if (!rows.length) {
+          vue.appendChild(K.note('Aucune fiche de poste n’est enregistrée. Les fiches de démonstration (deux '
+            + 'descriptions remises par la clinique, vingt-six postes recensés « à rédiger ») reviennent avec '
+            + '« Régénérer le jeu de données » ; sinon, créer une fiche avec « Nouvelle fiche de poste ».',
+          { tone: 'info', icon: 'file-question' }));
+        } else {
+          vue.appendChild(K.note('Seules <strong>deux fiches</strong> proviennent d’un document remis par la '
+            + 'clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est '
+            + '<strong>vide, marquée « à rédiger »</strong> — les inventer donnerait à la clinique des missions '
+            + 'qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents.',
+          { tone: 'warning', icon: 'file-question' }));
+        }
 
         vue.appendChild(U.dataTable({
           rows: C.sortBy(rows, 'intitule'),

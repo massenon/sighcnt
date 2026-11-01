@@ -183,14 +183,18 @@ String rhaAncienneteMoyenne(List<RhaFiche> p, DateTime auj) {
   return '${rhaNombreJs(arrondiJs(somme / p.length * 10) / 10)} ans';
 }
 
-String rhaSalaireMoyen(List<RhaFiche> p) => money(p.isEmpty ? 0 : rhaSomme(p, 'salaireBase') / p.length);
+/// Salaire moyen des seuls agents dont le salaire est renseigné ; « Non renseigné » si aucun (jeu vidé de ses salaires de démonstration).
+String rhaSalaireMoyen(List<RhaFiche> p) => moneyOu(moyenneOuNul(p.map((e) => e['salaireBase'])), 'Non renseigné');
+
+/// Masse salariale de base ; « Non renseignée » tant qu'aucun salaire n'est saisi : un zéro se lirait comme une clinique sans salaires.
+String rhaMasseSalariale(Iterable<RhaFiche> p) => moneyOu(sommeOuNul(p.map((e) => e['salaireBase'])), 'Non renseignée');
 
 /// Indicateurs du tableau de bord RH (`m10-dashboard`).
 List<RhaKpi> rhaKpisDashboard(List<RhaFiche> personnel, List<RhaFiche> planningDuJour, DateTime auj) {
   int de(bool Function(RhaFiche) t) => planningDuJour.where(t).length;
   return [
     RhaKpi('Effectif total', nombre(personnel.length), indice: 'Organigramme de la clinique', ton: 'navy'),
-    RhaKpi('Masse salariale (base)', money(rhaSomme(personnel, 'salaireBase')), ton: 'info'),
+    RhaKpi('Masse salariale (base)', rhaMasseSalariale(personnel), ton: 'info'),
     RhaKpi('Salaire moyen', rhaSalaireMoyen(personnel)),
     RhaKpi('Ancienneté moyenne', rhaAncienneteMoyenne(personnel, auj), ton: 'success'),
     RhaKpi('De garde aujourd’hui', nombre(de((x) => x['type'] == 'garde')), ton: 'danger'),
@@ -237,7 +241,7 @@ List<({String libelle, int nombre})> rhaRepartitionPlanning(List<RhaFiche> duJou
 /// Indicateurs de `m10-personnel` (sur les fiches ACTIVES).
 List<RhaKpi> rhaKpisPersonnel(List<RhaFiche> rows) => [
       RhaKpi('Effectif', nombre(rows.length), ton: 'navy'),
-      RhaKpi('Masse salariale', money(rhaSomme(rows, 'salaireBase')), ton: 'info'),
+      RhaKpi('Masse salariale', rhaMasseSalariale(rows), ton: 'info'),
       RhaKpi('Salaire moyen', rhaSalaireMoyen(rows)),
       RhaKpi('Femmes / Hommes', '${nombre(rows.where((e) => e['sexe'] == 'F').length)} / ${nombre(rows.where((e) => e['sexe'] == 'M').length)}', ton: 'success'),
     ];

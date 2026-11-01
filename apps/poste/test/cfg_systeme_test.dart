@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles, cfbPlanVidage;
+import 'package:sigh_domaine/sigh_domaine.dart' show cfbChampsDeTestConserves, cfbEssentielles, cfbPlanVidage;
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/modules/cfg/cfb_systeme.dart';
@@ -131,6 +131,15 @@ void main() {
     final patients = m.collection('patients').toutes.length;
     final auditAvant = m.collection('audit').toutes.length;
     final plan = cfbPlanVidage({for (final n in cfbNomsCollections()) n: m.collection(n).toutes.length}, {...cfbEssentielles, ...cfbCollectionsTechniques});
+    final effectif = m.collection('personnel').toutes.length;
+    final fiches = m.collection('fichesPoste').toutes.length;
+    var valeursDeTest = 0;
+    for (final f in m.collection('personnel').toutes) {
+      for (final ch in cfbChampsDeTestConserves['personnel']!) {
+        if (f[ch] != null) valeursDeTest++;
+      }
+    }
+    expect(valeursDeTest, greaterThan(0), reason: 'le jeu porte des salaires de démonstration');
     await ouvrirM14(t, m, 'cfg-systeme');
     await onglet(t, 'reinitialisation');
     await toucherM14(t, find.byKey(const Key('cfb:reinit:bascule')));
@@ -159,7 +168,17 @@ void main() {
     expect(m.collection('audit').toutes.length, greaterThanOrEqualTo(auditAvant), reason: 'le journal se garde : il trace ce que le vidage conserve');
     final j = m.collection('audit').toutes.first;
     expect([j['action'], j['module'], j['entite'], j['reference']], ['Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage']);
-    expect(j['apres'], {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'motif': 'Fin de la recette'});
+    expect(j['apres'], {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'valeursRetirees': valeursDeTest, 'motif': 'Fin de la recette'});
+    // Retour de la Direction du 01/11/2026 : l'effectif reste, ni sa rémunération de démonstration ni les fiches de poste.
+    expect(m.collection('personnel').toutes.length, effectif);
+    for (final f in m.collection('personnel').toutes) {
+      for (final ch in cfbChampsDeTestConserves['personnel']!) {
+        expect(f[ch], isNull, reason: '$ch de ${f['nomComplet']} est une valeur de démonstration');
+      }
+    }
+    expect(fiches, greaterThan(0));
+    expect(m.collection('fichesPoste').toutes, isEmpty, reason: 'les fiches de poste de démonstration ne sont plus conservées');
+    expect(cfbEssentielles, isNot(contains('fichesPoste')));
     expect(find.textContaining('table(s) vidée(s)'), findsOneWidget);
     // verrouiller de nouveau : les boutons disparaissent
     await toucherM14(t, find.byKey(const Key('cfb:reinit:bascule')));

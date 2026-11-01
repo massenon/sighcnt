@@ -18,6 +18,23 @@
   var PP = D.PARAM_PAIE;
 
   function personnel() { return S.collection('personnel').active(); }
+  /* SANS SALAIRE DE BASE, UN AGENT NE SE CALCULE PAS (01/11/2026). Le vidage des jeux de test retire les salaires de
+     démonstration et garde l'effectif : calculer une paie sur un salaire inconnu produirait des zéros qui se liraient
+     comme des bulletins à zéro. Ces agents sont exclus du calcul, et l'écran le dit. */
+  function agentPaye(e) { var s = e.salaireBase; return s !== null && s !== undefined && s !== '' && isFinite(Number(s)); }
+  function personnelPaye() { return personnel().filter(agentPaye); }
+  /* Total d'une colonne du calcul, ou « Non calculable » quand aucun agent n'est calculable. */
+  function montantPaie(calc, cle) { return calc.length ? C.money(C.sum(calc, cle)) : 'Non calculable'; }
+  /** Le bandeau qui nomme les agents exclus du calcul faute de salaire ; null s'ils sont tous calculables. */
+  function avisSansSalaire() {
+    var sans = personnel().length - personnelPaye().length;
+    if (!sans) return null;
+    return K.note(personnelPaye().length
+      ? C.num(sans) + ' agent(s) sans salaire de base sont exclus du calcul.'
+      : 'Aucun salaire de base n’est renseigné : la paie n’est pas calculable. Renseigner les salaires à l’écran '
+        + 'Personnel (M10), ou régénérer le jeu de démonstration.',
+    { tone: 'warning', icon: 'wallet' });
+  }
   function planning() { return S.collection('planning').active(); }
   function evaluations() { return S.collection('evaluations').active(); }
   function bulletins() { return S.collection('bulletins', { module: 'M11', entite: 'BulletinPaie' }); }
@@ -270,7 +287,7 @@
 
   function calculerTous(annee, mois) {
     amorcerHeuresSup();
-    return personnel().map(function (e) { return calculer(e, annee, mois); });
+    return personnelPaye().map(function (e) { return calculer(e, annee, mois); });
   }
 
   /* ==========================================================================
@@ -283,20 +300,23 @@
       kpis: function () {
         var calc = calculerTous(AUJ.getFullYear(), AUJ.getMonth());
         return [
-          { label: 'Masse salariale brute', value: C.money(C.sum(calc, 'brut')), icon: 'banknote', tone: 'navy' },
-          { label: 'Net à payer', value: C.money(C.sum(calc, 'net')), icon: 'wallet', tone: 'success' },
-          { label: 'Total des primes', value: C.money(C.sum(calc, 'totalPrimes')), icon: 'gift', tone: 'info', hint: 'Barème NS 132' },
-          { label: 'Sanctions (NS 131)', value: C.money(C.sum(calc, 'sanction')), icon: 'trending-down', tone: 'danger' },
-          { label: 'CNSS part ouvrière', value: C.money(C.sum(calc, 'cnssOuvriere')), icon: 'shield', tone: 'warning', hint: PP.cnss.ouvriere + ' %' },
-          { label: 'CNSS part patronale', value: C.money(C.sum(calc, 'cnssPatronale')), icon: 'building-2', tone: 'warning', hint: PP.cnss.patronale + ' %' },
-          { label: 'ITS retenu', value: C.money(C.sum(calc, 'its')), icon: 'landmark', tone: 'info' },
-          { label: 'Coût employeur total', value: C.money(C.sum(calc, 'coutEmployeur')), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale brute', value: montantPaie(calc, 'brut'), icon: 'banknote', tone: 'navy' },
+          { label: 'Net à payer', value: montantPaie(calc, 'net'), icon: 'wallet', tone: 'success' },
+          { label: 'Total des primes', value: montantPaie(calc, 'totalPrimes'), icon: 'gift', tone: 'info', hint: 'Barème NS 132' },
+          { label: 'Sanctions (NS 131)', value: montantPaie(calc, 'sanction'), icon: 'trending-down', tone: 'danger' },
+          { label: 'CNSS part ouvrière', value: montantPaie(calc, 'cnssOuvriere'), icon: 'shield', tone: 'warning', hint: PP.cnss.ouvriere + ' %' },
+          { label: 'CNSS part patronale', value: montantPaie(calc, 'cnssPatronale'), icon: 'building-2', tone: 'warning', hint: PP.cnss.patronale + ' %' },
+          { label: 'ITS retenu', value: montantPaie(calc, 'its'), icon: 'landmark', tone: 'info' },
+          { label: 'Coût employeur total', value: montantPaie(calc, 'coutEmployeur'), icon: 'calculator', tone: 'neutral' },
         ];
       },
       sections: [
         {
           render: function () {
             var calc = calculerTous(AUJ.getFullYear(), AUJ.getMonth());
+            if (!calc.length) {
+              return avisSansSalaire() || U.empty('Aucun agent à calculer.', { icon: 'users-round' });
+            }
             return K.charts([
               {
                 title: 'Décomposition de la masse salariale',
@@ -335,7 +355,8 @@
                 title: 'Évolution de la masse salariale (12 mois)',
                 render: function () {
                   var labels = G.moisGlissants(12);
-                  var base = C.sum(personnel(), 'salaireBase');
+                  var base = C.sum(personnelPaye(), 'salaireBase');
+                  if (!personnelPaye().length) return U.empty('Masse salariale non calculable : aucun salaire de base renseigné.', { icon: 'banknote' });
                   var rnd = C.seeded(1733);
                   return G.ligne(labels, [{
                     label: 'Masse salariale',
@@ -400,11 +421,12 @@
         var calc = calculs();
         C.clear(vue);
 
+        if (avisSansSalaire()) vue.appendChild(avisSansSalaire());
         vue.appendChild(U.kpiGrid([
           { label: 'Agents concernés', value: C.num(calc.length), icon: 'users-round', tone: 'navy' },
-          { label: 'Masse salariale brute', value: C.money(C.sum(calc, 'brut')), icon: 'banknote', tone: 'info' },
-          { label: 'Total des retenues', value: C.money(C.sum(calc, 'totalRetenues')), icon: 'trending-down', tone: 'warning' },
-          { label: 'Net à payer', value: C.money(C.sum(calc, 'net')), icon: 'wallet', tone: 'success' },
+          { label: 'Masse salariale brute', value: montantPaie(calc, 'brut'), icon: 'banknote', tone: 'info' },
+          { label: 'Total des retenues', value: montantPaie(calc, 'totalRetenues'), icon: 'trending-down', tone: 'warning' },
+          { label: 'Net à payer', value: montantPaie(calc, 'net'), icon: 'wallet', tone: 'success' },
         ]));
 
         vue.appendChild(U.dataTable({
@@ -604,9 +626,9 @@
           sousTitre: C.MOIS[Number(selMois.value)] + ' 2026',
           cartouche: [['Période', C.MOIS[Number(selMois.value)] + ' 2026'],
             ['Effectif', C.num(calc.length)],
-            ['Masse salariale brute', C.money(C.sum(calc, 'brut'))],
-            ['Net à payer', C.money(C.sum(calc, 'net'))],
-            ['CNSS totale', C.money(C.sum(calc, 'cnssOuvriere') + C.sum(calc, 'cnssPatronale'))],
+            ['Masse salariale brute', montantPaie(calc, 'brut')],
+            ['Net à payer', montantPaie(calc, 'net')],
+            ['CNSS totale', montantPaie(calc, function (x) { return x.cnssOuvriere + x.cnssPatronale; })],
             ['Date d’édition', C.dateFR(AUJ)]],
           contenu: P.tableau([
             { label: 'Mat.', value: function (c) { return c.employe.matricule; } },
@@ -858,22 +880,23 @@
       function afficher() {
         var c = calc();
         C.clear(vue);
+        if (avisSansSalaire()) vue.appendChild(avisSansSalaire());
         vue.appendChild(U.kpiGrid([
-          { label: 'CNSS part ouvrière', value: C.money(C.sum(c, 'cnssOuvriere')), icon: 'user', tone: 'warning', hint: PP.cnss.ouvriere + ' % du brut' },
-          { label: 'CNSS part patronale', value: C.money(C.sum(c, 'cnssPatronale')), icon: 'building-2', tone: 'warning', hint: PP.cnss.patronale + ' % du brut' },
-          { label: 'CNSS totale à verser', value: C.money(C.sum(c, 'cnssOuvriere') + C.sum(c, 'cnssPatronale')), icon: 'landmark', tone: 'danger' },
-          { label: 'ITS retenu', value: C.money(C.sum(c, 'its')), icon: 'receipt', tone: 'info' },
-          { label: 'VPS', value: C.money(C.sum(c, 'vps')), icon: 'percent', tone: 'navy', hint: PP.vps.taux + ' % du brut' },
+          { label: 'CNSS part ouvrière', value: montantPaie(c, 'cnssOuvriere'), icon: 'user', tone: 'warning', hint: PP.cnss.ouvriere + ' % du brut' },
+          { label: 'CNSS part patronale', value: montantPaie(c, 'cnssPatronale'), icon: 'building-2', tone: 'warning', hint: PP.cnss.patronale + ' % du brut' },
+          { label: 'CNSS totale à verser', value: montantPaie(c, function (x) { return x.cnssOuvriere + x.cnssPatronale; }), icon: 'landmark', tone: 'danger' },
+          { label: 'ITS retenu', value: montantPaie(c, 'its'), icon: 'receipt', tone: 'info' },
+          { label: 'VPS', value: montantPaie(c, 'vps'), icon: 'percent', tone: 'navy', hint: PP.vps.taux + ' % du brut' },
           {
-            label: 'ORTB Radio', value: C.money(C.sum(c, 'ortbRadio')), icon: 'radio-tower', tone: 'neutral',
+            label: 'ORTB Radio', value: montantPaie(c, 'ortbRadio'), icon: 'radio-tower', tone: 'neutral',
             hint: 'Tous les salariés · prélevée en mars',
           },
           {
-            label: 'ORTB Télé', value: C.money(C.sum(c, 'ortbTele')), icon: 'tv', tone: 'neutral',
+            label: 'ORTB Télé', value: montantPaie(c, 'ortbTele'), icon: 'tv', tone: 'neutral',
             hint: 'Au-delà de 60 000 F · prélevée en juin',
           },
-          { label: 'Masse salariale brute', value: C.money(C.sum(c, 'brut')), icon: 'banknote', tone: 'success' },
-          { label: 'Coût employeur', value: C.money(C.sum(c, 'coutEmployeur')), icon: 'calculator', tone: 'neutral' },
+          { label: 'Masse salariale brute', value: montantPaie(c, 'brut'), icon: 'banknote', tone: 'success' },
+          { label: 'Coût employeur', value: montantPaie(c, 'coutEmployeur'), icon: 'calculator', tone: 'neutral' },
         ]));
 
         vue.appendChild(U.dataTable({
@@ -953,7 +976,7 @@
           titre: titre,
           sousTitre: C.MOIS[Number(selMois.value)] + ' 2026',
           cartouche: [['Période', C.MOIS[Number(selMois.value)] + ' 2026'],
-            ['Effectif', C.num(c.length)], ['Masse salariale', C.money(C.sum(c, 'brut'))],
+            ['Effectif', C.num(c.length)], ['Masse salariale', montantPaie(c, 'brut')],
             ['Montant à verser', C.money(total)],
             ['IFU employeur', C.BRAND.ifu], ['Date d’édition', C.dateFR(AUJ)]],
           contenu: P.tableau(colonnes, C.sortBy(c, function (x) { return x.employe.nomComplet; })),
@@ -1008,7 +1031,7 @@
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
           if (e) {
             v.employe = e.nomComplet; v.matricule = e.matricule; v.service = e.service;
-            v.tauxHoraire = Math.round(e.salaireBase / 173.33 * (1 + (Number(v.majoration) || 25) / 100));
+            v.tauxHoraire = agentPaye(e) ? Math.round(e.salaireBase / 173.33 * (1 + (Number(v.majoration) || 25) / 100)) : (v.tauxHoraire || 0);
           }
           v.montant = (Number(v.heures) || 0) * (v.tauxHoraire || 0);
           if (!v.reference) v.reference = (record && record.reference) || C.referenceSuivante('HS-', 4, col.all().concat(col.archived()));   /* E680 */
@@ -1091,7 +1114,7 @@
           return [
             {
               name: 'employeId', label: 'Agent', type: 'select', required: true, col: 'full',
-              options: C.sortBy(personnel(), 'nomComplet').map(function (e) { return { value: e.id, label: e.matricule + ' — ' + e.nomComplet + ' (salaire ' + C.money(e.salaireBase) + ')' }; }),
+              options: C.sortBy(personnel(), 'nomComplet').map(function (e) { return { value: e.id, label: e.matricule + ' — ' + e.nomComplet + ' (salaire ' + C.moneyOu(e.salaireBase, 'non renseigné') + ')' }; }),
             },
             { name: 'date', label: 'Date d’octroi', type: 'date', required: true },
             { name: 'montant', label: 'Montant accordé (FCFA)', type: 'money', required: true, min: 1 },
@@ -1113,6 +1136,7 @@
         },
         beforeSave: function (v) {
           var e = personnel().filter(function (x) { return x.id === v.employeId; })[0];
+          if (e && !agentPaye(e)) return 'Le salaire de base de l’agent n’est pas renseigné : le plafond de trois mois de salaire ne peut pas être vérifié.';
           if (e && v.montant > e.salaireBase * 3) {
             return 'Le montant de l’avance ne peut excéder trois mois de salaire (' + C.money(e.salaireBase * 3) + ').';
           }
@@ -1473,7 +1497,7 @@
       /* Un agent, ses deux parts, son état sur l'exercice. */
       function lignes() {
         var mois = Number(selMois.value);
-        return personnel().map(function (e) {
+        return personnelPaye().map(function (e) {
           var c = calculer(e, annee, mois);
           var d = c.detailOrtb || { lignes: [], parCategorie: {} };
           var radio = d.parCategorie.radio || null;
@@ -1504,6 +1528,11 @@
         var totalExercice = C.sum(rows, 'totalAnnuel');
 
         C.clear(vue);
+        if (avisSansSalaire()) vue.appendChild(avisSansSalaire());
+        if (!rows.length) {
+          vue.appendChild(U.empty('Redevances ORTB non calculables : aucun agent n’a de salaire de base renseigné.', { icon: 'radio-tower' }));
+          return;
+        }
         vue.appendChild(U.kpiGrid([
           {
             label: 'ORTB Radio — tous les salariés', value: C.num(rows.length),
@@ -1671,7 +1700,7 @@
   }
 
   global.SIGH.screen('m11-prets-etudes', {
-    title: 'Prêts-études et avances',
+    title: 'Prêts et avances',
     description: 'Décaissements consentis au personnel et recouvrement par retenue sur salaire.',
     regle: 'Une échéance est retenue au bulletin du <strong>seul mois de son échéance</strong>. La porter '
       + 'chaque mois la prélèverait autant de fois qu’il y a de bulletins — c’est le piège déjà rencontré sur '

@@ -14,6 +14,43 @@ String money(Object? v, {bool avecDevise = true}) {
   return avecDevise ? '$s $devise' : s;
 }
 
+/// Le nombre que porte [v], ou `null` s'il n'en porte pas (absent, vide, texte non numérique). Un zéro ET un inconnu ne sont pas la même chose.
+num? nombreOuNul(Object? v) {
+  if (v == null) return null;
+  if (v is num) return v.isFinite ? v : null;
+  final t = '$v'.trim();
+  if (t.isEmpty) return null;
+  final n = num.tryParse(t);
+  return n != null && n.isFinite ? n : null;
+}
+
+/// `C.sumOuNul(arr, key)` : la somme des seules valeurs numériques, `null` quand aucune ligne n'en porte (masse salariale d'un jeu vidé de ses salaires).
+num? sommeOuNul(Iterable<Object?> valeurs) {
+  num? t;
+  for (final v in valeurs) {
+    final n = nombreOuNul(v);
+    if (n != null) t = (t ?? 0) + n;
+  }
+  return t;
+}
+
+/// `C.moyenneOuNul(arr, key)` : moyenne des seules valeurs numériques, `null` s'il n'y en a aucune.
+num? moyenneOuNul(Iterable<Object?> valeurs) {
+  var n = 0;
+  num t = 0;
+  for (final v in valeurs) {
+    final x = nombreOuNul(v);
+    if (x != null) {
+      t += x;
+      n++;
+    }
+  }
+  return n == 0 ? null : t / n;
+}
+
+/// `C.moneyOu(v, mention, withCurrency)` : le montant, ou [mention] (« Non renseigné », « Non calculable ») quand la valeur est inconnue.
+String moneyOu(Object? v, [String mention = 'Non renseigné', bool avecDevise = true]) => nombreOuNul(v) == null ? mention : money(v, avecDevise: avecDevise);
+
 /// `C.num(v, dec)`.
 String nombre(Object? v, [int? decimales]) =>
     grouperMilliers(toFixedJs(nombreOuZero(v), decimales ?? 0));

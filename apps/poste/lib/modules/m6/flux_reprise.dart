@@ -10,7 +10,7 @@ import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'flux_commun.dart';
 
-/// `m6-reprise` — « Reprise SAGE 100 ». Le stock initial n'a pas été saisi : il provient de l'import de l'inventaire « Grand Stock » (SAGE 100, arrêté au 15/07/2026).
+/// `m6-import-grand-stock` — « Importation Grand Stock ». Le stock initial n'a pas été saisi : il provient de l'import de l'inventaire « Grand Stock » (SAGE 100, arrêté au 15/07/2026).
 /// Chaque article conserve sa source, son lot d'import et sa quantité d'origine, afin de distinguer les données reprises des mouvements opérationnels ultérieurs.
 ///
 /// Le document FAIT FOI sur ce qu'il porte ; la valorisation que la clinique saisit pour les références qu'il ne valorise pas est une SURCOUCHE (collection
@@ -20,7 +20,7 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
   const EcranReprise({super.key});
 
   @override
-  String get titre => 'Reprise SAGE 100';
+  String get titre => 'Importation Grand Stock';
 
   @override
   String get description =>

@@ -362,6 +362,13 @@ bool _bulletinDe(PilFiche b, PilFiche a) =>
     (pilVrai(b['nomComplet']) && b['nomComplet'] == a['nomComplet']) ||
     (pilVrai(b['agent']) && b['agent'] == a['nomComplet']);
 
+/// Sans salaire de base (jeu vidé de ses valeurs de démonstration), le coût n'est pas calculable : un zéro se lirait comme un agent qui ne coûte rien.
+bool pilCoutAgentCalculable(PilFiche a) => nombreOuNul(a['salaireBase']) != null;
+
+/// Le message qui remplace le coût d'un agent sans salaire de base.
+String pilCoutAgentNonCalculable(PilFiche a) =>
+    'Le salaire de base de ${a['nomComplet']} n’est pas renseigné : son coût global n’est pas calculable. Le renseigner à la fiche de l’agent (Personnel, M10).';
+
 /// Le coût global d'un agent : le coût EMPLOYEUR (brut + CNSS patronale + VPS) et, à part, les retenues de l'AGENT (CNSS ouvrière, ORTB). L'ITS,
 /// progressif, se lit sur le bulletin — le recalculer ici créerait une seconde vérité.
 PilCoutAgent pilCoutAgent(PilFiche a, Iterable<PilFiche> bulletins, String du, String au) {

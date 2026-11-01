@@ -79,7 +79,7 @@ class FicheEmploye extends StatelessWidget {
           ('Numéro CNSS', e['cnss'] as String?),
           ('Téléphone', e['telephone'] as String?),
           ('Situation matrimoniale', e['situation'] as String?),
-          ('Salaire de base', money(e['salaireBase'])),
+          ('Salaire de base', moneyOu(e['salaireBase'])),
         ]),
       );
 

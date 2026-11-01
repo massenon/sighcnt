@@ -920,9 +920,9 @@
    "commandes": 10
   },
   {
-   "id": "m6-reprise",
+   "id": "m6-import-grand-stock",
    "acces": "ouvert",
-   "titre": "Reprise SAGE 100",
+   "titre": "Importation Grand Stock",
    "kpis": 5,
    "tableaux": 1,
    "onglets": 3,
@@ -1723,7 +1723,7 @@
   {
    "id": "m11-prets-etudes",
    "acces": "ouvert",
-   "titre": "Prêts-études et avances",
+   "titre": "Prêts et avances",
    "kpis": 4,
    "tableaux": 1,
    "onglets": 0,

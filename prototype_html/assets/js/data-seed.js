@@ -1082,7 +1082,7 @@
     var faits = {};
     var agents = personnel();
 
-    /* --- Prêts-études et avances ----------------------------------------- */
+    /* --- Prêts et avances ----------------------------------------- */
     var prets = col('pretsEtudes', { module: 'M11', entite: 'prêt-études', prefix: 'PRT' });
     var OBJETS = {
       pret_etudes: ['Licence en soins infirmiers', 'Formation en gestion hospitalière',

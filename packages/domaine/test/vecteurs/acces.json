@@ -901,8 +901,8 @@
         "href": "pages/m6-etiquetage.php"
        },
        {
-        "label": "Reprise SAGE 100",
-        "href": "pages/m6-reprise.php"
+        "label": "Importation Grand Stock",
+        "href": "pages/m6-import-grand-stock.php"
        },
        {
         "label": "Suivi des ventes",
@@ -1283,7 +1283,7 @@
       "code": "M11",
       "ecrans": [
        {
-        "label": "Prêts-études et avances",
+        "label": "Prêts et avances",
         "href": "pages/m11-prets-etudes.php"
        },
        {

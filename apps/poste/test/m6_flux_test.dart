@@ -433,7 +433,7 @@ void main() {
   group('reprise SAGE 100', () {
     cas('sans surcouche : 32 références restent à valoriser ; la saisie exige une SOURCE', (t) async {
       final m = magasin();
-      await ouvrir(t, m, 'm6-reprise');
+      await ouvrir(t, m, 'm6-import-grand-stock');
       expect(find.text('184'), findsWidgets);
       await toucher(t, find.textContaining('Points à traiter'));
       expect(find.textContaining('32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire'), findsOneWidget);
@@ -455,7 +455,7 @@ void main() {
     });
 
     cas('lecture seule (comptable) : « Valider la reprise » et « Valoriser » sont absents ; le bordereau reste imprimable', (t) async {
-      await ouvrir(t, magasin(), 'm6-reprise', role: 'comptable');
+      await ouvrir(t, magasin(), 'm6-import-grand-stock', role: 'comptable');
       expect(find.widgetWithText(BoutonSigh, 'Valider la reprise'), findsNothing);
       expect(find.widgetWithText(BoutonSigh, 'Éditer le bordereau'), findsOneWidget);
       await toucher(t, find.textContaining('Points à traiter').first);
@@ -464,7 +464,7 @@ void main() {
 
     cas('valider la reprise : confirmée, journalisée (RG-12), le document n\'est pas modifié', (t) async {
       final m = magasin();
-      await ouvrir(t, m, 'm6-reprise');
+      await ouvrir(t, m, 'm6-import-grand-stock');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Valider la reprise'));
       expect(find.text('Valider la reprise du stock initial ?'), findsOneWidget);
       await toucher(t, find.widgetWithText(BoutonSigh, 'Valider la reprise').last);
@@ -473,7 +473,7 @@ void main() {
     });
 
     cas('le bordereau : les totaux sont refaits depuis les lignes (TOTAL GRAND STOCK)', (t) async {
-      await ouvrir(t, magasin(), 'm6-reprise');
+      await ouvrir(t, magasin(), 'm6-import-grand-stock');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Éditer le bordereau'));
       expect(find.text('Bordereau de reprise du stock initial'), findsWidgets);
       expect(find.textContaining('TOTAL GRAND STOCK'), findsWidgets);

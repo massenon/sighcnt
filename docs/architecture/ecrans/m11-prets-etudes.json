@@ -2,15 +2,15 @@
  "id": "m11-prets-etudes",
  "module": "M11",
  "domaine": "RH",
- "libelleManifeste": "Prêts-études et avances",
+ "libelleManifeste": "Prêts et avances",
  "acces": "ouvert",
- "titre": "Prêts-études et avances",
+ "titre": "Prêts et avances",
  "description": "Décaissements consentis au personnel et recouvrement par retenue sur salaire.",
  "fil": [
   "Accueil",
   "RH",
   "Paie & Primes",
-  "Prêts-études et avances"
+  "Prêts et avances"
  ],
  "actions": [
   "Tableau de bord paie",

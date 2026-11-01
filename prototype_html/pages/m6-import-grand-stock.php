@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Pharmacie &amp; Stocks — Système Intégré de Gestion Hospitalière de la Clinique NASSIERA TOO SARL.">
-  <title>Reprise SAGE 100 — SIGH Clinique NASSIERA TOO</title>
+  <title>Importation Grand Stock — SIGH Clinique NASSIERA TOO</title>
   <link rel="icon" href="../assets/img/logo.jpeg">
   <link rel="stylesheet" href="../assets/css/tailwind.css">
 </head>
@@ -35,6 +35,6 @@
   <script src="../assets/js/data-seed.js"></script>
   <script src="../assets/js/modules/_kit.js"></script>
   <script src="../assets/js/modules/m6-stock.js"></script>
-  <script>SIGH.mount("m6-reprise");</script>
+  <script>SIGH.mount("m6-import-grand-stock");</script>
 </body>
 </html>

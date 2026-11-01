@@ -87,6 +87,7 @@ class _EtatCoutAgent extends State<EcranCoutAgent> {
   }
 
   List<Widget> _corps(ContexteEcran c, Fiche a, String du, String au) {
+    if (!pilCoutAgentCalculable(a)) return [pilNote(pilCoutAgentNonCalculable(a), icone: LucideIcons.wallet)];
     final r = pilCoutAgent(a, pilActives(c, 'bulletins'), du, au);
     final note = pilNoteAvances(pilActives(c, 'avances'), a);
     return [

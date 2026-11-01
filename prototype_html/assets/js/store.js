@@ -1992,7 +1992,7 @@
             'm6-mouvements': { voir: false, editer: false, annuler: false },
             'm6-lots': { voir: false, editer: false, annuler: false },
             'm6-inventaire': { voir: true, editer: false, annuler: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
 
             /* L'AVOIR se consulte au guichet — le patient revient avec sa
                pièce — mais son ÉMISSION appartient au Comptable et à la DAF
@@ -2033,7 +2033,7 @@
             'm6-stock-detail': { voir: false },
             'm6-transferts': { voir: false },
             'm6-inventaire': { voir: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
             'm6-point-ventes': { voir: false },
             'm6-point-stock': { voir: false },
             /* Le catalogue et les valeurs de référence du laboratoire sont
@@ -2595,7 +2595,7 @@
           droitsEcrans: {
             'm6-stock-gros': { voir: false },
             'm6-transferts': { voir: false },
-            'm6-reprise': { voir: false },
+            'm6-import-grand-stock': { voir: false },
           },
           definiLe: '2026-09-02', definiPar: 'Direction',
           motif: 'Direction médicale : écrit le clinique (M1-M5), lit le stock et la caisse, ne les '
@@ -3587,7 +3587,7 @@
     /* Paramétrage et référentiels administrés par la clinique */
     'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes', 'banques',
     'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel', 'soignants',
-    'fichesPoste', 'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
+    'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
     'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel',
     /* Comptes, droits et activation des modules */
     'utilisateurs', 'rbac', 'modulesActifs',
@@ -3606,6 +3606,13 @@
   /* Dérivées d'un référentiel : vidées, elles se reconstruisent depuis leur
      document — le vidage ne leur retire rien. */
   var COLLECTIONS_DERIVEES = ['echeancesFiscales'];
+  /* LE PERSONNEL SE GARDE, PAS SA RÉMUNÉRATION DE DÉMONSTRATION (01/11/2026). L'effectif (noms, postes, services)
+     vient de l'organigramme : c'est un référentiel. Le salaire de base, l'échelon et le numéro CNSS sont des valeurs
+     tirées pour le jeu : les garder faisait survivre la masse salariale, le calcul de la paie, les redevances ORTB et
+     le coût de l'agent à « Réinitialiser ». Vidés, ces champs valent `null` : les écrans disent « non renseigné » et
+     la paie dit « non calculable » au lieu d'afficher un zéro. Les fiches de poste ne sont plus conservées non plus :
+     les 26 fiches « à rédiger » étaient recensées d'office depuis l'effectif. */
+  var CHAMPS_DE_TEST_CONSERVES = { personnel: ['salaireBase', 'categorie', 'cnss'] };
 
   function essentielle(nom) { return COLLECTIONS_ESSENTIELLES.indexOf(nom) >= 0; }
   /** Le magasin a-t-il été volontairement vidé de ses jeux de test ? */
@@ -3624,6 +3631,15 @@
       lignes += db[k].length; tables++; vidées.push(k);
       db[k] = [];
     });
+    /* Les référentiels conservés perdent leurs valeurs de démonstration (voir CHAMPS_DE_TEST_CONSERVES). */
+    var champsVides = 0;
+    Object.keys(CHAMPS_DE_TEST_CONSERVES).forEach(function (nom) {
+      (db[nom] || []).forEach(function (r) {
+        CHAMPS_DE_TEST_CONSERVES[nom].forEach(function (ch) {
+          if (r[ch] !== null && r[ch] !== undefined) { r[ch] = null; champsVides++; }
+        });
+      });
+    });
     /* LE CALENDRIER FISCAL EST DÉRIVÉ D'UN DOCUMENT : il revient aussitôt, SANS règlement
        inventé — un tableau de bord qui lirait un faux zéro jusqu'à l'ouverture de l'écran
        des échéances est le défaut documenté de la vague 31. */
@@ -3638,8 +3654,8 @@
     save();
     /* Le vidage s'inscrit en tête du journal conservé (RG-12). */
     log('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
-      { tables: tables, enregistrements: lignes, motif: motif || '' });
-    return { tables: tables, enregistrements: lignes, collections: vidées };
+      { tables: tables, enregistrements: lignes, valeursRetirees: champsVides, motif: motif || '' });
+    return { tables: tables, enregistrements: lignes, collections: vidées, valeursRetirees: champsVides };
   }
 
   function reset() {
@@ -3911,7 +3927,7 @@
     rapportsMedicaux: 'M3|Rapports médicaux',
     fileAttente: 'M2|File d’attente',
     fichesPoste: 'M10|Fiches de poste',
-    pretsEtudes: 'M11|Prêts-études et avances',
+    pretsEtudes: 'M11|Prêts et avances',
     facturesMere: 'M9|Factures mères d’assurance',
     ambulances: 'M13|Répertoire des ambulances',
     materiel: 'M13|Parc technique',
@@ -4020,7 +4036,7 @@
     enLot: enLot,
     journaliserAcces: journaliserAcces,
     load: load, save: save, reset: reset, collection: collection,
-    COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, viderActivite: viderActivite,
+    COLLECTIONS_ESSENTIELLES: COLLECTIONS_ESSENTIELLES, CHAMPS_DE_TEST_CONSERVES: CHAMPS_DE_TEST_CONSERVES, viderActivite: viderActivite,
     jeuVide: jeuVide, amorcable: amorcable,
     hydraterServeur: hydraterServeur,
     surServeur: function () { return SRV.actif; },

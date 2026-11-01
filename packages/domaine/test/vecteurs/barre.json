@@ -2025,10 +2025,10 @@
      "groupe": "Écrans",
      "resultats": [
       {
-       "label": "Reprise SAGE 100",
+       "label": "Importation Grand Stock",
        "detail": "Pharmacie & Stocks",
        "icone": "database",
-       "ecran": "m6-reprise",
+       "ecran": "m6-import-grand-stock",
        "onglet": null
       },
       {
@@ -2935,10 +2935,10 @@
      "groupe": "Écrans",
      "resultats": [
       {
-       "label": "Reprise SAGE 100",
+       "label": "Importation Grand Stock",
        "detail": "Pharmacie & Stocks",
        "icone": "database",
-       "ecran": "m6-reprise",
+       "ecran": "m6-import-grand-stock",
        "onglet": null
       }
      ]
@@ -3407,10 +3407,10 @@
      "groupe": "Écrans",
      "resultats": [
       {
-       "label": "Reprise SAGE 100",
+       "label": "Importation Grand Stock",
        "detail": "Pharmacie & Stocks",
        "icone": "database",
-       "ecran": "m6-reprise",
+       "ecran": "m6-import-grand-stock",
        "onglet": null
       },
       {
@@ -3634,10 +3634,10 @@
      "groupe": "Écrans",
      "resultats": [
       {
-       "label": "Reprise SAGE 100",
+       "label": "Importation Grand Stock",
        "detail": "Pharmacie & Stocks",
        "icone": "database",
-       "ecran": "m6-reprise",
+       "ecran": "m6-import-grand-stock",
        "onglet": null
       }
      ]

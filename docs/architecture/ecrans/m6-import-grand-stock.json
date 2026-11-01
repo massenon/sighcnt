@@ -1,16 +1,16 @@
 {
- "id": "m6-reprise",
+ "id": "m6-import-grand-stock",
  "module": "M6",
  "domaine": "Logistique",
- "libelleManifeste": "Reprise SAGE 100",
+ "libelleManifeste": "Importation Grand Stock",
  "acces": "ouvert",
- "titre": "Reprise SAGE 100",
+ "titre": "Importation Grand Stock",
  "description": "Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.",
  "fil": [
   "Accueil",
   "Logistique",
   "Pharmacie & Stocks",
-  "Reprise SAGE 100"
+  "Importation Grand Stock"
  ],
  "actions": [
   "Pharmacie interne — urgences",

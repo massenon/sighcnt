@@ -2040,7 +2040,7 @@
     { document: 'Fiche d’évaluation et de solde (juillet 2026)', devient: 'Modèle d’état imprimable', module: 'M10 / RAP', ecran: 'm10-evaluations', statut: 'Intégré' },
     { document: 'Tarifs des analyses de laboratoire (48)', devient: 'Catalogue laboratoire', module: 'M5', ecran: 'm5-catalogue', statut: 'Intégré — tarifs à confirmer' },
     { document: 'Tarifs des médicaments et accessoires (144)', devient: 'Catalogue tarifaire pharmacie', module: 'M6', ecran: 'cfg-tarifs', statut: 'Intégré — tarifs à confirmer' },
-    { document: 'Inventaire « Grand Stock » (SAGE 100)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-reprise', statut: 'Intégré' },
+    { document: 'Inventaire « Grand Stock » (SAGE 100)', devient: 'Stock initial — 175 articles repris', module: 'M6', ecran: 'm6-import-grand-stock', statut: 'Intégré' },
     { document: 'Facture fournisseur SoBAPS (BL 26LNA00026)', devient: 'Modèle du workflow achat', module: 'M7', ecran: 'm7-receptions', statut: 'Intégré' },
     { document: 'Bon d’expression de besoins (modèle vierge)', devient: 'Workflow de demande interne', module: 'M7', ecran: 'm7-besoins', statut: 'Intégré' },
     { document: 'Classeur comptable SYSCOHADA', devient: 'Plan comptable + journaux', module: 'M12', ecran: 'm12-plan-comptable', statut: 'Intégré — partiel' },
