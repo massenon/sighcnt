@@ -20,3 +20,5 @@ Prototype : domaine « Relais en ligne » de la maquette, module `RLS`, 12 pages
 | `rls-opacite` | Preuve d'opacité | ⬜ | ce que le relais voit et ne voit pas |
 
 Contraintes d'hébergement qui s'imposent à tout écran : PHP ≥ 8.2, PostgreSQL, cron d'une minute, pas de SSH, pas de Redis, pas de WebSocket, pas de `npm`.
+
+Depuis le 01/11/2026, ces douze écrans existent aussi dans `apps/poste` (domaine « Relais en ligne », administrateur seul), lus par la mère ; ce qui n'a pas de source côté poste y est « non disponible » avec le lien vers ce panneau (voir `PARITE-RLS.md`).

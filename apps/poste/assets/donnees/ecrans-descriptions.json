@@ -1,0 +1,1341 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/gen-poste-assets.js depuis docs/architecture/ecrans/*.json, ne pas éditer.",
+ "ecrans": {
+  "adm-enquetes": {
+   "titre": "Enquêtes & questionnaires",
+   "description": "Le générateur de questionnaires : le formulaire de saisie naît du modèle, comme sur KoboCollect."
+  },
+  "adm-satisfaction": {
+   "titre": "Satisfaction des patients",
+   "description": "La lecture de l’enquête de satisfaction : notes moyennes par question, recommandation, derniers commentaires."
+  },
+  "adm-validations": {
+   "titre": "Validations en attente",
+   "description": "Tout ce qui attend une validation, classé par poste et par responsable — avec le chemin vers le geste."
+  },
+  "aide-apropos": {
+   "titre": "Aide & À propos",
+   "description": "Documentation d’usage : présentation du logiciel, guide des modules et foire aux questions."
+  },
+  "cfg-branding": {
+   "titre": "Identité & papier à en-tête",
+   "description": "Paramétrage de l’identité visuelle et des mentions légales reprises sur tous les documents édités."
+  },
+  "cfg-catalogue": {
+   "titre": "Catalogue tarifaire (deux prix)",
+   "description": "Les six grilles officielles : consultations, imageries, analyses, AMI, gynéco-obstétrique, certificats."
+  },
+  "cfg-centres-couts": {
+   "titre": "Centres de coûts",
+   "description": "Axes d’imputation analytique des écritures comptables, administrables par la clinique."
+  },
+  "cfg-certificats": {
+   "titre": "Certificats médicaux",
+   "description": "Génération, numérotation et archivage des certificats délivrés par la clinique."
+  },
+  "cfg-comptabilite": {
+   "titre": "Paramètres comptables & obligations",
+   "description": "Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances."
+  },
+  "cfg-compte": {
+   "titre": "Mon compte",
+   "description": "Informations personnelles, sécurité du compte et préférences d’affichage."
+  },
+  "cfg-entetes": {
+   "titre": "Papier à en-tête officiel",
+   "description": "L’unique identité légale imprimée sur tous les états de la clinique."
+  },
+  "cfg-fiscalite": {
+   "titre": "Paramètres fiscaux (IFU / RCCM)",
+   "description": "Identifiants fiscaux, numérotation des documents et paramètres de la facturation normalisée."
+  },
+  "cfg-imagerie-catalogue": {
+   "titre": "Catalogue de l’imagerie",
+   "description": "Examens d’imagerie et variables de leurs comptes rendus : listes de choix, mesures, rubriques."
+  },
+  "cfg-modules": {
+   "titre": "Activité des modules",
+   "description": "Ouvrir ou fermer les activités que la clinique exerce. Un module fermé disparaît du menu sans rien perdre."
+  },
+  "cfg-natures-facture": {
+   "titre": "Natures de facture",
+   "description": "Liste des natures proposées à l’émission d’une facture, administrable par la clinique."
+  },
+  "cfg-notifications": {
+   "titre": "Notifications",
+   "description": "Paramétrage des alertes adressées au personnel, par événement et par canal."
+  },
+  "cfg-organisation": {
+   "titre": "Organisation & organigramme",
+   "description": "Secteurs de la clinique, structure hiérarchique et rôles qui en découlent."
+  },
+  "cfg-poste": {
+   "titre": "Ce poste",
+   "description": "Mode du poste : fileul ou mère. La mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes)."
+  },
+  "cfg-rappels": {
+   "titre": "Rappels & messages",
+   "description": "Modèles de message administrables et rappels à échéance : anniversaires, nouvel an, fêtes, rendez-vous."
+  },
+  "cfg-regles": {
+   "titre": "Règles métier versionnées",
+   "description": "Matrice de traçabilité : chaque règle du système est rattachée au document de cadrage qui la fonde."
+  },
+  "cfg-systeme": {
+   "titre": "Paramètres système",
+   "description": "Configuration technique, environnement d’exécution et outils de maintenance du prototype."
+  },
+  "cfg-tarifs": {
+   "titre": "Référentiel tarifaire",
+   "description": "Tarif unique consommé par la pharmacie, la facturation, les assurances, les rapports et la comptabilité."
+  },
+  "cfg-types-piece": {
+   "titre": "Types de pièces certifiantes",
+   "description": "Les quatorze certificats et attestations que la clinique délivre."
+  },
+  "contact-editeur": {
+   "titre": "Contactez l’éditeur",
+   "description": "Assistance technique, suggestions d’amélioration et signalement d’anomalies."
+  },
+  "dash-admin-agent": {
+   "titre": "Tableau de bord — Agent administratif",
+   "description": "Courriers, réunions, événements, notes de service et gestion documentaire."
+  },
+  "dash-admin": {
+   "titre": "Tableau de bord — Administration système",
+   "description": "Supervision technique : comptes, sessions, journal d’audit, sauvegardes et intégrité des référentiels."
+  },
+  "dash-aide-comptable": {
+   "titre": "Tableau de bord — Assistant Comptable",
+   "description": "Saisie des dépenses et des écritures, réceptions fournisseurs et suivi des créances."
+  },
+  "dash-aide-soignant": {
+   "titre": "Tableau de bord — Aide-soignante",
+   "description": "Patients hospitalisés, soins du jour et visites — sans aucun résultat d’analyse."
+  },
+  "dash-ambulancier": {
+   "titre": "Tableau de bord — Ambulance",
+   "description": "Interventions, transports sanitaires, consultations et soins à domicile."
+  },
+  "dash-anesthesiste": {
+   "titre": "Tableau de bord — Anesthésiste",
+   "description": "Sécurité péri-opératoire : check-listes d’entrée, Glasgow, transfusion et surveillance."
+  },
+  "dash-assistant-comptable": {
+   "titre": "Tableau de bord — Assistant de Direction",
+   "description": "Créances assureur, obligations fiscales, point de caisse et inventaires."
+  },
+  "dash-caissier": {
+   "titre": "Tableau de bord — Caisse",
+   "description": "Encaissements du jour, factures à régler, reliquats et répartition des modes de paiement."
+  },
+  "dash-chirurgien": {
+   "titre": "Tableau de bord — Chirurgien",
+   "description": "Bloc opératoire : check-listes, comptes rendus, transfusion et suites opératoires."
+  },
+  "dash-comptable": {
+   "titre": "Tableau de bord — Comptabilité",
+   "description": "Écritures SYSCOHADA, équilibre des journaux, créances, dettes et rapprochements bancaires."
+  },
+  "dash-croise": {
+   "titre": "Tableau de bord dynamique croisé",
+   "description": "Croiser librement soins, actes, analyses, stock, facturation, patients, personnel et gardes."
+  },
+  "dash-da": {
+   "titre": "Statistiques de la Direction",
+   "description": "Caisse du jour et cumuls par périodicité : médicaments, actes, analyses, soins, par service."
+  },
+  "dash-direction": {
+   "titre": "Tableau de bord — Direction",
+   "description": "Pilotage stratégique : indicateurs financiers, activité, stock et ressources humaines en temps réel."
+  },
+  "dash-echographiste": {
+   "titre": "Tableau de bord — Échographie",
+   "description": "Examens d’imagerie à réaliser et comptes rendus à rendre au prescripteur."
+  },
+  "dash-infirmier": {
+   "titre": "Tableau de bord — Infirmier / Sage-femme",
+   "description": "Patients hospitalisés, relevés de constantes attendus, sorties à préparer et gardes du jour."
+  },
+  "dash-laborantin": {
+   "titre": "Tableau de bord — Laboratoire",
+   "description": "Demandes d’analyses, résultats à saisir, consommation de réactifs et banque de sang."
+  },
+  "dash-maternite": {
+   "titre": "Tableau de bord — Maternité",
+   "description": "Travail en cours, termes de la semaine, grossesses à risque, accouchements et nouveau-nés du mois."
+  },
+  "dash-medecin": {
+   "titre": "Tableau de bord — Médecin",
+   "description": "Consultations du jour, patients hospitalisés sous responsabilité et prescriptions récentes."
+  },
+  "dash-patient": {
+   "titre": "Espace patient",
+   "description": "Vue synthétique remise au patient : parcours de soins, prescriptions, analyses et situation financière."
+  },
+  "dash-pharmacien": {
+   "titre": "Tableau de bord — Pharmacie",
+   "description": "Stock de détail, dispensation, alertes de rupture et suivi des péremptions selon le principe FEFO."
+  },
+  "dash-receptionniste": {
+   "titre": "Tableau de bord — Accueil",
+   "description": "Création de dossiers, rendez-vous du jour, visites et orientation des patients."
+  },
+  "dash-rh": {
+   "titre": "Tableau de bord — Ressources humaines",
+   "description": "Effectif, plannings, présences, évaluations NS 131, primes NS 132 et masse salariale."
+  },
+  "dash-stock": {
+   "titre": "Tableau de bord — Gestion des stocks",
+   "description": "Stock gros et détail, mouvements, cycle d’achat, inventaires et suivi des écarts."
+  },
+  "dash-surveillant": {
+   "titre": "Tableau de bord — Surveillant",
+   "description": "Retards, absences, présences et planning du personnel paramédical."
+  },
+  "ged-archives": {
+   "titre": "Archivage & conservation",
+   "description": "Cycle de vie documentaire : archives actives, archives définitives et durées de conservation."
+  },
+  "ged-bibliotheque": {
+   "titre": "Bibliothèque documentaire",
+   "description": "Ensemble des documents numérisés, indexés et rattachés à leur dossier patient, fournisseur ou employé."
+  },
+  "ged-workflow": {
+   "titre": "Workflow de validation",
+   "description": "Circuit de validation des documents déposés : contrôle, signature et classement."
+  },
+  "hub-cfg": {
+   "titre": "Configuration Clinique",
+   "description": "Tous les écrans du module CFG — Configuration Clinique."
+  },
+  "hub-dash": {
+   "titre": "Tableaux de bord par poste",
+   "description": "Tous les écrans du module DASH — Tableaux de bord par poste."
+  },
+  "hub-ged": {
+   "titre": "Gestion documentaire",
+   "description": "Tous les écrans du module GED — Gestion documentaire."
+  },
+  "hub-m1": {
+   "titre": "Patients & Dossier médical",
+   "description": "Tous les écrans du module M1 — Patients & Dossier médical."
+  },
+  "hub-m10": {
+   "titre": "Ressources humaines",
+   "description": "Tous les écrans du module M10 — Ressources humaines."
+  },
+  "hub-m11": {
+   "titre": "Paie & Primes",
+   "description": "Tous les écrans du module M11 — Paie & Primes."
+  },
+  "hub-m12": {
+   "titre": "Comptabilité SYSCOHADA",
+   "description": "Tous les écrans du module M12 — Comptabilité SYSCOHADA."
+  },
+  "hub-m13": {
+   "titre": "Administration & Ambulance",
+   "description": "Tous les écrans du module M13 — Administration & Ambulance."
+  },
+  "hub-m14": {
+   "titre": "Sécurité & Utilisateurs",
+   "description": "Tous les écrans du module M14 — Sécurité & Utilisateurs."
+  },
+  "hub-m2": {
+   "titre": "RDV, Visites & Consultations",
+   "description": "Tous les écrans du module M2 — RDV, Visites & Consultations."
+  },
+  "hub-m3": {
+   "titre": "Hospitalisation",
+   "description": "Tous les écrans du module M3 — Hospitalisation."
+  },
+  "hub-m4": {
+   "titre": "Maternité, Naissances & Décès",
+   "description": "Tous les écrans du module M4 — Maternité, Naissances & Décès."
+  },
+  "hub-m5": {
+   "titre": "Laboratoire",
+   "description": "Tous les écrans du module M5 — Laboratoire."
+  },
+  "hub-m6": {
+   "titre": "Pharmacie & Stocks",
+   "description": "Tous les écrans du module M6 — Pharmacie & Stocks."
+  },
+  "hub-m7": {
+   "titre": "Achats & Fournisseurs",
+   "description": "Tous les écrans du module M7 — Achats & Fournisseurs."
+  },
+  "hub-m8": {
+   "titre": "Facturation & Caisse",
+   "description": "Tous les écrans du module M8 — Facturation & Caisse."
+  },
+  "hub-m9": {
+   "titre": "Assurances & Créances",
+   "description": "Tous les écrans du module M9 — Assurances & Créances."
+  },
+  "hub-mecef": {
+   "titre": "MECeF — Facture normalisée",
+   "description": "Tous les écrans du module MECEF — MECeF — Facture normalisée."
+  },
+  "hub-mere": {
+   "titre": "Exploitation de la synchronisation",
+   "description": "Tous les écrans du module MERE — Exploitation de la synchronisation."
+  },
+  "hub-pil": {
+   "titre": "Pilotage & analyse",
+   "description": "Tous les écrans du module PIL — Pilotage & analyse."
+  },
+  "hub-rap": {
+   "titre": "Rapports & Impression",
+   "description": "Tous les écrans du module RAP — Rapports & Impression."
+  },
+  "hub-rls": {
+   "titre": "Relais en ligne (apps/web)",
+   "description": "Tous les écrans du module RLS — Relais en ligne (apps/web)."
+  },
+  "m1-antecedents": {
+   "titre": "Antécédents & allergies",
+   "description": "Recensement des antécédents médicaux, chirurgicaux et des allergies connues, consultables depuis toute prescription."
+  },
+  "m1-certificats-externes": {
+   "titre": "Certificats — patients externes",
+   "description": "Page de renvoi : les pièces des patients externes figurent au registre unique."
+  },
+  "m1-constantes": {
+   "titre": "Constantes à l’accueil",
+   "description": "Température, poids, taille, tension, SpO₂ et pouls relevés dès l’arrivée du patient."
+  },
+  "m1-contre-reference": {
+   "titre": "Fiches de contre-référence",
+   "description": "Retours des centres d’accueil sur les patients référés : diagnostic de sortie, concordance, évolution."
+  },
+  "m1-documents": {
+   "titre": "Documents numérisés du patient",
+   "description": "Ordonnances, résultats d’analyses, comptes rendus, consentements et imagerie rattachés au dossier patient."
+  },
+  "m1-dossier-etendu": {
+   "titre": "Dossier de consultation étendu",
+   "description": "Page de renvoi : le dossier de consultation vit désormais dans son propre écran."
+  },
+  "m1-dossier-medical": {
+   "titre": "Dossier médical informatisé",
+   "description": "Fusionné dans le répertoire des patients — un seul point d’entrée du dossier (Bug 1)."
+  },
+  "m1-externe": {
+   "titre": "Patient externe — demande d’analyses",
+   "description": "Transcription de l’ordonnance d’un médecin extérieur, puis orientation vers la caisse."
+  },
+  "m1-numerisation": {
+   "titre": "Plan de numérisation des dossiers",
+   "description": "Suivi de la reprise progressive et priorisée des dossiers patients papier (CDCT §24)."
+  },
+  "m1-patient-nouveau": {
+   "titre": "Ouvrir un dossier patient",
+   "description": "Identité, coordonnées, âge déclaré à défaut de date de naissance et couverture d’assurance — le premier acte du parcours."
+  },
+  "m1-patient-profil": {
+   "titre": "Fiche patient",
+   "description": "Vue consolidée d’un dossier : administratif, médical, hospitalisations, financier et assurance."
+  },
+  "m1-patients": {
+   "titre": "Répertoire des patients",
+   "description": "Dossier patient unique et centralisé : identification, coordonnées, couverture assurance, historique médical et financier."
+  },
+  "m1-pieces": {
+   "titre": "Certificats & attestations",
+   "description": "Délivrance, numérotation et impression des quatorze pièces certifiantes de la clinique."
+  },
+  "m1-reference": {
+   "titre": "Fiches de référence",
+   "description": "Patients orientés vers un autre centre, et patients adressés à la clinique."
+  },
+  "m10-assurance-personnel": {
+   "titre": "Assurance du personnel",
+   "description": "Prestations dispensées aux agents de la clinique, prises en charge à 100 % — hors recettes et hors comptabilité."
+  },
+  "m10-badges-impression": {
+   "titre": "Planche d’impression des badges",
+   "description": "Sélection multiple puis pose sur feuille A4 avec repères de découpe, ou impression carte par carte."
+  },
+  "m10-badges-modeles": {
+   "titre": "Modèles de badge",
+   "description": "Les gabarits : format, orientation, zones imprimées et mentions du verso."
+  },
+  "m10-badges-verification": {
+   "titre": "Vérifier un badge",
+   "description": "Le badge présenté est-il valide ? Réponse immédiate, avec la photo et la fonction — et la vérification est journalisée."
+  },
+  "m10-badges": {
+   "titre": "Badges du personnel",
+   "description": "Un badge par agent : émission, remise, validité, retrait — et le code de contrôle qui permet de le vérifier."
+  },
+  "m10-conges": {
+   "titre": "Congés",
+   "description": "Demandes, validation et suivi des congés annuels et exceptionnels."
+  },
+  "m10-contrats": {
+   "titre": "Contrats",
+   "description": "Contrats de travail des agents : nature, durée, période d’essai et échéances."
+  },
+  "m10-cout-agent": {
+   "titre": "Coût global de l’agent",
+   "description": "Ce que coûte un agent à l’établissement — salaire et charges patronales — et l’historique de ses paies."
+  },
+  "m10-dashboard": {
+   "titre": "Tableau de bord — Ressources humaines",
+   "description": "Effectif, plannings, présences, évaluations, primes et masse salariale."
+  },
+  "m10-employe-profil": {
+   "titre": "Fiche employé",
+   "description": "Vue consolidée d’un agent : informations, planning, primes applicables et historique."
+  },
+  "m10-evaluations": {
+   "titre": "Évaluations mensuelles (NS 131)",
+   "description": "Évaluation du rendement selon les quatre critères de la note de service, avec calcul automatique du prélèvement sur salaire brut."
+  },
+  "m10-evenements": {
+   "titre": "Événements du personnel",
+   "description": "Mariages, naissances, décès et autres événements donnant lieu à une participation du personnel."
+  },
+  "m10-fiches-poste": {
+   "titre": "Fiches de poste",
+   "description": "Identification, missions, indicateurs de performance, relations fonctionnelles et compétences requises."
+  },
+  "m10-missions": {
+   "titre": "Ordres de mission",
+   "description": "Missions et formations du personnel : affectation, prise en charge, validation et états signés."
+  },
+  "m10-participations": {
+   "titre": "Frais de participation",
+   "description": "Participations dues par chaque agent : mode de règlement, encaissement au comptant et retenue sur salaire."
+  },
+  "m10-personnel": {
+   "titre": "Personnel",
+   "description": "Dossiers des agents : identité, fonction, catégorie, ancienneté, numéro CNSS et rémunération de base."
+  },
+  "m10-planning": {
+   "titre": "Planning & gardes",
+   "description": "Planification des gardes, permanences et repos, avec contrôle des incompatibilités."
+  },
+  "m10-presences": {
+   "titre": "Présences & absences",
+   "description": "Pointage quotidien, retards et absences, avec incidence sur l’évaluation mensuelle."
+  },
+  "m10-prestataires": {
+   "titre": "Prestataires externes",
+   "description": "Intervenants extérieurs rémunérés à l’acte : circoncision, hydrotubation, accouchement, analyses, hospitalisation."
+  },
+  "m10-primes": {
+   "titre": "Primes diverses (NS 132)",
+   "description": "Grille des primes par fonction et calcul des primes acquises à partir du planning validé."
+  },
+  "m10-sanctions": {
+   "titre": "Sanctions",
+   "description": "Sanctions issues des évaluations mensuelles et sanctions disciplinaires, avec incidence sur le salaire."
+  },
+  "m10-securite-entretien": {
+   "titre": "Sécurité & entretien",
+   "description": "Planning rotatif des agents de sécurité et d’entretien : permanence et entretien général de la journée."
+  },
+  "m10-stats-gardes": {
+   "titre": "Statistiques de garde",
+   "description": "Nombre de gardes effectuées par agent, par service et par type de vacation, sur la période choisie."
+  },
+  "m10-stats-permanences": {
+   "titre": "Statistiques des permanences",
+   "description": "Nombre de permanences assurées par agent, par service et par fonction, sur la période choisie."
+  },
+  "m10-stats-presence": {
+   "titre": "Taux de présence par service",
+   "description": "Présences, retards et absences par service et par agent, sur la période choisie."
+  },
+  "m11-avances": {
+   "titre": "Avances sur salaire",
+   "description": "Octroi et suivi du remboursement des avances, avec retenue automatique sur le bulletin."
+  },
+  "m11-bulletins": {
+   "titre": "Bulletins de paie",
+   "description": "Bulletins générés, statut de validation et édition avec l’entête officielle de la clinique."
+  },
+  "m11-calcul": {
+   "titre": "Calcul de la paie",
+   "description": "Consolidation automatique : salaire de base, primes du planning, sanctions, cotisations et retenues."
+  },
+  "m11-cotisations": {
+   "titre": "Cotisations CNSS / ITS / VPS",
+   "description": "États des cotisations sociales et fiscales, exploitables pour les déclarations périodiques."
+  },
+  "m11-dashboard": {
+   "titre": "Tableau de bord — Paie",
+   "description": "Masse salariale, primes, cotisations sociales et fiscales, avances et coût employeur."
+  },
+  "m11-heures-sup": {
+   "titre": "Heures supplémentaires",
+   "description": "Déclaration et valorisation des heures effectuées au-delà de l’horaire contractuel."
+  },
+  "m11-ortb": {
+   "titre": "Redevance ORTB",
+   "description": "Redevances audiovisuelles prélevées sur les salaires : catégorie Radio et catégorie Télé, mois de prélèvement et suivi de l’exercice."
+  },
+  "m11-prets-etudes": {
+   "titre": "Prêts-études et avances",
+   "description": "Décaissements consentis au personnel et recouvrement par retenue sur salaire."
+  },
+  "m11-validation": {
+   "titre": "Validation de la paie",
+   "description": "Soumission des bulletins à la Direction pour validation avant diffusion aux agents."
+  },
+  "m12-analytique": {
+   "titre": "Comptabilité analytique",
+   "description": "Charges et produits ventilés par centre de coûts et par secteur d’activité."
+  },
+  "m12-balance": {
+   "titre": "Balance générale & âgée",
+   "description": "Balance des comptes, contrôle d’équilibre et balance âgée des comptes de tiers."
+  },
+  "m12-banques": {
+   "titre": "Banques & rapprochements",
+   "description": "Comptes bancaires, relevés et rapprochement avec la comptabilité."
+  },
+  "m12-baseline-2025": {
+   "titre": "Baseline financière 2025",
+   "description": "Compte de résultat réel de l’exercice 2025, servant de référence de comparaison à l’exercice courant."
+  },
+  "m12-bfr": {
+   "titre": "Besoin en fonds de roulement",
+   "description": "Créances clients, valorisation des stocks et dettes fournisseurs — le besoin de financement du cycle d’exploitation, calculé en continu."
+  },
+  "m12-budgets": {
+   "titre": "Budgets",
+   "description": "Budgétisation par centre de coûts et suivi du réalisé par rapport au prévisionnel."
+  },
+  "m12-cloture": {
+   "titre": "Exercices & clôtures",
+   "description": "Sélecteur d’exercice, pré-clôture, clôture en deux gestes, à-nouveaux et lettrage des tiers."
+  },
+  "m12-compte-resultat": {
+   "titre": "Compte de résultat",
+   "description": "Le compte de résultat au format du feuillet 7/51 de la liasse DGI : déposé ou calculé depuis le journal."
+  },
+  "m12-cout-activite": {
+   "titre": "Coût à l’activité",
+   "description": "Consommables réellement sortis pour un séjour ou un acte, face au montant facturé — marge sur consommables par groupe de prestation."
+  },
+  "m12-dashboard": {
+   "titre": "Tableau de bord — Comptabilité SYSCOHADA",
+   "description": "Équilibre des journaux, trésorerie, charges et produits, créances et dettes."
+  },
+  "m12-depenses": {
+   "titre": "Dépenses journalières",
+   "description": "Saisie au fil de l’eau des charges de trésorerie directes, avec justificatif, écriture automatique et historique."
+  },
+  "m12-echeances": {
+   "titre": "Échéances fiscales & paiements",
+   "description": "Suivi des obligations fiscales et sociales : ce qui est dû, ce qui approche, ce qui est réglé."
+  },
+  "m12-ecritures": {
+   "titre": "Écritures comptables",
+   "description": "Saisie, consultation et validation des écritures, avec contrôle d’équilibre."
+  },
+  "m12-etats-financiers": {
+   "titre": "États financiers de synthèse",
+   "description": "Bilan, compte de résultat, flux de trésorerie, disponibilités et fiche de synthèse — au format de la liasse DGI."
+  },
+  "m12-flux-tresorerie": {
+   "titre": "Tableau des flux de trésorerie",
+   "description": "Le tableau des flux au format du feuillet 8/51 de la liasse DGI : déposé ou calculé depuis le journal, contrôle compris."
+  },
+  "m12-grand-livre": {
+   "titre": "Grand livre",
+   "description": "Détail chronologique des mouvements par compte, avec solde progressif."
+  },
+  "m12-immobilisations": {
+   "titre": "Immobilisations & amortissements",
+   "description": "Registre des immobilisations, plan d’amortissement SEMESTRIEL, cessions et report au bilan."
+  },
+  "m12-journaux": {
+   "titre": "Journaux comptables",
+   "description": "Journaux d’achats, ventes, caisse, banque, salaires, immobilisations et opérations diverses."
+  },
+  "m12-ouverture": {
+   "titre": "Bilan d’ouverture & à-nouveaux",
+   "description": "Report des soldes de bilan au 1ᵉʳ janvier — les à-nouveaux, écrits au journal AN."
+  },
+  "m12-plan-comptable": {
+   "titre": "Plan comptable OHADA",
+   "description": "Référentiel des comptes du plan SYSCOHADA utilisés par la clinique, par classe."
+  },
+  "m12-rentabilite-groupes": {
+   "titre": "Recettes & charges par groupe",
+   "description": "Recettes par groupe de prestation, charges par centre de coûts, et le bénéfice brut par groupe — rapprochement arrêté."
+  },
+  "m12-seuil-rentabilite": {
+   "titre": "Seuil de rentabilité",
+   "description": "Charges fixes et variables, marge sur coût variable, seuil, point mort et marge de sécurité."
+  },
+  "m12-tableau-decisionnel": {
+   "titre": "Tableau de bord décisionnel",
+   "description": "Objectif fixé face au réel atteint, sur quatre axes : trésorerie et BFR, activité clinique, logistique et pharmacie, performance administrative."
+  },
+  "m13-ambulance": {
+   "titre": "Interventions ambulance",
+   "description": "Registre des sorties d’ambulance : transports sanitaires, urgences et évacuations."
+  },
+  "m13-courriers": {
+   "titre": "Courriers (départ / arrivée)",
+   "description": "Registre numérisé du courrier administratif, avec suivi des réponses et des accusés de réception."
+  },
+  "m13-evenements": {
+   "titre": "Événements & notifications",
+   "description": "Événements de la clinique et paramétrage des notifications adressées au personnel."
+  },
+  "m13-maintenance": {
+   "titre": "Parc technique & maintenance",
+   "description": "Équipements de la clinique, état de marche, entretiens périodiques et pannes signalées."
+  },
+  "m13-notes-service": {
+   "titre": "Notes de service",
+   "description": "Notes de service en vigueur, versions et dates d’effet — sources des règles métier du système."
+  },
+  "m13-plan-annuel": {
+   "titre": "Plan annuel de travail",
+   "description": "Programmation annuelle des activités de la clinique, par axe et par trimestre."
+  },
+  "m13-repertoire-ambulances": {
+   "titre": "Répertoire des ambulances",
+   "description": "Numéros d’ambulance tenus à jour par l’accueil, avec appel rapide et disponibilité."
+  },
+  "m13-reunions": {
+   "titre": "Réunions",
+   "description": "Planification des réunions, convocations, ordres du jour et comptes rendus."
+  },
+  "m14-audit": {
+   "titre": "Journal d’audit",
+   "description": "Traçabilité intégrale : création, modification, validation, archivage et connexions."
+  },
+  "m14-roles": {
+   "titre": "Rôles & permissions (RBAC)",
+   "description": "Matrice des droits d’accès par rôle et par module : voir, éditer, annuler. Renommage et archivage des rôles."
+  },
+  "m14-sauvegardes": {
+   "titre": "Sauvegardes & restauration",
+   "description": "Sauvegardes quotidiennes locales, sauvegardes hebdomadaires externalisées et procédure de restauration."
+  },
+  "m14-sessions": {
+   "titre": "Sessions actives",
+   "description": "Connexions en cours, postes de travail et délai d’inactivité avant verrouillage."
+  },
+  "m14-soignants": {
+   "titre": "Prescripteurs & exécutants de soins",
+   "description": "Qui prescrit, qui exécute les soins, et dans quels secteurs."
+  },
+  "m14-taches": {
+   "titre": "Tâches planifiées",
+   "description": "Ce que le serveur évalue à heure fixe — échéances, péremptions, seuils de stock, rendez-vous du lendemain, créances âgées, sauvegarde — et ce qu’il a trouvé."
+  },
+  "m14-utilisateurs": {
+   "titre": "Utilisateurs",
+   "description": "Comptes individuels, rôles attribués, état d’activation et double facteur."
+  },
+  "m2-affichage": {
+   "titre": "Écran d’appel des patients",
+   "description": "Affichage de salle d’attente : numéros appelés et numéros suivants, sans aucune donnée médicale."
+  },
+  "m2-agenda-medecin": {
+   "titre": "Agenda du médecin",
+   "description": "Les consultations d’un praticien — passées, du jour et à venir — lues depuis le registre."
+  },
+  "m2-agenda": {
+   "titre": "Agenda",
+   "description": "Vue calendaire des rendez-vous et consultations, par praticien et par jour."
+  },
+  "m2-consultation-fiche": {
+   "titre": "Fiche de consultation",
+   "description": "Synthèse du dossier de consultation : diagnostic, conduite à tenir, et SEULE étape de prescription — médicaments, analyses, imagerie médicale."
+  },
+  "m2-consultations": {
+   "titre": "Consultations",
+   "description": "Enregistrement des consultations, diagnostics et actes réalisés, avec édition du compte rendu."
+  },
+  "m2-dashboard-imagerie": {
+   "titre": "Poste d’imagerie médicale",
+   "description": "Le premier regard du poste : les examens payés à exécuter, les comptes rendus en rédaction, la file d’attente."
+  },
+  "m2-domicile": {
+   "titre": "Consultations & soins à domicile",
+   "description": "Planification, réalisation et facturation spécifique des prestations réalisées au domicile du patient."
+  },
+  "m2-dossier-consultation-nouveau": {
+   "titre": "Dossier de consultation",
+   "description": "Anamnèse, antécédents, données préalables et examen clinique IPPOA par appareil — la saisie complète du dossier."
+  },
+  "m2-dossiers-consultation": {
+   "titre": "Dossiers de consultation",
+   "description": "Anamnèse, antécédents et examen clinique structuré (IPPOA) par appareil — le dossier que la fiche de consultation récapitule."
+  },
+  "m2-echographie-galerie": {
+   "titre": "Galerie des clichés",
+   "description": "Les clichés d’échographie conservés au poste, rattachés au patient et au compte rendu."
+  },
+  "m2-file-attente": {
+   "titre": "File d’attente",
+   "description": "Gestion des files par poste : ordre d’arrivée tempéré par la priorité de triage."
+  },
+  "m2-file-cabinet": {
+   "titre": "File par cabinet",
+   "description": "Qui attend quel praticien — et le vivier commun, que personne ne doit perdre de vue."
+  },
+  "m2-imagerie-cr": {
+   "titre": "Compte rendu d’imagerie",
+   "description": "En-tête et variables d’un compte rendu d’imagerie — échographie, radiographie, mammographie, scanner ou IRM."
+  },
+  "m2-imagerie-demandes": {
+   "titre": "Demandes d’imagerie médicale",
+   "description": "Le registre des examens demandés, aux mêmes états que le laboratoire : demandé, payé, exécuté, validé."
+  },
+  "m2-imagerie-irm": {
+   "titre": "Tableau IRM — imagerie par résonance magnétique",
+   "description": "Comptes rendus d’IRM — contre-indications, séquences, gadolinium, résultats."
+  },
+  "m2-imagerie-mammographie": {
+   "titre": "Tableau Mammographie",
+   "description": "Comptes rendus de mammographie — densité, masses, microcalcifications, classification ACR par sein."
+  },
+  "m2-imagerie-radiographie": {
+   "titre": "Tableau Radiographie",
+   "description": "Comptes rendus de radiographie standard — thorax, bassin, rachis, membres, crâne, ASP."
+  },
+  "m2-imagerie-scanner": {
+   "titre": "Tableau Scanner",
+   "description": "Comptes rendus de tomodensitométrie — technique, injection de produit de contraste, résultats."
+  },
+  "m2-imagerie": {
+   "titre": "Tableau Échographie",
+   "description": "Comptes rendus d’échographie et d’électrocardiogramme, saisis par variables et rendus au prescripteur."
+  },
+  "m2-ordonnance-nouvelle": {
+   "titre": "Nouvelle ordonnance",
+   "description": "Médicaments, analyses et actes d’une même ordonnance — transmise d’un seul geste à la caisse, à la pharmacie et au laboratoire."
+  },
+  "m2-ordonnances": {
+   "titre": "Ordonnances",
+   "description": "Prescriptions émises, suivi de leur dispensation en pharmacie et réédition."
+  },
+  "m2-pathologies": {
+   "titre": "Pathologies & morbidité",
+   "description": "Référentiel des pathologies de la clinique et tableau de morbidité issu des consultations."
+  },
+  "m2-prescriptions": {
+   "titre": "Prescriptions",
+   "description": "Registre unique des prescriptions d’ordonnance et de soins, quelle qu’en soit l’origine."
+  },
+  "m2-registre-appels": {
+   "titre": "Registre des appels",
+   "description": "Appels entrants et sortants liés à la prise de rendez-vous, aux résultats et au suivi des patients."
+  },
+  "m2-rendezvous": {
+   "titre": "Rendez-vous & visites",
+   "description": "Prise de rendez-vous et enregistrement des venues — patients, individus non enregistrés, affaires privées."
+  },
+  "m2-salle-soins": {
+   "titre": "Salle de soins",
+   "description": "Administrations dues à la salle de soins : ambulatoires et premières administrations des hospitalisés."
+  },
+  "m2-stats-consultations": {
+   "titre": "Statistiques des consultations",
+   "description": "L’activité de consultation par praticien, par type et dans le temps — calculée depuis le registre."
+  },
+  "m2-stats-echographie": {
+   "titre": "Statistiques de l’imagerie médicale",
+   "description": "Activité d’imagerie calculée depuis les registres : examens par type, par mois, délais et part obstétricale."
+  },
+  "m2-visites": {
+   "titre": "Registre des visites de suivi clinique",
+   "description": "Fusionné dans « Rendez-vous & visites » — un seul écran tient les venues, avec ou sans rendez-vous."
+  },
+  "m3-administrations": {
+   "titre": "Administration des traitements",
+   "description": "Administrations dues au service d’hospitalisation, à partir du deuxième passage."
+  },
+  "m3-admissions": {
+   "titre": "Admissions",
+   "description": "Enregistrement des admissions, affectation d’un lit et ouverture du registre d’hospitalisation."
+  },
+  "m3-bloc-checklist": {
+   "titre": "Check-listes du bloc",
+   "description": "Vérifications avant l’incision (entrée) et avant la sortie de salle (sortie)."
+  },
+  "m3-bloc-cro": {
+   "titre": "Comptes rendus opératoires",
+   "description": "Rédaction et impression du compte rendu opératoire du secteur Bloc."
+  },
+  "m3-bons-pansements": {
+   "titre": "Bons de pansement",
+   "description": "Prescription des pansements, réglés à la caisse séance par séance et exécutés en salle de soins."
+  },
+  "m3-chambres": {
+   "titre": "Chambres & lits",
+   "description": "Référentiel des chambres, nomenclature des lits et tarification journalière par catégorie."
+  },
+  "m3-cpa": {
+   "titre": "Consultation pré-anesthésique",
+   "description": "Évaluation avant anesthésie : classe ASA, score de Mallampati, technique proposée, conclusion d’aptitude."
+  },
+  "m3-cr-anesthesie": {
+   "titre": "Comptes rendus d’anesthésie",
+   "description": "Le déroulé anesthésique de l’intervention : technique, agents, incidents, réveil et décision de sortie."
+  },
+  "m3-demande-examen": {
+   "titre": "Demande d’examen",
+   "description": "La fiche de demande d’examen du service : identité complète, indication, urgence par examen ou bilan entier."
+  },
+  "m3-feuille-temperature": {
+   "titre": "Feuille de température",
+   "description": "Relevé numérique des constantes : tension, fréquence cardiaque, saturation, diurèse, poids, taille, fréquence respiratoire et traitement."
+  },
+  "m3-glasgow": {
+   "titre": "Score de Glasgow",
+   "description": "Évaluation de la conscience, adulte et enfant : ouverture des yeux, réponse verbale, réponse motrice."
+  },
+  "m3-observation": {
+   "titre": "Mise en observation",
+   "description": "Surveillance de courte durée : admission en unité d’observation, feuille de constantes, prescriptions ciblées et orientation de sortie."
+  },
+  "m3-plan-lits": {
+   "titre": "Plan des lits",
+   "description": "Visualisation graphique de l’occupation par aile, chambre et lit — nomenclature A1 LIT1, chambres VIP et VVIP."
+  },
+  "m3-rapport": {
+   "titre": "Rapport médical",
+   "description": "Compte rendu complet d’un séjour : anamnèse, examen physique, diagnostics et traitements."
+  },
+  "m3-soins": {
+   "titre": "Feuille de soins",
+   "description": "Actes de soins réalisés au chevet du patient : injections, pansements, perfusions et surveillance."
+  },
+  "m3-sortie-avis-medical": {
+   "titre": "Sortie contre avis médical",
+   "description": "Enregistrement des sorties décidées par le patient contre l’avis du médecin, avec motif et avis du Procureur le cas échéant."
+  },
+  "m3-sorties": {
+   "titre": "Sorties d’hospitalisation",
+   "description": "Préparation et finalisation des sorties : vérification financière, signatures et édition du bon de sortie."
+  },
+  "m3-stats-bloc": {
+   "titre": "Statistiques du bloc & de l’anesthésie",
+   "description": "Comptes rendus opératoires, comptes rendus d’anesthésie et CPA — calculés depuis les registres du bloc."
+  },
+  "m3-stats-hospitalisations": {
+   "titre": "Statistiques des hospitalisations",
+   "description": "Séjours, durée moyenne, occupation des lits et motifs d’admission — calculés depuis le registre."
+  },
+  "m3-surveillance": {
+   "titre": "Fiche de surveillance",
+   "description": "Relevé horodaté des constantes et courbe de surveillance à cinq échelles."
+  },
+  "m3-transfusion": {
+   "titre": "Surveillance transfusionnelle",
+   "description": "Surveillance d’une transfusion à temps imposés : avant la pose, 15 min, toutes les 30 min, fin, 1 h et 2 h après."
+  },
+  "m3-visites-patients": {
+   "titre": "Visites aux patients hospitalisés",
+   "description": "Enregistrement des visites du personnel traitant et des visites familiales, avec dates et heures."
+  },
+  "m4-accouchements": {
+   "titre": "Accouchements",
+   "description": "Enregistrement des accouchements : voie, durée du travail, complications et issue."
+  },
+  "m4-comptes-rendus": {
+   "titre": "Comptes rendus de maternité",
+   "description": "Comptes rendus d’accouchement, de planning familial et d’AMIU."
+  },
+  "m4-cpn": {
+   "titre": "CPN & carte maternelle",
+   "description": "Consultations prénatales structurées : SP1-SP5, MILDA, grossesse à risque, Mébendazole, visites CPN."
+  },
+  "m4-cpon": {
+   "titre": "Consultations post-natales (CPoN)",
+   "description": "CPoN 1 à 3, hémorragie ANTE-partum, HPP, examen puerpéral et état du nouveau-né."
+  },
+  "m4-deces": {
+   "titre": "Registre des décès",
+   "description": "Enregistrement des décès survenus dans l’établissement : date, heure, cause et déclaration."
+  },
+  "m4-dossier-bebe": {
+   "titre": "Dossier bébé & soins du nouveau-né",
+   "description": "PC et PT obligatoires, Apgar aux trois temps, vitamine K1, réanimation et vaccins de naissance."
+  },
+  "m4-dossier-obstetrical-nouveau": {
+   "titre": "Ouvrir un dossier obstétrical",
+   "description": "Identité, antécédents gynéco-obstétricaux, facteurs de surveillance et plan d’accouchement — le cahier de la parturiente s’ouvre ici."
+  },
+  "m4-dossier-obstetrical": {
+   "titre": "Dossier obstétrical",
+   "description": "Le cahier de la parturiente, de la première CPN à la surveillance du deuxième jour — identité, antécédents, facteurs de surveillance, examens, plan d’accouchement."
+  },
+  "m4-maternite": {
+   "titre": "Suivi maternité",
+   "description": "Consultations prénatales, terme, date prévue d’accouchement et niveau de risque obstétrical."
+  },
+  "m4-naissances": {
+   "titre": "Registre des naissances",
+   "description": "Déclaration des naissances : sexe, poids, taille, score d’Apgar et suivi de la déclaration à l’état civil."
+  },
+  "m4-partogramme": {
+   "titre": "Partogramme",
+   "description": "Suivi dynamique du travail : dilatation, lignes d’alerte et d’action, BDF, contractions."
+  },
+  "m4-planification": {
+   "titre": "Planification familiale",
+   "description": "Registre PF : 15 méthodes contraceptives, codification A/N, rendez-vous de renouvellement."
+  },
+  "m4-ptme": {
+   "titre": "Registre PTME",
+   "description": "Prévention de la transmission mère-enfant : dépistage, protocole, enfants exposés, dispensation ARV."
+  },
+  "m4-soins-curatifs": {
+   "titre": "Soins curatifs & urgences maternité",
+   "description": "Registre des consultations curatives : MILDA, femmes référées d’urgence, devenir (Case 27)."
+  },
+  "m4-sonu": {
+   "titre": "Registre SONUB / SONUC",
+   "description": "Urgences obstétricales et néonatales : les 10 fonctions officielles, gestes horodatés, évolution."
+  },
+  "m4-stats-maternite": {
+   "titre": "Statistiques maternité & naissances",
+   "description": "Indicateurs DHIS2/SNIS : CPN, SP, MILDA, GAR, accouchements, PF, vaccination et mortalité."
+  },
+  "m5-banque-sang": {
+   "titre": "Banque de sang",
+   "description": "Gestion des poches de sang par groupe, dates de péremption et demandes de transfusion."
+  },
+  "m5-catalogue": {
+   "titre": "Catalogue des analyses",
+   "description": "Référentiel des 48 analyses réalisées par le laboratoire de la clinique, avec catégorie, échantillon, délai et tarif."
+  },
+  "m5-demandes-hospitalisation": {
+   "titre": "Demandes — hospitalisation",
+   "description": "Les demandes d’analyses des patients hospitalisés ou mis en observation."
+  },
+  "m5-demandes-maternite": {
+   "titre": "Demandes — maternité",
+   "description": "Les demandes d’analyses prescrites par la maternité : CPN, bilans d’admission, suites de couches."
+  },
+  "m5-demandes": {
+   "titre": "Demandes d’analyses",
+   "description": "File des prescriptions de laboratoire, rattachées au dossier patient et à la facturation."
+  },
+  "m5-donneurs": {
+   "titre": "Donneurs & transfusions",
+   "description": "Registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément."
+  },
+  "m5-impression-resultats": {
+   "titre": "Impression des résultats",
+   "description": "Édition des comptes rendus, réservée aux examens réglés : un résultat dont l’examen n’est pas payé reste visible mais ne s’imprime pas."
+  },
+  "m5-prelevement": {
+   "titre": "Salle de prélèvement",
+   "description": "Prélèvement des échantillons après encaissement, et transmission au laboratoire avec le bon d’analyse."
+  },
+  "m5-reactifs-stats": {
+   "titre": "Statistiques des réactifs",
+   "description": "État du stock de réactifs et consommables de laboratoire : valeur, seuils, péremptions, demandes par section."
+  },
+  "m5-reactifs": {
+   "titre": "Réactifs & consommables de laboratoire",
+   "description": "Suivi des stocks de réactifs, consommation rattachée aux analyses réalisées et carnet de demande."
+  },
+  "m5-resultats-comparatif": {
+   "titre": "Comparatif des résultats",
+   "description": "Deux mesures du même examen côte à côte, variable par variable — la colonne « Antériorités » de la fiche de résultats, à l’écran."
+  },
+  "m5-resultats": {
+   "titre": "Saisie des résultats",
+   "description": "Enregistrement, validation biologique et archivage numérique des résultats d’analyses."
+  },
+  "m5-stats-examens": {
+   "titre": "Statistiques des examens",
+   "description": "Les examens du laboratoire selon plusieurs axes : service demandeur, âge, sexe, période, interne ou externe."
+  },
+  "m5-stats": {
+   "titre": "Statistiques du laboratoire",
+   "description": "Examens réalisés par service, âge, sexe, période et origine du patient ; consommation des réactifs."
+  },
+  "m5-unites": {
+   "titre": "Unités de mesure",
+   "description": "Unités dans lesquelles les résultats s’expriment, pré-insérées pour que le laboratoire n’ait pas à les ressaisir."
+  },
+  "m5-valeurs-reference": {
+   "titre": "Valeurs de référence",
+   "description": "Bornes de normalité, unités et type de chaque variable de résultat. Modifiables : elles dépendent du réactif."
+  },
+  "m6-alertes": {
+   "titre": "Alertes & seuils",
+   "description": "Centralisation des alertes de rupture, de seuil minimal et de péremption imminente."
+  },
+  "m6-dashboard": {
+   "titre": "Tableau de bord — Stocks",
+   "description": "Valeur du stock, produits critiques, péremptions, rotation et visualisation par catégorie."
+  },
+  "m6-dispensation": {
+   "titre": "Dispensation",
+   "description": "Délivrance des médicaments aux patients : décompte du stock de détail et rattachement à la facturation."
+  },
+  "m6-etiquetage": {
+   "titre": "Étiquetage & emplacements",
+   "description": "Organisation des rayons et casiers, classement par date de péremption et édition des étiquettes produits."
+  },
+  "m6-inventaire-feuille": {
+   "titre": "Feuille d’inventaire",
+   "description": "Comptage physique article par article sur un magasin nommé, écarts calculés en direct et valorisés au CUMP."
+  },
+  "m6-inventaire": {
+   "titre": "Inventaires",
+   "description": "Inventaire mensuel et annuel : comparaison automatique entre stock physique saisi et stock théorique du système."
+  },
+  "m6-lots": {
+   "titre": "Lots & péremptions (FEFO)",
+   "description": "Suivi des lots par date de péremption, application du principe « premier périmé, premier sorti »."
+  },
+  "m6-mouvements": {
+   "titre": "Mouvements de stock",
+   "description": "Registre chronologique de tous les mouvements : entrées, sorties, transferts, pertes, casses, péremptions et régularisations."
+  },
+  "m6-pertes": {
+   "titre": "Pertes, casses & rebuts",
+   "description": "Traçabilité des pertes, bris de flacons, flacons vides et rebuts de stock, avec valorisation comptable de la perte."
+  },
+  "m6-pharmacie-externe": {
+   "titre": "Pharmacie externe — voie orale",
+   "description": "Traitements par voie orale que le patient emporte : délivrance au comptoir sur ordonnance réglée."
+  },
+  "m6-pharmacie-interne": {
+   "titre": "Pharmacie interne — urgences",
+   "description": "Produits administrés sur place : injectables, perfusions et solutés remis à la salle de soins."
+  },
+  "m6-point-stock": {
+   "titre": "Point du stock valorisé",
+   "description": "Stock restant, reçu, entré et sorti — au magasin et à la pharmacie — avec sa valeur en francs."
+  },
+  "m6-point-ventes": {
+   "titre": "Suivi des ventes",
+   "description": "Ventes de la caisse par période, par client, par article et par groupe de prestation, avec impression détaillée ou globale."
+  },
+  "m6-produits": {
+   "titre": "Référentiel produits",
+   "description": "Catalogue de tous les articles gérés : médicaments, réactifs, consommables, fournitures, entretien, petit matériel et immobilisations."
+  },
+  "m6-reprise": {
+   "titre": "Reprise SAGE 100",
+   "description": "Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock."
+  },
+  "m6-stock-detail": {
+   "titre": "Stock détail (pharmacie d’urgence)",
+   "description": "Situation de la pharmacie d’urgence : dispensation aux patients et aux services de soins."
+  },
+  "m6-stock-gros": {
+   "titre": "Stock gros (magasin central)",
+   "description": "Situation du magasin central : réceptions fournisseurs et approvisionnement de la pharmacie de détail."
+  },
+  "m6-transferts": {
+   "titre": "Transferts gros → détail",
+   "description": "Approvisionnement de la pharmacie d’urgence depuis le magasin central, avec traçabilité complète."
+  },
+  "m7-besoins": {
+   "titre": "Bons d’expression de besoins",
+   "description": "Demandes internes des services : désignation, date, secteur demandeur, quantité voulue et quantité accordée."
+  },
+  "m7-commandes": {
+   "titre": "Bons de commande",
+   "description": "Commandes fournisseurs, validation par la Directrice Administrative et transmission."
+  },
+  "m7-ecarts": {
+   "titre": "Écarts de livraison",
+   "description": "Suivi des manquants entre commande et livraison, avec prise en compte automatique lors de la livraison suivante."
+  },
+  "m7-factures-fournisseurs": {
+   "titre": "Factures fournisseurs",
+   "description": "Rapprochement facture pro-forma → validation → facture normalisée → bordereau de livraison."
+  },
+  "m7-fournisseurs": {
+   "titre": "Fournisseurs",
+   "description": "Référentiel des fournisseurs, habilitation pour les retours de produits périmés et historique des commandes."
+  },
+  "m7-livraisons": {
+   "titre": "Bons de livraison",
+   "description": "Bordereaux de livraison fournisseurs, rapprochés des bons de commande correspondants."
+  },
+  "m7-pv-reception-consommables": {
+   "titre": "PV de réception — consommables",
+   "description": "Procès-verbaux de réception des consommables : quantités, écarts, réserves et signatures."
+  },
+  "m7-pv-reception-reactifs": {
+   "titre": "PV de réception — réactifs",
+   "description": "Procès-verbaux de réception des réactifs de laboratoire : chaîne du froid, lots, écarts, réserves."
+  },
+  "m7-receptions": {
+   "titre": "Réceptions & contrôles",
+   "description": "Réception physique des livraisons, vérification contradictoire par 2 à 3 personnes et entrée en stock gros."
+  },
+  "m8-caisse": {
+   "titre": "État de caisse journalier",
+   "description": "Arrêté de caisse : encaissements du jour ventilés par mode de règlement et par nature de prestation."
+  },
+  "m8-dashboard": {
+   "titre": "Tableau de bord — Facturation & Caisse",
+   "description": "Chiffre d’affaires, encaissements, reliquats, répartition des règlements et recettes par activité."
+  },
+  "m8-facturation": {
+   "titre": "Nouvelle facture",
+   "description": "Établissement d’une facture : sélection du patient, ajout des prestations et médicaments, calcul de la prise en charge et encaissement."
+  },
+  "m8-facture-avoir": {
+   "titre": "Factures d’avoir",
+   "description": "Contre-passation d’une pièce émise : erreur, interruption de soins, évacuation après paiement."
+  },
+  "m8-factures": {
+   "titre": "Factures",
+   "description": "Ensemble des factures émises, avec suivi du règlement, de la prise en charge assurance et de la transmission MECeF."
+  },
+  "m8-operations": {
+   "titre": "Opérations de caisse",
+   "description": "Tickets, factures et avoirs passés en caisse, avec inventaire journalier ou hebdomadaire."
+  },
+  "m8-paiements": {
+   "titre": "Paiements",
+   "description": "Encaissements par espèces, terminal de paiement électronique, MTN Mobile Money et Moov Money."
+  },
+  "m8-proforma": {
+   "titre": "Factures pro-forma",
+   "description": "Estimations remises au patient ou à l’assureur avant réalisation des prestations."
+  },
+  "m8-recettes": {
+   "titre": "Recettes par période",
+   "description": "Recettes encaissées par journée, semaine, mois, trimestre, semestre ou année, avec plage libre."
+  },
+  "m8-reliquats": {
+   "titre": "Reliquats",
+   "description": "Suivi des règlements différés et des écarts à régulariser, y compris par Mobile Money."
+  },
+  "m8-remboursements": {
+   "titre": "Remboursements & annulations",
+   "description": "Traitement des remboursements de trop-perçus et des annulations de factures, avec motif obligatoire."
+  },
+  "m9-assures": {
+   "titre": "Assurés & cartes",
+   "description": "Fiche assuré : compagnie, numéro de police, catégorie de carte, taux et date d’expiration."
+  },
+  "m9-compagnies": {
+   "titre": "Compagnies d’assurance partenaires",
+   "description": "Référentiel des compagnies conventionnées avec la clinique : coordonnées, convention, assurés et créances."
+  },
+  "m9-conventions": {
+   "titre": "Conventions & garanties",
+   "description": "Grille de prise en charge par souscripteur : taux et plafonds par catégorie, exclusions et accords préalables."
+  },
+  "m9-creances": {
+   "titre": "Créances assureurs",
+   "description": "Suivi des montants dus par les compagnies, par ancienneté et par compagnie."
+  },
+  "m9-dashboard": {
+   "titre": "Tableau de bord — Assurances",
+   "description": "Assurés, validité des cartes, prises en charge, créances par compagnie et relances."
+  },
+  "m9-facture-mere": {
+   "titre": "Facture mère assurance",
+   "description": "Pièce unique adressée à une compagnie, consolidant toutes ses factures par souscripteur."
+  },
+  "m9-factures-assureur": {
+   "titre": "Relevé & facture mensuelle assureur",
+   "description": "Relevé détaillé des prestations par souscripteur et facture consolidée transmise à la compagnie."
+  },
+  "m9-historique": {
+   "titre": "Historique par assureur",
+   "description": "Détail des prestations consommées par compagnie, souscripteur et assuré, sur une plage libre."
+  },
+  "m9-prises-en-charge": {
+   "titre": "Prises en charge",
+   "description": "Factures comportant une part assurance, avec répartition entre le patient et le tiers payeur."
+  },
+  "m9-relances": {
+   "titre": "Relances",
+   "description": "Suivi des relances adressées aux compagnies pour les créances en souffrance."
+  },
+  "mecef-avoirs": {
+   "titre": "Avoirs & annulations",
+   "description": "Émission des avoirs rectificatifs et suivi des factures annulées auprès de l’administration fiscale."
+  },
+  "mecef-config": {
+   "titre": "Configuration fiscale",
+   "description": "Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes."
+  },
+  "mecef-dashboard": {
+   "titre": "Tableau de bord fiscal — MECeF",
+   "description": "Supervision de l’émission et de la transmission des factures normalisées à l’administration fiscale."
+  },
+  "mecef-factures": {
+   "titre": "Factures normalisées",
+   "description": "Registre fiscal des factures normalisées, avec identifiant MECeF, montant déclaré et TVA collectée."
+  },
+  "mecef-journal": {
+   "titre": "Journal des transactions fiscales",
+   "description": "Historique horodaté des transmissions, réponses du dispositif et codes de retour."
+  },
+  "mecef-transmission": {
+   "titre": "Transmission & réponses",
+   "description": "File d’envoi vers le dispositif fiscal, suivi des réponses, codes de retour et nouvelles tentatives."
+  },
+  "mere-a-traiter": {
+   "titre": "« À traiter » consolidé",
+   "description": "Toutes les opérations refusées par la mère, tous appareils confondus, avec la cause nommée et le geste de correction."
+  },
+  "mere-appareils": {
+   "titre": "Appareils et appairage",
+   "description": "Postes fileuls et mobiles de la clinique : contact, retard, horloge, version ; appairer, révoquer, débloquer."
+  },
+  "mere-base": {
+   "titre": "Base de données locale",
+   "description": "PostgreSQL du serveur : état, taille, version de schéma, migrations, parité avec le magasin."
+  },
+  "mere-cle-clinique": {
+   "titre": "Clé de clinique",
+   "description": "La clé qui chiffre tout ce qui quitte le serveur : empreinte de contrôle, copie papier sous scellé, QR d’appairage mobile, rotation."
+  },
+  "mere-conflits": {
+   "titre": "Conflits et doublons",
+   "description": "Ce que la mère ne peut pas trancher seule : même champ modifié sur deux postes, homonymes créés hors ligne."
+  },
+  "mere-import": {
+   "titre": "Import de migration",
+   "description": "Reprise des données existantes (SAGE, classeurs, jeux de départ) avec traçabilité complète."
+  },
+  "mere-indicateurs": {
+   "titre": "Indicateurs publiés",
+   "description": "Ce que la mère publie au relais pour la supervision à distance : des compteurs, jamais un nom de patient."
+  },
+  "mere-integrite": {
+   "titre": "Intégrité et altérations",
+   "description": "Enveloppes altérées ou manquantes, appareils bloqués, décisions de l’administrateur."
+  },
+  "mere-journal-operations": {
+   "titre": "Journal des opérations",
+   "description": "Explorateur du journal : chaque geste d’écriture, dans l’ordre posé par la mère (séquence), jamais par l’horloge d’un poste."
+  },
+  "mere-journal-technique": {
+   "titre": "Journal technique",
+   "description": "Évènements du service de la mère : démarrages, erreurs, alertes, sauvegardes, liaison avec le relais."
+  },
+  "mere-lots-tournee": {
+   "titre": "Lots de tournée (mobiles)",
+   "description": "Les dossiers déposés chaque jour sur le téléphone d’un soignant, leur validité et ce qui n’est pas encore remonté."
+  },
+  "mere-mise-en-service": {
+   "titre": "Assistant de première mise en service",
+   "description": "Du serveur vide à la clinique prête : identité, administrateur, jeu de départ, activation de la mère, premier appairage."
+  },
+  "mere-mises-a-jour": {
+   "titre": "Mises à jour et compatibilité",
+   "description": "Version de l’application et du schéma par poste ; refus nommé d’un poste trop ancien ; déploiement planifié."
+  },
+  "mere-notifications": {
+   "titre": "Notifications serveur",
+   "description": "Alertes ouvertes, routées par rôle au serveur, résolues quand la cause cesse ; source de la cloche des postes."
+  },
+  "mere-plages-baux": {
+   "titre": "Plages de numéros et baux de stock",
+   "description": "Codes patients réservés à chaque appareil pour travailler hors ligne ; quotas de stock alloués par article."
+  },
+  "mere-planificateur": {
+   "titre": "Planificateur",
+   "description": "Les tâches que le serveur évalue à heure fixe : échéances, stocks, péremptions, rendez-vous, créances, sauvegarde."
+  },
+  "mere-reinit": {
+   "titre": "Réinitialisation de production",
+   "description": "Vider l’activité (tests de mise en service) en gardant les essentiels : tarifs, secteurs, comptes, droits, catalogues."
+  },
+  "mere-relais": {
+   "titre": "Relais en ligne",
+   "description": "État de la liaison avec le relais (hébergement mutualisé) : battement, retard de réplication, secret de la mère."
+  },
+  "mere-reseau": {
+   "titre": "Réseau local",
+   "description": "Adresses de la mère, accessibilité depuis les postes, certificat TLS du réseau local, aide pare-feu."
+  },
+  "mere-sauvegardes": {
+   "titre": "Sauvegardes et restauration",
+   "description": "Sauvegarde chiffrée quotidienne, vérification de restauration, restauration depuis le relais, remplacement de la mère."
+  },
+  "mere-service": {
+   "titre": "Service et démarrage",
+   "description": "Activation du mode mère sur ce serveur, démarrage automatique, ports, arrêt propre."
+  },
+  "mere-supervision": {
+   "titre": "Supervision",
+   "description": "Santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité."
+  },
+  "rapports-bibliotheque": {
+   "titre": "Bibliothèque des états",
+   "description": "Catalogue de tous les états et rapports éditables par le système, avec accès direct à l’écran producteur."
+  },
+  "rapports-direction": {
+   "titre": "États de la Direction",
+   "description": "Points de vente et de caisse par période et par axe d’analyse, avec cumuls et impression."
+  },
+  "rapports-generateur": {
+   "titre": "Générateur de rapports",
+   "description": "Composition d’un rapport personnalisé : périmètre, période, indicateurs et mise en forme."
+  },
+  "rapports-historique": {
+   "titre": "Historique des éditions",
+   "description": "Journal des documents générés, imprimés et exportés, avec l’utilisateur à l’origine de l’édition."
+  },
+  "rls-alertes": {
+   "titre": "Alertes et notifications",
+   "description": "Règles d’alerte du relais et canaux de notification du superadmin (courriel)."
+  },
+  "rls-appareils": {
+   "titre": "Appareils",
+   "description": "Les appareils appairés : état, dernier contact, boîte aux lettres. Révocation."
+  },
+  "rls-boites": {
+   "titre": "Boîtes aux lettres",
+   "description": "Pour chaque mobile : enveloppes déposées par la mère, enveloppes envoyées par le mobile, rangs, tailles."
+  },
+  "rls-codes": {
+   "titre": "Codes d’appairage",
+   "description": "Codes à usage unique créés par la mère : ils expirent, ne servent qu’une fois, ne sont jamais conservés en clair."
+  },
+  "rls-hebergement": {
+   "titre": "Hébergement (cPanel)",
+   "description": "Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat."
+  },
+  "rls-indicateurs": {
+   "titre": "Indicateurs reçus",
+   "description": "Les compteurs publiés par la mère à chaque battement. Aucun nom, aucun motif."
+  },
+  "rls-journal": {
+   "titre": "Journal d’audit du relais",
+   "description": "Qui a fait quoi sur le panneau : connexions, révocations, codes, changements de paramètres."
+  },
+  "rls-opacite": {
+   "titre": "Preuve d’opacité",
+   "description": "Ce que le relais détient et ne détient pas : la démonstration que l’hébergeur ne peut rien lire."
+  },
+  "rls-parametres": {
+   "titre": "Paramètres du relais",
+   "description": "Secret de la mère, seuil de battement, rétention de l’audit, crochets du banc d’essai (fermés)."
+  },
+  "rls-sauvegarde": {
+   "titre": "Sauvegarde du relais",
+   "description": "Export de la base du relais avant toute migration ; le journal chiffré qu’elle contient sert à restaurer la mère."
+  },
+  "rls-superadmin": {
+   "titre": "Comptes superadmin",
+   "description": "Les comptes qui administrent le relais : création par commande, mot de passe, sessions, double facteur."
+  },
+  "rls-tableau": {
+   "titre": "Tableau de bord du relais",
+   "description": "La mère est-elle vivante, à jour, sauvegardée ? Volumes et alertes — sans aucun nom de patient."
+  }
+ }
+}

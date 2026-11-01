@@ -17,9 +17,11 @@ class DonneesNavigation {
       this.referenceRbac,
       this.referenceModules,
       this.barre = const ReferentielBarre(),
-      Map<String, Map<String, bool>> modulesVoir = const {}})
+      Map<String, Map<String, bool>> modulesVoir = const {},
+      Map<String, ({String titre, String description})> descriptions = const {}})
       : _parite = parite,
-        _modulesVoir = modulesVoir;
+        _modulesVoir = modulesVoir,
+        _descriptions = descriptions;
 
   /// Droit de VOIR un module, par rôle, tel que la matrice engendrée le porte (`matriceModules` de `rbac.json`). Sert à décider si la page d'accueil d'un module
   /// (hub) est ouverte au rôle ; une décision prise à chaud sur un module n'y est pas relue (les écrans, eux, suivent la matrice à chaud).
@@ -36,13 +38,29 @@ class DonneesNavigation {
   final MatriceDroits matrice;
   final Map<String, Map<String, Object?>> _parite;
 
+  /// Titre et description de chaque écran, repris de la déclaration de l'écran dans la maquette (`ecrans-descriptions.json`, engendré) : les cartes
+  /// des pages d'accueil de module (hubs) les affichent.
+  final Map<String, ({String titre, String description})> _descriptions;
+
+  /// Titre de la déclaration de l'écran (vide si la maquette n'en donne pas : on retombe sur l'intitulé du manifeste).
+  String? titreDeclare(String id) {
+    final t = _descriptions[id]?.titre;
+    return t == null || t.isEmpty ? null : t;
+  }
+
+  /// Description de la déclaration de l'écran, `null` si la maquette n'en porte aucune.
+  String? descriptionDeclaree(String id) {
+    final d = _descriptions[id]?.description;
+    return d == null || d.isEmpty ? null : d;
+  }
+
   /// Les fiches que la matrice engendrée a connues au jour de l'extraction (le jeu livré : collections `rbac` et `modulesActifs`). Elles sont la
   /// RÉFÉRENCE de la superposition : seul ce qui a changé depuis elles remplace la matrice engendrée. `null` = inconnues, aucune superposition.
   final List<Map<String, Object?>>? referenceRbac, referenceModules;
 
   /// Les mêmes données de navigation sous une autre matrice (manifeste, parité et références partagés).
   DonneesNavigation avecMatrice(MatriceDroits m) =>
-      DonneesNavigation(manifeste: manifeste, matrice: m, parite: _parite, referenceRbac: referenceRbac, referenceModules: referenceModules, barre: barre, modulesVoir: _modulesVoir);
+      DonneesNavigation(manifeste: manifeste, matrice: m, parite: _parite, referenceRbac: referenceRbac, referenceModules: referenceModules, barre: barre, modulesVoir: _modulesVoir, descriptions: _descriptions);
 
   /// DROITS À CHAUD (A4) : la matrice engendrée reste la BASE ; les fiches de la collection `rbac` (surcharges par rôle, module et écran, rôles
   /// archivés ou créés) et de `modulesActifs` (activités fermées) du magasin la superposent, comme `N.can()` de la maquette, pour tout ce qui a changé
@@ -70,7 +88,8 @@ class DonneesNavigation {
       required String parite,
       String? fichesRbac,
       String? fichesModules,
-      String? rubriques}) {
+      String? rubriques,
+      String? descriptions}) {
     final p = <String, Map<String, Object?>>{
       for (final e in ((jsonDecode(parite) as Map)['ecrans'] as List))
         '${(e as Map)['id']}': e.cast<String, Object?>(),
@@ -85,6 +104,12 @@ class DonneesNavigation {
       referenceRbac: _fiches(fichesRbac),
       referenceModules: _fiches(fichesModules),
       barre: rubriques == null ? const ReferentielBarre() : ReferentielBarre.depuisJson(rubriques),
+      descriptions: descriptions == null
+          ? const {}
+          : {
+              for (final e in ((jsonDecode(descriptions) as Map)['ecrans'] as Map).entries)
+                '${e.key}': (titre: '${(e.value as Map)['titre'] ?? ''}', description: '${(e.value as Map)['description'] ?? ''}')
+            },
     );
   }
 
@@ -95,6 +120,7 @@ class DonneesNavigation {
         fichesRbac: await rootBundle.loadString('assets/donnees/jeu/rbac.json'),
         fichesModules: await rootBundle.loadString('assets/donnees/jeu/modulesActifs.json'),
         rubriques: await rootBundle.loadString('assets/donnees/rubriques.json'),
+        descriptions: await rootBundle.loadString('assets/donnees/ecrans-descriptions.json'),
       );
 
   /// Pour les tests : lit les mêmes fichiers engendrés sur le disque.
@@ -106,6 +132,7 @@ class DonneesNavigation {
         fichesRbac: _lireSiPresent('$dossier/jeu/rbac.json'),
         fichesModules: _lireSiPresent('$dossier/jeu/modulesActifs.json'),
         rubriques: _lireSiPresent('$dossier/rubriques.json'),
+        descriptions: _lireSiPresent('$dossier/ecrans-descriptions.json'),
       );
 
   static Map<String, Map<String, bool>> _modulesVoirDe(String rbac) {

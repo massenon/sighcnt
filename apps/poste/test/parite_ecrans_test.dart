@@ -104,6 +104,41 @@ void main() {
     'm5-banque-sang': {'poches': lignes((vecteursSang['banque'] as Map)['poches'])},
     'm5-donneurs': {'donneurs': lignes((vecteursSang['donneurs'] as Map)['donneurs'])},
   };
+  // Les écrans du module RLS lisent le relais PAR LA MÈRE (`/admin/etat`, `/admin/supervision`) : sans appareil, la commande « Révoquer » (une par ligne
+  // d'appareil non révoqué) ne se dessine pas, et ses en-têtes de tableau non plus. Une mère qui répond avec un appareil actif, un appareil bloqué et un
+  // contrôle de liaison fait DESSINER ces écrans comme le panneau de la maquette.
+  final reponsesMere = <String, Object?>{
+    '/admin/etat': {
+      'epoch': 1,
+      'seq_max': 120,
+      'rep_seq': 118,
+      'rep_n': 118,
+      'appareils': [
+        {'uuid': 'u-01', 'etiquette': 'Poste Caisse principale', 'role': 'fileul', 'etat': 'actif', 'dernier_contact': 1782000000000, 'dernier_seq': 120, 'derive_ms': 0},
+        {'uuid': 'u-07', 'etiquette': 'Mobile Sage-femme de garde', 'role': 'mobile', 'etat': 'actif', 'dernier_contact': 1782000000000, 'dernier_seq': 100, 'derive_ms': 0},
+      ],
+      'bloques': ['u-07'],
+      'derives': [],
+      'alertes': [
+        {'quand': 1782000000000, 'type': 'trou', 'appareil': 'u-07'}
+      ],
+      'conflits_ouverts': 0,
+      'reinit_ouverte': false,
+    },
+    '/admin/supervision': {
+      'etat': 'ok',
+      'depot': 'sqlite',
+      'controles': [
+        {'nom': 'Relais en ligne', 'etat': 'ok', 'detail': 'dernier échange réussi'}
+      ],
+    },
+    '/admin/compte': {'n': 42},
+    '/admin/journal': {
+      'liste': [
+        {'quand': 1782000000000, 'niveau': 'info', 'source': 'relais', 'message': 'Appareil révoqué : u-09'}
+      ]
+    },
+  };
   Future<Parite?> mesurer(WidgetTester t, String id, String role,
       {bool activiteRouverte = false, Map<String, List<Map<String, Object?>>> fixture = const {}}) async {
     final f = fiche(id);
@@ -131,7 +166,8 @@ void main() {
     final client = ClientMere(
         base: Uri.parse('http://x'),
         secretAdmin: 's',
-        client: MockClient((r) async => http.Response('[]', 200)));
+        client: MockClient((r) async =>
+            id.startsWith('rls-') && reponsesMere.containsKey(r.url.path) ? http.Response(jsonEncode(reponsesMere[r.url.path]), 200) : http.Response('[]', 200)));
     final act = ActivationMere(
         stockage: StockageMemoire(),
         service: FauxService(),
@@ -139,7 +175,7 @@ void main() {
     final ctl = ControleurPoste(
         activation: act,
         config: ConfigPoste(
-            mode: id.startsWith('mere-') ? ModePoste.mere : ModePoste.fileul,
+            mode: id.startsWith('mere-') || id.startsWith('rls-') ? ModePoste.mere : ModePoste.fileul,
             role: role,
             nomPoste: 'Test'));
     await t.pumpWidget(SighPoste(
@@ -153,6 +189,10 @@ void main() {
     for (var i = 0; i < 4; i++) {
       await t.pump(const Duration(milliseconds: 100));
     }
+    // GARDE (1er novembre 2026) : un écran déclaré porté doit être RENDU, pas la coque « Écran de la maquette à convertir ». Le test acceptait un
+    // statut « porté » pour un identifiant absent de `ecransPortes` : la Direction a ouvert 22 pages d'accueil de module qui disaient « non commencé ».
+    expect(find.byKey(const Key('ecran-a-porter')), findsNothing,
+        reason: '$id affiche la coque EcranAPorter : il est dans ecransPortes mais ne se rend pas');
     final mesure = comparerContenu(id, f, textesVisibles(t));
     // L'activité est refermée aussitôt : les écrans mesurés ensuite retrouvent le jeu tel qu'il est.
     if (activiteRouverte) colModules.remplacerContenu(avant);
@@ -171,6 +211,32 @@ void main() {
       .keys
       .toList()
     ..sort();
+
+  // INVENTAIRE HONNÊTE : un statut « porté » ou « recetté » n'est valable que si l'identifiant est dans `ecransPortes` (un widget Flutter existe) ET
+  // si l'écran est mesuré ci-dessous (fiche N1) ou mesuré à part (écran autonome, `parite_autonomes_test.dart`). Dans l'autre sens, un écran de
+  // `ecransPortes` doit être déclaré : un statut en retard fait mentir `PARITE-MAQUETTE.md`.
+  test('statuts déclarés et ecransPortes disent la même chose', () {
+    final manifeste = {for (final e in donnees.manifeste.tousLesEcrans) e.id};
+    final declares = {
+      for (final e in statuts.entries)
+        if (e.value == 'porté' || e.value == 'recetté') e.key
+    };
+    final absents = declares.where((id) => !portes.contains(id)).toList()..sort();
+    expect(absents, isEmpty, reason: 'déclarés porté ou recetté mais absents de ecransPortes (aucun widget Flutter) : $absents');
+    final nonDeclares = portes.where((id) => !declares.contains(id)).toList()..sort();
+    expect(nonDeclares, isEmpty, reason: 'présents dans ecransPortes mais non déclarés portés dans parite-statuts.json : $nonDeclares');
+    final inconnus = statuts.keys.where((id) => !manifeste.contains(id)).toList()..sort();
+    expect(inconnus, isEmpty, reason: 'statuts d’identifiants absents du manifeste : $inconnus');
+    // Tout écran du manifeste (hubs compris) a un statut explicite.
+    final sansStatut = manifeste.where((id) => !statuts.containsKey(id)).toList()..sort();
+    expect(sansStatut, isEmpty, reason: 'écrans du manifeste sans statut : $sansStatut');
+    // Un écran déclaré est mesuré : il a une fiche de la maquette (N1), ou c'est un écran autonome mesuré à part.
+    final sansMesure = declares.where((id) {
+      final f = fiche(id);
+      return f == null || (f['acces'] != 'ouvert') && f['autonome'] != true;
+    }).toList()..sort();
+    expect(sansMesure, isEmpty, reason: 'déclarés portés mais sans fiche mesurable : $sansMesure');
+  });
 
   testWidgets(
       'rapport de parité N1 des écrans portés + garde des statuts déclarés',
