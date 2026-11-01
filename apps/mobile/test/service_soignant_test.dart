@@ -130,11 +130,11 @@ void main() {
     test('sans note du jour : refus SANS_NOTE ; après la note, l\'ordonnance part, rattachée à la note, pièce émise', () async {
       final src = lotDeDemonstration();
       final s = service(src);
-      final sans = await refuse(() => s.prescrireMedicament('p1', {'med': 'Paracétamol 500 mg', 'poso': '1 cp x 3/j', 'duree': '5'}));
+      final sans = await refuse(() => s.prescrireMedicament('p1', {'med': 'PRD0001', 'quantite': '2', 'poso': '1 cp x 3/j', 'duree': '5'}));
       expect(sans.code, 'SANS_NOTE');
       expect(src.de('prescriptions'), isEmpty);
       final noteId = await s.enregistrerNote('p1', {'motif': 'Suivi HTA', 'diagnostic': 'Hypertension artérielle'});
-      await s.prescrireMedicament('p1', {'med': 'Paracétamol 500 mg', 'poso': '1 cp x 3/j', 'duree': '5'});
+      await s.prescrireMedicament('p1', {'med': 'PRD0001', 'quantite': '2', 'poso': '1 cp x 3/j', 'duree': '5'});
       final o = src.de('prescriptions').single;
       expect(o['noteId'], noteId);
       expect(o['emise'], isTrue);
@@ -174,7 +174,7 @@ void main() {
       final s = service(src);
       await s.enregistrerConstantes('p1', {'temperature': '37'});
       await s.enregistrerNote('p1', {'motif': 'm', 'diagnostic': 'Gastro-entérite'});
-      await s.prescrireMedicament('p1', {'med': 'x', 'poso': 'y', 'duree': '1'});
+      await s.prescrireMedicament('p1', {'med': 'PRD0001', 'quantite': '1', 'poso': 'y', 'duree': '1'});
       expect(src.ecritures.map((e) => e.$1), ['constantes', 'notes', 'prescriptions']);
     });
   });

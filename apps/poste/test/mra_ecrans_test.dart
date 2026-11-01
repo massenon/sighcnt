@@ -91,7 +91,8 @@ class SourceFauxMra implements SourceMra {
   @override
   Future<String> codeAppareil(String etiquette) => _geste('code-poste $etiquette', 'ABCD2345');
   @override
-  Future<({String code, String cle})> codeMobile(String etiquette) => _geste('code-mobile $etiquette', (code: 'MOBI2345', cle: 'CLE-CLINIQUE-XYZ'));
+  Future<({String code, String cle})> codeMobile(String etiquette, {required String profil, String? fonction}) =>
+      _geste('code-mobile $etiquette $profil ${fonction ?? ''}'.trim(), (code: 'MOBI2345', cle: 'CLE-CLINIQUE-XYZ'));
   @override
   Future<void> revoquer(String uuid) => _geste('revoquer $uuid', null);
   @override
@@ -261,7 +262,10 @@ void main() {
       await toucher(t, bouton('Appairer un mobile'));
       await t.enterText(find.byType(TextField).last, 'Dr Yeni 2');
       await toucher(t, bouton('Générer le code'));
-      expect(src.appels.last, 'code-mobile Dr Yeni 2');
+      // E1600 : le code porte l'affectation (profil, fonction), présélectionnée sur le premier choix.
+      expect(src.appels.last, 'code-mobile Dr Yeni 2 soignant medecin');
+      expect(find.byKey(const Key('mra-affectation')), findsOneWidget);
+      expect(find.textContaining('Ce code appaire : Soignant, Médecin.'), findsOneWidget);
       expect(find.text('CLE-CLINIQUE-XYZ'), findsOneWidget);
       await toucher(t, bouton('Fermer'));
       await fin(t);

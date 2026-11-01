@@ -128,7 +128,7 @@ void main() {
     expect(sante2.controle('Sauvegarde')!.valeur, isA<num>(), reason: 'la date de la dernière sauvegarde vient de la supervision');
 
     // 7. QR mobile : le code et la clé sortent par la seule route prévue.
-    final mobile = await s.codeMobile('Dr Yeni');
+    final mobile = await s.codeMobile('Dr Yeni', profil: 'soignant', fonction: 'medecin');
     expect(mobile.code, hasLength(8));
     expect(mobile.payloadQr, contains(cleBase64));
     expect(relais.chemins, contains('POST /mere/code'), reason: 'seul le HACHÉ du code est déclaré au relais');

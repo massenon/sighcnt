@@ -129,8 +129,8 @@ class Faux extends MrbSource {
   }
 
   @override
-  Future<MrbCodeMobile> codeMobile(String etiquette) async {
-    appels.add('codeMobile $etiquette');
+  Future<MrbCodeMobile> codeMobile(String etiquette, {required String profil, String? fonction}) async {
+    appels.add('codeMobile $etiquette $profil ${fonction ?? ''}'.trim());
     return MrbCodeMobile(code: 'MOBI9999', payloadQr: mrbPayloadQrMobile(code: 'MOBI9999', cleBase64: cleBase64));
   }
 
@@ -457,10 +457,11 @@ void main() {
       await ouvrir(t, 'mere-cle-clinique', f);
       await t.tap(bouton('Afficher le QR d’appairage mobile'));
       await pomper(t);
-      await t.enterText(find.byKey(const Key('mrb:etiquette-mobile')), 'Dr Yeni');
+      await t.enterText(find.byType(TextField).last, 'Dr Yeni');
       await t.tap(bouton('Générer le QR'));
       await pomper(t);
-      expect(f.appels, contains('codeMobile Dr Yeni'));
+      // E1600 : le code porte le profil et la fonction (par défaut le premier choix : soignant, médecin).
+      expect(f.appels, contains('codeMobile Dr Yeni soignant medecin'));
       expect(find.byKey(const Key('qual:qr')), findsOneWidget);
       expect(find.text('MOBI9999'), findsOneWidget);
       expect(toutLeTexte(t), isNot(contains(cleBase64)), reason: 'la clé ne s’affiche jamais en clair');
@@ -846,7 +847,7 @@ void main() {
       expect((await s.journal(limite: 500)).single.niveau, 'erreur');
       expect(appels, contains('GET /admin/journal?limite=500'));
       expect(await s.patientsActifs(), 42);
-      final mobile = await s.codeMobile('Dr Yeni');
+      final mobile = await s.codeMobile('Dr Yeni', profil: 'soignant', fonction: 'medecin');
       expect(mobile.code, 'MOBI9999');
       expect(mobile.payloadQr, contains(cleBase64));
       final r = await s.reinitialiser(confirmation: 'NASSIERA TOO', second: 'X');

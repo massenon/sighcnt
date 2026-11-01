@@ -15,8 +15,8 @@ const BANC = arg('banc', '0') === '1'; const SEUIL_BATTEMENT = +arg('seuil-batte
 const sha = (s) => nodeCrypto.createHash('sha256').update(s).digest('hex');
 const db = new DatabaseSync(DB);
 db.exec(`PRAGMA journal_mode=WAL;
-  CREATE TABLE IF NOT EXISTS codes (hash TEXT PRIMARY KEY, utilise INTEGER DEFAULT 0);
-  CREATE TABLE IF NOT EXISTS appareils (uuid TEXT PRIMARY KEY, jeton_hash TEXT, etat TEXT DEFAULT 'actif');
+  CREATE TABLE IF NOT EXISTS codes (hash TEXT PRIMARY KEY, utilise INTEGER DEFAULT 0, profil TEXT, fonction TEXT);
+  CREATE TABLE IF NOT EXISTS appareils (uuid TEXT PRIMARY KEY, jeton_hash TEXT, etat TEXT DEFAULT 'actif', profil TEXT, fonction TEXT);
   CREATE TABLE IF NOT EXISTS env (rid INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT UNIQUE, appareil TEXT, dir TEXT, n INTEGER, nonce TEXT, ct TEXT, taille INTEGER, recu INTEGER,
     UNIQUE (appareil, dir, n));
   CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT);`);
@@ -37,14 +37,16 @@ function lister(dir, appareilUuid, depuisN, limite) {
   return { env: rows, fin: rows.length < limite };
 }
 const routes = {
-  'POST /mere/code': (req, b) => { if (!mereOk(req)) throw new Err(403, 'mere_requise'); db.prepare('INSERT OR IGNORE INTO codes(hash) VALUES(?)').run(b.hash); return { ok: true }; },
+  /* Le profil et la fonction ne sont ici qu'une ÉTIQUETTE d'affichage déclarée par la mère (E1600) : le relais n'en tire aucun droit, la mère relit SA table. */
+  'POST /mere/code': (req, b) => { if (!mereOk(req)) throw new Err(403, 'mere_requise'); db.prepare('INSERT OR IGNORE INTO codes(hash,profil,fonction) VALUES(?,?,?)').run(b.hash, b.profil ? String(b.profil).slice(0, 32) : null, b.fonction ? String(b.fonction).slice(0, 32) : null); return { ok: true }; },
   'POST /appairage': (req, b) => {
     const c = db.prepare('SELECT * FROM codes WHERE hash=?').get(sha(String(b.code || '')));
     if (!c) throw new Err(403, 'code_invalide', 'Code inconnu.');
     if (c.utilise) throw new Err(403, 'code_utilise', 'Code déjà utilisé.');
+    if (db.prepare('SELECT 1 FROM appareils WHERE uuid=?').get(String(b.uuid || ''))) throw new Err(409, 'appareil_deja_appaire', 'Cet appareil est déjà appairé : pour changer sa fonction, le révoquer puis l’appairer avec un nouveau code.');
     db.prepare('UPDATE codes SET utilise=1 WHERE hash=?').run(c.hash);
     const secret = nodeCrypto.randomBytes(24).toString('hex');
-    db.prepare('INSERT INTO appareils(uuid,jeton_hash) VALUES(?,?)').run(b.uuid, sha(secret));
+    db.prepare('INSERT INTO appareils(uuid,jeton_hash,profil,fonction) VALUES(?,?,?,?)').run(b.uuid, sha(secret), c.profil, c.fonction);
     return { jeton: b.uuid + '.' + secret };
   },
   'POST /depot': (req, b) => {

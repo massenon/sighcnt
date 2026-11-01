@@ -45,9 +45,9 @@
     { id: 'u-03', nom: 'Laboratoire', role: 'fileul', agent: 'KINNOU A. Ganiou', etat: 'actif', contact: 1, retard: 0, derive: 0, version: '1.0.3' },
     { id: 'u-04', nom: 'Pharmacie', role: 'fileul', agent: 'DIEYABIDI Aïssatou', etat: 'actif', contact: 3, retard: 5, derive: 410000, version: '1.0.2' },
     { id: 'u-05', nom: 'Salle de soins', role: 'fileul', agent: 'BADO BANI A. B. Zoulehath', etat: 'actif', contact: 190, retard: 14, derive: 0, version: '1.0.3' },
-    { id: 'u-06', nom: 'Mobile — Dr YENI M’PO', role: 'mobile · soignant', agent: 'YENI M’PO Florent', etat: 'actif', contact: 12, retard: 0, derive: 0, version: '1.0.1' },
-    { id: 'u-07', nom: 'Mobile — Sage-femme de garde', role: 'mobile · soignant', agent: 'Sage-femme (garde)', etat: 'actif', contact: 45, retard: 3, derive: 0, version: '1.0.1' },
-    { id: 'u-08', nom: 'Mobile — Réception de secours', role: 'mobile · réception', agent: 'OROU YO Edmond', etat: 'actif', contact: 600, retard: 0, derive: 0, version: '1.0.1' },
+    { id: 'u-06', nom: 'Mobile — Dr YENI M’PO', role: 'mobile · soignant', fonction: 'Médecin', agent: 'YENI M’PO Florent', etat: 'actif', contact: 12, retard: 0, derive: 0, version: '1.0.1' },
+    { id: 'u-07', nom: 'Mobile — Sage-femme de garde', role: 'mobile · soignant', fonction: 'Sage-femme', agent: 'Sage-femme (garde)', etat: 'actif', contact: 45, retard: 3, derive: 0, version: '1.0.1' },
+    { id: 'u-08', nom: 'Mobile — Réception de secours', role: 'mobile · réception', fonction: '—', agent: 'OROU YO Edmond', etat: 'actif', contact: 600, retard: 0, derive: 0, version: '1.0.1' },
     { id: 'u-09', nom: 'Ancien poste Archives', role: 'fileul', agent: '—', etat: 'revoque', contact: 43200, retard: 0, derive: 0, version: '0.9.8' },
   ];
   var CONFLITS = [
@@ -115,9 +115,9 @@
     var hote = el('div.space-y-4');
     function peindre() {
       C.clear(hote);
-      hote.appendChild(tableau(['Appareil', 'Type', 'Agent', 'Dernier contact', 'Retard', 'Horloge', 'Version', 'État', ''], APPAREILS.map(function (a) {
+      hote.appendChild(tableau(['Appareil', 'Type', 'Fonction', 'Agent', 'Dernier contact', 'Retard', 'Horloge', 'Version', 'État', ''], APPAREILS.map(function (a) {
         var derive = a.derive ? Math.round(a.derive / 1000) + ' s' : 'ok';
-        return [a.nom, a.role, a.agent, a.etat === 'revoque' ? 'le ' + C.dateFR(new Date(Date.now() - a.contact * 60000)) : il(a.contact), a.retard + ' op.', a.derive ? U.badge('Dérive ' + derive, 'warning') : '—', a.version,
+        return [a.nom, a.role, a.fonction || '—', a.agent, a.etat === 'revoque' ? 'le ' + C.dateFR(new Date(Date.now() - a.contact * 60000)) : il(a.contact), a.retard + ' op.', a.derive ? U.badge('Dérive ' + derive, 'warning') : '—', a.version,
           a.etat === 'revoque' ? U.badge('Révoqué', 'neutral') : U.badge('Actif', 'success'),
           a.etat === 'revoque' ? '' : bouton('Révoquer', 'ban', function () {
             U.confirm({ title: 'Révoquer ' + a.nom + ' ?', message: 'L’appareil <strong>cessera de synchroniser</strong> et sera effacé au prochain contact s’il s’agit d’un mobile. Ses opérations non envoyées sont exportées d’abord.', confirmLabel: 'Révoquer', danger: true }).then(function (ok) {
@@ -126,10 +126,37 @@
           }, 'danger')];
       })));
     }
+    /* La FONCTION du soignant est fixée ICI, à l'émission du code : le téléphone la reçoit de la mère à l'appairage et ne peut plus la déclarer ni la changer
+       (un autre rôle exige un nouveau code). La mère la relit dans sa propre table à chaque dépôt (E1600). */
+    var FONCTIONS = [['medecin', 'Médecin'], ['sage_femme', 'Sage-femme'], ['infirmier', 'Infirmier(ère)'], ['aide_soignant', 'Aide-soignant(e)']];
     function code(mobile) {
-      var c = Array.from({ length: 8 }, function () { return 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'.charAt(Math.floor(Math.random() * 31)); }).join('');
-      var corps = el('div.space-y-3', {}, el('p.text-sm', { text: 'Valable 15 minutes, à usage unique.' }), el('p.text-3xl.font-mono.font-bold.tracking-widest.text-navy-900', { text: c }));
-      if (mobile) { corps.appendChild(el('p.text-sm.text-slate-600', { text: 'Clé de clinique à scanner sur le téléphone (clé de DÉMONSTRATION) :' })); try { corps.appendChild(C.qr('SIGH-DEMO-CLE-' + c)); } catch (e) { /* encodeur absent hors serveur */ } }
+      var corps = el('div.space-y-3');
+      var profil = el('select.input', { id: 'mere-profil' }, el('option', { value: 'soignant', text: 'Soignant' }), el('option', { value: 'reception', text: 'Réception de secours' }));
+      var fonction = el('select.input', { id: 'mere-fonction' }); FONCTIONS.forEach(function (f) { fonction.appendChild(el('option', { value: f[0], text: f[1] })); });
+      var zoneFonction = el('div.space-y-1', {}, el('label.text-sm.font-medium', { text: 'Fonction du soignant', for: 'mere-fonction' }), fonction,
+        el('p.text-xs.text-slate-600', { text: 'La fonction est fixée par ce code. Le téléphone ne peut ni la choisir ni la changer : un autre rôle exige un nouveau code.' }));
+      var sortie = el('div.space-y-3');
+      if (mobile) {
+        corps.appendChild(el('div.space-y-1', {}, el('label.text-sm.font-medium', { text: 'Profil du téléphone', for: 'mere-profil' }), profil));
+        corps.appendChild(zoneFonction);
+        profil.addEventListener('change', function () { zoneFonction.hidden = profil.value === 'reception'; });
+      }
+      function engendrer() {
+        var c = Array.from({ length: 8 }, function () { return 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'.charAt(Math.floor(Math.random() * 31)); }).join('');
+        C.clear(sortie);
+        sortie.appendChild(el('p.text-sm', { text: 'Valable 15 minutes, à usage unique.' }));
+        sortie.appendChild(el('p.text-3xl.font-mono.font-bold.tracking-widest.text-navy-900', { text: c }));
+        if (mobile) {
+          var lib = profil.value === 'reception' ? 'Réception de secours' : 'Soignant, ' + (FONCTIONS.filter(function (f) { return f[0] === fonction.value; })[0] || [0, ''])[1];
+          sortie.appendChild(el('p.text-sm.text-slate-700', { text: 'Ce code appaire : ' + lib + '.' }));
+          sortie.appendChild(el('p.text-sm.text-slate-600', { text: 'Clé de clinique à scanner sur le téléphone (clé de DÉMONSTRATION) :' }));
+          try { sortie.appendChild(C.qr('SIGH-DEMO-CLE-' + c)); } catch (e) { /* encodeur absent hors serveur */ }
+        }
+      }
+      if (mobile) {
+        var gen = el('button.btn.btn-primary.btn-sm', { type: 'button', text: 'Générer le code' }); gen.addEventListener('click', engendrer); corps.appendChild(gen);
+      } else engendrer();
+      corps.appendChild(sortie);
       U.modal({ title: mobile ? 'Code d’appairage — mobile' : 'Code d’appairage — poste', body: corps, size: 'sm' });
     }
     page(root, [

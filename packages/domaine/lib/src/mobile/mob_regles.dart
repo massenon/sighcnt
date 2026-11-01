@@ -79,6 +79,58 @@ bool mobPeutPrescrire(String fonction, String nature) {
   return ((c['prescrire'] as List?) ?? const []).contains(nature);
 }
 
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// Fonction AUTHENTIFIÉE (E1600) : fixée par le code d'appairage de la mère, relue par la mère à chaque dépôt, jamais déclarée par le téléphone
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Les profils que la console de la mère peut affecter à un mobile : « soignant » (agenda, dossier, notes, prescription) ou « reception »
+/// (réception de secours, qui n'a PAS de fonction de soignant).
+const mobProfils = ['soignant', 'reception'];
+
+/// Le contrôle d'un code d'appairage de mobile, à l'émission par la console : refus NOMMÉ (code, motif, geste) ou `null` quand l'affectation est bonne.
+/// Un soignant porte UNE des fonctions de [mobFonctions] ; la réception de secours n'en porte aucune.
+RefusMobile? mobRefusAffectation(String profil, String fonction) {
+  if (!mobProfils.contains(profil)) {
+    return const RefusMobile('profil_requis', 'Choisir le profil du téléphone : soignant ou réception de secours.', 'Choisir un profil avant de générer le code');
+  }
+  if (profil == 'reception') {
+    return fonction.isEmpty
+        ? null
+        : const RefusMobile('fonction_non_applicable', 'La réception de secours n’a pas de fonction de soignant.', 'Laisser la fonction vide pour ce profil');
+  }
+  if (!mobFonctions.contains(fonction)) {
+    return RefusMobile('fonction_inconnue', 'Fonction « ${fonction.isEmpty ? 'vide' : fonction} » inconnue : choisir parmi ${mobFonctions.join(', ')}.', 'Choisir la fonction du soignant dans la liste');
+  }
+  return null;
+}
+
+/// Le contrôle de la fonction ÉCRITE sur une pièce par un mobile soignant, refait par la mère à chaque dépôt avec la fonction qu'ELLE a fixée à
+/// l'appairage ([fixee], lue dans sa table des appareils). `null` : la pièce est recevable (une fonction non déclarée sur la pièce reçoit celle de
+/// l'appareil). Deux refus nommés : appareil appairé avant la fixation (`fonction_non_fixee`) et valeur du téléphone différente (`fonction_falsifiee`).
+RefusMobile? mobRefusFonctionPiece({required String? fixee, required String declaree}) {
+  if (fixee == null || fixee.isEmpty) {
+    return const RefusMobile(
+        'fonction_non_fixee',
+        'Cet appareil a été appairé avant que la clinique fixe la fonction du soignant : la mère ne peut pas vérifier son habilitation.',
+        'Réappairer le téléphone avec un nouveau code émis par la console (Appareils)');
+  }
+  if (declaree.isNotEmpty && declaree != fixee) {
+    return RefusMobile(
+        'fonction_falsifiee',
+        'Le téléphone déclare « $declaree » mais la clinique l’a appairé comme « $fixee » : la fonction est fixée à l’appairage et ne se change pas depuis le téléphone.',
+        'Faire corriger la fonction par la console de la mère : nouveau code d’appairage (Appareils)');
+  }
+  return null;
+}
+
+/// Le secteur de la fonction (`D.CAPACITES[f].secteurs[0]`, ex. « MATERNITE » pour la sage-femme) : le secteur demandeur d'une prescription du mobile
+/// commande la visibilité du résultat (RBAC métier). `null` : la fonction n'a pas de secteur propre.
+String? mobSecteurFonction(String fonction) {
+  final c = _capacites[fonction];
+  final l = c is Map ? c['secteurs'] : null;
+  return l is List && l.isNotEmpty ? '${l.first}' : null;
+}
+
 /// Les natures que le mobile sait prescrire, et l'écran qui les porte.
 const mobNaturesMobile = {'medicament': 'prescription', 'analyse': 'demande-analyse'};
 
@@ -351,7 +403,42 @@ void mobControlerPrescription({
   }
 }
 
+/// Un médicament du CATALOGUE de la clinique, tel que le lot de la tournée le livre (collection `produits`). Le téléphone ne tape plus un nom : il
+/// CHOISIT dans cette liste. Le prix d'achat est celui du catalogue, sans marge (RG-02) ; le stock est celui du jour du lot.
+class MobProduit {
+  const MobProduit({required this.id, required this.designation, required this.unite, required this.prixAchat, required this.stock});
+  final String id, designation, unite;
+  final num prixAchat;
+  final num stock;
+}
+
+/// Les médicaments prescriptibles du lot : les mêmes catégories que le choix de médicaments de l'ordonnance du poste (`optionsMedicamentsCs` :
+/// médicament et consommable médical), par ordre alphabétique. Les fiches archivées sont écartées.
+List<MobProduit> mobProduitsPrescriptibles(Iterable<MobFiche> produits) {
+  final l = [
+    for (final p in produits)
+      if ((p['categorie'] == 'medicament' || p['categorie'] == 'conso_medical') && p['statut'] != 'archive' && '${p['id'] ?? ''}'.isNotEmpty)
+        MobProduit(
+          id: '${p['id']}',
+          designation: '${p['designation'] ?? p['id']}',
+          unite: '${p['unite'] ?? ''}',
+          prixAchat: p['prixAchat'] is num ? p['prixAchat'] as num : 0,
+          stock: (p['stockDetail'] ?? p['stock']) is num ? (p['stockDetail'] ?? p['stock']) as num : 0,
+        )
+  ]..sort((a, b) => a.designation.compareTo(b.designation));
+  return l;
+}
+
+/// Le message d'un stock insuffisant : celui du refus de la pharmacie à la maquette (code `STOCK_INSUFFISANT`, « Stock disponible : 4 ; demandé : 6 (RG-03). »).
+String mobMotifStock(String designation, num dispo, num demande) =>
+    'Stock insuffisant pour « $designation » : disponible : ${_nombre(dispo)} ; demandé : ${_nombre(demande)} (RG-03).';
+
+/// Le geste du refus de stock, repris de la maquette.
+const mobGesteStock = 'Corriger la quantité ou demander un transfert du gros.';
+
 /// Les champs d'une ordonnance de médicaments (collection `prescriptions`, famille C : pièce ÉMISE, immuable ; une correction est une pièce de plus).
+/// `saisie` : `med` = identifiant du produit CHOISI dans le catalogue du lot [produits], `quantite`, `poso`, `duree`. Le prix ne part pas dans la pièce : le
+/// poste le lit au catalogue (RG-02). Refus nommés : produit hors catalogue (`PRODUIT_INCONNU`), stock insuffisant (`STOCK_INSUFFISANT`, RG-03).
 Map<String, Object?> mobChampsOrdonnance({
   required MobFiche patient,
   required String patientId,
@@ -360,9 +447,27 @@ Map<String, Object?> mobChampsOrdonnance({
   required String acteur,
   required String fonction,
   required DateTime maintenant,
+  required Iterable<MobFiche> produits,
 }) {
   final erreurs = mobValider(mobReglesPrescription, saisie);
+  final q = (saisie['quantite'] ?? '').trim();
+  final quantite = q.isEmpty ? null : _nombreJs(q);
+  if (q.isEmpty) {
+    erreurs['quantite'] = 'La quantité est obligatoire.';
+  } else if (quantite == null || quantite < 1 || quantite != quantite.truncate()) {
+    erreurs['quantite'] = 'La quantité doit être un entier d’au moins 1.';
+  }
   if (erreurs.isNotEmpty) throw _refusSaisie(erreurs);
+  final catalogue = mobProduitsPrescriptibles(produits);
+  final choisi = catalogue.where((x) => x.id == saisie['med']!.trim()).firstOrNull;
+  if (choisi == null) {
+    final m = 'Médicament absent du catalogue du lot : « ${saisie['med']!.trim()} ».';
+    throw RefusMobile('PRODUIT_INCONNU', m, 'Choisir le médicament dans la liste du lot', champs: {'med': m});
+  }
+  if (quantite! > choisi.stock) {
+    final m = mobMotifStock(choisi.designation, choisi.stock, quantite);
+    throw RefusMobile('STOCK_INSUFFISANT', m, mobGesteStock, champs: {'quantite': m});
+  }
   return {
     'nature': 'medicament',
     'patientId': patientId,
@@ -372,7 +477,9 @@ Map<String, Object?> mobChampsOrdonnance({
     'noteId': noteId,
     'lignes': [
       {
-        'medicament': saisie['med']!.trim(),
+        'produitId': choisi.id,
+        'medicament': choisi.designation,
+        'quantite': quantite.truncate(),
         'posologie': saisie['poso']!.trim(),
         'dureeJours': _nombreJs(saisie['duree']!.trim()),
       }
@@ -421,6 +528,47 @@ Map<String, Object?> mobChampsDemandeAnalyses({
     'emise': true,
     'origine': 'mobile',
   };
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+// Ce que devient la prescription au poste (E1559) : transcrite en ordonnance et facture, ou refusée en le disant
+// ---------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Le texte de l'écran de prescription AVANT la transcription. La phrase du simulateur (« Prescrire génère l'ordonnance et la facture de la caisse »)
+/// n'est vraie qu'APRÈS la transcription par un poste : elle s'affiche au dossier quand le compte rendu est revenu, pas avant. PROPOSITION à valider.
+const mobTexteEnvoiPrescription =
+    'La prescription part à la clinique par le relais. L’ordonnance et la facture de la caisse sont générées quand le poste de la clinique la transcrit : le dossier vous le confirme, ou vous dit pourquoi elle est refusée.';
+
+/// Où en est une prescription : `attente` (aucun compte rendu du poste), `transcrite` (ordonnance et facture existent), `refusee` (code, motif, geste).
+enum MobEtatTranscription { attente, transcrite, refusee }
+
+class MobTranscription {
+  const MobTranscription(this.etat, {this.ordonnance, this.facture, this.montant, this.code, this.motif, this.geste});
+  final MobEtatTranscription etat;
+  final String? ordonnance, facture, code, motif, geste;
+  final num? montant;
+
+  /// La ligne affichée au dossier. Transcrite : la phrase de la maquette, VRAIE puisque l'ordonnance et la facture existent, avec leurs numéros.
+  String get libelle => switch (etat) {
+        MobEtatTranscription.attente => 'En attente de transcription par la clinique.',
+        MobEtatTranscription.transcrite => 'Transcrite par la clinique : ordonnance ${ordonnance ?? ''}, facture ${facture ?? ''}.',
+        MobEtatTranscription.refusee => 'Refusée par la clinique : ${motif ?? ''}',
+      };
+}
+
+/// Le compte rendu de transcription d'une prescription (collection `transcriptions`, écrite par le poste, rendue par la mère au seul téléphone
+/// émetteur). Le dernier compte rendu fait foi ; aucun compte rendu : la prescription attend.
+MobTranscription mobTranscriptionDe(String prescriptionId, Iterable<MobFiche> transcriptions) {
+  final l = [
+    for (final t in transcriptions)
+      if ('${t['prescriptionId']}' == prescriptionId) t
+  ]..sort((a, b) => '${b['date'] ?? ''}'.compareTo('${a['date'] ?? ''}'));
+  if (l.isEmpty) return const MobTranscription(MobEtatTranscription.attente);
+  final t = l.first;
+  return t['etat'] == 'transcrite'
+      ? MobTranscription(MobEtatTranscription.transcrite,
+          ordonnance: t['ordonnance'] == null ? null : '${t['ordonnance']}', facture: t['facture'] == null ? null : '${t['facture']}', montant: t['montant'] is num ? t['montant'] as num : null)
+      : MobTranscription(MobEtatTranscription.refusee, code: '${t['code'] ?? ''}', motif: '${t['motif'] ?? ''}', geste: '${t['geste'] ?? ''}');
 }
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------

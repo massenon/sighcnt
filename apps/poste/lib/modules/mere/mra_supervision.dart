@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../mere/client_mere.dart';
+import 'mra_affectation.dart';
 import 'mra_commun.dart';
 
 /// Les trois écrans « santé et appareils » de la console mère : supervision (M-01), appareils et appairage (M-02), conflits et doublons (M-03).
@@ -209,29 +210,41 @@ class _EtatAppareils extends EtatEcranMra<EcranMraAppareils> {
   Future<void> _appairer({required bool mobile}) async {
     final s = source;
     if (s == null) return;
-    final ctl = ControleurFormulaire(const [
-      ChampDef(nom: 'etiquette', libelle: 'Nom de l’appareil (ex. Réception, Dr Yeni)', requis: true, col: ColChamp.plein),
-    ]);
-    final saisie = await afficherModale<Map<String, Object?>>(context,
-        titre: mobile ? 'Appairer un mobile' : 'Appairer un poste',
-        taille: TailleModale.sm,
-        corps: FormulaireSigh(controleur: ctl),
-        pied: (fermer) => [
-              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
-              BoutonSigh(
-                  libelle: 'Générer le code',
-                  onPressed: () {
-                    final v = ctl.valider();
-                    if (v != null) Navigator.of(context, rootNavigator: true).pop(v);
-                  }),
-            ]);
-    if (saisie == null || !mounted) return;
-    final etiquette = '${saisie['etiquette']}'.trim();
+    final String etiquette;
+    String profil = '';
+    String? fonction;
+    if (mobile) {
+      // E1600 : le profil et la fonction sont affectés ICI, par le code ; le téléphone ne les déclare plus.
+      final a = await demanderAffectationMobile(context);
+      if (a == null || !mounted) return;
+      etiquette = a.etiquette;
+      profil = a.profil;
+      fonction = a.fonction;
+    } else {
+      final ctl = ControleurFormulaire(const [
+        ChampDef(nom: 'etiquette', libelle: 'Nom de l’appareil (ex. Réception, Dr Yeni)', requis: true, col: ColChamp.plein),
+      ]);
+      final saisie = await afficherModale<Map<String, Object?>>(context,
+          titre: 'Appairer un poste',
+          taille: TailleModale.sm,
+          corps: FormulaireSigh(controleur: ctl),
+          pied: (fermer) => [
+                BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+                BoutonSigh(
+                    libelle: 'Générer le code',
+                    onPressed: () {
+                      final v = ctl.valider();
+                      if (v != null) Navigator.of(context, rootNavigator: true).pop(v);
+                    }),
+              ]);
+      if (saisie == null || !mounted) return;
+      etiquette = '${saisie['etiquette']}'.trim();
+    }
     try {
       final String code;
       String? cle;
       if (mobile) {
-        final r = await s.codeMobile(etiquette);
+        final r = await s.codeMobile(etiquette, profil: profil, fonction: fonction);
         code = r.code;
         cle = r.cle;
       } else {
@@ -246,6 +259,8 @@ class _EtatAppareils extends EtatEcranMra<EcranMraAppareils> {
             SelectableText(code, key: const Key('mra-code'), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700, letterSpacing: 4)),
             const Text('À usage unique, valable 15 minutes.', style: styleMraPetit),
             if (cle != null) ...[
+              Text('Ce code appaire : ${profil == 'reception' ? libelleProfilMobile(profil) : '${libelleProfilMobile(profil)}, ${mobLibelleFonction(fonction ?? '')}'}.',
+                  key: const Key('mra-affectation'), style: styleMraPetit),
               const SizedBox(height: 12),
               const Text('Clé de la clinique à saisir sur le téléphone (ne jamais l’envoyer par messagerie) :'),
               SelectableText(cle, key: const Key('mra-cle'), style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
@@ -292,6 +307,7 @@ class _EtatAppareils extends EtatEcranMra<EcranMraAppareils> {
         colonnes: [
           const ColonneTableau(cle: 'appareil', libelle: 'Appareil'),
           const ColonneTableau(cle: 'type', libelle: 'Type'),
+          const ColonneTableau(cle: 'fonction', libelle: 'Fonction', triable: false),
           const ColonneTableau(cle: 'agent', libelle: 'Agent', triable: false),
           const ColonneTableau(cle: 'contact', libelle: 'Dernier contact', triable: false),
           const ColonneTableau(cle: 'retard', libelle: 'Retard', droite: true),
@@ -306,6 +322,7 @@ class _EtatAppareils extends EtatEcranMra<EcranMraAppareils> {
               'brut': a,
               'appareil': a.etiquette.isEmpty ? a.uuid : a.etiquette,
               'type': _type(a.role),
+              'fonction': a.role == 'mobile' ? libelleFonctionMobile(a.profil, a.fonction) : '—',
               'agent': nonDisponible,
               'contact': ageDepuis(a.dernierContact, maintenant()),
               'retard': mraRetard(e!.seqMax, a.derniereSeq),

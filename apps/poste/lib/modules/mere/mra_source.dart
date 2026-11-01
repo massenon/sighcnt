@@ -15,7 +15,7 @@ abstract class SourceMra {
   Future<void> trancher(int id, String decision);
   Future<void> sauvegarderMaintenant();
   Future<String> codeAppareil(String etiquette);
-  Future<({String code, String cle})> codeMobile(String etiquette);
+  Future<({String code, String cle})> codeMobile(String etiquette, {required String profil, String? fonction});
   Future<void> revoquer(String uuid);
   Future<void> debloquer(String uuid);
   Future<void> renvoyerATous();
@@ -144,8 +144,8 @@ class SourceMraClient implements SourceMra {
   Future<String> codeAppareil(String etiquette) =>
       client.codeAppareil(etiquette);
   @override
-  Future<({String code, String cle})> codeMobile(String etiquette) =>
-      client.codeMobile(etiquette);
+  Future<({String code, String cle})> codeMobile(String etiquette, {required String profil, String? fonction}) =>
+      client.codeMobile(etiquette, profil: profil, fonction: fonction);
   @override
   Future<void> revoquer(String uuid) => client.revoquer(uuid);
   @override

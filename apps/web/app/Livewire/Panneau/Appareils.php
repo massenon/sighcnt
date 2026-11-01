@@ -34,11 +34,11 @@ class Appareils extends Component
         // posées dans sa boîte (vers_mobile) : le relais ne sait pas lesquelles le mobile a déjà relevées.
         $lignes = DB::table('relais_appareils as a')
             ->leftJoin('relais_enveloppes as e', 'e.appareil', '=', 'a.uuid')
-            ->selectRaw("a.uuid, a.etat,
+            ->selectRaw("a.uuid, a.etat, a.profil, a.fonction,
                 SUM(CASE WHEN e.dir = 'vers_mere' THEN 1 ELSE 0 END) as deposees,
                 SUM(CASE WHEN e.dir = 'vers_mobile' THEN 1 ELSE 0 END) as boite,
                 MAX(CASE WHEN e.dir = 'vers_mere' THEN e.recu END) as dernier")
-            ->groupBy('a.uuid', 'a.etat')->orderBy('a.uuid')->get();
+            ->groupBy('a.uuid', 'a.etat', 'a.profil', 'a.fonction')->orderBy('a.uuid')->get();
 
         return view('livewire.panneau.appareils', ['lignes' => $lignes]);
     }

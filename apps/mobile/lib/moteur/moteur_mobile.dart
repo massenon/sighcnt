@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:sigh_domaine/sigh_domaine.dart' show mobFonctions;
 import 'package:sigh_sync/sigh_sync.dart';
 
 import 'service_soignant.dart';
@@ -12,13 +11,12 @@ export 'service_soignant.dart';
 /// ne couvre pas la caisse (refus nommé côté mère), le soignant ne crée pas de dossier hors tournée.
 enum ProfilMobile { soignant, receptionSecours }
 
-extension on ProfilMobile {
-  String get cle => this == ProfilMobile.soignant ? 'soignant' : 'reception';
-}
-
 class EtatMobile {
-  const EtatMobile({this.appaire = false, this.horsLigne = true, this.suspendu = false, this.enAttente = 0, this.aTraiter = 0, this.lotExpire});
+  const EtatMobile({this.appaire = false, this.horsLigne = true, this.suspendu = false, this.enAttente = 0, this.aTraiter = 0, this.lotExpire, this.enAttenteClinique = false});
   final bool appaire;
+
+  /// Appairé au relais, mais la mère n'a pas encore répondu : le profil et la fonction viennent d'elle (code d'appairage), le téléphone ne les devine pas.
+  final bool enAttenteClinique;
   final bool horsLigne;
   final bool suspendu;
   final int enAttente;
@@ -32,8 +30,10 @@ class EtatMobile {
 abstract class MoteurMobile {
   ProfilMobile? get profil;
   ValueListenable<EtatMobile> get etat;
-  /// Le profil soignant demande en plus l'agent (RG-12 : aucune action anonyme) et sa fonction (elle décide des commandes offertes).
-  Future<void> appairer({required String code, required String cleClinique, required ProfilMobile profil, String agent = '', String fonction = ''});
+  /// Appaire le téléphone. Le PROFIL et la FONCTION du soignant ne sont plus déclarés ici (E1600) : ils sont portés par le code d'appairage émis par la
+  /// console de la mère, que le téléphone reçoit d'elle (réponse chiffrée) ; ils n'arrivent donc qu'avec la réponse de la mère (`profil` reste `null`
+  /// en attendant). L'agent est demandé à tous : aucune action anonyme (RG-12).
+  Future<void> appairer({required String code, required String cleClinique, String agent = ''});
 
   /// Le service du profil soignant (agenda, dossier, constantes, notes, prescription) ; `null` pour la réception de secours.
   ServiceSoignant? get soignant;
@@ -88,10 +88,10 @@ class SourceSync implements SourceMobile {
 class MoteurMobileSync implements MoteurMobile {
   MoteurMobileSync._(this._m) {
     _minuterie = Timer.periodic(const Duration(seconds: 2), (_) => actualiser());
-    // Un téléphone déjà appairé retrouve son profil, son agent et sa fonction au redémarrage (ils vivent dans la base locale, pas en mémoire).
-    if ((_m.base.meta('jeton') ?? '').isNotEmpty && _m.base.meta('profil') != null) {
-      _profil = _m.base.meta('profil') == 'reception' ? ProfilMobile.receptionSecours : ProfilMobile.soignant;
-      _bati();
+    // Un téléphone déjà appairé retrouve son profil, son agent et sa fonction au redémarrage (ils vivent dans la base locale, pas en mémoire). Le profil
+    // et la fonction sont ceux que la mère a fixés (E1600) ; sans réponse de la mère ils restent vides et la boucle attend.
+    if ((_m.base.meta('jeton') ?? '').isNotEmpty) {
+      _adopterReponseMere();
       unawaited(_m.boucle());
     }
   }
@@ -111,6 +111,15 @@ class MoteurMobileSync implements MoteurMobile {
   @override
   ServiceSoignant? get soignant => _soignant;
 
+  /// Lit le profil et la fonction que la mère a fixés (bienvenue chiffrée, rangée dans la base locale) ; `true` quand ils sont connus.
+  bool _adopterReponseMere() {
+    final profil = _m.base.meta('profil') ?? '';
+    if (profil.isEmpty) return false;
+    _profil = profil == 'reception' ? ProfilMobile.receptionSecours : ProfilMobile.soignant;
+    _bati();
+    return true;
+  }
+
   void _bati() {
     final fonction = _m.base.meta('fonction') ?? '';
     _soignant = _profil == ProfilMobile.soignant && fonction.isNotEmpty
@@ -122,29 +131,30 @@ class MoteurMobileSync implements MoteurMobile {
   ValueListenable<EtatMobile> get etat => _etat;
 
   @override
-  Future<void> appairer({required String code, required String cleClinique, required ProfilMobile profil, String agent = '', String fonction = ''}) async {
-    if (profil == ProfilMobile.soignant && (agent.trim().isEmpty || !mobFonctions.contains(fonction))) {
-      throw StateError('agent_et_fonction_requis');
-    }
-    final (statut, corps) = await _m.commande('POST /appairer', {'code': code, 'cle': cleClinique, 'profil': profil.cle}, const {});
+  Future<void> appairer({required String code, required String cleClinique, String agent = ''}) async {
+    if (agent.trim().isEmpty) throw StateError('agent_requis');
+    final (statut, corps) = await _m.commande('POST /appairer', {'code': code, 'cle': cleClinique}, const {});
     if (statut >= 400) {
       final c = corps is Map ? corps : const {};
       throw StateError('${c['code'] ?? 'appairage_refuse'}');
     }
-    _profil = profil;
     _m.base.poserMeta('agent', agent.trim());
-    _m.base.poserMeta('fonction', profil == ProfilMobile.soignant ? fonction : '');
-    _bati();
     unawaited(_m.boucle());
+    // La mère répond à la première relève (quelques secondes si elle est joignable) : on l'attend un moment, puis `actualiser` la guette.
+    for (var i = 0; i < 40 && !_adopterReponseMere(); i++) {
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
     await actualiser();
   }
 
   Future<void> actualiser() async {
     try {
+      if (_profil == null && (_m.base.meta('jeton') ?? '').isNotEmpty) _adopterReponseMere();
       final (_, c) = await _m.commande('GET /etat', const {}, const {});
       final j = (c! as Map).cast<String, Object?>();
       _etat.value = EtatMobile(
         appaire: _profil != null,
+        enAttenteClinique: _profil == null && (_m.base.meta('jeton') ?? '').isNotEmpty,
         horsLigne: j['hors_ligne'] == true,
         suspendu: j['suspendu'] == true,
         enAttente: ((j['en_attente'] ?? 0) as num).toInt(),
@@ -152,7 +162,7 @@ class MoteurMobileSync implements MoteurMobile {
         lotExpire: (j['lot_expire'] as num?)?.toInt(),
       );
     } catch (_) {
-      _etat.value = const EtatMobile(appaire: true, horsLigne: true);
+      _etat.value = EtatMobile(appaire: _profil != null, horsLigne: true, enAttenteClinique: _profil == null && (_m.base.meta('jeton') ?? '').isNotEmpty);
     }
   }
 

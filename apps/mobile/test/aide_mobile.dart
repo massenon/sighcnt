@@ -43,14 +43,22 @@ SourceMemoire lotDeDemonstration() => SourceMemoire({
         const LigneLot('r4', {'patientId': 'p3', 'date': '2026-11-02T14:00', 'statut': 'planifiee', 'type': 'Domicile', 'motif': 'demain et après'}),
         const LigneLot('r5', {'patientId': 'p1', 'date': '2026-10-31T08:00', 'statut': 'planifiee', 'motif': 'archivé'}, archive: true),
       ],
+      // Le catalogue des médicaments du lot (E1559) : le soignant CHOISIT, il ne tape plus un nom.
+      'produits': [
+        const LigneLot('PRD0001', {'designation': 'PARACETAMOL 500 MG', 'unite': 'Boîte', 'categorie': 'medicament', 'prixAchat': 500, 'stockDetail': 40}),
+        const LigneLot('PRD0002', {'designation': 'AMOXICILLINE 500 MG', 'unite': 'Boîte', 'categorie': 'medicament', 'prixAchat': 1200, 'stockDetail': 2}),
+      ],
       'constantes': [
         const LigneLot('c1', {'patientId': 'p1', 'patientCode': 'CNT/12/26', 'dateHeure': '2026-10-31T08:15', 'temperature': 38.6, 'pouls': 96, 'tension': '120/80'}),
       ],
     });
 
 class FauxMoteur implements MoteurMobile {
-  FauxMoteur({this.refus, SourceMemoire? source, this.fonction = 'medecin', this.agent = 'Dr YENI M’PO Florent', this.refusATraiter = const []})
+  FauxMoteur({this.refus, SourceMemoire? source, this.fonction = 'medecin', this.agent = 'Dr YENI M’PO Florent', this.refusATraiter = const [], this.profilDuCode = ProfilMobile.soignant})
       : source = source ?? lotDeDemonstration();
+
+  /// Le profil que le CODE d'appairage porte (E1600) : le téléphone ne le choisit pas, il le reçoit de la mère.
+  final ProfilMobile profilDuCode;
   final String? refus;
   final SourceMemoire source;
   final String fonction, agent;
@@ -60,7 +68,7 @@ class FauxMoteur implements MoteurMobile {
   @override
   final ValueNotifier<EtatMobile> etat = ValueNotifier(const EtatMobile(horsLigne: true));
   final List<FichePatient> crees = [];
-  String? codeAppairage, agentAppairage, fonctionAppairage;
+  String? codeAppairage, agentAppairage;
 
   @override
   ServiceSoignant? get soignant => profil == ProfilMobile.soignant
@@ -68,12 +76,11 @@ class FauxMoteur implements MoteurMobile {
       : null;
 
   @override
-  Future<void> appairer({required String code, required String cleClinique, required ProfilMobile profil, String agent = '', String fonction = ''}) async {
+  Future<void> appairer({required String code, required String cleClinique, String agent = ''}) async {
     if (refus != null) throw StateError(refus!);
     codeAppairage = code;
     agentAppairage = agent;
-    fonctionAppairage = fonction;
-    this.profil = profil;
+    profil = profilDuCode;
   }
 
   @override

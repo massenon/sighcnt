@@ -48,6 +48,27 @@ class RelaisTest extends TestCase
         $this->assertDatabaseHas('relais_codes', ['hash' => hash('sha256', $a['code']), 'utilise' => true]);
     }
 
+    /** E1600 : la mère déclare le profil et la fonction avec le code ; le relais les range comme ÉTIQUETTE, sans en tirer aucun droit. */
+    public function test_le_profil_et_la_fonction_du_code_sont_une_etiquette_recopiee_a_l_appairage(): void
+    {
+        $code = 'CODE-FONCTION';
+        $this->postJson('/mere/code', ['hash' => hash('sha256', $code), 'profil' => 'soignant', 'fonction' => 'infirmier'], $this->mere())->assertOk();
+        $this->assertDatabaseHas('relais_codes', ['hash' => hash('sha256', $code), 'profil' => 'soignant', 'fonction' => 'infirmier']);
+        $this->postJson('/appairage', ['code' => $code, 'uuid' => 'm-fn'])->assertOk();
+        $this->assertDatabaseHas('relais_appareils', ['uuid' => 'm-fn', 'profil' => 'soignant', 'fonction' => 'infirmier']);
+    }
+
+    /** Un appareil déjà appairé ne reprend pas un autre code : changer de fonction exige un NOUVEL appareil. Le code n'est pas consommé. */
+    public function test_un_appareil_deja_appaire_ne_reprend_pas_un_code(): void
+    {
+        $this->appairer('m-1');
+        $code = 'CODE-AUTRE-FONCTION';
+        $this->postJson('/mere/code', ['hash' => hash('sha256', $code), 'profil' => 'soignant', 'fonction' => 'medecin'], $this->mere())->assertOk();
+        $this->postJson('/appairage', ['code' => $code, 'uuid' => 'm-1'])->assertStatus(409)->assertJson(['code' => 'appareil_deja_appaire']);
+        $this->assertDatabaseHas('relais_codes', ['hash' => hash('sha256', $code), 'utilise' => false]);
+        $this->assertDatabaseHas('relais_appareils', ['uuid' => 'm-1', 'fonction' => null]);
+    }
+
     public function test_le_jeton_n_est_jamais_conserve_en_clair(): void
     {
         $a = $this->appairer('m-1');

@@ -60,8 +60,11 @@ class AgendaDuJour {
 
 /// Le dossier en lecture : le résumé du domaine, la fiche brute et le rendez-vous du jour (le motif de la visite).
 class DossierLu {
-  const DossierLu({required this.patientId, required this.fiche, required this.resume, this.rendezVous});
+  const DossierLu({required this.patientId, required this.fiche, required this.resume, this.rendezVous, this.transcriptions = const {}});
   final String patientId;
+
+  /// Où en est chaque prescription du dossier au poste de la clinique (clé : identifiant de la pièce) : en attente, transcrite ou refusée (E1559).
+  final Map<String, MobTranscription> transcriptions;
   final Map<String, Object?> fiche;
   final MobDossier resume;
   final LigneAgenda? rendezVous;
@@ -90,6 +93,9 @@ class ServiceSoignant {
 
   /// Les natures offertes à la prescription : habilitation de la fonction ET écran ouvert au profil. Vide : la commande n'existe pas.
   List<String> get naturesPrescriptibles => mobNaturesPrescriptibles(session.fonction);
+
+  /// Le catalogue des médicaments du lot (le téléphone CHOISIT, il ne tape plus un nom) : vide pour une fonction qui ne prescrit pas, le lot n'en porte alors aucun.
+  Future<List<MobProduit>> produits() async => mobProduitsPrescriptibles([for (final l in await _actives('produits')) {...l.data, 'id': l.id}]);
 
   // --- lecture ----------------------------------------------------------------------------------------------------------------------------
 
@@ -147,14 +153,16 @@ class ServiceSoignant {
       maintenant: maintenant,
       constantes: [for (final l in await _actives('constantes')) l.data],
       notes: [for (final l in await _actives('notes')) l.data],
-      prescriptions: [for (final l in await _actives('prescriptions')) l.data],
+      prescriptions: [for (final l in await _actives('prescriptions')) {...l.data, 'id': l.id}],
     );
+    final comptes = [for (final l in await _actives('transcriptions')) l.data];
+    final transcriptions = {for (final p in resume.prescriptions) '${p['id']}': mobTranscriptionDe('${p['id']}', comptes)};
     final ag = await agenda();
     LigneAgenda? rdv;
     for (final l in ag.duJour) {
       if (l.patientId == patientId) rdv ??= l;
     }
-    return DossierLu(patientId: patientId, fiche: p.champs, resume: resume, rendezVous: rdv);
+    return DossierLu(patientId: patientId, fiche: p.champs, resume: resume, rendezVous: rdv, transcriptions: transcriptions);
   }
 
   // --- écriture : un geste = une opération --------------------------------------------------------------------------------------------------
@@ -208,7 +216,8 @@ class ServiceSoignant {
   Future<String> prescrireMedicament(String patientId, Map<String, String> saisie) async {
     final p = await _preparer(patientId);
     final noteId = await _noteDuJour(patientId, 'medicament');
-    final champs = mobChampsOrdonnance(patient: p.champs, patientId: patientId, noteId: noteId, saisie: saisie, acteur: session.agent, fonction: session.fonction, maintenant: maintenant);
+    final champs = mobChampsOrdonnance(
+        patient: p.champs, patientId: patientId, noteId: noteId, saisie: saisie, acteur: session.agent, fonction: session.fonction, maintenant: maintenant, produits: [for (final l in await _actives('produits')) {...l.data, 'id': l.id}]);
     return source.creer('prescriptions', champs);
   }
 

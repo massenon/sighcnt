@@ -216,6 +216,8 @@ class Mobile {
         final plage = (p['plage'] as Map);
         base.poserMeta('plage_prochain', plage['debut']);
         base.poserMeta('plage_fin', plage['fin']);
+        base.poserMeta('profil', p['profil'] ?? '');
+        base.poserMeta('fonction', p['fonction'] ?? '');
         base.poserMeta('bienvenu', 1);
       case 'lot':
         base.poserMeta('lot_expire', p['expire']);
@@ -319,8 +321,8 @@ class Mobile {
   Future<(int, Object?)> commande(String cle, Map<String, Object?> b, Map<String, String> q) async {
     switch (cle) {
       case 'POST /appairer':
+        // E1600 : le profil et la fonction ne sont PAS déclarés ici, ils arrivent par la bienvenue de la mère (ils viennent du code qu'elle a émis).
         base.poserMeta('cle', b['cle']);
-        base.poserMeta('profil', b['profil'] ?? 'soignant');
         final req = await _http.postUrl(Uri.parse('${cfg.relais}/appairage'));
         req.headers.contentType = ContentType.json;
         req.add(utf8.encode(enJson({'code': b['code'], 'uuid': uuid})));
@@ -332,7 +334,7 @@ class Mobile {
         base.poserMeta('suspendu', 0);
         suspendu = false;
         base.poserMeta('sortie_n', 1);
-        final env = await _env.chiffrer({'type': 'hello', 'code': b['code'], 'profil': base.meta('profil'), 'plateforme': 'banc'}, id: '$uuid-1', appareil: uuid, dir: 'vers_mere', n: 1);
+        final env = await _env.chiffrer({'type': 'hello', 'code': b['code'], 'plateforme': 'banc'}, id: '$uuid-1', appareil: uuid, dir: 'vers_mere', n: 1);
         base.exec('INSERT INTO envois(n,enveloppe,ops) VALUES(?,?,?)', [1, enJson(env), '[]']);
         return (200, {'uuid': uuid});
       case 'GET /secret':
@@ -346,7 +348,7 @@ class Mobile {
       case 'GET /etat':
         return (200, {
           'hors_ligne': horsLigne, 'tentatives': tentatives, 'suspendu': suspendu, 'exports': exports, 'alertes': alertes,
-          'uuid': uuid, 'bienvenu': base.meta('bienvenu') == '1', 'epoch': base.metaInt('epoch', 1), 'curseur_n': base.metaInt('curseur_n'),
+          'uuid': uuid, 'bienvenu': base.meta('bienvenu') == '1', 'profil': (base.meta('profil') ?? '').isEmpty ? null : base.meta('profil'), 'fonction': (base.meta('fonction') ?? '').isEmpty ? null : base.meta('fonction'), 'epoch': base.metaInt('epoch', 1), 'curseur_n': base.metaInt('curseur_n'),
           'lot_expire': base.metaInt('lot_expire'),
           'en_attente': base.select("SELECT COUNT(*) AS n FROM file WHERE etat IN ('en_attente','envoyee')").first['n'],
           'a_traiter': base.select("SELECT resultat FROM file WHERE etat='refusee'").map((r) => jsonDecode(r['resultat'] as String)).toList(),

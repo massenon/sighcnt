@@ -25,9 +25,11 @@ class _SighMobileState extends State<SighMobile> {
       title: 'SIGH-CNT',
       debugShowCheckedModeBanner: false,
       theme: ThemeSigh.clair(),
-      home: widget.moteur.profil == null
-          ? Builder(builder: (c) => EcranAppairage(moteur: widget.moteur, apres: () => setState(() {})))
-          : Accueil(moteur: widget.moteur),
+      // Le profil vient de la mère (code d'appairage, E1600) : l'écran suit l'état du moteur, il ne devine pas.
+      home: ValueListenableBuilder<EtatMobile>(
+        valueListenable: widget.moteur.etat,
+        builder: (c, _, __) => widget.moteur.profil == null ? EcranAppairage(moteur: widget.moteur, apres: () => setState(() {})) : Accueil(moteur: widget.moteur),
+      ),
     );
   }
 }

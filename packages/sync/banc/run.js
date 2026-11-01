@@ -156,9 +156,12 @@ async function monde(opts = {}) {
     };
     await mob.demarrer();
     if (!o.sansAppairage) {
-      const { json: c } = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: nom });
+      // E1600 : le profil et la FONCTION sont portés par le code émis par la mère ; le téléphone ne les déclare plus.
+      const profil = o.profil || 'soignant';
+      const { json: c, status: sc } = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: nom, profil, fonction: profil === 'soignant' ? (o.fonction || 'medecin') : undefined });
+      if (sc !== 200) throw new Error('code mobile refusé : ' + JSON.stringify(c));
       m.cle = c.cle;
-      const r = await mob.post('/appairer', { code: c.code, cle: c.cle, profil: o.profil || 'soignant' });
+      const r = await mob.post('/appairer', { code: c.code, cle: c.cle });
       if (r.status !== 200) throw new Error('appairage mobile refusé : ' + JSON.stringify(r.json));
       mob.uuid = r.json.uuid;
       if (!(await attendre(async () => (await mob.etat()).bienvenu, 15000))) throw new Error('le mobile n\'a pas reçu la bienvenue de la mère');
@@ -589,25 +592,128 @@ const scenarios = {
     const note = await mob.ecrire({ type: 'creer', collection: 'notes', champs: { patientId: a.fiche, date: '2026-10-31T10:00', type: 'Domicile', motif: 'Suivi HTA', diagnostic: 'Hypertension artérielle', orientation: 'domicile', redigePar: 'Dr YENI', fonction: 'medecin', origine: 'mobile' } });
     const ordo = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, noteId: note.fiche, lignes: [{ medicament: 'Paracétamol 500 mg', posologie: '1 cp x 3/j', dureeJours: 5 }], prescripteur: 'Dr YENI', fonction: 'medecin', emise: true, origine: 'mobile' } });
     const ana = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'analyse', patientId: a.fiche, noteId: note.fiche, examens: ['NFS'], urgence: 'Non urgent', prescripteur: 'Dr YENI', fonction: 'medecin', emise: true, origine: 'mobile' } });
-    const inf = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, noteId: note.fiche, lignes: [{ medicament: 'X', posologie: 'Y', dureeJours: 1 }], prescripteur: 'Infirmière', fonction: 'infirmier', emise: true, origine: 'mobile' } });
-    const sans = await mob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [], emise: true } });
-    verifier('hors ligne, la note et les prescriptions sont visibles aussitôt sur le mobile', (await mob.liste('notes')).length === 1 && (await mob.liste('prescriptions')).length === 4);
+    verifier('hors ligne, la note et les prescriptions sont visibles aussitôt sur le mobile', (await mob.liste('notes')).length === 1 && (await mob.liste('prescriptions')).length === 2);
     m.reseauMobile.regler('ouvert');
     verifier('retour réseau : tout est parti et accusé', await attendre(async () => mob.vide(), 15000));
     const e = await mob.etat(); const res = (id) => e.resultats.find((x) => x.id === id) || {};
     verifier('la note (journal) et l\'ordonnance du médecin sont ACCEPTÉES', res(note.id).etat === 'acceptee' && res(ordo.id).etat === 'acceptee' && res(ana.id).etat === 'acceptee', e.resultats);
-    const ri = res(inf.id);
+    // E1600 : l'infirmier est appairé AVEC SA fonction ; qu'il la déclare sur la pièce ou non, la mère relit la sienne.
+    const infMob = await m.mobile('INFIRMIER', { profil: 'soignant', fonction: 'infirmier' });
+    await m.mere.admin('POST', '/admin/lot', { uuid: infMob.uuid, fiches: [{ collection: 'patients', id: a.fiche }], ttl_ms: 60000, catalogue: false });
+    await attendre(async () => (await infMob.liste('patients')).length === 1);
+    const inf = await infMob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [{ medicament: 'X', posologie: 'Y', dureeJours: 1 }], prescripteur: 'Infirmière', fonction: 'infirmier', emise: true, origine: 'mobile' } });
+    const sans = await infMob.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [], emise: true } });
+    await attendre(async () => (await infMob.etat()).resultats.filter((x) => x.etat === 'refusee').length === 2, 15000);
+    const ei = await infMob.etat(); const resi = (id) => ei.resultats.find((x) => x.id === id) || {};
+    const ri = resi(inf.id);
     verifier('la prescription d\'une fonction non habilitée est REFUSÉE, nommée (code, motif, geste)', ri.etat === 'refusee' && ri.code === 'droit_refuse' && /Infirmier/.test(ri.motif) && /m[ée]decin/.test(ri.geste), ri);
-    const rs = res(sans.id);
-    verifier('une prescription sans fonction déclarée est refusée en le disant', rs.etat === 'refusee' && rs.code === 'droit_refuse' && /sans fonction/.test(rs.motif), rs);
-    verifier('les deux refus attendent dans « À traiter » (rien n\'est rejoué tel quel)', e.a_traiter.length === 2, e.a_traiter);
+    const rs = resi(sans.id);
+    verifier('sans fonction écrite sur la pièce, la mère applique celle de l\'appareil (pas une valeur du téléphone)', rs.etat === 'refusee' && rs.code === 'droit_refuse' && /Infirmier/.test(rs.motif), rs);
+    verifier('les deux refus attendent dans « À traiter » (rien n\'est rejoué tel quel)', ei.a_traiter.length === 2, ei.a_traiter);
     verifier('la mère tient 1 note et 2 prescriptions (les refusées n\'y sont pas)', (await m.mere.admin('GET', '/admin/compte?collection=notes')).json.n === 1 && (await m.mere.admin('GET', '/admin/compte?collection=prescriptions')).json.n === 2);
     verifier('le poste de la clinique reçoit la note et les ordonnances par la mère', await attendre(async () => (await f1.liste('notes')).length === 1 && (await f1.liste('prescriptions')).length === 2, 15000));
+    verifier('la fonction ÉCRITE sur la pièce acceptée est celle de l\'appareil, fixée par le code', (await f1.liste('prescriptions')).every((x) => x.data.fonction === 'medecin'), await f1.liste('prescriptions'));
     const modif = await mob.ecrire({ type: 'modifier', collection: 'prescriptions', fiche: ordo.fiche, champs: { lignes: [] } });
     verifier('une ordonnance émise ne se réécrit pas : refus nommé', await attendre(async () => (await mob.etat()).resultats.some((x) => x.id === modif.id && x.code === 'piece_emise_immuable'), 15000));
     const rec = await m.mobile('ACCUEIL', { profil: 'reception' });
     const interdit = await rec.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', fonction: 'medecin', emise: true } });
     verifier('la réception de secours ne prescrit pas : le profil ne couvre pas la collection', await attendre(async () => (await rec.etat()).resultats.some((x) => x.id === interdit.id && x.code === 'droit_refuse'), 15000));
+    await m.fermer();
+  },
+  async R27() {
+    courant = 'SYNC-R27 · la FONCTION du soignant vient du code d\'appairage de la mère, jamais du téléphone';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const a = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'DOSSOU', prenom: 'Aline' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 1);
+    // 1. le code porte l'affectation, et la console de la mère la valide
+    const sansProfil = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: 'X' });
+    verifier('un code de mobile sans profil est refusé, nommé', sansProfil.status === 422 && sansProfil.json.code === 'profil_requis', sansProfil.json);
+    const inconnue = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: 'X', profil: 'soignant', fonction: 'chauffeur' });
+    verifier('une fonction inconnue est refusée en la nommant', inconnue.status === 422 && inconnue.json.code === 'fonction_inconnue' && /chauffeur/.test(inconnue.json.motif), inconnue.json);
+    const soignantSans = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: 'X', profil: 'soignant' });
+    verifier('un soignant sans fonction est refusé', soignantSans.status === 422 && soignantSans.json.code === 'fonction_inconnue', soignantSans.json);
+    const recFonction = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: 'X', profil: 'reception', fonction: 'medecin' });
+    verifier('la réception de secours n\'a pas de fonction : refusé', recFonction.status === 422 && recFonction.json.code === 'fonction_non_applicable', recFonction.json);
+    // 2. l'infirmier est appairé comme tel ; il REÇOIT sa fonction (bienvenue chiffrée), il ne la déclare pas
+    const inf = await m.mobile('INF', { profil: 'soignant', fonction: 'infirmier' });
+    const ei = await inf.etat();
+    verifier('le téléphone reçoit de la mère son profil et sa fonction', ei.profil === 'soignant' && ei.fonction === 'infirmier', ei);
+    await m.mere.admin('POST', '/admin/lot', { uuid: inf.uuid, fiches: [{ collection: 'patients', id: a.fiche }], ttl_ms: 60000 });
+    await attendre(async () => (await inf.liste('patients')).length === 1);
+    // 3. fonction falsifiée : refus NOMMÉ, la pièce n'entre pas
+    const faux = await inf.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [{ medicament: 'X', posologie: 'Y', dureeJours: 1 }], prescripteur: 'Infirmière', fonction: 'medecin', emise: true, origine: 'mobile' } });
+    const fauxNote = await inf.ecrire({ type: 'creer', collection: 'notes', champs: { patientId: a.fiche, date: '2026-10-31T10:00', motif: 'Suivi', diagnostic: 'Paludisme simple', redigePar: 'Infirmière', fonction: 'medecin', origine: 'mobile' } });
+    await attendre(async () => (await inf.etat()).resultats.filter((x) => x.etat === 'refusee').length === 2, 15000);
+    const e1 = await inf.etat(); const r1 = (id) => e1.resultats.find((x) => x.id === id) || {};
+    verifier('la prescription à fonction falsifiée est REFUSÉE : code, les DEUX fonctions nommées, geste', r1(faux.id).etat === 'refusee' && r1(faux.id).code === 'fonction_falsifiee' && /medecin/.test(r1(faux.id).motif) && /infirmier/.test(r1(faux.id).motif) && /code d’appairage/.test(r1(faux.id).geste), r1(faux.id));
+    verifier('la note à fonction falsifiée l\'est aussi', r1(fauxNote.id).code === 'fonction_falsifiee', r1(fauxNote.id));
+    verifier('rien n\'est entré à la mère', (await m.mere.admin('GET', '/admin/compte?collection=prescriptions')).json.n === 0 && (await m.mere.admin('GET', '/admin/compte?collection=notes')).json.n === 0);
+    // 4. un appareil ne change pas de fonction sans nouvel appairage
+    const { json: c2 } = await m.mere.admin('POST', '/admin/code-mobile', { etiquette: 'INF2', profil: 'soignant', fonction: 'medecin' });
+    const reappaire = await inf.post('/appairer', { code: c2.code, cle: c2.cle });
+    verifier('le même appareil ne peut pas reprendre un code d\'une autre fonction (déjà appairé)', reappaire.status === 409 && reappaire.json.code === 'appareil_deja_appaire', reappaire.json);
+    const encore = await inf.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [], fonction: 'medecin', emise: true } });
+    verifier('sa fonction reste « infirmier » : la même falsification est encore refusée', await attendre(async () => (await inf.etat()).resultats.some((x) => x.id === encore.id && x.code === 'fonction_falsifiee'), 15000));
+    // 5. un NOUVEL appairage (autre appareil) porte l'autre fonction : le médecin prescrit, sans rien déclarer
+    const med = await m.mobile('MED', { profil: 'soignant', fonction: 'medecin' });
+    await m.mere.admin('POST', '/admin/lot', { uuid: med.uuid, fiches: [{ collection: 'patients', id: a.fiche }], ttl_ms: 60000 });
+    await attendre(async () => (await med.liste('patients')).length === 1);
+    const ok = await med.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [{ medicament: 'Paracétamol', posologie: '1 cp x 3/j', dureeJours: 5 }], prescripteur: 'Dr YENI', emise: true, origine: 'mobile' } });
+    verifier('le médecin appairé comme tel prescrit SANS déclarer de fonction : acceptée, fonction écrite par la mère', await attendre(async () => (await med.etat()).resultats.some((x) => x.id === ok.id && x.etat === 'acceptee'), 15000)
+      && (await m.mere.admin('GET', `/admin/fiche?collection=prescriptions&id=${ok.fiche}`)).json.data.fonction === 'medecin');
+    // 6. un appareil d'avant la fixation (fonction absente de la table) est refusé en le disant
+    if (!PG_URL) {
+      const { DatabaseSync } = require('node:sqlite'); const bd = new DatabaseSync(m.mere.db, { timeout: 5000 });
+      bd.prepare('UPDATE appareils SET fonction=NULL WHERE uuid=?').run(med.uuid); bd.close();
+      const vieux = await med.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, lignes: [], emise: true } });
+      verifier('un appareil appairé avant la fixation de la fonction est refusé, nommé, avec le geste (nouvel appairage)', await attendre(async () => (await med.etat()).resultats.some((x) => x.id === vieux.id && x.code === 'fonction_non_fixee' && /Réappairer/.test(x.geste)), 15000));
+    }
+    // 7. la révocation reste : l'appareil est suspendu au prochain contact
+    await m.mere.admin('POST', '/admin/revoquer', { uuid: inf.uuid });
+    await inf.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'analyse', fonction: 'infirmier', emise: true } });
+    verifier('un appareil révoqué est suspendu', await attendre(async () => (await inf.etat()).suspendu === true, 20000));
+    await m.fermer();
+  },
+  async R28() {
+    courant = 'SYNC-R28 · catalogue des produits dans le lot, patient hors lot refusé, compte rendu de transcription renvoyé au seul téléphone émetteur';
+    const m = await monde({ relais: true }); const f1 = await m.fileul('F1');
+    const a = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'DOSSOU', prenom: 'Aline' } });
+    const b = await f1.ecrire({ type: 'creer', collection: 'patients', champs: { nom: 'HORS', prenom: 'Tournée' } });
+    await attendre(async () => (await m.mere.admin('GET', '/admin/compte?collection=patients')).json.n === 2);
+    await m.mere.admin('POST', '/admin/referentiel', { collection: 'produits', fiche: 'PRD0001', champs: { designation: 'PARACETAMOL 500 MG', unite: 'Boîte', categorie: 'medicament', prixAchat: 500, stockDetail: 40 } });
+    await m.mere.admin('POST', '/admin/referentiel', { collection: 'produits', fiche: 'PRD0002', champs: { designation: 'AMOXICILLINE 500 MG', unite: 'Boîte', categorie: 'medicament', prixAchat: 1200, stockDetail: 2 } });
+    const med = await m.mobile('MED', { profil: 'soignant', fonction: 'medecin' });
+    const inf = await m.mobile('INF', { profil: 'soignant', fonction: 'infirmier' });
+    const sf = await m.mobile('SF', { profil: 'soignant', fonction: 'sage_femme' });
+    const lot = { fiches: [{ collection: 'patients', id: a.fiche }], ttl_ms: 60000 };
+    await m.mere.admin('POST', '/admin/lot', Object.assign({ uuid: med.uuid }, lot));
+    await m.mere.admin('POST', '/admin/lot', Object.assign({ uuid: inf.uuid }, lot));
+    await m.mere.admin('POST', '/admin/lot', Object.assign({ uuid: sf.uuid }, lot));
+    verifier('le lot du MÉDECIN porte le catalogue des produits (prix d\'achat, stock du jour)', await attendre(async () => (await med.liste('produits')).length === 2 && (await med.liste('patients')).length === 1)
+      && (await med.liste('produits')).some((x) => x.data.prixAchat === 500 && x.data.stockDetail === 40));
+    verifier('le lot de la SAGE-FEMME le porte aussi (elle prescrit des médicaments)', await attendre(async () => (await sf.liste('produits')).length === 2, 15000));
+    await attendre(async () => (await inf.liste('patients')).length === 1);
+    verifier('le lot de l\'INFIRMIER ne porte PAS le catalogue (il ne prescrit pas)', (await inf.liste('produits')).length === 0);
+    // patient hors lot : la mère refuse en le disant
+    const hors = await med.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: b.fiche, lignes: [], prescripteur: 'Dr YENI', emise: true, origine: 'mobile' } });
+    verifier('une prescription pour un patient HORS LOT est refusée en le disant', await attendre(async () => (await med.etat()).resultats.some((x) => x.id === hors.id && x.code === 'patient_hors_lot' && /lot de ce téléphone/.test(x.motif) && /lot du jour/.test(x.geste)), 15000));
+    verifier('et rien n\'entre à la mère', (await m.mere.admin('GET', '/admin/compte?collection=prescriptions')).json.n === 0);
+    // une prescription du médecin, avec le médicament choisi dans le catalogue du lot
+    const ordo = await med.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, patientCode: 'CNT/1/26', lignes: [{ produitId: 'PRD0001', medicament: 'PARACETAMOL 500 MG', quantite: 2, posologie: '1 cp x 3/j', dureeJours: 5 }], prescripteur: 'Dr YENI', emise: true, origine: 'mobile' } });
+    verifier('la prescription est acceptée', await attendre(async () => (await med.etat()).resultats.some((x) => x.id === ordo.id && x.etat === 'acceptee'), 15000));
+    verifier('le poste de la clinique reçoit la pièce (de quoi la transcrire)', await attendre(async () => (await f1.liste('prescriptions')).length === 1, 15000));
+    // le poste écrit le compte rendu de transcription (journal) ; un mobile ne peut pas
+    const faux = await med.ecrire({ type: 'creer', collection: 'transcriptions', champs: { prescriptionId: ordo.fiche, etat: 'transcrite', ordonnance: 'ORD-FAUX' } });
+    verifier('un MOBILE ne peut pas écrire un compte rendu de transcription', await attendre(async () => (await med.etat()).resultats.some((x) => x.id === faux.id && x.code === 'droit_refuse'), 15000));
+    const tr = await f1.ecrire({ type: 'creer', collection: 'transcriptions', champs: { prescriptionId: ordo.fiche, patientId: a.fiche, etat: 'transcrite', ordonnance: 'ORD-2026-00001', facture: 'FP-2026-00001', montant: 1000 } });
+    verifier('le compte rendu revient au téléphone ÉMETTEUR', await attendre(async () => (await med.liste('transcriptions')).some((x) => x.data.prescriptionId === ordo.fiche && x.data.facture === 'FP-2026-00001'), 15000));
+    await attendre(async () => (await m.mere.admin('GET', '/admin/etat')).json.rep_seq > 0);
+    verifier('et à lui seul : ni l\'infirmier ni la sage-femme ne le reçoivent', (await inf.liste('transcriptions')).length === 0 && (await sf.liste('transcriptions')).length === 0);
+    // la pièce refusée au poste revient avec code, motif et geste
+    const ordo2 = await med.ecrire({ type: 'creer', collection: 'prescriptions', champs: { nature: 'medicament', patientId: a.fiche, patientCode: 'CNT/1/26', lignes: [{ produitId: 'PRD0002', medicament: 'AMOXICILLINE 500 MG', quantite: 5, posologie: '1', dureeJours: 3 }], prescripteur: 'Dr YENI', emise: true, origine: 'mobile' } });
+    await attendre(async () => (await f1.liste('prescriptions')).length === 2, 15000);
+    await f1.ecrire({ type: 'creer', collection: 'transcriptions', champs: { prescriptionId: ordo2.fiche, patientId: a.fiche, etat: 'refusee', code: 'STOCK_INSUFFISANT', motif: 'Stock insuffisant (RG-03).', geste: 'Corriger la quantité' } });
+    verifier('un refus de transcription revient avec son code, son motif et son geste', await attendre(async () => (await med.liste('transcriptions')).some((x) => x.data.prescriptionId === ordo2.fiche && x.data.etat === 'refusee' && x.data.code === 'STOCK_INSUFFISANT' && x.data.geste), 15000));
     await m.fermer();
   },
   async R8r() {

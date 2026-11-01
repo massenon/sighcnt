@@ -7,6 +7,14 @@ import 'package:sigh_mobile/moteur/moteur_mobile.dart';
 
 import 'aide_mobile.dart';
 
+/// Le médicament se CHOISIT dans le catalogue du lot (E1559) : on ouvre la liste et on touche la ligne.
+Future<void> choisirMedicament(WidgetTester t, String designation) async {
+  await t.tap(find.byKey(const Key('champ-med')));
+  await t.pumpAndSettle();
+  await t.tap(find.textContaining(designation).last);
+  await t.pumpAndSettle();
+}
+
 Future<FauxMoteur> ouvrir(WidgetTester t, {String fonction = 'medecin', SourceMemoire? source}) async {
   t.view.physicalSize = const Size(800, 1800);
   t.view.devicePixelRatio = 1;
@@ -134,7 +142,8 @@ void main() {
     await t.scrollUntilVisible(find.byKey(const Key('prescrire')), 300, scrollable: find.byType(Scrollable).last);
     await t.tap(find.byKey(const Key('prescrire')));
     await t.pumpAndSettle();
-    await t.enterText(find.byKey(const Key('champ-med')), 'Paracétamol 500 mg');
+    await choisirMedicament(t, 'PARACETAMOL 500 MG');
+    await t.enterText(find.byKey(const Key('champ-quantite')), '2');
     await t.enterText(find.byKey(const Key('champ-poso')), '1 cp x 3/j');
     await t.enterText(find.byKey(const Key('champ-duree')), '5');
     await t.tap(find.byKey(const Key('envoyer-prescription')));
@@ -181,7 +190,8 @@ void main() {
     await t.scrollUntilVisible(find.byKey(const Key('prescrire')), 300, scrollable: find.byType(Scrollable).last);
     await t.tap(find.byKey(const Key('prescrire')));
     await t.pumpAndSettle();
-    await t.enterText(find.byKey(const Key('champ-med')), 'Paracétamol 500 mg');
+    await choisirMedicament(t, 'PARACETAMOL 500 MG');
+    await t.enterText(find.byKey(const Key('champ-quantite')), '2');
     await t.enterText(find.byKey(const Key('champ-poso')), '1 cp x 3/j');
     await t.enterText(find.byKey(const Key('champ-duree')), '0');
     await t.tap(find.byKey(const Key('envoyer-prescription')));
@@ -191,7 +201,61 @@ void main() {
     await t.tap(find.byKey(const Key('envoyer-prescription')));
     await t.pumpAndSettle();
     expect(m.source.de('prescriptions').single['emise'], isTrue);
-    expect(find.textContaining('Ordonnance : Paracétamol 500 mg'), findsOneWidget, reason: 'la prescription se relit au dossier');
+    expect(find.textContaining('Ordonnance : PARACETAMOL 500 MG'), findsOneWidget, reason: 'la prescription se relit au dossier');
+  });
+
+  testWidgets('le catalogue du lot : stock insuffisant refusé en le nommant (RG-03), médicament hors catalogue, quantité exigée', (t) async {
+    final m = await ouvrir(t);
+    await m.soignant!.enregistrerNote('p1', {'motif': 'm', 'diagnostic': 'Gastro-entérite'});
+    await ouvrirDossierDe(t, 'p1');
+    await t.scrollUntilVisible(find.byKey(const Key('prescrire')), 300, scrollable: find.byType(Scrollable).last);
+    await t.tap(find.byKey(const Key('prescrire')));
+    await t.pumpAndSettle();
+    expect(find.textContaining('La prescription part à la clinique par le relais.'), findsOneWidget);
+    expect(find.textContaining('Prescrire génère l’ordonnance'), findsNothing, reason: 'la phrase de la maquette n\'est vraie qu\'après la transcription par le poste');
+    await t.tap(find.byKey(const Key('envoyer-prescription')));
+    await t.pumpAndSettle();
+    expect(find.text('Le médicament est obligatoire.'), findsOneWidget);
+    expect(find.text('La quantité est obligatoire.'), findsOneWidget);
+    await choisirMedicament(t, 'AMOXICILLINE 500 MG');
+    await t.enterText(find.byKey(const Key('champ-quantite')), '3');
+    await t.enterText(find.byKey(const Key('champ-poso')), '1');
+    await t.enterText(find.byKey(const Key('champ-duree')), '3');
+    await t.tap(find.byKey(const Key('envoyer-prescription')));
+    await t.pumpAndSettle();
+    expect(find.text('Stock insuffisant pour « AMOXICILLINE 500 MG » : disponible : 2 ; demandé : 3 (RG-03).'), findsWidgets);
+    expect(m.source.de('prescriptions'), isEmpty, reason: 'rien n\'est écrit');
+  });
+
+  testWidgets('au dossier : la prescription attend, puis le compte rendu du poste dit « transcrite » (et seulement alors, la phrase de la maquette) ou « refusée »', (t) async {
+    final m = await ouvrir(t);
+    await m.soignant!.enregistrerNote('p1', {'motif': 'm', 'diagnostic': 'Gastro-entérite'});
+    final id = await m.soignant!.prescrireMedicament('p1', {'med': 'PRD0001', 'quantite': '2', 'poso': '1 cp x 3/j', 'duree': '5'});
+    await ouvrirDossierDe(t, 'p1');
+    await t.scrollUntilVisible(find.byKey(Key('transcription-$id')), 300, scrollable: find.byType(Scrollable).last);
+    expect(find.text('En attente de transcription par la clinique.'), findsOneWidget);
+    expect(find.textContaining('Prescrire génère'), findsNothing);
+
+    m.source.donnees['transcriptions'] = [
+      LigneLot('t1', {'prescriptionId': id, 'etat': 'transcrite', 'ordonnance': 'ORD-2026-00007', 'facture': 'FP-2026-00012', 'montant': 1000})
+    ];
+    await t.pageBack();
+    await t.pumpAndSettle();
+    await ouvrirDossierDe(t, 'p1');
+    await t.scrollUntilVisible(find.byKey(Key('transcription-$id')), 300, scrollable: find.byType(Scrollable).last);
+    expect(find.textContaining('Transcrite par la clinique : ordonnance ORD-2026-00007, facture FP-2026-00012.'), findsOneWidget);
+    expect(find.textContaining('Prescrire génère l’ordonnance et la facture de la caisse.'), findsOneWidget);
+
+    m.source.donnees['transcriptions'] = [
+      LigneLot('t2', {'prescriptionId': id, 'etat': 'refusee', 'code': 'STOCK_INSUFFISANT', 'motif': 'Stock insuffisant (RG-03).', 'geste': 'Corriger la quantité.', 'date': '2026-10-31T11:00'})
+    ];
+    await t.pageBack();
+    await t.pumpAndSettle();
+    await ouvrirDossierDe(t, 'p1');
+    await t.scrollUntilVisible(find.byKey(Key('transcription-$id')), 300, scrollable: find.byType(Scrollable).last);
+    expect(find.textContaining('Refusée par la clinique : Stock insuffisant (RG-03).'), findsOneWidget);
+    expect(find.textContaining('À faire : Corriger la quantité. (STOCK_INSUFFISANT)'), findsOneWidget);
+    expect(find.textContaining('Prescrire génère'), findsNothing);
   });
 
   testWidgets('demande d\'analyses : aucun examen refusé avec le texte de l\'écran, puis la demande part', (t) async {
