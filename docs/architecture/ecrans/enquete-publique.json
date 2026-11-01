@@ -12,7 +12,8 @@
   "Votre santé, notre raison de vivre",
   "Recueil à la sortie.",
   "Questionnaire ANONYME : votre réponse n’est reliée ni à votre nom, ni à votre dossier. Aucune question ne porte sur votre santé.",
-  "CLINIQUE NASSIERA TOO SARL — BP : 507 NATITINGOU (Rép. du Bénin)"
+  "CLINIQUE NASSIERA TOO SARL — BP : 507 NATITINGOU (Rép. du Bénin)",
+  "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214 — RCCM RB/NAT/2016-B-268."
  ],
  "cartes": [],
  "champs": [
@@ -27,7 +28,7 @@
  ],
  "fixtureEnquete": {
   "enquete": {
-   "id": "ENQxmvwph19mn2dp8",
+   "id": "ENQxmvy5zwhdy5y2b",
    "statut": "actif",
    "reference": "ENQ-SAT",
    "titre": "Satisfaction des patients",
@@ -54,23 +55,23 @@
     }
    ],
    "_creePar": "BASSONGUI Chabi Séko",
-   "_creeLe": "2026-10-31T17:59:25.354Z"
+   "_creeLe": "2026-11-01T18:29:45.649Z"
   },
   "jeton": {
-   "id": "JETxmvwph19mea5v5",
+   "id": "JETxmvy5zwhdr18qt",
    "statut": "actif",
-   "jeton": "wtzn8q3ep44ti48tu6cahep5",
-   "enqueteId": "ENQxmvwph19mn2dp8",
+   "jeton": "vwupdn9ewfgqsj4a9yr9sdvt",
+   "enqueteId": "ENQxmvy5zwhdy5y2b",
    "enqueteTitre": "Satisfaction des patients",
    "anonyme": true,
    "usage": "Lien",
-   "creeLe": "2026-10-31",
+   "creeLe": "2026-11-01",
    "expireLe": "2099-12-31",
    "revoqueLe": null,
    "note": null,
    "ouvertPar": "extraction",
    "_creePar": "BASSONGUI Chabi Séko",
-   "_creeLe": "2026-10-31T17:59:25.354Z"
+   "_creeLe": "2026-11-01T18:29:45.649Z"
   }
  }
 }
