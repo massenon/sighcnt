@@ -17,6 +17,13 @@ import '../modules/auth/acc_session.dart';
 import 'acces_rapides.dart';
 import 'activite_fermee.dart';
 import '../donnees/magasin.dart';
+import '../kit/toast.dart';
+import '../modules/cfg/cfb_notifications.dart' show CfbAudio;
+import 'centre_notifications.dart';
+import 'fenetre_poste.dart';
+import 'menus_barre.dart';
+import 'modal_notifications.dart';
+import 'recherche_globale.dart';
 import 'ruban.dart';
 
 /// Coque UNIQUE du poste (fileul et mère) : barre supérieure → ruban à méga-menus → page. Elle reproduit la structure de
@@ -32,6 +39,7 @@ class CoquePoste extends StatefulWidget {
       this.horloge,
       this.ecranInitial,
       this.session,
+      this.fenetre,
       this.parametres = const {}});
   final ConfigPoste config;
   final DonneesNavigation donnees;
@@ -55,6 +63,9 @@ class CoquePoste extends StatefulWidget {
   /// Les paramètres de l'adresse d'un écran autonome (`jeton` de la page publique d'enquête).
   final Map<String, String> parametres;
 
+  /// La fenêtre du poste (plein écran). Absente : la fenêtre réelle (`window_manager`), créée au premier usage.
+  final FenetrePoste? fenetre;
+
   @override
   State<CoquePoste> createState() => _CoquePosteState();
 }
@@ -73,6 +84,26 @@ class _CoquePosteState extends State<CoquePoste> {
   /// `modulesActifs` (activités fermées de cfg-modules), comme `N.can()` de la maquette. Recalculées à chaque écriture de l'une ou l'autre.
   late DonneesNavigation _nav;
   Listenable? _ecouteDroits;
+
+  /// Le moteur de notifications du poste : la cloche en compte les alertes non acquittées, routées pour le rôle connecté.
+  CentreNotifications? _centreNotif;
+  Magasin? _centreSur;
+  FenetrePoste? _fenetreSysteme;
+  FenetrePoste get _fenetre => widget.fenetre ?? (_fenetreSysteme ??= FenetreSysteme());
+  bool _rechercheOuverte = false;
+
+  DateTime _maintenant() => (widget.horloge ?? _session?.horloge ?? DateTime.now)();
+
+  CentreNotifications get _centre {
+    final m = widget.magasin ?? _magasinVide;
+    if (_centreNotif == null || !identical(_centreSur, m)) {
+      _centreNotif?.dispose();
+      _centreSur = m;
+      _centreNotif = CentreNotifications(
+          magasin: m, donnees: () => _nav, role: () => _role, horloge: _maintenant, audioDisponible: () => CfbAudio.disponible());
+    }
+    return _centreNotif!;
+  }
 
   DonneesNavigation _calculerNav() {
     final m = widget.magasin;
@@ -117,9 +148,9 @@ class _CoquePosteState extends State<CoquePoste> {
     if (demande != null && _estAutonome(demande)) _autonome = demande;
     final s = _session;
     _compteVu = s?.compte;
+    HardwareKeyboard.instance.addHandler(_surClavier);
     if (s != null) {
       s.addListener(_surSession);
-      HardwareKeyboard.instance.addHandler(_surClavier);
       // Le délai est mesuré sur l'horloge INJECTÉE de la session ; le minuteur ne fait que la consulter.
       _minuteur = Timer.periodic(const Duration(seconds: 2), (_) => _verifierVerrou());
     }
@@ -136,13 +167,109 @@ class _CoquePosteState extends State<CoquePoste> {
     _ecouteDroits?.removeListener(_surDroits);
     _minuteur?.cancel();
     _session?.removeListener(_surSession);
-    if (_session != null) HardwareKeyboard.instance.removeHandler(_surClavier);
+    HardwareKeyboard.instance.removeHandler(_surClavier);
+    _centreNotif?.dispose();
     super.dispose();
   }
 
   bool _surClavier(KeyEvent e) {
     _session?.activite();
+    if (e is! KeyDownEvent || !_barreActive) return false;
+    final k = HardwareKeyboard.instance;
+    // Ctrl K (Cmd K sur Mac) : la recherche globale, de partout, comme la maquette. F11 : le plein écran.
+    if ((k.isControlPressed || k.isMetaPressed) && e.logicalKey == LogicalKeyboardKey.keyK) {
+      _ouvrirRecherche();
+      return true;
+    }
+    if (e.logicalKey == LogicalKeyboardKey.f11) {
+      _basculerPleinEcran();
+      return true;
+    }
     return false;
+  }
+
+  /// La barre est-elle sous les yeux de l'agent ? Ni sur un écran autonome, ni derrière la connexion, ni sous le verrou.
+  bool get _barreActive {
+    final s = _session;
+    if (!mounted || _autonome != null) return false;
+    if (s != null && (s.etat != EtatSession.connectee)) return false;
+    return true;
+  }
+
+  // ------------------------------------------------------------------------------------------------------------------------------------------
+  // LES BOUTONS DE LA BARRE SUPÉRIEURE : chacun agit.
+  // ------------------------------------------------------------------------------------------------------------------------------------------
+
+  /// Une destination atteinte depuis la barre (résultat de recherche, action rapide, alerte, lien du profil) : l'écran s'ouvre si le profil le voit (RG-13),
+  /// sinon rien ne s'ouvre en silence : la tentative est dite.
+  void _allerDepuisBarre(String id, {String? onglet}) {
+    if (_estAutonome(id)) {
+      _ouvrir(id);
+      return;
+    }
+    if (ecranOuvertAuRole(_nav, _role, id) || (_nav.manifeste.ecran(id)?.standalone ?? false)) {
+      _ouvrir(id);
+      return;
+    }
+    ToastsSigh.afficher(context, 'Cet écran n’est pas ouvert à votre profil.', type: TypeToast.attention);
+  }
+
+  Future<void> _ouvrirRecherche() async {
+    if (_rechercheOuverte) return;
+    _rechercheOuverte = true;
+    try {
+      await ouvrirRechercheGlobale(context,
+          nav: () => _nav, role: () => _role, magasin: widget.magasin ?? _magasinVide, aller: (e, {onglet}) => _allerDepuisBarre(e, onglet: onglet));
+    } finally {
+      _rechercheOuverte = false;
+    }
+  }
+
+  Future<void> _ouvrirActions() =>
+      ouvrirActionsRapides(context, nav: _nav, role: _role, aller: (e) => _allerDepuisBarre(e));
+
+  Future<void> _basculerPleinEcran() async {
+    try {
+      await _fenetre.basculerPleinEcran();
+    } catch (_) {
+      if (mounted) ToastsSigh.afficher(context, 'Plein écran indisponible sur ce poste.', type: TypeToast.erreur);
+    }
+  }
+
+  Future<void> _ouvrirNotifications({bool ouverture = false}) =>
+      ouvrirCentreNotifications(context, centre: _centre, ouverture: ouverture, aller: (e) => _allerDepuisBarre(e));
+
+  Future<void> _ouvrirProfil() => ouvrirMenuProfil(context,
+      nav: _nav,
+      role: _role,
+      nom: _nomAffiche(),
+      libelleRole: _nav.matrice.libelle(_role) ?? _role,
+      aller: (e) => _allerDepuisBarre(e),
+      verrouiller: _session == null ? null : _verrouillerMaintenant,
+      deconnecter: _deconnecter);
+
+  /// « Verrouiller l'écran » : la session est SUSPENDUE (jamais fermée), l'écran courant est retenu pour le retour ; le geste est journalisé (RG-12).
+  void _verrouillerMaintenant() {
+    final s = _session;
+    if (s == null) return;
+    final id = _courantAffiche;
+    if (s.verrouillerMaintenant(id)) {
+      widget.magasin?.journaliser('Verrouillage manuel', 'M14', 'Session', s.compte?.identifiant ?? _role, null, {'ecran': id});
+    }
+  }
+
+  /// « Se déconnecter » : la session se ferme et la connexion s'ouvre. Journalisé (RG-12).
+  void _deconnecter() {
+    final s = _session;
+    widget.magasin?.journaliser('Déconnexion', 'M14', 'Session', s?.compte?.identifiant ?? _role, null, {'role': _role});
+    s?.deconnecter();
+    if (_estAutonome('index')) {
+      setState(() {
+        _autonome = 'index';
+        _ecran = null;
+        _domaine = null;
+      });
+    }
   }
 
   void _verifierVerrou() {
@@ -168,11 +295,22 @@ class _CoquePosteState extends State<CoquePoste> {
         _ecran = null;
         _domaine = null;
         _autonome = null;
+        _panneauOuvert = true;
+        _notifierALArrivee = s.compte != null;
       }
       if (s.etat == EtatSession.deconnectee) _autonome = null;
       _compteVu = s.compte;
     });
+    // À la CONNEXION, le centre de notifications s'ouvre de lui-même sur le tableau de bord du poste : ce qui attend l'agent, routé par son rôle.
+    if (_notifierALArrivee) {
+      _notifierALArrivee = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _barreActive) _ouvrirNotifications(ouverture: true);
+      });
+    }
   }
+
+  bool _notifierALArrivee = false;
 
   List<DomaineRuban> get _ruban =>
       _nav.manifeste.ruban(_nav.matrice, _role,
@@ -309,8 +447,7 @@ class _CoquePosteState extends State<CoquePoste> {
     if (ruban.isEmpty) {
       return Scaffold(
           body: Column(children: [
-        BarreSuperieure(
-            config: widget.config, etatSync: widget.etatSync, nomRole: nomRole),
+        _barre(nomRole, null),
         const Expanded(
             child: Center(
                 child: Text('Aucun module n’est ouvert à votre profil.')))
@@ -334,11 +471,7 @@ class _CoquePosteState extends State<CoquePoste> {
         ruban.first.nom;
     return Scaffold(
       body: Column(children: [
-        BarreSuperieure(
-            config: widget.config,
-            etatSync: widget.etatSync,
-            nomRole: nomRole,
-            surAccueil: () => _ouvrir(_accueil(ruban)!)),
+        _barre(nomRole, () => _ouvrir(_accueil(ruban)!)),
         Ruban(
           domaines: ruban,
           raccourcis: _nav.manifeste.raccourcis(ruban),
@@ -360,19 +493,48 @@ class _CoquePosteState extends State<CoquePoste> {
     );
   }
 
+  /// Le nom affiché au profil : celui de l'agent nominatif de la session ; à défaut le nom du compte (sauf s'il n'est que l'identifiant du rôle) ; à défaut
+  /// l'agent de démonstration du rôle.
+  String _nomAffiche() {
+    final c = _session?.compte;
+    if (c?.agent != null) return c!.agent!.nom;
+    if (c != null && c.nom.trim().isNotEmpty && c.nom != c.identifiant && c.nom != c.role) return c.nom;
+    return _agent().nom;
+  }
+
+  Widget _barre(String nomRole, VoidCallback? surAccueil) => BarreSuperieure(
+      config: widget.config,
+      etatSync: widget.etatSync,
+      nomRole: nomRole,
+      nomAgent: _nomAffiche(),
+      surAccueil: surAccueil,
+      centre: _centre,
+      surRecherche: _ouvrirRecherche,
+      surActions: _ouvrirActions,
+      surPleinEcran: _basculerPleinEcran,
+      pleinEcran: _fenetre.pleinEcran,
+      surNotifications: _ouvrirNotifications,
+      surProfil: _ouvrirProfil);
+
+  /// Les maillons cliquables du fil (comme la maquette) : « Accueil » ramène à la page d'accueil du rôle ; l'intitulé du module ouvre la page d'accueil du module
+  /// (sauf sur cette page elle-même), s'il est ouvert au profil.
+  Map<int, VoidCallback> _liensDuFil(List<String> fil, EcranNav e, EcranNav? hub) => {
+        0: () => _ouvrir(_accueilDuRole()),
+        if (!e.hub && hub != null && ecranOuvertAuRole(_nav, _role, hub.id)) fil.indexOf(e.moduleLabel): () => _ouvrir(hub.id),
+      };
+
   Widget _page(String id, List<DomaineRuban> ruban, String libelleMode) {
     final e = _nav.manifeste.ecran(id);
-    final rangee = ruban
-        .expand((d) => d.rangees.map((r) => (d, r)))
-        .where((x) => x.$2.hub == id || x.$2.ecrans.any((s) => s.id == id))
-        .firstOrNull;
+    // Le fil d'Ariane est celui de la maquette : Accueil, le domaine CANONIQUE de l'écran (jamais « Accueil > Accueil » : le premier maillon nomme déjà
+    // le domaine Accueil), l'intitulé du module, puis l'écran (absent sur la page d'accueil d'un module, qui est le module).
     final fil = [
       'Accueil',
-      if (rangee != null) rangee.$1.nom,
-      if (rangee != null) rangee.$2.label,
-      e?.label ?? id
+      if (e != null && e.domaine != 'Accueil') e.domaine,
+      if (e != null) e.moduleLabel,
+      if (e != null && !e.hub) e.label,
     ];
     if (e == null) return const Center(child: Text('Écran inconnu.'));
+    final hubDuModule = _nav.manifeste.ecran('hub-${e.module.toLowerCase()}');
     final fermeture = _fermeturePour(id);
     if (fermeture != null) return PageActiviteFermee(ecran: e, fermeture: fermeture, fil: fil);
     final porte = widget.ecrans[id];
@@ -403,6 +565,7 @@ class _CoquePosteState extends State<CoquePoste> {
           return PageStandard(
               titre: (w is EcranMaquette ? w.titre : null) ?? e.label,
               fil: fil,
+              surFil: _liensDuFil(fil, e, hubDuModule),
               module: e.module,
               defilable: w is EcranMaquette ? true : false,
               description: w is EcranMaquette ? w.description : null,

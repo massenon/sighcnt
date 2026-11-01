@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/jetons_shell.dart';
+import '../shell/logo_clinique.dart';
 import 'piece.dart';
 
 /// 1 mm = 96/25,4 px logiques : le gabarit imprimé garde ses dimensions physiques à l'aperçu (A4 = 210 × 297 mm, rouleau = 80 mm).
@@ -150,12 +151,7 @@ class FeuilleA4 extends StatelessWidget {
             border: Border(
                 bottom: BorderSide(color: JetonsShell.navy900, width: 3))),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Image.asset('assets/img/logo.jpeg',
-              width: 64,
-              height: 64,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) =>
-                  const SizedBox(width: 64, height: 64)),
+          const LogoClinique(largeur: 64, hauteur: 64),
           const SizedBox(width: 16),
           Flexible(
             child: Column(children: [

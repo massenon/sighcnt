@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sigh_poste/shell/page_standard.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/modules/cfg/cfb_perimetre.dart';
 
@@ -28,7 +29,8 @@ void main() {
       expect(find.text(k), findsWidgets, reason: k);
     }
     expect(find.text('admin.systeme'), findsOneWidget);
-    expect(find.text('AS'), findsOneWidget, reason: 'initiales de « Administrateur système »');
+    // La barre supérieure porte désormais les initiales de l'agent connecté : on mesure celles de la FICHE (dans la page).
+    expect(find.descendant(of: find.byType(PageStandard), matching: find.text('AS')), findsOneWidget, reason: 'initiales de « Administrateur système »');
     // l’identifiant et le poste ne se saisissent pas : aucun champ de saisie ne porte ces libellés
     expect(find.byKey(const Key('kit:champ:identifiant')), findsNothing);
     expect(find.byKey(const Key('kit:champ:poste')), findsNothing);

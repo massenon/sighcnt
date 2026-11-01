@@ -1630,6 +1630,28 @@
       motsCles: 'enquête lien partage jeton qr questionnaire tiers public satisfaction' },
   ];
 
+  /* ==========================================================================
+   * ACTIONS RAPIDES : le menu « Actions » de la barre supérieure
+   * --------------------------------------------------------------------------
+   * [libellé, icône, écran]. La liste est filtrée par les droits du profil au
+   * moment de l'afficher : un raccourci vers un écran interdit promet une porte
+   * fermée. Elle vit ici, avec le reste des points d'entrée, pour que le poste
+   * Flutter la lise depuis la même source.
+   * ======================================================================== */
+  var ACTIONS_RAPIDES = [
+    ['Nouveau dossier patient', 'user-plus', 'm1-patients'],
+    ['Patient externe : analyses', 'user-round-plus', 'm1-externe'],
+    ['Nouvelle consultation', 'stethoscope', 'm2-consultations'],
+    ['Nouvelle admission', 'bed-double', 'm3-admissions'],
+    ['Nouvelle facture', 'receipt', 'm8-facturation'],
+    ['Encaisser un paiement', 'banknote', 'm8-paiements'],
+    ['Assurés & cartes', 'id-card', 'm9-assures'],
+    ['Demande d’analyse', 'flask-conical', 'm5-demandes'],
+    ['Mouvement de stock', 'package', 'm6-mouvements'],
+    ['Bon d’expression de besoins', 'clipboard-list', 'm7-besoins'],
+    ['Éditer un état', 'printer', 'rapports-bibliotheque'],
+  ];
+
   global.SIGH = global.SIGH || {};
   global.SIGH.nav = {
     ROLES: ROLES,
@@ -1640,6 +1662,7 @@
     ALL: ALL,
     RACCOURCIS: RACCOURCIS,
     RUBRIQUES: RUBRIQUES,
+    ACTIONS_RAPIDES: ACTIONS_RAPIDES,
     can: can,
     droits: droits,
     droitsEcran: droitsEcran,

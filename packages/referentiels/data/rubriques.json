@@ -1,0 +1,290 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/extraire-rubriques.js depuis nav.js (RUBRIQUES, ACTIONS_RAPIDES), ne pas éditer.",
+ "rubriques": [
+  {
+   "ecran": "cfg-tarifs",
+   "onglet": "produits",
+   "label": "Produits & médicaments",
+   "motsCles": "tarif prix médicament produit pharmacie prix d’achat prix de vente marge RG-02"
+  },
+  {
+   "ecran": "cfg-tarifs",
+   "onglet": "analyses",
+   "label": "Analyses de laboratoire",
+   "motsCles": "tarif prix analyse laboratoire biologie examen catalogue"
+  },
+  {
+   "ecran": "cfg-tarifs",
+   "onglet": "actes",
+   "label": "Actes & hospitalisation",
+   "motsCles": "acte actes soin chirurgie accouchement échographie consultation hospitalisation chambre tarif prix"
+  },
+  {
+   "ecran": "cfg-natures-facture",
+   "onglet": null,
+   "label": "Natures de facture",
+   "motsCles": "nature facture type émission maternité observation consultation CPN spécialiste généraliste"
+  },
+  {
+   "ecran": "cfg-centres-couts",
+   "onglet": null,
+   "label": "Centres de coûts",
+   "motsCles": "centre de coût analytique imputation service ventilation charge comptabilité"
+  },
+  {
+   "ecran": "cfg-organisation",
+   "onglet": "secteurs",
+   "label": "Secteurs de la clinique (NS 145)",
+   "motsCles": "secteur service responsable adjoint NS 145 répartition accueil maternité bloc laboratoire"
+  },
+  {
+   "ecran": "cfg-organisation",
+   "onglet": "organigramme",
+   "label": "Organigramme et postes",
+   "motsCles": "organigramme poste département hiérarchie effectif titulaire rattachement"
+  },
+  {
+   "ecran": "cfg-systeme",
+   "onglet": "corbeille",
+   "label": "Corbeille — éléments archivés",
+   "motsCles": "corbeille archive archivé restaurer restauration supprimé suppression RG-14"
+  },
+  {
+   "ecran": "cfg-systeme",
+   "onglet": "installation",
+   "label": "Installation et données",
+   "motsCles": "installation technique collection données version stockage maintenance réinitialiser"
+  },
+  {
+   "ecran": "m5-resultats",
+   "onglet": "attente",
+   "label": "Résultats à saisir",
+   "motsCles": "résultat analyse saisie attente laboratoire biologie"
+  },
+  {
+   "ecran": "m5-resultats",
+   "onglet": "valides",
+   "label": "Résultats validés",
+   "motsCles": "résultat validé compte rendu biologique laboratoire"
+  },
+  {
+   "ecran": "m6-alertes",
+   "onglet": "rupture",
+   "label": "Ruptures de stock",
+   "motsCles": "rupture stock zéro manquant alerte"
+  },
+  {
+   "ecran": "m6-alertes",
+   "onglet": "seuil",
+   "label": "Produits sous le seuil",
+   "motsCles": "seuil alerte réapprovisionnement stock minimum"
+  },
+  {
+   "ecran": "m6-alertes",
+   "onglet": "peremption",
+   "label": "Péremptions",
+   "motsCles": "péremption périmé expiration FEFO lot date limite RG-05"
+  },
+  {
+   "ecran": "m8-paiements",
+   "onglet": "aregler",
+   "label": "Factures à encaisser",
+   "motsCles": "encaisser encaissement paiement règlement caisse impayé à régler"
+  },
+  {
+   "ecran": "m8-paiements",
+   "onglet": "historique",
+   "label": "Historique des règlements",
+   "motsCles": "historique paiement règlement reçu encaissement"
+  },
+  {
+   "ecran": "m9-compagnies",
+   "onglet": "assures",
+   "label": "Assurés d’une compagnie",
+   "motsCles": "assuré assurance compagnie police souscripteur carte prise en charge"
+  },
+  {
+   "ecran": "m9-compagnies",
+   "onglet": "factures",
+   "label": "Factures d’une compagnie",
+   "motsCles": "facture assureur compagnie créance relevé"
+  },
+  {
+   "ecran": "m12-balance",
+   "onglet": "generale",
+   "label": "Balance générale",
+   "motsCles": "balance générale comptabilité syscohada solde débit crédit"
+  },
+  {
+   "ecran": "m12-etats-financiers",
+   "onglet": "bilan",
+   "label": "Bilan",
+   "motsCles": "bilan actif passif états financiers syscohada"
+  },
+  {
+   "ecran": "m12-flux-tresorerie",
+   "onglet": null,
+   "label": "Tableau des flux de trésorerie",
+   "motsCles": "flux trésorerie tft cafg liasse feuillet cash flow financement investissement"
+  },
+  {
+   "ecran": "m12-bfr",
+   "onglet": null,
+   "label": "Besoin en fonds de roulement",
+   "motsCles": "bfr besoin fonds roulement encours créances stocks dettes fournisseurs trésorerie dso"
+  },
+  {
+   "ecran": "m12-cout-activite",
+   "onglet": null,
+   "label": "Coût à l’activité",
+   "motsCles": "coût activité cah consommables marge séjour acte analytique revient"
+  },
+  {
+   "ecran": "m12-tableau-decisionnel",
+   "onglet": "grille",
+   "label": "Grille objectif / réel",
+   "motsCles": "décisionnel objectif réel pilotage dso occupation rotation seuil alerte axes"
+  },
+  {
+   "ecran": "m12-tableau-decisionnel",
+   "onglet": "objectifs",
+   "label": "Objectifs & seuils du pilotage",
+   "motsCles": "objectifs seuils cibles alerte pilotage paramétrage direction"
+  },
+  {
+   "ecran": "m2-imagerie-radiographie",
+   "onglet": null,
+   "label": "Radiographie",
+   "motsCles": "radio radiographie rx thorax bassin rachis fracture cliché"
+  },
+  {
+   "ecran": "m2-imagerie-mammographie",
+   "onglet": null,
+   "label": "Mammographie",
+   "motsCles": "mammographie sein acr birads dépistage"
+  },
+  {
+   "ecran": "m2-imagerie-scanner",
+   "onglet": null,
+   "label": "Scanner",
+   "motsCles": "scanner tdm tomodensitométrie injection contraste"
+  },
+  {
+   "ecran": "m2-imagerie-irm",
+   "onglet": null,
+   "label": "IRM",
+   "motsCles": "irm résonance magnétique gadolinium séquences"
+  },
+  {
+   "ecran": "mecef-transmission",
+   "onglet": "attente",
+   "label": "Transmissions MECeF en attente",
+   "motsCles": "mecef transmission attente dgi normalisée fiscal"
+  },
+  {
+   "ecran": "mecef-transmission",
+   "onglet": "rejets",
+   "label": "Rejets MECeF",
+   "motsCles": "mecef rejet erreur transmission dgi"
+  },
+  {
+   "ecran": "m6-dashboard",
+   "onglet": "lots",
+   "label": "Lots et FEFO",
+   "motsCles": "lot fefo péremption numéro de lot traçabilité"
+  },
+  {
+   "ecran": "m10-dashboard",
+   "onglet": "primes",
+   "label": "Primes (NS 132)",
+   "motsCles": "prime garde permanence bloc accouchement NS 132 rémunération"
+  },
+  {
+   "ecran": "m10-dashboard",
+   "onglet": "planning",
+   "label": "Planning du mois",
+   "motsCles": "planning garde permanence repos roulement"
+  },
+  {
+   "ecran": "m10-badges",
+   "onglet": "badges",
+   "label": "Badges émis",
+   "motsCles": "badge carte professionnelle personnel identification port visible"
+  },
+  {
+   "ecran": "m10-badges",
+   "onglet": "retires",
+   "label": "Badges retirés (perte, départ)",
+   "motsCles": "badge perdu retiré perte vol départ restitution"
+  },
+  {
+   "ecran": "m10-badges-verification",
+   "onglet": "verifier",
+   "label": "Vérifier un badge présenté",
+   "motsCles": "vérifier badge contrôle qr numéro de série validité entrée"
+  },
+  {
+   "ecran": "adm-enquetes",
+   "onglet": "partage",
+   "label": "Liens de partage d’une enquête",
+   "motsCles": "enquête lien partage jeton qr questionnaire tiers public satisfaction"
+  }
+ ],
+ "actionsRapides": [
+  {
+   "libelle": "Nouveau dossier patient",
+   "icone": "user-plus",
+   "ecran": "m1-patients"
+  },
+  {
+   "libelle": "Patient externe : analyses",
+   "icone": "user-round-plus",
+   "ecran": "m1-externe"
+  },
+  {
+   "libelle": "Nouvelle consultation",
+   "icone": "stethoscope",
+   "ecran": "m2-consultations"
+  },
+  {
+   "libelle": "Nouvelle admission",
+   "icone": "bed-double",
+   "ecran": "m3-admissions"
+  },
+  {
+   "libelle": "Nouvelle facture",
+   "icone": "receipt",
+   "ecran": "m8-facturation"
+  },
+  {
+   "libelle": "Encaisser un paiement",
+   "icone": "banknote",
+   "ecran": "m8-paiements"
+  },
+  {
+   "libelle": "Assurés & cartes",
+   "icone": "id-card",
+   "ecran": "m9-assures"
+  },
+  {
+   "libelle": "Demande d’analyse",
+   "icone": "flask-conical",
+   "ecran": "m5-demandes"
+  },
+  {
+   "libelle": "Mouvement de stock",
+   "icone": "package",
+   "ecran": "m6-mouvements"
+  },
+  {
+   "libelle": "Bon d’expression de besoins",
+   "icone": "clipboard-list",
+   "ecran": "m7-besoins"
+  },
+  {
+   "libelle": "Éditer un état",
+   "icone": "printer",
+   "ecran": "rapports-bibliotheque"
+  }
+ ]
+}

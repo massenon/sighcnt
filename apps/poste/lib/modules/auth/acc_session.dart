@@ -79,6 +79,16 @@ class SessionPoste extends ChangeNotifier {
     return true;
   }
 
+  /// « Verrouiller l'écran » demandé par l'agent (menu du profil) : la session est SUSPENDUE sans attendre le délai, l'écran retenu pour le retour. Rend vrai
+  /// quand le verrou vient de se poser ; sans effet si la session n'est pas ouverte.
+  bool verrouillerMaintenant(String ecranCourant, {String? onglet}) {
+    if (_etat != EtatSession.connectee) return false;
+    verrou.verrouiller(horloge(), ecranCourant, onglet: onglet);
+    _etat = EtatSession.verrouillee;
+    notifyListeners();
+    return true;
+  }
+
   /// Le déverrouillage rend la session et CONSOMME l'adresse de retour (usage unique). `null` : retour à l'accueil du rôle.
   AccRetour? deverrouiller() {
     final r = verrou.deverrouiller(horloge());

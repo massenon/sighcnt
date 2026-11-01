@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
+import '../../shell/logo_clinique.dart';
 
 /// Le gabarit commun des écrans d'accès (`shell()` de `auth.js`) : une grande carte arrondie posée sur un fond clair — panneau institutionnel en dégradé
 /// à gauche (au-delà de 1024 px), carte de saisie blanche détachée à droite. Il sert SIX écrans (connexion, verrou, mot de passe oublié, réinitialisation,
@@ -29,12 +30,7 @@ class SceneAcces extends StatelessWidget {
       height: cote,
       decoration: BoxDecoration(color: fond, borderRadius: BorderRadius.circular(12)),
       alignment: Alignment.center,
-      child: Image.asset('assets/img/logo.jpeg',
-          width: interieur,
-          height: interieur,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => Text(IdentiteClinique.sigle,
-              style: TextStyle(color: fond == Colors.white ? JetonsShell.navy900 : Colors.white, fontWeight: FontWeight.w700))));
+      child: LogoClinique(largeur: interieur, hauteur: interieur, fondSombre: fond != Colors.white));
 
   Widget _panneau() => Padding(
       padding: const EdgeInsets.all(40),
