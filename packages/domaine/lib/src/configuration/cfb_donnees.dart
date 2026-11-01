@@ -202,6 +202,7 @@ const cfbEssentielles = <String>[
   'utilisateurs',
   'rbac',
   'modulesActifs',
+  'politiqueSecurite',
   'regimesTravail',
   'grillePrimes',
   'historiquePrimes',
