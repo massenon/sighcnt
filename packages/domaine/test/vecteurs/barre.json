@@ -2025,13 +2025,6 @@
      "groupe": "Écrans",
      "resultats": [
       {
-       "label": "Importation Grand Stock",
-       "detail": "Pharmacie & Stocks",
-       "icone": "database",
-       "ecran": "m6-import-grand-stock",
-       "onglet": null
-      },
-      {
        "label": "Rappels & messages",
        "detail": "Configuration Clinique",
        "icone": "bell-ring",
@@ -2930,20 +2923,7 @@
      ]
     }
    ],
-   "sage": [
-    {
-     "groupe": "Écrans",
-     "resultats": [
-      {
-       "label": "Importation Grand Stock",
-       "detail": "Pharmacie & Stocks",
-       "icone": "database",
-       "ecran": "m6-import-grand-stock",
-       "onglet": null
-      }
-     ]
-    }
-   ],
+   "sage": [],
    "accou": [],
    "hemo": [],
    "paludisme": [],
@@ -3407,13 +3387,6 @@
      "groupe": "Écrans",
      "resultats": [
       {
-       "label": "Importation Grand Stock",
-       "detail": "Pharmacie & Stocks",
-       "icone": "database",
-       "ecran": "m6-import-grand-stock",
-       "onglet": null
-      },
-      {
        "label": "Rappels & messages",
        "detail": "Configuration Clinique",
        "icone": "bell-ring",
@@ -3629,20 +3602,7 @@
      ]
     }
    ],
-   "sage": [
-    {
-     "groupe": "Écrans",
-     "resultats": [
-      {
-       "label": "Importation Grand Stock",
-       "detail": "Pharmacie & Stocks",
-       "icone": "database",
-       "ecran": "m6-import-grand-stock",
-       "onglet": null
-      }
-     ]
-    }
-   ],
+   "sage": [],
    "accou": [],
    "hemo": [],
    "paludisme": [],
