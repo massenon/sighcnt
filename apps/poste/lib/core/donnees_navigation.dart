@@ -14,13 +14,31 @@ class DonneesNavigation {
       required this.matrice,
       required Map<String, Map<String, Object?>> parite,
       this.referenceRbac,
-      this.referenceModules})
-      : _parite = parite;
+      this.referenceModules,
+      Map<String, ({String titre, String description})> descriptions = const {}})
+      : _parite = parite,
+        _descriptions = descriptions;
   final Manifeste manifeste;
 
   /// La matrice EN FORCE : celle de `rbac.json` (engendrée), ou la matrice superposée à chaud par [aChaud].
   final MatriceDroits matrice;
   final Map<String, Map<String, Object?>> _parite;
+
+  /// Titre et description de chaque écran, repris de la déclaration de l'écran dans la maquette (`ecrans-descriptions.json`, engendré) : les cartes
+  /// des pages d'accueil de module (hubs) les affichent.
+  final Map<String, ({String titre, String description})> _descriptions;
+
+  /// Titre de la déclaration de l'écran (vide si la maquette n'en donne pas : on retombe sur l'intitulé du manifeste).
+  String? titreDeclare(String id) {
+    final t = _descriptions[id]?.titre;
+    return t == null || t.isEmpty ? null : t;
+  }
+
+  /// Description de la déclaration de l'écran, `null` si la maquette n'en porte aucune.
+  String? descriptionDeclaree(String id) {
+    final d = _descriptions[id]?.description;
+    return d == null || d.isEmpty ? null : d;
+  }
 
   /// Les fiches que la matrice engendrée a connues au jour de l'extraction (le jeu livré : collections `rbac` et `modulesActifs`). Elles sont la
   /// RÉFÉRENCE de la superposition : seul ce qui a changé depuis elles remplace la matrice engendrée. `null` = inconnues, aucune superposition.
@@ -28,7 +46,8 @@ class DonneesNavigation {
 
   /// Les mêmes données de navigation sous une autre matrice (manifeste, parité et références partagés).
   DonneesNavigation avecMatrice(MatriceDroits m) =>
-      DonneesNavigation(manifeste: manifeste, matrice: m, parite: _parite, referenceRbac: referenceRbac, referenceModules: referenceModules);
+      DonneesNavigation(
+      manifeste: manifeste, matrice: m, parite: _parite, referenceRbac: referenceRbac, referenceModules: referenceModules, descriptions: _descriptions);
 
   /// DROITS À CHAUD (A4) : la matrice engendrée reste la BASE ; les fiches de la collection `rbac` (surcharges par rôle, module et écran, rôles
   /// archivés ou créés) et de `modulesActifs` (activités fermées) du magasin la superposent, comme `N.can()` de la maquette, pour tout ce qui a changé
@@ -55,7 +74,8 @@ class DonneesNavigation {
       required String rbac,
       required String parite,
       String? fichesRbac,
-      String? fichesModules}) {
+      String? fichesModules,
+      String? descriptions}) {
     final p = <String, Map<String, Object?>>{
       for (final e in ((jsonDecode(parite) as Map)['ecrans'] as List))
         '${(e as Map)['id']}': e.cast<String, Object?>(),
@@ -68,6 +88,12 @@ class DonneesNavigation {
       parite: p,
       referenceRbac: _fiches(fichesRbac),
       referenceModules: _fiches(fichesModules),
+      descriptions: descriptions == null
+          ? const {}
+          : {
+              for (final e in ((jsonDecode(descriptions) as Map)['ecrans'] as Map).entries)
+                '${e.key}': (titre: '${(e.value as Map)['titre'] ?? ''}', description: '${(e.value as Map)['description'] ?? ''}')
+            },
     );
   }
 
@@ -77,6 +103,7 @@ class DonneesNavigation {
         parite: await rootBundle.loadString('assets/donnees/parite.json'),
         fichesRbac: await rootBundle.loadString('assets/donnees/jeu/rbac.json'),
         fichesModules: await rootBundle.loadString('assets/donnees/jeu/modulesActifs.json'),
+        descriptions: await rootBundle.loadString('assets/donnees/ecrans-descriptions.json'),
       );
 
   /// Pour les tests : lit les mêmes fichiers engendrés sur le disque.
@@ -87,6 +114,7 @@ class DonneesNavigation {
         parite: File('$dossier/parite.json').readAsStringSync(),
         fichesRbac: _lireSiPresent('$dossier/jeu/rbac.json'),
         fichesModules: _lireSiPresent('$dossier/jeu/modulesActifs.json'),
+        descriptions: _lireSiPresent('$dossier/ecrans-descriptions.json'),
       );
 
   static String? _lireSiPresent(String chemin) => File(chemin).existsSync() ? File(chemin).readAsStringSync() : null;

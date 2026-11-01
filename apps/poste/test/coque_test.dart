@@ -6,6 +6,8 @@ import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/main.dart';
 import 'package:sigh_poste/mere/client_mere.dart';
+import 'package:sigh_poste/shell/coque.dart';
+import 'package:sigh_poste/sync/etat_sync.dart';
 
 import 'aide_polices.dart';
 
@@ -88,7 +90,10 @@ void main() {
     }
     await t.tap(find.byKey(const Key('raccourci-Pharmacie')));
     await t.pump();
-    expect(find.textContaining('Identifiant : hub-m6'), findsOneWidget);
+    // La page d'accueil du module est PORTÉE (E1741) : une carte par écran du module, plus la coque « à convertir ».
+    expect(find.byKey(const Key('hub')), findsOneWidget);
+    expect(find.byKey(const Key('ecran-a-porter')), findsNothing);
+    expect(find.byKey(const Key('hub-carte:m6-produits')), findsOneWidget);
   });
 
   testWidgets(
@@ -134,9 +139,18 @@ void main() {
   testWidgets(
       'un écran de la maquette pas encore converti se NOMME : tranche et parité, jamais une page vide',
       (t) async {
-    await monter(t,
-        config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin'));
-    await ouvrir(t, 'Relais en ligne', 'rls-tableau');
+    // Tous les écrans du manifeste sont désormais portés : le repli de la coque se vérifie avec un registre d'écrans VIDE, comme au premier jour.
+    t.view.physicalSize = const Size(1600, 1000);
+    t.view.devicePixelRatio = 1;
+    addTearDown(t.view.resetPhysicalSize);
+    await t.pumpWidget(MaterialApp(
+        home: CoquePoste(
+            config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin'),
+            donnees: donnees,
+            ecrans: const {},
+            ecranInitial: 'rls-tableau',
+            etatSync: ValueNotifier(const EtatSync(niveau: NiveauSync.horsLigne)))));
+    await t.pump();
     expect(find.byKey(const Key('ecran-a-porter')), findsOneWidget);
     expect(find.textContaining('Identifiant : rls-tableau'), findsOneWidget);
     expect(find.textContaining('tranche 6'), findsOneWidget);

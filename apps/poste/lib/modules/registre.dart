@@ -19,6 +19,7 @@ import 'mere/mrb_source.dart' show mrbClientMere;
 import 'mere/mrc_commun.dart' show Mrc;
 import 'mere/registre_mere.dart';
 import 'pil/registre_pil.dart';
+import 'rls/registre_rls.dart';
 import 'rap/registre_rap.dart';
 import 'm2/registre_m2.dart';
 import 'm3/registre_m3.dart';
@@ -38,6 +39,7 @@ import 'm8/proforma.dart';
 import 'm8/recettes.dart';
 import 'm8/remboursements.dart';
 import 'm8/reliquats.dart';
+import '../shell/ecran_hub.dart';
 import 'reglages_poste.dart';
 
 typedef ConstruireEcran = Widget Function(
@@ -62,6 +64,8 @@ Map<String, ConstruireEcran> ecransPortes(
     'm8-dashboard': (c, cfg) => const EcranDashboardFacturation(),
     'm8-facturation': (c, cfg) => const EcranFacturation(),
     'm8-caisse': (c, cfg) => const EcranCaisse(),
+    // Les pages d'accueil de module (hubs) : une carte par écran du module, filtrée par les droits.
+    for (final h in hubsDuManifeste) h: (c, cfg) => EcranHub.depuis(c, h, estMere: cfg.estMere),
     // Tranche 2 — chaque module déclare ses écrans dans SON registre (un fichier par module : pas de conflit d'édition).
     ...ecransAUTH,
     ...ecransDASH,
@@ -83,6 +87,7 @@ Map<String, ConstruireEcran> ecransPortes(
     ...ecransM6,
     ...ecransM7,
     ...ecransMERE,
+    ...ecransRLS,
     'mecef-dashboard': (c, cfg) => const EcranMecefTableauDeBord(),
     'mecef-factures': (c, cfg) => const EcranMecefFactures(),
     'mecef-transmission': (c, cfg) => const EcranMecefTransmission(),

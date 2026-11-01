@@ -60,3 +60,14 @@ j += `  /// Ombres de tailwind.config.js (boxShadow card / raise / pop), couleur
 j += '}\n';
 fs.writeFileSync(path.join(POSTE, 'lib', 'core', 'jetons_shell.dart'), j);
 console.log('  jetons de la coque : lib/core/jetons_shell.dart');
+
+/* Titre et description de chaque écran, tirés des fiches extraites de la maquette (docs/architecture/ecrans/*.json) : les cartes des pages d'accueil de
+   module (hubs) reprennent « la description de la déclaration de l'écran » comme `hubCartes()` de la maquette. Jamais écrit à la main. */
+const desc = {};
+for (const f of fs.readdirSync(path.join(REPO, 'docs', 'architecture', 'ecrans')).filter((x) => x.endsWith('.json')).sort()) {
+  const fi = JSON.parse(fs.readFileSync(path.join(REPO, 'docs', 'architecture', 'ecrans', f), 'utf8'));
+  if (fi.acces !== 'ouvert' || fi.autonome) continue;
+  desc[fi.id] = { titre: fi.titre || '', description: fi.description || '' };
+}
+fs.writeFileSync(path.join(POSTE, 'assets', 'donnees', 'ecrans-descriptions.json'), JSON.stringify({ _doc: 'ENGENDRÉ par prototype_html/build/gen-poste-assets.js depuis docs/architecture/ecrans/*.json, ne pas éditer.', ecrans: desc }, null, 1) + '\n');
+console.log('  descriptions d’écrans : ' + Object.keys(desc).length);

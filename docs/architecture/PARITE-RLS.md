@@ -1,6 +1,8 @@
 # Parité du panneau superadmin du relais (module RLS, domaine « Relais en ligne »)
 
-Décision de la Direction du 31/10/2026 : les douze écrans RLS ne sont pas refaits en Flutter. Ils sont servis par `apps/web` (Laravel 12 + Livewire) et déclarés « porté (apps/web) » une fois la parité contrôlée contre les fiches de la maquette (`docs/architecture/ecrans/rls-*.json`).
+**Mise à jour du 01/11/2026 : cette décision est remplacée.** Les douze écrans sont AUSSI portés dans `apps/poste` (`lib/modules/rls/`, N1 = 100 % mesuré par `parite_ecrans_test.dart`), lus par la mère ; le panneau Laravel reste la source de vérité de ce que seul le relais connaît (écarts E1740 à E1752). La garde de parité accepte donc désormais ces douze ids dans `ecransPortes`, et `servisParWeb` proposé plus bas n'a plus d'objet.
+
+Décision d'origine, du 31/10/2026 : les douze écrans RLS ne sont pas refaits en Flutter. Ils sont servis par `apps/web` (Laravel 12 + Livewire) et déclarés « porté (apps/web) » une fois la parité contrôlée contre les fiches de la maquette (`docs/architecture/ecrans/rls-*.json`).
 
 ## Méthode
 
