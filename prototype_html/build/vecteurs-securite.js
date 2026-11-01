@@ -47,11 +47,7 @@ function litteralDart(x, indent) {
       const tableau = (root, n) => { const t = [...root.querySelectorAll('table')][n || 0]; return { entetes: [...t.querySelectorAll('thead th')].map((h) => h.textContent.trim()), lignes: [...t.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map((td) => td.textContent.replace(/\s+/g, ' ').trim())) }; };
       const imprime = []; const etatOrig = SIGH.print.etat; SIGH.print.etat = function (o) { imprime.push({ titre: o.titre, sousTitre: o.sousTitre || null, cartouche: o.cartouche || null, signatures: o.signatures || null, texte: o.contenu && o.contenu.textContent ? o.contenu.textContent.replace(/\s+/g, ' ').trim().slice(0, 1500) : null }); };
       const utilisateursInitiaux = propre(S.collection('utilisateurs').active().filter((u) => u.actif).slice(0, 12).map((u) => ({ id: u.id, identifiant: u.identifiant, nomComplet: u.nomComplet, role: u.role })));
-      /* ----- 0. Les sessions (calculées, sur le jeu AVANT toute écriture de ce script) ----- */
-      const sessions = (() => { const root = montrer('m14-sessions'); return { utilisateurs: propre(S.collection('utilisateurs').active().filter((u) => u.actif).slice(0, 12).map((u) => ({ id: u.id, identifiant: u.identifiant, nomComplet: u.nomComplet, role: u.role }))), kpis: kpis(root), tableau: tableau(root), jour: C.iso(C.aujourdhui()) }; })();
-      nettoyer();
-      const sessionsCloture = await (async () => { const root = montrer('m14-sessions'); await dormir(20); const nb = toasts.length; const nbAudit = (S.raw().audit || []).length; const b = bouton('Clôturer', root); b.click(); await dormir(40); const conf = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === 'Clôturer la session'); const msg = (document.querySelector('.modal-root, [role=dialog]') || { textContent: '' }).textContent.replace(/\s+/g, ' ').trim(); conf.click(); await dormir(60); const a = (S.raw().audit || []); return { message: msg, toasts: toasts.slice(nb), audit: propre(a[0] || null), nbAudit: a.length - nbAudit }; })();
-      nettoyer();
+      /* ----- 0. m14-sessions : « Clôturer » change le statut depuis le 01/11/2026, ses vecteurs sont dans vecteurs-sessions.js ----- */
       /* ----- 0bis. L'écran des rôles à l'ouverture, AVANT toute écriture ----- */
       const rolesOuverture = await (async () => {
         const root = montrer('m14-roles'); await dormir(40);
@@ -449,7 +445,7 @@ function litteralDart(x, indent) {
       }
 
       rolesCas.forEach((c) => { if (c.avant && c.apres && typeof c.avant.matriceAutres === "string") { c.autresIdentiques = c.avant.matriceAutres === c.apres.matriceAutres; delete c.avant.matriceAutres; delete c.apres.matriceAutres; } });
-      return { comptes: cas, roles: rolesCas, modules, nbRoles: Object.keys(N.ROLES).length, sessions, sessionsCloture, rolesOuverture, audit: auditCas, sauvegardes, soignants, taches: tachesCas, services: propre(D.SERVICES), capacites: propre(D.CAPACITES), naturesPrescription: propre(D.NATURES_PRESCRIPTION) };
+      return { comptes: cas, roles: rolesCas, modules, nbRoles: Object.keys(N.ROLES).length, rolesOuverture, audit: auditCas, sauvegardes, soignants, taches: tachesCas, services: propre(D.SERVICES), capacites: propre(D.CAPACITES), naturesPrescription: propre(D.NATURES_PRESCRIPTION) };
     });
     sortie.comptes.forEach((c) => console.log('  compte · ' + c.nom + ' → ' + (c.creee ? c.creee.length : '?') + ' créé(s) ' + JSON.stringify((c.toasts || []).slice(-1))));
     sortie.roles.forEach((c) => console.log('  rôle · ' + c.nom + ' → ' + JSON.stringify((c.toasts || []).slice(-1).map((t) => t.message))));

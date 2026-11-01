@@ -5,13 +5,13 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **321** |
+| Écrans du manifeste (hors hubs de module) | **322** |
 | Hubs de module (un par module, engendrés) | 22 |
-| Écrans nommés par au moins un scénario de la maquette | 201 (63 %) |
-| Écrans **sans** scénario (recette à écrire) | 120 |
+| Écrans nommés par au moins un scénario de la maquette | 203 (63 %) |
+| Écrans **sans** scénario (recette à écrire) | 119 |
 | Écrans portés | 321 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 74 |
+| Scénarios de la maquette analysés | 75 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 21 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
 | 5 · assurances et comptabilité | 31 | 19 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 155 | 82 | 155 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 156 | 84 | 155 | 0 |
 
 ## Par écran
 
@@ -323,7 +323,8 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m14-audit` | Journal d’audit | M14 | 3 | — | porté |
 | `m14-roles` | Rôles & permissions (RBAC) | M14 | 3 | 20, 31, 33 | porté |
 | `m14-sauvegardes` | Sauvegardes & restauration | M14 | 3 | 23 | porté |
-| `m14-sessions` | Sessions actives | M14 | 3 | — | porté |
+| `m14-securite-utilisateurs` | Sécurité des utilisateurs | M14 | 1 | 75 | non commencé |
+| `m14-sessions` | Sessions actives | M14 | 3 | 75 | porté |
 | `m14-soignants` | Prescripteurs & exécutants de soins | M14 | 3 | 33 | porté |
 | `m14-taches` | Tâches planifiées | M14 | 3 | 71, 72 | porté |
 | `m14-utilisateurs` | Utilisateurs | M14 | 3 | — | porté |

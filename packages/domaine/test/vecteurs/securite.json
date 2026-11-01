@@ -26,12 +26,12 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -43,7 +43,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "rôle « dm » : le double facteur est imposé même décoché",
@@ -70,12 +70,12 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:27.792Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:38.573Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -87,7 +87,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "rôle « direction » : double facteur imposé",
@@ -114,12 +114,12 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:27.956Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:38.747Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -131,7 +131,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "rôle « admin » : double facteur imposé",
@@ -158,12 +158,12 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:28.108Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:38.904Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -175,7 +175,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "rôle « da » : double facteur imposé",
@@ -202,12 +202,12 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:28.288Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:39.069Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -219,7 +219,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "double facteur coché sur un rôle ordinaire : conservé",
@@ -246,12 +246,12 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:28.448Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:39.219Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -263,7 +263,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "changement obligatoire décoché : conservé tel que saisi (faux)",
@@ -290,12 +290,12 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": false,
-      "motDePasseDefiniLe": "2026-10-31T00:13:28.585Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:39.377Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -307,7 +307,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "compte désactivé à la création",
@@ -334,12 +334,12 @@
       "actif": false,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:28.739Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:39.532Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -351,7 +351,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "identifiant déjà attribué : refusé en le disant",
@@ -371,7 +371,7 @@
    "toasts": [
     "Cet identifiant est déjà attribué : aucun compte ne peut être partagé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "mot de passe de sept caractères : refusé",
@@ -391,7 +391,7 @@
    "toasts": [
     "Le mot de passe doit compter au moins huit caractères."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "mot de passe de huit caractères : accepté",
@@ -418,12 +418,12 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:29.180Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:39.938Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -435,7 +435,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "confirmation différente : refusée",
@@ -455,7 +455,7 @@
    "toasts": [
     "Les deux mots de passe saisis ne correspondent pas."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "mot de passe de huit espaces : compte huit caractères",
@@ -482,12 +482,12 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:29.464Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:40.299Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
       "poste": "Directrice de l’Administration et des Finances",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -499,7 +499,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "identifiant vide : formulaire en erreur",
@@ -519,7 +519,7 @@
    "toasts": [
     "Le formulaire comporte des erreurs."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "sans agent rattaché : ni nom ni matricule",
@@ -546,9 +546,9 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:29.725Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:40.588Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -560,7 +560,7 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "autre agent, service laissé au choix",
@@ -587,12 +587,12 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-10-31T00:13:29.871Z",
+      "motDePasseDefiniLe": "2026-11-01T17:03:40.719Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "BASSONGUI Chabi Séko",
       "matricule": "1",
       "poste": "Directeur Médical",
-      "dernierAcces": "2026-10-31",
+      "dernierAcces": "2026-11-01",
       "echecs": 0
      },
      "definiLe": true,
@@ -604,12 +604,12 @@
    "toasts": [
     "Nouveau compte créé."
    ],
-   "jour": "2026-10-31"
+   "jour": "2026-11-01"
   },
   {
    "nom": "modifier le rôle vers « dm » : double facteur imposé",
    "mode": "edition",
-   "cible": "UTIxmvvne772odg3p",
+   "cible": "UTIxmvy2x5fc44hei",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -619,12 +619,12 @@
     "actif": true,
     "mfa": false,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
     "poste": "Directrice de l’Administration et des Finances",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "saisie": {
@@ -640,12 +640,12 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
     "poste": "Directrice de l’Administration et des Finances",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "toasts": [
@@ -655,7 +655,7 @@
   {
    "nom": "conserver son propre identifiant : pas de doublon",
    "mode": "edition",
-   "cible": "UTIxmvvne772odg3p",
+   "cible": "UTIxmvy2x5fc44hei",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -665,12 +665,12 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
     "poste": "Directrice de l’Administration et des Finances",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "saisie": {
@@ -686,12 +686,12 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
     "poste": "Directrice de l’Administration et des Finances",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "toasts": [
@@ -701,7 +701,7 @@
   {
    "nom": "prendre l'identifiant d'un autre : refusé",
    "mode": "edition",
-   "cible": "UTIxmvvne772odg3p",
+   "cible": "UTIxmvy2x5fc44hei",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -711,12 +711,12 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
     "poste": "Directrice de l’Administration et des Finances",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "saisie": {
@@ -732,12 +732,12 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
     "poste": "Directrice de l’Administration et des Finances",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "toasts": [
@@ -747,7 +747,7 @@
   {
    "nom": "changer d'agent rattaché : nom, matricule, poste suivent",
    "mode": "edition",
-   "cible": "UTIxmvvne772odg3p",
+   "cible": "UTIxmvy2x5fc44hei",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -757,12 +757,12 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
     "poste": "Directrice de l’Administration et des Finances",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "saisie": {
@@ -778,12 +778,12 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-10-31T00:13:27.662Z",
+    "motDePasseDefiniLe": "2026-11-01T17:03:38.424Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "BASSONGUI Chabi Séko",
     "matricule": "1",
     "poste": "Directeur Médical",
-    "dernierAcces": "2026-10-31",
+    "dernierAcces": "2026-11-01",
     "echecs": 0
    },
    "toasts": [
@@ -805,7 +805,7 @@
     "poste": "Directeur Médical",
     "actif": true,
     "mfa": true,
-    "dernierAcces": "2026-10-27",
+    "dernierAcces": "2026-10-28",
     "echecs": 2,
     "creeLe": "2018-06-27"
    },
@@ -824,7 +824,7 @@
     "poste": "Directeur Médical",
     "actif": true,
     "mfa": true,
-    "dernierAcces": "2026-10-27",
+    "dernierAcces": "2026-10-28",
     "echecs": 2,
     "creeLe": "2018-06-27"
    },
@@ -984,6 +984,11 @@
        }
       },
       "droitsEcrans": {
+       "m13-repertoire-ambulances": {
+        "voir": true,
+        "editer": true,
+        "annuler": false
+       },
        "m1-dossier-medical": {
         "voir": false
        },
@@ -1755,6 +1760,11 @@
        }
       },
       "droitsEcrans": {
+       "m13-repertoire-ambulances": {
+        "voir": true,
+        "editer": true,
+        "annuler": false
+       },
        "m1-dossier-medical": {
         "voir": false
        },
@@ -1828,7 +1838,7 @@
         "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Zone 1 du dossier — identification, coordonnées, couverture, constantes. La zone clinique ne lui est pas ouverte (RG-13) et chaque consultation du dossier est journalisée. Les tarifs publics lui sont ouverts en lecture (phase 3) : renseigner un prix au guichet."
      }
@@ -2887,7 +2897,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Encaisse et délivre. La pharmacie de DÉTAIL lui est rattachée ; le magasin central et les transferts restent au Gestionnaire de Stock — séparation des tâches. Aucun accès clinique (RG-13)."
      },
@@ -3850,7 +3860,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Consultations, prescriptions, hospitalisation et lecture des résultats. Il prescrit le médicament, il ne tient pas le stock ; il lit le catalogue d’analyses, il ne le tient pas."
      }
@@ -4731,7 +4741,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Exécute les soins, tient l’hospitalisation et la maternité. Les certificats engagent le médecin : il les lit sans les délivrer. Le filtre de DONNÉES (secteur, fonction) reste porté par les capacités métier — c’est lui qui distingue la sage-femme de l’infirmier."
      }
@@ -5617,7 +5627,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Magasin, achats, réceptions et réactifs. Il SUIT les ventes — ce sont ses sorties — mais il n’encaisse pas : séparation des tâches. Aucun accès au dossier patient ni aux soins (décision du 02/09/2026)."
      }
@@ -5853,6 +5863,11 @@
         "annuler": false
        },
        "mecef-config": {
+        "voir": true,
+        "editer": false,
+        "annuler": false
+       },
+       "m11-validation": {
         "voir": true,
         "editer": false,
         "annuler": false
@@ -6602,9 +6617,14 @@
         "voir": true,
         "editer": false,
         "annuler": false
+       },
+       "m11-validation": {
+        "voir": true,
+        "editer": false,
+        "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "La comptabilité, la caisse (avoirs compris), les créances, la paie et le fiscal. Les achats et le stock se lisent ; la facture fournisseur s’y saisit car c’est une pièce comptable. Aucun accès clinique (RG-13)."
      }
@@ -7549,7 +7569,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Courriers, réunions, événements, ambulance, documentaire et états — le secrétariat de l’établissement. Il identifie un patient pour un courrier, il ne lit pas son dossier (RG-13)."
      }
@@ -8572,7 +8592,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, rien du dossier au-delà de l’identité du patient transporté."
      }
@@ -9324,6 +9344,11 @@
        }
       },
       "droitsEcrans": {
+       "m13-repertoire-ambulances": {
+        "voir": true,
+        "editer": true,
+        "annuler": false
+       },
        "m1-dossier-medical": {
         "voir": false
        },
@@ -9397,7 +9422,7 @@
         "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Zone 1 du dossier — identification, coordonnées, couverture, constantes. La zone clinique ne lui est pas ouverte (RG-13) et chaque consultation du dossier est journalisée. Les tarifs publics lui sont ouverts en lecture (phase 3) : renseigner un prix au guichet."
      }
@@ -9736,6 +9761,11 @@
        }
       },
       "droitsEcrans": {
+       "m13-repertoire-ambulances": {
+        "voir": true,
+        "editer": true,
+        "annuler": false
+       },
        "m1-dossier-medical": {
         "voir": false
        },
@@ -9809,7 +9839,7 @@
         "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Zone 1 du dossier — identification, coordonnées, couverture, constantes. La zone clinique ne lui est pas ouverte (RG-13) et chaque consultation du dossier est journalisée. Les tarifs publics lui sont ouverts en lecture (phase 3) : renseigner un prix au guichet."
      }
@@ -9819,7 +9849,7 @@
     {
      "message": "Droits par écran enregistrés.",
      "type": "success",
-     "detail": "20 écran(s) réglé(s), dont 14 fermé(s)."
+     "detail": "21 écran(s) réglé(s), dont 14 fermé(s)."
     }
    ],
    "nbEcransModule": 13,
@@ -10405,7 +10435,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvvnedjjjwfmq",
+      "id": "RBACxmvy2xct7h3xch",
       "statut": "actif",
       "role": "auditeurexterne",
       "nouveau": true,
@@ -10534,14 +10564,14 @@
         "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko"
      }
     ]
    },
    "fiche": [
     {
-     "id": "RBACxmvvnedjjjwfmq",
+     "id": "RBACxmvy2xct7h3xch",
      "statut": "actif",
      "role": "auditeurexterne",
      "nouveau": true,
@@ -10670,7 +10700,7 @@
        "annuler": false
       }
      },
-     "definiLe": "2026-10-31",
+     "definiLe": "2026-11-01",
      "definiPar": "BASSONGUI Chabi Séko"
     }
    ],
@@ -10972,7 +11002,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Consultations, prescriptions, hospitalisation et lecture des résultats. Il prescrit le médicament, il ne tient pas le stock ; il lit le catalogue d’analyses, il ne le tient pas."
      }
@@ -11256,7 +11286,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Consultations, prescriptions, hospitalisation et lecture des résultats. Il prescrit le médicament, il ne tient pas le stock ; il lit le catalogue d’analyses, il ne le tient pas."
      }
@@ -11419,7 +11449,7 @@
        "voir": false
       }
      },
-     "definiLe": "2026-10-31",
+     "definiLe": "2026-11-01",
      "definiPar": "BASSONGUI Chabi Séko",
      "motif": "Consultations, prescriptions, hospitalisation et lecture des résultats. Il prescrit le médicament, il ne tient pas le stock ; il lit le catalogue d’analyses, il ne le tient pas."
     }
@@ -11596,7 +11626,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvvnee4vkqxiu",
+      "id": "RBACxmvy2xdh6pnzm0",
       "statut": "actif",
       "role": "veilleur",
       "nouveau": true,
@@ -11725,14 +11755,14 @@
         "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko"
      }
     ]
    },
    "fiche": [
     {
-     "id": "RBACxmvvnee4vkqxiu",
+     "id": "RBACxmvy2xdh6pnzm0",
      "statut": "actif",
      "role": "veilleur",
      "nouveau": true,
@@ -11861,7 +11891,7 @@
        "annuler": false
       }
      },
-     "definiLe": "2026-10-31",
+     "definiLe": "2026-11-01",
      "definiPar": "BASSONGUI Chabi Séko"
     }
    ],
@@ -12532,7 +12562,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Encaisse et délivre. La pharmacie de DÉTAIL lui est rattachée ; le magasin central et les transferts restent au Gestionnaire de Stock — séparation des tâches. Aucun accès clinique (RG-13)."
      },
@@ -12884,7 +12914,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Encaisse et délivre. La pharmacie de DÉTAIL lui est rattachée ; le magasin central et les transferts restent au Gestionnaire de Stock — séparation des tâches. Aucun accès clinique (RG-13)."
      },
@@ -13115,7 +13145,7 @@
        "voir": false
       }
      },
-     "definiLe": "2026-10-31",
+     "definiLe": "2026-11-01",
      "definiPar": "BASSONGUI Chabi Séko",
      "motif": "Encaisse et délivre. La pharmacie de DÉTAIL lui est rattachée ; le magasin central et les transferts restent au Gestionnaire de Stock — séparation des tâches. Aucun accès clinique (RG-13)."
     },
@@ -13472,7 +13502,7 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, rien du dossier au-delà de l’identité du patient transporté."
      }
@@ -13800,10 +13830,10 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, rien du dossier au-delà de l’identité du patient transporté.",
-      "archiveLe": "2026-10-31",
+      "archiveLe": "2026-11-01",
       "archivePar": "BASSONGUI Chabi Séko",
       "motifArchivage": "Poste supprimé"
      }
@@ -14010,10 +14040,10 @@
        "voir": false
       }
      },
-     "definiLe": "2026-10-31",
+     "definiLe": "2026-11-01",
      "definiPar": "BASSONGUI Chabi Séko",
      "motif": "Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, rien du dossier au-delà de l’identité du patient transporté.",
-     "archiveLe": "2026-10-31",
+     "archiveLe": "2026-11-01",
      "archivePar": "BASSONGUI Chabi Séko",
      "motifArchivage": "Poste supprimé"
     }
@@ -14156,7 +14186,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvvnee4vkqxiu",
+      "id": "RBACxmvy2xdh6pnzm0",
       "statut": "actif",
       "role": "veilleur",
       "nouveau": true,
@@ -14285,7 +14315,7 @@
         "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko"
      }
     ]
@@ -14413,7 +14443,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvvnee4vkqxiu",
+      "id": "RBACxmvy2xdh6pnzm0",
       "statut": "archive",
       "role": "veilleur",
       "nouveau": true,
@@ -14542,9 +14572,9 @@
         "annuler": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
-      "archiveLe": "2026-10-31",
+      "archiveLe": "2026-11-01",
       "archivePar": "BASSONGUI Chabi Séko",
       "motifArchivage": "Test"
      }
@@ -14552,7 +14582,7 @@
    },
    "fiche": [
     {
-     "id": "RBACxmvvnee4vkqxiu",
+     "id": "RBACxmvy2xdh6pnzm0",
      "statut": "archive",
      "role": "veilleur",
      "nouveau": true,
@@ -14681,9 +14711,9 @@
        "annuler": false
       }
      },
-     "definiLe": "2026-10-31",
+     "definiLe": "2026-11-01",
      "definiPar": "BASSONGUI Chabi Séko",
-     "archiveLe": "2026-10-31",
+     "archiveLe": "2026-11-01",
      "archivePar": "BASSONGUI Chabi Séko",
      "motifArchivage": "Test"
     }
@@ -15286,10 +15316,10 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, rien du dossier au-delà de l’identité du patient transporté.",
-      "archiveLe": "2026-10-31",
+      "archiveLe": "2026-11-01",
       "archivePar": "BASSONGUI Chabi Séko",
       "motifArchivage": "Poste supprimé"
      }
@@ -15617,13 +15647,13 @@
         "voir": false
        }
       },
-      "definiLe": "2026-10-31",
+      "definiLe": "2026-11-01",
       "definiPar": "BASSONGUI Chabi Séko",
       "motif": "Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, rien du dossier au-delà de l’identité du patient transporté.",
-      "archiveLe": "2026-10-31",
+      "archiveLe": "2026-11-01",
       "archivePar": "BASSONGUI Chabi Séko",
       "motifArchivage": "Poste supprimé",
-      "restaureLe": "2026-10-31",
+      "restaureLe": "2026-11-01",
       "restaurePar": "BASSONGUI Chabi Séko"
      }
     ]
@@ -15829,13 +15859,13 @@
        "voir": false
       }
      },
-     "definiLe": "2026-10-31",
+     "definiLe": "2026-11-01",
      "definiPar": "BASSONGUI Chabi Séko",
      "motif": "Les interventions d’ambulance et le répertoire d’urgence — rien du secrétariat, rien du dossier au-delà de l’identité du patient transporté.",
-     "archiveLe": "2026-10-31",
+     "archiveLe": "2026-11-01",
      "archivePar": "BASSONGUI Chabi Séko",
      "motifArchivage": "Poste supprimé",
-     "restaureLe": "2026-10-31",
+     "restaureLe": "2026-11-01",
      "restaurePar": "BASSONGUI Chabi Séko"
     }
    ],
@@ -16117,7 +16147,7 @@
       "definiPar": "Direction",
       "motif": "Compte fermé sur décision de la Direction. Ses droits — M10 Ressources humaines et M11 Paie & Primes — sont transférés à la Directrice de l’Administration et des Finances (fiche RBAC06). Un rôle s’ARCHIVE, il ne se supprime jamais (RG-14) : effacer rendrait anonymes les bulletins qu’il a émis.",
       "transfereA": "da",
-      "restaureLe": "2026-10-31",
+      "restaureLe": "2026-11-01",
       "restaurePar": "BASSONGUI Chabi Séko"
      }
     ]
@@ -16132,7 +16162,7 @@
      "definiPar": "Direction",
      "motif": "Compte fermé sur décision de la Direction. Ses droits — M10 Ressources humaines et M11 Paie & Primes — sont transférés à la Directrice de l’Administration et des Finances (fiche RBAC06). Un rôle s’ARCHIVE, il ne se supprime jamais (RG-14) : effacer rendrait anonymes les bulletins qu’il a émis.",
      "transfereA": "da",
-     "restaureLe": "2026-10-31",
+     "restaureLe": "2026-11-01",
      "restaurePar": "BASSONGUI Chabi Séko"
     }
    ],
@@ -16414,7 +16444,7 @@
       "definiPar": "Direction",
       "motif": "Compte fermé sur décision de la Direction. Ses droits — module M6 en totalité, annulation comprise — sont transférés au compte Caissier (fiche RBAC04). Rien n’est supprimé : la réouverture rendrait le compte en l’état (RG-14).",
       "transfereA": "caissier",
-      "restaureLe": "2026-10-31",
+      "restaureLe": "2026-11-01",
       "restaurePar": "BASSONGUI Chabi Séko"
      }
     ]
@@ -16429,7 +16459,7 @@
      "definiPar": "Direction",
      "motif": "Compte fermé sur décision de la Direction. Ses droits — module M6 en totalité, annulation comprise — sont transférés au compte Caissier (fiche RBAC04). Rien n’est supprimé : la réouverture rendrait le compte en l’état (RG-14).",
      "transfereA": "caissier",
-     "restaureLe": "2026-10-31",
+     "restaureLe": "2026-11-01",
      "restaurePar": "BASSONGUI Chabi Séko"
     }
    ],
@@ -16463,9 +16493,9 @@
    "apres": {
     "traitee": true,
     "examineePar": "BASSONGUI Chabi Séko",
-    "examineeLe": "2026-10-31"
+    "examineeLe": "2026-11-01"
    },
-   "jour": "2026-10-31",
+   "jour": "2026-11-01",
    "toasts": [
     {
      "message": "Tentative marquée comme examinée.",
@@ -16638,272 +16668,6 @@
   }
  ],
  "nbRoles": 24,
- "sessions": {
-  "utilisateurs": [
-   {
-    "id": "USR000",
-    "identifiant": "admin.systeme",
-    "nomComplet": "Administrateur système",
-    "role": "admin"
-   },
-   {
-    "id": "USR001",
-    "identifiant": "s.bassongui",
-    "nomComplet": "BASSONGUI Chabi Séko",
-    "role": "dm"
-   },
-   {
-    "id": "USR002",
-    "identifiant": "a.taki",
-    "nomComplet": "TAKI Alimatou",
-    "role": "da"
-   },
-   {
-    "id": "USR003",
-    "identifiant": "a.kassa",
-    "nomComplet": "KASSA Augustin",
-    "role": "comptable"
-   },
-   {
-    "id": "USR004",
-    "identifiant": "h.gbedji",
-    "nomComplet": "GBEDJI Hervé",
-    "role": "assistant_comptable"
-   },
-   {
-    "id": "USR005",
-    "identifiant": "f.yeni",
-    "nomComplet": "YENI M’PO Florent",
-    "role": "medecin"
-   },
-   {
-    "id": "USR006",
-    "identifiant": "o.taki",
-    "nomComplet": "TAKI Orou",
-    "role": "medecin"
-   },
-   {
-    "id": "USR007",
-    "identifiant": "r.ahohou",
-    "nomComplet": "AHOHOU Rodrigue",
-    "role": "echographiste"
-   },
-   {
-    "id": "USR008",
-    "identifiant": "g.kinnou",
-    "nomComplet": "KINNOU A. Ganiou",
-    "role": "laborantin"
-   },
-   {
-    "id": "USR009",
-    "identifiant": "y.agossou",
-    "nomComplet": "AGOSSOU Yahouza",
-    "role": "laborantin"
-   },
-   {
-    "id": "USR010",
-    "identifiant": "y.garba",
-    "nomComplet": "GARBA Yahouza",
-    "role": "surveillant"
-   },
-   {
-    "id": "USR011",
-    "identifiant": "b.idrissou",
-    "nomComplet": "IDRISSOU ANIKI Baba-Toundé",
-    "role": "infirmier"
-   }
-  ],
-  "kpis": [
-   [
-    "Sessions ouvertes",
-    "12"
-   ],
-   [
-    "Postes distincts",
-    "6"
-   ],
-   [
-    "Verrouillées pour inactivité",
-    "7"
-   ],
-   [
-    "Délai de verrouillage",
-    "15 min"
-   ]
-  ],
-  "tableau": {
-   "entetes": [
-    "Identifiant",
-    "Utilisateur",
-    "Rôle",
-    "Poste",
-    "Adresse réseau",
-    "Ouverture",
-    "Inactivité",
-    "État",
-    "Actions"
-   ],
-   "lignes": [
-    [
-     "admin.systeme",
-     "Administrateur système",
-     "Administrateur système",
-     "POSTE-COMPTA",
-     "192.168.1.28",
-     "09h40",
-     "17 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "s.bassongui",
-     "BASSONGUI Chabi Séko",
-     "Directeur Médical",
-     "POSTE-LABO",
-     "192.168.1.15",
-     "07h05",
-     "8 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "a.taki",
-     "TAKI Alimatou",
-     "Directrice de l’Administration et des Finances (DAF)",
-     "POSTE-DIR",
-     "192.168.1.19",
-     "07h21",
-     "2 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "a.kassa",
-     "KASSA Augustin",
-     "Comptable",
-     "POSTE-COMPTA",
-     "192.168.1.26",
-     "11h05",
-     "9 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "h.gbedji",
-     "GBEDJI Hervé",
-     "Assistant de Direction",
-     "POSTE-PHARMA",
-     "192.168.1.14",
-     "09h02",
-     "24 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "f.yeni",
-     "YENI M’PO Florent",
-     "Médecin",
-     "POSTE-SOINS",
-     "192.168.1.42",
-     "09h59",
-     "4 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "o.taki",
-     "TAKI Orou",
-     "Médecin",
-     "POSTE-CAISSE",
-     "192.168.1.23",
-     "13h03",
-     "18 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "r.ahohou",
-     "AHOHOU Rodrigue",
-     "Technicien d’échographie",
-     "POSTE-DIR",
-     "192.168.1.29",
-     "12h55",
-     "23 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "g.kinnou",
-     "KINNOU A. Ganiou",
-     "Biologiste médical",
-     "POSTE-CAISSE",
-     "192.168.1.32",
-     "10h33",
-     "25 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "y.agossou",
-     "AGOSSOU Yahouza",
-     "Biologiste médical",
-     "POSTE-CAISSE",
-     "192.168.1.22",
-     "08h39",
-     "21 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "y.garba",
-     "GARBA Yahouza",
-     "Surveillant",
-     "POSTE-DIR",
-     "192.168.1.15",
-     "08h47",
-     "8 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "b.idrissou",
-     "IDRISSOU ANIKI Baba-Toundé",
-     "Infirmier / Sage-femme",
-     "POSTE-DIR",
-     "192.168.1.45",
-     "10h08",
-     "16 min",
-     "Verrouillée",
-     "Clôturer"
-    ]
-   ]
-  },
-  "jour": "2026-10-31"
- },
- "sessionsCloture": {
-  "message": "Clôturer la session de Administrateur système ?L’utilisateur sera immédiatement déconnecté du poste POSTE-COMPTA. L’opération est journalisée.AnnulerClôturer la session",
-  "toasts": [
-   {
-    "message": "Session clôturée.",
-    "type": "success",
-    "detail": "Administrateur système — POSTE-COMPTA"
-   }
-  ],
-  "audit": {
-   "id": "LOGmvvne6ps",
-   "dateHeure": "2026-10-31T00:13:27.040Z",
-   "utilisateur": "BASSONGUI Chabi Séko",
-   "action": "Modification",
-   "module": "M14",
-   "entite": "SessionUtilisateur",
-   "reference": "admin.systeme",
-   "ancienneValeur": "{\"etat\":\"ouverte\"}",
-   "nouvelleValeur": "{\"etat\":\"close\"}",
-   "poste": "POSTE-LOCAL",
-   "succes": true
-  },
-  "nbAudit": 1
- },
  "rolesOuverture": {
   "kpis": [
    [
@@ -17599,7 +17363,7 @@
    "tiroirSansValeur": "Archivage — facture30/10/2026 à 07h00Horodatage30/10/2026 à 07h00UtilisateurKASSA AugustinActionArchivageModuleM8Entité concernéefactureRéférenceFN-2026-00002Poste de travailPOSTE-CAISSERésultatSuccèsAucune valeur détaillée conservée pour cette action.",
    "impression": {
     "titre": "Journal d’audit",
-    "sousTitre": "Traçabilité des actions — situation au 31/10/2026",
+    "sousTitre": "Traçabilité des actions — situation au 01/11/2026",
     "cartouche": [
      [
       "Actions journalisées",
@@ -17615,7 +17379,7 @@
      ],
      [
       "Date d’édition",
-      "31/10/2026"
+      "01/11/2026"
      ]
     ],
     "signatures": [
@@ -17683,7 +17447,7 @@
    ],
    [
     "Dernière sauvegarde",
-    "31/10/2026"
+    "01/11/2026"
    ],
    [
     "Échecs constatés",
@@ -17704,43 +17468,43 @@
    ],
    "lignes": [
     [
-     "sigh-cnt-20261031.json",
-     "31/10/202601:00 — 1.4 Mo",
+     "sigh-cnt-20261101.json",
+     "01/11/202601:00 — 1.4 Mo",
      "79 table(s)",
      "Base complète",
      ""
     ],
     [
-     "sigh-cnt-20261024.json",
-     "24/10/202601:00 — 777 Ko",
+     "sigh-cnt-20261025.json",
+     "25/10/202601:00 — 777 Ko",
      "79 table(s)",
      "Base complète",
      ""
     ],
     [
-     "sigh-cnt-20261017.json",
-     "17/10/202601:00 — 1.1 Mo",
+     "sigh-cnt-20261018.json",
+     "18/10/202601:00 — 1.1 Mo",
      "79 table(s)",
      "Base complète",
      ""
     ],
     [
-     "sigh-cnt-20261010.json",
-     "10/10/202601:00 — 1.3 Mo",
+     "sigh-cnt-20261011.json",
+     "11/10/202601:00 — 1.3 Mo",
      "79 table(s)",
      "Base complète",
      ""
     ],
     [
-     "sigh-cnt-20261003.json",
-     "03/10/202601:00 — 525 Ko",
+     "sigh-cnt-20261004.json",
+     "04/10/202601:00 — 525 Ko",
      "79 table(s)",
      "Base complète",
      ""
     ],
     [
-     "sigh-cnt-20260926.json",
-     "26/09/202601:00 — 1.3 Mo",
+     "sigh-cnt-20260927.json",
+     "27/09/202601:00 — 1.3 Mo",
      "79 table(s)",
      "Base complète",
      ""
@@ -17762,11 +17526,11 @@
    ],
    "lignes": [
     [
-     "BK-20261031",
-     "31/10/2026",
-     "02:00",
-     "Quotidienne locale",
-     "Disque local dédié",
+     "BK-20261101",
+     "01/11/2026",
+     "01:00",
+     "Hebdomadaire externalisée",
+     "Disque externe / cloud sécurisé",
      "446 Mo",
      "9 s",
      "Succès",
@@ -17774,8 +17538,8 @@
      "Restaurer"
     ],
     [
-     "BK-20261030",
-     "30/10/2026",
+     "BK-20261031",
+     "31/10/2026",
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
@@ -17786,12 +17550,24 @@
      "Restaurer"
     ],
     [
+     "BK-20261030",
+     "30/10/2026",
+     "02:00",
+     "Quotidienne locale",
+     "Disque local dédié",
+     "182 Mo",
+     "18 s",
+     "Succès",
+     "Sauvegarde complète vérifiée",
+     "Restaurer"
+    ],
+    [
      "BK-20261029",
      "29/10/2026",
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
-     "182 Mo",
+     "489 Mo",
      "18 s",
      "Succès",
      "Sauvegarde complète vérifiée",
@@ -17803,7 +17579,7 @@
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
-     "489 Mo",
+     "306 Mo",
      "18 s",
      "Succès",
      "Sauvegarde complète vérifiée",
@@ -17815,8 +17591,8 @@
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
-     "306 Mo",
-     "18 s",
+     "256 Mo",
+     "9 s",
      "Succès",
      "Sauvegarde complète vérifiée",
      "Restaurer"
@@ -17827,8 +17603,8 @@
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
-     "256 Mo",
-     "9 s",
+     "524 Mo",
+     "14 s",
      "Succès",
      "Sauvegarde complète vérifiée",
      "Restaurer"
@@ -17839,18 +17615,6 @@
      "01:00",
      "Hebdomadaire externalisée",
      "Disque externe / cloud sécurisé",
-     "524 Mo",
-     "14 s",
-     "Succès",
-     "Sauvegarde complète vérifiée",
-     "Restaurer"
-    ],
-    [
-     "BK-20261024",
-     "24/10/2026",
-     "02:00",
-     "Quotidienne locale",
-     "Disque local dédié",
      "410 Mo",
      "8 s",
      "Échec",
@@ -17858,8 +17622,8 @@
      ""
     ],
     [
-     "BK-20261023",
-     "23/10/2026",
+     "BK-20261024",
+     "24/10/2026",
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
@@ -17870,8 +17634,8 @@
      "Restaurer"
     ],
     [
-     "BK-20261022",
-     "22/10/2026",
+     "BK-20261023",
+     "23/10/2026",
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
@@ -17882,8 +17646,8 @@
      "Restaurer"
     ],
     [
-     "BK-20261021",
-     "21/10/2026",
+     "BK-20261022",
+     "22/10/2026",
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
@@ -17894,8 +17658,8 @@
      ""
     ],
     [
-     "BK-20261020",
-     "20/10/2026",
+     "BK-20261021",
+     "21/10/2026",
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
@@ -17906,8 +17670,8 @@
      "Restaurer"
     ],
     [
-     "BK-20261019",
-     "19/10/2026",
+     "BK-20261020",
+     "20/10/2026",
      "02:00",
      "Quotidienne locale",
      "Disque local dédié",
@@ -17918,11 +17682,11 @@
      "Restaurer"
     ],
     [
-     "BK-20261018",
-     "18/10/2026",
-     "01:00",
-     "Hebdomadaire externalisée",
-     "Disque externe / cloud sécurisé",
+     "BK-20261019",
+     "19/10/2026",
+     "02:00",
+     "Quotidienne locale",
+     "Disque local dédié",
      "262 Mo",
      "18 s",
      "Échec",
@@ -17930,11 +17694,11 @@
      ""
     ],
     [
-     "BK-20261017",
-     "17/10/2026",
-     "02:00",
-     "Quotidienne locale",
-     "Disque local dédié",
+     "BK-20261018",
+     "18/10/2026",
+     "01:00",
+     "Hebdomadaire externalisée",
+     "Disque externe / cloud sécurisé",
      "423 Mo",
      "5 s",
      "Succès",
@@ -17951,8 +17715,8 @@
    {
     "id": "BKP001",
     "statut": "actif",
-    "fichier": "sigh-cnt-20261031.json",
-    "date": "2026-10-31",
+    "fichier": "sigh-cnt-20261101.json",
+    "date": "2026-11-01",
     "heure": "01:00",
     "portee": "Base complète",
     "tables": 79,
@@ -17962,8 +17726,8 @@
    {
     "id": "BKP002",
     "statut": "actif",
-    "fichier": "sigh-cnt-20261024.json",
-    "date": "2026-10-24",
+    "fichier": "sigh-cnt-20261025.json",
+    "date": "2026-10-25",
     "heure": "01:00",
     "portee": "Base complète",
     "tables": 79,
@@ -17973,8 +17737,8 @@
    {
     "id": "BKP003",
     "statut": "actif",
-    "fichier": "sigh-cnt-20261017.json",
-    "date": "2026-10-17",
+    "fichier": "sigh-cnt-20261018.json",
+    "date": "2026-10-18",
     "heure": "01:00",
     "portee": "Base complète",
     "tables": 79,
@@ -17984,8 +17748,8 @@
    {
     "id": "BKP004",
     "statut": "actif",
-    "fichier": "sigh-cnt-20261010.json",
-    "date": "2026-10-10",
+    "fichier": "sigh-cnt-20261011.json",
+    "date": "2026-10-11",
     "heure": "01:00",
     "portee": "Base complète",
     "tables": 79,
@@ -17995,8 +17759,8 @@
    {
     "id": "BKP005",
     "statut": "actif",
-    "fichier": "sigh-cnt-20261003.json",
-    "date": "2026-10-03",
+    "fichier": "sigh-cnt-20261004.json",
+    "date": "2026-10-04",
     "heure": "01:00",
     "portee": "Base complète",
     "tables": 79,
@@ -18006,8 +17770,8 @@
    {
     "id": "BKP006",
     "statut": "actif",
-    "fichier": "sigh-cnt-20260926.json",
-    "date": "2026-09-26",
+    "fichier": "sigh-cnt-20260927.json",
+    "date": "2026-09-27",
     "heure": "01:00",
     "portee": "Base complète",
     "tables": 79,
@@ -18015,23 +17779,23 @@
     "genereePar": "Sauvegarde hebdomadaire automatique"
    }
   ],
-  "jour": "2026-10-31",
+  "jour": "2026-11-01",
   "nbTables": 79,
   "generation": {
    "fiche": {
     "statut": "actif",
-    "fichier": "sigh-cnt-20261031-07.json",
-    "date": "2026-10-31",
-    "heure": "00h13",
+    "fichier": "sigh-cnt-20261101-07.json",
+    "date": "2026-11-01",
+    "heure": "17h03",
     "portee": "Base complète",
     "tables": 79,
-    "taille": 3113344,
+    "taille": 3113178,
     "genereePar": "BASSONGUI Chabi Séko"
    },
    "nbFichiers": 1,
    "toasts": [
     {
-     "message": "Sauvegarde sigh-cnt-20261031-07.json générée.",
+     "message": "Sauvegarde sigh-cnt-20261101-07.json générée.",
      "detail": "79 tables — 3.0 Mo"
     }
    ]
@@ -18045,7 +17809,7 @@
     }
    ],
    "audit": {
-    "dateHeure": "2026-10-31T00:13:40.037Z",
+    "dateHeure": "2026-11-01T17:03:52.083Z",
     "utilisateur": "BASSONGUI Chabi Séko",
     "action": "Création",
     "module": "M14",
@@ -18068,7 +17832,7 @@
    "audit": null
   },
   "restauration": {
-   "message": "Restaurer la sauvegarde du 31/10/2026 ?Cette opération remplacera les données actuelles par celles de la sauvegarde sélectionnée. Elle doit être réalisée sous le contrôle de l’Administrateur système et est journalisée.Motif (consigné dans le journal d’audit)AnnulerRestaurer",
+   "message": "Restaurer la sauvegarde du 01/11/2026 ?Cette opération remplacera les données actuelles par celles de la sauvegarde sélectionnée. Elle doit être réalisée sous le contrôle de l’Administrateur système et est journalisée.Motif (consigné dans le journal d’audit)AnnulerRestaurer",
    "toasts": [
     {
      "message": "Restauration simulée avec succès.",
@@ -18076,12 +17840,12 @@
     }
    ],
    "audit": {
-    "dateHeure": "2026-10-31T00:13:40.316Z",
+    "dateHeure": "2026-11-01T17:03:52.379Z",
     "utilisateur": "BASSONGUI Chabi Séko",
     "action": "Restauration",
     "module": "M14",
     "entite": "Sauvegarde",
-    "reference": "BK-20261031",
+    "reference": "BK-20261101",
     "ancienneValeur": null,
     "nouvelleValeur": "{\"motif\":\"Test de restauration\"}",
     "poste": "POSTE-LOCAL",
@@ -18092,7 +17856,7 @@
   "lignesSansRestaurer": 3,
   "impression": {
    "titre": "Journal des sauvegardes",
-   "sousTitre": "Historique glissant — situation au 31/10/2026",
+   "sousTitre": "Historique glissant — situation au 01/11/2026",
    "cartouche": [
     [
      "Sauvegardes conservées",
@@ -18100,7 +17864,7 @@
     ],
     [
      "Dernière sauvegarde",
-     "31/10/2026 à 02:00"
+     "01/11/2026 à 01:00"
     ],
     [
      "Échecs",
@@ -18120,7 +17884,7 @@
      "nom": "TAKI Alimatou"
     }
    ],
-   "texte": "RéférenceDateHeureTypeSupportVolumeDuréeRésultatBK-2026103131/10/202602:00Quotidienne localeDisque local dédié446 Mo9 sSuccèsBK-2026103030/10/202602:00Quotidienne localeDisque local dédié522 Mo12 sSuccèsBK-2026102929/10/202602:00Quotidienne localeDisque local dédié182 Mo18 sSuccèsBK-2026102828/10/202602:00Quotidienne localeDisque local dédié489 Mo18 sSuccèsBK-2026102727/10/202602:00Quotidienne localeDisque local dédié306 Mo18 sSuccèsBK-2026102626/10/202602:00Quotidienne localeDisque local dédié256 Mo9 sSuccèsBK-2026102525/10/202601:00Hebdomadaire externaliséeDisque externe / cloud sécurisé524 Mo14 sSuccèsBK-2026102424/10/202602:00Quotidienne localeDisque local dédié410 Mo8 sÉchecBK-2026102323/10/202602:00Quotidienne localeDisque local dédié541 Mo12 sSuccèsBK-2026102222/10/202602:00Quotidienne localeDisque local dédié218 Mo18 sSuccèsBK-2026102121/10/202602:00Quotidienne localeDisque local dédié506 Mo17 sÉchecBK-2026102020/10/202602:00Quotidienne localeDisque local dédié266 Mo14 sSuccèsBK-2026101919/10/202602:00Quotidienne localeDisque local dédié565 Mo18 sSuccèsBK-2026101818/10/202601:00Hebdomadaire externaliséeDisque externe / cloud sécurisé262 Mo18 sÉchecBK-2026101717/10/202602:00Quotidienne localeDisque local dédié423 Mo5 sSuccèsBK-2026101616/10/202602:00Quotidienne localeDisque local dédié351 Mo17 sSuccèsBK-2026101515/10/202602:00Quotidienne localeDisque local dédié229 Mo14 sSuccèsBK-2026101414/10/202602:00Quotidienne localeDisque local dédié240 Mo18 sÉchecBK-2026101313/10"
+   "texte": "RéférenceDateHeureTypeSupportVolumeDuréeRésultatBK-2026110101/11/202601:00Hebdomadaire externaliséeDisque externe / cloud sécurisé446 Mo9 sSuccèsBK-2026103131/10/202602:00Quotidienne localeDisque local dédié522 Mo12 sSuccèsBK-2026103030/10/202602:00Quotidienne localeDisque local dédié182 Mo18 sSuccèsBK-2026102929/10/202602:00Quotidienne localeDisque local dédié489 Mo18 sSuccèsBK-2026102828/10/202602:00Quotidienne localeDisque local dédié306 Mo18 sSuccèsBK-2026102727/10/202602:00Quotidienne localeDisque local dédié256 Mo9 sSuccèsBK-2026102626/10/202602:00Quotidienne localeDisque local dédié524 Mo14 sSuccèsBK-2026102525/10/202601:00Hebdomadaire externaliséeDisque externe / cloud sécurisé410 Mo8 sÉchecBK-2026102424/10/202602:00Quotidienne localeDisque local dédié541 Mo12 sSuccèsBK-2026102323/10/202602:00Quotidienne localeDisque local dédié218 Mo18 sSuccèsBK-2026102222/10/202602:00Quotidienne localeDisque local dédié506 Mo17 sÉchecBK-2026102121/10/202602:00Quotidienne localeDisque local dédié266 Mo14 sSuccèsBK-2026102020/10/202602:00Quotidienne localeDisque local dédié565 Mo18 sSuccèsBK-2026101919/10/202602:00Quotidienne localeDisque local dédié262 Mo18 sÉchecBK-2026101818/10/202601:00Hebdomadaire externaliséeDisque externe / cloud sécurisé423 Mo5 sSuccèsBK-2026101717/10/202602:00Quotidienne localeDisque local dédié351 Mo17 sSuccèsBK-2026101616/10/202602:00Quotidienne localeDisque local dédié229 Mo14 sSuccèsBK-2026101515/10/202602:00Quotidienne localeDisque local dédié240 Mo18 sÉ"
   }
  },
  "soignants": {

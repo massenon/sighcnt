@@ -10,6 +10,26 @@
  * ========================================================================== */
 'use strict';
 const fs = require('fs');
+
+/* --seul=<fragment> (un _ vaut une espace) : ne joue que les scénarios dont le titre contient le fragment (un scénario seul, ou ceux d'un module),
+   sans les quatre-vingts autres. Le fichier est recomposé en mémoire : préambule + blocs retenus + restitution. */
+const SEUL = (process.argv.find((a) => a.startsWith('--seul=')) || '').slice(7).replace(/_/g, ' ');
+if (SEUL && !process.env.SIGH_REDUIT) {
+  const lignes = fs.readFileSync(__filename, 'utf8').split('\n');
+  const debuts = []; lignes.forEach((l, i) => { if (l === '  {' && /^    scenario\(/.test(lignes[i + 1] || '')) debuts.push(i); });
+  const fin = lignes.findIndex((l) => l === '  await browser.close();');
+  const gardes = [];
+  debuts.forEach((d, k) => { if (lignes[d + 1].indexOf(SEUL) >= 0) gardes.push(lignes.slice(d, k + 1 < debuts.length ? debuts[k + 1] : fin)); });
+  if (!gardes.length) { console.log('Aucun scénario ne contient « ' + SEUL + ' ».'); process.exit(2); }
+  // Un scénario isolé commence sur un document vide : une page est ouverte d'abord (les scénarios suivants héritent de la page du précédent).
+  const ouverture = ["  await ouvrir('m14-roles.html');"];
+  const reduit = lignes.slice(0, debuts[0]).concat(ouverture, ...gardes, lignes.slice(fin)).join('\n');
+  const Module = require('module');
+  const m = new Module(__filename, module); m.filename = __filename; m.paths = Module._nodeModulePaths(__dirname);
+  process.env.SIGH_REDUIT = '1';
+  m._compile(reduit, __filename);
+  return;
+}
 const path = require('path');
 const BANC = require('./_banc');
 const http = require('http');
@@ -11705,6 +11725,287 @@ async function viderMessages(page) {
     const cre = await page.evaluate(() => !document.getElementById('selecteur-exercice'));
     verifier('Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due', cre, '');
     await page.evaluate(() => window.SIGH.exercice.choisir(String(new Date().getFullYear())));
+    verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  /* ========================================================================
+   * Vague 71 (01/11/2026) — Clôturer une session change son statut ; l'écran
+   * « Sécurité des utilisateurs » existe, gouverné, journalisé, réservé à l'admin
+   * ======================================================================== */
+  {
+    scenario('Vague 71 — sessions : « Clôturer » change le statut (journal, KPI, filtre, refus nommés, poste visé renvoyé à la connexion) et écran Sécurité des utilisateurs');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
+    await ouvrir('m14-sessions.html');
+    erreursJS = [];
+    const kpiDe = (lib) => page.evaluate((l) => {
+      const k = [...document.querySelectorAll('#page-content .kpi')].find((x) => x.querySelector('.kpi-label').textContent.trim() === l);
+      return k ? k.querySelector('.kpi-value').textContent.trim() : null;
+    }, lib);
+    const cliquerModale = (lib) => page.evaluate(async (l) => { for (let i = 0; i < 40; i++) { const b = [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === l); if (b) { b.click(); return true; } await new Promise((r) => setTimeout(r, 100)); } return false; }, lib);
+    const auditAvant = await page.evaluate(() => window.SIGH.store.raw().audit.length);
+
+    /* --- 1. L'état initial : douze sessions de démonstration + la session réelle de ce poste --- */
+    const init = await page.evaluate(() => {
+      const f = window.SIGH.store.raw().sessionsUtilisateur || [];
+      return { total: f.length, demo: f.filter((x) => x.source === 'demonstration').length, reelles: f.filter((x) => x.source === 'poste').length,
+        cloturees: f.filter((x) => x.etat === 'cloturee').length, sessionId: window.SIGH.store.session().sessionId || null };
+    });
+    verifier('Le registre porte douze sessions de démonstration et la session réelle de ce poste, aucune clôturée', init.demo === 12 && init.reelles >= 1 && init.cloturees === 0 && !!init.sessionId, JSON.stringify(init));
+    const ouvertes0 = Number(await kpiDe('Sessions ouvertes'));
+    verifier('Le KPI « Sessions ouvertes » compte les sessions actives et suspendues', ouvertes0 === init.total && (await kpiDe('Clôturées')) === '0', String(ouvertes0));
+
+    /* --- 2. Le geste complet sur une session d'un AUTRE agent : clic, confirmation, statut changé --- */
+    const cible = await page.evaluate(() => {
+      const f = window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.source === 'demonstration' && x.etat === 'active');
+      return { id: f.id, identifiant: f.identifiant, nom: f.nomComplet, poste: f.poste };
+    });
+    const clic = (identifiant, libelle) => page.evaluate((idf, lib) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => [...t.querySelectorAll('td')].some((c) => c.textContent.trim() === idf));
+      if (!tr) return false;
+      const b = [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === lib);
+      if (!b) return false;
+      b.click(); return true;
+    }, identifiant, libelle);
+    await page.evaluate(() => { const i = document.querySelector('#page-content input[type=search]'); if (i) { i.value = ''; } });
+    verifier('« Clôturer » est offerte sur une session ouverte', await clic(cible.identifiant, 'Clôturer'), cible.identifiant);
+    await pause(250);
+    const modale = await page.evaluate(() => { const m = document.querySelector('.modal-root, [role=dialog]'); return m ? m.textContent.replace(/\s+/g, ' ').trim() : null; });
+    verifier('La confirmation nomme l’agent, le poste et dit qu’une session clôturée ne se rouvre pas', modale && modale.includes('Clôturer la session de ' + cible.nom) && modale.includes(cible.poste) && /ne se rouvre pas/.test(modale), String(modale));
+    await cliquerModale('Annuler');
+    await pause(150);
+    const intacte = await page.evaluate((id) => window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.id === id).etat, cible.id);
+    verifier('Annuler la confirmation ne change rien', intacte === 'active', intacte);
+    await clic(cible.identifiant, 'Clôturer'); await pause(250);
+    await cliquerModale('Clôturer la session');
+    await pause(400);
+    const apres = await page.evaluate((id) => {
+      const S = window.SIGH.store, f = S.raw().sessionsUtilisateur.find((x) => x.id === id), a = S.raw().audit[0];
+      return { etat: f.etat, clotureLe: f.clotureLe, cloturePar: f.cloturePar, parId: f.clotureParIdentifiant, propre: f.cloturePropre, present: !!f,
+        audit: { action: a.action, module: a.module, ref: a.reference, nouvelle: a.nouvelleValeur }, nbAudit: S.raw().audit.length };
+    }, cible.id);
+    verifier('Le statut de la fiche passe à « clôturée » avec date, heure et auteur (RG-12)', apres.etat === 'cloturee' && !!apres.clotureLe && apres.cloturePar === ADMIN.nom && apres.parId === ADMIN.identifiant && apres.propre === false, JSON.stringify(apres));
+    verifier('La clôture est journalisée en tête du journal (module M14, référence = la session)', apres.audit.action === 'Modification' && apres.audit.module === 'M14' && apres.audit.ref === cible.id && /cloturee/.test(apres.audit.nouvelle || '') || apres.audit.ref === cible.id, JSON.stringify(apres.audit));
+    verifier('Rien n’est supprimé (RG-14) : la fiche clôturée reste au registre', apres.present, '');
+    verifier('Les KPI suivent : une ouverte de moins, une clôturée de plus', Number(await kpiDe('Sessions ouvertes')) === ouvertes0 - 1 && (await kpiDe('Clôturées')) === '1', String(await kpiDe('Clôturées')));
+    const ligne = await page.evaluate((idf) => {
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => [...t.querySelectorAll('td')].some((c) => c.textContent.trim() === idf));
+      return tr ? { texte: tr.textContent.replace(/\s+/g, ' '), bouton: [...tr.querySelectorAll('button')].some((b) => b.textContent.trim() === 'Clôturer') } : null;
+    }, cible.identifiant);
+    verifier('La ligne affiche « Clôturée » et n’offre plus « Clôturer »', ligne && /Clôturée/.test(ligne.texte) && !ligne.bouton, JSON.stringify(ligne));
+    const filtre = await page.evaluate(async () => {
+      const sel = [...document.querySelectorAll('#page-content select')].find((s) => s.getAttribute('aria-label') === 'État');
+      if (!sel) return null;
+      sel.value = 'cloturee'; sel.dispatchEvent(new Event('change')); await new Promise((r) => setTimeout(r, 200));
+      return document.querySelectorAll('#page-content tbody tr').length;
+    });
+    verifier('Le filtre « État : Clôturées » ne montre que les sessions clôturées', filtre === 1, String(filtre));
+
+    /* --- 3. Refus nommés du moteur --- */
+    const refus = await page.evaluate((id) => {
+      const M = window.SIGH.sessions, S = window.SIGH.store;
+      const deja = M.cloturer(id);
+      const inconnue = M.cloturer('SES-INEXISTANTE');
+      const propreId = S.session().sessionId;
+      const propre = M.cloturer(propreId);
+      const etatPropre = S.raw().sessionsUtilisateur.find((x) => x.id === propreId).etat;
+      const sess = JSON.parse(localStorage.getItem('sigh-cnt:session'));
+      const sauve = localStorage.getItem('sigh-cnt:session');
+      localStorage.setItem('sigh-cnt:session', JSON.stringify(Object.assign({}, sess, { role: 'caissier' })));
+      const droit = M.cloturer(S.raw().sessionsUtilisateur.find((x) => x.source === 'demonstration' && x.etat === 'active').id);
+      localStorage.setItem('sigh-cnt:session', sauve);
+      return { deja: [deja.ok, deja.code, !!deja.geste], inconnue: [inconnue.ok, inconnue.code], propre: [propre.ok, propre.code, !!propre.geste], etatPropre: etatPropre, droit: [droit.ok, droit.code] };
+    }, cible.id);
+    verifier('Une session clôturée ne se rouvre ni ne se reclôture : refus nommé DEJA_CLOTUREE avec son geste', refus.deja[0] === false && refus.deja[1] === 'DEJA_CLOTUREE' && refus.deja[2], JSON.stringify(refus.deja));
+    verifier('Session inconnue : refus nommé', refus.inconnue[0] === false && refus.inconnue[1] === 'SESSION_INCONNUE', JSON.stringify(refus.inconnue));
+    verifier('Clôturer SA propre session sans confirmation explicite est refusé en le disant, rien n’est écrit', refus.propre[0] === false && refus.propre[1] === 'SESSION_PROPRE' && refus.propre[2] && refus.etatPropre !== 'cloturee', JSON.stringify(refus));
+    verifier('Un profil sans droit d’édition sur M14 (caissier) est refusé : DROIT_REFUSE', refus.droit[0] === false && refus.droit[1] === 'DROIT_REFUSE', JSON.stringify(refus.droit));
+
+    /* --- 4. Poste B : sa session est clôturée par l'administrateur, il retombe sur la connexion à son prochain geste --- */
+    const ctxB = await browser.createBrowserContext();
+    const pageB = await ctxB.newPage();
+    pageB.setDefaultTimeout(120000);
+    const repB = await BANC.connecter('e.orouyo');
+    await pageB.evaluateOnNewDocument((jeton) => {
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({ role: 'reception', fonction: 'accueil', nom: 'OROU YO Edmond', identifiant: 'e.orouyo', secteur: 'ACC', jeton: jeton }));
+      localStorage.setItem('sigh-cnt:jeton', jeton);
+    }, repB.jeton);
+    await pageB.goto(`http://127.0.0.1:${PORT}/pages/m1-patients.php`, { waitUntil: 'domcontentloaded' });
+    await pageB.waitForFunction(() => window.SIGH && window.SIGH.app && window.SIGH.app.entry() && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 150000 });
+    const sessB = await pageB.evaluate(() => window.SIGH.store.session().sessionId);
+    verifier('Le poste B (accueil) a sa propre fiche de session au registre', !!sessB, String(sessB));
+    await pageB.evaluate(() => { const o = window.SIGH.store.log; window.SIGH.store.log = function () { try { const l = JSON.parse(sessionStorage.getItem('__v71') || '[]'); l.push(Array.prototype.slice.call(arguments, 0, 4)); sessionStorage.setItem('__v71', JSON.stringify(l)); } catch (e) { /* sonde */ } return o.apply(this, arguments); }; });
+    /* L'administrateur la voit chez lui (sondage entre postes), puis la clôture par le geste. */
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant && window.SIGH.store.pousserMaintenant());
+    let vue = false;
+    for (let i = 0; i < 25 && !vue; i++) {
+      await pause(1000);
+      vue = await page.evaluate((id) => !!(window.SIGH.store.raw().sessionsUtilisateur || []).find((x) => x.id === id), sessB);
+    }
+    verifier('La session du poste B apparaît au registre de l’administrateur sans recharger', vue, '');
+    await page.evaluate(() => { const i = document.querySelector('#page-content select[aria-label="État"]'); if (i) { i.value = ''; i.dispatchEvent(new Event('change')); } });
+    await ouvrir('m14-sessions.html');
+    const okB = await clic('e.orouyo', 'Clôturer'); await pause(250);
+    await cliquerModale('Clôturer la session');
+    await pause(500);
+    await page.evaluate(() => window.SIGH.store.pousserMaintenant && window.SIGH.store.pousserMaintenant());
+    verifier('L’administrateur clôture la session de l’accueil par le geste', okB && (await page.evaluate((id) => window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.id === id).etat, sessB)) === 'cloturee', String(okB));
+    let recu = false;
+    for (let i = 0; i < 25 && !recu; i++) {
+      await pause(1000);
+      recu = await pageB.evaluate((id) => { if (/motif=session-cloturee/.test(location.search)) return true; const f = (window.SIGH.store.raw().sessionsUtilisateur || []).find((x) => x.id === id); return !!f && f.etat === 'cloturee'; }, sessB).catch(() => true);
+    }
+    verifier('Le poste B reçoit la clôture par la synchronisation', recu, '');
+    let urlB0 = '';
+    for (let i = 0; i < 24; i++) {
+      urlB0 = await pageB.evaluate(() => location.pathname + location.search).catch(() => '');
+      if (/motif=session-cloturee/.test(urlB0)) break;
+      if (i === 4) await pageB.evaluate(() => { const e = document.querySelector('#page-content'); if (e) e.click(); }).catch(() => {});
+      await pause(500);
+    }
+    const urlB = await pageB.evaluate(() => location.pathname + location.search);
+    verifier('Au prochain geste, le poste B retombe sur la connexion avec le motif', /index\.php/.test(urlB) && /motif=session-cloturee/.test(urlB), urlB);
+    await pageB.waitForFunction(() => document.body && /clôturée par un administrateur/.test(document.body.textContent), { timeout: 30000 }).catch(() => null);
+    const bandeau = await pageB.evaluate(() => /clôturée par un administrateur/.test(document.body.textContent));
+    const pageB2 = pageB;
+    verifier('La connexion dit pourquoi : « session clôturée par un administrateur »', bandeau, '');
+    const journalB = await pageB2.evaluate(() => { try { return JSON.parse(sessionStorage.getItem('__v71') || '[]'); } catch (e) { return []; } });
+    verifier('La fermeture de la session du poste B est journalisée par ce poste (RG-12)', journalB.some((l) => l[0] === 'Session fermée par clôture' && l[3] === 'e.orouyo'), JSON.stringify(journalB));
+    await ctxB.close();
+
+    /* --- 5. Clôturer SA PROPRE session : confirmation explicite, déconnexion immédiate --- */
+    await ouvrir('m14-sessions.html');
+    const moi = await page.evaluate(() => { const f = window.SIGH.store.session(); return { id: f.sessionId, identifiant: f.identifiant }; });
+    await clic(moi.identifiant, 'Clôturer'); await pause(250);
+    const modPropre = await page.evaluate(() => { const m = document.querySelector('.modal-root, [role=dialog]'); return m ? m.textContent.replace(/\s+/g, ' ') : ''; });
+    verifier('Sa propre session demande une confirmation qui le DIT (« votre propre session », déconnexion immédiate)', /Clôturer VOTRE session/.test(modPropre) && /propre session/.test(modPropre) && /immédiatement/.test(modPropre), modPropre.slice(0, 200));
+    await Promise.all([
+      page.waitForFunction(() => /motif=session-cloturee/.test(location.search), { timeout: 60000 }).catch(() => null),
+      page.evaluate(() => { [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((b) => b.textContent.trim() === 'Clôturer ma session').click(); }),
+    ]);
+    const urlA = await page.evaluate(() => location.pathname + location.search);
+    verifier('Après confirmation, l’agent est ramené à la connexion', /index\.php/.test(urlA) && /motif=session-cloturee/.test(urlA), urlA);
+    await ouvrir('m14-sessions.html');
+    const fiche = await page.evaluate((id) => { const f = window.SIGH.store.raw().sessionsUtilisateur.find((x) => x.id === id); return f ? { etat: f.etat, propre: f.cloturePropre, par: f.cloturePar } : null; }, moi.id);
+    verifier('La session propre est clôturée au registre, marquée comme telle, et l’entrée « Session fermée par clôture » est au journal', fiche && fiche.etat === 'cloturee' && fiche.propre === true
+      && (await page.evaluate(() => window.SIGH.store.raw().audit.some((a) => a.action === 'Session fermée par clôture'))), JSON.stringify(fiche));
+    const nouvelle = await page.evaluate(() => window.SIGH.store.session().sessionId);
+    verifier('Se reconnecter ouvre une AUTRE session : l’ancienne ne rouvre pas', nouvelle && nouvelle !== moi.id, String(nouvelle) + ' / ' + moi.id);
+
+    /* --- 6. L'écran Sécurité des utilisateurs --- */
+    const SEC = 'm14-securite-utilisateurs.html';
+    await ouvrir(SEC);
+    erreursJS = [];
+    const secInit = await page.evaluate(() => {
+      const kp = [...document.querySelectorAll('#page-content .kpi')].map((k) => k.querySelector('.kpi-label').textContent.trim());
+      const onglets = [...document.querySelectorAll('#page-content [role=tab]')].map((t) => t.textContent.trim().replace(/\d+$/, ''));
+      const lignes = [...document.querySelectorAll('#page-content tbody tr')].map((t) => t.textContent.replace(/\s+/g, ' ').trim());
+      return { kp, onglets, lignes, titre: document.querySelector('h1') ? document.querySelector('h1').textContent.trim() : null,
+        politique: window.SIGH.securiteUtilisateurs.politique() };
+    });
+    verifier('L’écran existe, avec ses six indicateurs et ses quatre onglets (politique, comptes, tentatives, sessions)',
+      /Sécurité des utilisateurs/.test(secInit.titre || '') && secInit.kp.length === 6 && secInit.onglets.join('|') === 'Politique|Comptes|Tentatives de connexion|Sessions', JSON.stringify(secInit.kp) + secInit.onglets.join('|'));
+    verifier('La politique affiche huit lignes avec leur source, dont « proposition à valider » pour l’historique',
+      secInit.lignes.length === 8 && secInit.lignes.some((l) => /Historique des mots de passe interdits/.test(l) && /Proposition à valider/.test(l)) && secInit.lignes.some((l) => /Inactivité avant verrouillage/.test(l) && /CDCT §12\.2/.test(l)), secInit.lignes.join(' ; ').slice(0, 300));
+    verifier('Valeurs de référence : 12 caractères, 90 jours, 3 échecs, 15 minutes de verrou, 15 minutes d’inactivité',
+      secInit.politique.longueurMin === 12 && secInit.politique.expirationJours === 90 && secInit.politique.echecsMax === 3 && secInit.politique.blocageMin === 15 && secInit.politique.inactiviteMin === 15, JSON.stringify(secInit.politique));
+
+    const pol = await page.evaluate(async () => {
+      const X = window.SIGH.securiteUtilisateurs, S = window.SIGH.store;
+      const base = X.politique();
+      const horsBornes = X.enregistrerPolitique(Object.assign({}, base, { longueurMin: 3 }));
+      const apresRefus = X.politique().longueurMin;
+      const ok = X.enregistrerPolitique(Object.assign({}, base, { inactiviteMin: 10 }));
+      const delai = window.SIGH.app.delaiVerrou();
+      const journal = S.raw().audit[0];
+      X.enregistrerPolitique(Object.assign({}, base));
+      return { horsBornes: [horsBornes.ok, horsBornes.code, !!horsBornes.geste], apresRefus, ok: ok.ok, delai, journal: [journal.action, journal.module], retour: window.SIGH.app.delaiVerrou() };
+    });
+    verifier('Une valeur hors bornes est refusée en nommant la règle, la politique ne change pas', pol.horsBornes[0] === false && pol.horsBornes[1] === 'VALEUR_HORS_BORNES' && pol.horsBornes[2] && pol.apresRefus === 12, JSON.stringify(pol));
+    verifier('Le délai d’inactivité de la politique s’applique au verrou de session (10 min), journalisé, puis revient à 15', pol.ok && pol.delai === 600000 && pol.journal[1] === 'M14' && pol.retour === 900000, JSON.stringify(pol));
+
+    /* Comptes : bloquer par le geste, refus nommés, serveur de la maquette qui refuse la connexion. */
+    await page.evaluate(() => window.SIGH.app.go('m14-securite-utilisateurs', { onglet: 'comptes' }));
+    await pause(1500);
+    const compte = await page.evaluate(() => {
+      const u = window.SIGH.store.collection('utilisateurs').active().find((x) => x.identifiant === 'demo.anesthesiste');
+      return { id: u.id, nom: u.nomComplet, echecs: u.echecs };
+    });
+    const refusC = await page.evaluate((id) => {
+      const X = window.SIGH.securiteUtilisateurs;
+      const sans = X.bloquer(id, '  ');
+      const inconnu = X.bloquer('USR-INCONNU', 'x motif');
+      const nonBloque = X.debloquer(id);
+      const sess = localStorage.getItem('sigh-cnt:session');
+      localStorage.setItem('sigh-cnt:session', JSON.stringify(Object.assign(JSON.parse(sess), { identifiant: 'demo.anesthesiste' })));
+      const propre = X.bloquer(id, 'essai');
+      localStorage.setItem('sigh-cnt:session', sess);
+      return { sans: sans.code, inconnu: inconnu.code, nonBloque: nonBloque.code, propre: propre.code };
+    }, compte.id);
+    verifier('Refus nommés : motif obligatoire, compte inconnu, déblocage d’un compte non bloqué, blocage de son propre compte',
+      refusC.sans === 'MOTIF_OBLIGATOIRE' && refusC.inconnu === 'COMPTE_INCONNU' && refusC.nonBloque === 'NON_BLOQUE' && refusC.propre === 'COMPTE_PROPRE', JSON.stringify(refusC));
+
+    const geste = await page.evaluate(async () => {
+      const sel = document.querySelector('#page-content input[type=search]'); sel.value = 'demo.anesthesiste'; sel.dispatchEvent(new Event('input'));
+      await new Promise((r) => setTimeout(r, 400));
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => /demo\.anesthesiste/.test(t.textContent));
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => x.textContent.trim() === 'Bloquer');
+      if (!b) return { bouton: false };
+      b.click();
+      await new Promise((r) => setTimeout(r, 300));
+      document.getElementById('motif-blocage').value = 'Départ du poste, accès à retirer';
+      [...document.querySelectorAll('.modal-root button, [role=dialog] button')].find((x) => x.textContent.trim() === 'Bloquer le compte').click();
+      await new Promise((r) => setTimeout(r, 400));
+      const u = window.SIGH.store.collection('utilisateurs').active().find((x) => x.identifiant === 'demo.anesthesiste');
+      return { bouton: true, bloque: u.bloque, motif: u.bloqueMotif, par: u.bloquePar, le: !!u.bloqueLe };
+    });
+    verifier('Bloquer un compte par le geste (modale, motif) écrit blocage, motif, auteur et date', geste.bouton && geste.bloque === true && /Départ du poste/.test(geste.motif) && !!geste.par && geste.le, JSON.stringify(geste));
+    const kpiBloques = await page.evaluate(() => { const k = [...document.querySelectorAll('#page-content .kpi')].find((x) => x.querySelector('.kpi-label').textContent.trim() === 'Comptes bloqués'); return k ? k.querySelector('.kpi-value').textContent.trim() : null; });
+    verifier('Le KPI « Comptes bloqués » suit', kpiBloques === '1', String(kpiBloques));
+    const serveur = await page.evaluate(async () => {
+      const r = await fetch('../api/auth.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'connexion', identifiant: 'demo.anesthesiste', motDePasse: 'demonstration', poste: 'banc' }) });
+      return { statut: r.status, corps: await r.json() };
+    });
+    verifier('Le serveur de la maquette refuse la connexion d’un compte bloqué (423, refus nommé)', serveur.statut === 423 && /bloqué/.test(serveur.corps.detail || ''), JSON.stringify(serveur));
+    const debl = await page.evaluate(() => {
+      const X = window.SIGH.securiteUtilisateurs, u = window.SIGH.store.collection('utilisateurs').active().find((x) => x.identifiant === 'demo.anesthesiste');
+      const r = X.debloquer(u.id); const v = window.SIGH.store.collection('utilisateurs').get(u.id);
+      return { ok: r.ok, bloque: v.bloque, echecs: v.echecs, par: v.debloquePar };
+    });
+    verifier('Débloquer rend l’accès, remet les échecs à zéro et signe le geste', debl.ok && debl.bloque === false && debl.echecs === 0 && !!debl.par, JSON.stringify(debl));
+    await pause(800);
+    const serveur2 = await page.evaluate(async () => {
+      const r = await fetch('../api/auth.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'connexion', identifiant: 'demo.anesthesiste', motDePasse: 'demonstration', poste: 'banc' }) });
+      return r.status;
+    });
+    verifier('Une fois débloqué, le serveur ouvre de nouveau la session', serveur2 === 200, String(serveur2));
+
+    const reinit = await page.evaluate((id) => {
+      const X = window.SIGH.securiteUtilisateurs, S = window.SIGH.store;
+      const a = X.imposerReinitialisation(id), b = X.imposerReinitialisation(id), u = S.collection('utilisateurs').get(id);
+      return { a: a.ok, b: [b.ok, b.code], doit: u.doitChangerMotDePasse, par: u.reinitialisationImposeePar, secret: Object.keys(u).filter((k) => /motdepasse$/i.test(k) && k !== 'doitChangerMotDePasse' && k !== 'motDePasseDefiniLe' && k !== 'motDePasseDefiniPar') };
+    }, compte.id);
+    verifier('Imposer la réinitialisation pose l’obligation (auteur, date), refuse de la poser deux fois, et ne touche à aucun secret', reinit.a && reinit.doit === true && !!reinit.par && reinit.b[0] === false && reinit.b[1] === 'DEJA_IMPOSEE' && reinit.secret.length === 0, JSON.stringify(reinit));
+
+    const sess = await page.evaluate(() => {
+      const X = window.SIGH.securiteUtilisateurs, S = window.SIGH.store;
+      const demo = S.raw().sessionsUtilisateur.find((f) => f.source === 'demonstration' && f.etat !== 'cloturee');
+      const u = S.collection('utilisateurs').active().find((x) => x.identifiant === demo.identifiant);
+      const r = X.cloturerSessions(u.id);
+      return { ok: r.ok, n: r.sessions, apres: S.raw().sessionsUtilisateur.filter((f) => f.identifiant === demo.identifiant && f.etat !== 'cloturee').length, vide: X.cloturerSessions(u.id).code };
+    });
+    verifier('« Clôturer les sessions » d’un compte ferme toutes ses sessions ouvertes ; recommencer est refusé (AUCUNE_SESSION)', sess.ok && sess.n >= 1 && sess.apres === 0 && sess.vide === 'AUCUNE_SESSION', JSON.stringify(sess));
+
+    /* --- 7. Droits : administrateur seul --- */
+    const droits = await page.evaluate(() => {
+      const N = window.SIGH.nav, e = N.get('m14-securite-utilisateurs');
+      return { admin: N.can('admin', e), direction: N.can('direction', e), da: N.can('da', e), caissier: N.can('caissier', e), medecin: N.can('medecin', e) };
+    });
+    verifier('Droits : l’écran Sécurité des utilisateurs est ouvert à l’administrateur seul (direction, DAF et autres refusés)', droits.admin === true && !droits.direction && !droits.da && !droits.caissier && !droits.medecin, JSON.stringify(droits));
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'direction', fonction: 'direction', nom: 'Direction', identifiant: 'direction.test' }));
+    await ouvrir(SEC);
+    const refuse403 = await page.evaluate(() => /error-403/.test(location.pathname));
+    verifier('Ouvrir l’écran sous la Direction renvoie à la page 403', refuse403, '');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
   }
 

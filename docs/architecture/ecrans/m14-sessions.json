@@ -14,21 +14,22 @@
  ],
  "actions": [
   "Utilisateurs",
-  "Rôles & permissions (RBAC)",
+  "Sécurité des utilisateurs",
   "Sécurité & Utilisateurs"
  ],
  "regle": [
-  "Sur les postes partagés — accueil et caisse — un délai d’inactivité de 15 minutes entraîne le verrouillage automatique de l’écran."
+  "Sur les postes partagés (accueil et caisse), un délai d’inactivité de 15 minutes entraîne le verrouillage automatique de l’écran. Clôturer une session va plus loin : elle est fermée, et l’agent doit se reconnecter."
  ],
  "onglets": [],
  "kpis": [
   "Sessions ouvertes",
   "Postes distincts",
   "Verrouillées pour inactivité",
+  "Clôturées",
   "Délai de verrouillage"
  ],
  "cartes": [
-  "Sessions en cours"
+  "Sessions"
  ],
  "tableaux": [
   [
@@ -40,6 +41,7 @@
    "Ouverture",
    "Inactivité",
    "État",
+   "Clôture",
    "Actions"
   ]
  ],
@@ -50,5 +52,5 @@
  ],
  "champs": [],
  "nbTableaux": 1,
- "nbKpis": 4
+ "nbKpis": 5
 }

@@ -3349,6 +3349,108 @@
     return { annee: a, debut: C.iso(new Date(a, 0, 1)), fin: C.iso(fin) };
   }
 
+  /* ==========================================================================
+   * SESSIONS DE POSTE : ACTIVES, SUSPENDUES, CLOTURÉES (01/11/2026)
+   * --------------------------------------------------------------------------
+   * La Direction a demandé que « Clôturer » change le statut d'une session. Le
+   * registre vit au magasin (`sessionsUtilisateur`, une fiche par session) :
+   * la clôture y est ÉCRITE, avec sa date, son auteur et son motif, et le poste
+   * visé la lit au PROCHAIN GESTE (ouverture d'écran, clic) pour retomber sur
+   * la connexion.
+   *
+   * Trois principes, tous nés d'un défaut évité :
+   *  - une session clôturée NE ROUVRE PAS : l'agent se reconnecte et obtient
+   *    une AUTRE session ; rouvrir la fiche ferait mentir l'heure de clôture ;
+   *  - RIEN n'est supprimé (RG-14) : la fiche clôturée reste au registre, avec
+   *    qui l'a fermée et quand (RG-12) ;
+   *  - un agent qui clôture SA PROPRE session le DIT : refus nommé tant que la
+   *    confirmation explicite n'est pas donnée, puis déconnexion immédiate.
+   * `etat` et non `statut` : `statut` est le champ d'archivage du magasin.
+   * ======================================================================== */
+  var ETATS_SESSION = { active: 'Active', suspendue: 'Suspendue', cloturee: 'Clôturée' };
+  function colSessions() { return S.collection('sessionsUtilisateur', { module: 'M14', entite: 'session', prefix: 'SES' }); }
+  function refusSession(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  function sessionDuPoste() {
+    var s = S.session();
+    if (!s || !s.sessionId) return null;
+    return colSessions().get(s.sessionId) || null;
+  }
+  /** La fiche de la session courante, créée à la première occasion (connexion, banc). */
+  function assurerSession() {
+    var s = S.session();
+    if (!s || !s.role) return null;
+    var col = colSessions();
+    if (s.sessionId && col.get(s.sessionId)) return s.sessionId;
+    var poste = (global.location && global.location.hostname) || 'poste';
+    var identifiant = s.identifiant || s.role;
+    var reprise = s.nouvelleSession ? null : col.all().filter(function (f) {
+      return f.source === 'poste' && f.identifiant === identifiant && f.poste === poste && f.etat !== 'cloturee';
+    })[0];
+    var id = reprise ? reprise.id : null;
+    if (!id) {
+      /* L'ouverture d'une session n'est pas un geste de l'agent : elle s'écrit au registre SANS entrée de journal (comme un amorçage),
+         la connexion étant déjà journalisée par le serveur. Seules la suspension et la clôture, elles, sont des gestes journalisés. */
+      var maintenant = new Date().toISOString();
+      col.all();
+      id = 'SES' + C.uid();
+      S.raw().sessionsUtilisateur.unshift({
+        id: id, statut: 'actif', identifiant: identifiant, nomComplet: s.nom || identifiant, role: s.role, poste: poste, adresseIp: null,
+        source: 'poste', debut: maintenant, derniereActivite: maintenant, inactivite: 0, etat: 'active',
+        _creePar: S.currentUser(), _creeLe: maintenant,
+      });
+      S.save();
+    }
+    s.sessionId = id; delete s.nouvelleSession;
+    S.storage.set('sigh-cnt:session', JSON.stringify(s));
+    return id;
+  }
+  /** La session courante a-t-elle été clôturée depuis un autre écran ou un autre poste ? */
+  function clotureeDuPoste() {
+    var f = sessionDuPoste();
+    return f && f.etat === 'cloturee' ? f : null;
+  }
+  /** Suspend (verrou d'inactivité) ou reprend la session courante. Une session clôturée n'en change plus. */
+  function changerEtatSession(etat) {
+    var f = sessionDuPoste();
+    if (!f || f.etat === 'cloturee' || f.etat === etat) return false;
+    colSessions().update(f.id, { etat: etat, derniereActivite: new Date().toISOString() });
+    return true;
+  }
+  /**
+   * CLOTURER. Rend { ok:true, fiche, propre } ou un refus NOMMÉ { ok:false, code, motif, geste }.
+   * opts : { confirmePropre, motif }.
+   */
+  function cloturerSession(id, opts) {
+    var o = opts || {}, s = S.session() || {};
+    var f = colSessions().get(id);
+    if (!f) return refusSession('SESSION_INCONNUE', 'Cette session n’existe pas au registre.', 'Actualiser la liste des sessions.');
+    if (f.etat === 'cloturee') {
+      return refusSession('DEJA_CLOTUREE', 'Cette session est déjà clôturée (le ' + C.dateHeure(f.clotureLe) + ', par ' + (f.cloturePar || 'un administrateur') + '). Une session clôturée ne se rouvre pas.',
+        'L’agent ouvre une nouvelle session en se reconnectant.');
+    }
+    var d = global.SIGH.nav.droitsEcran(s.role, 'm14-sessions', 'M14');
+    if (!d.editer) {
+      return refusSession('DROIT_REFUSE', 'Le profil courant ne peut pas clôturer de session.', 'Demander la clôture à l’administrateur système.');
+    }
+    var propre = !!s.sessionId && s.sessionId === f.id;
+    if (propre && !o.confirmePropre) {
+      return refusSession('SESSION_PROPRE', 'C’est VOTRE session : la clôturer vous déconnecte aussitôt de ce poste.',
+        'Confirmer explicitement la clôture de votre propre session.');
+    }
+    var patch = {
+      etat: 'cloturee', clotureLe: new Date().toISOString(), cloturePar: S.currentUser(),
+      clotureParIdentifiant: s.identifiant || s.role, clotureMotif: o.motif || null, cloturePropre: propre,
+    };
+    var r = colSessions().update(id, patch);
+    if (!r) return refusSession('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer, puis consulter le journal d’audit.');
+    return { ok: true, fiche: r.record, propre: propre };
+  }
+
+  global.SIGH.sessions = {
+    ETATS: ETATS_SESSION, collection: colSessions, courante: sessionDuPoste, assurer: assurerSession,
+    cloturee: clotureeDuPoste, changerEtat: changerEtatSession, cloturer: cloturerSession,
+  };
+
   global.SIGH.exercice = {
     dansExercice: dansExerciceChoisi, fenetre: fenetreExercice,
     liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,

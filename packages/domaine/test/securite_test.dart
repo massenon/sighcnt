@@ -385,47 +385,14 @@ void main() {
   });
 
   group('sessions (m14-sessions)', () {
-    test('douze sessions, tirage 3413 : identifiant, poste, adresse, ouverture, inactivité, état', () {
-      final s = f(v['sessions']);
-      final users = [for (final u in liste(s['utilisateurs'])) {...u, 'actif': true}];
-      final rows = secSessions(users, DateTime.parse('${s['jour']}'));
-      final t = (f(s['tableau'])['lignes'] as List).map((x) => (x as List).cast<String>()).toList();
-      expect(rows.length, t.length);
-      for (var i = 0; i < rows.length; i++) {
-        expect(rows[i].identifiant, t[i][0]);
-        expect(rows[i].nomComplet, t[i][1]);
-        expect(rows[i].poste, t[i][3]);
-        expect(rows[i].adresseIp, t[i][4]);
-        expect(heure(rows[i].debut), t[i][5]);
-        expect('${rows[i].inactivite} min', t[i][6]);
-        expect(rows[i].verrouillage ? 'Verrouillée' : 'Active', t[i][7]);
-      }
-      final kpis = (s['kpis'] as List).map((x) => (x as List).cast<String>()).toList();
-      expect(kpis[0][1], '${rows.length}');
-      expect(kpis[1][1], '${rows.map((r) => r.poste).toSet().length}');
-      expect(kpis[2][1], '${rows.where((r) => r.verrouillage).length}');
-      expect(kpis[3][1], '$secDelaiVerrouillageMin min');
-    });
-
+    // Les douze sessions du tirage 3413 et la clôture (qui CHANGE LE STATUT depuis le 01/11/2026) sont rejouées sur les vecteurs de
+    // `vecteurs-sessions.js` par sessions_securite_test.dart.
     test('un compte désactivé n\'ouvre pas de session', () {
       final rows = secSessions([
         {'id': 'a', 'identifiant': 'x', 'actif': false, 'role': 'admin'},
         {'id': 'b', 'identifiant': 'y', 'actif': true, 'role': 'admin'},
       ], DateTime(2026, 10, 30));
       expect(rows.map((r) => r.identifiant), ['y']);
-    });
-
-    test('« Clôturer » journalise la modification (RG-12) : ouverte → close', () {
-      final c = f(v['sessionsCloture']);
-      final a = f(c['audit']);
-      expect(a['action'], 'Modification');
-      expect(a['module'], 'M14');
-      expect(a['entite'], 'SessionUtilisateur');
-      expect(a['ancienneValeur'], '{"etat":"ouverte"}');
-      expect(a['nouvelleValeur'], '{"etat":"close"}');
-      expect(secSessionAvant, {'etat': 'ouverte'});
-      expect(secSessionApres, {'etat': 'close'});
-      expect((c['toasts'] as List).single['message'], 'Session clôturée.');
     });
   });
 

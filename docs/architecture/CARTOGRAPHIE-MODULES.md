@@ -58,7 +58,7 @@
 
 | Rangée | Module | Type | Écrans | Rôles d'origine |
 |---|---|---|---|---|
-| Sécurité & Utilisateurs | M14 | canonique | 7 | admin, direction, da |
+| Sécurité & Utilisateurs | M14 | canonique | 8 | admin, direction, da |
 | Configuration Clinique | CFG | canonique | 19 | admin, da, direction |
 
 ## Poste mère

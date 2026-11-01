@@ -75,6 +75,17 @@ class CollectionMagasin extends ChangeNotifier {
     return (fiche: nouvelle, annuler: () => archiver(nouvelle['id']));
   }
 
+  /// Ajoute une fiche À LA FIN, sans journal : l'amorçage de démonstration d'un écran (`db[nom].push` de la maquette, sans `log`). Jamais pour une écriture
+  /// de l'agent : celle-là passe par [inserer] et se journalise (RG-12).
+  void ajouterSansJournal(Fiche f, {bool enTete = false}) {
+    if (enTete) {
+      _fiches.insert(0, {...f});
+    } else {
+      _fiches.add({...f});
+    }
+    notifyListeners();
+  }
+
   static bool estArchivee(Fiche f) => f['statut'] == 'archive';
 
   List<Fiche> get actives => [
@@ -324,6 +335,8 @@ class Magasin {
     'identifiants': 'M14',
     'rbac': 'M14',
     'tentativesConnexion': 'M14',
+    'sessionsUtilisateur': 'M14',
+    'politiqueSecurite': 'M14',
     'fichiersSauvegarde': 'M14',
     'tachesPlanifiees': 'M14',
     'executionsTaches': 'M14',

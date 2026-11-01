@@ -186,6 +186,11 @@
       erreur.appendChild(erreurTexte);
       form.appendChild(erreur);
 
+      /* Une session clôturée par l'administrateur renvoie ici, et le dit. */
+      if (/[?&]motif=session-cloturee/.test(global.location.search)) {
+        erreur.className = 'flex items-start gap-2 rounded-lg border border-warning-200 bg-warning-50 px-3 py-2';
+        erreurTexte.textContent = 'Votre session a été clôturée par un administrateur. Elle ne se rouvre pas : reconnectez-vous pour en ouvrir une nouvelle.';
+      }
       var tentatives = 0;
       var submit = el('button.btn.btn-primary.btn-lg.w-full', { type: 'submit' }, [C.icon('log-in', 'h-4 w-4'), 'Se connecter']);
       form.appendChild(submit);
@@ -237,6 +242,7 @@
 
           /* Le JETON vient du serveur : on l'adopte, on n'en invente pas. */
           S.setSession({
+            nouvelleSession: true,
             jeton: res.o.jeton, role: u.role, nom: u.nom,
             poste: (N.ROLES[u.role] && N.ROLES[u.role].label) || u.role,
             identifiant: u.identifiant, fonction: u.fonction, secteur: u.secteur,
@@ -497,6 +503,17 @@
 
       f.addEventListener('submit', function (e) {
         e.preventDefault();
+        /* Une session clôturée pendant le verrouillage ne se reprend pas : retour à la connexion, avec le motif. */
+        var M = global.SIGH.sessions;
+        var fermee = M && M.cloturee();
+        if (fermee) {
+          S.log('Session fermée par clôture', 'M14', 'Session', fermee.identifiant, { etat: 'ouverte' }, { sessionId: fermee.id, cloturePar: fermee.cloturePar });
+          S.setSession(null);
+          S.storage.remove(cleRetour);
+          global.location.href = url('index') + '?motif=session-cloturee';
+          return;
+        }
+        if (M) M.changerEtat('active');
         S.log('Déverrouillage de session', 'M14', 'Session', s.identifiant || s.nom, null,
           { retour: retour || null });
         /* Le drapeau est à usage unique : sans cela, un rechargement de cet

@@ -5,11 +5,14 @@ import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
+import 'dart:io' show Platform;
+
 import '../../core/identifiants.dart';
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
 import 'acc_gabarit.dart';
+import 'acc_registre_sessions.dart';
 import 'acc_session.dart';
 
 /// Les écrans d'accès SANS COQUE (`auth.js`) : connexion, mot de passe oublié, réinitialisation, double facteur, écran verrouillé, pages d'erreur.
@@ -120,6 +123,18 @@ class _EtatConnexion extends State<EcranConnexion> {
     });
   }
 
+  bool _motifLu = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Une session CLOTURÉE par un administrateur renvoie ici, et le DIT (comme la maquette : `?motif=session-cloturee`).
+    if (!_motifLu) {
+      _motifLu = true;
+      if (ContexteAutonome.of(context).session?.motifFermeture == 'cloturee') _erreur = accMessageSessionCloturee;
+    }
+  }
+
   Set<String> _rolesArchives(ContexteAutonome x) => {
         for (final r in x.magasin.collection('rbac').toutes)
           if ('${r['statut']}' == 'archive') '${r['role']}'
@@ -175,6 +190,18 @@ class _EtatConnexion extends State<EcranConnexion> {
     final s = x.session;
     if (s != null) {
       s.connecter(c);
+      // Le REGISTRE des sessions : une fiche nouvelle à chaque connexion (jamais la réouverture d'une session clôturée), un contrôle de clôture au
+      // prochain geste, le verrou qui suspend et reprend la fiche.
+      final reg = RegistreSessions.de(m);
+      final id = reg.ouvrir(identifiant: c.identifiant, nomComplet: c.nom, role: c.role, poste: Platform.localHostname, maintenant: x.maintenant);
+      s.sessionId = id;
+      s.estCloturee = reg.estCloturee;
+      s.surEtat = (i, e) => reg.changerEtat(i, e, x.maintenant);
+      reg.surCloturePropre = s.fermerParCloture;
+      reg.appliquerDelaiVerrou = (d) => s.verrou.delai = d;
+      // Le délai d'inactivité de la politique de sécurité, quand l'administrateur l'a réglée.
+      final pol = m.collection('politiqueSecurite').actives.firstOrNull;
+      if (pol != null) s.verrou.delai = Duration(minutes: secPolitique(pol)['inactiviteMin']!);
     } else {
       x.aller(x.donnees?.matrice.accueil(c.role) ?? 'plan-du-site');
     }

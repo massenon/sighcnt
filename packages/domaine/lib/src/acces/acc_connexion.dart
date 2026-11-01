@@ -28,10 +28,15 @@ const String accMessageCompteArchive = 'Ce compte a été archivé : il n’ouvr
 
 /// Motifs consignés dans `tentativesConnexion` (RG-12) — ceux du serveur et de l'écran.
 const String accMotifIdentifiantInconnu = 'Identifiant inconnu';
+/// Un compte BLOQUÉ par l'administrateur (écran « Sécurité des utilisateurs ») n'ouvre pas de session : le même texte que le serveur de la maquette.
+const String accMessageCompteBloque = 'Ce compte a été bloqué par l’administrateur système : il n’ouvre plus de session tant qu’il n’est pas débloqué.';
+/// Ce que la connexion dit quand la session a été CLOTURÉE par un administrateur (même texte que la maquette, `?motif=session-cloturee`).
+const String accMessageSessionCloturee = 'Votre session a été clôturée par un administrateur. Elle ne se rouvre pas : reconnectez-vous pour en ouvrir une nouvelle.';
+const String accMotifCompteBloque = 'Compte bloqué par l’administrateur';
 const String accMotifCompteArchive = 'Compte archivé — accès retiré par l’administrateur';
 const String accMotifRoleArchive = 'Rôle archivé — accès retiré par l’administrateur';
 
-enum AccIssue { accepte, refuse, compteArchive, roleArchive }
+enum AccIssue { accepte, refuse, compteArchive, roleArchive, compteBloque }
 
 class AccCompte {
   const AccCompte({required this.identifiant, required this.nom, required this.role, this.mfa = false, this.agent});
@@ -94,6 +99,9 @@ AccDecision accEvaluer({
       agent: agentDepuisCompte(u, personnel: personnel, soignants: soignants));
   if ('${u['statut'] ?? 'actif'}' != 'actif') {
     return AccDecision(AccIssue.compteArchive, compte: compte, message: accMessageCompteArchive, motif: accMotifCompteArchive);
+  }
+  if (u['bloque'] == true) {
+    return AccDecision(AccIssue.compteBloque, compte: compte, message: accMessageCompteBloque, motif: accMotifCompteBloque);
   }
   if (rolesArchives.contains(role)) {
     final l = libelleRole(role);

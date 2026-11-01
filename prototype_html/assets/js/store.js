@@ -3590,7 +3590,7 @@
     'fichesPoste', 'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
     'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel',
     /* Comptes, droits et activation des modules */
-    'utilisateurs', 'rbac', 'modulesActifs',
+    'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées — régimes, primes, barème */
     'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
@@ -3887,6 +3887,7 @@
     evenements: 'M10|Événements du personnel', participations: 'M10|Participations aux événements',
     grillePrimes: 'M10|Grille des primes NS 132', historiquePrimes: 'M10|Versions antérieures de la grille des primes', beneficiairesPrimes: 'M10|Bénéficiaires des primes fixes',
     rbac: 'M14|Rôles et permissions', tentativesConnexion: 'M14|Tentatives de connexion refusées',
+    sessionsUtilisateur: 'M14|Sessions de poste', politiqueSecurite: 'M14|Politique de sécurité des comptes',
     courriers: 'M13|Courriers', reunions: 'M13|Réunions',
     /* Une clé déclarée deux fois dans un littéral écrase la première EN
        SILENCE : « evenements » désignait ici les événements de M13 et effaçait

@@ -621,6 +621,10 @@
    "titre": "Sauvegardes & restauration",
    "description": "Sauvegardes quotidiennes locales, sauvegardes hebdomadaires externalisées et procédure de restauration."
   },
+  "m14-securite-utilisateurs": {
+   "titre": "Sécurité des utilisateurs",
+   "description": "Politique de mot de passe, verrouillage, double facteur, comptes bloqués et tentatives de connexion."
+  },
   "m14-sessions": {
    "titre": "Sessions actives",
    "description": "Connexions en cours, postes de travail et délai d’inactivité avant verrouillage."
