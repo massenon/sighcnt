@@ -5,6 +5,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../donnees/magasin.dart';
+import 'referentiel_barre.dart';
 
 /// Ce que la coque sait de la maquette : le manifeste de navigation, la matrice des droits et l'état de parité de chaque
 /// écran. Tout est ENGENDRÉ (`prototype_html/build/gen-poste-assets.js`) ; rien n'est écrit à la main.
@@ -14,8 +15,21 @@ class DonneesNavigation {
       required this.matrice,
       required Map<String, Map<String, Object?>> parite,
       this.referenceRbac,
-      this.referenceModules})
-      : _parite = parite;
+      this.referenceModules,
+      this.barre = const ReferentielBarre(),
+      Map<String, Map<String, bool>> modulesVoir = const {}})
+      : _parite = parite,
+        _modulesVoir = modulesVoir;
+
+  /// Droit de VOIR un module, par rôle, tel que la matrice engendrée le porte (`matriceModules` de `rbac.json`). Sert à décider si la page d'accueil d'un module
+  /// (hub) est ouverte au rôle ; une décision prise à chaud sur un module n'y est pas relue (les écrans, eux, suivent la matrice à chaud).
+  final Map<String, Map<String, bool>> _modulesVoir;
+
+  /// Le module est-il ouvert au rôle ? Inconnu (matrice sans modules) : réputé ouvert, ce sont alors les écrans qui décident.
+  bool moduleVisible(String role, String code) => _modulesVoir.isEmpty ? true : (_modulesVoir[role]?[code] ?? false);
+
+  /// Rubriques de la recherche globale et actions rapides de la barre supérieure (engendrées depuis `nav.js`).
+  final ReferentielBarre barre;
   final Manifeste manifeste;
 
   /// La matrice EN FORCE : celle de `rbac.json` (engendrée), ou la matrice superposée à chaud par [aChaud].
@@ -28,7 +42,7 @@ class DonneesNavigation {
 
   /// Les mêmes données de navigation sous une autre matrice (manifeste, parité et références partagés).
   DonneesNavigation avecMatrice(MatriceDroits m) =>
-      DonneesNavigation(manifeste: manifeste, matrice: m, parite: _parite, referenceRbac: referenceRbac, referenceModules: referenceModules);
+      DonneesNavigation(manifeste: manifeste, matrice: m, parite: _parite, referenceRbac: referenceRbac, referenceModules: referenceModules, barre: barre, modulesVoir: _modulesVoir);
 
   /// DROITS À CHAUD (A4) : la matrice engendrée reste la BASE ; les fiches de la collection `rbac` (surcharges par rôle, module et écran, rôles
   /// archivés ou créés) et de `modulesActifs` (activités fermées) du magasin la superposent, comme `N.can()` de la maquette, pour tout ce qui a changé
@@ -55,7 +69,8 @@ class DonneesNavigation {
       required String rbac,
       required String parite,
       String? fichesRbac,
-      String? fichesModules}) {
+      String? fichesModules,
+      String? rubriques}) {
     final p = <String, Map<String, Object?>>{
       for (final e in ((jsonDecode(parite) as Map)['ecrans'] as List))
         '${(e as Map)['id']}': e.cast<String, Object?>(),
@@ -65,9 +80,11 @@ class DonneesNavigation {
           (jsonDecode(manifeste) as Map).cast<String, Object?>()),
       matrice: MatriceDroits.depuisJson(
           (jsonDecode(rbac) as Map).cast<String, Object?>()),
+      modulesVoir: _modulesVoirDe(rbac),
       parite: p,
       referenceRbac: _fiches(fichesRbac),
       referenceModules: _fiches(fichesModules),
+      barre: rubriques == null ? const ReferentielBarre() : ReferentielBarre.depuisJson(rubriques),
     );
   }
 
@@ -77,6 +94,7 @@ class DonneesNavigation {
         parite: await rootBundle.loadString('assets/donnees/parite.json'),
         fichesRbac: await rootBundle.loadString('assets/donnees/jeu/rbac.json'),
         fichesModules: await rootBundle.loadString('assets/donnees/jeu/modulesActifs.json'),
+        rubriques: await rootBundle.loadString('assets/donnees/rubriques.json'),
       );
 
   /// Pour les tests : lit les mêmes fichiers engendrés sur le disque.
@@ -87,7 +105,19 @@ class DonneesNavigation {
         parite: File('$dossier/parite.json').readAsStringSync(),
         fichesRbac: _lireSiPresent('$dossier/jeu/rbac.json'),
         fichesModules: _lireSiPresent('$dossier/jeu/modulesActifs.json'),
+        rubriques: _lireSiPresent('$dossier/rubriques.json'),
       );
+
+  static Map<String, Map<String, bool>> _modulesVoirDe(String rbac) {
+    final m = (jsonDecode(rbac) as Map)['matriceModules'];
+    if (m is! Map) return const {};
+    return {
+      for (final r in m.entries)
+        '${r.key}': {
+          for (final c in (r.value as Map).entries) '${c.key}': (c.value as Map)['voir'] == true || (c.value as Map)['horsMatrice'] == true
+        }
+    };
+  }
 
   static String? _lireSiPresent(String chemin) => File(chemin).existsSync() ? File(chemin).readAsStringSync() : null;
 }

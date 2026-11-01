@@ -617,19 +617,17 @@
   }
 
   /* --- Recherche globale --------------------------------------------------- */
-  function openSearch() {
-    var input = el('input.input', { type: 'search', placeholder: 'Patient, produit, employé, écran, acte, analyse, compte…', autocomplete: 'off' });
-    var results = el('div.mt-3.max-h-\\[24rem\\].overflow-y-auto');
-
-    function search() {
-      var q = input.value.trim();
-      C.clear(results);
-      if (q.length < 2) {
-        results.appendChild(el('p.px-1.py-6.text-center.text-xs.text-slate-400', { text: 'Saisir au moins 2 caractères.' }));
-        return;
-      }
-      var groups = [];
-      var role = (S.session() || {}).role;
+  /**
+   * LA RECHERCHE GLOBALE, SANS INTERFACE. Elle rend les groupes de résultats d'une
+   * requête pour un rôle : `[[titre, [{label, detail, icon, ecran, onglet}]]]`. Le modal
+   * ne fait que les peindre ; la cible (poste Flutter) les lit tels quels, ce qui
+   * permet de les comparer résultat par résultat (vecteurs).
+   * Un résultat ne mène jamais où le profil n'a pas accès (RG-13).
+   */
+  function rechercher(q, role) {
+    q = String(q || '').trim();
+    if (q.length < 2) return [];
+    var groups = [];
       /* Un résultat ne doit jamais mener où le profil n'a pas accès (RG-13). */
       function autorise(id) {
         var e = N.get(id);
@@ -644,7 +642,7 @@
         return !e.standalone && C.matches(e.label + ' ' + e.moduleLabel, q) && autorise(e.id);
       }).slice(0, 6);
       if (ecrans.length) groups.push(['Écrans', ecrans.map(function (e) {
-        return { label: e.label, detail: e.moduleLabel, icon: e.icon, go: function () { go(e.id); } };
+        return { label: e.label, detail: e.moduleLabel, icon: e.icon, ecran: e.id };
       })]);
 
       /* Rubriques : la recherche ouvre la page ET l'onglet concerné. */
@@ -654,8 +652,8 @@
       if (rubriques.length) groups.push(['Rubriques', rubriques.map(function (r) {
         var e = N.get(r.ecran);
         return {
-          label: r.label, detail: (e ? e.label : r.ecran) + ' — onglet', icon: e ? e.icon : 'panel-top',
-          go: function () { go(r.ecran, { onglet: r.onglet }); },
+          label: r.label, detail: (e ? e.label : r.ecran) + ', onglet', icon: e ? e.icon : 'panel-top',
+          ecran: r.ecran, onglet: r.onglet,
         };
       })]);
 
@@ -663,22 +661,22 @@
         var pats = S.collection('patients').active().filter(function (p) {
           return C.matches(p.nom + ' ' + p.prenom + ' ' + p.code, q);
         }).slice(0, 5);
-        if (pats.length) groups.push(['Patients', pats.map(function (p) {
-          return { label: p.nom + ' ' + p.prenom, detail: p.code + ' — ' + p.quartier, icon: 'user', go: function () { go('m1-patients'); } };
+        if (pats.length && autorise('m1-patients')) groups.push(['Patients', pats.map(function (p) {
+          return { label: p.nom + ' ' + p.prenom, detail: p.code + ', ' + p.quartier, icon: 'user', ecran: 'm1-patients' };
         })]);
 
         var prods = S.collection('produits').active().filter(function (p) {
           return C.matches(p.designation + ' ' + p.code, q);
         }).slice(0, 5);
-        if (prods.length) groups.push(['Produits', prods.map(function (p) {
-          return { label: p.designation, detail: p.code + ' — stock ' + p.stock + ' ' + p.unite, icon: 'pill', go: function () { go('m6-produits'); } };
+        if (prods.length && autorise('m6-produits')) groups.push(['Produits', prods.map(function (p) {
+          return { label: p.designation, detail: p.code + ', stock ' + p.stock + ' ' + p.unite, icon: 'pill', ecran: 'm6-produits' };
         })]);
 
         var emps = S.collection('personnel').active().filter(function (e) {
           return C.matches(e.nomComplet + ' ' + e.matricule + ' ' + e.poste, q);
         }).slice(0, 5);
-        if (emps.length) groups.push(['Personnel', emps.map(function (e) {
-          return { label: e.nomComplet, detail: 'Mat. ' + e.matricule + ' — ' + e.poste, icon: 'id-card', go: function () { go('m10-personnel'); } };
+        if (emps.length && autorise('m10-personnel')) groups.push(['Personnel', emps.map(function (e) {
+          return { label: e.nomComplet, detail: 'Mat. ' + e.matricule + ', ' + e.poste, icon: 'id-card', ecran: 'm10-personnel' };
         })]);
 
         /* Les deux prix de la grille, en une ligne. C'est la question du
@@ -705,8 +703,8 @@
         if (actes.length && autorise('cfg-tarifs')) groups.push(['Actes & prestations', actes.map(function (a) {
           return {
             label: a.libelle, icon: 'stethoscope',
-            detail: a.secteur + ' — ' + tarifCourt(a),
-            go: function () { go('cfg-tarifs', { onglet: 'actes' }); },
+            detail: a.secteur + ', ' + tarifCourt(a),
+            ecran: 'cfg-tarifs', onglet: 'actes',
           };
         })]);
 
@@ -716,8 +714,8 @@
         if (anas.length && autorise('cfg-tarifs')) groups.push(['Analyses', anas.map(function (a) {
           return {
             label: a.designation, icon: 'flask-conical',
-            detail: a.categorie + ' — ' + C.money(a.prix, false) + ' · ' + a.echantillon,
-            go: function () { go('cfg-tarifs', { onglet: 'analyses' }); },
+            detail: a.categorie + ', ' + C.money(a.prix, false) + ' · ' + a.echantillon,
+            ecran: 'cfg-tarifs', onglet: 'analyses',
           };
         })]);
 
@@ -725,17 +723,32 @@
           return C.matches(a.nom + ' ' + (a.sigle || ''), q);
         }).slice(0, 4);
         if (assur.length && autorise('m9-compagnies')) groups.push(['Assureurs', assur.map(function (a) {
-          return { label: a.nom, detail: 'Convention ' + (a.convention || '—'), icon: 'shield', go: function () { go('m9-compagnies'); } };
+          return { label: a.nom, detail: 'Convention ' + (a.convention || 'non renseignée'), icon: 'shield', ecran: 'm9-compagnies' };
         })]);
 
         var cpts = S.collection('comptes').active().filter(function (c) {
           return C.matches(c.numero + ' ' + c.intitule, q);
         }).slice(0, 4);
         if (cpts.length && autorise('m12-plan-comptable')) groups.push(['Plan comptable', cpts.map(function (c) {
-          return { label: c.numero + ' — ' + c.intitule, detail: 'SYSCOHADA', icon: 'book-open', go: function () { go('m12-plan-comptable'); } };
+          return { label: c.numero + ' : ' + c.intitule, detail: 'SYSCOHADA', icon: 'book-open', ecran: 'm12-plan-comptable' };
         })]);
       } catch (e) { /* recherche partielle acceptable */ }
 
+    return groups;
+  }
+
+  function openSearch() {
+    var input = el('input.input', { type: 'search', placeholder: 'Patient, produit, employé, écran, acte, analyse, compte…', autocomplete: 'off' });
+    var results = el('div.mt-3.max-h-\\[24rem\\].overflow-y-auto');
+
+    function search() {
+      var q = input.value.trim();
+      C.clear(results);
+      if (q.length < 2) {
+        results.appendChild(el('p.px-1.py-6.text-center.text-xs.text-slate-400', { text: 'Saisir au moins 2 caractères.' }));
+        return;
+      }
+      var groups = rechercher(q, (S.session() || {}).role);
       if (!groups.length) {
         results.appendChild(U.empty('Aucun résultat pour « ' + q + ' ».', { icon: 'search-x' }));
         return;
@@ -743,7 +756,7 @@
       groups.forEach(function (g) {
         results.appendChild(el('p.px-1.pb-1.pt-3.text-\\[10px\\].font-semibold.uppercase.tracking-wider.text-slate-400', { text: g[0] }));
         g[1].forEach(function (r) {
-          var row = el('button.flex.w-full.items-center.gap-3.rounded-lg.px-2.py-2.text-left.transition-colors.hover\\:bg-slate-100', { type: 'button', onclick: r.go });
+          var row = el('button.flex.w-full.items-center.gap-3.rounded-lg.px-2.py-2.text-left.transition-colors.hover\\:bg-slate-100', { type: 'button', onclick: function () { go(r.ecran, r.onglet ? { onglet: r.onglet } : undefined); } });
           row.appendChild(el('span.grid.h-8.w-8.shrink-0.place-items-center.rounded-lg.bg-slate-100.text-slate-500', null, C.icon(r.icon, 'h-4 w-4')));
           row.appendChild(el('span.min-w-0.flex-1', null, [
             el('span.block.truncate.text-sm.font-medium.text-slate-800', { text: r.label }),
@@ -763,27 +776,20 @@
   }
 
   /* --- Actions rapides ----------------------------------------------------- */
-  function openQuickActions() {
-    var actions = [
-      ['Nouveau dossier patient', 'user-plus', 'm1-patients'],
-      ['Patient externe — analyses', 'user-round-plus', 'm1-externe'],
-      ['Nouvelle consultation', 'stethoscope', 'm2-consultations'],
-      ['Nouvelle admission', 'bed-double', 'm3-admissions'],
-      ['Nouvelle facture', 'receipt', 'm8-facturation'],
-      ['Encaisser un paiement', 'banknote', 'm8-paiements'],
-      ['Assurés & cartes', 'id-card', 'm9-assures'],
-      ['Demande d’analyse', 'flask-conical', 'm5-demandes'],
-      ['Mouvement de stock', 'package', 'm6-mouvements'],
-      ['Bon d’expression de besoins', 'clipboard-list', 'm7-besoins'],
-      ['Éditer un état', 'printer', 'rapports-bibliotheque'],
-    ];
-    /* Un raccourci vers un écran interdit promet une porte fermée : la liste
-       est filtrée par les droits du profil, comme le méga-menu. */
-    var session = S.session() || {};
-    actions = actions.filter(function (a) {
+  /* Les actions rapides se déclarent au manifeste (nav.js : N.ACTIONS_RAPIDES), avec les rubriques de recherche. */
+  var ACTIONS_RAPIDES = N.ACTIONS_RAPIDES;
+
+  /** Les actions rapides OUVERTES à un rôle : la liste ci-dessus, filtrée par les droits (un raccourci vers un écran interdit promet une porte fermée). */
+  function actionsRapides(role) {
+    return ACTIONS_RAPIDES.filter(function (a) {
       var e = N.get(a[2]);
-      return e && N.can(session.role, e);
+      return e && N.can(role, e);
     });
+  }
+
+  function openQuickActions() {
+    var session = S.session() || {};
+    var actions = actionsRapides(session.role);
     var grid = el('div.grid.grid-cols-1.gap-2.sm\\:grid-cols-2');
     if (!actions.length) {
       U.modal({
@@ -815,7 +821,11 @@
    *
    * Il lit désormais le moteur, qui route par poste et par RBAC.
    */
-  function openNotifications() {
+  function openNotifications(opts) {
+    /* Branchée sur un clic, la fonction reçoit l'événement : seul un objet
+       `{ ouverture: true }` change son comportement. */
+    var ouverture = !!(opts && opts.ouverture === true);
+    var titreModal = ouverture ? 'À votre arrivée' : 'Notifications';
     var NT = global.SIGH.notifications;
     var body = el('div');
 
@@ -834,10 +844,12 @@
       var actuelles = NT.collecter();
 
       if (!actuelles.length) {
+        /* UN MODAL VIDE ET MUET EST INTERDIT : à l'ouverture de session, rien à
+           faire se DIT par une phrase. */
         host.appendChild(el('div.flex.items-start.gap-3.rounded-lg.border.border-success-200.bg-success-50.p-3', null, [
           el('span.shrink-0.text-success-600', null, C.icon('check-circle-2', 'h-5 w-5')),
           el('div', null, [
-            el('p.text-sm.font-medium.text-success-900', { text: 'Aucune alerte en cours' }),
+            el('p.text-sm.font-medium.text-success-900', { text: ouverture ? 'Rien ne vous attend' : 'Aucune alerte en cours' }),
             el('p.text-xs.text-success-700', { text: 'Rien ne requiert votre attention à ce poste.' }),
           ]),
         ]));
@@ -846,9 +858,24 @@
 
       /* Métier et système restent SÉPARÉS : ce sont deux natures d'information,
          et les mélanger ferait chercher une panne de son parmi les ruptures de
-         stock. C'est une classification d'affichage, pas une règle métier. */
-      [['metier', 'Alertes métier'], ['systeme', 'Système']].forEach(function (grp) {
-        var sous = actuelles.filter(function (n) { return n.categorie === grp[0]; });
+         stock. C'est une classification d'affichage, pas une règle métier.
+         À l'ouverture de session, le métier se range par FAMILLE (stock,
+         comptabilité, à valider, laboratoire…) : l'agent lit ce qu'il a à faire
+         poste par poste. */
+      var groupes = [];
+      if (ouverture) {
+        var domaines = [];
+        actuelles.filter(function (n) { return n.categorie === 'metier'; }).forEach(function (n) {
+          if (domaines.indexOf(n.domaine) < 0) domaines.push(n.domaine);
+        });
+        domaines.forEach(function (d) { groupes.push([function (n) { return n.categorie === 'metier' && n.domaine === d; }, d]); });
+        groupes.push([function (n) { return n.categorie === 'systeme'; }, 'Système']);
+      } else {
+        groupes = [[function (n) { return n.categorie === 'metier'; }, 'Alertes métier'],
+          [function (n) { return n.categorie === 'systeme'; }, 'Système']];
+      }
+      groupes.forEach(function (grp) {
+        var sous = actuelles.filter(grp[0]);
         if (!sous.length) return;
         host.appendChild(el('p.mt-2.text-\\[10px\\].font-semibold.uppercase.tracking-wide.text-slate-400',
           { text: grp[1] + ' — ' + sous.length }));
@@ -907,8 +934,24 @@
         'Paramétrer'),
     ]));
 
-    m = U.modal({ title: 'Notifications', size: 'md', body: body });
+    m = U.modal({ title: titreModal, size: 'md', body: body });
     U.icons(body);
+  }
+
+  /* Ouverture de session : le modal de notifications s'ouvre de lui-même, UNE
+     fois, sur la page d'accueil du profil. Le drapeau est posé par la
+     connexion (auth.js) ; le consommer ici garantit qu'un simple rechargement
+     ne le rouvre pas. */
+  function notificationsDOuverture() {
+    var cle = 'sigh-cnt:notifs-ouverture';
+    var pose = false;
+    try { pose = global.sessionStorage.getItem(cle) === '1'; global.sessionStorage.removeItem(cle); } catch (e) { pose = false; }
+    if (!pose) return;
+    /* Les alertes du planificateur serveur arrivent par un sondage : on l'attend
+       (sinon le modal s'ouvrirait « vide » alors que la cloche en porte dix). */
+    var NT = global.SIGH.notifications;
+    function ouvrir() { openNotifications({ ouverture: true }); }
+    if (NT && NT.sonderServeur) NT.sonderServeur().then(ouvrir, ouvrir); else ouvrir();
   }
 
   /* --- Profil -------------------------------------------------------------- */
@@ -1015,8 +1058,12 @@
     var session = S.session();
     crumbs.appendChild(el('a.hover\\:text-navy-700', { href: href(N.ROLES[session.role].home), text: 'Accueil' }));
     crumbs.appendChild(C.icon('chevron-right', 'h-3 w-3 text-slate-300'));
-    crumbs.appendChild(el('span', { text: entry.domain }));
-    crumbs.appendChild(C.icon('chevron-right', 'h-3 w-3 text-slate-300'));
+    /* Le domaine ACCUEIL est déjà nommé par le premier maillon : le répéter
+       donnait « Accueil > Accueil > … » (retour de terrain du 01/11/2026). */
+    if (entry.domain !== 'Accueil') {
+      crumbs.appendChild(el('span', { text: entry.domain }));
+      crumbs.appendChild(C.icon('chevron-right', 'h-3 w-3 text-slate-300'));
+    }
     /* L'intitulé du module ouvre sa page d'accueil : on circule d'un écran à
        l'autre du module sans repasser par le menu. */
     var hub = N.get(N.hubId(entry.module));
@@ -1406,6 +1453,7 @@
        * consomme UNE fois, comme le drapeau de repli du ruban.
        * ================================================================== */
       U.consommerMessageDiffere();
+      notificationsDOuverture();
 
       /* Raccourcis clavier — postes à forte saisie (CDCT §10.3). */
       ecoute(document, 'keydown', function (e) {
@@ -1451,6 +1499,7 @@
   global.SIGH.app = {
     href: href, go: go, base: base,
     openSearch: openSearch, openProfile: openProfile, openNotifications: openNotifications,
+    rechercher: rechercher, actionsRapides: actionsRapides,
     droits: droitsCourants,
     entry: function () { return PAGE ? N.get(PAGE.id) : null; },
     VERROU_RETOUR: VERROU_RETOUR, VERROU_DELAI: VERROU_DELAI,

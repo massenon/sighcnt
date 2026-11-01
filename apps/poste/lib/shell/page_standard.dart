@@ -14,6 +14,7 @@ class PageStandard extends StatelessWidget {
       this.module,
       this.description,
       this.regle,
+      this.surFil = const {},
       this.actions = const [],
       required this.child,
       this.defilable = true});
@@ -22,6 +23,9 @@ class PageStandard extends StatelessWidget {
   final String? module;
   final String? description;
   final String? regle;
+
+  /// Maillons du fil qui mènent quelque part (indice → geste) : « Accueil », l'intitulé du module.
+  final Map<int, VoidCallback> surFil;
   final List<Widget> actions;
   final Widget child;
 
@@ -33,12 +37,18 @@ class PageStandard extends StatelessWidget {
     final entete = <Widget>[
       Row(key: const Key('fil-ariane'), children: [
         for (var i = 0; i < fil.length; i++) ...[
-          Text(fil[i],
-              style: TextStyle(
-                  color: i == fil.length - 1
-                      ? JetonsShell.slate700
-                      : JetonsShell.slate500,
-                  fontSize: 12)),
+          if (surFil[i] != null)
+            InkWell(
+                key: Key('fil-lien:$i'),
+                onTap: surFil[i],
+                child: Text(fil[i], style: const TextStyle(color: JetonsShell.slate500, fontSize: 12)))
+          else
+            Text(fil[i],
+                style: TextStyle(
+                    color: i == fil.length - 1
+                        ? JetonsShell.slate700
+                        : JetonsShell.slate500,
+                    fontSize: 12)),
           if (i < fil.length - 1)
             const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 6),

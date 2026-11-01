@@ -241,6 +241,9 @@
             poste: (N.ROLES[u.role] && N.ROLES[u.role].label) || u.role,
             identifiant: u.identifiant, fonction: u.fonction, secteur: u.secteur,
           });
+          /* La connexion demande l'ouverture du centre de notifications sur la
+             page d'accueil du profil (consommé une seule fois par app.js). */
+          try { global.sessionStorage.setItem('sigh-cnt:notifs-ouverture', '1'); } catch (e) { /* sans effet */ }
           global.location.href = url((N.ROLES[u.role] && N.ROLES[u.role].home) || 'dash-admin');
         }).catch(function () {
           submit.disabled = false;

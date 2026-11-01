@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sigh_sync/sigh_sync.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'donnees/magasin.dart';
 import 'core/config_poste.dart';
@@ -13,6 +14,7 @@ import 'mere/client_mere.dart';
 import 'modules/auth/acc_session.dart';
 import 'modules/registre.dart';
 import 'shell/coque.dart';
+import 'shell/fenetre_poste.dart';
 import 'sync/etat_sync.dart';
 import 'sync/moteur_fileul.dart';
 import 'sync/transcription_mobile.dart';
@@ -41,6 +43,10 @@ const String dossierDonnees =
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // La fenêtre pilotable (plein écran de la barre supérieure) : un poste sans fenêtre native n'empêche pas le démarrage, le bouton le dira.
+  try {
+    await windowManager.ensureInitialized();
+  } catch (_) {}
   final stockage = StockageFichier('$dossierDonnees/poste.json');
   final activation = ActivationMere(
     stockage: stockage,
@@ -93,7 +99,11 @@ class SighPoste extends StatelessWidget {
       this.horloge,
       this.ecranInitial,
       this.session,
+      this.fenetre,
       this.parametres = const {}});
+
+  /// La fenêtre du poste (plein écran) ; absente = la fenêtre réelle.
+  final FenetrePoste? fenetre;
 
   /// Session du poste (connexion, verrou d'inactivité) ; absente = l'agent est réputé connecté sous le rôle de la configuration.
   final SessionPoste? session;
@@ -147,6 +157,7 @@ class SighPoste extends StatelessWidget {
       donnees: donnees,
       ecranInitial: ecranInitial,
       session: session,
+      fenetre: fenetre,
       parametres: parametres,
       ecrans: ecransPortes(controleur: ctl, client: cl),
       magasin: magasin,

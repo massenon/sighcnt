@@ -90,6 +90,39 @@
    * d'affichage, pas une règle. Elle permet à un poste de filtrer sans que le
    * moteur ait à connaître le métier.
    * ======================================================================== */
+  /* Quels rôles tiennent un POSTE de notification. `null` = tout le monde
+     (« tous » ou poste non précisé) ; un poste inconnu est lu comme un rôle. */
+  var POSTES_NOTIF = {
+    tous: null,
+    caisse: ['caissier'],
+    comptable: ['comptable', 'assistant_comptable', 'aide_comptable', 'da'],
+    direction: ['direction', 'da', 'dm'],
+    imagerie: ['echographiste'],
+    laboratoire: ['laborantin'],
+    prescripteur: ['medecin', 'chirurgien', 'anesthesiste', 'dm'],
+    stock: ['stock', 'pharmacien', 'da'],
+    salle_soins: ['infirmier', 'aide_soignant', 'surveillant'],
+    hospitalisation: ['infirmier', 'aide_soignant', 'surveillant', 'medecin'],
+  };
+  function rolesDuPoste(poste) {
+    if (!poste || poste === 'tous') return null;
+    return POSTES_NOTIF[poste] === undefined ? [poste] : POSTES_NOTIF[poste];
+  }
+  /* `PR.notifier` écrit « haute » ou « normale » ; le moteur raisonne en critique, important, information. */
+  function prioriteDePoste(n) {
+    if (n.priorite === 'critique' || n.priorite === 'important' || n.priorite === 'information') return n.priorite;
+    if (n.priorite === 'haute' || n.ton === 'danger') return 'critique';
+    return 'information';
+  }
+  /* L'écran où se traite chaque type de notification de poste. */
+  var LIENS_NOTIF = {
+    demande_imagerie: 'm2-imagerie-demandes',
+    prescription_soins: 'm2-salle-soins',
+    resultat_disponible: 'm5-resultats',
+    resultat_rectifie: 'm5-resultats',
+    cloture: 'm12-cloture',
+  };
+
   var SOURCES = [
     {
       code: 'stock_seuil', categorie: 'metier', domaine: 'Stock',
@@ -103,9 +136,9 @@
             return {
               cle: 'stock:' + p.id,
               priorite: p.stock <= 0 ? 'critique' : 'important',
-              titre: p.designation + ' — ' + C.num(p.stock) + ' en stock',
+              titre: p.designation + ' : ' + C.num(p.stock) + ' en stock',
               detail: 'Seuil d’alerte fixé à ' + C.num(p.seuilAlerte) + '. Établir un bon '
-                + 'de commande — validation de la Direction requise (RG-04).',
+                + 'de commande, validation de la Direction requise (RG-04).',
               lien: 'm6-alertes',
               postes: ['stock', 'pharmacien', 'caissier', 'da'],
             };
@@ -122,8 +155,8 @@
               cle: 'lot:' + l.id,
               priorite: l.statut === 'perime' ? 'critique' : 'important',
               titre: l.statut === 'perime'
-                ? 'Lot périmé — ' + (l.produit || l.numero)
-                : 'Péremption proche — ' + (l.produit || l.numero),
+                ? 'Lot périmé : ' + (l.produit || l.numero)
+                : 'Péremption proche : ' + (l.produit || l.numero),
               detail: l.statut === 'perime'
                 ? 'À sortir du rayon et à déclarer en perte.'
                 : 'Appliquer le principe FEFO (RG-05).',
@@ -162,7 +195,7 @@
             return {
               cle: 'fisc:' + e.id,
               priorite: 'critique',
-              titre: (e.libelle || e.obligation) + ' — échéance dépassée',
+              titre: (e.libelle || e.obligation) + ' : échéance dépassée',
               detail: 'Échéance au ' + C.dateFR(e.echeance) + '. Une pénalité court.',
               lien: 'm12-echeances',
               postes: ['comptable', 'da', 'assistant_comptable', 'direction'],
@@ -189,7 +222,7 @@
           return {
             cle: 'creance:' + a.assureur,
             priorite: a.jours > a.seuil * 1.5 ? 'critique' : 'important',
-            titre: (nom ? nom.nom : a.assureur) + ' — ' + C.money(a.montant, false) + ' en souffrance',
+            titre: (nom ? nom.nom : a.assureur) + ' : ' + C.money(a.montant, false) + ' en souffrance',
             detail: C.num(a.nb) + ' facture(s), jusqu’à ' + a.jours + ' jours d’ancienneté '
               + '(seuil retenu : ' + a.seuil + ' jours). Cette créance pèse sur le besoin '
               + 'en fonds de roulement.',
@@ -212,7 +245,7 @@
               cle: 'labo-prel:' + d.id,
               priorite: 'important',
               titre: 'Analyse réglée, prélèvement à faire',
-              detail: (d.analyse || 'Analyse') + ' — le patient a payé, il peut être appelé.',
+              detail: (d.analyse || 'Analyse') + ' : le patient a payé, il peut être appelé.',
               lien: 'm5-prelevement',
               postes: ['laborantin'],
             };
@@ -229,9 +262,56 @@
               cle: 'labo-saisie:' + d.id,
               priorite: 'information',
               titre: 'Échantillon reçu, résultat à saisir',
-              detail: (d.analyse || 'Analyse') + ' — reçu le ' + C.dateFR(d.recuLaboLe) + '.',
+              detail: (d.analyse || 'Analyse') + ' : reçu le ' + C.dateFR(d.recuLaboLe) + '.',
               lien: 'm5-resultats',
               postes: ['laborantin'],
+            };
+          });
+      },
+    },
+    {
+      code: 'a_valider_besoins', categorie: 'metier', domaine: 'À valider',
+      /* Les bons d'expression de besoins qui attendent l'arbitrage de la DAF
+         (étapes « soumis » et « validation DA »). La source LIT l'étape que le
+         module a posée ; elle ne revalide rien. */
+      lire: function () {
+        return S.collection('besoins').active()
+          .filter(function (b) { return b.etape === 'soumis' || b.etape === 'validation_da'; })
+          .map(function (b) {
+            return {
+              cle: 'besoin:' + b.id,
+              priorite: 'important',
+              titre: 'Bon de besoins à valider' + (b.reference ? ' : ' + b.reference : ''),
+              detail: (b.service || 'Service') + (b.motif ? ' : ' + b.motif : '') + '. La validation est un geste de la DAF.',
+              lien: 'm7-besoins',
+              postes: ['da', 'direction'],
+            };
+          });
+      },
+    },
+    {
+      code: 'a_valider_ecritures', categorie: 'metier', domaine: 'À valider',
+      /* Une PIÈCE comptable en brouillon (deux lignes de même numéro) compte
+         pour une : le comptable valide des pièces, pas des lignes (RG-10). */
+      lire: function () {
+        var vues = {};
+        return S.collection('ecritures').active()
+          .filter(function (e) {
+            if (e.statut !== 'brouillon') return false;
+            var k = e.numero || e.pieceNumero || e.id;
+            if (vues[k]) return false;
+            vues[k] = true;
+            return true;
+          })
+          .map(function (e) {
+            var k = e.numero || e.pieceNumero || e.id;
+            return {
+              cle: 'ecr:' + k,
+              priorite: 'information',
+              titre: 'Pièce comptable en brouillon : ' + k,
+              detail: (e.libelle || 'Écriture') + '. La validation comptable reste un geste humain.',
+              lien: 'm12-ecritures',
+              postes: ['comptable', 'da', 'aide_comptable'],
             };
           });
       },
@@ -241,18 +321,22 @@
       /* Les notifications de POSTE, écrites par le moteur transactionnel
          (`PR.notifier`). Elles s'adressent à un poste et non à une personne :
          le prescripteur peut être en congé, c'est le service qui doit voir
-         passer l'information. */
+         passer l'information.
+         Le POSTE d'une notification (« imagerie », « salle_soins »…) n'est pas
+         un identifiant de rôle : `POSTES_NOTIF` dit quels rôles le tiennent,
+         et « tous » s'adresse à chacun. Le titre est le `libelle` que
+         `PR.notifier` écrit. */
       lire: function () {
         return S.collection('notifications').active()
           .filter(function (n) { return !n.lue; })
           .map(function (n) {
             return {
               cle: 'notif:' + n.id,
-              priorite: n.priorite || (n.ton === 'danger' ? 'critique' : 'important'),
-              titre: n.titre || n.message || 'Notification',
+              priorite: prioriteDePoste(n),
+              titre: n.titre || n.libelle || n.message || 'Notification',
               detail: n.detail || n.message || '',
-              lien: n.ecran || null,
-              postes: n.poste ? [n.poste] : null,
+              lien: n.ecran || LIENS_NOTIF[n.type] || null,
+              postes: rolesDuPoste(n.poste),
               enregistree: n.id,
             };
           });
@@ -354,7 +438,7 @@
 
   var LIBELLES_GROUPE = {
     stock_seuil: ['article(s) sous leur seuil d’alerte',
-      'Établir un bon de commande — validation de la Direction requise (RG-04).'],
+      'Établir un bon de commande, validation de la Direction requise (RG-04).'],
     lots_peremption: ['lot(s) périmés ou proches de la péremption',
       'Appliquer le principe FEFO (RG-05) et déclarer les pertes constatées.'],
     mecef_rejet: ['facture(s) rejetée(s) par la MECeF',
@@ -365,6 +449,10 @@
       'Les patients ont payé : ils peuvent être appelés en salle de prélèvement.'],
     labo_a_saisir: ['échantillon(s) reçu(s), résultat à saisir',
       'Le prescripteur ne verra rien tant que le résultat n’est pas validé.'],
+    creance_agee: ['créance(s) assureur en souffrance',
+      'Relancer chaque compagnie : ces créances pèsent sur le besoin en fonds de roulement.'],
+    a_valider_besoins: ['bon(s) de besoins à valider', 'Arbitrer chaque bon : validé, complément demandé ou rejeté avec son motif.'],
+    a_valider_ecritures: ['pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'],
     poste: ['notification(s) de poste', 'À consulter dans les écrans concernés.'],
   };
 
@@ -384,7 +472,7 @@
     ordre.forEach(function (cle) {
       var g = paquets[cle];
       if (g.length < SEUIL_REGROUPEMENT) { out = out.concat(g); return; }
-      var lib = LIBELLES_GROUPE[g[0].source] || [g[0].domaine.toLowerCase() + ' — alertes', ''];
+      var lib = LIBELLES_GROUPE[g[0].source] || [g[0].domaine.toLowerCase() + ' : alertes', ''];
       /* Une alerte groupée est acquittée si TOUS ses membres le sont — faire
          taire la ligne alors que quinze articles restent en rupture ferait
          perdre l'information au moment où elle compte — OU si la ligne
