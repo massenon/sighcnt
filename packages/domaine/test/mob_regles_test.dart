@@ -194,14 +194,53 @@ void main() {
       }
     });
 
-    test('l\'ordonnance est une pièce ÉMISE rattachée à la note, sa durée est bornée', () {
-      final o = mobChampsOrdonnance(
-          patient: patient, patientId: 'p1', noteId: 'n1', saisie: {'med': 'Paracétamol 500 mg', 'poso': '1 cp × 3/j', 'duree': '5'}, acteur: 'YENI M’PO Florent', fonction: 'medecin', maintenant: maintenant);
+    final produits = [
+      {'id': 'PRD0001', 'designation': 'PARACETAMOL 500 MG', 'unite': 'Boîte', 'categorie': 'medicament', 'prixAchat': 500, 'stockDetail': 10, 'stock': 40},
+      {'id': 'PRD0002', 'designation': 'AMOXICILLINE 500 MG', 'unite': 'Boîte', 'categorie': 'medicament', 'prixAchat': 1200, 'stockDetail': 2},
+      {'id': 'PRD0003', 'designation': 'GANTS', 'unite': 'Boîte', 'categorie': 'conso_medical', 'prixAchat': 300, 'stock': 5},
+      {'id': 'PRD0004', 'designation': 'ARCHIVE', 'categorie': 'medicament', 'statut': 'archive', 'stock': 5},
+      {'id': 'PRD0005', 'designation': 'RAYON', 'categorie': 'reactif', 'stock': 5},
+    ];
+    Map<String, Object?> ordonnance(Map<String, String> saisie) => mobChampsOrdonnance(
+        patient: patient, patientId: 'p1', noteId: 'n1', saisie: saisie, acteur: 'YENI M’PO Florent', fonction: 'medecin', maintenant: maintenant, produits: produits);
+
+    test('le catalogue du lot : médicaments et consommables médicaux, par ordre alphabétique, sans archivés ni réactifs ; le stock du jour est le détail', () {
+      final l = mobProduitsPrescriptibles(produits);
+      expect([for (final x in l) x.designation], ['AMOXICILLINE 500 MG', 'GANTS', 'PARACETAMOL 500 MG']);
+      expect(l.last.stock, 10, reason: 'le stock de la pharmacie (détail), pas celui du gros');
+      expect(l.last.prixAchat, 500);
+    });
+
+    test('l\'ordonnance est une pièce ÉMISE rattachée à la note : le médicament est CHOISI dans le catalogue, avec sa quantité, jamais un prix', () {
+      final o = ordonnance({'med': 'PRD0001', 'quantite': '2', 'poso': '1 cp × 3/j', 'duree': '5'});
       expect(o['emise'], isTrue);
       expect(o['noteId'], 'n1');
-      expect((o['lignes'] as List).single, {'medicament': 'Paracétamol 500 mg', 'posologie': '1 cp × 3/j', 'dureeJours': 5});
-      expect(() => mobChampsOrdonnance(patient: patient, patientId: 'p1', noteId: 'n1', saisie: {'med': 'x', 'poso': 'y', 'duree': '91'}, acteur: 'X', fonction: 'medecin', maintenant: maintenant),
-          throwsA(isA<RefusMobile>()));
+      expect((o['lignes'] as List).single, {'produitId': 'PRD0001', 'medicament': 'PARACETAMOL 500 MG', 'quantite': 2, 'posologie': '1 cp × 3/j', 'dureeJours': 5});
+      expect(o.toString().contains('prix'), isFalse, reason: 'le prix ne part pas du téléphone (RG-02 : le poste lit le catalogue)');
+    });
+
+    test('refus nommés : durée hors bornes, quantité absente ou non entière, médicament hors catalogue, stock insuffisant (RG-03)', () {
+      RefusMobile refus(Map<String, String> s) {
+        try {
+          ordonnance(s);
+        } on RefusMobile catch (e) {
+          return e;
+        }
+        fail('refus attendu pour $s');
+      }
+
+      expect(refus({'med': 'PRD0001', 'quantite': '1', 'poso': 'y', 'duree': '91'}).champs['duree'], 'La durée : valeur improbable (1 à 90).');
+      expect(refus({'med': 'PRD0001', 'quantite': '', 'poso': 'y', 'duree': '5'}).champs['quantite'], 'La quantité est obligatoire.');
+      expect(refus({'med': 'PRD0001', 'quantite': '1,5', 'poso': 'y', 'duree': '5'}).champs['quantite'], 'La quantité doit être un entier d’au moins 1.');
+      expect(refus({'med': 'PRD0001', 'quantite': '0', 'poso': 'y', 'duree': '5'}).champs['quantite'], 'La quantité doit être un entier d’au moins 1.');
+      expect(refus({'med': '', 'quantite': '1', 'poso': 'y', 'duree': '5'}).champs['med'], 'Le médicament est obligatoire.');
+      final inconnu = refus({'med': 'PRD9999', 'quantite': '1', 'poso': 'y', 'duree': '5'});
+      expect((inconnu.code, inconnu.geste), ('PRODUIT_INCONNU', 'Choisir le médicament dans la liste du lot'));
+      final archive = refus({'med': 'PRD0004', 'quantite': '1', 'poso': 'y', 'duree': '5'});
+      expect(archive.code, 'PRODUIT_INCONNU', reason: 'un produit archivé n\'est plus prescriptible');
+      final stock = refus({'med': 'PRD0002', 'quantite': '3', 'poso': 'y', 'duree': '5'});
+      expect((stock.code, stock.motif, stock.geste), ('STOCK_INSUFFISANT', 'Stock insuffisant pour « AMOXICILLINE 500 MG » : disponible : 2 ; demandé : 3 (RG-03).', 'Corriger la quantité ou demander un transfert du gros.'));
+      expect(ordonnance({'med': 'PRD0002', 'quantite': '2', 'poso': 'y', 'duree': '5'})['emise'], isTrue, reason: 'le stock exactement épuisé est accepté');
     });
   });
 

@@ -7,11 +7,12 @@
             <p class="vide">Aucun appareil appairé.</p>
         @else
             <table>
-                <thead><tr><th>Appareil</th><th>Identifiant</th><th>État</th><th>Dernier contact</th><th class="num">En attente</th><th></th></tr></thead>
+                <thead><tr><th>Appareil</th><th>Fonction</th><th>Identifiant</th><th>État</th><th>Dernier contact</th><th class="num">En attente</th><th></th></tr></thead>
                 <tbody>
                 @foreach($lignes as $l)
                     <tr wire:key="{{ $l->uuid }}">
                         <td>Mobile {{ \Illuminate\Support\Str::limit($l->uuid, 8, '') }}</td>
+                        <td>{{ $l->profil ? ($l->profil === 'reception' ? 'Réception de secours' : 'Soignant'.($l->fonction ? ' · '.str_replace('_', ' ', $l->fonction) : '')) : 'non précisé' }}</td>
                         <td><code title="{{ $l->uuid }}">{{ \Illuminate\Support\Str::limit($l->uuid, 13, '…') }}</code></td>
                         <td><span class="puce {{ $l->etat === 'actif' ? 'ok' : 'alerte' }}">{{ $l->etat === 'actif' ? 'Actif' : 'Révoqué' }}</span></td>
                         <td>{{ \App\Relais\Format::depuis($l->dernier ? (int) $l->dernier : null) }}</td>

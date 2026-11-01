@@ -342,6 +342,107 @@
     };
   }
 
+  /* ==========================================================================
+   * LA TRANSCRIPTION D'UNE PRESCRIPTION DU MOBILE (E1559, E1561, 01/11/2026)
+   * --------------------------------------------------------------------------
+   * Le téléphone d'un soignant écrit une PIÈCE `prescriptions` (famille C, émise, immuable) que la mère accepte et distribue ; elle ne devient une
+   * ordonnance, une facture de caisse et des files d'aval que lorsqu'un POSTE de la clinique la TRANSCRIT. La transcription passe par `PR.prescrire`
+   * (le même moteur que la fiche de consultation du poste) : rien n'est recalculé à côté. Ce qu'elle ajoute, ce sont les REFUS, nommés, parce qu'une
+   * pièce reçue du terrain n'a pas été saisie devant le catalogue de la clinique :
+   *   - le prix ne vient jamais du téléphone : prix d'achat du catalogue, sans marge (RG-02) ;
+   *   - la quantité sortie ne dépasse pas le stock de la pharmacie (RG-03) : refus nommé, jamais un stock négatif ;
+   *   - la carte d'assurance se lit À LA DATE de la prescription (RG-09), pas à celle de la transcription ;
+   *   - une pièce transcriptible est transcrite UNE FOIS (`pieceMobileId` sur l'ordonnance) ;
+   *   - une pièce qui ne l'est pas (patient inconnu, médicament hors catalogue, examen sans correspondance) est REFUSÉE EN LE DISANT : elle n'est ni
+   *     perdue ni transcrite à moitié.
+   * La phrase « Prescrire génère l'ordonnance et la facture de la caisse » du simulateur n'est donc vraie qu'APRÈS cette transcription.
+   * ======================================================================== */
+
+  /** Les six examens du simulateur mobile et l'analyse du catalogue du laboratoire qui les porte. PROPOSITION à valider par le biologiste : le
+      simulateur nomme des examens courants, le catalogue de la clinique les nomme autrement (« NFS COMPLETE (HEMOGRAMME) »). « Goutte épaisse / TDR
+      paludisme » est rapprochée de « GE-DP / FROTTIS SANGUIN » : le test de diagnostic rapide n'a pas de ligne propre au catalogue. */
+  var CORRESPONDANCE_EXAMENS_MOBILE = {
+    'NFS': 'L24',
+    'Glycémie': 'L14',
+    'Goutte épaisse / TDR paludisme': 'L16',
+    'CRP': 'L10',
+    'Test de grossesse (TBG)': 'L35',
+    'Créatininémie': 'L09',
+  };
+
+  function refusMobile(code, motif, geste) {
+    var e = new Error(motif); e.code = code; e.motif = motif; e.geste = geste; return e;
+  }
+
+  /** `transcrireMobile(piece, { note, session })` : transcrit une pièce `prescriptions` émise par un mobile (médicaments ou analyses). Lève un refus nommé
+      (`code`, `motif`, `geste`) sans rien écrire ; rend `{ deja, ordonnance, facture, taches, demandes }` sinon. */
+  function transcrireMobile(piece, opts) {
+    opts = opts || {};
+    var pieceId = piece.id || piece.pieceId;
+    /* Idempotence : une pièce n'est transcrite qu'une fois. */
+    var deja = col('ordonnances').active().filter(function (o) { return o.pieceMobileId && o.pieceMobileId === pieceId; })[0];
+    if (deja) return { deja: true, ordonnance: deja, facture: col('factures').get(deja.factureId), taches: [], demandes: [] };
+
+    var nature = String(piece.nature || '');
+    if (nature !== 'medicament' && nature !== 'analyse') {
+      throw refusMobile('NATURE_NON_PORTEE', 'Le mobile ne prescrit pas « ' + nature + ' ».', 'Prescrire depuis un poste de la clinique');
+    }
+    var fonction = String(piece.fonction || '');
+    if (!peutPrescrire(nature, { fonction: fonction })) {
+      /* Formulation de la maquette (`prescrireSoins` : « X n’est pas habilité à prescrire. »), complétée de la nature refusée. */
+      var libFonction = (D.CAPACITES[fonction] || {}).label || fonction;
+      var libNature = (D.NATURES_PRESCRIPTION.filter(function (n) { return n.id === nature; })[0] || {}).label || nature;
+      throw refusMobile('FONCTION_NON_HABILITEE', libFonction + ' n’est pas habilité à prescrire « ' + libNature + ' ».', 'Demander la prescription à un médecin');
+    }
+    var p = patientParCode(piece.patientCode);
+    if (!p) {
+      throw refusMobile('PATIENT_INTROUVABLE', 'Le dossier « ' + (piece.patientCode || 'sans code') + ' » n’existe pas à la clinique : la prescription ne peut pas être facturée.', 'Rapprocher le dossier du patient avant de transcrire');
+    }
+
+    var medicaments = [], analyses = [];
+    if (nature === 'medicament') {
+      var lignes = piece.lignes || [];
+      if (!lignes.length) throw refusMobile('ORDONNANCE_VIDE', 'L’ordonnance ne porte aucune ligne.', 'Refaire la prescription depuis le téléphone');
+      var demande = {};
+      lignes.forEach(function (l) {
+        var prod = l.produitId ? produitParId(l.produitId) : null;
+        if (!prod) {
+          throw refusMobile('PRODUIT_INCONNU', 'Médicament absent du catalogue de la clinique : « ' + (l.medicament || 'sans nom') + ' ».', 'Choisir le médicament dans la liste du lot et refaire la prescription');
+        }
+        var q = Number(l.quantite);
+        if (!(q >= 1) || q !== Math.floor(q)) {
+          throw refusMobile('QUANTITE_INVALIDE', 'Quantité invalide pour « ' + prod.designation + ' » : un entier d’au moins 1 est attendu.', 'Refaire la prescription depuis le téléphone');
+        }
+        demande[prod.id] = (demande[prod.id] || 0) + q;
+        var dispo = prod.stockDetail != null ? prod.stockDetail : prod.stock;
+        if (demande[prod.id] > dispo) {
+          throw refusMobile('STOCK_INSUFFISANT', 'Stock insuffisant pour « ' + prod.designation + ' » : disponible : ' + dispo + ' ; demandé : ' + demande[prod.id] + ' (RG-03).', 'Corriger la quantité ou demander un transfert du gros.');
+        }
+        medicaments.push({ produitId: prod.id, quantite: q, posologie: l.posologie || '', duree: l.dureeJours != null ? l.dureeJours + (Number(l.dureeJours) > 1 ? ' jours' : ' jour') : '' });
+      });
+    } else {
+      var examens = piece.examens || [];
+      if (!examens.length) throw refusMobile('ORDONNANCE_VIDE', 'La demande ne porte aucun examen.', 'Refaire la demande depuis le téléphone');
+      examens.forEach(function (nom) {
+        var code = CORRESPONDANCE_EXAMENS_MOBILE[nom];
+        if (!code || !analyseParCode(code)) {
+          throw refusMobile('EXAMEN_INCONNU', 'Examen sans correspondance au catalogue du laboratoire : ' + nom + '.', 'Demander l’examen depuis un poste de la clinique');
+        }
+        analyses.push(code);
+      });
+    }
+
+    var date = new Date(String(piece.date || '').indexOf('T') > 0 ? piece.date : Date.now()).toISOString();
+    var res = prescrire({
+      patientCode: p.code, medecin: piece.prescripteur || '', diagnostic: (opts.note && opts.note.diagnostic) || '',
+      date: date, urgent: nature === 'analyse' && String(piece.urgence || 'Non urgent') !== 'Non urgent',
+      medicaments: medicaments, analyses: analyses, actes: [], origine: 'mobile',
+      secteurDemandeur: (capacites({ fonction: fonction }).secteurs || [])[0] || 'Consultation',
+    });
+    col('ordonnances').update(res.ordonnance.id, { origine: 'mobile', pieceMobileId: pieceId, fonctionPrescripteur: fonction });
+    return { deja: false, ordonnance: col('ordonnances').get(res.ordonnance.id), facture: res.facture, taches: res.taches, demandes: res.demandes };
+  }
+
   function resumeLignes(med, ana, act, img) {
     var t = [];
     if (med.length) t.push(med.length + ' médicament(s)');
@@ -2880,6 +2981,7 @@
     changerCouverture: changerCouverture,
     TACHES: TACHES,
     prescrire: prescrire, encaisser: encaisser, delivrer: delivrer,
+    transcrireMobile: transcrireMobile, CORRESPONDANCE_EXAMENS_MOBILE: CORRESPONDANCE_EXAMENS_MOBILE,
     verifierStock: verifierStock,
     taches: taches, aFaire: aFaire, terminer: terminer, compteurs: compteurs,
     dossier: dossier,

@@ -90,7 +90,7 @@ function purgerLotExpire() {
   setMeta('lot_expire', 0); etat.lot_purge_le = Date.now();
 }
 function recevoir(p) {
-  if (p.type === 'bienvenue') { setMeta('epoch', p.epoch); setMeta('plage_prochain', p.plage.debut); setMeta('plage_fin', p.plage.fin); setMeta('bienvenu', 1); }
+  if (p.type === 'bienvenue') { setMeta('epoch', p.epoch); setMeta('plage_prochain', p.plage.debut); setMeta('plage_fin', p.plage.fin); setMeta('profil', p.profil || ''); setMeta('fonction', p.fonction || ''); setMeta('bienvenu', 1); }
   else if (p.type === 'lot') {
     setMeta('lot_expire', p.expire);
     for (const f of p.fiches) ecrireConfirme(f.collection, f.id, { data: f.data, fieldseq: f.fieldseq, archive: f.archive, dulot: true });
@@ -142,12 +142,12 @@ async function cycle() {
 /* --- commande ---------------------------------------------------------------------- */
 const commandes = {
   'POST /appairer': async (b) => {
-    setMeta('cle', b.cle); setMeta('profil', b.profil || 'soignant');
+    setMeta('cle', b.cle); // E1600 : le profil et la fonction ne sont PAS déclarés ici, ils arrivent par la bienvenue de la mère (ils viennent du code).
     const r = await fetch(RELAIS + '/appairage', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: b.code, uuid: UUID }) });
     const j = await r.json(); if (!r.ok) return [r.status, j];
     setMeta('jeton', j.jeton); setMeta('epoch', 1); setMeta('suspendu', 0); etat.suspendu = false;
     const n = 1; setMeta('sortie_n', 1);
-    const env = chiffrer(cle(), { type: 'hello', code: b.code, profil: meta('profil'), plateforme: 'banc' }, { id: `${UUID}-1`, appareil: UUID, dir: 'vers_mere', n });
+    const env = chiffrer(cle(), { type: 'hello', code: b.code, plateforme: 'banc' }, { id: `${UUID}-1`, appareil: UUID, dir: 'vers_mere', n });
     db.prepare('INSERT INTO envois(n,enveloppe,ops) VALUES(?,?,?)').run(n, JSON.stringify(env), '[]');
     return [200, { uuid: UUID }];
   },
@@ -156,7 +156,7 @@ const commandes = {
   'GET /vue': (b, q) => [200, vue(q.collection, q.id)],
   'GET /liste': (b, q) => [200, liste(q.collection)],
   'GET /etat': () => [200, Object.assign({}, etat, {
-    uuid: UUID, bienvenu: meta('bienvenu') === '1', epoch: +meta('epoch', 1), curseur_n: +meta('curseur_n', 0), lot_expire: +meta('lot_expire', 0),
+    uuid: UUID, bienvenu: meta('bienvenu') === '1', profil: meta('profil') || null, fonction: meta('fonction') || null, epoch: +meta('epoch', 1), curseur_n: +meta('curseur_n', 0), lot_expire: +meta('lot_expire', 0),
     en_attente: db.prepare("SELECT COUNT(*) AS n FROM file WHERE etat IN ('en_attente','envoyee')").get().n,
     a_traiter: db.prepare("SELECT resultat FROM file WHERE etat='refusee'").all().map((r) => JSON.parse(r.resultat)),
     resultats: db.prepare('SELECT id,etat,resultat FROM file ORDER BY ordre').all().map((r) => Object.assign({ id: r.id, etat: r.etat }, r.resultat ? JSON.parse(r.resultat) : {})),

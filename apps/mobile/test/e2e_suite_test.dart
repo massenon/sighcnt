@@ -109,11 +109,11 @@ void main() {
     Future<Map<String, Object?>> adminPost(String chemin, Map<String, Object?> corps) => _appel('POST', '$mere$chemin', corps, admin);
     Future<int> compte(String c) async => ((await _appel('GET', '$mere/admin/compte?collection=$c', null, admin))['n'] as num).toInt();
 
-    Future<Mobile> appairer(String nom, String profil) async {
+    Future<Mobile> appairer(String nom, String profil, {String? fonction}) async {
       final m = Mobile(ConfigMobile(port: 0, relais: 'http://127.0.0.1:$portRelais', dbChemin: '${tmp.path}/$nom.sqlite', nom: nom));
       mobiles.add(m);
-      final c = await adminPost('/admin/code-mobile', {'etiquette': nom});
-      final (statut, corps) = await m.commande('POST /appairer', {'code': c['code'], 'cle': c['cle'], 'profil': profil}, const {});
+      final c = await adminPost('/admin/code-mobile', {'etiquette': nom, 'profil': profil, if (fonction != null) 'fonction': fonction});
+      final (statut, corps) = await m.commande('POST /appairer', {'code': c['code'], 'cle': c['cle']}, const {});
       expect(statut, 200, reason: '$corps');
       return m;
     }
@@ -142,7 +142,7 @@ void main() {
     await _attendre(() async => await compte('orientations') == 1 && await compte('patients') == 1, 'la mère a reçu le dossier et l\'orientation');
 
     // --- le téléphone de la sage-femme : CPN, CPoN, surveillance dans son lot -------------------------------------------------------------------------------
-    final tel = await appairer('sagefemme', 'soignant');
+    final tel = await appairer('sagefemme', 'soignant', fonction: 'sage_femme');
     final a = await srcAccueil.creer('patients', {'nom': 'SOUROU', 'prenom': 'Mariam', 'ageDeclare': 31});
     await synchroniser(accueil);
     await _attendre(() async => await compte('patients') == 2, 'la mère a reçu la patiente');

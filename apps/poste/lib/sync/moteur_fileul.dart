@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:sigh_sync/sigh_sync.dart';
 
+import 'source_pieces_fileul.dart';
 import 'source_sync.dart';
+import 'transcription_mobile.dart';
 
 /// Le moteur de synchronisation d'un poste FILEUL embarqué dans l'application (même code que le banc d'essai :
 /// `packages/sync_dart`). Il lit/écrit sa base locale, parle à la mère en HTTP et rattrape seul après une coupure.
@@ -23,6 +25,9 @@ class MoteurFileul {
   void demarrer() => unawaited(_fileul.boucle());
 
   String get uuid => _fileul.uuid;
+
+  /// La base de synchronisation du poste, vue par la transcription des prescriptions du mobile (E1559).
+  SourcePiecesMobile get pieces => SourcePiecesFileul(_fileul);
 
   Future<void> appairer(String code) async {
     final (statut, corps) =

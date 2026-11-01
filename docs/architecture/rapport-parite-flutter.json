@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
  "ecrans_du_manifeste": 321,
- "ecrans_portes": 292,
+ "ecrans_portes": 309,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -38,22 +38,22 @@
   {
    "id": "auth-2fa",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "auth-forgot",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "auth-lock",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "auth-reset",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "cfg-branding",
@@ -410,17 +410,17 @@
   {
    "id": "enquete-publique",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "error-403",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "error-404",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "ged-archives",
@@ -449,7 +449,7 @@
   {
    "id": "index",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "m1-antecedents",
@@ -846,8 +846,8 @@
   {
    "id": "m12-balance",
    "mesure": true,
-   "attendus": 19,
-   "presents": 19,
+   "attendus": 20,
+   "presents": 20,
    "taux": 1.0,
    "manquants": []
   },
@@ -1679,26 +1679,9 @@
    "id": "m5-banque-sang",
    "mesure": true,
    "attendus": 20,
-   "presents": 4,
-   "taux": 0.2,
-   "manquants": [
-    "banque de sang",
-    "gestion des poches de sang par groupe, dates de péremption et demandes de transfusion.",
-    "poches en stock",
-    "disponibles",
-    "péremption sous 7 jours",
-    "périmées à détruire",
-    "n° poche",
-    "volume",
-    "péremption",
-    "donneur",
-    "réservée",
-    "bon de demande de sang",
-    "colonnes",
-    "exporter",
-    "disponibilité par groupe sanguin",
-    "poches de sang"
-   ]
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "m5-catalogue",
@@ -1736,28 +1719,9 @@
    "id": "m5-donneurs",
    "mesure": true,
    "attendus": 20,
-   "presents": 2,
-   "taux": 0.1,
-   "manquants": [
-    "donneurs & transfusions",
-    "registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément.",
-    "donneurs enregistrés",
-    "éligibles",
-    "dons cumulés",
-    "donneurs bénévoles",
-    "tous les donneurs",
-    "archivés",
-    "n°",
-    "donneur",
-    "téléphone",
-    "type de don",
-    "dons",
-    "dernier don",
-    "éligibilité",
-    "colonnes",
-    "exporter",
-    "nouveau"
-   ]
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "m5-impression-resultats",
@@ -2272,108 +2236,185 @@
    "manquants": []
   },
   {
+   "id": "mere-a-traiter",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "mere-appareils",
    "mesure": true,
-   "attendus": 18,
-   "presents": 3,
-   "taux": 0.167,
-   "manquants": [
-    "postes fileuls et mobiles de la clinique : contact, retard, horloge, version ; appairer, révoquer, débloquer.",
-    "appareils actifs",
-    "postes fileuls",
-    "horloge à vérifier",
-    "type",
-    "agent",
-    "dernier contact",
-    "retard",
-    "horloge",
-    "version",
-    "état",
-    "appairer un poste",
-    "appairer un mobile",
-    "renvoyer vers tous",
-    "révoquer"
-   ]
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-base",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-cle-clinique",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "mere-conflits",
    "mesure": true,
    "attendus": 17,
-   "presents": 2,
-   "taux": 0.118,
-   "manquants": [
-    "ce que la mère ne peut pas trancher seule : même champ modifié sur deux postes, homonymes créés hors ligne.",
-    "ouverts",
-    "doublons possibles",
-    "tranchés (30 j)",
-    "n°",
-    "champ",
-    "version a",
-    "version b",
-    "origine",
-    "décision",
-    "garder a",
-    "garder b",
-    "fusionner à la main",
-    "ce n’est pas un doublon",
-    "à arbitrer"
-   ]
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-import",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-indicateurs",
+   "mesure": true,
+   "attendus": 6,
+   "presents": 6,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-integrite",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-journal-operations",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "mere-journal-technique",
    "mesure": true,
    "attendus": 12,
-   "presents": 1,
-   "taux": 0.083,
-   "manquants": [
-    "évènements du service de la mère : démarrages, erreurs, alertes, sauvegardes, liaison avec le relais.",
-    "évènements (24 h)",
-    "alertes",
-    "erreurs",
-    "quand",
-    "niveau",
-    "source",
-    "message",
-    "colonnes",
-    "exporter",
-    "évènements"
-   ]
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-lots-tournee",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-mise-en-service",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-mises-a-jour",
+   "mesure": true,
+   "attendus": 11,
+   "presents": 11,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-notifications",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-plages-baux",
+   "mesure": true,
+   "attendus": 17,
+   "presents": 17,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-planificateur",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "mere-reinit",
    "mesure": true,
    "attendus": 5,
-   "presents": 1,
-   "taux": 0.2,
-   "manquants": [
-    "vider l’activité (tests de mise en service) en gardant les essentiels : tarifs, secteurs, comptes, droits, catalogues.",
-    "ouvrir la fenêtre (30 min)",
-    "fenêtre de réinitialisation",
-    "ce qui est conservé"
-   ]
+   "presents": 5,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-relais",
+   "mesure": true,
+   "attendus": 13,
+   "presents": 13,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-reseau",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-sauvegardes",
+   "mesure": true,
+   "attendus": 14,
+   "presents": 14,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "mere-service",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "mere-supervision",
    "mesure": true,
    "attendus": 12,
-   "presents": 3,
-   "taux": 0.25,
-   "manquants": [
-    "santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité.",
-    "santé de la mère",
-    "époque",
-    "retard vers le relais",
-    "contrôle",
-    "état",
-    "sauvegarder maintenant",
-    "actualiser",
-    "contrôles"
-   ]
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
   },
   {
    "id": "plan-du-site",
    "mesure": false,
-   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js)"
+   "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
   },
   {
    "id": "rapports-bibliotheque",

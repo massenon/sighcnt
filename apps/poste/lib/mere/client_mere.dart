@@ -20,7 +20,9 @@ class Appareil {
       required this.etat,
       required this.dernierContact,
       required this.derniereSeq,
-      required this.deriveMs});
+      required this.deriveMs,
+      this.profil,
+      this.fonction});
   final String uuid;
   final String etiquette;
   final String role;
@@ -28,6 +30,11 @@ class Appareil {
   final DateTime? dernierContact;
   final int derniereSeq;
   final int deriveMs;
+
+  /// Profil (soignant, reception) et fonction du soignant FIXÉS par le code d'appairage de la mère (E1600) ; `null` pour un poste fileul, ou pour un
+  /// mobile appairé avant la fixation de la fonction.
+  final String? profil;
+  final String? fonction;
 
   bool get revoque => etat == 'revoque';
 
@@ -42,6 +49,8 @@ class Appareil {
                 (j['dernier_contact']! as num).toInt()),
         derniereSeq: ((j['dernier_seq'] ?? 0) as num).toInt(),
         deriveMs: ((j['derive_ms'] ?? 0) as num).toInt(),
+        profil: j['profil'] as String?,
+        fonction: j['fonction'] as String?,
       );
 }
 
@@ -240,9 +249,16 @@ class ClientMere {
           }))['code']}';
 
   /// Code d'appairage d'un MOBILE : rend aussi la clé de clinique (QR à scanner sur le téléphone).
-  Future<({String code, String cle})> codeMobile(String etiquette) async {
-    final r =
-        await _appel('POST', '/admin/code-mobile', {'etiquette': etiquette});
+  ///
+  /// Le PROFIL (`soignant` ou `reception`) et la FONCTION du soignant (`medecin`, `sage_femme`, `infirmier`, `aide_soignant`) sont portés par le code :
+  /// le téléphone les reçoit de la mère et ne peut plus les déclarer (E1600).
+  Future<({String code, String cle})> codeMobile(String etiquette,
+      {required String profil, String? fonction}) async {
+    final r = await _appel('POST', '/admin/code-mobile', {
+      'etiquette': etiquette,
+      'profil': profil,
+      if (fonction != null && fonction.isNotEmpty) 'fonction': fonction
+    });
     return (code: '${r['code']}', cle: '${r['cle']}');
   }
 

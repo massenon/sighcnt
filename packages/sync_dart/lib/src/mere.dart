@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:sigh_domaine/sigh_domaine.dart' show mobLibelleFonction, mobLibelleNature, mobPeutPrescrire;
+import 'package:sigh_domaine/sigh_domaine.dart' show RefusMobile, mobMotifFonctionNonHabilitee, mobPeutPrescrire, mobRefusAffectation, mobRefusFonctionPiece;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -24,7 +24,7 @@ const familles = <String, String>{
   'cpn': 'B', 'cpon': 'B', 'surveillances': 'B', 'orientations': 'B', // suite du mobile (E1650 à E1660)
   'factures': 'C', 'prescriptions': 'C',
   'stock': 'D',
-  'tarifs': 'R', 'chambres': 'R',
+  'tarifs': 'R', 'chambres': 'R', 'produits': 'R', 'transcriptions': 'B',
 };
 const essentielles = {'tarifs', 'chambres'};
 const _clinique = 'NASSIERA TOO';
@@ -35,21 +35,28 @@ const autorise = <String, Set<String>>{
 };
 
 /// La prescription d'un mobile est une pièce ÉMISE : la mère REFAIT le contrôle d'habilitation (un bouton absent sur le téléphone ne protège rien).
-/// La règle est celle du domaine (`PR.peutPrescrire` de la maquette, vecteurs de `mobile.json`), jamais recopiée ici. La fonction est celle que le
-/// téléphone déclare : la mère ne la connaît pas encore par le code d'appairage (limite consignée, ECARTS E1553).
-Map<String, Object?>? refusPrescriptionMobile(Map op) {
+/// La règle est celle du domaine (`PR.peutPrescrire` de la maquette, vecteurs de `mobile.json`), jamais recopiée ici. La fonction est celle que la
+/// mère a FIXÉE à l'appairage et relue dans sa table des appareils (E1600) : le téléphone ne la déclare plus.
+Map<String, Object?>? refusPrescriptionMobile(Map op, Appareil app) {
   final champs = ((op['champs'] ?? {}) as Map).cast<String, Object?>();
-  final fonction = '${champs['fonction'] ?? ''}';
+  final fonction = app.fonction ?? '';
   final nature = '${champs['nature'] ?? ''}';
   if (mobPeutPrescrire(fonction, nature)) return null;
   return {
     'id': op['id'], 'statut': 'refusee', 'code': 'droit_refuse',
-    'motif': fonction.isEmpty
-        ? 'Prescription sans fonction déclarée : aucune habilitation ne peut être vérifiée.'
-        : '${mobLibelleFonction(fonction)} : la prescription de « ${mobLibelleNature(nature)} » n’est pas dans ses habilitations.',
+    'motif': mobMotifFonctionNonHabilitee(fonction, nature),
     'geste': 'Demander la prescription à un médecin',
   };
 }
+
+/// Le contrôle de la fonction écrite sur une note ou une prescription d'un mobile soignant : refus nommé ou `null`.
+Map<String, Object?>? refusFonctionMobile(Map op, Appareil app) {
+  final champs = ((op['champs'] ?? {}) as Map).cast<String, Object?>();
+  final r = mobRefusFonctionPiece(fixee: app.fonction, declaree: champs['fonction'] == null ? '' : '${champs['fonction']}');
+  return r == null ? null : refusDe('${op['id']}', r);
+}
+
+Map<String, Object?> refusDe(String id, RefusMobile r) => {'id': id, 'statut': 'refusee', 'code': r.code, 'motif': r.motif, 'geste': r.geste};
 
 const _ddl = '''
   CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT);
@@ -57,8 +64,8 @@ const _ddl = '''
   CREATE TABLE IF NOT EXISTS resultats (id TEXT PRIMARY KEY, corps TEXT);
   CREATE TABLE IF NOT EXISTS fiches (collection TEXT, id TEXT, data TEXT, fieldseq TEXT, archive INTEGER, PRIMARY KEY (collection, id));
   CREATE TABLE IF NOT EXISTS appareils (uuid TEXT PRIMARY KEY, etiquette TEXT, role TEXT, etat TEXT, jeton_hash TEXT, jeton_expire BIGINT,
-    renouv_hash TEXT, dernier_contact BIGINT, dernier_seq BIGINT DEFAULT 0, derive_ms BIGINT DEFAULT 0, profil TEXT);
-  CREATE TABLE IF NOT EXISTS codes (code TEXT PRIMARY KEY, etiquette TEXT, role TEXT, expire BIGINT, utilise INTEGER DEFAULT 0);
+    renouv_hash TEXT, dernier_contact BIGINT, dernier_seq BIGINT DEFAULT 0, derive_ms BIGINT DEFAULT 0, profil TEXT, fonction TEXT);
+  CREATE TABLE IF NOT EXISTS codes (code TEXT PRIMARY KEY, etiquette TEXT, role TEXT, expire BIGINT, utilise INTEGER DEFAULT 0, profil TEXT, fonction TEXT);
   CREATE TABLE IF NOT EXISTS conflits (id {AUTO}, collection TEXT, fiche TEXT, champ TEXT, a TEXT, b TEXT, appareil TEXT, etat TEXT DEFAULT 'ouvert', decision TEXT);
   CREATE TABLE IF NOT EXISTS plages (appareil TEXT, nom TEXT, debut BIGINT, fin BIGINT);
   CREATE TABLE IF NOT EXISTS baux (appareil TEXT, article TEXT, reste BIGINT, PRIMARY KEY (appareil, article));
@@ -69,10 +76,13 @@ const _ddl = '''
 ''';
 
 class Appareil {
-  Appareil(this.uuid, this.role, [this.profil]);
+  Appareil(this.uuid, this.role, [this.profil, this.fonction]);
   final String uuid;
   final String role;
   final String? profil;
+
+  /// La fonction du soignant, FIXÉE à l'appairage par le code (E1600) et lue dans la table de la mère à chaque dépôt ; jamais celle du téléphone.
+  final String? fonction;
 }
 
 class Fiche {
@@ -128,6 +138,13 @@ class Mere {
   static Future<Mere> creer(ConfigMere cfg) async {
     final base = await Depot.ouvrir(cfg.dbChemin);
     await base.initialiser(_ddl);
+    // Migration (E1600) : une base d'avant la fonction authentifiée reçoit les colonnes ; un appareil déjà appairé garde `fonction` à NULL et la mère
+    // refuse alors ses pièces en le disant (nouvel appairage).
+    for (final (t, c) in const [('codes', 'profil'), ('codes', 'fonction'), ('appareils', 'fonction')]) {
+      try {
+        await base.exec('ALTER TABLE $t ADD COLUMN $c TEXT');
+      } catch (_) {/* déjà présente */}
+    }
     if (await base.meta('epoch') == null) await base.poserMeta('epoch', 1);
     if (await base.meta('next_patient') == null) await base.poserMeta('next_patient', 1000);
     if (await base.meta('reinit_ouverte') == null) await base.poserMeta('reinit_ouverte', 0);
@@ -322,7 +339,7 @@ class Mere {
     if (sha256hex(m.group(2)!) != a['jeton_hash']) throw Err(401, 'jeton_invalide', 'Jeton invalide.');
     if (maintenantMs() > (a['jeton_expire'] as int)) throw Err(401, 'jeton_expire', 'Jeton expiré.');
     await base.exec('UPDATE appareils SET dernier_contact=? WHERE uuid=?', [maintenantMs(), a['uuid']]);
-    return Appareil(a['uuid'] as String, a['role'] as String, a['profil'] as String?);
+    return Appareil(a['uuid'] as String, a['role'] as String, a['profil'] as String?, a['fonction'] as String?);
   }
 
   void adminOk(HttpRequest req) {
@@ -337,10 +354,27 @@ class Mere {
     return {'jeton': '$uuid.$secret', 'renouvellement': '$uuid.$renouv'};
   }
 
+  /// L'affectation d'un code de mobile (profil, fonction), validée par le domaine : refus 422 nommé.
+  ({String profil, String? fonction}) affectationMobile(Map<String, Object?> b) {
+    final profil = '${b['profil'] ?? ''}';
+    final fonction = '${b['fonction'] ?? ''}';
+    final r = mobRefusAffectation(profil, fonction);
+    if (r != null) throw Err(422, r.code, r.motif, {'geste': r.geste});
+    return (profil: profil, fonction: profil == 'reception' ? null : fonction);
+  }
+
   String codeAppairage() {
     const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     final r = Random.secure();
     return List.generate(8, (_) => alphabet[r.nextInt(alphabet.length)]).join();
+  }
+
+  /// E1559 : une pièce du soignant ne se rattache qu'à un dossier DE SA TOURNÉE (le lot que la mère lui a déposé) : un patient hors lot est refusé en le disant.
+  Future<Map<String, Object?>?> refusHorsLot(Map op, Appareil app) async {
+    final champs = ((op['champs'] ?? {}) as Map).cast<String, Object?>();
+    final patientId = '${champs['patientId'] ?? ''}';
+    if (patientId.isNotEmpty && (await base.select("SELECT 1 FROM portee WHERE appareil=? AND collection='patients' AND fiche=?", [app.uuid, patientId])).isNotEmpty) return null;
+    return refusDe('${op['id']}', const RefusMobile('patient_hors_lot', 'Ce patient n’est pas dans le lot de ce téléphone.', 'Recevoir le lot du jour à la prochaine synchronisation'));
   }
 
   /// L'envoi d'un lot, commun aux postes (P1) et aux mobiles (P2/P3).
@@ -364,13 +398,29 @@ class Mere {
             'id': op['id'], 'statut': 'refusee', 'code': 'droit_refuse',
             'motif': 'Le profil « ${app.profil} » ne couvre pas la collection ${op['collection']}.', 'geste': 'Utiliser un poste',
           };
-        } else if (app.role == 'mobile' && op['collection'] == 'prescriptions' && op['type'] == 'creer' && refusPrescriptionMobile(op) != null) {
-          r = refusPrescriptionMobile(op)!;
+        } else if (app.role == 'mobile' && app.profil == 'soignant' && const ['notes', 'prescriptions'].contains(op['collection']) && op['type'] == 'creer' && await refusHorsLot(op, app) != null) {
+          r = (await refusHorsLot(op, app))!;
+        } else if (app.role == 'mobile' && app.profil == 'soignant' && const ['notes', 'prescriptions'].contains(op['collection']) && op['type'] == 'creer' && refusFonctionMobile(op, app) != null) {
+          r = refusFonctionMobile(op, app)!;
+        } else if (app.role == 'mobile' && op['collection'] == 'prescriptions' && op['type'] == 'creer' && refusPrescriptionMobile(op, app) != null) {
+          r = refusPrescriptionMobile(op, app)!;
         } else {
+          // La fonction ÉCRITE sur la pièce est celle que la mère tient pour l'appareil, jamais celle du téléphone.
+          if (app.role == 'mobile' && app.profil == 'soignant' && const ['notes', 'prescriptions'].contains(op['collection']) && op['type'] == 'creer') {
+            op['champs'] = {...((op['champs'] ?? {}) as Map).cast<String, Object?>(), 'fonction': app.fonction};
+          }
           r = await traiter(op, app);
         }
         if (app.role == 'mobile' && r['statut'] == 'acceptee' && op['type'] == 'creer') {
           await base.exec('INSERT INTO portee(appareil,collection,fiche) VALUES(?,?,?) ON CONFLICT DO NOTHING', [app.uuid, op['collection'], op['fiche']]);
+        }
+        // E1559 : le COMPTE RENDU de la transcription (écrit par un poste) revient au téléphone qui a émis la prescription, et à lui seul.
+        if (r['statut'] == 'acceptee' && op['collection'] == 'transcriptions' && op['type'] == 'creer') {
+          final champsT = ((op['champs'] ?? {}) as Map).cast<String, Object?>();
+          final src = await base.select("SELECT appareil FROM operations WHERE collection='prescriptions' AND fiche=?", ['${champsT['prescriptionId'] ?? ''}']);
+          if (src.isNotEmpty) {
+            await base.exec('INSERT INTO portee(appareil,collection,fiche) VALUES(?,?,?) ON CONFLICT DO NOTHING', [src.first['appareil'], 'transcriptions', op['fiche']]);
+          }
         }
         await base.exec('INSERT INTO resultats(id,corps) VALUES(?,?)', [op['id'], enJson(r)]);
         sortie.add(r);
@@ -386,8 +436,10 @@ class Mere {
       case 'POST /admin/code':
         adminOk(req);
         final code = codeAppairage();
-        await base.exec('INSERT INTO codes(code,etiquette,role,expire) VALUES(?,?,?,?)',
-            [code, b['etiquette'] ?? '', b['role'] ?? 'fileul', maintenantMs() + cfg.codeTtl]);
+        final roleCode = '${b['role'] ?? 'fileul'}';
+        final aff = roleCode == 'mobile' ? affectationMobile(b) : (profil: null, fonction: null);
+        await base.exec('INSERT INTO codes(code,etiquette,role,expire,profil,fonction) VALUES(?,?,?,?,?,?)',
+            [code, b['etiquette'] ?? '', roleCode, maintenantMs() + cfg.codeTtl, aff.profil, aff.fonction]);
         return {'code': code};
       case 'POST /appairage':
         final r = await base.select('SELECT * FROM codes WHERE code=?', ['${b['code'] ?? ''}']);
@@ -474,7 +526,7 @@ class Mere {
         return {
           'epoch': await base.metaInt('epoch'),
           'seq_max': await seqMax(),
-          'appareils': (await base.select('SELECT uuid,etiquette,role,etat,dernier_contact,dernier_seq,derive_ms FROM appareils')).toList(),
+          'appareils': (await base.select('SELECT uuid,etiquette,role,etat,dernier_contact,dernier_seq,derive_ms,profil,fonction FROM appareils')).toList(),
           'derives': (await base.select('SELECT uuid FROM appareils WHERE derive_ms>?', [_deriveMaxMs])).map((x) => x['uuid']).toList(),
           'conflits_ouverts': (await base.select("SELECT COUNT(*) AS n FROM conflits WHERE etat='ouvert'")).first['n'],
           'resync': {
@@ -601,9 +653,12 @@ class Mere {
   Future<Object?> codeMobile(HttpRequest req, Map<String, Object?> b) async {
     adminOk(req);
     final code = codeAppairage();
-    await verrou.executer(() => base.exec('INSERT INTO codes(code,etiquette,role,expire) VALUES(?,?,?,?)', [code, b['etiquette'] ?? '', 'mobile', maintenantMs() + cfg.codeTtl]));
-    await pont.declarerCode(sha256hex(code));
-    return {'code': code, 'cle': pont.cleBase64};
+    final aff = affectationMobile(b);
+    await verrou.executer(() => base.exec('INSERT INTO codes(code,etiquette,role,expire,profil,fonction) VALUES(?,?,?,?,?,?)',
+        [code, b['etiquette'] ?? '', 'mobile', maintenantMs() + cfg.codeTtl, aff.profil, aff.fonction]));
+    // Le relais ne reçoit que l'empreinte ET, comme étiquette d'affichage (jamais une autorité), le profil et la fonction du code.
+    await pont.declarerCode(sha256hex(code), profil: aff.profil, fonction: aff.fonction);
+    return {'code': code, 'cle': pont.cleBase64, 'profil': aff.profil, 'fonction': aff.fonction};
   }
 
   Future<void> demarrer() async {

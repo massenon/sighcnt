@@ -39,9 +39,11 @@ class _SighMobileState extends State<SighMobile> {
       debugShowCheckedModeBanner: false,
       theme: ThemeSigh.clair(),
       builder: (context, child) => GardeVerrou(coffre: widget.coffre, horloge: widget.horlogeVerrou, child: child ?? const SizedBox.shrink()),
-      home: widget.moteur.profil == null
-          ? Builder(builder: (c) => EcranAppairage(moteur: widget.moteur, apres: () => setState(() {})))
-          : Accueil(moteur: widget.moteur, coffreActif: widget.coffre != null, apresReinitialisation: () => setState(() {})),
+      // Le profil vient de la mère (code d'appairage, E1600) : l'écran suit l'état du moteur, il ne devine pas.
+      home: ValueListenableBuilder<EtatMobile>(
+        valueListenable: widget.moteur.etat,
+        builder: (c, _, __) => widget.moteur.profil == null ? EcranAppairage(moteur: widget.moteur, apres: () => setState(() {})) : Accueil(moteur: widget.moteur, coffreActif: widget.coffre != null, apresReinitialisation: () => setState(() {})),
+      ),
     );
   }
 }

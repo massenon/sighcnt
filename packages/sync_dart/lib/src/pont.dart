@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cryptography/cryptography.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show mobPeutPrescrire;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -95,8 +96,8 @@ class Pont {
   int _dernierOk = 0;
 
   // --- côté administration ------------------------------------------------------------------------------
-  Future<void> declarerCode(String hash) async {
-    await rel('POST', '/mere/code', {'hash': hash});
+  Future<void> declarerCode(String hash, {String? profil, String? fonction}) async {
+    await rel('POST', '/mere/code', {'hash': hash, if (profil != null) 'profil': profil, if (fonction != null) 'fonction': fonction});
   }
 
   void revoquerAuRelais(String uuid) {
@@ -117,7 +118,18 @@ class Pont {
   /// Lot de tournée : sous le verrou (appelé par la route d'administration).
   Future<Map<String, Object?>> lot(Map<String, Object?> b) async {
     final fiches = <Map<String, Object?>>[];
-    for (final f in (b['fiches'] as List)) {
+    final lot = [...(b['fiches'] as List)];
+    // E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
+    // jamais à une infirmière ni à une réception. Ce n'est pas une donnée patient.
+    if (b['catalogue'] != false) {
+      final dest = await base.select('SELECT profil,fonction FROM appareils WHERE uuid=?', ['${b['uuid']}']);
+      if (dest.isNotEmpty && dest.first['profil'] == 'soignant' && mobPeutPrescrire('${dest.first['fonction'] ?? ''}', 'medicament')) {
+        for (final x in await base.select("SELECT id FROM fiches WHERE collection='produits' AND archive=0")) {
+          lot.add({'collection': 'produits', 'id': x['id']});
+        }
+      }
+    }
+    for (final f in lot) {
       final x = await mere.lire('${(f as Map)['collection']}', '${f['id']}');
       if (x == null) continue;
       await base.exec('INSERT INTO portee(appareil,collection,fiche) VALUES(?,?,?) ON CONFLICT DO NOTHING', [b['uuid'], f['collection'], f['id']]);
@@ -196,18 +208,20 @@ class Pont {
         return;
       }
       await base.exec('UPDATE codes SET utilise=1 WHERE code=?', [c['code']]);
-      await base.exec("INSERT INTO appareils(uuid,etiquette,role,etat,profil) VALUES(?,?,'mobile','actif',?)", [uuid, c['etiquette'], p['profil']]);
+      // Le profil et la fonction viennent du CODE (table de la mère), jamais du `hello` : un profil déclaré différent est signalé.
+      if (p['profil'] != null && p['profil'] != c['profil']) alerter({'type': 'profil_declare_different', 'appareil': uuid, 'declare': '${p['profil']}', 'code': c['profil']});
+      await base.exec("INSERT INTO appareils(uuid,etiquette,role,etat,profil,fonction) VALUES(?,?,'mobile','actif',?,?)", [uuid, c['etiquette'], c['profil'] ?? 'soignant', c['fonction']]);
       final debut = await base.metaInt('next_patient');
       final fin = debut + 19;
       await base.poserMeta('next_patient', fin + 1);
       await base.exec('INSERT INTO plages(appareil,nom,debut,fin) VALUES(?,?,?,?)', [uuid, 'patients', debut, fin]);
       await base.poserMeta('sortie_seq:$uuid', await mere.seqMax());
-      await publier(uuid, {'type': 'bienvenue', 'epoch': await base.metaInt('epoch'), 'plage': {'debut': debut, 'fin': fin}});
+      await publier(uuid, {'type': 'bienvenue', 'epoch': await base.metaInt('epoch'), 'plage': {'debut': debut, 'fin': fin}, 'profil': c['profil'] ?? 'soignant', 'fonction': c['fonction']});
       return;
     }
     final r = await base.select('SELECT * FROM appareils WHERE uuid=?', [uuid]);
     if (r.isEmpty || r.first['etat'] == 'revoque') return;
-    final app = Appareil(uuid, r.first['role'] as String, r.first['profil'] as String?);
+    final app = Appareil(uuid, r.first['role'] as String, r.first['profil'] as String?, r.first['fonction'] as String?);
     if (p['type'] == 'push') {
       try {
         await publier(uuid, {'type': 'accuse', 'resultats': (await mere.pousser(app, p))['resultats']});

@@ -95,11 +95,12 @@ void main() {
     Future<Map<String, Object?>> adminPost(String chemin, Map<String, Object?> corps) => _appel('POST', '$mere$chemin', corps, admin);
     Future<int> compte(String c) async => ((await _appel('GET', '$mere/admin/compte?collection=$c', null, admin))['n'] as num).toInt();
 
-    Future<Mobile> appairer(String nom, String profil) async {
+    Future<Mobile> appairer(String nom, String profil, {String? fonction}) async {
       final m = Mobile(ConfigMobile(port: 0, relais: 'http://127.0.0.1:$portRelais', dbChemin: '${tmp.path}/$nom.sqlite', nom: nom));
       mobiles.add(m);
-      final c = await adminPost('/admin/code-mobile', {'etiquette': nom});
-      final (statut, corps) = await m.commande('POST /appairer', {'code': c['code'], 'cle': c['cle'], 'profil': profil}, const {});
+      // E1600 : le profil et la FONCTION sont portés par le code émis par la console de la mère ; le téléphone ne les déclare pas.
+      final c = await adminPost('/admin/code-mobile', {'etiquette': nom, 'profil': profil, if (fonction != null) 'fonction': fonction});
+      final (statut, corps) = await m.commande('POST /appairer', {'code': c['code'], 'cle': c['cle']}, const {});
       expect(statut, 200, reason: '$corps');
       return m;
     }
@@ -134,7 +135,11 @@ void main() {
     await _attendre(() async => await compte('patients') == 2 && await compte('rendezvous') == 1 && await compte('constantes') == 1, 'la mère a reçu les quatre fiches');
 
     // --- le soignant : appairage, lot de la tournée (le dossier B n'y est pas) ------------------------------------------------------------------
-    final tel = await appairer('medecin', 'soignant');
+    // Le catalogue des produits de la clinique : il part avec le lot d'un soignant habilité à prescrire (E1559).
+    await adminPost('/admin/referentiel', {'collection': 'produits', 'fiche': 'PRD0001', 'champs': {'designation': 'PARACETAMOL 500 MG', 'unite': 'Boîte', 'categorie': 'medicament', 'prixAchat': 500, 'stockDetail': 40}});
+    final tel = await appairer('medecin', 'soignant', fonction: 'medecin');
+    // La mère n'affecte le catalogue qu'à un appareil dont elle CONNAÎT la fonction : on attend sa bienvenue (le banc de SYNC-R28 fait de même).
+    await synchroniser(tel);
     final uuid = (await tel.commande('GET /etat', const {}, const {})).$2! as Map;
     await adminPost('/admin/lot', {
       'uuid': uuid['uuid'],
@@ -150,9 +155,11 @@ void main() {
     await synchroniser(tel, jusqua: () => true);
     await _attendre(() async {
       await tel.cycle();
-      return (await src.liste('patients')).length == 1 && (await src.liste('rendezvous')).length == 1;
+      return (await src.liste('patients')).length == 1 && (await src.liste('rendezvous')).length == 1 && (await src.liste('produits')).length == 1;
     }, 'le lot est arrivé');
     final medecin = service('medecin');
+    expect((await medecin.produits()).map((p) => '${p.designation} ${p.stock}'), ['PARACETAMOL 500 MG 40'], reason: 'le catalogue du lot : le médicament se choisit, il ne se tape plus');
+    expect((await tel.commande('GET /etat', const {}, const {})).$2! as Map, containsPair('fonction', 'medecin'), reason: 'la fonction est celle du code, reçue de la mère');
     expect((await medecin.patients()).map((p) => p.nom), ['DOSSOU Aline'], reason: 'le dossier hors tournée ne descend pas ($b)');
 
     // --- lecture : l'agenda du jour et le dossier se lisent dans le lot --------------------------------------------------------------------------
@@ -166,18 +173,18 @@ void main() {
 
     // --- écriture : un geste, une opération, nommée à l'agent ------------------------------------------------------------------------------------
     await medecin.enregistrerConstantes(a, {'temperature': '38,2', 'sys': '130', 'dia': '85'});
-    final ordonnanceSansNote = await medecin.prescrireMedicament(a, {'med': 'Paracétamol 500 mg', 'poso': '1 cp x 3/j', 'duree': '5'}).then<Object?>((_) => null, onError: (Object e) => e);
+    final ordonnanceSansNote = await medecin.prescrireMedicament(a, {'med': 'PRD0001', 'quantite': '2', 'poso': '1 cp x 3/j', 'duree': '5'}).then<Object?>((_) => null, onError: (Object e) => e);
     expect(ordonnanceSansNote, isA<RefusMobile>());
     expect((ordonnanceSansNote! as RefusMobile).code, 'SANS_NOTE');
     await medecin.enregistrerNote(a, {'motif': 'Suivi HTA', 'diagnostic': 'Hypertension artérielle', 'orientation': 'domicile'});
-    await medecin.prescrireMedicament(a, {'med': 'Paracétamol 500 mg', 'poso': '1 cp x 3/j', 'duree': '5'});
+    await medecin.prescrireMedicament(a, {'med': 'PRD0001', 'quantite': '2', 'poso': '1 cp x 3/j', 'duree': '5'});
     await medecin.prescrireAnalyses(a, ['NFS'], 'Non urgent');
     // Un infirmier ne prescrit pas : refus AU MOTEUR du téléphone, rien n'est écrit.
     final avant = (await src.liste('prescriptions')).length;
-    final inf = await service('infirmier', agent: 'Infirmière').prescrireMedicament(a, {'med': 'x', 'poso': 'y', 'duree': '1'}).then<Object?>((_) => null, onError: (Object e) => e);
+    final inf = await service('infirmier', agent: 'Infirmière').prescrireMedicament(a, {'med': 'PRD0001', 'quantite': '1', 'poso': 'y', 'duree': '1'}).then<Object?>((_) => null, onError: (Object e) => e);
     expect((inf! as RefusMobile).code, 'FONCTION_NON_HABILITEE');
     expect((await src.liste('prescriptions')).length, avant);
-    // ... et si l'écran était contourné, la MÈRE refait le contrôle (la fonction que le téléphone déclare).
+    // ... et si l'écran était contourné en déclarant une AUTRE fonction, la MÈRE refuse en la nommant : la fonction est celle de l'appairage (E1600).
     await src.creer('prescriptions', {'nature': 'medicament', 'patientId': a, 'fonction': 'infirmier', 'prescripteur': 'Infirmière', 'emise': true, 'lignes': <Object?>[]});
 
     await synchroniser(tel);
@@ -186,9 +193,9 @@ void main() {
     final etat = (e! as Map).cast<String, Object?>();
     final refus = (etat['a_traiter'] as List).cast<Map>();
     expect(refus.length, 1, reason: 'seule la prescription contournée est refusée : $refus');
-    expect(refus.single['code'], 'droit_refuse');
-    expect(refus.single['motif'], contains('Infirmier'));
-    expect(refus.single['geste'], 'Demander la prescription à un médecin');
+    expect(refus.single['code'], 'fonction_falsifiee');
+    expect(refus.single['motif'], allOf(contains('infirmier'), contains('medecin')));
+    expect(refus.single['geste'], contains('nouveau code d’appairage'));
     // La fiche refusée n'a pas été rejouée telle quelle : la mère ne tient que les deux ordonnances du médecin.
     expect(await compte('prescriptions'), 2);
 

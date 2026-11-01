@@ -73,6 +73,30 @@ class EcranOrdonnances extends StatelessWidget with EcranMaquette {
   }
 }
 
+/// E1559 : les prescriptions reçues d'un téléphone que le poste n'a PAS pu transcrire. Elles ne se perdent pas en silence : chacune est nommée (code, motif,
+/// geste) jusqu'à ce qu'on la reprenne depuis un poste. Le bloc n'existe que s'il y en a. Texte PROPOSÉ, à valider (docs/architecture/TEXTES-A-VALIDER-MOBILE.md).
+class _PiecesMobileRefusees extends StatelessWidget {
+  const _PiecesMobileRefusees(this.col);
+  final CollectionMagasin col;
+
+  @override
+  Widget build(BuildContext context) => ListenableBuilder(
+      listenable: col,
+      builder: (_, __) {
+        final refusees = [for (final p in col.actives) if (p['etat'] == 'refusee') p];
+        if (refusees.isEmpty) return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: NoteSigh(
+              '${refusees.length} prescription(s) reçue(s) d’un téléphone n’ont pas pu être transcrites :\n'
+              '${[for (final p in refusees.take(5)) '${p['patient'] ?? p['patientCode']} (${p['prescripteur'] ?? ''}) : ${p['motif']} À faire : ${p['geste']} [${p['code']}]'].join('\n')}'
+              '${refusees.length > 5 ? '\net ${refusees.length - 5} autre(s).' : ''}\n(Texte proposé, à valider.)',
+              ton: TonSigh.attention,
+              icone: LucideIcons.triangleAlert),
+        );
+      });
+}
+
 class _Registre extends StatelessWidget {
   const _Registre({required this.c, required this.ecran, required this.rows});
   final ContexteEcran c;
@@ -196,6 +220,7 @@ class _Registre extends StatelessWidget {
   Widget build(BuildContext context) {
     final k = csKpisOrdonnances(rows);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      _PiecesMobileRefusees(c.magasin.collection('piecesMobile')),
       KpiGrilleSigh(kpis: [
         KpiSigh(
             libelle: 'Ordonnances émises',

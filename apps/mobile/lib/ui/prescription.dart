@@ -16,7 +16,9 @@ class SaisiePrescription extends StatefulWidget {
 }
 
 class _SaisiePrescriptionState extends State<SaisiePrescription> {
-  final _med = TextEditingController();
+  String? _produit;
+  List<MobProduit> _catalogue = const [];
+  final _quantite = TextEditingController();
   final _poso = TextEditingController();
   final _duree = TextEditingController();
   final _coches = <String>{};
@@ -24,10 +26,18 @@ class _SaisiePrescriptionState extends State<SaisiePrescription> {
   String _urgence = mobUrgencesAnalyses.first;
   RefusMobile? _refus;
 
+  @override
+  void initState() {
+    super.initState();
+    widget.service.produits().then((l) {
+      if (mounted) setState(() => _catalogue = l);
+    });
+  }
+
   Future<void> _envoyer() async {
     try {
       if (_nature == 'medicament') {
-        await widget.service.prescrireMedicament(widget.patientId, {'med': _med.text, 'poso': _poso.text, 'duree': _duree.text});
+        await widget.service.prescrireMedicament(widget.patientId, {'med': _produit ?? '', 'quantite': _quantite.text, 'poso': _poso.text, 'duree': _duree.text});
       } else {
         await widget.service.prescrireAnalyses(widget.patientId, [for (final e in mobExamensAnalyses) if (_coches.contains(e)) e], _urgence);
       }
@@ -61,12 +71,23 @@ class _SaisiePrescriptionState extends State<SaisiePrescription> {
               }),
             ),
           ),
-        // Le texte de l'écran de la maquette annonce une facture générée par le téléphone ; ici la prescription PART à la clinique, qui la facture.
-        NoteInfo(medicament
-            ? 'La prescription part à la clinique par le relais. Le patient règle à la caisse de la clinique ; la délivrance n’a lieu qu’après paiement (RG-03).'
-            : mobTexte('analyses')),
+        // La phrase de la maquette (« Prescrire génère l'ordonnance et la facture de la caisse ») n'est vraie qu'après la transcription par le poste : elle
+        // s'affiche au dossier quand le compte rendu est revenu. Ici la prescription PART à la clinique, qui la transcrit.
+        NoteInfo(medicament ? mobTexteEnvoiPrescription : mobTexte('analyses')),
         if (medicament) ...[
-          champSaisie(cle: 'med', libelle: 'Médicament', controleur: _med, erreurs: erreurs, requis: true),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: DropdownButtonFormField<String>(
+              key: const Key('champ-med'),
+              initialValue: _produit,
+              isExpanded: true,
+              decoration: InputDecoration(labelText: 'Médicament du catalogue *', errorText: erreurs['med'], border: const OutlineInputBorder()),
+              items: [for (final p in _catalogue) DropdownMenuItem(value: p.id, child: Text('${p.designation} · stock ${p.stock}', overflow: TextOverflow.ellipsis))],
+              onChanged: (v) => setState(() => _produit = v),
+            ),
+          ),
+          if (_catalogue.isEmpty) const NoteInfo('Aucun médicament dans le lot de ce téléphone : le catalogue arrive avec le lot du jour.', key: Key('catalogue-vide')),
+          champSaisie(cle: 'quantite', libelle: 'Quantité (boîtes, unités)', controleur: _quantite, erreurs: erreurs, requis: true, clavier: TextInputType.number),
           champSaisie(cle: 'poso', libelle: 'Posologie', controleur: _poso, erreurs: erreurs, requis: true),
           champSaisie(cle: 'duree', libelle: 'Durée (jours)', controleur: _duree, erreurs: erreurs, requis: true, clavier: TextInputType.number),
         ] else ...[

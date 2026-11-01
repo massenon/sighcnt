@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:sigh_domaine/sigh_domaine.dart';
-
 import '../moteur/moteur_mobile.dart';
 
-/// Appairage : code à usage unique + clé de clinique (scannée par QR sur le vrai téléphone, collée ici) + profil.
+/// Appairage : code à usage unique + clé de clinique (scannée par QR sur le vrai téléphone, collée ici) + nom de l'agent. Le profil et la fonction viennent du code.
 class EcranAppairage extends StatefulWidget {
   const EcranAppairage({super.key, required this.moteur, required this.apres});
   final MoteurMobile moteur;
@@ -18,8 +16,6 @@ class _EcranAppairageState extends State<EcranAppairage> {
   final _code = TextEditingController();
   final _cle = TextEditingController();
   final _agent = TextEditingController();
-  String _fonction = mobFonctions.first;
-  ProfilMobile _profil = ProfilMobile.soignant;
   String? _erreur;
   bool _en = false;
 
@@ -37,7 +33,7 @@ class _EcranAppairageState extends State<EcranAppairage> {
       _erreur = null;
     });
     try {
-      await widget.moteur.appairer(code: _code.text.trim().toUpperCase(), cleClinique: _cle.text.trim(), profil: _profil, agent: _agent.text.trim(), fonction: _fonction);
+      await widget.moteur.appairer(code: _code.text.trim().toUpperCase(), cleClinique: _cle.text.trim(), agent: _agent.text.trim());
       widget.apres();
     } catch (e) {
       if (mounted) setState(() => _erreur = 'Appairage refusé : $e');
@@ -49,36 +45,24 @@ class _EcranAppairageState extends State<EcranAppairage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('SIGH-CNT — appairage')),
+      appBar: AppBar(title: const Text('SIGH-CNT, appairage')),
       body: ListView(padding: const EdgeInsets.all(16), children: [
-        const Text('Demandez un code à la mère (DAF / administrateur) : il ne sert qu’une fois.'),
+        const Text('Demandez un code à la mère (DAF / administrateur) : il ne sert qu’une fois. Le profil du téléphone et la fonction du soignant sont fixés par ce code : ils ne se choisissent pas ici.'),
         const SizedBox(height: 12),
         TextField(key: const Key('code'), controller: _code, decoration: const InputDecoration(labelText: 'Code d’appairage')),
         const SizedBox(height: 12),
         TextField(key: const Key('cle'), controller: _cle, decoration: const InputDecoration(labelText: 'Clé de clinique (QR)'), obscureText: true),
-        const SizedBox(height: 16),
-        SegmentedButton<ProfilMobile>(
-          key: const Key('profil'),
-          segments: const [
-            ButtonSegment(value: ProfilMobile.soignant, label: Text('Soignant')),
-            ButtonSegment(value: ProfilMobile.receptionSecours, label: Text('Réception de secours')),
-          ],
-          selected: {_profil},
-          onSelectionChanged: (s) => setState(() => _profil = s.first),
-        ),
-        // Le nom de l'agent est demandé aux DEUX profils : l'orientation de la réception est aussi une action nommée (RG-12).
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         TextField(key: const Key('agent'), controller: _agent, decoration: const InputDecoration(labelText: 'Nom de l’agent')),
-        if (_profil == ProfilMobile.soignant) ...[
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            key: const Key('fonction'),
-            initialValue: _fonction,
-            decoration: const InputDecoration(labelText: 'Fonction'),
-            items: [for (final f in mobFonctions) DropdownMenuItem(value: f, child: Text(mobLibelleFonction(f)))],
-            onChanged: (v) => setState(() => _fonction = v ?? _fonction),
-          ),
-        ],
+        ValueListenableBuilder<EtatMobile>(
+          valueListenable: widget.moteur.etat,
+          builder: (_, e, __) => e.enAttenteClinique
+              ? const Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: Text('Téléphone appairé. En attente de la clinique : elle vous attribue votre profil et votre fonction dès qu’elle est joignable (proposition à valider).',
+                      key: Key('attente-clinique')))
+              : const SizedBox.shrink(),
+        ),
         if (_erreur != null) Padding(padding: const EdgeInsets.only(top: 12), child: Text(_erreur!, key: const Key('erreur'), style: TextStyle(color: Theme.of(context).colorScheme.error))),
         const SizedBox(height: 16),
         FilledButton(key: const Key('appairer'), onPressed: _en ? null : _valider, child: Text(_en ? 'Appairage…' : 'Appairer ce téléphone')),

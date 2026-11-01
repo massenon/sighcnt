@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show mobFonctions, mobLibelleFonction;
 
 import '../core/theme.dart';
 import 'client_mere.dart';
@@ -373,22 +374,50 @@ class _ConsoleMereState extends State<ConsoleMere> {
 
   Future<void> _appairer({required bool mobile}) async {
     final nom = TextEditingController();
+    // E1600 : pour un mobile, la console affecte le PROFIL et la FONCTION du soignant ; le téléphone les reçoit de la mère et ne peut plus les déclarer.
+    var profil = 'soignant';
+    var fonction = mobFonctions.first;
     final etiquette = await showDialog<String>(
       context: context,
-      builder: (c) => AlertDialog(
-        title: Text(mobile ? 'Appairer un mobile' : 'Appairer un poste'),
-        content: TextField(
-            controller: nom,
-            autofocus: true,
-            decoration: const InputDecoration(
-                labelText: 'Nom de l’appareil (ex. Réception, Dr Yeni)')),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(c), child: const Text('Annuler')),
-          FilledButton(
-              onPressed: () => Navigator.pop(c, nom.text.trim()),
-              child: const Text('Générer le code'))
-        ],
+      builder: (c) => StatefulBuilder(
+        builder: (c, majEtat) => AlertDialog(
+          title: Text(mobile ? 'Appairer un mobile' : 'Appairer un poste'),
+          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+            TextField(
+                controller: nom,
+                autofocus: true,
+                decoration: const InputDecoration(labelText: 'Nom de l’appareil (ex. Réception, Dr Yeni)')),
+            if (mobile) ...[
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                key: const Key('console-profil'),
+                initialValue: profil,
+                decoration: const InputDecoration(labelText: 'Profil du téléphone'),
+                items: const [
+                  DropdownMenuItem(value: 'soignant', child: Text('Soignant')),
+                  DropdownMenuItem(value: 'reception', child: Text('Réception de secours')),
+                ],
+                onChanged: (v) => majEtat(() => profil = v ?? profil),
+              ),
+              if (profil == 'soignant') ...[
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  key: const Key('console-fonction'),
+                  initialValue: fonction,
+                  decoration: const InputDecoration(labelText: 'Fonction du soignant'),
+                  items: [for (final f in mobFonctions) DropdownMenuItem(value: f, child: Text(mobLibelleFonction(f)))],
+                  onChanged: (v) => majEtat(() => fonction = v ?? fonction),
+                ),
+                const SizedBox(height: 4),
+                const Text('La fonction est fixée par ce code : le téléphone ne peut ni la choisir ni la changer.', style: TextStyle(fontSize: 12)),
+              ],
+            ],
+          ]),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(c), child: const Text('Annuler')),
+            FilledButton(onPressed: () => Navigator.pop(c, nom.text.trim()), child: const Text('Générer le code'))
+          ],
+        ),
       ),
     );
     if (etiquette == null || etiquette.isEmpty) return;
@@ -396,7 +425,7 @@ class _ConsoleMereState extends State<ConsoleMere> {
       final String code;
       String? cle;
       if (mobile) {
-        final r = await widget.client.codeMobile(etiquette);
+        final r = await widget.client.codeMobile(etiquette, profil: profil, fonction: profil == 'soignant' ? fonction : null);
         code = r.code;
         cle = r.cle;
       } else {

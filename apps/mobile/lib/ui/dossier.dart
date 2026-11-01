@@ -98,11 +98,15 @@ class _DossierPatientState extends State<DossierPatient> {
               if (r.prescriptions.isEmpty) const Text('Aucune prescription sur ce téléphone.', key: Key('prescriptions-vide')),
               for (final p in r.prescriptions)
                 ListTile(
+                  key: Key('prescription-${p['id']}'),
                   dense: true,
                   contentPadding: EdgeInsets.zero,
                   title: Text(p['nature'] == 'analyse' ? 'Analyses : ${(p['examens'] as List?)?.join(', ') ?? ''}' : 'Ordonnance : ${((p['lignes'] as List?) ?? const []).map((l) => (l as Map)['medicament']).join(', ')}'),
                   subtitle: Text('${_quand(p['date'])} · ${p['prescripteur'] ?? ''}'),
+                  trailing: null,
+                  isThreeLine: true,
                 ),
+              for (final p in r.prescriptions) ..._etatTranscription(d.transcriptions['${p['id']}'], '${p['id']}', p['nature'] == 'analyse'),
             ]),
             // Les commandes : une commande dont la fonction n'a pas le droit n'est pas dessinée.
             FilledButton.icon(
@@ -147,6 +151,25 @@ class _DossierPatientState extends State<DossierPatient> {
         );
       },
     );
+  }
+
+  /// Ce que la clinique a fait de la prescription. La phrase de la maquette (l'ordonnance et la facture de la caisse) n'est dite que quand elles existent.
+  static List<Widget> _etatTranscription(MobTranscription? t, String id, bool analyse) {
+    if (t == null) return const [];
+    return [
+      Padding(
+        key: Key('transcription-$id'),
+        padding: const EdgeInsets.only(bottom: 8, left: 8),
+        child: Text(
+          switch (t.etat) {
+            MobEtatTranscription.transcrite => '${t.libelle} ${analyse ? mobTexte('analyses') : mobTexte('prescription')}',
+            MobEtatTranscription.refusee => '${t.libelle}\nÀ faire : ${t.geste ?? ''} (${t.code ?? ''})',
+            MobEtatTranscription.attente => t.libelle,
+          },
+          style: TextStyle(color: t.etat == MobEtatTranscription.refusee ? ThemeSigh.danger : null, fontSize: 13),
+        ),
+      ),
+    ];
   }
 
   static String _quand(Object? v) {

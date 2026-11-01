@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../m13/qual_qr.dart';
+import 'mra_affectation.dart';
 import 'mrb_commun.dart';
 import 'mrb_source.dart';
 
@@ -100,30 +101,13 @@ class _EtatCle extends MrbEtatEcran<EcranCleClinique, _Cle> {
   Future<void> _qr(BuildContext contexte) async {
     final s = source;
     if (s == null) return;
-    final nom = TextEditingController();
-    final etiquette = await afficherModale<String>(contexte,
-        titre: 'Appairer un mobile',
-        taille: TailleModale.sm,
-        corps: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-          const Text('Nom du mobile (ex. Dr Yeni)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: JetonsShell.slate600)),
-          const SizedBox(height: 6),
-          TextField(
-              key: const Key('mrb:etiquette-mobile'),
-              controller: nom,
-              autofocus: true,
-              style: styleSaisie,
-              decoration: decorationChamp(indicatif: 'Nom du mobile')),
-        ]),
-        pied: (fermer) => [
-              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
-              BoutonSigh(
-                  libelle: 'Générer le QR', onPressed: () => Navigator.of(contexte, rootNavigator: true).pop(nom.text.trim())),
-            ]);
-    // Le contrôleur n'est pas libéré ici : la modale joue encore son animation de fermeture et le relirait.
-    if (etiquette == null || etiquette.isEmpty) return;
+    // E1600 : le profil et la fonction du téléphone sont affectés ICI, par le code ; le téléphone ne les déclare plus.
+    final a = await demanderAffectationMobile(contexte, libelleOk: 'Générer le QR');
+    if (a == null || a.etiquette.isEmpty || !contexte.mounted) return;
+    final etiquette = a.etiquette;
     final MrbCodeMobile r;
     try {
-      r = await s.codeMobile(etiquette);
+      r = await s.codeMobile(etiquette, profil: a.profil, fonction: a.fonction);
     } catch (e) {
       if (contexte.mounted) ToastsSigh.afficher(contexte, 'QR refusé : ${mrbCause(e)}', type: TypeToast.erreur);
       return;

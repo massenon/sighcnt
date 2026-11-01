@@ -35,7 +35,7 @@ const FAMILLES = {
   cpn: 'B', cpon: 'B', surveillances: 'B', orientations: 'B', /* suite du mobile (E1650 à E1660) */
   factures: 'C', prescriptions: 'C',
   stock: 'D',
-  tarifs: 'R', chambres: 'R',
+  tarifs: 'R', chambres: 'R', produits: 'R', transcriptions: 'B',
 };
 const ESSENTIELLES = new Set(['tarifs', 'chambres']);
 
@@ -48,8 +48,8 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS resultats (id TEXT PRIMARY KEY, json TEXT);
   CREATE TABLE IF NOT EXISTS fiches (collection TEXT, id TEXT, data TEXT, fieldseq TEXT, archive INTEGER, PRIMARY KEY (collection, id));
   CREATE TABLE IF NOT EXISTS appareils (uuid TEXT PRIMARY KEY, etiquette TEXT, role TEXT, etat TEXT, jeton_hash TEXT, jeton_expire INTEGER,
-    renouv_hash TEXT, dernier_contact INTEGER, dernier_seq INTEGER DEFAULT 0, derive_ms INTEGER DEFAULT 0, profil TEXT);
-  CREATE TABLE IF NOT EXISTS codes (code TEXT PRIMARY KEY, etiquette TEXT, role TEXT, expire INTEGER, utilise INTEGER DEFAULT 0);
+    renouv_hash TEXT, dernier_contact INTEGER, dernier_seq INTEGER DEFAULT 0, derive_ms INTEGER DEFAULT 0, profil TEXT, fonction TEXT);
+  CREATE TABLE IF NOT EXISTS codes (code TEXT PRIMARY KEY, etiquette TEXT, role TEXT, expire INTEGER, utilise INTEGER DEFAULT 0, profil TEXT, fonction TEXT);
   CREATE TABLE IF NOT EXISTS conflits (id INTEGER PRIMARY KEY AUTOINCREMENT, collection TEXT, fiche TEXT, champ TEXT, a TEXT, b TEXT,
     appareil TEXT, etat TEXT DEFAULT 'ouvert', decision TEXT);
   CREATE TABLE IF NOT EXISTS plages (appareil TEXT, nom TEXT, debut INTEGER, fin INTEGER);
@@ -58,6 +58,11 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS portee (appareil TEXT, collection TEXT, fiche TEXT, PRIMARY KEY (appareil, collection, fiche));
   CREATE TABLE IF NOT EXISTS sortie (appareil TEXT, n INTEGER, enveloppe TEXT, depose INTEGER DEFAULT 0, PRIMARY KEY (appareil, n));
 `);
+/* Migration (E1600) : une base d'avant la fonction authentifiée reçoit les colonnes ; un appareil déjà appairé garde `fonction` NULL,
+   et la mère refuse alors ses prescriptions en le disant (nouvel appairage). */
+for (const [t, c] of [['codes', 'profil'], ['codes', 'fonction'], ['appareils', 'fonction']]) {
+  try { db.exec(`ALTER TABLE ${t} ADD COLUMN ${c} TEXT`); } catch (e) { /* déjà présente */ }
+}
 const meta = (k, d) => { const r = db.prepare('SELECT v FROM meta WHERE k=?').get(k); return r ? r.v : d; };
 const setMeta = (k, v) => db.prepare('INSERT INTO meta(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v').run(k, String(v));
 if (meta('epoch') === undefined) setMeta('epoch', 1);
@@ -222,18 +227,52 @@ function emettreJetons(uuid) {
 /* --- l'envoi d'un lot, commun aux postes (P1) et aux mobiles (P2/P3) ------------------------- */
 const AUTORISE = { reception: new Set(['patients', 'rendezvous', 'constantes', 'orientations']), soignant: new Set(['patients', 'constantes', 'notes', 'rendezvous', 'prescriptions', 'cpn', 'cpon', 'surveillances']) };
 /* La prescription d'un mobile est une pièce ÉMISE : la mère REFAIT le contrôle d'habilitation. La règle n'est pas recopiée : elle est LUE dans les
-   vecteurs de la maquette (PR.peutPrescrire, `mobile.json`), comme le fait le test du domaine Dart. La fonction est celle que le téléphone déclare. */
+   vecteurs de la maquette (PR.peutPrescrire, `mobile.json`), comme le fait le test du domaine Dart. La fonction est celle que la mère a FIXÉE à l'appairage (E1600). */
 const PRESCRIPTION = (() => {
   try { return JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'domaine', 'test', 'vecteurs', 'mobile.json'), 'utf8')).droitsPrescription; } catch (e) { return null; }
 })();
-function refusPrescriptionMobile(op) {
-  const fonction = String((op.champs || {}).fonction || ''), nature = String((op.champs || {}).nature || '');
+function refusPrescriptionMobile(op, app) {
+  const fonction = String((app && app.fonction) || ''), nature = String((op.champs || {}).nature || '');
   const ligne = PRESCRIPTION && PRESCRIPTION.lignes.find((l) => l.fonction === fonction && l.nature === nature);
   if (ligne && ligne.autorise) return null;
   const libelle = PRESCRIPTION && PRESCRIPTION.labels[fonction];
   return { id: op.id, statut: 'refusee', code: 'droit_refuse',
-    motif: !fonction ? 'Prescription sans fonction déclarée : aucune habilitation ne peut être vérifiée.' : `${libelle || fonction} : la prescription de « ${nature} » n’est pas dans ses habilitations.`,
+    motif: `${libelle || fonction} n’est pas habilité à prescrire « ${nature} ».`,
     geste: 'Demander la prescription à un médecin' };
+}
+
+/* E1600 : la FONCTION du soignant est fixée par le code d'appairage que la console de la mère émet. Le téléphone ne la déclare plus : il la
+   REÇOIT (bienvenue chiffrée) et la mère la relit dans sa propre table à chaque dépôt. Les fonctions du profil soignant sont celles de `mobFonctions`. */
+const PROFILS_MOBILE = ['soignant', 'reception'];
+const FONCTIONS_MOBILE = ['medecin', 'sage_femme', 'infirmier', 'aide_soignant'];
+function affectationMobile(b) {
+  const profil = String(b.profil || '');
+  if (!PROFILS_MOBILE.includes(profil)) throw new Err(422, 'profil_requis', 'Choisir le profil du téléphone : soignant ou réception de secours.');
+  const fonction = String(b.fonction || '');
+  if (profil === 'reception') {
+    if (fonction) throw new Err(422, 'fonction_non_applicable', 'La réception de secours n’a pas de fonction de soignant.');
+    return { profil, fonction: null };
+  }
+  if (!FONCTIONS_MOBILE.includes(fonction)) throw new Err(422, 'fonction_inconnue', `Fonction « ${fonction || 'vide'} » inconnue : choisir parmi ${FONCTIONS_MOBILE.join(', ')}.`);
+  return { profil, fonction };
+}
+/* Le contrôle de fonction d'une pièce émise par un mobile soignant : refus NOMMÉS, jamais une valeur du téléphone prise pour argent comptant. */
+function refusFonctionMobile(app, op) {
+  const champs = op.champs || {};
+  const declaree = champs.fonction == null ? '' : String(champs.fonction);
+  if (!app.fonction) {
+    return { id: op.id, statut: 'refusee', code: 'fonction_non_fixee', motif: 'Cet appareil a été appairé avant que la clinique fixe la fonction du soignant : la mère ne peut pas vérifier son habilitation.', geste: 'Réappairer le téléphone avec un nouveau code émis par la console (Appareils)' };
+  }
+  if (declaree && declaree !== app.fonction) {
+    return { id: op.id, statut: 'refusee', code: 'fonction_falsifiee', motif: `Le téléphone déclare « ${declaree} » mais la clinique l’a appairé comme « ${app.fonction} » : la fonction est fixée à l’appairage et ne se change pas depuis le téléphone.`, geste: 'Faire corriger la fonction par la console de la mère : nouveau code d’appairage (Appareils)' };
+  }
+  return null;
+}
+/* E1559 : une pièce du soignant ne se rattache qu'à un dossier DE SA TOURNÉE (le lot que la mère lui a déposé) : un patient hors lot est refusé en le disant. */
+function refusHorsLot(app, op) {
+  const patientId = String((op.champs || {}).patientId || '');
+  if (patientId && db.prepare("SELECT 1 FROM portee WHERE appareil=? AND collection='patients' AND fiche=?").get(app.uuid, patientId)) return null;
+  return { id: op.id, statut: 'refusee', code: 'patient_hors_lot', motif: 'Ce patient n’est pas dans le lot de ce téléphone.', geste: 'Recevoir le lot du jour à la prochaine synchronisation' };
 }
 function pousser(app, b) {
   if (b.epoch !== +meta('epoch')) throw new Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', { epoch_mere: +meta('epoch') });
@@ -245,10 +284,23 @@ function pousser(app, b) {
     let r;
     if (app.role === 'mobile' && !(AUTORISE[app.profil] || new Set()).has(op.collection)) {
       r = { id: op.id, statut: 'refusee', code: 'droit_refuse', motif: `Le profil « ${app.profil} » ne couvre pas la collection ${op.collection}.`, geste: 'Utiliser un poste' };
-    } else if (app.role === 'mobile' && op.collection === 'prescriptions' && op.type === 'creer' && refusPrescriptionMobile(op)) {
-      r = refusPrescriptionMobile(op);
-    } else r = traiter(op, app);
+    } else if (app.role === 'mobile' && app.profil === 'soignant' && ['notes', 'prescriptions'].includes(op.collection) && op.type === 'creer' && refusHorsLot(app, op)) {
+      r = refusHorsLot(app, op);
+    } else if (app.role === 'mobile' && app.profil === 'soignant' && ['notes', 'prescriptions'].includes(op.collection) && op.type === 'creer' && refusFonctionMobile(app, op)) {
+      r = refusFonctionMobile(app, op);
+    } else if (app.role === 'mobile' && op.collection === 'prescriptions' && op.type === 'creer' && refusPrescriptionMobile(op, app)) {
+      r = refusPrescriptionMobile(op, app);
+    } else {
+      // La fonction ÉCRITE sur la pièce est celle que la mère tient pour l'appareil, jamais celle du téléphone.
+      if (app.role === 'mobile' && app.profil === 'soignant' && ['notes', 'prescriptions'].includes(op.collection) && op.type === 'creer') op.champs = Object.assign({}, op.champs, { fonction: app.fonction });
+      r = traiter(op, app);
+    }
     if (app.role === 'mobile' && r.statut === 'acceptee' && op.type === 'creer') db.prepare('INSERT OR IGNORE INTO portee(appareil,collection,fiche) VALUES(?,?,?)').run(app.uuid, op.collection, op.fiche);
+    /* E1559 : le COMPTE RENDU de la transcription (écrit par un poste) revient au téléphone qui a émis la prescription, et à lui seul. */
+    if (r.statut === 'acceptee' && op.collection === 'transcriptions' && op.type === 'creer') {
+      const src = db.prepare("SELECT appareil FROM operations WHERE collection='prescriptions' AND fiche=?").get(String((op.champs || {}).prescriptionId || ''));
+      if (src) db.prepare('INSERT OR IGNORE INTO portee(appareil,collection,fiche) VALUES(?,?,?)').run(src.appareil, 'transcriptions', op.fiche);
+    }
     db.prepare('INSERT INTO resultats(id,json) VALUES(?,?)').run(op.id, JSON.stringify(r));
     return r;
   }));
@@ -261,7 +313,9 @@ const routes = {
     adminOk(req);
     const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     const code = Array.from(crypto.randomBytes(8)).map((x) => alphabet[x % alphabet.length]).join('');
-    db.prepare('INSERT INTO codes(code,etiquette,role,expire) VALUES(?,?,?,?)').run(code, b.etiquette || '', b.role || 'fileul', Date.now() + CODE_TTL);
+    const role = b.role || 'fileul';
+    const aff = role === 'mobile' ? affectationMobile(b) : { profil: null, fonction: null };
+    db.prepare('INSERT INTO codes(code,etiquette,role,expire,profil,fonction) VALUES(?,?,?,?,?,?)').run(code, b.etiquette || '', role, Date.now() + CODE_TTL, aff.profil, aff.fonction);
     return { code };
   },
   'POST /appairage': (req, b) => {
@@ -324,14 +378,23 @@ const routes = {
     adminOk(req);
     const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     const code = Array.from(crypto.randomBytes(8)).map((x) => alphabet[x % alphabet.length]).join('');
-    db.prepare('INSERT INTO codes(code,etiquette,role,expire) VALUES(?,?,?,?)').run(code, b.etiquette || '', 'mobile', Date.now() + CODE_TTL);
-    await rel('POST', '/mere/code', { hash: sha(code) });
-    return { code, cle: CLE.toString('base64') };
+    const aff = affectationMobile(b);
+    db.prepare('INSERT INTO codes(code,etiquette,role,expire,profil,fonction) VALUES(?,?,?,?,?,?)').run(code, b.etiquette || '', 'mobile', Date.now() + CODE_TTL, aff.profil, aff.fonction);
+    // Le relais ne reçoit que l'empreinte ET, à titre d'étiquette d'affichage (jamais d'autorité), le profil et la fonction du code.
+    await rel('POST', '/mere/code', { hash: sha(code), profil: aff.profil, fonction: aff.fonction });
+    return { code, cle: CLE.toString('base64'), profil: aff.profil, fonction: aff.fonction };
   },
   'POST /admin/lot': (req, b) => {
     adminOk(req);
     const fiches = [];
-    for (const f of b.fiches) {
+    const lot = b.fiches.slice();
+    /* E1600/E1559 : le CATALOGUE des produits (prix d'achat, stock du jour, RG-02) part avec le lot d'un soignant habilité à prescrire des médicaments ;
+       jamais à une infirmière ni à une réception. Ce n'est pas une donnée patient : il ne sort pas du périmètre de la tournée. */
+    const dest = db.prepare('SELECT * FROM appareils WHERE uuid=?').get(b.uuid);
+    if (b.catalogue !== false && dest && dest.profil === 'soignant' && PRESCRIPTION && PRESCRIPTION.lignes.some((l) => l.fonction === dest.fonction && l.nature === 'medicament' && l.autorise)) {
+      for (const x of db.prepare("SELECT id FROM fiches WHERE collection='produits' AND archive=0").all()) lot.push({ collection: 'produits', id: x.id });
+    }
+    for (const f of lot) {
       const x = lire(f.collection, f.id); if (!x) continue;
       db.prepare('INSERT OR IGNORE INTO portee(appareil,collection,fiche) VALUES(?,?,?)').run(b.uuid, f.collection, f.id);
       fiches.push({ collection: f.collection, id: f.id, data: x.data, fieldseq: x.fieldseq, archive: x.archive });
@@ -463,11 +526,13 @@ function traiterEnveloppe(uuid, p) {
     if (db.prepare('SELECT 1 FROM appareils WHERE uuid=?').get(uuid)) return;
     if (!c || c.role !== 'mobile' || c.utilise || Date.now() > c.expire) { alerter({ type: 'appareil_inconnu', appareil: uuid }); setMeta('bloque:' + uuid, 'inconnu'); return; }
     db.prepare('UPDATE codes SET utilise=1 WHERE code=?').run(c.code);
-    db.prepare("INSERT INTO appareils(uuid,etiquette,role,etat,profil) VALUES(?,?,'mobile','actif',?)").run(uuid, c.etiquette, p.profil);
+    // Le profil et la fonction viennent du CODE (table de la mère), jamais du `hello` : un profil déclaré différent est signalé.
+    if (p.profil && p.profil !== c.profil) alerter({ type: 'profil_declare_different', appareil: uuid, declare: String(p.profil), code: c.profil });
+    db.prepare("INSERT INTO appareils(uuid,etiquette,role,etat,profil,fonction) VALUES(?,?,'mobile','actif',?,?)").run(uuid, c.etiquette, c.profil || 'soignant', c.fonction || null);
     const debut = +meta('next_patient'); const fin = debut + 19; setMeta('next_patient', fin + 1);
     db.prepare('INSERT INTO plages(appareil,nom,debut,fin) VALUES(?,?,?,?)').run(uuid, 'patients', debut, fin);
     setMeta('sortie_seq:' + uuid, Number(db.prepare('SELECT COALESCE(MAX(seq),0) AS s FROM operations').get().s));
-    publier(uuid, { type: 'bienvenue', epoch: +meta('epoch'), plage: { debut, fin } });
+    publier(uuid, { type: 'bienvenue', epoch: +meta('epoch'), plage: { debut, fin }, profil: c.profil || 'soignant', fonction: c.fonction || null });
     return;
   }
   const app = db.prepare('SELECT * FROM appareils WHERE uuid=?').get(uuid);

@@ -78,7 +78,15 @@ class RelaisController extends Controller
     public function code(Request $r): JsonResponse
     {
         $this->exigerMere($r);
-        DB::table('relais_codes')->insertOrIgnore(['hash' => (string) $r->input('hash'), 'utilise' => false, 'cree' => (int) (microtime(true) * 1000)]);
+        /* Le profil et la fonction ne sont qu'une ÉTIQUETTE d'affichage déclarée par la mère (E1600) : le relais n'en tire aucun droit et n'en contrôle
+           pas la valeur. L'autorité est la table de la mère, relue à chaque dépôt. */
+        $profil = $r->input('profil');
+        $fonction = $r->input('fonction');
+        DB::table('relais_codes')->insertOrIgnore([
+            'hash' => (string) $r->input('hash'), 'utilise' => false, 'cree' => (int) (microtime(true) * 1000),
+            'profil' => is_string($profil) && $profil !== '' ? mb_substr($profil, 0, 32) : null,
+            'fonction' => is_string($fonction) && $fonction !== '' ? mb_substr($fonction, 0, 32) : null,
+        ]);
 
         return response()->json(['ok' => true]);
     }
@@ -95,13 +103,17 @@ class RelaisController extends Controller
             $this->refus(403, 'code_utilise', 'Code déjà utilisé.');
         }
         $uuid = (string) $r->input('uuid');
-        if ($uuid === '' || DB::table('relais_appareils')->where('uuid', $uuid)->exists()) {
-            $this->refus(422, 'uuid_invalide', 'Identifiant d\'appareil absent ou déjà connu.');
+        if ($uuid === '') {
+            $this->refus(422, 'uuid_invalide', 'Identifiant d\'appareil absent.');
+        }
+        // Un appareil déjà appairé ne reprend pas un autre code : sa fonction ne change qu'avec un NOUVEL appareil (révocation puis nouvel appairage).
+        if (DB::table('relais_appareils')->where('uuid', $uuid)->exists()) {
+            $this->refus(409, 'appareil_deja_appaire', 'Cet appareil est déjà appairé : pour changer sa fonction, le révoquer puis l\'appairer avec un nouveau code.');
         }
         $secret = bin2hex(random_bytes(24));
-        DB::transaction(function () use ($hash, $uuid, $secret) {
+        DB::transaction(function () use ($hash, $uuid, $secret, $c) {
             DB::table('relais_codes')->where('hash', $hash)->update(['utilise' => true, 'utilise_le' => (int) (microtime(true) * 1000)]);
-            DB::table('relais_appareils')->insert(['uuid' => $uuid, 'jeton_hash' => hash('sha256', $secret), 'etat' => 'actif']);
+            DB::table('relais_appareils')->insert(['uuid' => $uuid, 'jeton_hash' => hash('sha256', $secret), 'etat' => 'actif', 'profil' => $c->profil, 'fonction' => $c->fonction]);
         });
 
         return response()->json(['jeton' => $uuid.'.'.$secret]);

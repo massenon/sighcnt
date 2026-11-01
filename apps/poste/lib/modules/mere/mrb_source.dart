@@ -143,7 +143,7 @@ abstract class MrbSource {
   Future<void> revoquer(String uuid);
   Future<void> ouvrirFenetreReinit(bool ouvrir);
   Future<MrbResultatReinit> reinitialiser({required String confirmation, required String second});
-  Future<MrbCodeMobile> codeMobile(String etiquette);
+  Future<MrbCodeMobile> codeMobile(String etiquette, {required String profil, String? fonction});
 
   /// Le nom de la clinique que le moteur exige en confirmation (`_clinique` dans `mere.dart`).
   String get nomClinique => 'NASSIERA TOO';
@@ -269,8 +269,8 @@ class MrbSourceClient extends MrbSource {
   }
 
   @override
-  Future<MrbCodeMobile> codeMobile(String etiquette) async {
-    final r = await client.codeMobile(etiquette);
+  Future<MrbCodeMobile> codeMobile(String etiquette, {required String profil, String? fonction}) async {
+    final r = await client.codeMobile(etiquette, profil: profil, fonction: fonction);
     return MrbCodeMobile(code: r.code, payloadQr: mrbPayloadQrMobile(code: r.code, cleBase64: r.cle));
   }
 }

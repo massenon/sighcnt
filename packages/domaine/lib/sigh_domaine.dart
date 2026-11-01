@@ -103,3 +103,5 @@ export 'src/mere/mrc_regles.dart';
 export 'src/mobile/mob_pin.dart';
 export 'src/mobile/mob_regles.dart';
 export 'src/mobile/mob_suite.dart';
+export 'src/mobile/mob_textes.dart';
+export 'src/mobile/mob_transcription.dart';
