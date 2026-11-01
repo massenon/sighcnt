@@ -7,6 +7,7 @@ import 'donnees/magasin.dart';
 import 'core/config_poste.dart';
 import 'core/controleur_poste.dart';
 import 'core/donnees_navigation.dart';
+import 'core/identifiants.dart';
 import 'core/parametres_poste.dart';
 import 'core/theme.dart';
 import 'mere/activation.dart';
@@ -40,6 +41,11 @@ const String connexionExigee =
 /// `SIGH_PLEIN_ECRAN=non` : ne pas passer en plein écran au démarrage (développement). Par défaut le poste se lance en plein écran.
 const String pleinEcranAuDemarrage =
     String.fromEnvironment('SIGH_PLEIN_ECRAN', defaultValue: 'oui');
+
+/// `SIGH_MDP_DEMO=<mot de passe>` : DÉVELOPPEMENT SEULEMENT. Définit ce mot de passe pour tous les comptes actifs du jeu, avec changement obligatoire à la
+/// première connexion. Vide (défaut) : seul l'administrateur reçoit un mot de passe provisoire aléatoire, affiché sur l'écran de connexion.
+const String motDePasseDemo =
+    String.fromEnvironment('SIGH_MDP_DEMO', defaultValue: '');
 
 /// Dossier des données du poste. À remplacer par le dossier d'application du système à l'installation (tâche de packaging).
 const String dossierDonnees =
@@ -91,6 +97,22 @@ Future<void> main() async {
   final magasin = await Magasin.depuisAssets(Magasin.collectionsDuJeu);
   // E1559 : les prescriptions que les téléphones des soignants envoient par la mère sont TRANSCRITES ici (ordonnance, facture de la caisse, files
   // d'aval) par le moteur de la fiche de consultation ; une pièce non transcriptible est refusée en le disant.
+  if (connexionExigee != 'non') {
+    final ident = ServiceIdentifiants.de(magasin);
+    final maintenant = DateTime.now();
+    if (motDePasseDemo.isEmpty) {
+      ServiceIdentifiants.provisoireAffiche =
+          await ident.amorcerAdministrateur(maintenant: maintenant);
+    } else {
+      for (final u in magasin.collection('utilisateurs').toutes) {
+        if ('${u['statut'] ?? 'actif'}' != 'actif') continue;
+        await ident.definir('${u['id'] ?? u['identifiant']}', motDePasseDemo,
+            par: 'Mise en service (démonstration)',
+            doitChanger: true,
+            maintenant: maintenant);
+      }
+    }
+  }
   ServiceTranscriptionMobile(magasin: magasin, source: moteur.pieces).demarrer();
   runApp(SighPoste(
       controleur: controleur,
