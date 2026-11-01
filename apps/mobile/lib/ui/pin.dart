@@ -7,7 +7,8 @@ import '../core/theme.dart';
 
 /// Le pavé du code PIN : douze touches dans l'ordre de la page du simulateur (chiffres, un vide, 0, effacer), quatre points pleins au fur et à mesure.
 class PavePin extends StatelessWidget {
-  const PavePin({super.key, required this.points, required this.message, required this.touche, this.invite, this.activ = true});
+  const PavePin({super.key, required this.points, required this.message, required this.touche, this.invite, this.activ = true, this.entete});
+  final Widget? entete;
   final int points;
   final String message;
   final String? invite;
@@ -19,6 +20,7 @@ class PavePin extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
+        if (entete != null) ...[entete!, const SizedBox(height: 16)],
         Icon(Icons.lock_outline, size: 40, color: ThemeSigh.navy),
         const SizedBox(height: 12),
         if (invite != null) Text(invite!, key: const Key('pin-invite'), textAlign: TextAlign.center),
@@ -65,7 +67,8 @@ class PavePin extends StatelessWidget {
 
 /// L'écran « Code PIN ». La règle est celle de la page (`MobPin`) ; le code est vérifié par le coffre, jamais gardé ici.
 class EcranPin extends StatefulWidget {
-  const EcranPin({super.key, required this.pin, required this.ouvrir, this.horloge});
+  const EcranPin({super.key, required this.pin, required this.ouvrir, this.horloge, this.entete});
+  final Widget? entete;
   final MobPin pin;
   final VoidCallback ouvrir;
   final DateTime Function()? horloge;
@@ -113,7 +116,7 @@ class _EcranPinState extends State<EcranPin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(mobPinTitre)),
-      body: Center(child: SingleChildScrollView(child: PavePin(points: _etat.points, message: _etat.message, invite: mobPinInvite, touche: _touche))),
+      body: Center(child: SingleChildScrollView(child: PavePin(points: _etat.points, message: _etat.message, invite: mobPinInvite, touche: _touche, entete: widget.entete))),
     );
   }
 }
@@ -121,7 +124,8 @@ class _EcranPinState extends State<EcranPin> {
 /// Premier lancement : choisir le code, deux fois. Cet écran n'est PAS dans le simulateur (qui fixe 1234 pour la démonstration) : le texte est une
 /// proposition (E1657).
 class EcranDefinirPin extends StatefulWidget {
-  const EcranDefinirPin({super.key, required this.coffre, required this.termine});
+  const EcranDefinirPin({super.key, required this.coffre, required this.termine, this.entete});
+  final Widget? entete;
   final CoffrePin coffre;
   final VoidCallback termine;
 
@@ -170,7 +174,7 @@ class _EcranDefinirPinState extends State<EcranDefinirPin> {
       appBar: AppBar(title: Text(mobPinTitre)),
       body: Center(
         child: SingleChildScrollView(
-          child: PavePin(points: _saisie.length, message: _message, invite: _premier.isEmpty ? 'Choisissez un code à 4 chiffres.' : 'Saisissez le même code une seconde fois.', touche: _touche),
+          child: PavePin(entete: widget.entete, points: _saisie.length, message: _message, invite: _premier.isEmpty ? 'Choisissez un code à 4 chiffres.' : 'Saisissez le même code une seconde fois.', touche: _touche),
         ),
       ),
     );
@@ -181,11 +185,18 @@ class _EcranDefinirPinState extends State<EcranDefinirPin> {
 /// l'arrière-plan passé ce délai. L'écran en dessous reste monté (la saisie en cours n'est pas perdue). Sans [coffre], aucun verrou : c'est le cas des
 /// tests d'écran, jamais celui de l'application (`main`).
 class GardeVerrou extends StatefulWidget {
-  const GardeVerrou({super.key, required this.coffre, required this.child, this.delai, this.horloge});
+  const GardeVerrou({super.key, required this.coffre, required this.child, this.delai, this.horloge, this.appaire = true, this.identite});
   final CoffrePin? coffre;
   final Widget child;
   final Duration? delai;
   final DateTime Function()? horloge;
+
+  /// Le verrou ne couvre QUE ce qui est appairé (E1820) : un téléphone neuf n'a ni donnée ni agent à protéger, il doit d'abord s'appairer ; le code PIN se
+  /// choisit ensuite, à l'ouverture du profil. Un appairage retiré (réinitialisation) lève le verrou de la même façon.
+  final bool appaire;
+
+  /// L'agent (déclaré à l'appairage) et le profil (fixé par le code), affichés sur l'écran de verrou (jamais saisis, E1821).
+  final Widget? Function()? identite;
 
   @override
   State<GardeVerrou> createState() => _GardeVerrouState();
@@ -223,7 +234,7 @@ class _GardeVerrouState extends State<GardeVerrou> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState etat) {
-    if (widget.coffre == null) return;
+    if (!_couvre) return;
     if (etat == AppLifecycleState.paused || etat == AppLifecycleState.inactive) {
       _quitteLe ??= _maintenant();
     } else if (etat == AppLifecycleState.resumed) {
@@ -233,8 +244,25 @@ class _GardeVerrouState extends State<GardeVerrou> with WidgetsBindingObserver {
     }
   }
 
+  @override
+  void didUpdateWidget(GardeVerrou ancien) {
+    super.didUpdateWidget(ancien);
+    if (widget.coffre == null || ancien.appaire == widget.appaire) return;
+    _inactivite?.cancel();
+    if (widget.appaire) {
+      // Appairage terminé (ou refait) : on revérifie l'existence d'un code, et l'écran de verrou passe AVANT l'accueil du profil.
+      _verrouille = true;
+      _pin = MobPin(widget.coffre!, horloge: widget.horloge);
+      unawaited(widget.coffre!.aUnCode().then((a) {
+        if (mounted) setState(() => _aCode = a);
+      }));
+    }
+  }
+
+  bool get _couvre => widget.coffre != null && widget.appaire;
+
   void _verrouiller() {
-    if (!mounted || widget.coffre == null) return;
+    if (!mounted || !_couvre) return;
     _inactivite?.cancel();
     setState(() {
       _pin = MobPin(widget.coffre!, horloge: widget.horloge);
@@ -243,7 +271,7 @@ class _GardeVerrouState extends State<GardeVerrou> with WidgetsBindingObserver {
   }
 
   void _activite() {
-    if (widget.coffre == null || _verrouille) return;
+    if (!_couvre || _verrouille) return;
     _inactivite?.cancel();
     _inactivite = Timer(_delai, _verrouiller);
   }
@@ -256,11 +284,13 @@ class _GardeVerrouState extends State<GardeVerrou> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (widget.coffre == null) return widget.child;
+    final enteteVerrou = _couvre ? widget.identite?.call() : null;
     final Widget verrou;
     if (_aCode == null) {
       verrou = const Scaffold(body: Center(child: CircularProgressIndicator()));
     } else if (!_aCode!) {
       verrou = EcranDefinirPin(
+          entete: enteteVerrou,
           coffre: widget.coffre!,
           termine: () => setState(() {
                 _aCode = true;
@@ -268,16 +298,34 @@ class _GardeVerrouState extends State<GardeVerrou> with WidgetsBindingObserver {
                 _activite();
               }));
     } else {
-      verrou = EcranPin(key: ValueKey(_pin), pin: _pin, ouvrir: _ouvrir, horloge: widget.horloge);
+      verrou = EcranPin(key: ValueKey(_pin), pin: _pin, ouvrir: _ouvrir, horloge: widget.horloge, entete: enteteVerrou);
     }
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (_) => _activite(),
       onPointerMove: (_) => _activite(),
       child: Stack(children: [
-        Offstage(offstage: _verrouille, child: TickerMode(enabled: !_verrouille, child: widget.child)),
-        if (_verrouille) Positioned.fill(child: verrou),
+        Offstage(offstage: _couvre && _verrouille, child: TickerMode(enabled: !(_couvre && _verrouille), child: widget.child)),
+        if (_couvre && _verrouille) Positioned.fill(child: verrou),
       ]),
     );
   }
+}
+
+/// L'identification de l'agent sur l'écran de verrou : le profil et la fonction sont ceux que la mère a fixés dans le code d'appairage ; le nom est celui déclaré une fois à l'appairage (E1611)
+/// (le code ne le porte pas). Lecture seule, rien à saisir ici (E1821).
+class EnteteIdentite extends StatelessWidget {
+  const EnteteIdentite({super.key, required this.agent, required this.profil});
+  final String agent, profil;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        container: true,
+        label: 'Agent $agent, profil $profil',
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Text('Agent identifié', style: TextStyle(fontSize: 12)),
+          Text(agent.isEmpty ? 'Agent non renseigné' : agent, key: const Key('identite-agent'), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+          Text(profil, key: const Key('identite-profil'), textAlign: TextAlign.center),
+        ]),
+      );
 }

@@ -81,3 +81,18 @@ class CoffrePinSecurise implements CoffrePin {
     await _stockage.ecrire(_kBloque, '${c.bloqueJusquaMs ?? 0}');
   }
 }
+
+/// Sonde du stockage sécurisé, au démarrage : écrit une valeur, la relit, compare. Rend `null` quand le coffre du système répond, sinon la CAUSE en
+/// français. Il n'y a aucun repli silencieux (E1820) : sans coffre, l'application refuse de s'ouvrir et le dit, elle ne range jamais le haché du code
+/// ailleurs. NON ÉPROUVÉE sur appareil (aucune chaîne native ici).
+Future<String?> sonderStockage(StockageSecret stockage) async {
+  const cle = 'sonde.stockage', valeur = 'ok';
+  try {
+    await stockage.ecrire(cle, valeur);
+    final relu = await stockage.lire(cle);
+    if (relu != valeur) return 'Le coffre du système n’a pas restitué la valeur de contrôle.';
+    return null;
+  } catch (e) {
+    return 'Le coffre du système répond par une erreur : $e';
+  }
+}
