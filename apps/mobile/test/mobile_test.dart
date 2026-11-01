@@ -17,10 +17,17 @@ void main() {
     await t.enterText(find.byKey(const Key('cle')), 'Y2xl');
     await t.tap(find.text('Réception de secours'));
     await t.pump();
-    // La réception de secours n'a ni agent ni fonction à déclarer.
-    expect(find.byKey(const Key('agent')), findsNothing);
+    // La réception de secours n'a pas de fonction à déclarer, mais elle nomme son agent (RG-12 : l'orientation est une action nommée ; la page des
+    // réglages du simulateur montre un agent pour ce profil aussi, E1661).
+    expect(find.byKey(const Key('fonction')), findsNothing);
+    await t.tap(find.byKey(const Key('appairer')));
+    await t.pump();
+    expect(find.text('Le nom de l’agent est obligatoire : aucune action anonyme (RG-12).'), findsOneWidget);
+    expect(m.codeAppairage, isNull);
+    await t.enterText(find.byKey(const Key('agent')), 'OROU YO Edmond');
     await t.tap(find.byKey(const Key('appairer')));
     await t.pumpAndSettle();
+    expect(m.agentAppairage, 'OROU YO Edmond');
     expect(m.codeAppairage, 'ABCD2345');
     expect(m.profil, ProfilMobile.receptionSecours);
     expect(find.text('Réception de secours'), findsWidgets);

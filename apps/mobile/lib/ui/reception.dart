@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show mobLibelleEcran;
 
 import '../moteur/moteur_mobile.dart';
+import 'orientation.dart';
 
 /// Réception de secours : l'accueil continue quand les postes fileuls n'ont plus de courant. On enregistre le dossier ici ;
 /// le code CNT vient de la plage réservée à CE téléphone, jamais inventé à la main (RG-01). Un homonyme n'est pas refusé :
@@ -60,6 +62,15 @@ class _ReceptionState extends State<Reception> {
       if (_erreur != null) Padding(padding: const EdgeInsets.only(top: 8), child: Text(_erreur!, key: const Key('erreur'), style: TextStyle(color: Theme.of(context).colorScheme.error))),
       const SizedBox(height: 12),
       FilledButton(key: const Key('creer'), onPressed: _creer, child: const Text('Ouvrir le dossier')),
+      const SizedBox(height: 8),
+      // L'orientation n'existe que pour la réception de secours (le simulateur la ferme aux autres profils) et si le moteur sait écrire une ligne de journal.
+      if (widget.moteur is ExtensionsMobile && ServiceSuite.reception(widget.moteur as ExtensionsMobile).peut('orientation'))
+        OutlinedButton.icon(
+          key: const Key('orienter'),
+          icon: const Icon(Icons.signpost_outlined),
+          label: Text(mobLibelleEcran('orientation')),
+          onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => OrienterPatient(service: ServiceSuite.reception(widget.moteur as ExtensionsMobile)))),
+        ),
       const Divider(height: 32),
       Text('Dossiers ouverts depuis ce téléphone', style: Theme.of(context).textTheme.titleMedium),
       FutureBuilder<List<FichePatient>>(

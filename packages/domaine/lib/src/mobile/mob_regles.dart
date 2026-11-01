@@ -116,6 +116,9 @@ num? _nombreJs(String v) {
   return (n == null || (n is double && n.isNaN)) ? null : n;
 }
 
+/// La conversion de JavaScript, publique : les écrans de la suite du mobile (CPN, CPoN, surveillance) lisent les mêmes nombres que `valider`.
+num? mobNombreJs(String v) => _nombreJs(v);
+
 /// `valider(regles)` du simulateur : requis → « X est obligatoire. » ; non numérique → « X doit être un nombre. » ; hors bornes → « X : valeur
 /// improbable (a à b). ». Une valeur hors bornes est REFUSÉE EN LA NOMMANT. Rend les erreurs par champ (vide = tout est bon).
 Map<String, String> mobValider(List<MobRegle> regles, Map<String, String> saisie) {

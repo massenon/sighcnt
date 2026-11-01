@@ -28,7 +28,7 @@ class _EcranAppairageState extends State<EcranAppairage> {
       setState(() => _erreur = 'Le code d’appairage et la clé de clinique sont obligatoires.');
       return;
     }
-    if (_profil == ProfilMobile.soignant && _agent.text.trim().isEmpty) {
+    if (_agent.text.trim().isEmpty) {
       setState(() => _erreur = 'Le nom de l’agent est obligatoire : aucune action anonyme (RG-12).');
       return;
     }
@@ -66,9 +66,10 @@ class _EcranAppairageState extends State<EcranAppairage> {
           selected: {_profil},
           onSelectionChanged: (s) => setState(() => _profil = s.first),
         ),
+        // Le nom de l'agent est demandé aux DEUX profils : l'orientation de la réception est aussi une action nommée (RG-12).
+        const SizedBox(height: 16),
+        TextField(key: const Key('agent'), controller: _agent, decoration: const InputDecoration(labelText: 'Nom de l’agent')),
         if (_profil == ProfilMobile.soignant) ...[
-          const SizedBox(height: 16),
-          TextField(key: const Key('agent'), controller: _agent, decoration: const InputDecoration(labelText: 'Nom de l’agent')),
           const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             key: const Key('fonction'),

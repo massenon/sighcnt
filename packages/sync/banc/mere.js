@@ -32,6 +32,7 @@ const RESTAURER = arg('restaurer', '0') === '1'; const CLE_ARG = arg('cle', '');
 const FAMILLES = {
   patients: 'A', rendezvous: 'A',
   constantes: 'B', notes: 'B',
+  cpn: 'B', cpon: 'B', surveillances: 'B', orientations: 'B', /* suite du mobile (E1650 à E1660) */
   factures: 'C', prescriptions: 'C',
   stock: 'D',
   tarifs: 'R', chambres: 'R',
@@ -219,7 +220,7 @@ function emettreJetons(uuid) {
 }
 
 /* --- l'envoi d'un lot, commun aux postes (P1) et aux mobiles (P2/P3) ------------------------- */
-const AUTORISE = { reception: new Set(['patients', 'rendezvous', 'constantes']), soignant: new Set(['patients', 'constantes', 'notes', 'rendezvous', 'prescriptions']) };
+const AUTORISE = { reception: new Set(['patients', 'rendezvous', 'constantes', 'orientations']), soignant: new Set(['patients', 'constantes', 'notes', 'rendezvous', 'prescriptions', 'cpn', 'cpon', 'surveillances']) };
 /* La prescription d'un mobile est une pièce ÉMISE : la mère REFAIT le contrôle d'habilitation. La règle n'est pas recopiée : elle est LUE dans les
    vecteurs de la maquette (PR.peutPrescrire, `mobile.json`), comme le fait le test du domaine Dart. La fonction est celle que le téléphone déclare. */
 const PRESCRIPTION = (() => {

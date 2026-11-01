@@ -6,6 +6,7 @@ import '../moteur/moteur_mobile.dart';
 import 'commun.dart';
 import 'note.dart';
 import 'prescription.dart';
+import 'sage_femme.dart';
 import 'tournee.dart';
 
 Future<void> ouvrirDossier(BuildContext context, MoteurMobile moteur, String patientId) =>
@@ -48,6 +49,7 @@ class _DossierPatientState extends State<DossierPatient> {
         final r = d.resume;
         final s = widget.service;
         final natures = s.naturesPrescriptibles;
+        final suite = ServiceSuite.depuisSoignant(s);
         return Scaffold(
           appBar: AppBar(title: Text(r.nom.isEmpty ? r.code : r.nom), bottom: PreferredSize(preferredSize: const Size.fromHeight(24), child: Text(r.code, style: const TextStyle(color: Colors.white)))),
           body: ListView(padding: const EdgeInsets.all(16), children: [
@@ -127,6 +129,20 @@ class _DossierPatientState extends State<DossierPatient> {
                 onPressed: () => _ouvrir(SaisiePrescription(service: s, patientId: widget.patientId)),
               ),
             ],
+            // Le profil sage-femme : visite prénatale, visite post-natale, surveillance mère-bébé (la commande n'existe que si le simulateur ouvre l'écran).
+            for (final e in const [('cpn', Icons.pregnant_woman, ouvrirCpn), ('cpon', Icons.child_friendly_outlined, ouvrirCpon), ('surveillance', Icons.monitor_heart_outlined, ouvrirSurveillance)])
+              if (suite.peut(e.$1)) ...[
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  key: Key('ouvrir-${e.$1}'),
+                  icon: Icon(e.$2),
+                  label: Text(mobLibelleEcran(e.$1)),
+                  onPressed: () async {
+                    await e.$3(context, suite, widget.patientId);
+                    if (mounted) _recharger();
+                  },
+                ),
+              ],
           ]),
         );
       },

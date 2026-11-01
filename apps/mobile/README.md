@@ -22,11 +22,24 @@ PIN/biométrie, expiration du lot. Android d'abord.
 | **Prescription selon droits** | médicaments, analyses ; commande ABSENTE sans habilitation (`D.CAPACITES`) ; refus nommés refaits au moteur, puis par la mère |
 | **À traiter** | refus de la mère : code, motif, geste |
 
+### La suite du simulateur (01/11/2026, E1650 à E1668)
+
+| Écran | Profil | Source |
+|---|---|---|
+| **Visite prénatale (CPN)**, **post-natale (CPoN)**, **surveillance mère-bébé** | sage-femme, depuis le dossier de la patiente | `mob_suite.dart` (`mobErreursCpn`, `mobChampsCpn`…) ; une ligne de journal par geste (`cpn`, `cpon`, `surveillances`) |
+| **Orienter un patient** | réception de secours | listes de la page ; ligne de journal `orientations` au nom de l'agent |
+| **Lot de tournée** | profils cliniques (absent de la réception) | état, validité restante, expiration, rafraîchir |
+| **Réglages** | tous | profil, agent, garanties vraies, réinitialisation de l'appairage (refusée tant que des saisies ne sont pas parties) |
+| **Code PIN** | tous, au démarrage et après 5 minutes d'inactivité | `mob_pin.dart` (règle de la page), port `CoffrePin`, `CoffrePinSecurise` (haché PBKDF2) |
+
+Parité N1 mesurée contre les pages du simulateur : `test/parite_mobile_test.dart` (162/162, exclusions nommées en tête du test).
+Limite à connaître : le coffre du système, la biométrie et SQLCipher n'ont pas été exercés sur un appareil (E1658).
+
 Chaque geste est UNE opération `creer` (aucune suppression, RG-14), nommée à l'agent (RG-12). Les règles sont dans `packages/domaine/lib/src/mobile/`
 (jamais recopiées ici) ; le service `lib/moteur/service_soignant.dart` n'importe pas Flutter.
 
 ```bash
-cd apps/mobile && flutter pub get && flutter analyze && flutter test            # 33 tests, dont le bout en bout contre le banc
+cd apps/mobile && flutter pub get && flutter analyze && flutter test            # 68 tests, dont 2 bouts en bout contre le banc (e2e_banc_test.dart, e2e_suite_test.dart)
 SIGH_E2E_MERE=dart flutter test test/e2e_banc_test.dart                          # idem avec la mère Dart (packages/sync_dart/construire.sh mere)
 cd ../.. && npm run banc:sync                                                    # scénario R25 : le même parcours côté protocole
 ```

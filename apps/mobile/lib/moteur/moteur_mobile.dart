@@ -5,8 +5,10 @@ import 'package:sigh_domaine/sigh_domaine.dart' show mobFonctions;
 import 'package:sigh_sync/sigh_sync.dart';
 
 import 'service_soignant.dart';
+import 'service_suite.dart';
 
 export 'service_soignant.dart';
+export 'service_suite.dart';
 
 /// Profils du mobile (spec §11). Le profil décide des écrans ET de ce que le serveur accepte : la réception de secours
 /// ne couvre pas la caisse (refus nommé côté mère), le soignant ne crée pas de dossier hors tournée.
@@ -85,7 +87,7 @@ class SourceSync implements SourceMobile {
 }
 
 /// Moteur réel : `packages/sync_dart` (même code que le banc d'essai à plusieurs processus).
-class MoteurMobileSync implements MoteurMobile {
+class MoteurMobileSync implements MoteurMobile, ExtensionsMobile {
   MoteurMobileSync._(this._m) {
     _minuterie = Timer.periodic(const Duration(seconds: 2), (_) => actualiser());
     // Un téléphone déjà appairé retrouve son profil, son agent et sa fonction au redémarrage (ils vivent dans la base locale, pas en mémoire).
@@ -139,6 +141,7 @@ class MoteurMobileSync implements MoteurMobile {
     await actualiser();
   }
 
+  @override
   Future<void> actualiser() async {
     try {
       final (_, c) = await _m.commande('GET /etat', const {}, const {});
@@ -183,6 +186,34 @@ class MoteurMobileSync implements MoteurMobile {
         RefusAffiche(
             operation: '${(r as Map)['id']}', code: '${r['code'] ?? ''}', motif: '${r['motif'] ?? ''}', geste: '${r['geste'] ?? ''}')
     ];
+  }
+
+  // --- ExtensionsMobile (suite du mobile : lot, réglages, orientation) ---------------------------------------------------------------------
+
+  @override
+  SourceMobile get source => SourceSync(_m);
+
+  @override
+  String get agent => _m.base.meta('agent') ?? '';
+
+  @override
+  Future<String?> appareil() async {
+    try {
+      final (_, c) = await _m.commande('GET /etat', const {}, const {});
+      final u = (c! as Map)['uuid'];
+      return u == null ? null : '$u';
+    } catch (_) {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> reinitialiserAppairage() async {
+    _m.base.poserMeta('jeton', '');
+    _m.base.poserMeta('profil', '');
+    _profil = null;
+    _soignant = null;
+    _etat.value = const EtatMobile();
   }
 
   void arreter() => _minuterie?.cancel();

@@ -21,6 +21,7 @@ import 'supervision.dart';
 const familles = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
   'constantes': 'B', 'notes': 'B',
+  'cpn': 'B', 'cpon': 'B', 'surveillances': 'B', 'orientations': 'B', // suite du mobile (E1650 à E1660)
   'factures': 'C', 'prescriptions': 'C',
   'stock': 'D',
   'tarifs': 'R', 'chambres': 'R',
@@ -29,8 +30,8 @@ const essentielles = {'tarifs', 'chambres'};
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
-  'reception': {'patients', 'rendezvous', 'constantes'},
-  'soignant': {'patients', 'constantes', 'notes', 'rendezvous', 'prescriptions'},
+  'reception': {'patients', 'rendezvous', 'constantes', 'orientations'},
+  'soignant': {'patients', 'constantes', 'notes', 'rendezvous', 'prescriptions', 'cpn', 'cpon', 'surveillances'},
 };
 
 /// La prescription d'un mobile est une pièce ÉMISE : la mère REFAIT le contrôle d'habilitation (un bouton absent sur le téléphone ne protège rien).
