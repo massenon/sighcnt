@@ -46,3 +46,4 @@ Thumbs.db
 prototype_html/api/sauvegardes/
 packages/sync_dart/build/
 .claude/worktrees/
+.claude/settings.local.json
