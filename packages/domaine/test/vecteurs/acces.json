@@ -911,6 +911,10 @@
        {
         "label": "Point du stock valorisé",
         "href": "pages/m6-point-stock.php"
+       },
+       {
+        "label": "Importation Grand Stock",
+        "href": "pages/m6-import-grand-stock.php"
        }
       ]
      },
@@ -1537,6 +1541,52 @@
         "href": "pages/cfg-poste.php"
        }
       ]
+     },
+     {
+      "titre": "Importation de données",
+      "code": "IMP",
+      "ecrans": [
+       {
+        "label": "Jeux d’import et historique des lots",
+        "href": "pages/imp-accueil.php"
+       },
+       {
+        "label": "Importation du répertoire patients",
+        "href": "pages/imp-patients.php"
+       },
+       {
+        "label": "Importation du personnel",
+        "href": "pages/imp-personnel.php"
+       },
+       {
+        "label": "Importation du catalogue des actes",
+        "href": "pages/imp-actes.php"
+       },
+       {
+        "label": "Importation du catalogue des analyses",
+        "href": "pages/imp-analyses.php"
+       },
+       {
+        "label": "Importation des fournisseurs",
+        "href": "pages/imp-fournisseurs.php"
+       },
+       {
+        "label": "Importation des compagnies d’assurance",
+        "href": "pages/imp-assureurs.php"
+       },
+       {
+        "label": "Importation des souscripteurs",
+        "href": "pages/imp-souscripteurs.php"
+       },
+       {
+        "label": "Importation du plan comptable",
+        "href": "pages/imp-plan-comptable.php"
+       },
+       {
+        "label": "Importation des soldes d’ouverture",
+        "href": "pages/imp-soldes-ouverture.php"
+       }
+      ]
      }
     ],
     "liensSysteme": []
@@ -1980,7 +2030,7 @@
     ]
    }
   ],
-  "pied": "308 écrans métier recensés au manifeste, plus 21 pages d’accès et système.",
+  "pied": "319 écrans métier recensés au manifeste, plus 21 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -1988,11 +2038,11 @@
   "kpis": [
    {
     "label": "Modules fonctionnels",
-    "valeur": "32"
+    "valeur": "33"
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "308"
+    "valeur": "319"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2213,6 +2263,13 @@
     "href": "pages/hub-cfg.php"
    },
    {
+    "titre": "Importation de données",
+    "code": "IMP",
+    "resume": "Module du système.",
+    "domaine": "Domaine Système",
+    "href": "pages/hub-imp.php"
+   },
+   {
     "titre": "Exploitation de la synchronisation",
     "code": "MERE",
     "resume": "Module du système.",
@@ -2304,9 +2361,9 @@
    "Les quatorze règles de gestion du cahier des charges sont appliquées et rappelées à l’écran là où elles s’imposent : identifiant patient, marge nulle sur les médicaments, stock jamais négatif, signatures de sortie, validité des cartes d’assurance, équilibre des écritures, journalisation et archivage logique.",
    "À propos",
    "Modules fonctionnels",
-   "32",
+   "33",
    "Écrans disponibles",
-   "308",
+   "319",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",
@@ -2564,6 +2621,11 @@
    {
     "valeur": "CFG",
     "label": "CFG — Configuration Clinique",
+    "domaine": "Système"
+   },
+   {
+    "valeur": "IMP",
+    "label": "IMP — Importation de données",
     "domaine": "Système"
    },
    {

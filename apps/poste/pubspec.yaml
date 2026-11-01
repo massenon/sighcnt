@@ -23,6 +23,10 @@ dependencies:
   postgres: any                 # mode mère : PostgreSQL local
   pdf: ^3.13.1
   qr: any                       # le QR du lien de partage d'une enquête (encodeur local, aucune requête réseau)
+  archive: any                 # modules d'importation : archive ZIP d'un classeur .xlsx (déjà tirée par pdf)
+  xml: any                     # modules d'importation : XML des feuilles du classeur (déjà tiré par pdf)
+  file_picker: any             # sélecteur de fichier natif du téléversement (injectable : aucun test ne dépend du sélecteur)
+  file_selector: any           # enregistrement du modèle .xlsx et du rapport d'erreurs, dans le dossier choisi
   window_manager: any          # plein écran de la barre supérieure (Windows, Linux, macOS)
 dev_dependencies:
   flutter_test:

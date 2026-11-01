@@ -598,6 +598,7 @@
    "historiquePrimes",
    "baremeNS131",
    "historiqueBareme",
+   "beneficiairesPrimes",
    "examensLabo",
    "unitesLabo",
    "variablesLabo",
@@ -885,6 +886,10 @@
    "cpon": {
     "module": "M4",
     "entite": "Consultations post-natales"
+   },
+   "crAnesthesie": {
+    "module": "M3",
+    "entite": "Comptes rendus d’anesthésie"
    },
    "crMaternite": {
     "module": "M4",
@@ -1274,6 +1279,10 @@
     "module": "M4",
     "entite": "Suivi maternité"
    },
+   "support": {
+    "module": "M2",
+    "entite": "Registre des appels"
+   },
    "surveillancesTransfusion": {
     "module": "M3",
     "entite": "Surveillances transfusionnelles"
@@ -1500,7 +1509,7 @@
    },
    "fiche": [
     {
-     "id": "CCxmvuswn406wmvi",
+     "id": "CCxmvuswn40vowuh",
      "statut": "actif",
      "libelle": "Centre Test Alpha",
      "code": "CC08",
@@ -1547,7 +1556,7 @@
    },
    "fiche": [
     {
-     "id": "CCxmvuswn407xa61",
+     "id": "CCxmvuswn40p0iie",
      "statut": "actif",
      "libelle": "Centre Test Beta",
      "code": "XYZ",
@@ -6105,6 +6114,7 @@
      "RAP",
      "M14",
      "CFG",
+     "IMP",
      "MERE",
      "MERE",
      "MERE",
@@ -6143,6 +6153,7 @@
      "RAP",
      "M14",
      "CFG",
+     "IMP",
      "PIL",
      "M12",
      "DASH"
@@ -6190,6 +6201,7 @@
      "RAP",
      "M14",
      "CFG",
+     "IMP",
      "MERE",
      "MERE",
      "MERE",
@@ -6253,6 +6265,7 @@
      "M7",
      "M13",
      "RAP",
+     "IMP",
      "PIL",
      "DASH"
     ],
@@ -6265,6 +6278,7 @@
      "M7",
      "M8",
      "RAP",
+     "IMP",
      "DASH"
     ],
     "poste": "Gestionnaire de Stock",
@@ -6300,6 +6314,7 @@
      "M13",
      "GED",
      "RAP",
+     "IMP",
      "PIL",
      "M12",
      "DASH"
@@ -6323,6 +6338,7 @@
      "M3",
      "M13",
      "RAP",
+     "IMP",
      "DASH"
     ],
     "poste": "Réception / Accueil",
@@ -6336,6 +6352,7 @@
      "M13",
      "GED",
      "RAP",
+     "IMP",
      "DASH"
     ],
     "poste": "Agent Administratif",
@@ -6457,7 +6474,7 @@
     "Informations personnelles Nom et prénoms * Identifiant de connexion Poste Téléphone Adresse électronique Enregistrer",
     "Sécurité du compte Mot de passe actuel * Nouveau mot de passe * Confirmer le nouveau mot de passe * Activer l’authentification à deux facteurs Politique en vigueur : 12 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses. Modifier le mot de passe",
     "BC BASSONGUI Chabi Séko Administrateur système Compte actif",
-    "Périmètre d’accès Matrice RBAC M2 M1 M13 CFG M1 M2 M2 M3 M4 M5 M6 M7 M8 M9 MECEF M12 M10 M11 M13 GED RAP M14 CFG MERE MERE MERE MERE MERE RLS PIL M12 DASH",
+    "Périmètre d’accès Matrice RBAC M2 M1 M13 CFG M1 M2 M2 M3 M4 M5 M6 M7 M8 M9 MECEF M12 M10 M11 M13 GED RAP M14 CFG IMP MERE MERE MERE MERE MERE RLS PIL M12 DASH",
     "Activité récente Modification — ParametrageNotifications Module CFG à l’instant Paramétrage — Valorisation des sorties Module M6 à l’instant Paramétrage — Valorisation des sorties Module M6 à l’instant Création — centre de coûts Module M12 à l’instant Création — centre de coûts Module M12 à l’instant Création — relevé de constantes Module M1 à l’instant"
    ],
    "notes": [
@@ -6678,7 +6695,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "300",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -6693,7 +6710,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "298",
+     "valeur": "309",
      "indice": null
     }
    ],
@@ -6783,6 +6800,7 @@
     "Fermer le module GED",
     "Fermer le module RAP",
     "Fermer le module M14",
+    "Fermer le module IMP",
     "Fermer le module MERE",
     "Fermer le module RLS",
     "Fermer le module PIL"
@@ -6790,13 +6808,13 @@
   },
   "cartesTexte": [
    "Activités pilotées Colonnes Exporter Piloter une activité ACTIVITÉ MODULE ÉTAT MOTIF DEPUIS LE ACTIONS Banque de sang 1 écran(s) M5 Fermée La clinique ne pratique pas la banque de sang. 21/08/2026 Donneurs & transfusions 1 écran(s) M5 Fermée La clinique ne pratique pas la transfusion. 21/08/2026 Affichage de 1 à 2 sur 2 enregistrements",
-   "Modules du logiciel — activer seulement ce que l’établissement exerce Fermer un module n’empêche jamais un autre de travailler. Les stocks, la paie ou les ressources humaines fonctionnent Accueil et Soins fermés : les files que le module fermé alimentait cessent simplement de se remplir, ses données restent en place, et la saisie directe des autres postes demeure ouverte — c’est la doctrine du laboratoire (saisie manuelle) et de l’accueil externe, appliquée partout. M2 — RDV, Visites & Consultations 9 écran(s) · Accueil Ouvert M1 — Patients & Dossier médical 10 écran(s) · Soins Ouvert M3 — Hospitalisation 20 écran(s) · Soins Ouvert M4 — Maternité, Naissances & Décès 14 écran(s) · Soins Ouvert M5 — Laboratoire 15 écran(s) · Soins Ouvert M6 — Pharmacie & Stocks 17 écran(s) · Logistique Ouvert M7 — Achats & Fournisseurs 9 écran(s) · Logistique Ouvert M8 — Facturation & Caisse 11 écran(s) · Financier Ouvert M9 — Assurances & Créances 10 écran(s) · Financier Ouvert MECEF — MECeF — Facture normalisée 6 écran(s) · Financier Ouvert M12 — Comptabilité SYSCOHADA 19 écran(s) · Financier Ouvert M10 — Ressources humaines 24 écran(s) · RH Ouvert M11 — Paie & Primes 9 écran(s) · RH Ouvert M13 — Administration & Ambulance 11 écran(s) · Administration Ouvert GED — Gestion documentaire 3 écran(s) · Administration Ouvert RAP — Rapports & Impression 4 écran(s) · Administration Ouvert M14 — Sécurité & Utilisateurs 7 écran(s) · Système Ouvert CFG — Configuration Clinique NOYAU : porte cet interrupteur — un interrupteur qui se coupe lui-même ne se rallume plus Toujours ouvert MERE — Exploitation de la synchronisation 7 écran(s) · Poste mère Ouvert RLS — Relais en ligne (apps/web) 12 écran(s) · Relais en ligne Ouvert PIL — Pilotage & analyse 13 écran(s) · Pilotage Ouvert DASH — Tableaux de bord par poste NOYAU : porte la page d’accueil de chaque rôle — la fermer laisserait la connexion sans destination Toujours ouvert",
+   "Modules du logiciel — activer seulement ce que l’établissement exerce Fermer un module n’empêche jamais un autre de travailler. Les stocks, la paie ou les ressources humaines fonctionnent Accueil et Soins fermés : les files que le module fermé alimentait cessent simplement de se remplir, ses données restent en place, et la saisie directe des autres postes demeure ouverte — c’est la doctrine du laboratoire (saisie manuelle) et de l’accueil externe, appliquée partout. M2 — RDV, Visites & Consultations 9 écran(s) · Accueil Ouvert M1 — Patients & Dossier médical 10 écran(s) · Soins Ouvert M3 — Hospitalisation 20 écran(s) · Soins Ouvert M4 — Maternité, Naissances & Décès 14 écran(s) · Soins Ouvert M5 — Laboratoire 15 écran(s) · Soins Ouvert M6 — Pharmacie & Stocks 18 écran(s) · Logistique Ouvert M7 — Achats & Fournisseurs 9 écran(s) · Logistique Ouvert M8 — Facturation & Caisse 11 écran(s) · Financier Ouvert M9 — Assurances & Créances 10 écran(s) · Financier Ouvert MECEF — MECeF — Facture normalisée 6 écran(s) · Financier Ouvert M12 — Comptabilité SYSCOHADA 19 écran(s) · Financier Ouvert M10 — Ressources humaines 24 écran(s) · RH Ouvert M11 — Paie & Primes 9 écran(s) · RH Ouvert M13 — Administration & Ambulance 11 écran(s) · Administration Ouvert GED — Gestion documentaire 3 écran(s) · Administration Ouvert RAP — Rapports & Impression 4 écran(s) · Administration Ouvert M14 — Sécurité & Utilisateurs 7 écran(s) · Système Ouvert CFG — Configuration Clinique NOYAU : porte cet interrupteur — un interrupteur qui se coupe lui-même ne se rallume plus Toujours ouvert IMP — Importation de données 10 écran(s) · Système Ouvert MERE — Exploitation de la synchronisation 7 écran(s) · Poste mère Ouvert RLS — Relais en ligne (apps/web) 12 écran(s) · Relais en ligne Ouvert PIL — Pilotage & analyse 13 écran(s) · Pilotage Ouvert DASH — Tableaux de bord par poste NOYAU : porte la page d’accueil de chaque rôle — la fermer laisserait la connexion sans destination Toujours ouvert",
    "M2 — RDV, Visites & Consultations 9 écran(s) · Accueil Ouvert",
    "M1 — Patients & Dossier médical 10 écran(s) · Soins Ouvert",
    "M3 — Hospitalisation 20 écran(s) · Soins Ouvert",
    "M4 — Maternité, Naissances & Décès 14 écran(s) · Soins Ouvert",
    "M5 — Laboratoire 15 écran(s) · Soins Ouvert",
-   "M6 — Pharmacie & Stocks 17 écran(s) · Logistique Ouvert",
+   "M6 — Pharmacie & Stocks 18 écran(s) · Logistique Ouvert",
    "M7 — Achats & Fournisseurs 9 écran(s) · Logistique Ouvert",
    "M8 — Facturation & Caisse 11 écran(s) · Financier Ouvert",
    "M9 — Assurances & Créances 10 écran(s) · Financier Ouvert",
@@ -6809,6 +6827,7 @@
    "RAP — Rapports & Impression 4 écran(s) · Administration Ouvert",
    "M14 — Sécurité & Utilisateurs 7 écran(s) · Système Ouvert",
    "CFG — Configuration Clinique NOYAU : porte cet interrupteur — un interrupteur qui se coupe lui-même ne se rallume plus Toujours ouvert",
+   "IMP — Importation de données 10 écran(s) · Système Ouvert",
    "MERE — Exploitation de la synchronisation 7 écran(s) · Poste mère Ouvert",
    "RLS — Relais en ligne (apps/web) 12 écran(s) · Relais en ligne Ouvert",
    "PIL — Pilotage & analyse 13 écran(s) · Pilotage Ouvert",
@@ -6851,7 +6870,7 @@
     ]
    },
    {
-    "texte": "M6 — Pharmacie & Stocks 17 écran(s) · Logistique Ouvert",
+    "texte": "M6 — Pharmacie & Stocks 18 écran(s) · Logistique Ouvert",
     "boutons": [
      "Fermer le module M6"
     ]
@@ -6927,6 +6946,12 @@
     "boutons": []
    },
    {
+    "texte": "IMP — Importation de données 10 écran(s) · Système Ouvert",
+    "boutons": [
+     "Fermer le module IMP"
+    ]
+   },
+   {
     "texte": "MERE — Exploitation de la synchronisation 7 écran(s) · Poste mère Ouvert",
     "boutons": [
      "Fermer le module MERE"
@@ -6949,7 +6974,7 @@
     "boutons": []
    }
   ],
-  "tousEcrans": 300,
+  "tousEcrans": 311,
   "modulesListe": [
    [
     "M2",
@@ -6991,7 +7016,7 @@
     "Pharmacie & Stocks",
     "pill",
     "Logistique",
-    17
+    18
    ],
    [
     "M7",
@@ -7078,6 +7103,13 @@
     19
    ],
    [
+    "IMP",
+    "Importation de données",
+    "file-up",
+    "Système",
+    10
+   ],
+   [
     "MERE",
     "Exploitation de la synchronisation",
     "refresh-cw",
@@ -7109,7 +7141,7 @@
   "fermerM7Confirmation": "Fermer « Module — Achats & Fournisseurs » ? Le module M7 entier disparaîtra du méga-menu, de la recherche globale et de ses adresses, pour tous les rôles, administrateur compris. Aucune donnée n’est supprimée : la réouverture rend les écrans en l’état. Motif (consigné dans le journal d’audit) Annuler Fermer l’activité",
   "fermerM7": {
    "fiche": {
-    "id": "MODxmvuswn40w5vtp",
+    "id": "MODxmvuswn40uasd5",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7144,7 +7176,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "300",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -7159,7 +7191,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "289",
+     "valeur": "300",
      "indice": null
     }
    ],
@@ -7369,7 +7401,7 @@
   "rouvrirM7Confirmation": "Rouvrir « Module — Achats & Fournisseurs » ? Le module M7 réapparaîtra au méga-menu, avec leurs données inchangées. Annuler Rouvrir l’activité",
   "rouvrirM7": {
    "fiche": {
-    "id": "MODxmvuswn40w5vtp",
+    "id": "MODxmvuswn40uasd5",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7401,7 +7433,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "300",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -7416,7 +7448,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "298",
+     "valeur": "309",
      "indice": null
     }
    ],
@@ -7442,7 +7474,7 @@
     "Écrans concernés",
     "Motif *"
    ],
-   "nbModules": 22,
+   "nbModules": 23,
    "optionsModule": [
     [
      "M2",
@@ -7517,6 +7549,10 @@
      "CFG — Configuration Clinique"
     ],
     [
+     "IMP",
+     "IMP — Importation de données"
+    ],
+    [
      "MERE",
      "MERE — Exploitation de la synchronisation"
     ],
@@ -7533,11 +7569,11 @@
      "DASH — Tableaux de bord par poste"
     ]
    ],
-   "nbEcrans": 300
+   "nbEcrans": 311
   },
   "declarerCfg": {
    "fiche": {
-    "id": "MODxmvuswn401hyiu",
+    "id": "MODxmvuswn403yp1o",
     "statut": "actif",
     "libelle": "Activité noyau test",
     "module": "CFG",
@@ -7568,7 +7604,7 @@
   },
   "declarerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn40oazgu",
+    "id": "MODxmvuswn40yvnp2",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
@@ -7593,7 +7629,7 @@
   },
   "fermerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn40oazgu",
+    "id": "MODxmvuswn40yvnp2",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
@@ -7616,7 +7652,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "300",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -7631,7 +7667,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "296",
+     "valeur": "307",
      "indice": null
     }
    ],
@@ -7692,15 +7728,15 @@
   ],
   "regleCartes": [
    "Architecture cible — proposition Application Web — Laravel 12 (PHP 8.3) avec Vue 3 via Inertia Postes de travail Navigateur ; application installable (PWA) sur chaque poste Base de données PostgreSQL, hébergée avec l’application Hébergement Serveur mutualisé cPanel — déploiement Git, SSL automatique Poste caisse Enveloppe Tauri si l’imprimante ticket ou la MECeF l’exigent Reporting Gabarits d’impression du navigateur ; PDF archivés côté serveur Sauvegarde Export chiffré planifié HORS de l’hébergeur — jamais un seul dépositaire Continuité électrique Onduleurs aux postes critiques, box sur onduleur, secours 4G, mode dégradé papier Ce prototype HTML, CSS et JavaScript — sans dépendance réseau",
-   "Contenu du jeu de données Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 145 enregistrements 1 2 3 4 5",
-   "Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 145 enregistrements 1 2 3 4 5",
+   "Contenu du jeu de données Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 147 enregistrements 1 2 3 4 5",
+   "Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 147 enregistrements 1 2 3 4 5",
    "Maintenance du prototype Réinitialiser le jeu de données Exporter les données Plan du site Sauvegardes"
   ],
   "installation": {
    "kpis": [
     {
      "libelle": "Collections de données",
-     "valeur": "145",
+     "valeur": "147",
      "indice": null
     },
     {
@@ -7938,8 +7974,8 @@
    ],
    "cartesTexte": [
     "Architecture cible — proposition Application Web — Laravel 12 (PHP 8.3) avec Vue 3 via Inertia Postes de travail Navigateur ; application installable (PWA) sur chaque poste Base de données PostgreSQL, hébergée avec l’application Hébergement Serveur mutualisé cPanel — déploiement Git, SSL automatique Poste caisse Enveloppe Tauri si l’imprimante ticket ou la MECeF l’exigent Reporting Gabarits d’impression du navigateur ; PDF archivés côté serveur Sauvegarde Export chiffré planifié HORS de l’hébergeur — jamais un seul dépositaire Continuité électrique Onduleurs aux postes critiques, box sur onduleur, secours 4G, mode dégradé papier Ce prototype HTML, CSS et JavaScript — sans dépendance réseau",
-    "Contenu du jeu de données Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 145 enregistrements 1 2 3 4 5",
-    "Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 145 enregistrements 1 2 3 4 5",
+    "Contenu du jeu de données Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 147 enregistrements 1 2 3 4 5",
+    "Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 147 enregistrements 1 2 3 4 5",
     "Maintenance du prototype Réinitialiser le jeu de données Exporter les données Plan du site Sauvegardes"
    ]
   },
@@ -8521,6 +8557,12 @@
     0
    ],
    [
+    "crAnesthesie",
+    0,
+    0,
+    0
+   ],
+   [
     "deces",
     14,
     14,
@@ -8779,6 +8821,12 @@
     0
    ],
    [
+    "support",
+    0,
+    0,
+    0
+   ],
+   [
     "tachesPlanifiees",
     6,
     6,
@@ -8992,7 +9040,7 @@
      },
      {
       "libelle": "Tables d’activité",
-      "valeur": "101",
+      "valeur": "103",
       "indice": "9 495 enregistrements"
      },
      {
@@ -9017,7 +9065,7 @@
      "Barème NS 131",
      "Jeux de test"
     ],
-    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Réinitialisation Verrouillée Aucun effacement possible Tables d’activité 101 9 495 enregistrements Tables de paramétrage préservées 44 Tarifs, secteurs, conventions, comptes Autorisation Autoriser la réinitialisation des jeux de test sur ce poste À laisser fermé sur un poste en service. Le déverrouillage et le verrouillage sont journalisés. Ce qui serait effacé, ce qui serait conservé EFFACÉ — DONNÉES D’ACTIVITÉ patients (210) lots (346) consultations (282) admissions (91) soins (354) releves (270) factures (409) mouvements (678) ecritures (502) planning (1394) ordonnances (132) avoirs (0) pvReceptions (6) taches (451) depenses (190) pieces (90) prescriptions (158) administrations (125) crOperatoires (26) checklistsBloc (52) echeancesFiscales (63) crMaternite (65) resultatsImagerie (156) fichesReference (30) CONSERVÉ — PARAMÉTRAGE ET RÉFÉRENTIELS actes (73) analyses (48) produits (184) assureurs (13) fournisseurs (6) comptes (112) banques (4) naturesFacture (14) centresCouts (9) secteurs (14) postes (16) personnel (44) soignants (15) fichesPoste (28) ressources (0) souscripteurs (9) garanties (0) certificats (0) typesPiece (14) catalogueTarifs (147) objectifsPilotage (8) valorisationsSage (34) ambulances (5) materiel (18) utilisateurs (48) rbac (22) modulesActifs (2) regimesTravail (8) grillePrimes (11) historiquePrimes (0) baremeNS131 (4) historiqueBareme (0) examensLabo (70) unitesLabo (23) variablesLabo (163) plagesReactif (0) examensImagerie (24) variablesImagerie (280) pathologies (55) modelesBadge (1) modelesMessage (6) enquetes (1) emplacements (24) audit (400) L’administrateur, les réglages et les référentiels administrés par la clinique ne sont jamais effacés. La réinitialisation ne retire que les données engendrées pour la démonstration — patients, consultations, factures, mouvements. Réinitialisation Réinitialisation verrouillée — activer l’autorisation ci-dessus pour la rendre possible."
+    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Réinitialisation Verrouillée Aucun effacement possible Tables d’activité 103 9 495 enregistrements Tables de paramétrage préservées 44 Tarifs, secteurs, conventions, comptes Autorisation Autoriser la réinitialisation des jeux de test sur ce poste À laisser fermé sur un poste en service. Le déverrouillage et le verrouillage sont journalisés. Ce qui serait effacé, ce qui serait conservé EFFACÉ — DONNÉES D’ACTIVITÉ patients (210) lots (346) consultations (282) admissions (91) soins (354) releves (270) factures (409) mouvements (678) ecritures (502) planning (1394) ordonnances (132) avoirs (0) pvReceptions (6) taches (451) depenses (190) pieces (90) prescriptions (158) administrations (125) crOperatoires (26) checklistsBloc (52) echeancesFiscales (63) crMaternite (65) resultatsImagerie (156) fichesReference (30) CONSERVÉ — PARAMÉTRAGE ET RÉFÉRENTIELS actes (73) analyses (48) produits (184) assureurs (13) fournisseurs (6) comptes (112) banques (4) naturesFacture (14) centresCouts (9) secteurs (14) postes (16) personnel (44) soignants (15) fichesPoste (28) ressources (0) souscripteurs (9) garanties (0) certificats (0) typesPiece (14) catalogueTarifs (147) objectifsPilotage (8) valorisationsSage (34) ambulances (5) materiel (18) utilisateurs (48) rbac (22) modulesActifs (2) regimesTravail (8) grillePrimes (11) historiquePrimes (0) baremeNS131 (4) historiqueBareme (0) examensLabo (70) unitesLabo (23) variablesLabo (163) plagesReactif (0) examensImagerie (24) variablesImagerie (280) pathologies (55) modelesBadge (1) modelesMessage (6) enquetes (1) emplacements (24) audit (400) L’administrateur, les réglages et les référentiels administrés par la clinique ne sont jamais effacés. La réinitialisation ne retire que les données engendrées pour la démonstration — patients, consultations, factures, mouvements. Réinitialisation Réinitialisation verrouillée — activer l’autorisation ci-dessus pour la rendre possible."
    },
    "autoriserConfirmation": "Autoriser la réinitialisation des jeux de test ? Une fois autorisée, la réinitialisation devient possible depuis ce poste. Sur un poste en production, la laisser fermée est la seule position raisonnable : elle protège les données réelles de l’établissement. Annuler Autoriser",
    "autorisee": {
@@ -9030,7 +9078,7 @@
      },
      {
       "libelle": "Tables d’activité",
-      "valeur": "101",
+      "valeur": "103",
       "indice": "9 495 enregistrements"
      },
      {
@@ -9064,11 +9112,11 @@
      "Réinitialisation Vider les jeux de test Régénérer le jeu de démonstration complet"
     ]
    },
-   "viderConfirmation": "Vider les jeux de test ? Les 101 tables d’activité seront vidées : patients, consultations, factures, mouvements, ordonnances. Les paramètres, les référentiels et le compte administrateur sont conservés. L’opération est journalisée et irréversible — générer une sauvegarde d’abord. Motif (consigné dans le journal d’audit) Annuler Vider les jeux de test",
+   "viderConfirmation": "Vider les jeux de test ? Les 103 tables d’activité seront vidées : patients, consultations, factures, mouvements, ordonnances. Les paramètres, les référentiels et le compte administrateur sont conservés. L’opération est journalisée et irréversible — générer une sauvegarde d’abord. Motif (consigné dans le journal d’audit) Annuler Vider les jeux de test",
    "vider": {
     "toasts": [
      [
-      "101 table(s) vidée(s) — 9 495 enregistrements retirés.",
+      "103 table(s) vidée(s) — 9 495 enregistrements retirés.",
       "Paramétrage, référentiels, comptes et droits conservés."
      ]
     ],
@@ -9079,12 +9127,12 @@
      "entite": "Base",
      "reference": "vidage",
      "ancienneValeur": null,
-     "nouvelleValeur": "{\"tables\":101,\"enregistrements\":9495,\"motif\":\"Fin de la recette\"}",
+     "nouvelleValeur": "{\"tables\":103,\"enregistrements\":9495,\"motif\":\"Fin de la recette\"}",
      "poste": "POSTE-LOCAL",
      "succes": true
     },
     "nbAudit": 400,
-    "attenduTables": 101,
+    "attenduTables": 103,
     "attenduLignes": 9495,
     "videes": [
      "patients",
@@ -9146,6 +9194,7 @@
      "couverturesAssurance",
      "cpa",
      "cpon",
+     "crAnesthesie",
      "deces",
      "demandesAnalyses",
      "dispensations",
@@ -9183,6 +9232,7 @@
      "reunions",
      "soinsCuratifsMaternite",
      "suiviMaternite",
+     "support",
      "tachesPlanifiees",
      "tentativesConnexion",
      "transferts",

@@ -19,6 +19,7 @@ const Map<String, IconData> iconesLucide = {
   'bell-ring': LucideIcons.bellRing,
   'bone': LucideIcons.bone,
   'book-marked': LucideIcons.bookMarked,
+  'book-open': LucideIcons.bookOpen,
   'book-open-check': LucideIcons.bookOpenCheck,
   'book-open-text': LucideIcons.bookOpenText,
   'brain': LucideIcons.brain,

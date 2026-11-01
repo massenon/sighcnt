@@ -197,7 +197,8 @@
         "m6-etiquetage",
         "m6-reprise",
         "m6-point-ventes",
-        "m6-point-stock"
+        "m6-point-stock",
+        "m6-import-grand-stock"
        ]
       },
       {
@@ -434,6 +435,23 @@
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste"
+       ]
+      },
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients",
+        "imp-personnel",
+        "imp-actes",
+        "imp-analyses",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
        ]
       }
      ]
@@ -783,7 +801,8 @@
         "m6-etiquetage",
         "m6-reprise",
         "m6-point-ventes",
-        "m6-point-stock"
+        "m6-point-stock",
+        "m6-import-grand-stock"
        ]
       },
       {
@@ -1019,6 +1038,15 @@
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme"
+       ]
+      },
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-actes"
        ]
       }
      ]
@@ -1423,7 +1451,8 @@
         "m6-etiquetage",
         "m6-reprise",
         "m6-point-ventes",
-        "m6-point-stock"
+        "m6-point-stock",
+        "m6-import-grand-stock"
        ]
       },
       {
@@ -1660,6 +1689,23 @@
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste"
+       ]
+      },
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients",
+        "imp-personnel",
+        "imp-actes",
+        "imp-analyses",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
        ]
       }
      ]
@@ -2298,6 +2344,20 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-analyses"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -2348,7 +2408,8 @@
         "m6-etiquetage",
         "m6-reprise",
         "m6-point-ventes",
-        "m6-point-stock"
+        "m6-point-stock",
+        "m6-import-grand-stock"
        ]
       },
       {
@@ -2399,6 +2460,20 @@
        "hub": "hub-rap",
        "ecrans": [
         "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-fournisseurs"
        ]
       }
      ]
@@ -2468,7 +2543,8 @@
         "m6-dispensation",
         "m6-etiquetage",
         "m6-point-ventes",
-        "m6-point-stock"
+        "m6-point-stock",
+        "m6-import-grand-stock"
        ]
       },
       {
@@ -2772,6 +2848,24 @@
      ]
     },
     {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    },
+    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -2972,6 +3066,15 @@
         "cfg-catalogue",
         "cfg-certificats"
        ]
+      },
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients"
+       ]
       }
      ]
     },
@@ -3079,6 +3182,20 @@
        "hub": "hub-rap",
        "ecrans": [
         "rapports-bibliotheque"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients"
        ]
       }
      ]

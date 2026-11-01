@@ -65,7 +65,7 @@ void main() {
   Fiche ficheRole(Magasin m, String role) =>
       m.collection('rbac').toutes.firstWhere((x) => x['role'] == role);
 
-  casM14('ouverture : quatre indicateurs, cinq onglets, 20 rôles actifs × 32 modules, comptes par rôle et mention « ex- »', (t) async {
+  casM14('ouverture : quatre indicateurs, cinq onglets, 20 rôles actifs × 33 modules, comptes par rôle et mention « ex- »', (t) async {
     final m = magasinM14();
     await ouvrirM14(t, m, 'm14-roles');
     for (final k in ['Rôles actifs', 'Rôles archivés', 'Modules protégés', 'Tentatives refusées']) {
@@ -76,7 +76,7 @@ void main() {
     }
     final ouv = f(vecteurs['rolesOuverture']);
     final kpis = [for (final k in ouv['kpis'] as List) (k as List).cast<String>()];
-    expect(kpis.map((k) => k[1]).toList(), ['20', '2', '32', '0']);
+    expect(kpis.map((k) => k[1]).toList(), ['20', '2', '33', '0']);
     for (final l in ouv['lignes'] as List) {
       final texte = (l as List)[0] as String;
       // « Libellé » puis « N compte(s) [· ex-…] » : deux textes dans la maquette (collés par textContent).
@@ -216,7 +216,7 @@ void main() {
     }
     expect(f(fiche['droitsEcrans']).keys, ['m7-besoins']);
     expect(find.text('Rôle « Auditeur externe » créé.'), findsOneWidget);
-    expect(find.text(secDetailCreationRole(32)), findsOneWidget);
+    expect(find.text(secDetailCreationRole(33)), findsOneWidget);
     expect(m.collection('audit').toutes.any((a) => a['action'] == 'Création d’un rôle'), isTrue);
     // Le rôle figure à la matrice (21 actifs), sans compte, et n'ouvre RIEN.
     expect(find.text('Auditeur externe'), findsWidgets);

@@ -5,11 +5,11 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **321** |
-| Hubs de module (un par module, engendrés) | 22 |
-| Écrans nommés par au moins un scénario de la maquette | 201 (63 %) |
-| Écrans **sans** scénario (recette à écrire) | 120 |
-| Écrans portés | 321 |
+| Écrans du manifeste (hors hubs de module) | **332** |
+| Hubs de module (un par module, engendrés) | 23 |
+| Écrans nommés par au moins un scénario de la maquette | 201 (61 %) |
+| Écrans **sans** scénario (recette à écrire) | 131 |
+| Écrans portés | 332 |
 | Écrans recettés | 0 |
 | Scénarios de la maquette analysés | 74 |
 
@@ -20,11 +20,11 @@
 | Tranche | Écrans | Avec scénario | Portés | Recettés |
 |---|---|---|---|---|
 | 1 · caisse + MECeF + impression | 17 | 8 | 17 | 0 |
-| 2 · pharmacie, stocks, achats | 27 | 21 | 27 | 0 |
+| 2 · pharmacie, stocks, achats | 28 | 21 | 28 | 0 |
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 21 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
 | 5 · assurances et comptabilité | 31 | 19 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 155 | 82 | 155 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 165 | 82 | 165 | 0 |
 
 ## Par écran
 
@@ -60,6 +60,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m6-dashboard` | Tableau de bord stock | M6 | 6 | — | porté |
 | `m6-dispensation` | Dispensation | M6 | 7 | 15, 24 | porté |
 | `m6-etiquetage` | Étiquetage & emplacements | M6 | 7 | 32 | porté |
+| `m6-import-grand-stock` | Importation Grand Stock | M6 | 5 | — | porté |
 | `m6-inventaire` | Inventaires | M6 | 6 | 65 | porté |
 | `m6-inventaire-feuille` | Feuille d’inventaire — comptage | M6 | 6 | — | porté |
 | `m6-lots` | Lots & péremptions (FEFO) | M6 | 6 | 11, 42 | porté |
@@ -275,6 +276,16 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `ged-archives` | Archivage & conservation | GED | 6 | — | porté |
 | `ged-bibliotheque` | Bibliothèque documentaire | GED | 6 | 52 | porté |
 | `ged-workflow` | Workflow de validation | GED | 6 | — | porté |
+| `imp-accueil` | Jeux d’import et historique des lots | IMP | 8 | — | porté |
+| `imp-actes` | Importation du catalogue des actes | IMP | 3 | — | porté |
+| `imp-analyses` | Importation du catalogue des analyses | IMP | 3 | — | porté |
+| `imp-assureurs` | Importation des compagnies d’assurance | IMP | 3 | — | porté |
+| `imp-fournisseurs` | Importation des fournisseurs | IMP | 4 | — | porté |
+| `imp-patients` | Importation du répertoire patients | IMP | 4 | — | porté |
+| `imp-personnel` | Importation du personnel | IMP | 2 | — | porté |
+| `imp-plan-comptable` | Importation du plan comptable | IMP | 3 | — | porté |
+| `imp-soldes-ouverture` | Importation des soldes d’ouverture | IMP | 3 | — | porté |
+| `imp-souscripteurs` | Importation des souscripteurs | IMP | 3 | — | porté |
 | `m10-assurance-personnel` | Assurance du personnel | M10 | 3 | 26 | porté |
 | `m10-badges` | Badges du personnel | M10 | 5 | 55, 67 | porté |
 | `m10-badges-impression` | Planche d’impression des badges | M10 | 3 | 55 | porté |

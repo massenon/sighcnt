@@ -14,6 +14,8 @@
     "lint": "node build/lint.js",
     "check": "node build/check.js",
     "test": "node build/test-fonctionnel.js",
+    "test:import": "node build/test-import.js",
+    "vecteurs:import": "node build/vecteurs-import.js",
     "verify": "npm run lint && npm run build && npm run check && npm run test",
     "audit-rbac": "node build/audit-rbac.js",
     "inventaire-rbac": "node build/inventaire-rbac.js",

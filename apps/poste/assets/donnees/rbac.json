@@ -314,6 +314,11 @@
     "editer": true,
     "annuler": true
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": true,
     "editer": true,
@@ -432,6 +437,11 @@
     "editer": true,
     "annuler": false
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -546,6 +556,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -668,6 +683,11 @@
     "editer": true,
     "annuler": true
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": true,
     "editer": true,
@@ -782,6 +802,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -904,6 +929,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -1018,6 +1048,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1140,6 +1175,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -1258,6 +1298,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -1372,6 +1417,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1494,6 +1544,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -1608,6 +1663,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -1730,6 +1790,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -1848,6 +1913,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": true,
+    "editer": true,
+    "annuler": true
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -1962,6 +2032,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -2084,6 +2159,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -2198,6 +2278,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -2320,6 +2405,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -2434,6 +2524,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -2556,6 +2651,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -2674,6 +2774,11 @@
     "editer": false,
     "annuler": false
    },
+   "IMP": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
    "MERE": {
     "voir": false,
     "editer": false,
@@ -2788,6 +2893,11 @@
     "annuler": false
    },
    "CFG": {
+    "voir": false,
+    "editer": false,
+    "annuler": false
+   },
+   "IMP": {
     "voir": false,
     "editer": false,
     "annuler": false
@@ -3303,6 +3413,11 @@
     1
    ],
    "m6-point-stock": [
+    1,
+    1,
+    1
+   ],
+   "m6-import-grand-stock": [
     1,
     1,
     1
@@ -3963,6 +4078,56 @@
     1
    ],
    "cfg-poste": [
+    1,
+    1,
+    1
+   ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-patients": [
+    1,
+    1,
+    1
+   ],
+   "imp-personnel": [
+    1,
+    1,
+    1
+   ],
+   "imp-actes": [
+    1,
+    1,
+    1
+   ],
+   "imp-analyses": [
+    1,
+    1,
+    1
+   ],
+   "imp-fournisseurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-assureurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-souscripteurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-plan-comptable": [
+    1,
+    1,
+    1
+   ],
+   "imp-soldes-ouverture": [
     1,
     1,
     1
@@ -4904,6 +5069,11 @@
     0,
     0
    ],
+   "m6-import-grand-stock": [
+    1,
+    0,
+    0
+   ],
    "m7-besoins": [
     1,
     1,
@@ -5558,6 +5728,16 @@
     1,
     1,
     0
+   ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-actes": [
+    1,
+    1,
+    1
    ],
    "dash-direction": [
     1,
@@ -6588,6 +6768,11 @@
     1,
     1
    ],
+   "m6-import-grand-stock": [
+    1,
+    1,
+    1
+   ],
    "m7-besoins": [
     1,
     1,
@@ -7244,6 +7429,56 @@
     1
    ],
    "cfg-poste": [
+    1,
+    1,
+    1
+   ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-patients": [
+    1,
+    1,
+    1
+   ],
+   "imp-personnel": [
+    1,
+    1,
+    1
+   ],
+   "imp-actes": [
+    1,
+    1,
+    1
+   ],
+   "imp-analyses": [
+    1,
+    1,
+    1
+   ],
+   "imp-fournisseurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-assureurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-souscripteurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-plan-comptable": [
+    1,
+    1,
+    1
+   ],
+   "imp-soldes-ouverture": [
     1,
     1,
     1
@@ -8735,6 +8970,16 @@
     1,
     1
    ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-analyses": [
+    1,
+    1,
+    1
+   ],
    "m5-stats-examens": [
     1,
     1,
@@ -8897,6 +9142,11 @@
     1,
     1
    ],
+   "m6-import-grand-stock": [
+    1,
+    1,
+    1
+   ],
    "m7-besoins": [
     1,
     1,
@@ -8988,6 +9238,16 @@
     0
    ],
    "rapports-bibliotheque": [
+    1,
+    1,
+    1
+   ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-fournisseurs": [
     1,
     1,
     1
@@ -9120,6 +9380,11 @@
     1
    ],
    "m6-point-stock": [
+    1,
+    1,
+    1
+   ],
+   "m6-import-grand-stock": [
     1,
     1,
     1
@@ -9791,6 +10056,36 @@
     1,
     0
    ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-fournisseurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-assureurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-souscripteurs": [
+    1,
+    1,
+    1
+   ],
+   "imp-plan-comptable": [
+    1,
+    1,
+    1
+   ],
+   "imp-soldes-ouverture": [
+    1,
+    1,
+    1
+   ],
    "dash-da": [
     1,
     1,
@@ -10149,6 +10444,16 @@
     0,
     0
    ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-patients": [
+    1,
+    1,
+    1
+   ],
    "dash-receptionniste": [
     1,
     1,
@@ -10315,6 +10620,16 @@
     1,
     1,
     0
+   ],
+   "imp-accueil": [
+    1,
+    1,
+    1
+   ],
+   "imp-patients": [
+    1,
+    1,
+    1
    ],
    "dash-admin-agent": [
     1,

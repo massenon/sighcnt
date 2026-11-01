@@ -1,0 +1,52 @@
+{
+ "id": "imp-accueil",
+ "module": "IMP",
+ "domaine": "Système",
+ "libelleManifeste": "Jeux d’import et historique des lots",
+ "acces": "ouvert",
+ "titre": "Importation de données",
+ "description": "Les jeux d’import de la clinique en démarrage : modèle .xlsx à télécharger, fichier à téléverser, analyse complète avant écriture, historique et annulation des lots.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Importation de données",
+  "Jeux d’import et historique des lots"
+ ],
+ "actions": [
+  "Importation du répertoire patients",
+  "Importation du personnel",
+  "Importation de données"
+ ],
+ "regle": [],
+ "onglets": [
+  "Jeux d’import",
+  "Historique des lots"
+ ],
+ "kpis": [
+  "Jeux d’import",
+  "Lots appliqués",
+  "Fichiers refusés",
+  "Lots annulés"
+ ],
+ "cartes": [
+  "Importation Grand Stock",
+  "Importation du personnel",
+  "Importation du répertoire patients",
+  "Importation du catalogue des actes",
+  "Importation du catalogue des analyses",
+  "Importation des fournisseurs",
+  "Importation des compagnies d’assurance",
+  "Importation des souscripteurs",
+  "Importation du plan comptable",
+  "Importation des soldes d’ouverture"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Jeux d’import",
+  "Historique des lots0",
+  "Ouvrir"
+ ],
+ "champs": [],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

@@ -12,7 +12,7 @@ import 'contexte_ecran.dart';
 /// main sans garde) : ajouter un module crée son hub côté maquette, et `parite_hubs_test.dart` échoue ici tant que le hub n'est pas déclaré.
 const hubsDuManifeste = [
   'hub-m1', 'hub-m2', 'hub-m3', 'hub-m4', 'hub-m5', 'hub-m6', 'hub-m7', 'hub-m8', 'hub-m9', 'hub-mecef', 'hub-m12', 'hub-m10', 'hub-m11',
-  'hub-m13', 'hub-ged', 'hub-rap', 'hub-m14', 'hub-cfg', 'hub-mere', 'hub-rls', 'hub-pil', 'hub-dash',
+  'hub-m13', 'hub-ged', 'hub-rap', 'hub-m14', 'hub-cfg', 'hub-mere', 'hub-rls', 'hub-pil', 'hub-dash', 'hub-imp',
 ];
 
 /// Un module tel que `N.module(code)` de la maquette le rend : la rangée CANONIQUE (ni alias, ni secondaire) le nomme et le situe ; les rangées

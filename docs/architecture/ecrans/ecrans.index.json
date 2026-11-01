@@ -947,6 +947,15 @@
    "commandes": 9
   },
   {
+   "id": "m6-import-grand-stock",
+   "acces": "ouvert",
+   "titre": "Importation Grand Stock",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
    "id": "hub-m7",
    "acces": "ouvert",
    "titre": "Achats & Fournisseurs",
@@ -2243,6 +2252,105 @@
    "commandes": 1
   },
   {
+   "id": "hub-imp",
+   "acces": "ouvert",
+   "titre": "Importation de données",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 0
+  },
+  {
+   "id": "imp-accueil",
+   "acces": "ouvert",
+   "titre": "Importation de données",
+   "kpis": 4,
+   "tableaux": 0,
+   "onglets": 2,
+   "commandes": 3
+  },
+  {
+   "id": "imp-patients",
+   "acces": "ouvert",
+   "titre": "Importation du répertoire patients",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-personnel",
+   "acces": "ouvert",
+   "titre": "Importation du personnel",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-actes",
+   "acces": "ouvert",
+   "titre": "Importation du catalogue des actes",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-analyses",
+   "acces": "ouvert",
+   "titre": "Importation du catalogue des analyses",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-fournisseurs",
+   "acces": "ouvert",
+   "titre": "Importation des fournisseurs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-assureurs",
+   "acces": "ouvert",
+   "titre": "Importation des compagnies d’assurance",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-souscripteurs",
+   "acces": "ouvert",
+   "titre": "Importation des souscripteurs",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-plan-comptable",
+   "acces": "ouvert",
+   "titre": "Importation du plan comptable",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
+   "id": "imp-soldes-ouverture",
+   "acces": "ouvert",
+   "titre": "Importation des soldes d’ouverture",
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
+  },
+  {
    "id": "hub-mere",
    "acces": "ouvert",
    "titre": "Exploitation de la synchronisation",
@@ -3086,7 +3194,7 @@
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 325
+   "commandes": 336
   }
  ]
 }

@@ -1,0 +1,5023 @@
+{
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-import.js : le moteur d’importation piloté sur un magasin contrôlé. Ne pas éditer.",
+ "jour": "2026-11-01",
+ "utilisateur": "ADMIN TEST",
+ "magasin": {
+  "produits": [
+   {
+    "id": "PRD0001",
+    "code": "ABA",
+    "designation": "ABAISSE LANGUE",
+    "unite": "Unité",
+    "categorie": "conso_medical",
+    "stock": 2,
+    "stockGros": 2,
+    "stockDetail": 0,
+    "statut": "actif"
+   },
+   {
+    "id": "PRD0002",
+    "code": "PARA500",
+    "designation": "PARACETAMOL 500 MG CP B/100",
+    "unite": "Boîte",
+    "categorie": "medicament",
+    "stock": 10,
+    "stockGros": 10,
+    "stockDetail": 0,
+    "statut": "actif"
+   }
+  ],
+  "lots": [],
+  "mouvements": [
+   {
+    "id": "MVT00001",
+    "reference": "M000001",
+    "produitId": "PRD0001",
+    "produit": "ABAISSE LANGUE",
+    "type": "entree",
+    "typeLabel": "Entrée",
+    "quantite": 2,
+    "statut": "actif"
+   }
+  ],
+  "fournisseurs": [
+   {
+    "id": "F001",
+    "code": "SOBAPS",
+    "nom": "SoBAPS SA",
+    "statut": "actif"
+   }
+  ],
+  "patients": [
+   {
+    "id": "PAT0001",
+    "code": "CNT/1/25",
+    "nom": "TCHANE",
+    "prenom": "Bertine",
+    "dateNaissance": "1989-07-01",
+    "telephone": "0372398919",
+    "statut": "actif"
+   },
+   {
+    "id": "PAT0002",
+    "code": "CNT/7/26",
+    "nom": "ADJOVI",
+    "prenom": "Paul",
+    "telephone": "0197000001",
+    "statut": "actif"
+   }
+  ],
+  "personnel": [
+   {
+    "id": "EMP01",
+    "matricule": "1",
+    "nom": "BASSONGUI",
+    "prenom": "Chabi Séko",
+    "service": "Direction",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP02",
+    "matricule": "2",
+    "nom": "KASSA",
+    "prenom": "Augustin",
+    "service": "Comptabilité",
+    "statut": "actif"
+   },
+   {
+    "id": "EMP03",
+    "matricule": "3",
+    "nom": "TAKI",
+    "prenom": "Alimatou",
+    "service": "Soins infirmiers",
+    "statut": "actif"
+   }
+  ],
+  "actes": [
+   {
+    "id": "ACT001",
+    "code": "MG01",
+    "libelle": "Consultation généraliste",
+    "secteur": "Médecine générale",
+    "statut": "actif"
+   },
+   {
+    "id": "ACT002",
+    "code": "CH01",
+    "libelle": "Petite chirurgie",
+    "secteur": "Chirurgie",
+    "statut": "actif"
+   }
+  ],
+  "examensLabo": [
+   {
+    "id": "EXA01",
+    "code": "NFS",
+    "designation": "NFS complète (hémogramme)",
+    "section": "hematologie",
+    "statut": "actif"
+   }
+  ],
+  "assureurs": [
+   {
+    "id": "ASS01",
+    "code": "AFR",
+    "nom": "AFRICAINE DES ASSURANCES",
+    "convention": "Signée",
+    "statut": "actif"
+   },
+   {
+    "id": "ASS02",
+    "code": "NSIA",
+    "nom": "NSIA ASSURANCE",
+    "convention": "Signée",
+    "statut": "actif"
+   }
+  ],
+  "souscripteurs": [
+   {
+    "id": "SOU001",
+    "nom": "PIB Bénin",
+    "police": "AFR/2024/0100",
+    "assureur": "AFR",
+    "statut": "actif"
+   }
+  ],
+  "comptes": [
+   {
+    "id": "CPT001",
+    "num": "101100",
+    "libelle": "Capital souscrit, non appelé",
+    "classe": 1,
+    "journal": "OD",
+    "statut": "actif"
+   },
+   {
+    "id": "CPT002",
+    "num": "571000",
+    "libelle": "Caisse",
+    "classe": 5,
+    "journal": "CAI",
+    "statut": "actif"
+   },
+   {
+    "id": "CPT003",
+    "num": "411000",
+    "libelle": "Clients",
+    "classe": 4,
+    "journal": "VTE",
+    "statut": "actif"
+   },
+   {
+    "id": "CPT004",
+    "num": "601000",
+    "libelle": "Achats de marchandises",
+    "classe": 6,
+    "journal": "ACH",
+    "statut": "actif"
+   }
+  ],
+  "ecritures": [
+   {
+    "id": "ECR1",
+    "numero": "AN-2025-00001",
+    "date": "2025-01-01",
+    "journal": "AN",
+    "compte": "571000",
+    "debit": 1,
+    "credit": 0,
+    "statut": "brouillon"
+   }
+  ],
+  "lotsImportation": []
+ },
+ "cas": [
+  {
+   "id": "gs-valide",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED1",
+     "AMOXICILLINE 500 MG GELULE B/100",
+     "Médicaments",
+     "Boîte",
+     100,
+     "L1",
+     "2028-06-30",
+     350,
+     20,
+     "Rayon A, Casier 3",
+     "SOBAPS"
+    ],
+    [
+     "MED1",
+     "AMOXICILLINE 500 MG GELULE B/100",
+     "Médicaments",
+     "Boîte",
+     50,
+     "L2",
+     "2029-01-31",
+     350,
+     "",
+     "",
+     ""
+    ],
+    [
+     "GANT1",
+     "GANTS LATEX M B/100",
+     "Consommables médicaux",
+     "",
+     40,
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 3,
+    "compte": {
+     "valides": 2,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 4,
+      "colonne": "Prix de revient unitaire",
+      "code": "A_VALORISER",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-modele-intact",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "PARA500",
+     "PARACETAMOL 500 MG CP B/100",
+     "Médicaments",
+     "Boîte",
+     120,
+     "L2026-014",
+     "2028-06-30",
+     350,
+     20,
+     "Rayon A, Casier 3",
+     "SOBAPS"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 0,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "",
+      "code": "FICHIER_VIDE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": []
+   }
+  },
+  {
+   "id": "gs-doublon-fichier",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED1",
+     "AMOX",
+     "Médicaments",
+     "",
+     10,
+     "L1",
+     "2028-06-30",
+     100,
+     "",
+     "",
+     ""
+    ],
+    [
+     "med1",
+     "AMOX",
+     "Médicaments",
+     "",
+     5,
+     "L1",
+     "2028-06-30",
+     100,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Code article",
+      "code": "DOUBLON_FICHIER",
+      "niveau": "refus",
+      "valeur": "med1"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-doublon-magasin",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "PARA500",
+     "PARACETAMOL",
+     "Médicaments",
+     "",
+     10,
+     "L1",
+     "2028-06-30",
+     100,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code article",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "PARA500"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-colonne-manquante",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED9",
+     "AMOX",
+     "Médicaments",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 0,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Quantité",
+      "code": "COLONNE_MANQUANTE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": []
+   }
+  },
+  {
+   "id": "gs-type-invalide",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED9",
+     "AMOX",
+     "Médicaments",
+     "",
+     "abc",
+     "L1",
+     "2028-06-30",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "abc"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-peremption-passee",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED8",
+     "EXPIRE",
+     "Médicaments",
+     "",
+     10,
+     "L9",
+     "2020-01-01",
+     100,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "PEREMPTION_PASSEE",
+      "niveau": "avertissement",
+      "valeur": "2020-01-01"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-quantite-negative",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED7",
+     "NEGATIF",
+     "Médicaments",
+     "",
+     -5,
+     "L1",
+     "2028-06-30",
+     100,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Quantité",
+      "code": "RG03_STOCK_NEGATIF",
+      "niveau": "refus",
+      "valeur": "-5"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-lot-obligatoire",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED6",
+     "SANS LOT",
+     "Médicaments",
+     "",
+     5,
+     "",
+     "",
+     100,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de lot",
+      "code": "LOT_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-lot-incomplet",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "FOU1",
+     "PAPIER",
+     "Fournitures administratives",
+     "",
+     5,
+     "X1",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date de péremption",
+      "code": "LOT_INCOMPLET",
+      "niveau": "refus",
+      "valeur": ""
+     },
+     {
+      "n": 2,
+      "colonne": "Prix de revient unitaire",
+      "code": "A_VALORISER",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-categorie-inconnue",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "BIJ1",
+     "BIJOU",
+     "Bijoux",
+     "",
+     1,
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Catégorie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Bijoux"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-incoherent",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED2",
+     "AMOX A",
+     "Médicaments",
+     "",
+     5,
+     "A",
+     "2028-01-01",
+     100,
+     "",
+     "",
+     ""
+    ],
+    [
+     "MED2",
+     "AUTRE NOM",
+     "Médicaments",
+     "",
+     5,
+     "B",
+     "2028-01-01",
+     100,
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Désignation",
+      "code": "ARTICLE_INCOHERENT",
+      "niveau": "refus",
+      "valeur": "AUTRE NOM"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-obligatoire-vide",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ],
+    [
+     "MED5",
+     "",
+     "Médicaments",
+     "",
+     5,
+     "A",
+     "2028-01-01",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Désignation",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "gs-fichier-vide",
+   "jeu": "grand-stock",
+   "lignes": [
+    [
+     "Code article",
+     "Désignation",
+     "Catégorie",
+     "Unité",
+     "Quantité",
+     "N° de lot",
+     "Date de péremption",
+     "Prix de revient unitaire",
+     "Seuil d’alerte",
+     "Emplacement",
+     "Code fournisseur"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 0,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "",
+      "code": "FICHIER_VIDE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": []
+   }
+  },
+  {
+   "id": "pa-valide",
+   "jeu": "patients",
+   "lignes": [
+    [
+     "Code dossier",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Date de naissance",
+     "Âge déclaré",
+     "Téléphone",
+     "Quartier",
+     "Adresse",
+     "Personne à prévenir",
+     "Groupe sanguin",
+     "Code assureur",
+     "N° de police",
+     "Date d’ouverture du dossier"
+    ],
+    [
+     "CNT/12/24",
+     "AKPO",
+     "Marc",
+     "M",
+     "1990-04-12",
+     "",
+     "0197000010",
+     "Boukoumbé",
+     "",
+     "",
+     "",
+     "AFR",
+     "AFR/2024/0100",
+     "2024-05-02"
+    ],
+    [
+     "",
+     "DOSSOU",
+     "Aïcha",
+     "F",
+     "2001-09-30",
+     "",
+     "0197000011",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "2026-03-10"
+    ],
+    [
+     "",
+     "GBEDO",
+     "Lucien",
+     "M",
+     "",
+     45,
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 3,
+    "compte": {
+     "valides": 2,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 4,
+      "colonne": "Téléphone",
+      "code": "TELEPHONE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pa-code-existant",
+   "jeu": "patients",
+   "lignes": [
+    [
+     "Code dossier",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Date de naissance",
+     "Âge déclaré",
+     "Téléphone",
+     "Quartier",
+     "Adresse",
+     "Personne à prévenir",
+     "Groupe sanguin",
+     "Code assureur",
+     "N° de police",
+     "Date d’ouverture du dossier"
+    ],
+    [
+     "CNT/1/25",
+     "AUTRE",
+     "Personne",
+     "F",
+     "",
+     30,
+     "0197000099",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "CNT/1/25"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pa-doublon-identite",
+   "jeu": "patients",
+   "lignes": [
+    [
+     "Code dossier",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Date de naissance",
+     "Âge déclaré",
+     "Téléphone",
+     "Quartier",
+     "Adresse",
+     "Personne à prévenir",
+     "Groupe sanguin",
+     "Code assureur",
+     "N° de police",
+     "Date d’ouverture du dossier"
+    ],
+    [
+     "",
+     "TCHANE",
+     "Bertine",
+     "F",
+     "1989-07-01",
+     "",
+     "0197000098",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pa-doublon-telephone",
+   "jeu": "patients",
+   "lignes": [
+    [
+     "Code dossier",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Date de naissance",
+     "Âge déclaré",
+     "Téléphone",
+     "Quartier",
+     "Adresse",
+     "Personne à prévenir",
+     "Groupe sanguin",
+     "Code assureur",
+     "N° de police",
+     "Date d’ouverture du dossier"
+    ],
+    [
+     "",
+     "ADJOVI",
+     "Paul",
+     "M",
+     "",
+     40,
+     "0197000001",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pa-sans-age",
+   "jeu": "patients",
+   "lignes": [
+    [
+     "Code dossier",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Date de naissance",
+     "Âge déclaré",
+     "Téléphone",
+     "Quartier",
+     "Adresse",
+     "Personne à prévenir",
+     "Groupe sanguin",
+     "Code assureur",
+     "N° de police",
+     "Date d’ouverture du dossier"
+    ],
+    [
+     "",
+     "ZANNOU",
+     "Rose",
+     "F",
+     "",
+     "",
+     "0197000012",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date de naissance",
+      "code": "CHAMP_OBLIGATOIRE",
+      "niveau": "refus",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pa-code-invalide",
+   "jeu": "patients",
+   "lignes": [
+    [
+     "Code dossier",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Date de naissance",
+     "Âge déclaré",
+     "Téléphone",
+     "Quartier",
+     "Adresse",
+     "Personne à prévenir",
+     "Groupe sanguin",
+     "Code assureur",
+     "N° de police",
+     "Date d’ouverture du dossier"
+    ],
+    [
+     "DOSSIER-12",
+     "ZANNOU",
+     "Rose",
+     "F",
+     "",
+     20,
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code dossier",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "DOSSIER-12"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pa-date-future",
+   "jeu": "patients",
+   "lignes": [
+    [
+     "Code dossier",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Date de naissance",
+     "Âge déclaré",
+     "Téléphone",
+     "Quartier",
+     "Adresse",
+     "Personne à prévenir",
+     "Groupe sanguin",
+     "Code assureur",
+     "N° de police",
+     "Date d’ouverture du dossier"
+    ],
+    [
+     "",
+     "ZANNOU",
+     "Rose",
+     "F",
+     "2031-01-01",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date de naissance",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "2031-01-01"
+     },
+     {
+      "n": 2,
+      "colonne": "Téléphone",
+      "code": "TELEPHONE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "so-valide",
+   "jeu": "soldes-ouverture",
+   "lignes": [
+    [
+     "Date",
+     "N° de compte",
+     "Libellé",
+     "Tiers",
+     "Débit",
+     "Crédit"
+    ],
+    [
+     "2026-01-01",
+     "571000",
+     "Caisse à l’ouverture",
+     "",
+     300000,
+     ""
+    ],
+    [
+     "2026-01-01",
+     "411000",
+     "",
+     "NSIA",
+     100000,
+     ""
+    ],
+    [
+     "2026-01-01",
+     "411000",
+     "",
+     "SUNU",
+     50000,
+     ""
+    ],
+    [
+     "2026-01-01",
+     "101100",
+     "Capital",
+     "",
+     "",
+     450000
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 4,
+    "compte": {
+     "valides": 4,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "valide"
+     ],
+     [
+      5,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "so-desequilibre",
+   "jeu": "soldes-ouverture",
+   "lignes": [
+    [
+     "Date",
+     "N° de compte",
+     "Libellé",
+     "Tiers",
+     "Débit",
+     "Crédit"
+    ],
+    [
+     "2026-01-01",
+     "571000",
+     "",
+     "",
+     250000,
+     ""
+    ],
+    [
+     "2026-01-01",
+     "101100",
+     "",
+     "",
+     "",
+     200000
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Débit / Crédit",
+      "code": "RG10_DESEQUILIBRE",
+      "niveau": "refus",
+      "valeur": "débit 250000 ≠ crédit 200000"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "so-classe-6",
+   "jeu": "soldes-ouverture",
+   "lignes": [
+    [
+     "Date",
+     "N° de compte",
+     "Libellé",
+     "Tiers",
+     "Débit",
+     "Crédit"
+    ],
+    [
+     "2026-01-01",
+     "601000",
+     "",
+     "",
+     1000,
+     ""
+    ],
+    [
+     "2026-01-01",
+     "101100",
+     "",
+     "",
+     "",
+     1000
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "CLASSE_NON_REPORTABLE",
+      "niveau": "refus",
+      "valeur": "601000"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "so-deux-sens",
+   "jeu": "soldes-ouverture",
+   "lignes": [
+    [
+     "Date",
+     "N° de compte",
+     "Libellé",
+     "Tiers",
+     "Débit",
+     "Crédit"
+    ],
+    [
+     "2026-01-01",
+     "571000",
+     "",
+     "",
+     1000,
+     1000
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Crédit",
+      "code": "DEUX_SENS",
+      "niveau": "refus",
+      "valeur": "1000"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "so-compte-inconnu",
+   "jeu": "soldes-ouverture",
+   "lignes": [
+    [
+     "Date",
+     "N° de compte",
+     "Libellé",
+     "Tiers",
+     "Débit",
+     "Crédit"
+    ],
+    [
+     "2026-01-01",
+     "999999",
+     "",
+     "",
+     1000,
+     ""
+    ],
+    [
+     "2026-01-01",
+     "101100",
+     "",
+     "",
+     "",
+     1000
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "COMPTE_INCONNU",
+      "niveau": "refus",
+      "valeur": "999999"
+     },
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "CLASSE_NON_REPORTABLE",
+      "niveau": "refus",
+      "valeur": "999999"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "so-an-existant",
+   "jeu": "soldes-ouverture",
+   "lignes": [
+    [
+     "Date",
+     "N° de compte",
+     "Libellé",
+     "Tiers",
+     "Débit",
+     "Crédit"
+    ],
+    [
+     "2025-01-01",
+     "571000",
+     "",
+     "",
+     10,
+     ""
+    ],
+    [
+     "2025-01-01",
+     "101100",
+     "",
+     "",
+     "",
+     10
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Date",
+      "code": "A_NOUVEAU_EXISTANT",
+      "niveau": "refus",
+      "valeur": "2025-01-01"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "so-dates-multiples",
+   "jeu": "soldes-ouverture",
+   "lignes": [
+    [
+     "Date",
+     "N° de compte",
+     "Libellé",
+     "Tiers",
+     "Débit",
+     "Crédit"
+    ],
+    [
+     "2026-01-01",
+     "571000",
+     "",
+     "",
+     10,
+     ""
+    ],
+    [
+     "2026-01-02",
+     "101100",
+     "",
+     "",
+     "",
+     10
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 0,
+      "colonne": "Date",
+      "code": "DATES_MULTIPLES",
+      "niveau": "refus",
+      "valeur": "2026-01-01, 2026-01-02"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ac-valide",
+   "jeu": "actes",
+   "lignes": [
+    [
+     "Code acte",
+     "Libellé",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Code tarif"
+    ],
+    [
+     "X1",
+     "Acte A",
+     "Médecine générale",
+     5000,
+     3000,
+     "T1"
+    ],
+    [
+     "X2",
+     "Acte B",
+     "Chirurgie",
+     8000,
+     "NC",
+     ""
+    ],
+    [
+     "X3",
+     "Acte C",
+     "Médecine générale",
+     "-",
+     "-",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 3,
+    "compte": {
+     "valides": 2,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 4,
+      "colonne": "Prix non assuré",
+      "code": "PRIX_MANQUANT",
+      "niveau": "avertissement",
+      "valeur": "-"
+     },
+     {
+      "n": 4,
+      "colonne": "Prix assuré",
+      "code": "PRIX_MANQUANT",
+      "niveau": "avertissement",
+      "valeur": "-"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ],
+     [
+      4,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ac-nc-non-assure",
+   "jeu": "actes",
+   "lignes": [
+    [
+     "Code acte",
+     "Libellé",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Code tarif"
+    ],
+    [
+     "X4",
+     "Acte D",
+     "Médecine générale",
+     "NC",
+     3000,
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "NC_INTERDIT",
+      "niveau": "refus",
+      "valeur": "NC"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ac-type-invalide",
+   "jeu": "actes",
+   "lignes": [
+    [
+     "Code acte",
+     "Libellé",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Code tarif"
+    ],
+    [
+     "X5",
+     "Acte E",
+     "Médecine générale",
+     "12,5",
+     3000,
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Prix non assuré",
+      "code": "TYPE_INVALIDE",
+      "niveau": "refus",
+      "valeur": "12,5"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "ac-secteur-inconnu",
+   "jeu": "actes",
+   "lignes": [
+    [
+     "Code acte",
+     "Libellé",
+     "Secteur",
+     "Prix non assuré",
+     "Prix assuré",
+     "Code tarif"
+    ],
+    [
+     "X6",
+     "Acte F",
+     "Astrologie",
+     1000,
+     500,
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Secteur",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Astrologie"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pe-valide",
+   "jeu": "personnel",
+   "lignes": [
+    [
+     "Matricule",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Fonction",
+     "Poste",
+     "Service",
+     "Catégorie",
+     "Date d’embauche",
+     "Téléphone",
+     "N° CNSS",
+     "Situation familiale",
+     "Salaire de base"
+    ],
+    [
+     "45",
+     "ADJOVI",
+     "Marie",
+     "F",
+     "infirmier",
+     "Infirmière",
+     "Soins infirmiers",
+     "E3-2",
+     "2024-03-01",
+     "0197000020",
+     "294011541",
+     "Marié(e)",
+     150000
+    ],
+    [
+     "46",
+     "HOUNKPATIN",
+     "Jean",
+     "M",
+     "stock",
+     "Magasinier",
+     "Pharmacie",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pe-doublon-matricule",
+   "jeu": "personnel",
+   "lignes": [
+    [
+     "Matricule",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Fonction",
+     "Poste",
+     "Service",
+     "Catégorie",
+     "Date d’embauche",
+     "Téléphone",
+     "N° CNSS",
+     "Situation familiale",
+     "Salaire de base"
+    ],
+    [
+     "2",
+     "NOUVEAU",
+     "Agent",
+     "F",
+     "infirmier",
+     "Infirmière",
+     "Soins infirmiers",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Matricule",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "2"
+     },
+     {
+      "n": 2,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pe-doublon-identite",
+   "jeu": "personnel",
+   "lignes": [
+    [
+     "Matricule",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Fonction",
+     "Poste",
+     "Service",
+     "Catégorie",
+     "Date d’embauche",
+     "Téléphone",
+     "N° CNSS",
+     "Situation familiale",
+     "Salaire de base"
+    ],
+    [
+     "77",
+     "kassa",
+     "augustin",
+     "F",
+     "infirmier",
+     "Infirmière",
+     "Soins infirmiers",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Matricule",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "77"
+     },
+     {
+      "n": 2,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pe-service-inconnu",
+   "jeu": "personnel",
+   "lignes": [
+    [
+     "Matricule",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Fonction",
+     "Poste",
+     "Service",
+     "Catégorie",
+     "Date d’embauche",
+     "Téléphone",
+     "N° CNSS",
+     "Situation familiale",
+     "Salaire de base"
+    ],
+    [
+     "78",
+     "NOUVEAU",
+     "Agent",
+     "F",
+     "infirmier",
+     "Infirmière",
+     "Service fantôme",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Service",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Service fantôme"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pe-date-future",
+   "jeu": "personnel",
+   "lignes": [
+    [
+     "Matricule",
+     "Nom",
+     "Prénom",
+     "Sexe",
+     "Fonction",
+     "Poste",
+     "Service",
+     "Catégorie",
+     "Date d’embauche",
+     "Téléphone",
+     "N° CNSS",
+     "Situation familiale",
+     "Salaire de base"
+    ],
+    [
+     "79",
+     "NOUVEAU",
+     "Agent",
+     "F",
+     "infirmier",
+     "Infirmière",
+     "Soins infirmiers",
+     "",
+     "2031-01-01",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date d’embauche",
+      "code": "DATE_FUTURE",
+      "niveau": "refus",
+      "valeur": "2031-01-01"
+     },
+     {
+      "n": 2,
+      "colonne": "Salaire de base",
+      "code": "SALAIRE_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "fo-valide",
+   "jeu": "fournisseurs",
+   "lignes": [
+    [
+     "Code fournisseur",
+     "Raison sociale",
+     "Type",
+     "Ville",
+     "Adresse",
+     "Téléphone",
+     "IFU",
+     "Délai de livraison (jours)",
+     "Banque",
+     "N° de compte"
+    ],
+    [
+     "CAME",
+     "Centrale d’achat",
+     "Grossiste",
+     "Cotonou",
+     "",
+     "",
+     "3202112446799",
+     7,
+     "",
+     ""
+    ],
+    [
+     "LOCAL",
+     "Fournisseur local",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "IFU",
+      "code": "IFU_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "fo-doublon",
+   "jeu": "fournisseurs",
+   "lignes": [
+    [
+     "Code fournisseur",
+     "Raison sociale",
+     "Type",
+     "Ville",
+     "Adresse",
+     "Téléphone",
+     "IFU",
+     "Délai de livraison (jours)",
+     "Banque",
+     "N° de compte"
+    ],
+    [
+     "sobaps",
+     "SoBAPS bis",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code fournisseur",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "sobaps"
+     },
+     {
+      "n": 2,
+      "colonne": "IFU",
+      "code": "IFU_ABSENT",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "fo-ifu-invalide",
+   "jeu": "fournisseurs",
+   "lignes": [
+    [
+     "Code fournisseur",
+     "Raison sociale",
+     "Type",
+     "Ville",
+     "Adresse",
+     "Téléphone",
+     "IFU",
+     "Délai de livraison (jours)",
+     "Banque",
+     "N° de compte"
+    ],
+    [
+     "CAME",
+     "Centrale d’achat",
+     "",
+     "",
+     "",
+     "",
+     "12AB",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "IFU",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "12AB"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "as-valide",
+   "jeu": "assureurs",
+   "lignes": [
+    [
+     "Code compagnie",
+     "Raison sociale",
+     "Téléphones",
+     "E-mail",
+     "Convention"
+    ],
+    [
+     "SUNU",
+     "SUNU ASSURANCES",
+     "0195000001 / 0195000002",
+     "contact@sunu.bj",
+     "Signée"
+    ],
+    [
+     "OLEA",
+     "OLEA",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 1,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 3,
+      "colonne": "Convention",
+      "code": "CONVENTION_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "as-doublon",
+   "jeu": "assureurs",
+   "lignes": [
+    [
+     "Code compagnie",
+     "Raison sociale",
+     "Téléphones",
+     "E-mail",
+     "Convention"
+    ],
+    [
+     "afr",
+     "Autre",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code compagnie",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "afr"
+     },
+     {
+      "n": 2,
+      "colonne": "Convention",
+      "code": "CONVENTION_ABSENTE",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "as-email-invalide",
+   "jeu": "assureurs",
+   "lignes": [
+    [
+     "Code compagnie",
+     "Raison sociale",
+     "Téléphones",
+     "E-mail",
+     "Convention"
+    ],
+    [
+     "GAB",
+     "GAB",
+     "",
+     "pas-un-email",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "E-mail",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "pas-un-email"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-valide",
+   "jeu": "souscripteurs",
+   "lignes": [
+    [
+     "Souscripteur",
+     "N° de police",
+     "Code compagnie",
+     "Catégorie",
+     "Effectif",
+     "Date de début",
+     "Date de fin"
+    ],
+    [
+     "Société X",
+     "NSIA/2026/001",
+     "NSIA",
+     "entreprise",
+     40,
+     "2026-01-01",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 1,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "etats": [
+     [
+      2,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-compagnie-inconnue",
+   "jeu": "souscripteurs",
+   "lignes": [
+    [
+     "Souscripteur",
+     "N° de police",
+     "Code compagnie",
+     "Catégorie",
+     "Effectif",
+     "Date de début",
+     "Date de fin"
+    ],
+    [
+     "Société Y",
+     "ZZZ/1",
+     "ZZZ",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code compagnie",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "ZZZ"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-periode-inversee",
+   "jeu": "souscripteurs",
+   "lignes": [
+    [
+     "Souscripteur",
+     "N° de police",
+     "Code compagnie",
+     "Catégorie",
+     "Effectif",
+     "Date de début",
+     "Date de fin"
+    ],
+    [
+     "Société Z",
+     "NSIA/2026/002",
+     "NSIA",
+     "",
+     "",
+     "2026-06-01",
+     "2026-01-01"
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Date de fin",
+      "code": "PERIODE_INVERSEE",
+      "niveau": "refus",
+      "valeur": "2026-01-01"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "sc-police-existante",
+   "jeu": "souscripteurs",
+   "lignes": [
+    [
+     "Souscripteur",
+     "N° de police",
+     "Code compagnie",
+     "Catégorie",
+     "Effectif",
+     "Date de début",
+     "Date de fin"
+    ],
+    [
+     "PIB bis",
+     "afr/2024/0100",
+     "AFR",
+     "",
+     "",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Souscripteur",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "PIB bis"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pc-valide",
+   "jeu": "plan-comptable",
+   "lignes": [
+    [
+     "N° de compte",
+     "Libellé",
+     "Journal"
+    ],
+    [
+     "605000",
+     "Fournitures consommables",
+     "ACH"
+    ],
+    [
+     "6051",
+     "Eau",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 2,
+    "compte": {
+     "valides": 2,
+     "avertissements": 0,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [],
+    "etats": [
+     [
+      2,
+      "valide"
+     ],
+     [
+      3,
+      "valide"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pc-doublon",
+   "jeu": "plan-comptable",
+   "lignes": [
+    [
+     "N° de compte",
+     "Libellé",
+     "Journal"
+    ],
+    [
+     "571000",
+     "Caisse bis",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "DOUBLON_MAGASIN",
+      "niveau": "refus",
+      "valeur": "571000"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "pc-numero-invalide",
+   "jeu": "plan-comptable",
+   "lignes": [
+    [
+     "N° de compte",
+     "Libellé",
+     "Journal"
+    ],
+    [
+     "05",
+     "Trop court",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "N° de compte",
+      "code": "FORMAT_INVALIDE",
+      "niveau": "refus",
+      "valeur": "05"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "an-valide",
+   "jeu": "analyses",
+   "lignes": [
+    [
+     "Code examen",
+     "Désignation",
+     "Section",
+     "Échantillon",
+     "Délai de rendu"
+    ],
+    [
+     "HBA1C",
+     "Hémoglobine glyquée",
+     "Biochimie",
+     "Sang total (EDTA)",
+     "24 h"
+    ]
+   ],
+   "attendu": {
+    "accepte": true,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 1,
+     "refus": 0
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Code examen",
+      "code": "SANS_VARIABLES",
+      "niveau": "avertissement",
+      "valeur": ""
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "avertissement"
+     ]
+    ]
+   }
+  },
+  {
+   "id": "an-section-inconnue",
+   "jeu": "analyses",
+   "lignes": [
+    [
+     "Code examen",
+     "Désignation",
+     "Section",
+     "Échantillon",
+     "Délai de rendu"
+    ],
+    [
+     "GLY",
+     "Glycémie",
+     "Magie",
+     "",
+     ""
+    ]
+   ],
+   "attendu": {
+    "accepte": false,
+    "nbLignes": 1,
+    "compte": {
+     "valides": 0,
+     "avertissements": 0,
+     "refus": 1
+    },
+    "coherentCsv": true,
+    "problemes": [
+     {
+      "n": 2,
+      "colonne": "Section",
+      "code": "VALEUR_HORS_LISTE",
+      "niveau": "refus",
+      "valeur": "Magie"
+     }
+    ],
+    "etats": [
+     [
+      2,
+      "refus"
+     ]
+    ]
+   }
+  }
+ ],
+ "modeles": {
+  "grand-stock": {
+   "libelle": "Importation Grand Stock",
+   "ecran": "m6-import-grand-stock",
+   "statut": "supporte",
+   "module": "M6",
+   "roles": [
+    "stock",
+    "da",
+    "admin",
+    "direction"
+   ],
+   "cibles": [
+    "produits",
+    "lots",
+    "mouvements"
+   ],
+   "source": "Inventaire SAGE 100 « Grand Stock » du 15/07/2026 (docs/) : 184 articles, 12 080 unités, 3 976 459 FCFA.",
+   "fichier": "modele-import-grand-stock",
+   "entetes": [
+    "Code article",
+    "Désignation",
+    "Catégorie",
+    "Unité",
+    "Quantité",
+    "N° de lot",
+    "Date de péremption",
+    "Prix de revient unitaire",
+    "Seuil d’alerte",
+    "Emplacement",
+    "Code fournisseur"
+   ],
+   "cles": [
+    "code",
+    "designation",
+    "categorie",
+    "unite",
+    "quantite",
+    "lot",
+    "peremption",
+    "prixRevient",
+    "seuil",
+    "emplacement",
+    "fournisseur"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "texte",
+    "entier",
+    "texte",
+    "date",
+    "entier",
+    "entier",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "PARA500",
+    "PARACETAMOL 500 MG CP B/100",
+    "Médicaments",
+    "Boîte",
+    120,
+    "L2026-014",
+    "2028-06-30",
+    350,
+    20,
+    "Rayon A, Casier 3",
+    "SOBAPS"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 23,
+   "listes": [
+    "Catégorie"
+   ]
+  },
+  "personnel": {
+   "libelle": "Importation du personnel",
+   "ecran": "imp-personnel",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "da",
+    "admin"
+   ],
+   "cibles": [
+    "personnel"
+   ],
+   "source": "Organigramme et liste du personnel de la clinique (docs/) : 44 agents.",
+   "fichier": "modele-import-personnel",
+   "entetes": [
+    "Matricule",
+    "Nom",
+    "Prénom",
+    "Sexe",
+    "Fonction",
+    "Poste",
+    "Service",
+    "Catégorie",
+    "Date d’embauche",
+    "Téléphone",
+    "N° CNSS",
+    "Situation familiale",
+    "Salaire de base"
+   ],
+   "cles": [
+    "matricule",
+    "nom",
+    "prenom",
+    "sexe",
+    "fonction",
+    "poste",
+    "service",
+    "categorie",
+    "dateEmbauche",
+    "telephone",
+    "cnss",
+    "situation",
+    "salaireBase"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "texte",
+    "liste",
+    "liste",
+    "texte",
+    "liste",
+    "texte",
+    "date",
+    "texte",
+    "texte",
+    "liste",
+    "entier"
+   ],
+   "exemple": [
+    "45",
+    "ADJOVI",
+    "Marie",
+    "F",
+    "infirmier",
+    "Infirmière",
+    "Soins infirmiers",
+    "E3-2",
+    "2024-03-01",
+    "0197000000",
+    "294011540",
+    "Marié(e)",
+    150000
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 25,
+   "listes": [
+    "Sexe",
+    "Fonction",
+    "Service",
+    "Situation familiale"
+   ]
+  },
+  "patients": {
+   "libelle": "Importation du répertoire patients",
+   "ecran": "imp-patients",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "reception",
+    "agentadmin",
+    "da",
+    "admin"
+   ],
+   "cibles": [
+    "patients"
+   ],
+   "source": "Registre papier des dossiers (environ 18 000) : seule l’identité administrative se reprend (CDCT 4.3).",
+   "fichier": "modele-import-patients",
+   "entetes": [
+    "Code dossier",
+    "Nom",
+    "Prénom",
+    "Sexe",
+    "Date de naissance",
+    "Âge déclaré",
+    "Téléphone",
+    "Quartier",
+    "Adresse",
+    "Personne à prévenir",
+    "Groupe sanguin",
+    "Code assureur",
+    "N° de police",
+    "Date d’ouverture du dossier"
+   ],
+   "cles": [
+    "code",
+    "nom",
+    "prenom",
+    "sexe",
+    "dateNaissance",
+    "age",
+    "telephone",
+    "quartier",
+    "adresse",
+    "personneAPrevenir",
+    "groupeSanguin",
+    "assureur",
+    "numeroPolice",
+    "dateCreation"
+   ],
+   "obligatoires": [
+    false,
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "texte",
+    "liste",
+    "date",
+    "entier",
+    "texte",
+    "texte",
+    "texte",
+    "texte",
+    "liste",
+    "liste",
+    "texte",
+    "date"
+   ],
+   "exemple": [
+    "",
+    "ADJOVI",
+    "Marie",
+    "F",
+    "1990-04-12",
+    "",
+    "0197000000",
+    "Boukoumbé",
+    "Tchirimina, Natitingou",
+    "ADJOVI Paul",
+    "O+",
+    "",
+    "",
+    "2024-05-02"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 26,
+   "listes": [
+    "Sexe",
+    "Groupe sanguin",
+    "Code assureur"
+   ]
+  },
+  "actes": {
+   "libelle": "Importation du catalogue des actes",
+   "ecran": "imp-actes",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "da",
+    "admin",
+    "direction"
+   ],
+   "cibles": [
+    "actes"
+   ],
+   "source": "Six grilles tarifaires imprimées et « Répartition des activités » (docs/) ; les prix du fichier font foi, aucun n’est complété par le logiciel.",
+   "fichier": "modele-import-actes",
+   "entetes": [
+    "Code acte",
+    "Libellé",
+    "Secteur",
+    "Prix non assuré",
+    "Prix assuré",
+    "Code tarif"
+   ],
+   "cles": [
+    "code",
+    "libelle",
+    "secteur",
+    "prixNonAssure",
+    "prixAssure",
+    "codeTarif"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "tarif",
+    "tarif",
+    "texte"
+   ],
+   "exemple": [
+    "MG01",
+    "Consultation généraliste",
+    "Médecine générale",
+    5000,
+    3000,
+    "CONS-GEN"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 18,
+   "listes": [
+    "Secteur"
+   ]
+  },
+  "analyses": {
+   "libelle": "Importation du catalogue des analyses",
+   "ecran": "imp-analyses",
+   "statut": "proposition",
+   "module": "IMP",
+   "roles": [
+    "laborantin",
+    "da",
+    "admin"
+   ],
+   "cibles": [
+    "examensLabo"
+   ],
+   "source": "Bulletin d’analyses bio-médicales et fiche de résultats du 21/08/2026 (docs/) : 48 analyses au catalogue.",
+   "fichier": "modele-import-analyses",
+   "entetes": [
+    "Code examen",
+    "Désignation",
+    "Section",
+    "Échantillon",
+    "Délai de rendu"
+   ],
+   "cles": [
+    "code",
+    "designation",
+    "section",
+    "echantillon",
+    "delai"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "GLY",
+    "Glycémie à jeun",
+    "Biochimie",
+    "Sérum",
+    "4 h"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 17,
+   "listes": [
+    "Section"
+   ]
+  },
+  "fournisseurs": {
+   "libelle": "Importation des fournisseurs",
+   "ecran": "imp-fournisseurs",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "stock",
+    "da",
+    "comptable",
+    "admin"
+   ],
+   "cibles": [
+    "fournisseurs"
+   ],
+   "source": "Factures de vente et bons de livraison collectés (docs/), dont la facture SoBAPS.",
+   "fichier": "modele-import-fournisseurs",
+   "entetes": [
+    "Code fournisseur",
+    "Raison sociale",
+    "Type",
+    "Ville",
+    "Adresse",
+    "Téléphone",
+    "IFU",
+    "Délai de livraison (jours)",
+    "Banque",
+    "N° de compte"
+   ],
+   "cles": [
+    "code",
+    "nom",
+    "type",
+    "ville",
+    "adresse",
+    "tel",
+    "ifu",
+    "delai",
+    "banque",
+    "compte"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "texte",
+    "texte",
+    "texte",
+    "texte",
+    "texte",
+    "entier",
+    "texte",
+    "texte"
+   ],
+   "exemple": [
+    "SOBAPS",
+    "SoBAPS SA",
+    "Grossiste pharmaceutique",
+    "Parakou",
+    "BP 201 Parakou",
+    "0191484242",
+    "3202112446712",
+    5,
+    "BANK OF AFRICA",
+    "007393360019"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 22,
+   "listes": [
+    "Aucune liste pour ce jeu"
+   ]
+  },
+  "assureurs": {
+   "libelle": "Importation des compagnies d’assurance",
+   "ecran": "imp-assureurs",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "da",
+    "comptable",
+    "admin"
+   ],
+   "cibles": [
+    "assureurs"
+   ],
+   "source": "Treize assureurs relevés dans les documents de cadrage (docs/).",
+   "fichier": "modele-import-assureurs",
+   "entetes": [
+    "Code compagnie",
+    "Raison sociale",
+    "Téléphones",
+    "E-mail",
+    "Convention"
+   ],
+   "cles": [
+    "code",
+    "nom",
+    "tel",
+    "email",
+    "convention"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "texte",
+    "texte",
+    "liste"
+   ],
+   "exemple": [
+    "NSIA",
+    "NSIA ASSURANCE",
+    "0153212091 / 0196043695",
+    "contact@exemple.bj",
+    "Signée"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 17,
+   "listes": [
+    "Convention"
+   ]
+  },
+  "souscripteurs": {
+   "libelle": "Importation des souscripteurs",
+   "ecran": "imp-souscripteurs",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "da",
+    "comptable",
+    "admin"
+   ],
+   "cibles": [
+    "souscripteurs"
+   ],
+   "source": "Relevés de prestations et factures mensuelles par souscripteur (docs/).",
+   "fichier": "modele-import-souscripteurs",
+   "entetes": [
+    "Souscripteur",
+    "N° de police",
+    "Code compagnie",
+    "Catégorie",
+    "Effectif",
+    "Date de début",
+    "Date de fin"
+   ],
+   "cles": [
+    "nom",
+    "police",
+    "assureur",
+    "categorie",
+    "effectif",
+    "dateDebut",
+    "dateFin"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste",
+    "liste",
+    "entier",
+    "date",
+    "date"
+   ],
+   "exemple": [
+    "PIB Bénin",
+    "AFR/2024/0100",
+    "AFR",
+    "entreprise",
+    75,
+    "2024-08-01"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 19,
+   "listes": [
+    "Code compagnie",
+    "Catégorie"
+   ]
+  },
+  "plan-comptable": {
+   "libelle": "Importation du plan comptable",
+   "ecran": "imp-plan-comptable",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "comptable",
+    "da",
+    "admin"
+   ],
+   "cibles": [
+    "comptes"
+   ],
+   "source": "Plan comptable de la clinique, classeur SYSCOHADA 2025 (docs/) : 93 comptes.",
+   "fichier": "modele-import-plan-comptable",
+   "entetes": [
+    "N° de compte",
+    "Libellé",
+    "Journal"
+   ],
+   "cles": [
+    "num",
+    "libelle",
+    "journal"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    false
+   ],
+   "types": [
+    "texte",
+    "texte",
+    "liste"
+   ],
+   "exemple": [
+    "571000",
+    "Caisse",
+    "CAI"
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 15,
+   "listes": [
+    "Journal"
+   ]
+  },
+  "soldes-ouverture": {
+   "libelle": "Importation des soldes d’ouverture",
+   "ecran": "imp-soldes-ouverture",
+   "statut": "supporte",
+   "module": "IMP",
+   "roles": [
+    "comptable",
+    "da",
+    "admin"
+   ],
+   "cibles": [
+    "ecritures"
+   ],
+   "source": "Bilan de clôture de l’exercice précédent : liasse déposée le 15/05/2026 (docs/).",
+   "fichier": "modele-import-soldes-ouverture",
+   "entetes": [
+    "Date",
+    "N° de compte",
+    "Libellé",
+    "Tiers",
+    "Débit",
+    "Crédit"
+   ],
+   "cles": [
+    "date",
+    "compte",
+    "libelle",
+    "tiers",
+    "debit",
+    "credit"
+   ],
+   "obligatoires": [
+    true,
+    true,
+    false,
+    false,
+    false,
+    false
+   ],
+   "types": [
+    "date",
+    "texte",
+    "texte",
+    "texte",
+    "entier",
+    "entier"
+   ],
+   "exemple": [
+    "2026-01-01",
+    "571000",
+    "Caisse à l’ouverture",
+    "",
+    250000
+   ],
+   "feuilles": [
+    "Données",
+    "Instructions",
+    "Listes"
+   ],
+   "instructions": 18,
+   "listes": [
+    "Aucune liste pour ce jeu"
+   ]
+  }
+ },
+ "applications": [
+  {
+   "cas": "gs-valide",
+   "jeu": "grand-stock",
+   "ok": true,
+   "reference": "IMP-2026-002",
+   "ecrits": 7,
+   "fiches": {
+    "produits": [
+     {
+      "statut": "actif",
+      "source": "Import Importation Grand Stock (gs-valide.xlsx)",
+      "lotImport": "IMP-2026-002",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "MED1",
+      "designation": "AMOXICILLINE 500 MG GELULE B/100",
+      "unite": "Boîte",
+      "categorie": "medicament",
+      "prixAchat": 350,
+      "prixVente": 350,
+      "cump": 350,
+      "seuilAlerte": 20,
+      "seuilAValider": false,
+      "stockGros": 150,
+      "stockDetail": 0,
+      "stock": 150,
+      "quantiteImportee": 150,
+      "emplacement": "Rayon A, Casier 3",
+      "fournisseur": "SOBAPS",
+      "valoriseSage": false
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation Grand Stock (gs-valide.xlsx)",
+      "lotImport": "IMP-2026-002",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "GANT1",
+      "designation": "GANTS LATEX M B/100",
+      "unite": "Unité",
+      "categorie": "conso_medical",
+      "prixAchat": 0,
+      "prixVente": 0,
+      "cump": 0,
+      "seuilAlerte": 8,
+      "seuilAValider": true,
+      "stockGros": 40,
+      "stockDetail": 0,
+      "stock": 40,
+      "quantiteImportee": 40,
+      "emplacement": "",
+      "fournisseur": "",
+      "valoriseSage": false,
+      "valorisationProvisoire": true,
+      "sourceValorisation": "Prix de revient absent du fichier d’import IMP-2026-002 : à valoriser"
+     }
+    ],
+    "lots": [
+     {
+      "statut": "actif",
+      "source": "Import Importation Grand Stock (gs-valide.xlsx)",
+      "lotImport": "IMP-2026-002",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "produitId": "code:MED1",
+      "produit": "AMOXICILLINE 500 MG GELULE B/100",
+      "numeroLot": "L1",
+      "datePeremption": "2028-06-30",
+      "quantiteRestante": 100,
+      "emplacement": "Rayon A, Casier 3"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation Grand Stock (gs-valide.xlsx)",
+      "lotImport": "IMP-2026-002",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "produitId": "code:MED1",
+      "produit": "AMOXICILLINE 500 MG GELULE B/100",
+      "numeroLot": "L2",
+      "datePeremption": "2029-01-31",
+      "quantiteRestante": 50,
+      "emplacement": "Rayon A, Casier 3"
+     }
+    ],
+    "mouvements": [
+     {
+      "statut": "actif",
+      "source": "Import Importation Grand Stock (gs-valide.xlsx)",
+      "lotImport": "IMP-2026-002",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "M000002",
+      "date": "2026-11-01",
+      "produitId": "code:MED1",
+      "produit": "AMOXICILLINE 500 MG GELULE B/100",
+      "type": "entree",
+      "typeLabel": "Entrée",
+      "quantite": 100,
+      "stockType": "gros",
+      "justificatif": "Import IMP-2026-002 (stock initial, lot L1)",
+      "utilisateur": "ADMIN TEST"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation Grand Stock (gs-valide.xlsx)",
+      "lotImport": "IMP-2026-002",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "M000003",
+      "date": "2026-11-01",
+      "produitId": "code:MED1",
+      "produit": "AMOXICILLINE 500 MG GELULE B/100",
+      "type": "entree",
+      "typeLabel": "Entrée",
+      "quantite": 50,
+      "stockType": "gros",
+      "justificatif": "Import IMP-2026-002 (stock initial, lot L2)",
+      "utilisateur": "ADMIN TEST"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation Grand Stock (gs-valide.xlsx)",
+      "lotImport": "IMP-2026-002",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "reference": "M000004",
+      "date": "2026-11-01",
+      "produitId": "code:GANT1",
+      "produit": "GANTS LATEX M B/100",
+      "type": "entree",
+      "typeLabel": "Entrée",
+      "quantite": 40,
+      "stockType": "gros",
+      "justificatif": "Import IMP-2026-002 (stock initial)",
+      "utilisateur": "ADMIN TEST"
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 3,
+    "nbAvertissements": 1,
+    "jeu": "grand-stock",
+    "fichier": "gs-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "pa-valide",
+   "jeu": "patients",
+   "ok": true,
+   "reference": "IMP-2026-003",
+   "ecrits": 3,
+   "fiches": {
+    "patients": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du répertoire patients (pa-valide.xlsx)",
+      "lotImport": "IMP-2026-003",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "CNT/12/24",
+      "nom": "AKPO",
+      "prenom": "Marc",
+      "sexe": "M",
+      "dateNaissance": "1990-04-12",
+      "telephone": "0197000010",
+      "quartier": "Boukoumbé",
+      "adresse": null,
+      "personneAPrevenir": null,
+      "groupeSanguin": null,
+      "assureur": "AFR",
+      "numeroPolice": "AFR/2024/0100",
+      "dateCreation": "2024-05-02",
+      "externe": false,
+      "origineDossier": "Reprise du répertoire papier",
+      "age": 36,
+      "assure": true,
+      "assureurNom": "AFRICAINE DES ASSURANCES"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du répertoire patients (pa-valide.xlsx)",
+      "lotImport": "IMP-2026-003",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "CNT/8/26",
+      "nom": "DOSSOU",
+      "prenom": "Aïcha",
+      "sexe": "F",
+      "dateNaissance": "2001-09-30",
+      "telephone": "0197000011",
+      "quartier": null,
+      "adresse": null,
+      "personneAPrevenir": null,
+      "groupeSanguin": null,
+      "assureur": null,
+      "numeroPolice": null,
+      "dateCreation": "2026-03-10",
+      "externe": false,
+      "origineDossier": "Reprise du répertoire papier",
+      "age": 25
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du répertoire patients (pa-valide.xlsx)",
+      "lotImport": "IMP-2026-003",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "CNT/9/26",
+      "nom": "GBEDO",
+      "prenom": "Lucien",
+      "sexe": "M",
+      "dateNaissance": null,
+      "telephone": null,
+      "quartier": null,
+      "adresse": null,
+      "personneAPrevenir": null,
+      "groupeSanguin": null,
+      "assureur": null,
+      "numeroPolice": null,
+      "dateCreation": "2026-11-01",
+      "externe": false,
+      "origineDossier": "Reprise du répertoire papier",
+      "age": 45,
+      "ageReferenceLe": "2026-11-01"
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 3,
+    "nbAvertissements": 1,
+    "jeu": "patients",
+    "fichier": "pa-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "so-valide",
+   "jeu": "soldes-ouverture",
+   "ok": true,
+   "reference": "IMP-2026-004",
+   "ecrits": 4,
+   "fiches": {
+    "ecritures": [
+     {
+      "statut": "brouillon",
+      "source": "Import Importation des soldes d’ouverture (so-valide.xlsx)",
+      "lotImport": "IMP-2026-004",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "numero": "AN-2026-00001",
+      "date": "2026-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Caisse à l’ouverture",
+      "compte": "571000",
+      "compteLibelle": "Caisse",
+      "debit": 300000,
+      "credit": 0,
+      "origine": "Import des soldes d’ouverture"
+     },
+     {
+      "statut": "brouillon",
+      "source": "Import Importation des soldes d’ouverture (so-valide.xlsx)",
+      "lotImport": "IMP-2026-004",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "numero": "AN-2026-00001",
+      "date": "2026-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Solde d’ouverture 411000 NSIA",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "debit": 100000,
+      "credit": 0,
+      "origine": "Import des soldes d’ouverture"
+     },
+     {
+      "statut": "brouillon",
+      "source": "Import Importation des soldes d’ouverture (so-valide.xlsx)",
+      "lotImport": "IMP-2026-004",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "numero": "AN-2026-00001",
+      "date": "2026-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Solde d’ouverture 411000 SUNU",
+      "compte": "411000",
+      "compteLibelle": "Clients",
+      "debit": 50000,
+      "credit": 0,
+      "origine": "Import des soldes d’ouverture"
+     },
+     {
+      "statut": "brouillon",
+      "source": "Import Importation des soldes d’ouverture (so-valide.xlsx)",
+      "lotImport": "IMP-2026-004",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "numero": "AN-2026-00001",
+      "date": "2026-01-01",
+      "journal": "AN",
+      "journalLibelle": "Journal des à-nouveaux",
+      "libelle": "Capital",
+      "compte": "101100",
+      "compteLibelle": "Capital souscrit, non appelé",
+      "debit": 0,
+      "credit": 450000,
+      "origine": "Import des soldes d’ouverture"
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 4,
+    "nbAvertissements": 0,
+    "jeu": "soldes-ouverture",
+    "fichier": "so-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "ac-valide",
+   "jeu": "actes",
+   "ok": true,
+   "reference": "IMP-2026-005",
+   "ecrits": 3,
+   "fiches": {
+    "actes": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du catalogue des actes (ac-valide.xlsx)",
+      "lotImport": "IMP-2026-005",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "X1",
+      "libelle": "Acte A",
+      "secteur": "Médecine générale",
+      "codeTarif": "T1",
+      "prixNonAssure": 5000,
+      "prixAssure": 3000,
+      "nonCouvert": false,
+      "assurable": true,
+      "prix": 5000,
+      "tarifProvisoire": false
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du catalogue des actes (ac-valide.xlsx)",
+      "lotImport": "IMP-2026-005",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "X2",
+      "libelle": "Acte B",
+      "secteur": "Chirurgie",
+      "codeTarif": null,
+      "prixNonAssure": 8000,
+      "prixAssure": null,
+      "nonCouvert": true,
+      "assurable": false,
+      "prix": 8000,
+      "tarifProvisoire": false
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du catalogue des actes (ac-valide.xlsx)",
+      "lotImport": "IMP-2026-005",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "X3",
+      "libelle": "Acte C",
+      "secteur": "Médecine générale",
+      "codeTarif": null,
+      "prixNonAssure": null,
+      "prixAssure": null,
+      "nonCouvert": false,
+      "assurable": true,
+      "prix": null,
+      "tarifProvisoire": false,
+      "motifPrix": "Valeur manquante à l’import IMP-2026-005 : l’acte ne se facture pas tant que le prix n’est pas saisi."
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 3,
+    "nbAvertissements": 1,
+    "jeu": "actes",
+    "fichier": "ac-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "pe-valide",
+   "jeu": "personnel",
+   "ok": true,
+   "reference": "IMP-2026-006",
+   "ecrits": 2,
+   "fiches": {
+    "personnel": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du personnel (pe-valide.xlsx)",
+      "lotImport": "IMP-2026-006",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "matricule": "45",
+      "nom": "ADJOVI",
+      "prenom": "Marie",
+      "nomComplet": "ADJOVI Marie",
+      "sexe": "F",
+      "fonction": "infirmier",
+      "poste": "Infirmière",
+      "service": "Soins infirmiers",
+      "categorie": "E3-2",
+      "dateEmbauche": "2024-03-01",
+      "telephone": "0197000020",
+      "cnss": "294011541",
+      "situation": "Marié(e)",
+      "salaireBase": 150000
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du personnel (pe-valide.xlsx)",
+      "lotImport": "IMP-2026-006",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "matricule": "46",
+      "nom": "HOUNKPATIN",
+      "prenom": "Jean",
+      "nomComplet": "HOUNKPATIN Jean",
+      "sexe": "M",
+      "fonction": "stock",
+      "poste": "Magasinier",
+      "service": "Pharmacie",
+      "categorie": null,
+      "dateEmbauche": null,
+      "telephone": null,
+      "cnss": null,
+      "situation": null,
+      "salaireBase": null
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 1,
+    "jeu": "personnel",
+    "fichier": "pe-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "fo-valide",
+   "jeu": "fournisseurs",
+   "ok": true,
+   "reference": "IMP-2026-007",
+   "ecrits": 2,
+   "fiches": {
+    "fournisseurs": [
+     {
+      "statut": "actif",
+      "source": "Import Importation des fournisseurs (fo-valide.xlsx)",
+      "lotImport": "IMP-2026-007",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "CAME",
+      "nom": "Centrale d’achat",
+      "type": "Grossiste",
+      "ville": "Cotonou",
+      "adresse": null,
+      "tel": null,
+      "ifu": "3202112446799",
+      "delai": 7,
+      "banque": null,
+      "compte": null,
+      "habilite": false
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation des fournisseurs (fo-valide.xlsx)",
+      "lotImport": "IMP-2026-007",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "LOCAL",
+      "nom": "Fournisseur local",
+      "type": null,
+      "ville": null,
+      "adresse": null,
+      "tel": null,
+      "ifu": null,
+      "delai": null,
+      "banque": null,
+      "compte": null,
+      "habilite": false
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 1,
+    "jeu": "fournisseurs",
+    "fichier": "fo-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "as-valide",
+   "jeu": "assureurs",
+   "ok": true,
+   "reference": "IMP-2026-008",
+   "ecrits": 2,
+   "fiches": {
+    "assureurs": [
+     {
+      "statut": "actif",
+      "source": "Import Importation des compagnies d’assurance (as-valide.xlsx)",
+      "lotImport": "IMP-2026-008",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "SUNU",
+      "nom": "SUNU ASSURANCES",
+      "tel": [
+       "0195000001",
+       "0195000002"
+      ],
+      "email": "contact@sunu.bj",
+      "convention": "Signée",
+      "assures": 0
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation des compagnies d’assurance (as-valide.xlsx)",
+      "lotImport": "IMP-2026-008",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "OLEA",
+      "nom": "OLEA",
+      "tel": [],
+      "email": null,
+      "convention": null,
+      "assures": 0
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 1,
+    "jeu": "assureurs",
+    "fichier": "as-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "sc-valide",
+   "jeu": "souscripteurs",
+   "ok": true,
+   "reference": "IMP-2026-009",
+   "ecrits": 1,
+   "fiches": {
+    "souscripteurs": [
+     {
+      "statut": "actif",
+      "source": "Import Importation des souscripteurs (sc-valide.xlsx)",
+      "lotImport": "IMP-2026-009",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "nom": "Société X",
+      "police": "NSIA/2026/001",
+      "assureur": "NSIA",
+      "assureurNom": "NSIA ASSURANCE",
+      "categorie": "entreprise",
+      "effectif": 40,
+      "dateDebut": "2026-01-01",
+      "dateFin": null,
+      "grilleSaisie": false,
+      "actesExclus": [],
+      "produitsExclus": [],
+      "accordPrealable": []
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 1,
+    "nbAvertissements": 0,
+    "jeu": "souscripteurs",
+    "fichier": "sc-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "pc-valide",
+   "jeu": "plan-comptable",
+   "ok": true,
+   "reference": "IMP-2026-010",
+   "ecrits": 2,
+   "fiches": {
+    "comptes": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du plan comptable (pc-valide.xlsx)",
+      "lotImport": "IMP-2026-010",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "num": "605000",
+      "libelle": "Fournitures consommables",
+      "classe": 6,
+      "journal": "ACH"
+     },
+     {
+      "statut": "actif",
+      "source": "Import Importation du plan comptable (pc-valide.xlsx)",
+      "lotImport": "IMP-2026-010",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "num": "6051",
+      "libelle": "Eau",
+      "classe": 6,
+      "journal": "OD"
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 2,
+    "nbAvertissements": 0,
+    "jeu": "plan-comptable",
+    "fichier": "pc-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  },
+  {
+   "cas": "an-valide",
+   "jeu": "analyses",
+   "ok": true,
+   "reference": "IMP-2026-011",
+   "ecrits": 1,
+   "fiches": {
+    "examensLabo": [
+     {
+      "statut": "actif",
+      "source": "Import Importation du catalogue des analyses (an-valide.xlsx)",
+      "lotImport": "IMP-2026-011",
+      "validePar": "ADMIN TEST",
+      "dateImport": "2026-11-01",
+      "code": "HBA1C",
+      "designation": "Hémoglobine glyquée",
+      "section": "biochimie",
+      "sectionResultat": "biochimie",
+      "sectionBulletin": "biochimie",
+      "echantillon": "Sang total (EDTA)",
+      "delai": "24 h",
+      "documente": false,
+      "aValider": true
+     }
+    ]
+   },
+   "lot": {
+    "etat": "applique",
+    "nbLignes": 1,
+    "nbAvertissements": 1,
+    "jeu": "analyses",
+    "fichier": "an-valide.xlsx",
+    "validePar": "ADMIN TEST",
+    "date": "2026-11-01"
+   }
+  }
+ ],
+ "lotRefus": {
+  "reference": "IMP-2026-001",
+  "etat": "refuse",
+  "nbLignes": 1,
+  "nbAvertissements": 0,
+  "nbRefus": 1,
+  "erreursTotal": 1,
+  "jeu": "grand-stock",
+  "fichier": "gs-quantite-negative.xlsx"
+ },
+ "rejeu": {
+  "accepte": false,
+  "codes": [
+   "DOUBLON_MAGASIN",
+   "DOUBLON_MAGASIN",
+   "DOUBLON_MAGASIN"
+  ]
+ },
+ "annulations": [
+  {
+   "cas": "gs-valide",
+   "ok": false,
+   "code": "MOUVEMENT_POSTERIEUR"
+  },
+  {
+   "cas": "gs-valide",
+   "ok": true,
+   "code": null,
+   "archives": 7,
+   "archivesVerifiees": 7,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "pa-valide",
+   "ok": true,
+   "code": null,
+   "archives": 3,
+   "archivesVerifiees": 3,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "so-valide",
+   "ok": true,
+   "code": null,
+   "archives": 4,
+   "archivesVerifiees": 4,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "ac-valide",
+   "ok": true,
+   "code": null,
+   "archives": 3,
+   "archivesVerifiees": 3,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "pe-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "fo-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "as-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "sc-valide",
+   "ok": true,
+   "code": null,
+   "archives": 1,
+   "archivesVerifiees": 1,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "pc-valide",
+   "ok": true,
+   "code": null,
+   "archives": 2,
+   "archivesVerifiees": 2,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "an-valide",
+   "ok": true,
+   "code": null,
+   "archives": 1,
+   "archivesVerifiees": 1,
+   "etatLot": "annule"
+  },
+  {
+   "cas": "gs-valide-deuxieme-fois",
+   "ok": false,
+   "code": "LOT_NON_APPLIQUE"
+  }
+ ],
+ "atomicite": {
+  "ok": false,
+  "code": "ECRITURE_REFUSEE",
+  "ecrituresAvant": 5,
+  "ecrituresApres": 5,
+  "lotsAjoutes": 1,
+  "lotEtat": "refuse"
+ },
+ "rapport": {
+  "feuilles": [
+   "Erreurs",
+   "Résumé"
+  ],
+  "entete": [
+   "Ligne",
+   "Colonne",
+   "Valeur",
+   "Niveau",
+   "Code",
+   "Motif",
+   "Geste de correction"
+  ],
+  "nbLignes": 2
+ },
+ "csv": {
+  "grandStock": "﻿\"Code article\";\"Désignation\";\"Catégorie\";\"Unité\";\"Quantité\";\"N° de lot\";\"Date de péremption\";\"Prix de revient unitaire\";\"Seuil d’alerte\";\"Emplacement\";\"Code fournisseur\"\r\n\"PARA500\";\"PARACETAMOL 500 MG CP B/100\";\"Médicaments\";\"Boîte\";\"120\";\"L2026-014\";\"2028-06-30\";\"350\";\"20\";\"Rayon A, Casier 3\";\"SOBAPS\"\r\n",
+  "lignes": [
+   [
+    "Code article",
+    "Désignation",
+    "Catégorie",
+    "Unité",
+    "Quantité",
+    "N° de lot",
+    "Date de péremption",
+    "Prix de revient unitaire",
+    "Seuil d’alerte",
+    "Emplacement",
+    "Code fournisseur"
+   ],
+   [
+    "PARA500",
+    "PARACETAMOL 500 MG CP B/100",
+    "Médicaments",
+    "Boîte",
+    "120",
+    "L2026-014",
+    "2028-06-30",
+    "350",
+    "20",
+    "Rayon A, Casier 3",
+    "SOBAPS"
+   ]
+  ]
+ },
+ "referentiels": {
+  "categories": [
+   [
+    "medicament",
+    "Médicaments"
+   ],
+   [
+    "reactif",
+    "Réactifs de laboratoire"
+   ],
+   [
+    "conso_labo",
+    "Consommables de laboratoire"
+   ],
+   [
+    "conso_medical",
+    "Consommables médicaux"
+   ],
+   [
+    "fourniture",
+    "Fournitures administratives"
+   ],
+   [
+    "entretien",
+    "Produits d’entretien"
+   ],
+   [
+    "petit_materiel",
+    "Petit matériel médical"
+   ],
+   [
+    "immobilisation",
+    "Immobilisations"
+   ]
+  ],
+  "fonctions": [
+   "medecin",
+   "sage_femme",
+   "infirmier",
+   "aide_soignant",
+   "tsl",
+   "biologiste",
+   "accueil",
+   "caissiere",
+   "dispensatrice",
+   "direction",
+   "stock",
+   "comptable",
+   "securite",
+   "entretien",
+   "chauffeur",
+   "chirurgien"
+  ],
+  "groupesSanguins": [
+   "O+",
+   "O-",
+   "A+",
+   "A-",
+   "B+",
+   "B-",
+   "AB+",
+   "AB-"
+  ],
+  "journaux": [
+   [
+    "ACH",
+    "Journal des achats"
+   ],
+   [
+    "VTE",
+    "Journal des ventes"
+   ],
+   [
+    "CAI",
+    "Journal de caisse-dépenses"
+   ],
+   [
+    "BQ",
+    "Journal de banque"
+   ],
+   [
+    "BQE",
+    "Journal de banque, dépenses"
+   ],
+   [
+    "SAL",
+    "Journal des salaires"
+   ],
+   [
+    "IMM",
+    "Journal des immobilisations"
+   ],
+   [
+    "OD",
+    "Journal des opérations diverses"
+   ],
+   [
+    "AN",
+    "Journal des à-nouveaux"
+   ]
+  ],
+  "sectionsLabo": [
+   [
+    "hematologie",
+    "Hématologie"
+   ],
+   [
+    "serologie",
+    "Sérologie"
+   ],
+   [
+    "parasitologie",
+    "Parasitologie"
+   ],
+   [
+    "biochimie",
+    "Biochimie"
+   ],
+   [
+    "bacteriologie",
+    "Bactériologie"
+   ],
+   [
+    "hormonologie",
+    "Hormonologie"
+   ]
+  ],
+  "services": [
+   "Médecine générale",
+   "Maternité",
+   "Chirurgie",
+   "Laboratoire",
+   "Pharmacie",
+   "Imagerie / Échographie",
+   "Soins infirmiers",
+   "Accueil",
+   "Direction",
+   "Comptabilité"
+  ],
+  "secteursActes": [
+   "Médecine générale",
+   "Chirurgie",
+   "Maternité",
+   "Imagerie médicale",
+   "Soins et observation"
+  ]
+ },
+ "lienCellules": {
+  "serie1": "1900-01-01",
+  "serie60": "1900-03-01",
+  "serie45000": "2023-03-15",
+  "serie46023": "2026-01-01"
+ }
+}

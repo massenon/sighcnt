@@ -2236,6 +2236,24 @@
    "statut": "porté"
   },
   {
+   "id": "m6-import-grand-stock",
+   "label": "Importation Grand Stock",
+   "module": "M6",
+   "domaine": "Logistique",
+   "tranche": 2,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "stock",
+    "caissier"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
    "id": "m7-besoins",
    "label": "Bons d’expression de besoins",
    "module": "M7",
@@ -4841,6 +4859,172 @@
    "roles": [
     "admin",
     "da"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-accueil",
+   "label": "Jeux d’import et historique des lots",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da",
+    "laborantin",
+    "stock",
+    "comptable",
+    "reception",
+    "agentadmin"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-patients",
+   "label": "Importation du répertoire patients",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "reception",
+    "agentadmin"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-personnel",
+   "label": "Importation du personnel",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-actes",
+   "label": "Importation du catalogue des actes",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "direction",
+    "da"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-analyses",
+   "label": "Importation du catalogue des analyses",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "laborantin"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-fournisseurs",
+   "label": "Importation des fournisseurs",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "stock",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-assureurs",
+   "label": "Importation des compagnies d’assurance",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-souscripteurs",
+   "label": "Importation des souscripteurs",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-plan-comptable",
+   "label": "Importation du plan comptable",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "comptable"
+   ],
+   "scenarios": [],
+   "statut": "porté"
+  },
+  {
+   "id": "imp-soldes-ouverture",
+   "label": "Importation des soldes d’ouverture",
+   "module": "IMP",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da",
+    "comptable"
    ],
    "scenarios": [],
    "statut": "porté"

@@ -23,7 +23,7 @@ const MODULE_FILES = {
   M4: 'm4-maternite', M5: 'm5-laboratoire', M6: 'm6-stock', M7: 'm7-achats',
   M8: 'm8-facturation', M9: 'm9-assurances', MECEF: 'mecef', M12: 'm12-comptabilite',
   M10: 'm10-rh', M11: 'm11-paie', M13: 'm13-administration', GED: 'ged',
-  RAP: 'rapports', MERE: 'mere', RLS: 'relais', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
+  RAP: 'rapports', IMP: 'import', MERE: 'mere', RLS: 'relais', M14: 'm14-securite', CFG: 'configuration', AUTH: 'auth', SUP: 'support',
 };
 
 const SCRIPTS = [
@@ -41,7 +41,15 @@ function template(entry, opts) {
   const depth = o.root ? '' : '../';
   const mod = MODULE_FILES[entry.module];
   const scripts = SCRIPTS.map((s) => `  <script src="${depth}assets/js/${s}"></script>`);
-  if (mod) scripts.push(`  <script src="${depth}assets/js/modules/${mod}.js"></script>`);
+  /* Un écran peut déclarer des fichiers en plus de ceux de son module (`scripts`) ; le module IMP charge toujours son
+     lecteur et écrivain .xlsx. Dédoublonnage : un fichier n'est jamais chargé deux fois (m6-import-grand-stock). */
+  const sup = (entry.scripts || []);
+  const deja = new Set();
+  const ajouter = (s) => { if (deja.has(s)) return; deja.add(s); scripts.push(`  <script src="${depth}assets/js/${s}"></script>`); };
+  /* L'ORDRE COMPTE : import.js capture SIGH.xlsx au chargement, son lecteur doit donc le précéder. */
+  if (entry.module === 'IMP') ajouter('vendor/xlsx-mini.js');
+  if (mod) ajouter('modules/' + mod + '.js');
+  sup.forEach(ajouter);
 
   return `<!doctype html>
 <html lang="fr" data-root="${depth}">
