@@ -85,7 +85,7 @@ void main() {
 
   testWidgets('le bandeau dit qu\'un refus attend et ouvre « À traiter » avec son code, son motif et son geste', (t) async {
     final m = FauxMoteur(refusATraiter: const [
-      RefusAffiche(operation: 'op1', code: 'droit_refuse', motif: 'Infirmier(ère) : la prescription de « Médicaments » n’est pas dans ses habilitations.', geste: 'Demander la prescription à un médecin')
+      RefusAffiche(operation: 'op1', code: 'droit_refuse', motif: 'Infirmier(ère) n’est pas habilité à prescrire « Médicaments ».', geste: 'Demander la prescription à un médecin')
     ])
       ..profil = ProfilMobile.soignant;
     m.etat.value = const EtatMobile(horsLigne: false, aTraiter: 1);
@@ -94,7 +94,7 @@ void main() {
     expect(find.textContaining('1 à traiter'), findsOneWidget);
     await t.tap(find.byKey(const Key('bandeau')));
     await t.pumpAndSettle();
-    expect(find.textContaining('n’est pas dans ses habilitations'), findsOneWidget);
+    expect(find.textContaining('n’est pas habilité à prescrire'), findsOneWidget);
     expect(find.textContaining('À faire : Demander la prescription à un médecin'), findsOneWidget);
     expect(find.textContaining('droit_refuse'), findsOneWidget);
   });

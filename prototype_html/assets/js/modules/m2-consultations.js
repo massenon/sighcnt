@@ -2707,6 +2707,15 @@
         var rows = col.active();
         var host = el('div.space-y-4');
 
+        /* E1559 : les prescriptions reçues d'un téléphone que le poste n'a pas pu transcrire (registre `piecesMobile`, écrit par `PR.transcrireMobile`
+           côté cible). Elles ne se perdent pas en silence : chacune est nommée (code, motif, geste). Le bloc n'existe que s'il y en a. */
+        var refusMobile = ((S.raw().piecesMobile) || []).filter(function (p) { return p.statut !== 'archive' && p.etat === 'refusee'; });
+        if (refusMobile.length) {
+          host.appendChild(K.note(refusMobile.length + ' prescription(s) reçue(s) d’un téléphone n’ont pas pu être transcrites :<br>'
+            + refusMobile.slice(0, 5).map(function (p) { return (p.patient || p.patientCode) + ' (' + (p.prescripteur || '') + ') : ' + p.motif + ' À faire : ' + p.geste + ' [' + p.code + ']'; }).join('<br>')
+            + (refusMobile.length > 5 ? '<br>et ' + (refusMobile.length - 5) + ' autre(s).' : '') + '<br>(Texte proposé, à valider.)', { tone: 'warning', icon: 'triangle-alert' }));
+        }
+
         host.appendChild(U.kpiGrid([
           { label: 'Ordonnances émises', value: C.num(rows.length), icon: 'file-text', tone: 'navy' },
           {

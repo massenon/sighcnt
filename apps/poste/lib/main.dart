@@ -15,6 +15,7 @@ import 'modules/registre.dart';
 import 'shell/coque.dart';
 import 'sync/etat_sync.dart';
 import 'sync/moteur_fileul.dart';
+import 'sync/transcription_mobile.dart';
 
 /// Le MODE du poste n'est plus une option de compilation : il vit dans les réglages du poste (`poste.json`) et se décide à
 /// l'exécution, sur le serveur local, par « Ce poste → Activer le mode mère ». `SIGH_MODE` ne sert plus qu'à l'amorçage
@@ -68,10 +69,14 @@ Future<void> main() async {
   final moteur = MoteurFileul.creer(
       dbChemin: '$dossierDonnees/poste.db', mere: adresseMere)
     ..demarrer();
+  final magasin = await Magasin.depuisAssets(Magasin.collectionsDuJeu);
+  // E1559 : les prescriptions que les téléphones des soignants envoient par la mère sont TRANSCRITES ici (ordonnance, facture de la caisse, files
+  // d'aval) par le moteur de la fiche de consultation ; une pièce non transcriptible est refusée en le disant.
+  ServiceTranscriptionMobile(magasin: magasin, source: moteur.pieces).demarrer();
   runApp(SighPoste(
       controleur: controleur,
       donnees: await DonneesNavigation.chargerAssets(),
-      magasin: await Magasin.depuisAssets(Magasin.collectionsDuJeu),
+      magasin: magasin,
       session: connexionExigee == 'oui' ? SessionPoste(exigeConnexion: true) : null,
       etatSync: moteur.source()));
 }

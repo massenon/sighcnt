@@ -12,13 +12,14 @@ typedef AffectationMobile = ({String etiquette, String profil, String? fonction}
 String libelleProfilMobile(String? profil) => switch (profil) {
       'soignant' => 'Soignant',
       'reception' => 'Réception de secours',
-      _ => '—',
+      _ => 'Aucun',
     };
 
-/// « Soignant, Médecin » / « Réception de secours » / « — » : la colonne « Fonction » des appareils.
+/// « Soignant, Médecin » / « Réception de secours » / « Aucune » : la colonne « Fonction » des appareils.
 String libelleFonctionMobile(String? profil, String? fonction) {
-  if (profil == null) return '—';
-  if (profil == 'reception') return '—';
+  // Un mobile appairé AVANT la fixation de la fonction n'a pas de profil dans la table de la mère : sa fonction n'est pas fixée et la mère refuse ses pièces.
+  if (profil == null) return 'Non fixée';
+  if (profil == 'reception') return 'Aucune';
   return fonction == null || fonction.isEmpty ? 'Non fixée' : mobLibelleFonction(fonction);
 }
 

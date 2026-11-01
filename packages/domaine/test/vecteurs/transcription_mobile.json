@@ -779,7 +779,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximln91gbli",
+       "id": "ORDxmvxjbpf4ufqbf",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -826,7 +826,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximlna2g3o1",
+       "factureId": "FACxmvxjbpf5dm46m",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -835,7 +835,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximlna2g3o1",
+       "id": "FACxmvxjbpf5dm46m",
        "statut": "actif",
        "lignes": [
         {
@@ -908,14 +908,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximln91gbli",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximlwpa2jg8",
+       "id": "TCHxmvxjbpf54bs0z",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -924,8 +924,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximln91gbli",
-       "factureId": "FACxmvximlna2g3o1",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
+       "factureId": "FACxmvxjbpf5dm46m",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -937,7 +937,7 @@
        "montant": 3950
       },
       {
-       "id": "TCHxmvximlnathi5l",
+       "id": "TCHxmvxjbpf51x9is",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -946,8 +946,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximln91gbli",
-       "factureId": "FACxmvximlna2g3o1",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
+       "factureId": "FACxmvxjbpf5dm46m",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -961,7 +961,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximlwp3z94i",
+       "id": "PRSxmvxjbpf5eueun",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -975,7 +975,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximln91gbli",
+       "ordonnanceId": "ORDxmvxjbpf4ufqbf",
        "lignes": [
         {
          "produitId": "PRD0002",
@@ -1053,7 +1053,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm57442mh",
+       "id": "ORDxmvxjbpf803wk0",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -1090,7 +1090,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm58bsl13",
+       "factureId": "FACxmvxjbpf82xbjg",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -1099,7 +1099,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm58bsl13",
+       "id": "FACxmvxjbpf82xbjg",
        "statut": "actif",
        "lignes": [
         {
@@ -1149,14 +1149,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm57442mh",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm58i8vw4",
+       "id": "TCHxmvxjbpf8llgwe",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -1165,8 +1165,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm57442mh",
-       "factureId": "FACxmvximm58bsl13",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
+       "factureId": "FACxmvxjbpf82xbjg",
        "factureNumero": "FP-2026-00001",
        "patient": "BETA Deux",
        "patientCode": "CNT/1002/26",
@@ -1178,7 +1178,7 @@
        "montant": 2000
       },
       {
-       "id": "TCHxmvximm58avhfg",
+       "id": "TCHxmvxjbpf8d4zp1",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -1187,8 +1187,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm57442mh",
-       "factureId": "FACxmvximm58bsl13",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
+       "factureId": "FACxmvxjbpf82xbjg",
        "factureNumero": "FP-2026-00001",
        "patient": "BETA Deux",
        "patientCode": "CNT/1002/26",
@@ -1202,7 +1202,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximm58qh7c7",
+       "id": "PRSxmvxjbpf83zeos",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -1216,7 +1216,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximm57442mh",
+       "ordonnanceId": "ORDxmvxjbpf803wk0",
        "lignes": [
         {
          "produitId": "PRD0002",
@@ -1285,7 +1285,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm59vcqu3",
+       "id": "ORDxmvxjbpf9qh7fz",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -1322,7 +1322,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm59llyys",
+       "factureId": "FACxmvxjbpf9tfqhc",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -1331,7 +1331,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm59llyys",
+       "id": "FACxmvxjbpf9tfqhc",
        "statut": "actif",
        "lignes": [
         {
@@ -1381,14 +1381,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm59vcqu3",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm59eg01z",
+       "id": "TCHxmvxjbpf98ndpx",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -1397,8 +1397,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm59vcqu3",
-       "factureId": "FACxmvximm59llyys",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
+       "factureId": "FACxmvxjbpf9tfqhc",
        "factureNumero": "FP-2026-00001",
        "patient": "GAMMA Trois",
        "patientCode": "CNT/1003/26",
@@ -1410,7 +1410,7 @@
        "montant": 2000
       },
       {
-       "id": "TCHxmvximm596wpkd",
+       "id": "TCHxmvxjbpf94x2tn",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -1419,8 +1419,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm59vcqu3",
-       "factureId": "FACxmvximm59llyys",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
+       "factureId": "FACxmvxjbpf9tfqhc",
        "factureNumero": "FP-2026-00001",
        "patient": "GAMMA Trois",
        "patientCode": "CNT/1003/26",
@@ -1434,7 +1434,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximm59ct11b",
+       "id": "PRSxmvxjbpf9chz17",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -1448,7 +1448,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximm59vcqu3",
+       "ordonnanceId": "ORDxmvxjbpf9qh7fz",
        "lignes": [
         {
          "produitId": "PRD0002",
@@ -1517,7 +1517,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm593azfj",
+       "id": "ORDxmvxjbpf97qg4h",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -1554,7 +1554,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm59fz3jv",
+       "factureId": "FACxmvxjbpf9txyj1",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -1563,7 +1563,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm59fz3jv",
+       "id": "FACxmvxjbpf9txyj1",
        "statut": "actif",
        "lignes": [
         {
@@ -1613,14 +1613,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm593azfj",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm596kmln",
+       "id": "TCHxmvxjbpf98o8hl",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -1629,8 +1629,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm593azfj",
-       "factureId": "FACxmvximm59fz3jv",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
+       "factureId": "FACxmvxjbpf9txyj1",
        "factureNumero": "FP-2026-00001",
        "patient": "EPSILON Cinq",
        "patientCode": "CNT/1005/26",
@@ -1642,7 +1642,7 @@
        "montant": 2000
       },
       {
-       "id": "TCHxmvximm59joof2",
+       "id": "TCHxmvxjbpf93arml",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -1651,8 +1651,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm593azfj",
-       "factureId": "FACxmvximm59fz3jv",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
+       "factureId": "FACxmvxjbpf9txyj1",
        "factureNumero": "FP-2026-00001",
        "patient": "EPSILON Cinq",
        "patientCode": "CNT/1005/26",
@@ -1666,7 +1666,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximm59aoj6o",
+       "id": "PRSxmvxjbpf9asfpv",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -1680,7 +1680,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximm593azfj",
+       "ordonnanceId": "ORDxmvxjbpf97qg4h",
        "lignes": [
         {
          "produitId": "PRD0002",
@@ -1749,7 +1749,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm593y2e5",
+       "id": "ORDxmvxjbpfaw7irt",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-09-05T09:00:00.000Z",
@@ -1786,7 +1786,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm59wgk6g",
+       "factureId": "FACxmvxjbpfa3ll25",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -1795,7 +1795,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm59wgk6g",
+       "id": "FACxmvxjbpfa3ll25",
        "statut": "actif",
        "lignes": [
         {
@@ -1845,14 +1845,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm593y2e5",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm5avkvl9",
+       "id": "TCHxmvxjbpfapdopp",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -1861,8 +1861,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm593y2e5",
-       "factureId": "FACxmvximm59wgk6g",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
+       "factureId": "FACxmvxjbpfa3ll25",
        "factureNumero": "FP-2026-00001",
        "patient": "EPSILON Cinq",
        "patientCode": "CNT/1005/26",
@@ -1874,7 +1874,7 @@
        "montant": 2000
       },
       {
-       "id": "TCHxmvximm5a8hx2b",
+       "id": "TCHxmvxjbpfa3mzq9",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -1883,8 +1883,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm593y2e5",
-       "factureId": "FACxmvximm59wgk6g",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
+       "factureId": "FACxmvxjbpfa3ll25",
        "factureNumero": "FP-2026-00001",
        "patient": "EPSILON Cinq",
        "patientCode": "CNT/1005/26",
@@ -1898,7 +1898,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximm5aify6d",
+       "id": "PRSxmvxjbpfajarcs",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -1912,7 +1912,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximm593y2e5",
+       "ordonnanceId": "ORDxmvxjbpfaw7irt",
        "lignes": [
         {
          "produitId": "PRD0002",
@@ -1981,7 +1981,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm5avw0rz",
+       "id": "ORDxmvxjbpfasjhia",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -2018,7 +2018,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm5agiakw",
+       "factureId": "FACxmvxjbpfadtyvx",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -2027,7 +2027,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm5agiakw",
+       "id": "FACxmvxjbpfadtyvx",
        "statut": "actif",
        "lignes": [
         {
@@ -2077,14 +2077,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm5avw0rz",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm5al8jn8",
+       "id": "TCHxmvxjbpfa6nnhj",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -2093,8 +2093,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5avw0rz",
-       "factureId": "FACxmvximm5agiakw",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
+       "factureId": "FACxmvxjbpfadtyvx",
        "factureNumero": "FP-2026-00001",
        "patient": "DELTA Quatre",
        "patientCode": "CNT/1004/26",
@@ -2106,7 +2106,7 @@
        "montant": 2000
       },
       {
-       "id": "TCHxmvximm5aovgpc",
+       "id": "TCHxmvxjbpfagjbpz",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -2115,8 +2115,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5avw0rz",
-       "factureId": "FACxmvximm5agiakw",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
+       "factureId": "FACxmvxjbpfadtyvx",
        "factureNumero": "FP-2026-00001",
        "patient": "DELTA Quatre",
        "patientCode": "CNT/1004/26",
@@ -2130,7 +2130,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximm5aydzwk",
+       "id": "PRSxmvxjbpfaeergx",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -2144,7 +2144,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximm5avw0rz",
+       "ordonnanceId": "ORDxmvxjbpfasjhia",
        "lignes": [
         {
          "produitId": "PRD0002",
@@ -2209,7 +2209,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm5aqdrxa",
+       "id": "ORDxmvxjbpfbncnu0",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -2252,7 +2252,7 @@
        "statutAnalyses": "en_attente",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm5brht0f",
+       "factureId": "FACxmvxjbpfbi58ci",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-2",
@@ -2261,7 +2261,7 @@
      ],
      "demandesAnalyses": [
       {
-       "id": "DEMxmvximm5bb63m9",
+       "id": "DEMxmvxjbpfbjux9p",
        "statut": "actif",
        "reference": "LAB-00002",
        "codeAnalyse": "00002-2026",
@@ -2280,14 +2280,14 @@
        "urgent": false,
        "etatAnalyse": "en_attente",
        "origine": "ordonnance",
-       "ordonnanceId": "ORDxmvximm5aqdrxa",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null,
        "secteurDemandeur": "Consultation",
        "bloqueParPaiement": true
       },
       {
-       "id": "DEMxmvximm5bje82r",
+       "id": "DEMxmvxjbpfbbqvf8",
        "statut": "actif",
        "reference": "LAB-00001",
        "codeAnalyse": "00001-2026",
@@ -2306,7 +2306,7 @@
        "urgent": false,
        "etatAnalyse": "en_attente",
        "origine": "ordonnance",
-       "ordonnanceId": "ORDxmvximm5aqdrxa",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null,
        "secteurDemandeur": "Consultation",
@@ -2315,7 +2315,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm5brht0f",
+       "id": "FACxmvxjbpfbi58ci",
        "statut": "actif",
        "lignes": [
         {
@@ -2332,7 +2332,7 @@
          "partAssureur": 0,
          "partPersonnel": 0,
          "partPatient": 4000,
-         "demandeId": "DEMxmvximm5bje82r",
+         "demandeId": "DEMxmvxjbpfbbqvf8",
          "produitId": null,
          "acteCode": null,
          "demandeImagerieId": null,
@@ -2355,7 +2355,7 @@
          "partAssureur": 0,
          "partPersonnel": 0,
          "partPatient": 1500,
-         "demandeId": "DEMxmvximm5bb63m9",
+         "demandeId": "DEMxmvxjbpfbjux9p",
          "produitId": null,
          "acteCode": null,
          "demandeImagerieId": null,
@@ -2388,14 +2388,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm5aqdrxa",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm5bosmvg",
+       "id": "TCHxmvxjbpfb4mnlg",
        "statut": "bloque",
        "type": "prelevement",
        "role": "laborantin",
@@ -2404,8 +2404,8 @@
        "titre": "Prélever et analyser",
        "icon": "flask-conical",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5aqdrxa",
-       "factureId": "FACxmvximm5brht0f",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
+       "factureId": "FACxmvxjbpfbi58ci",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -2417,7 +2417,7 @@
        "montant": 5500
       },
       {
-       "id": "TCHxmvximm5b4o78s",
+       "id": "TCHxmvxjbpfbln1yv",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -2426,8 +2426,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5aqdrxa",
-       "factureId": "FACxmvximm5brht0f",
+       "ordonnanceId": "ORDxmvxjbpfbncnu0",
+       "factureId": "FACxmvxjbpfbi58ci",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -2487,7 +2487,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm5bc2fp6",
+       "id": "ORDxmvxjbpfcg5gtb",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -2522,7 +2522,7 @@
        "statutAnalyses": "en_attente",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm5bw02zz",
+       "factureId": "FACxmvxjbpfc71rq4",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-2",
@@ -2531,7 +2531,7 @@
      ],
      "demandesAnalyses": [
       {
-       "id": "DEMxmvximm5bgyu4s",
+       "id": "DEMxmvxjbpfcojeh3",
        "statut": "actif",
        "reference": "LAB-00001",
        "codeAnalyse": "00001-2026",
@@ -2550,7 +2550,7 @@
        "urgent": true,
        "etatAnalyse": "en_attente",
        "origine": "ordonnance",
-       "ordonnanceId": "ORDxmvximm5bc2fp6",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null,
        "secteurDemandeur": "Consultation",
@@ -2559,7 +2559,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm5bw02zz",
+       "id": "FACxmvxjbpfc71rq4",
        "statut": "actif",
        "lignes": [
         {
@@ -2576,7 +2576,7 @@
          "partAssureur": 0,
          "partPersonnel": 0,
          "partPatient": 4000,
-         "demandeId": "DEMxmvximm5bgyu4s",
+         "demandeId": "DEMxmvxjbpfcojeh3",
          "produitId": null,
          "acteCode": null,
          "demandeImagerieId": null,
@@ -2609,14 +2609,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm5bc2fp6",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm5bp3clb",
+       "id": "TCHxmvxjbpfczaeje",
        "statut": "bloque",
        "type": "prelevement",
        "role": "laborantin",
@@ -2625,8 +2625,8 @@
        "titre": "Prélever et analyser",
        "icon": "flask-conical",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5bc2fp6",
-       "factureId": "FACxmvximm5bw02zz",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
+       "factureId": "FACxmvxjbpfc71rq4",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -2638,7 +2638,7 @@
        "montant": 4000
       },
       {
-       "id": "TCHxmvximm5b08j4l",
+       "id": "TCHxmvxjbpfcug6ss",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -2647,8 +2647,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5bc2fp6",
-       "factureId": "FACxmvximm5bw02zz",
+       "ordonnanceId": "ORDxmvxjbpfcg5gtb",
+       "factureId": "FACxmvxjbpfc71rq4",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -2708,7 +2708,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm5cv2ncn",
+       "id": "ORDxmvxjbpfcnttlm",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -2743,7 +2743,7 @@
        "statutAnalyses": "en_attente",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm5c62hkc",
+       "factureId": "FACxmvxjbpfd1cmlq",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-2",
@@ -2752,7 +2752,7 @@
      ],
      "demandesAnalyses": [
       {
-       "id": "DEMxmvximm5c11z2e",
+       "id": "DEMxmvxjbpfclq8nz",
        "statut": "actif",
        "reference": "LAB-00001",
        "codeAnalyse": "00001-2026",
@@ -2771,7 +2771,7 @@
        "urgent": false,
        "etatAnalyse": "en_attente",
        "origine": "ordonnance",
-       "ordonnanceId": "ORDxmvximm5cv2ncn",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null,
        "secteurDemandeur": "MATERNITE",
@@ -2780,7 +2780,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm5c62hkc",
+       "id": "FACxmvxjbpfd1cmlq",
        "statut": "actif",
        "lignes": [
         {
@@ -2797,7 +2797,7 @@
          "partAssureur": 0,
          "partPersonnel": 0,
          "partPatient": 12000,
-         "demandeId": "DEMxmvximm5c11z2e",
+         "demandeId": "DEMxmvxjbpfclq8nz",
          "produitId": null,
          "acteCode": null,
          "demandeImagerieId": null,
@@ -2830,14 +2830,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm5cv2ncn",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm5cxpbsn",
+       "id": "TCHxmvxjbpfdnas4k",
        "statut": "bloque",
        "type": "prelevement",
        "role": "laborantin",
@@ -2846,8 +2846,8 @@
        "titre": "Prélever et analyser",
        "icon": "flask-conical",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5cv2ncn",
-       "factureId": "FACxmvximm5c62hkc",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
+       "factureId": "FACxmvxjbpfd1cmlq",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -2859,7 +2859,7 @@
        "montant": 12000
       },
       {
-       "id": "TCHxmvximm5caz8e7",
+       "id": "TCHxmvxjbpfdu5bxi",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -2868,8 +2868,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5cv2ncn",
-       "factureId": "FACxmvximm5c62hkc",
+       "ordonnanceId": "ORDxmvxjbpfcnttlm",
+       "factureId": "FACxmvxjbpfd1cmlq",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -2930,7 +2930,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm5cn9ow2",
+       "id": "ORDxmvxjbpfdjapig",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -2967,7 +2967,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm5cx5883",
+       "factureId": "FACxmvxjbpfd1xym3",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -2976,7 +2976,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm5cx5883",
+       "id": "FACxmvxjbpfd1xym3",
        "statut": "actif",
        "lignes": [
         {
@@ -3026,14 +3026,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm5cn9ow2",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm5cmmhpg",
+       "id": "TCHxmvxjbpfd827b0",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -3042,8 +3042,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5cn9ow2",
-       "factureId": "FACxmvximm5cx5883",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
+       "factureId": "FACxmvxjbpfd1xym3",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -3055,7 +3055,7 @@
        "montant": 2000
       },
       {
-       "id": "TCHxmvximm5c4z3qh",
+       "id": "TCHxmvxjbpfd7335m",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -3064,8 +3064,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm5cn9ow2",
-       "factureId": "FACxmvximm5cx5883",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
+       "factureId": "FACxmvxjbpfd1xym3",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -3079,7 +3079,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximm5cl2pfu",
+       "id": "PRSxmvxjbpfdtf5pz",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -3093,7 +3093,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximm5cn9ow2",
+       "ordonnanceId": "ORDxmvxjbpfdjapig",
        "lignes": [
         {
          "produitId": "PRD0002",
@@ -3146,7 +3146,7 @@
    },
    "preparation": null,
    "sortie": {
-    "erreur": "La fonction « infirmier » n’est pas habilitée à prescrire « medicament ».",
+    "erreur": "Infirmier(ère) n’est pas habilité à prescrire « Médicaments ».",
     "code": "FONCTION_NON_HABILITEE",
     "geste": "Demander la prescription à un médecin",
     "retour": null,
@@ -3183,7 +3183,7 @@
    },
    "preparation": null,
    "sortie": {
-    "erreur": "La fonction « aide_soignant » n’est pas habilitée à prescrire « analyse ».",
+    "erreur": "Aide-soignant(e) n’est pas habilité à prescrire « Analyses de laboratoire ».",
     "code": "FONCTION_NON_HABILITEE",
     "geste": "Demander la prescription à un médecin",
     "retour": null,
@@ -3224,7 +3224,7 @@
    },
    "preparation": null,
    "sortie": {
-    "erreur": "La fonction «  » n’est pas habilitée à prescrire « medicament ».",
+    "erreur": " n’est pas habilité à prescrire « Médicaments ».",
     "code": "FONCTION_NON_HABILITEE",
     "geste": "Demander la prescription à un médecin",
     "retour": null,
@@ -3523,7 +3523,7 @@
     "inserts": {
      "ordonnances": [
       {
-       "id": "ORDxmvximm7srbd6l",
+       "id": "ORDxmvxjbpff3l39a",
        "statut": "actif",
        "numero": "ORD-2026-00001",
        "date": "2026-08-20T09:00:00.000Z",
@@ -3560,7 +3560,7 @@
        "statutAnalyses": "sans_objet",
        "statutActes": "sans_objet",
        "statutImagerie": "sans_objet",
-       "factureId": "FACxmvximm7s29u29",
+       "factureId": "FACxmvxjbpffmxxsk",
        "factureNumero": "FP-2026-00001",
        "origine": "mobile",
        "pieceMobileId": "PIECE-1",
@@ -3569,7 +3569,7 @@
      ],
      "factures": [
       {
-       "id": "FACxmvximm7s29u29",
+       "id": "FACxmvxjbpffmxxsk",
        "statut": "actif",
        "lignes": [
         {
@@ -3619,14 +3619,14 @@
        "modePaiement": null,
        "statutPaiement": "impayee",
        "statutMecef": "en_attente",
-       "ordonnanceId": "ORDxmvximm7srbd6l",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
        "ordonnanceNumero": "ORD-2026-00001",
        "dossierConsultationId": null
       }
      ],
      "taches": [
       {
-       "id": "TCHxmvximm7sel3et",
+       "id": "TCHxmvxjbpffq51fr",
        "statut": "bloque",
        "type": "dispensation",
        "role": "pharmacien",
@@ -3635,8 +3635,8 @@
        "titre": "Délivrer les médicaments",
        "icon": "pill",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm7srbd6l",
-       "factureId": "FACxmvximm7s29u29",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
+       "factureId": "FACxmvxjbpffmxxsk",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -3648,7 +3648,7 @@
        "montant": 500
       },
       {
-       "id": "TCHxmvximm7s59f62",
+       "id": "TCHxmvxjbpff7aja2",
        "statut": "en_attente",
        "type": "encaissement",
        "role": "caissier",
@@ -3657,8 +3657,8 @@
        "titre": "Encaisser la prescription",
        "icon": "coins",
        "reference": "ORD-2026-00001",
-       "ordonnanceId": "ORDxmvximm7srbd6l",
-       "factureId": "FACxmvximm7s29u29",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
+       "factureId": "FACxmvxjbpffmxxsk",
        "factureNumero": "FP-2026-00001",
        "patient": "ALPHA Une",
        "patientCode": "CNT/1001/26",
@@ -3672,7 +3672,7 @@
      ],
      "prescriptions": [
       {
-       "id": "PRSxmvximm7sceubs",
+       "id": "PRSxmvxjbpff0dflj",
        "statut": "en_cours",
        "reference": "ORD-2026-00001",
        "type": "ordonnance",
@@ -3686,7 +3686,7 @@
        "secteurDestinataire": "pharmacie",
        "modalite": "ambulatoire",
        "premierAdministrateur": "salle_soins",
-       "ordonnanceId": "ORDxmvximm7srbd6l",
+       "ordonnanceId": "ORDxmvxjbpff3l39a",
        "lignes": [
         {
          "produitId": "PRD0003",

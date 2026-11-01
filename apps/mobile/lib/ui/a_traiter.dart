@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:sigh_domaine/sigh_domaine.dart' show mobMentionAValider, mobRefusAValider;
+
 import '../core/theme.dart';
 import '../moteur/moteur_mobile.dart';
 
@@ -25,7 +27,7 @@ class ATraiter extends StatelessWidget {
                 key: Key('refus-${r.operation}'),
                 leading: Icon(Icons.report_gmailerrorred, color: ThemeSigh.danger),
                 title: Text(r.motif),
-                subtitle: Text('À faire : ${r.geste}\n${r.code}'),
+                subtitle: Text('À faire : ${r.geste}\n${r.code}${mobRefusAValider(r.code) ? '\n$mobMentionAValider' : ''}'),
                 isThreeLine: true,
               ),
           ]);

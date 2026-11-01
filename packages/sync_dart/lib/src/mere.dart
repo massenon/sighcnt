@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:sigh_domaine/sigh_domaine.dart' show RefusMobile, mobLibelleFonction, mobLibelleNature, mobPeutPrescrire, mobRefusAffectation, mobRefusFonctionPiece;
+import 'package:sigh_domaine/sigh_domaine.dart' show RefusMobile, mobMotifFonctionNonHabilitee, mobPeutPrescrire, mobRefusAffectation, mobRefusFonctionPiece;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -43,7 +43,7 @@ Map<String, Object?>? refusPrescriptionMobile(Map op, Appareil app) {
   if (mobPeutPrescrire(fonction, nature)) return null;
   return {
     'id': op['id'], 'statut': 'refusee', 'code': 'droit_refuse',
-    'motif': '${mobLibelleFonction(fonction)} : la prescription de « ${mobLibelleNature(nature)} » n’est pas dans ses habilitations.',
+    'motif': mobMotifFonctionNonHabilitee(fonction, nature),
     'geste': 'Demander la prescription à un médecin',
   };
 }

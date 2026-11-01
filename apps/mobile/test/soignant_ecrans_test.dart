@@ -150,6 +150,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.byKey(const Key('refus-code')), findsOneWidget);
     expect(find.text('SANS_NOTE'), findsOneWidget);
+    expect(find.text('Texte proposé, à valider.'), findsOneWidget, reason: 'la durée « du jour » de la note n\'a pas de source : le dire à l\'écran (E1557)');
     expect(find.textContaining('la prescription se fait après l’enregistrement de la fiche'), findsOneWidget);
     expect(find.text('À faire : Enregistrer d’abord la note de consultation'), findsOneWidget);
     expect(m.source.de('prescriptions'), isEmpty);

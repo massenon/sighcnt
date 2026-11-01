@@ -56,7 +56,7 @@ TranscriptionMobile mobTranscrire(StockCs s, MobFiche piece, {MobFiche? note}) {
   }
   final fonction = '${piece['fonction'] ?? ''}';
   if (!mobPeutPrescrire(fonction, nature)) {
-    throw _refus('FONCTION_NON_HABILITEE', 'La fonction « $fonction » n’est pas habilitée à prescrire « $nature ».', 'Demander la prescription à un médecin');
+    throw _refus('FONCTION_NON_HABILITEE', mobMotifFonctionNonHabilitee(fonction, nature), 'Demander la prescription à un médecin');
   }
   final p = csPatientParCode(s, piece['patientCode']);
   if (p == null) {

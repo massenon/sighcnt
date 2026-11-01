@@ -389,7 +389,10 @@
     }
     var fonction = String(piece.fonction || '');
     if (!peutPrescrire(nature, { fonction: fonction })) {
-      throw refusMobile('FONCTION_NON_HABILITEE', 'La fonction « ' + fonction + ' » n’est pas habilitée à prescrire « ' + nature + ' ».', 'Demander la prescription à un médecin');
+      /* Formulation de la maquette (`prescrireSoins` : « X n’est pas habilité à prescrire. »), complétée de la nature refusée. */
+      var libFonction = (D.CAPACITES[fonction] || {}).label || fonction;
+      var libNature = (D.NATURES_PRESCRIPTION.filter(function (n) { return n.id === nature; })[0] || {}).label || nature;
+      throw refusMobile('FONCTION_NON_HABILITEE', libFonction + ' n’est pas habilité à prescrire « ' + libNature + ' ».', 'Demander la prescription à un médecin');
     }
     var p = patientParCode(piece.patientCode);
     if (!p) {

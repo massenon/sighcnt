@@ -322,7 +322,7 @@ class _EtatAppareils extends EtatEcranMra<EcranMraAppareils> {
               'brut': a,
               'appareil': a.etiquette.isEmpty ? a.uuid : a.etiquette,
               'type': _type(a.role),
-              'fonction': a.role == 'mobile' ? libelleFonctionMobile(a.profil, a.fonction) : '—',
+              'fonction': a.role == 'mobile' ? libelleFonctionMobile(a.profil, a.fonction) : 'Aucune',
               'agent': nonDisponible,
               'contact': ageDepuis(a.dernierContact, maintenant()),
               'retard': mraRetard(e!.seqMax, a.derniereSeq),

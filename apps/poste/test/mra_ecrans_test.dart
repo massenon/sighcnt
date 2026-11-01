@@ -24,8 +24,8 @@ import 'aide_polices.dart';
 final _t0 = DateTime(2026, 10, 30, 12);
 
 Appareil app(String uuid, String nom, String role,
-        {String etat = 'actif', DateTime? contact, int seq = 0, int derive = 0}) =>
-    Appareil(uuid: uuid, etiquette: nom, role: role, etat: etat, dernierContact: contact, derniereSeq: seq, deriveMs: derive);
+        {String etat = 'actif', DateTime? contact, int seq = 0, int derive = 0, String? profil, String? fonction}) =>
+    Appareil(uuid: uuid, etiquette: nom, role: role, etat: etat, dernierContact: contact, derniereSeq: seq, deriveMs: derive, profil: profil, fonction: fonction);
 
 class SourceFauxMra implements SourceMra {
   final List<String> appels = [];
@@ -234,6 +234,39 @@ void main() {
       expect(find.text('jamais'), findsOneWidget);
       expect(find.text('Révoqué'), findsOneWidget);
       expect(find.text('non disponible'), findsWidgets, reason: 'agent et version ne sont pas tenus par la mère');
+      await fin(t);
+    });
+
+    testWidgets('E1600 : la colonne « Fonction » dit ce que la mère a fixé ; un mobile d\'avant la fixation est « Non fixée » (la mère refusera ses pièces)', (t) async {
+      final s = SourceFauxMra()
+        ..etatMere = EtatMere(
+            epoch: 3, seqMax: 120, repSeq: 100, conflitsOuverts: 0, alertes: const [], derives: const [], bloques: const [], reinitOuverte: false, restauration: null,
+            appareils: [
+              app('u-1', 'Caisse', 'fileul', seq: 5),
+              app('u-2', 'Sage-femme de garde', 'mobile', seq: 5, profil: 'soignant', fonction: 'sage_femme'),
+              app('u-3', 'Accueil de secours', 'mobile', seq: 5, profil: 'reception'),
+              app('u-4', 'Ancien mobile', 'mobile', seq: 5),
+            ]);
+      await monter(t, EcranMraAppareils(source: s, maintenant: () => _t0));
+      expect(find.text('Sage-femme'), findsOneWidget);
+      expect(find.text('Non fixée'), findsOneWidget);
+      expect(find.text('Aucune'), findsNWidgets(2), reason: 'le poste fileul et la réception de secours n\'ont pas de fonction de soignant');
+      await fin(t);
+    });
+
+    testWidgets('E1600 : un code de mobile exige un profil ; la réception de secours n\'a pas de fonction, un soignant a la sienne, fixée par le code', (t) async {
+      await monter(t, EcranMraAppareils(source: src, maintenant: () => _t0));
+      await toucher(t, bouton('Appairer un mobile'));
+      expect(find.byKey(const Key('kit:champ:fonction')), findsOneWidget, reason: 'profil soignant par défaut : la fonction se choisit ICI');
+      expect(find.textContaining('La fonction est fixée par ce code'), findsOneWidget);
+      // Profil « Réception de secours » : la fonction disparaît de la saisie.
+      await toucher(t, find.descendant(of: find.byKey(const Key('kit:champ:profil')), matching: find.byType(InkWell)).first);
+      await toucher(t, find.text('Réception de secours').last);
+      expect(find.byKey(const Key('kit:champ:fonction')), findsNothing);
+      await t.enterText(find.byType(TextField).last, 'Accueil de secours');
+      await toucher(t, bouton('Générer le code'));
+      expect(src.appels.last, 'code-mobile Accueil de secours reception');
+      expect(find.textContaining('Ce code appaire : Réception de secours.'), findsOneWidget);
       await fin(t);
     });
 

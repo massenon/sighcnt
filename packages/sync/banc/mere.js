@@ -236,7 +236,7 @@ function refusPrescriptionMobile(op, app) {
   if (ligne && ligne.autorise) return null;
   const libelle = PRESCRIPTION && PRESCRIPTION.labels[fonction];
   return { id: op.id, statut: 'refusee', code: 'droit_refuse',
-    motif: !fonction ? 'Prescription sans fonction déclarée : aucune habilitation ne peut être vérifiée.' : `${libelle || fonction} : la prescription de « ${nature} » n’est pas dans ses habilitations.`,
+    motif: `${libelle || fonction} n’est pas habilité à prescrire « ${nature} ».`,
     geste: 'Demander la prescription à un médecin' };
 }
 

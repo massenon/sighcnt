@@ -47,7 +47,7 @@
     { id: 'u-05', nom: 'Salle de soins', role: 'fileul', agent: 'BADO BANI A. B. Zoulehath', etat: 'actif', contact: 190, retard: 14, derive: 0, version: '1.0.3' },
     { id: 'u-06', nom: 'Mobile — Dr YENI M’PO', role: 'mobile · soignant', fonction: 'Médecin', agent: 'YENI M’PO Florent', etat: 'actif', contact: 12, retard: 0, derive: 0, version: '1.0.1' },
     { id: 'u-07', nom: 'Mobile — Sage-femme de garde', role: 'mobile · soignant', fonction: 'Sage-femme', agent: 'Sage-femme (garde)', etat: 'actif', contact: 45, retard: 3, derive: 0, version: '1.0.1' },
-    { id: 'u-08', nom: 'Mobile — Réception de secours', role: 'mobile · réception', fonction: '—', agent: 'OROU YO Edmond', etat: 'actif', contact: 600, retard: 0, derive: 0, version: '1.0.1' },
+    { id: 'u-08', nom: 'Mobile — Réception de secours', role: 'mobile · réception', fonction: 'Aucune', agent: 'OROU YO Edmond', etat: 'actif', contact: 600, retard: 0, derive: 0, version: '1.0.1' },
     { id: 'u-09', nom: 'Ancien poste Archives', role: 'fileul', agent: '—', etat: 'revoque', contact: 43200, retard: 0, derive: 0, version: '0.9.8' },
   ];
   var CONFLITS = [
@@ -117,7 +117,7 @@
       C.clear(hote);
       hote.appendChild(tableau(['Appareil', 'Type', 'Fonction', 'Agent', 'Dernier contact', 'Retard', 'Horloge', 'Version', 'État', ''], APPAREILS.map(function (a) {
         var derive = a.derive ? Math.round(a.derive / 1000) + ' s' : 'ok';
-        return [a.nom, a.role, a.fonction || '—', a.agent, a.etat === 'revoque' ? 'le ' + C.dateFR(new Date(Date.now() - a.contact * 60000)) : il(a.contact), a.retard + ' op.', a.derive ? U.badge('Dérive ' + derive, 'warning') : '—', a.version,
+        return [a.nom, a.role, a.fonction || 'Aucune', a.agent, a.etat === 'revoque' ? 'le ' + C.dateFR(new Date(Date.now() - a.contact * 60000)) : il(a.contact), a.retard + ' op.', a.derive ? U.badge('Dérive ' + derive, 'warning') : '—', a.version,
           a.etat === 'revoque' ? U.badge('Révoqué', 'neutral') : U.badge('Actif', 'success'),
           a.etat === 'revoque' ? '' : bouton('Révoquer', 'ban', function () {
             U.confirm({ title: 'Révoquer ' + a.nom + ' ?', message: 'L’appareil <strong>cessera de synchroniser</strong> et sera effacé au prochain contact s’il s’agit d’un mobile. Ses opérations non envoyées sont exportées d’abord.', confirmLabel: 'Révoquer', danger: true }).then(function (ok) {

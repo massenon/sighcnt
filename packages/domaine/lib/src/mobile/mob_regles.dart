@@ -131,6 +131,10 @@ String? mobSecteurFonction(String fonction) {
   return l is List && l.isNotEmpty ? '${l.first}' : null;
 }
 
+/// Le motif d'une prescription refusée à une fonction non habilitée : la formulation de la maquette (`PR.prescrireSoins` : « X n’est pas habilité à
+/// prescrire. »), complétée de la nature refusée (la capacité se règle nature par nature, `D.CAPACITES`).
+String mobMotifFonctionNonHabilitee(String fonction, String nature) => '${mobLibelleFonction(fonction)} n’est pas habilité à prescrire « ${mobLibelleNature(nature)} ».';
+
 /// Les natures que le mobile sait prescrire, et l'écran qui les porte.
 const mobNaturesMobile = {'medicament': 'prescription', 'analyse': 'demande-analyse'};
 
@@ -383,16 +387,14 @@ void mobControlerPrescription({
     throw RefusMobile('NATURE_NON_PORTEE', 'Le mobile ne prescrit pas « ${mobLibelleNature(nature)} ».', 'Prescrire depuis un poste de la clinique');
   }
   if (!mobPeutPrescrire(fonction, nature)) {
-    throw RefusMobile(
-        'FONCTION_NON_HABILITEE',
-        '${mobLibelleFonction(fonction)} : la prescription de « ${mobLibelleNature(nature)} » n’est pas dans ses habilitations.',
-        'Demander la prescription à un médecin');
+    throw RefusMobile('FONCTION_NON_HABILITEE', mobMotifFonctionNonHabilitee(fonction, nature), 'Demander la prescription à un médecin');
   }
   if (!mobEcranOuvert(fonction, mobNaturesMobile[nature]!)) {
     final profil = ((mobDonnees['profils'] as Map)[mobProfilSimulateur(fonction)] as Map)['label'];
+    // Formulation du simulateur (`mobile.js`, écran fermé au profil), reprise telle quelle.
     throw RefusMobile(
         'ECRAN_FERME_AU_PROFIL',
-        'Écran fermé au profil « $profil » : le simulateur ne l’ouvre pas, même si l’habilitation de la fonction le permet.',
+        'Écran fermé au profil « $profil ». Ce profil ne couvre pas cette fonction ; la clinique le refuserait aussi côté serveur.',
         'Prescrire depuis un poste de la clinique');
   }
   if (mobNoteDuJour(notes, patientId, maintenant) == null) {

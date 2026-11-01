@@ -22,6 +22,7 @@ class CarteRefus extends StatelessWidget {
         Text('À faire : ${refus.geste}', key: const Key('refus-geste'), style: t.bodyMedium),
         const SizedBox(height: 4),
         Text(refus.code, key: const Key('refus-code'), style: t.bodySmall),
+        if (mobRefusAValider(refus.code)) Text(mobMentionAValider, key: const Key('refus-a-valider'), style: t.bodySmall?.copyWith(fontStyle: FontStyle.italic)),
       ]),
     );
   }
