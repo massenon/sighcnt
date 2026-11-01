@@ -26,7 +26,7 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -70,7 +70,7 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:03.098Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:35.005Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -114,7 +114,7 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:03.208Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:35.126Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -158,7 +158,7 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:03.333Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:35.259Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -202,7 +202,7 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:03.467Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:35.390Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -246,7 +246,7 @@
       "actif": true,
       "mfa": true,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:03.591Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:35.515Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -290,7 +290,7 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": false,
-      "motDePasseDefiniLe": "2026-11-01T18:09:03.719Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:35.654Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -334,7 +334,7 @@
       "actif": false,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:03.845Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:35.790Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -418,7 +418,7 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:04.250Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:36.168Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -482,7 +482,7 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:04.492Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:36.401Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "TAKI Alimatou",
       "matricule": "2",
@@ -546,7 +546,7 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:04.744Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:36.619Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "dernierAcces": "2026-11-01",
       "echecs": 0
@@ -587,7 +587,7 @@
       "actif": true,
       "mfa": false,
       "doitChangerMotDePasse": true,
-      "motDePasseDefiniLe": "2026-11-01T18:09:04.874Z",
+      "motDePasseDefiniLe": "2026-11-01T18:32:36.760Z",
       "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
       "nomComplet": "BASSONGUI Chabi Séko",
       "matricule": "1",
@@ -609,7 +609,7 @@
   {
    "nom": "modifier le rôle vers « dm » : double facteur imposé",
    "mode": "edition",
-   "cible": "UTIxmvy599mrudlea",
+   "cible": "UTIxmvy63j22t1rik",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -619,7 +619,7 @@
     "actif": true,
     "mfa": false,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
@@ -640,7 +640,7 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
@@ -655,7 +655,7 @@
   {
    "nom": "conserver son propre identifiant : pas de doublon",
    "mode": "edition",
-   "cible": "UTIxmvy599mrudlea",
+   "cible": "UTIxmvy63j22t1rik",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -665,7 +665,7 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
@@ -686,7 +686,7 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
@@ -701,7 +701,7 @@
   {
    "nom": "prendre l'identifiant d'un autre : refusé",
    "mode": "edition",
-   "cible": "UTIxmvy599mrudlea",
+   "cible": "UTIxmvy63j22t1rik",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -711,7 +711,7 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
@@ -732,7 +732,7 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
@@ -747,7 +747,7 @@
   {
    "nom": "changer d'agent rattaché : nom, matricule, poste suivent",
    "mode": "edition",
-   "cible": "UTIxmvy599mrudlea",
+   "cible": "UTIxmvy63j22t1rik",
    "avant": {
     "statut": "actif",
     "identifiant": "v.test1",
@@ -757,7 +757,7 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "TAKI Alimatou",
     "matricule": "2",
@@ -778,7 +778,7 @@
     "actif": true,
     "mfa": true,
     "doitChangerMotDePasse": true,
-    "motDePasseDefiniLe": "2026-11-01T18:09:02.979Z",
+    "motDePasseDefiniLe": "2026-11-01T18:32:34.874Z",
     "motDePasseDefiniPar": "BASSONGUI Chabi Séko",
     "nomComplet": "BASSONGUI Chabi Séko",
     "matricule": "1",
@@ -10712,7 +10712,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvy59fddyfr7b",
+      "id": "RBACxmvy63opul433q",
       "statut": "actif",
       "role": "auditeurexterne",
       "nouveau": true,
@@ -10853,7 +10853,7 @@
    },
    "fiche": [
     {
-     "id": "RBACxmvy59fddyfr7b",
+     "id": "RBACxmvy63opul433q",
      "statut": "actif",
      "role": "auditeurexterne",
      "nouveau": true,
@@ -11943,7 +11943,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvy59fwkbr756",
+      "id": "RBACxmvy63p7xcu0an",
       "statut": "actif",
       "role": "veilleur",
       "nouveau": true,
@@ -12084,7 +12084,7 @@
    },
    "fiche": [
     {
-     "id": "RBACxmvy59fwkbr756",
+     "id": "RBACxmvy63p7xcu0an",
      "statut": "actif",
      "role": "veilleur",
      "nouveau": true,
@@ -14578,7 +14578,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvy59fwkbr756",
+      "id": "RBACxmvy63p7xcu0an",
       "statut": "actif",
       "role": "veilleur",
       "nouveau": true,
@@ -14845,7 +14845,7 @@
     },
     "fiches": [
      {
-      "id": "RBACxmvy59fwkbr756",
+      "id": "RBACxmvy63p7xcu0an",
       "statut": "archive",
       "role": "veilleur",
       "nouveau": true,
@@ -14989,7 +14989,7 @@
    },
    "fiche": [
     {
-     "id": "RBACxmvy59fwkbr756",
+     "id": "RBACxmvy63p7xcu0an",
      "statut": "archive",
      "role": "veilleur",
      "nouveau": true,
@@ -17140,272 +17140,6 @@
   }
  ],
  "nbRoles": 24,
- "sessions": {
-  "utilisateurs": [
-   {
-    "id": "USR000",
-    "identifiant": "admin.systeme",
-    "nomComplet": "Administrateur système",
-    "role": "admin"
-   },
-   {
-    "id": "USR001",
-    "identifiant": "s.bassongui",
-    "nomComplet": "BASSONGUI Chabi Séko",
-    "role": "dm"
-   },
-   {
-    "id": "USR002",
-    "identifiant": "a.taki",
-    "nomComplet": "TAKI Alimatou",
-    "role": "da"
-   },
-   {
-    "id": "USR003",
-    "identifiant": "a.kassa",
-    "nomComplet": "KASSA Augustin",
-    "role": "comptable"
-   },
-   {
-    "id": "USR004",
-    "identifiant": "h.gbedji",
-    "nomComplet": "GBEDJI Hervé",
-    "role": "assistant_comptable"
-   },
-   {
-    "id": "USR005",
-    "identifiant": "f.yeni",
-    "nomComplet": "YENI M’PO Florent",
-    "role": "medecin"
-   },
-   {
-    "id": "USR006",
-    "identifiant": "o.taki",
-    "nomComplet": "TAKI Orou",
-    "role": "medecin"
-   },
-   {
-    "id": "USR007",
-    "identifiant": "r.ahohou",
-    "nomComplet": "AHOHOU Rodrigue",
-    "role": "echographiste"
-   },
-   {
-    "id": "USR008",
-    "identifiant": "g.kinnou",
-    "nomComplet": "KINNOU A. Ganiou",
-    "role": "laborantin"
-   },
-   {
-    "id": "USR009",
-    "identifiant": "y.agossou",
-    "nomComplet": "AGOSSOU Yahouza",
-    "role": "laborantin"
-   },
-   {
-    "id": "USR010",
-    "identifiant": "y.garba",
-    "nomComplet": "GARBA Yahouza",
-    "role": "surveillant"
-   },
-   {
-    "id": "USR011",
-    "identifiant": "b.idrissou",
-    "nomComplet": "IDRISSOU ANIKI Baba-Toundé",
-    "role": "infirmier"
-   }
-  ],
-  "kpis": [
-   [
-    "Sessions ouvertes",
-    "12"
-   ],
-   [
-    "Postes distincts",
-    "6"
-   ],
-   [
-    "Verrouillées pour inactivité",
-    "7"
-   ],
-   [
-    "Délai de verrouillage",
-    "15 min"
-   ]
-  ],
-  "tableau": {
-   "entetes": [
-    "Identifiant",
-    "Utilisateur",
-    "Rôle",
-    "Poste",
-    "Adresse réseau",
-    "Ouverture",
-    "Inactivité",
-    "État",
-    "Actions"
-   ],
-   "lignes": [
-    [
-     "admin.systeme",
-     "Administrateur système",
-     "Administrateur système",
-     "POSTE-COMPTA",
-     "192.168.1.28",
-     "09h40",
-     "17 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "s.bassongui",
-     "BASSONGUI Chabi Séko",
-     "Directeur Médical",
-     "POSTE-LABO",
-     "192.168.1.15",
-     "07h05",
-     "8 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "a.taki",
-     "TAKI Alimatou",
-     "Directrice de l’Administration et des Finances (DAF)",
-     "POSTE-DIR",
-     "192.168.1.19",
-     "07h21",
-     "2 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "a.kassa",
-     "KASSA Augustin",
-     "Comptable",
-     "POSTE-COMPTA",
-     "192.168.1.26",
-     "11h05",
-     "9 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "h.gbedji",
-     "GBEDJI Hervé",
-     "Assistant de Direction",
-     "POSTE-PHARMA",
-     "192.168.1.14",
-     "09h02",
-     "24 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "f.yeni",
-     "YENI M’PO Florent",
-     "Médecin",
-     "POSTE-SOINS",
-     "192.168.1.42",
-     "09h59",
-     "4 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "o.taki",
-     "TAKI Orou",
-     "Médecin",
-     "POSTE-CAISSE",
-     "192.168.1.23",
-     "13h03",
-     "18 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "r.ahohou",
-     "AHOHOU Rodrigue",
-     "Technicien d’échographie",
-     "POSTE-DIR",
-     "192.168.1.29",
-     "12h55",
-     "23 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "g.kinnou",
-     "KINNOU A. Ganiou",
-     "Biologiste médical",
-     "POSTE-CAISSE",
-     "192.168.1.32",
-     "10h33",
-     "25 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "y.agossou",
-     "AGOSSOU Yahouza",
-     "Biologiste médical",
-     "POSTE-CAISSE",
-     "192.168.1.22",
-     "08h39",
-     "21 min",
-     "Verrouillée",
-     "Clôturer"
-    ],
-    [
-     "y.garba",
-     "GARBA Yahouza",
-     "Surveillant",
-     "POSTE-DIR",
-     "192.168.1.15",
-     "08h47",
-     "8 min",
-     "Active",
-     "Clôturer"
-    ],
-    [
-     "b.idrissou",
-     "IDRISSOU ANIKI Baba-Toundé",
-     "Infirmier / Sage-femme",
-     "POSTE-DIR",
-     "192.168.1.45",
-     "10h08",
-     "16 min",
-     "Verrouillée",
-     "Clôturer"
-    ]
-   ]
-  },
-  "jour": "2026-11-01"
- },
- "sessionsCloture": {
-  "message": "Clôturer la session de Administrateur système ?L’utilisateur sera immédiatement déconnecté du poste POSTE-COMPTA. L’opération est journalisée.AnnulerClôturer la session",
-  "toasts": [
-   {
-    "message": "Session clôturée.",
-    "type": "success",
-    "detail": "Administrateur système — POSTE-COMPTA"
-   }
-  ],
-  "audit": {
-   "id": "LOGmvy599a2",
-   "dateHeure": "2026-11-01T18:09:02.522Z",
-   "utilisateur": "BASSONGUI Chabi Séko",
-   "action": "Modification",
-   "module": "M14",
-   "entite": "SessionUtilisateur",
-   "reference": "admin.systeme",
-   "ancienneValeur": "{\"etat\":\"ouverte\"}",
-   "nouvelleValeur": "{\"etat\":\"close\"}",
-   "poste": "POSTE-LOCAL",
-   "succes": true
-  },
-  "nbAudit": 1
- },
  "rolesOuverture": {
   "kpis": [
    [
@@ -18525,10 +18259,10 @@
     "statut": "actif",
     "fichier": "sigh-cnt-20261101-07.json",
     "date": "2026-11-01",
-    "heure": "18h09",
+    "heure": "18h32",
     "portee": "Base complète",
     "tables": 79,
-    "taille": 3114681,
+    "taille": 3114271,
     "genereePar": "BASSONGUI Chabi Séko"
    },
    "nbFichiers": 1,
@@ -18548,7 +18282,7 @@
     }
    ],
    "audit": {
-    "dateHeure": "2026-11-01T18:09:13.785Z",
+    "dateHeure": "2026-11-01T18:32:45.715Z",
     "utilisateur": "BASSONGUI Chabi Séko",
     "action": "Création",
     "module": "M14",
@@ -18579,7 +18313,7 @@
     }
    ],
    "audit": {
-    "dateHeure": "2026-11-01T18:09:14.061Z",
+    "dateHeure": "2026-11-01T18:32:45.984Z",
     "utilisateur": "BASSONGUI Chabi Séko",
     "action": "Restauration",
     "module": "M14",

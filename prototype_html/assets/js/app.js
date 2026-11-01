@@ -273,7 +273,38 @@
 
   function delaiVerrou() {
     var v = Number(S.storage.get(VERROU_DELAI));
-    return v > 0 ? v : VERROU_DELAI_DEFAUT;
+    if (v > 0) return v;
+    /* La politique de sécurité (écran « Sécurité des utilisateurs ») fixe le délai quand elle est écrite. */
+    try {
+      var pol = (S.raw().politiqueSecurite || []).filter(function (f) { return f.statut !== 'archive'; })[0];
+      if (pol && Number(pol.inactiviteMin) > 0) return Number(pol.inactiviteMin) * 60000;
+    } catch (e) { /* le délai de référence s'applique */ }
+    return VERROU_DELAI_DEFAUT;
+  }
+
+  /**
+   * La session de ce poste a-t-elle été clôturée ? Si oui : journal (RG-12), session fermée, retour à la connexion
+   * avec le motif. Rend vrai quand la redirection est partie. Une session clôturée ne se rouvre pas.
+   */
+  var _clotureEnCours = false;
+  function controlerCloture() {
+    var M = global.SIGH.sessions;
+    if (_clotureEnCours || !M || !S.session()) return false;
+    var f;
+    try { f = M.cloturee(); } catch (e) { return false; }
+    if (!f) return false;
+    _clotureEnCours = true;
+    S.log('Session fermée par clôture', 'M14', 'Session', f.identifiant, { etat: 'ouverte' },
+      { sessionId: f.id, cloturePar: f.cloturePar, clotureLe: f.clotureLe });
+    /* Le journal part AVANT que la session (donc le jeton d'écriture) disparaisse : on attend la fin de la file, quatre secondes au plus. */
+    S.pousserMaintenant();
+    var debut = Date.now();
+    (function attendre() {
+      if (S.fileEnAttente && S.fileEnAttente() > 0 && Date.now() - debut < 4000) { global.setTimeout(attendre, 50); return; }
+      S.setSession(null);
+      global.location.href = href('index') + '?motif=session-cloturee';
+    })();
+    return true;
   }
 
   /** Arme la surveillance d'inactivité sur la page courante. */
@@ -285,6 +316,7 @@
       if (!s2) return;
       /* L'adresse complète, ancre comprise : c'est elle qui porte l'onglet. */
       S.storage.set(VERROU_RETOUR, global.location.pathname.split('/').pop() + global.location.hash);
+      if (global.SIGH.sessions) { try { global.SIGH.sessions.changerEtat('suspendue'); } catch (e) { /* sans effet */ } }
       S.log('Verrouillage pour inactivité', 'M14', 'Session', s2.identifiant || s2.nom,
         null, { ecran: entry.id, delaiMinutes: Math.round(delaiVerrou() / 60000) });
       global.location.href = href('auth-lock');
@@ -1387,9 +1419,16 @@
         return;
       }
 
+      /* Une session CLOTUREE depuis l'écran des sessions (de ce poste ou d'un autre) ne travaille plus :
+         au prochain écran ouvert, la connexion reprend la main. */
+      if (controlerCloture()) return;
+      if (global.SIGH.sessions) { try { global.SIGH.sessions.assurer(); } catch (e) { /* le registre ne bloque pas le travail */ } }
+
       document.body.className = 'min-h-screen bg-slate-100';
       document.body.appendChild(buildMenubar(session, PAGE.id));
       armerVerrou(entry);
+      /* ... et au prochain CLIC, sans attendre un changement d'écran. */
+      ecoute(document, 'click', function () { controlerCloture(); }, { capture: true });
 
       var main = el('div#app-main');
 
@@ -1504,7 +1543,7 @@
     href: href, go: go, base: base,
     openSearch: openSearch, openProfile: openProfile, openNotifications: openNotifications,
     rechercher: rechercher, actionsRapides: actionsRapides,
-    droits: droitsCourants,
+    droits: droitsCourants, controlerCloture: controlerCloture,
     entry: function () { return PAGE ? N.get(PAGE.id) : null; },
     VERROU_RETOUR: VERROU_RETOUR, VERROU_DELAI: VERROU_DELAI,
     delaiVerrou: delaiVerrou,

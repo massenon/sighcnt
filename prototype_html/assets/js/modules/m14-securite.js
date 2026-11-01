@@ -1255,84 +1255,559 @@
   });
 
   /* ==========================================================================
-   * SESSIONS ACTIVES
+   * SESSIONS DE POSTE
+   * --------------------------------------------------------------------------
+   * Le registre `sessionsUtilisateur` tient UNE FICHE PAR SESSION : active,
+   * suspendue (verrou d'inactivité) ou clôturée. « Clôturer » change le STATUT
+   * de la fiche (date, heure et auteur écrits, RG-12) ; le poste visé retombe sur
+   * la connexion à son prochain geste. Une session clôturée ne se rouvre pas et
+   * ne se supprime pas (RG-14) : elle reste au registre, filtrable.
+   *
+   * Les douze premières fiches sont le jeu de DÉMONSTRATION (tirage à graine
+   * 3413, comptes actifs) : amorcées par l'écran, marquées `source:
+   * 'demonstration'`. Les sessions réelles de ce poste s'ajoutent à la
+   * connexion (`SIGH.sessions.assurer`). L'inactivité n'est relevée que pour le
+   * jeu de démonstration : le poste ne mesure pas l'activité de ses propres
+   * sessions, il pose seulement le verrou.
    * ======================================================================== */
+  function amorcerSessions() {
+    var col = S.collection('sessionsUtilisateur', { module: 'M14', entite: 'session', prefix: 'SES' });
+    if (!S.amorcable('sessionsUtilisateur')) return col;
+    var db = S.raw();
+    if ((db.sessionsUtilisateur || []).some(function (f) { return f.source === 'demonstration'; })) return col;
+    var rnd = C.seeded(3413);
+    utilisateurs().active().filter(function (u) { return u.actif; }).slice(0, 12).forEach(function (u, i) {
+      var debut = new Date(AUJ.getTime());
+      debut.setHours(C.between(rnd, 7, 15), C.between(rnd, 0, 59), 0, 0);
+      var inactivite = C.between(rnd, 0, 25);
+      var poste = 'POSTE-' + C.pick(rnd, ['ACCUEIL', 'CAISSE', 'PHARMA', 'LABO', 'COMPTA', 'DIR', 'SOINS']);
+      var ip = '192.168.1.' + C.between(rnd, 10, 60);
+      db.sessionsUtilisateur.push({
+        id: 'SES-D' + C.pad(i + 1, 2), statut: 'actif', source: 'demonstration', utilisateurId: u.id,
+        identifiant: u.identifiant, nomComplet: u.nomComplet, role: u.role, poste: poste, adresseIp: ip,
+        debut: debut.toISOString(), derniereActivite: debut.toISOString(), inactivite: inactivite,
+        etat: inactivite >= 15 ? 'suspendue' : 'active',
+        _creePar: 'Système', _creeLe: debut.toISOString(),
+      });
+    });
+    S.save();
+    return col;
+  }
+
   global.SIGH.screen('m14-sessions', {
     title: 'Sessions actives',
-    regle: 'Écran <strong>calculé</strong> : les sessions reflètent les connexions en cours. '
-      + 'Elles ne se créent ni ne se modifient — elles se <strong>terminent</strong>, et la clôture '
-      + 'est journalisée (RG-12).',
+    regle: 'Le registre tient une fiche par session : <strong>active</strong>, <strong>suspendue</strong> ou <strong>clôturée</strong>. '
+      + 'Une session ne se crée ni ne se modifie ici : elle se <strong>clôture</strong> (statut, date, heure et auteur écrits, RG-12). '
+      + 'Une session clôturée ne se rouvre pas et ne s’efface pas (RG-14) ; le poste retombe sur la connexion à son prochain geste.',
     description: 'Connexions en cours, postes de travail et délai d’inactivité avant verrouillage.',
     render: function (root) {
-      var users = utilisateurs().active().filter(function (u) { return u.actif; });
-      var rnd = C.seeded(3413);
-      var rows = users.slice(0, 12).map(function (u, i) {
-        var debut = new Date(AUJ.getTime());
-        debut.setHours(C.between(rnd, 7, 15), C.between(rnd, 0, 59));
-        var inactivite = C.between(rnd, 0, 25);
-        return {
-          id: u.id, identifiant: u.identifiant, nomComplet: u.nomComplet,
-          role: u.role, poste: 'POSTE-' + C.pick(rnd, ['ACCUEIL', 'CAISSE', 'PHARMA', 'LABO', 'COMPTA', 'DIR', 'SOINS']),
-          adresseIp: '192.168.1.' + C.between(rnd, 10, 60),
-          debut: debut.toISOString(),
-          inactivite: inactivite,
-          verrouillage: inactivite >= 15,
-        };
-      });
-
+      amorcerSessions();
+      var M = global.SIGH.sessions;
       var host = el('div.space-y-4');
-      host.appendChild(U.kpiGrid([
-        { label: 'Sessions ouvertes', value: C.num(rows.length), icon: 'monitor', tone: 'navy' },
-        { label: 'Postes distincts', value: C.num(Object.keys(C.groupBy(rows, 'poste')).length), icon: 'network', tone: 'info' },
-        { label: 'Verrouillées pour inactivité', value: C.num(rows.filter(function (r) { return r.verrouillage; }).length), icon: 'lock', tone: 'warning' },
-        { label: 'Délai de verrouillage', value: '15 min', icon: 'timer', tone: 'neutral', hint: 'Postes partagés' },
-      ]));
-
-      host.appendChild(K.note('Sur les postes partagés — accueil et caisse — un délai d’inactivité de 15 minutes entraîne le <strong>verrouillage automatique de l’écran</strong>.', { tone: 'info', icon: 'lock' }));
-
-      host.appendChild(U.dataTable({
-        title: 'Sessions en cours', rows: rows, exportName: 'sessions', pageSize: 15,
-        columns: [
-          { key: 'identifiant', label: 'Identifiant', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold', { text: r.identifiant }); } },
-          { key: 'nomComplet', label: 'Utilisateur' },
-          { key: 'role', label: 'Rôle', text: roleLabel, render: function (r) { return U.badge(roleLabel(r.role), 'navy'); } },
-          { key: 'poste', label: 'Poste', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.poste }); } },
-          { key: 'adresseIp', label: 'Adresse réseau', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.text-slate-500', { text: r.adresseIp }); } },
-          {
-            key: 'debut', label: 'Ouverture', nowrap: true,
-            text: function (r) { return C.heure(r.debut); },
-            render: function (r) { return C.heure(r.debut); },
-          },
-          {
-            key: 'inactivite', label: 'Inactivité', align: 'right',
-            render: function (r) {
-              return el('span.num', { class: r.inactivite >= 15 ? 'font-semibold text-warning-600' : 'text-slate-600', text: r.inactivite + ' min' });
-            },
-          },
-          {
-            key: 'verrouillage', label: 'État',
-            text: function (r) { return r.verrouillage ? 'Verrouillée' : 'Active'; },
-            render: function (r) { return r.verrouillage ? U.badge('Verrouillée', 'warning') : U.badge('Active', 'success'); },
-          },
-        ],
-        rowActions: function (r) {
-          return [K.btn('Clôturer', {
-            size: 'sm', variant: 'danger', icon: 'log-out',
-            onclick: function () {
-              U.confirm({
-                title: 'Clôturer la session de ' + r.nomComplet + ' ?',
-                message: 'L’utilisateur sera immédiatement déconnecté du poste ' + r.poste + '. L’opération est journalisée.',
-                confirmLabel: 'Clôturer la session', danger: true,
-              }).then(function (ok) {
-                if (!ok) return;
-                S.log('Modification', 'M14', 'SessionUtilisateur', r.identifiant, { etat: 'ouverte' }, { etat: 'close' });
-                U.toast('Session clôturée.', { type: 'success', detail: r.nomComplet + ' — ' + r.poste });
-              });
-            },
-          })];
-        },
-      }));
       root.appendChild(host);
+
+      function lignes() {
+        var cle = function (f) { return f.debut || ''; };
+        return C.sortBy(M.collection().all().filter(function (f) { return f.statut !== 'archive'; }), cle, 'desc').map(function (f) {
+          return {
+            id: f.id, identifiant: f.identifiant, nomComplet: f.nomComplet, role: f.role, poste: f.poste,
+            adresseIp: f.adresseIp || null, debut: f.debut, etat: f.etat || 'active',
+            inactivite: f.source === 'demonstration' ? f.inactivite : null,
+            clotureLe: f.clotureLe || null, cloturePar: f.cloturePar || null,
+          };
+        });
+      }
+
+      function demander(r) {
+        var propre = (S.session() || {}).sessionId === r.id;
+        U.confirm({
+          title: propre ? 'Clôturer VOTRE session ?' : 'Clôturer la session de ' + r.nomComplet + ' ?',
+          message: propre
+            ? 'Il s’agit de votre propre session : vous serez déconnecté immédiatement de ce poste et ramené à la connexion. L’opération est journalisée.'
+            : 'L’utilisateur sera déconnecté du poste ' + r.poste + ' à son prochain geste. L’opération est journalisée. Une session clôturée ne se rouvre pas.',
+          confirmLabel: propre ? 'Clôturer ma session' : 'Clôturer la session', danger: true,
+        }).then(function (ok) {
+          if (!ok) return;
+          var res = M.cloturer(r.id, { confirmePropre: propre });
+          if (!res.ok) {
+            U.toast(res.motif, { type: 'error', detail: res.geste });
+            afficher();
+            return;
+          }
+          U.toast('Session clôturée.', { type: 'success', detail: r.nomComplet + ' (' + r.poste + ')' });
+          if (res.propre) { global.SIGH.app.controlerCloture(); return; }
+          afficher();
+        });
+      }
+
+      function afficher() {
+        C.clear(host);
+        var rows = lignes();
+        var ouvertes = rows.filter(function (r) { return r.etat !== 'cloturee'; });
+        host.appendChild(U.kpiGrid([
+          { label: 'Sessions ouvertes', value: C.num(ouvertes.length), icon: 'monitor', tone: 'navy' },
+          { label: 'Postes distincts', value: C.num(Object.keys(C.groupBy(ouvertes, 'poste')).length), icon: 'network', tone: 'info' },
+          { label: 'Verrouillées pour inactivité', value: C.num(rows.filter(function (r) { return r.etat === 'suspendue'; }).length), icon: 'lock', tone: 'warning' },
+          { label: 'Clôturées', value: C.num(rows.filter(function (r) { return r.etat === 'cloturee'; }).length), icon: 'log-out', tone: 'neutral', hint: 'Conservées au registre' },
+          { label: 'Délai de verrouillage', value: '15 min', icon: 'timer', tone: 'neutral', hint: 'Postes partagés' },
+        ]));
+
+        host.appendChild(K.note('Sur les postes partagés (accueil et caisse), un délai d’inactivité de 15 minutes entraîne le <strong>verrouillage automatique de l’écran</strong>. '
+          + 'Clôturer une session va plus loin : elle est <strong>fermée</strong>, et l’agent doit se reconnecter.', { tone: 'info', icon: 'lock' }));
+
+        var libEtat = function (e) { return M.ETATS[e] || e; };
+        host.appendChild(U.dataTable({
+          title: 'Sessions', rows: rows, exportName: 'sessions', pageSize: 15,
+          filters: [{ name: 'etat', label: 'État', options: [
+            { value: 'active', label: 'Actives' }, { value: 'suspendue', label: 'Suspendues' }, { value: 'cloturee', label: 'Clôturées' },
+            { value: 'ouverte', label: 'Ouvertes (actives et suspendues)' },
+          ], match: function (r, v) { return v === 'ouverte' ? r.etat !== 'cloturee' : r.etat === v; } }],
+          columns: [
+            { key: 'identifiant', label: 'Identifiant', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold', { text: r.identifiant }); } },
+            { key: 'nomComplet', label: 'Utilisateur' },
+            { key: 'role', label: 'Rôle', text: function (r) { return roleLabel(r.role); }, render: function (r) { return U.badge(roleLabel(r.role), 'navy'); } },
+            { key: 'poste', label: 'Poste', nowrap: true, render: function (r) { return el('span.font-mono.text-xs', { text: r.poste }); } },
+            { key: 'adresseIp', label: 'Adresse réseau', nowrap: true, text: function (r) { return r.adresseIp || '—'; }, render: function (r) { return el('span.font-mono.text-xs.text-slate-500', { text: r.adresseIp || '—' }); } },
+            {
+              key: 'debut', label: 'Ouverture', nowrap: true,
+              text: function (r) { return C.heure(r.debut); },
+              render: function (r) { return C.heure(r.debut); },
+            },
+            {
+              key: 'inactivite', label: 'Inactivité', align: 'right',
+              text: function (r) { return r.inactivite == null ? '—' : r.inactivite + ' min'; },
+              render: function (r) {
+                if (r.inactivite == null) return el('span.text-slate-400', { text: '—' });
+                return el('span.num', { class: r.inactivite >= 15 ? 'font-semibold text-warning-600' : 'text-slate-600', text: r.inactivite + ' min' });
+              },
+            },
+            {
+              key: 'etat', label: 'État',
+              text: function (r) { return libEtat(r.etat); },
+              render: function (r) {
+                return U.badge(libEtat(r.etat), r.etat === 'cloturee' ? 'neutral' : r.etat === 'suspendue' ? 'warning' : 'success');
+              },
+            },
+            {
+              key: 'clotureLe', label: 'Clôture', nowrap: true,
+              text: function (r) { return r.clotureLe ? C.dateHeure(r.clotureLe) + ' ' + (r.cloturePar || '') : '—'; },
+              render: function (r) {
+                if (!r.clotureLe) return el('span.text-slate-400', { text: '—' });
+                return el('div', null, [
+                  el('p.text-xs.text-slate-700', { text: C.dateHeure(r.clotureLe) }),
+                  el('p.text-xs.text-slate-400', { text: 'par ' + (r.cloturePar || '') }),
+                ]);
+              },
+            },
+          ],
+          rowActions: function (r) {
+            if (r.etat === 'cloturee') return [];
+            return [K.commande('Clôturer', {
+              moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'log-out',
+              onclick: function () { demander(r); },
+            })];
+          },
+        }));
+      }
+      afficher();
+      return null;
+    },
+  });
+
+  /* ==========================================================================
+   * SECURITÉ DES UTILISATEURS (01/11/2026)
+   * --------------------------------------------------------------------------
+   * Retour de la Direction : « l'écran Sécurité des utilisateurs n'est pas
+   * implémenté ». Aucun écran ne portait ce nom : la sécurité des comptes était
+   * éparpillée entre `m14-utilisateurs` (création, double facteur), `m14-roles`
+   * (tentatives refusées) et `m14-sessions`. Cet écran RASSEMBLE, il ne
+   * duplique pas : la politique est ici (une fiche, `politiqueSecurite`), les
+   * comptes restent ceux de `m14-utilisateurs`, les tentatives celles de
+   * `tentativesConnexion`, les sessions celles du registre de `m14-sessions`.
+   *
+   * SOURCES ET HONNÊTETÉ. Chaque paramètre dit d'où il vient. Ce qu'aucun
+   * document ne fixe est marqué « proposition à valider » : la profondeur de
+   * l'historique des mots de passe n'a aucune source. Et chaque paramètre dit
+   * s'il est APPLIQUÉ par la maquette : seul le délai d'inactivité l'est
+   * (verrou de session) ; le verrou après échecs est appliqué par le poste
+   * (A5), pas par le serveur de la maquette, qui bloque à la main.
+   *
+   * Un mot de passe ne passe jamais ici : « imposer la réinitialisation »
+   * oblige l'agent à en choisir un nouveau à sa prochaine connexion, rien de
+   * plus. Droits : administrateur seul.
+   * ======================================================================== */
+  var POLITIQUE_DEFAUT = {
+    longueurMin: 12, expirationJours: 90, historique: 5, echecsMax: 3, blocageMin: 15, inactiviteMin: 15,
+  };
+  var PARAMETRES_POLITIQUE = [
+    { cle: 'longueurMin', libelle: 'Longueur minimale du mot de passe', unite: 'caractères', min: 8, max: 64,
+      source: 'Politique affichée par l’écran de réinitialisation (écart E1107)',
+      application: 'Affichée, non appliquée : la création de compte exige 8 caractères' },
+    { cle: 'expirationJours', libelle: 'Durée de validité du mot de passe', unite: 'jours', min: 0, max: 365,
+      source: 'Renouvellement à 90 jours affiché par la maquette (écart E1107)',
+      application: 'Calculée par cet écran (mots de passe à renouveler)' },
+    { cle: 'historique', libelle: 'Historique des mots de passe interdits', unite: 'derniers', min: 0, max: 24,
+      source: 'Proposition à valider : aucun document ne fixe cette profondeur',
+      application: 'Non appliquée par la maquette' },
+    { cle: 'echecsMax', libelle: 'Échecs de connexion avant blocage', unite: 'échecs', min: 1, max: 10,
+      source: 'CDCT §12.2 (verrouillage après échecs successifs) ; trois échecs retenus au poste (A5)',
+      application: 'Appliquée par le poste ; la maquette bloque à la main et refuse la connexion d’un compte bloqué' },
+    { cle: 'blocageMin', libelle: 'Durée du verrou après échecs', unite: 'minutes', min: 1, max: 1440,
+      source: 'Quinze minutes retenues au poste (A5)',
+      application: 'Appliquée par le poste, non par le serveur de la maquette' },
+    { cle: 'inactiviteMin', libelle: 'Inactivité avant verrouillage de l’écran', unite: 'minutes', min: 1, max: 120,
+      source: 'CDCT §12.2 (déconnexion automatique sur poste partagé : 15 minutes)',
+      application: 'Appliquée : verrou de session de ce poste' },
+  ];
+  var ROLES_DOUBLE_FACTEUR = ['dm', 'da', 'direction', 'admin'];
+
+  function colPolitique() {
+    return S.collection('politiqueSecurite', { module: 'M14', entite: 'politique de sécurité', prefix: 'POL' });
+  }
+  /** La politique en vigueur : la fiche du magasin, amorcée avec les valeurs de référence (sans écriture au journal). */
+  function politique() {
+    var col = colPolitique();
+    var db = S.raw();
+    if (!(db.politiqueSecurite || []).length && S.amorcable('politiqueSecurite')) {
+      db.politiqueSecurite.push(Object.assign({ id: 'POL-001', statut: 'actif', _creePar: 'Système', _creeLe: C.iso(AUJ) }, POLITIQUE_DEFAUT));
+      S.save();
+    }
+    var f = col.all()[0];
+    return Object.assign({}, POLITIQUE_DEFAUT, f || {});
+  }
+  function enregistrerPolitique(valeurs) {
+    for (var i = 0; i < PARAMETRES_POLITIQUE.length; i++) {
+      var p = PARAMETRES_POLITIQUE[i], v = valeurs[p.cle];
+      if (v == null || !isFinite(v) || Math.floor(v) !== v || v < p.min || v > p.max) {
+        return { ok: false, code: 'VALEUR_HORS_BORNES', motif: p.libelle + ' : une valeur entière entre ' + p.min + ' et ' + p.max + ' est attendue.',
+          geste: 'Corriger la valeur de « ' + p.libelle + ' ».' };
+      }
+    }
+    politique();
+    var col = colPolitique(), f = col.all()[0];
+    var patch = {};
+    PARAMETRES_POLITIQUE.forEach(function (p) { patch[p.cle] = valeurs[p.cle]; });
+    patch.modifieeLe = new Date().toISOString();
+    var r = f ? col.update(f.id, patch) : col.insert(Object.assign({ id: 'POL-001' }, patch));
+    return r ? { ok: true, politique: politique() } : { ok: false, code: 'ECRITURE_REFUSEE', motif: 'Le magasin a refusé l’écriture.', geste: 'Réessayer.' };
+  }
+
+  function refusSecurite(code, motif, geste) { return { ok: false, code: code, motif: motif, geste: geste }; }
+  function compteDe(id) { return S.collection('utilisateurs').get(id); }
+  function estBloque(u, pol) { return !!u.bloque || (u.echecs || 0) >= (pol || politique()).echecsMax; }
+  function jourDe(x) { var d = new Date(x); return isNaN(d.getTime()) ? null : d; }
+  /** Jours restants avant expiration du mot de passe ; null si la date de définition n'est pas relevée ou s'il n'expire pas. */
+  function joursAvantExpiration(u, pol) {
+    var p = pol || politique();
+    var d = u.motDePasseDefiniLe ? jourDe(u.motDePasseDefiniLe) : null;
+    if (!d || !p.expirationJours) return null;
+    return p.expirationJours - Math.floor((AUJ.getTime() - d.getTime()) / 86400000);
+  }
+  function aReinitialiser(u, pol) {
+    if (u.doitChangerMotDePasse === true) return true;
+    var j = joursAvantExpiration(u, pol);
+    return j != null && j < 0;
+  }
+  function sessionsOuvertesDe(u) {
+    return global.SIGH.sessions.collection().all().filter(function (f) {
+      return f.identifiant === u.identifiant && f.etat !== 'cloturee' && f.statut !== 'archive';
+    });
+  }
+
+  function bloquerCompte(id, motif) {
+    var u = compteDe(id), s = S.session() || {};
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    if (!String(motif || '').trim() || String(motif).trim().length < 3) {
+      return refusSecurite('MOTIF_OBLIGATOIRE', 'Un motif est obligatoire pour bloquer un compte.', 'Saisir le motif du blocage.');
+    }
+    if (u.identifiant === s.identifiant) {
+      return refusSecurite('COMPTE_PROPRE', 'Vous ne pouvez pas bloquer votre propre compte.', 'Demander à un autre administrateur de le faire.');
+    }
+    if (estBloque(u)) return refusSecurite('DEJA_BLOQUE', 'Ce compte est déjà bloqué.', 'Le débloquer si l’accès doit être rendu.');
+    var r = S.collection('utilisateurs').update(id, {
+      bloque: true, bloqueLe: new Date().toISOString(), bloquePar: S.currentUser(), bloqueMotif: String(motif).trim(),
+    });
+    return r ? { ok: true, compte: r.record } : refusSecurite('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer.');
+  }
+  function debloquerCompte(id) {
+    var u = compteDe(id);
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    if (!estBloque(u)) return refusSecurite('NON_BLOQUE', 'Ce compte n’est pas bloqué.', 'Aucun déblocage à faire.');
+    var r = S.collection('utilisateurs').update(id, {
+      bloque: false, echecs: 0, debloqueLe: new Date().toISOString(), debloquePar: S.currentUser(),
+    });
+    return r ? { ok: true, compte: r.record } : refusSecurite('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer.');
+  }
+  function imposerReinitialisation(id) {
+    var u = compteDe(id);
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    if (u.doitChangerMotDePasse === true) {
+      return refusSecurite('DEJA_IMPOSEE', 'La réinitialisation est déjà imposée à ce compte : l’agent doit choisir un nouveau mot de passe à sa prochaine connexion.', 'Rien à faire.');
+    }
+    var r = S.collection('utilisateurs').update(id, {
+      doitChangerMotDePasse: true, reinitialisationImposeeLe: new Date().toISOString(), reinitialisationImposeePar: S.currentUser(),
+    });
+    return r ? { ok: true, compte: r.record } : refusSecurite('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer.');
+  }
+  function cloturerSessionsDe(id) {
+    var u = compteDe(id);
+    if (!u) return refusSecurite('COMPTE_INCONNU', 'Ce compte n’existe pas.', 'Actualiser la liste.');
+    var ouvertes = sessionsOuvertesDe(u);
+    if (!ouvertes.length) return refusSecurite('AUCUNE_SESSION', 'Ce compte n’a aucune session ouverte.', 'Rien à clôturer.');
+    var propre = (S.session() || {}).sessionId;
+    if (ouvertes.some(function (f) { return f.id === propre; })) {
+      return refusSecurite('SESSION_PROPRE', 'L’une de ces sessions est la vôtre.', 'Clôturez-la depuis « Sessions actives », avec sa confirmation explicite.');
+    }
+    var n = 0;
+    for (var i = 0; i < ouvertes.length; i++) {
+      var r = global.SIGH.sessions.cloturer(ouvertes[i].id, { motif: 'Clôture depuis Sécurité des utilisateurs' });
+      if (!r.ok) return r;
+      n++;
+    }
+    return { ok: true, sessions: n };
+  }
+
+  global.SIGH.securiteUtilisateurs = {
+    politique: politique, enregistrerPolitique: enregistrerPolitique, PARAMETRES: PARAMETRES_POLITIQUE,
+    bloquer: bloquerCompte, debloquer: debloquerCompte, imposerReinitialisation: imposerReinitialisation,
+    cloturerSessions: cloturerSessionsDe, estBloque: estBloque, aReinitialiser: aReinitialiser,
+    joursAvantExpiration: joursAvantExpiration, ROLES_DOUBLE_FACTEUR: ROLES_DOUBLE_FACTEUR,
+  };
+
+  global.SIGH.screen('m14-securite-utilisateurs', {
+    title: 'Sécurité des utilisateurs',
+    description: 'Politique de mot de passe, verrouillage, double facteur, comptes bloqués et tentatives de connexion.',
+    regle: 'Écran réservé à l’<strong>administrateur système</strong>. La politique est une fiche unique ; chaque paramètre dit sa <strong>source</strong> '
+      + 'et s’il est <strong>appliqué</strong> par la maquette. Un mot de passe ne s’affiche ni ne se conserve ici : on <strong>impose</strong> '
+      + 'sa réinitialisation. Bloquer, débloquer et clôturer sont journalisés (RG-12) ; rien n’est supprimé (RG-14).',
+    render: function (root) {
+      utilisateurs();
+      amorcerSessions();
+      var SEC = global.SIGH.securiteUtilisateurs;
+      var host = el('div.space-y-4');
+      root.appendChild(host);
+      var ongletCourant = null;
+
+      function toastRefus(res) { U.toast(res.motif, { type: 'error', detail: res.geste }); }
+
+      function lignesComptes() {
+        var pol = politique();
+        return C.sortBy(S.collection('utilisateurs').active(), 'nomComplet').map(function (u) {
+          var j = joursAvantExpiration(u, pol);
+          return {
+            id: u.id, identifiant: u.identifiant, nomComplet: u.nomComplet, role: u.role, actif: !!u.actif,
+            bloque: estBloque(u, pol), bloqueMotif: u.bloqueMotif || null, echecs: u.echecs || 0,
+            mfa: !!u.mfa, mfaExige: ROLES_DOUBLE_FACTEUR.indexOf(u.role) !== -1,
+            definiLe: u.motDePasseDefiniLe || null, jours: j, reinit: aReinitialiser(u, pol), imposee: u.doitChangerMotDePasse === true,
+            sessions: sessionsOuvertesDe(u).length,
+          };
+        });
+      }
+
+      function demanderBlocage(r) {
+        var zone = el('textarea.input', { rows: 3, id: 'motif-blocage', placeholder: 'Motif du blocage (obligatoire)' });
+        var m = U.modal({
+          title: 'Bloquer le compte de ' + r.nomComplet, size: 'md',
+          body: el('div.space-y-3', null, [
+            K.note('Un compte bloqué ne peut plus ouvrir de session tant qu’un administrateur ne l’a pas débloqué. Les sessions déjà ouvertes ne sont pas fermées : utiliser « Clôturer les sessions ».', { tone: 'warning', icon: 'shield-alert' }),
+            el('label.label', { for: 'motif-blocage', text: 'Motif *' }), zone,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Bloquer le compte', {
+              variant: 'danger', icon: 'lock',
+              onclick: function () {
+                var res = bloquerCompte(r.id, zone.value);
+                if (!res.ok) { toastRefus(res); return; }
+                m.close();
+                U.toast('Compte bloqué.', { type: 'success', detail: r.nomComplet });
+                afficher();
+              },
+            }),
+          ],
+        });
+      }
+
+      function agir(libelle, fn, r, texteOk) {
+        U.confirm({ title: libelle + ' : ' + r.nomComplet + ' ?', message: texteOk, confirmLabel: libelle, danger: false }).then(function (ok) {
+          if (!ok) return;
+          var res = fn(r.id);
+          if (!res.ok) { toastRefus(res); return; }
+          U.toast(libelle + ' effectué.', { type: 'success', detail: r.nomComplet });
+          afficher();
+        });
+      }
+
+      function ongletPolitique() {
+        var pol = politique();
+        var rows = PARAMETRES_POLITIQUE.map(function (p) {
+          return { cle: p.cle, libelle: p.libelle, valeur: pol[p.cle] + ' ' + p.unite, source: p.source, application: p.application };
+        });
+        rows.push({ cle: 'complexite', libelle: 'Composition du mot de passe', valeur: 'Majuscule, minuscule, chiffre et caractère spécial',
+          source: 'Politique affichée par l’écran de réinitialisation (écart E1107)', application: 'Affichée, non appliquée par la maquette' });
+        rows.push({ cle: 'mfa', libelle: 'Double facteur obligatoire pour les rôles',
+          valeur: ROLES_DOUBLE_FACTEUR.map(function (r) { return roleLabel(r); }).join(', '),
+          source: 'CDCT §12.2 nomme l’Administrateur et la Direction ; la création de compte l’impose aussi à la DAF et au Directeur Médical',
+          application: 'Appliquée à la création d’un compte (m14-utilisateurs)' });
+        var corps = el('div.space-y-4');
+        corps.appendChild(K.note('Les valeurs de cette liste sont celles que la maquette <strong>affiche</strong> ou que le poste <strong>applique</strong>. '
+          + 'La profondeur de l’historique des mots de passe est une <strong>proposition à valider</strong> : aucun document ne la fixe.', { tone: 'info', icon: 'info' }));
+        corps.appendChild(U.dataTable({
+          title: 'Politique de sécurité des comptes', rows: rows, exportName: 'politique-securite', pageSize: 20, searchable: false,
+          columns: [
+            { key: 'libelle', label: 'Paramètre' },
+            { key: 'valeur', label: 'Valeur', nowrap: true, render: function (r) { return el('span.font-semibold.text-slate-800', { text: r.valeur }); } },
+            { key: 'source', label: 'Source', render: function (r) { return el('span.text-xs.text-slate-600', { text: r.source }); } },
+            { key: 'application', label: 'Application', render: function (r) { return el('span.text-xs.text-slate-600', { text: r.application }); } },
+          ],
+          actions: [K.commande('Modifier la politique', { moduleCode: 'M14', icon: 'sliders-horizontal', variant: 'primary', onclick: modifierPolitique })],
+        }));
+        return corps;
+      }
+
+      function modifierPolitique() {
+        var pol = politique();
+        var f = U.form(PARAMETRES_POLITIQUE.map(function (p) {
+          return { name: p.cle, label: p.libelle + ' (' + p.unite + ')', type: 'number', required: true, value: pol[p.cle] };
+        }), pol);
+        var m = U.modal({
+          title: 'Modifier la politique de sécurité', size: 'lg',
+          body: el('div.space-y-3', null, [
+            K.note('Chaque valeur est bornée. Le délai d’inactivité s’applique aussitôt au verrou de session de ce poste ; les autres valeurs sont celles que le poste applique et que cet écran calcule.', { tone: 'info' }),
+            f,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Enregistrer', {
+              variant: 'primary', icon: 'save',
+              onclick: function () {
+                var v = f.collect();
+                if (!v) return;
+                var res = enregistrerPolitique(v);
+                if (!res.ok) { toastRefus(res); return; }
+                m.close();
+                U.toast('Politique de sécurité enregistrée.', { type: 'success' });
+                afficher();
+              },
+            }),
+          ],
+        });
+      }
+
+      function ongletComptes() {
+        var rows = lignesComptes();
+        return U.dataTable({
+          title: 'Comptes et situation de sécurité', rows: rows, exportName: 'securite-comptes', pageSize: 15,
+          filters: [{ name: 'situation', label: 'Situation', options: [
+            { value: 'bloques', label: 'Comptes bloqués' }, { value: 'reinit', label: 'À réinitialiser' },
+            { value: 'sessions', label: 'Avec session ouverte' }, { value: 'sansmfa', label: 'Double facteur manquant' },
+          ], match: function (r, v) {
+            if (v === 'bloques') return r.bloque;
+            if (v === 'reinit') return r.reinit;
+            if (v === 'sessions') return r.sessions > 0;
+            return r.mfaExige && !r.mfa;
+          } }],
+          columns: [
+            { key: 'identifiant', label: 'Identifiant', nowrap: true, render: function (r) { return el('span.font-mono.text-xs.font-semibold', { text: r.identifiant }); } },
+            { key: 'nomComplet', label: 'Utilisateur' },
+            { key: 'role', label: 'Rôle', text: function (r) { return roleLabel(r.role); }, render: function (r) { return U.badge(roleLabel(r.role), 'navy'); } },
+            { key: 'bloque', label: 'Accès', text: function (r) { return r.bloque ? 'Bloqué' : (r.actif ? 'Ouvert' : 'Désactivé'); },
+              render: function (r) { return r.bloque ? U.badge('Bloqué', 'danger') : (r.actif ? U.badge('Ouvert', 'success') : U.badge('Désactivé', 'neutral')); } },
+            { key: 'echecs', label: 'Échecs', align: 'right', text: function (r) { return String(r.echecs); },
+              render: function (r) { return r.echecs ? el('span.font-semibold.text-warning-600', { text: String(r.echecs) }) : '—'; } },
+            { key: 'mfa', label: 'Double facteur',
+              text: function (r) { return r.mfa ? 'Activé' : (r.mfaExige ? 'Manquant' : 'Non requis'); },
+              render: function (r) { return r.mfa ? U.badge('Activé', 'info') : (r.mfaExige ? U.badge('Manquant', 'danger') : el('span.text-xs.text-slate-400', { text: 'Non requis' })); } },
+            { key: 'reinit', label: 'Mot de passe',
+              text: function (r) { return r.imposee ? 'Réinitialisation imposée' : (r.reinit ? 'À renouveler' : (r.jours == null ? 'Date non relevée' : 'Valide')); },
+              render: function (r) {
+                if (r.imposee) return U.badge('Réinitialisation imposée', 'warning');
+                if (r.reinit) return U.badge('À renouveler', 'warning');
+                if (r.jours == null) return el('span.text-xs.text-slate-400', { text: 'Date non relevée' });
+                return el('span.text-xs.text-slate-600', { text: 'Valide, ' + r.jours + ' j restants' });
+              } },
+            { key: 'sessions', label: 'Sessions', align: 'right', render: function (r) { return String(r.sessions); } },
+          ],
+          rowActions: function (r) {
+            return [
+              r.bloque
+                ? K.commande('Débloquer', { moduleCode: 'M14', size: 'sm', icon: 'lock-open', onclick: function () {
+                  agir('Débloquer', debloquerCompte, r, 'Le compte retrouve l’accès et son compteur d’échecs repart de zéro. L’opération est journalisée.'); } })
+                : (r.actif ? K.commande('Bloquer', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'lock', onclick: function () { demanderBlocage(r); } }) : null),
+              r.imposee ? null : K.commande('Imposer la réinitialisation', { moduleCode: 'M14', size: 'sm', icon: 'key-round', onclick: function () {
+                agir('Imposer la réinitialisation', imposerReinitialisation, r, 'L’agent devra choisir un nouveau mot de passe à sa prochaine connexion. Aucun mot de passe n’est affiché ni conservé ici.'); } }),
+              r.sessions ? K.commande('Clôturer les sessions', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'log-out', onclick: function () {
+                agir('Clôturer les sessions', cloturerSessionsDe, r, 'Les ' + r.sessions + ' session(s) ouverte(s) de ce compte seront clôturées ; le poste retombe sur la connexion à son prochain geste.'); } }) : null,
+            ].filter(Boolean);
+          },
+        });
+      }
+
+      function ongletTentatives() {
+        var rows = colTentatives().active().map(function (t) {
+          return Object.assign({}, t, { quand: t.horodatage ? C.dateHeure(new Date(t.horodatage)) : '—', roleLabel: roleLabel(t.role) });
+        }).sort(function (a, b) { return String(b.horodatage).localeCompare(String(a.horodatage)); });
+        if (!rows.length) {
+          return U.card('Tentatives de connexion refusées', U.empty('Aucune tentative refusée.', { icon: 'shield-check', hint: 'Les refus de connexion apparaissent ici avec leur motif.' }));
+        }
+        return U.dataTable({
+          title: 'Tentatives de connexion refusées', rows: rows, exportName: 'securite-tentatives', pageSize: 15,
+          columns: [
+            { key: 'quand', label: 'Date et heure', nowrap: true },
+            { key: 'identifiant', label: 'Identifiant', render: function (r) { return el('span.font-mono.text-xs', { text: r.identifiant || '—' }); } },
+            { key: 'nom', label: 'Compte' },
+            { key: 'roleLabel', label: 'Rôle' },
+            { key: 'motif', label: 'Motif du refus', render: function (r) { return el('span.text-xs.text-danger-700', { text: r.motif }); } },
+          ],
+        });
+      }
+
+      function ongletSessions() {
+        var ouvertes = global.SIGH.sessions.collection().all().filter(function (f) { return f.etat !== 'cloturee' && f.statut !== 'archive'; });
+        var corps = el('div.space-y-4');
+        corps.appendChild(K.note('Le détail des sessions, leur clôture et leur historique sont à l’écran <strong>Sessions actives</strong>.', { tone: 'info', icon: 'monitor' }));
+        corps.appendChild(U.dataTable({
+          title: 'Sessions ouvertes', rows: ouvertes.map(function (f) { return { id: f.id, identifiant: f.identifiant, nomComplet: f.nomComplet, poste: f.poste, etat: f.etat }; }),
+          exportName: 'securite-sessions', pageSize: 10,
+          columns: [
+            { key: 'identifiant', label: 'Identifiant', nowrap: true },
+            { key: 'nomComplet', label: 'Utilisateur' },
+            { key: 'poste', label: 'Poste', nowrap: true },
+            { key: 'etat', label: 'État', text: function (r) { return global.SIGH.sessions.ETATS[r.etat] || r.etat; },
+              render: function (r) { return r.etat === 'suspendue' ? U.badge('Suspendue', 'warning') : U.badge('Active', 'success'); } },
+          ],
+          actions: [K.btn('Ouvrir les sessions actives', { icon: 'monitor', onclick: function () { global.SIGH.app.go('m14-sessions'); } })],
+        }));
+        return corps;
+      }
+
+      function afficher() {
+        C.clear(host);
+        var voulu = ongletCourant;
+        var pol = politique();
+        var comptes = lignesComptes();
+        var actifs = comptes.filter(function (r) { return r.actif; });
+        var tentatives = colTentatives().active().length;
+        var ouvertes = global.SIGH.sessions.collection().all().filter(function (f) { return f.etat !== 'cloturee' && f.statut !== 'archive'; });
+        host.appendChild(U.kpiGrid([
+          { label: 'Comptes actifs', value: C.num(actifs.length), icon: 'user-check', tone: 'navy' },
+          { label: 'Comptes bloqués', value: C.num(comptes.filter(function (r) { return r.bloque; }).length), icon: 'lock', tone: comptes.some(function (r) { return r.bloque; }) ? 'danger' : 'success' },
+          { label: 'Mots de passe à renouveler', value: C.num(comptes.filter(function (r) { return r.reinit; }).length), icon: 'key-round', tone: 'warning' },
+          { label: 'Double facteur manquant', value: C.num(actifs.filter(function (r) { return r.mfaExige && !r.mfa; }).length), icon: 'shield-alert', tone: 'warning' },
+          { label: 'Tentatives refusées', value: C.num(tentatives), icon: 'shield-x', tone: tentatives ? 'danger' : 'neutral' },
+          { label: 'Sessions ouvertes', value: C.num(ouvertes.length), icon: 'monitor', tone: 'info', hint: 'Verrou à ' + pol.inactiviteMin + ' min' },
+        ]));
+        var onglets = U.tabs([
+          { id: 'politique', label: 'Politique', render: ongletPolitique },
+          { id: 'comptes', label: 'Comptes', badge: comptes.filter(function (r) { return r.bloque || r.reinit; }).length || undefined, render: ongletComptes },
+          { id: 'tentatives', label: 'Tentatives de connexion', badge: tentatives || undefined, render: ongletTentatives },
+          { id: 'sessions', label: 'Sessions', badge: ouvertes.length, render: ongletSessions },
+        ], { onChange: function (id) { ongletCourant = id; } });
+        host.appendChild(onglets);
+        if (voulu && voulu !== 'politique') setTimeout(function () { onglets.selectTab(voulu); }, 5);
+        U.icons(host);
+      }
+      afficher();
       return null;
     },
   });

@@ -4,3 +4,4 @@ library;
 export 'sec_comptes.dart';
 export 'sec_roles.dart';
 export 'sec_exploitation.dart';
+export 'sec_sessions.dart';

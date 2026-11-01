@@ -67,6 +67,24 @@ function sigh_semer_comptes(PDO $pdo): void
     }
 }
 
+/** Le compte est-il marqué bloqué dans la collection `utilisateurs` du magasin ? */
+function sigh_compte_bloque(PDO $pdo, string $identifiant): bool
+{
+    $q = $pdo->prepare('SELECT donnees FROM collections WHERE nom = ?');
+    $q->execute(['utilisateurs']);
+    $brut = $q->fetchColumn();
+    $fiches = is_string($brut) ? json_decode($brut, true) : $brut;
+    if (!is_array($fiches)) {
+        return false;
+    }
+    foreach ($fiches as $f) {
+        if (is_array($f) && ($f['identifiant'] ?? null) === $identifiant && ($f['statut'] ?? 'actif') !== 'archive') {
+            return !empty($f['bloque']);
+        }
+    }
+    return false;
+}
+
 $pdo = null;
 try {
     $pdo = sigh_pdo();
@@ -171,6 +189,27 @@ if ($action === 'connexion') {
             'erreur' => 'compte fermé',
             'detail' => 'Ce compte a été archivé : il n’ouvre plus de session (RG-14).',
         ], 403);
+    }
+
+    /* UN COMPTE BLOQUÉ PAR L'ADMINISTRATEUR N'OUVRE PAS DE SESSION (01/11/2026).
+       Le blocage s'écrit dans la fiche du compte (collection `utilisateurs`, écran « Sécurité des utilisateurs »),
+       pas dans la table `utilisateurs` du serveur : on lit la fiche. Le refus est NOMMÉ, la tentative journalisée. */
+    if (sigh_compte_bloque($pdo, $identifiant)) {
+        sigh_ajouter_fiche($pdo, 'tentativesConnexion', [
+            'id'          => sigh_uid('TNT'),
+            'identifiant' => $identifiant,
+            'nom'         => $u['nom'],
+            'role'        => $u['role'],
+            'motif'       => 'Compte bloqué par l’administrateur',
+            'horodatage'  => date('c'),
+            'poste'       => 'Écran de connexion',
+            'traitee'     => false,
+            'statut'      => 'actif',
+        ], 200);
+        sigh_repondre([
+            'erreur' => 'compte bloqué',
+            'detail' => 'Ce compte a été bloqué par l’administrateur système : il n’ouvre plus de session tant qu’il n’est pas débloqué.',
+        ], 423);
     }
 
     /* LE JETON EST ENGENDRÉ ICI, ET NULLE PART AILLEURS. */

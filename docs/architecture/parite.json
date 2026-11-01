@@ -4416,6 +4416,22 @@
    "statut": "porté"
   },
   {
+   "id": "m14-securite-utilisateurs",
+   "label": "Sécurité des utilisateurs",
+   "module": "M14",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin"
+   ],
+   "scenarios": [
+    76
+   ],
+   "statut": "porté"
+  },
+  {
    "id": "m14-roles",
    "label": "Rôles & permissions (RBAC)",
    "module": "M14",
@@ -4466,7 +4482,9 @@
     "direction",
     "da"
    ],
-   "scenarios": [],
+   "scenarios": [
+    76
+   ],
    "statut": "porté"
   },
   {

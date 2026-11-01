@@ -592,6 +592,7 @@
    "utilisateurs",
    "rbac",
    "modulesActifs",
+   "politiqueSecurite",
    "regimesTravail",
    "grillePrimes",
    "historiquePrimes",
@@ -1515,7 +1516,7 @@
    },
    "fiche": [
     {
-     "id": "CCxmvuswn40151xf",
+     "id": "CCxmvuswn40pgvuf",
      "statut": "actif",
      "libelle": "Centre Test Alpha",
      "code": "CC08",
@@ -1562,7 +1563,7 @@
    },
    "fiche": [
     {
-     "id": "CCxmvuswn40n54dp",
+     "id": "CCxmvuswn40ugt1t",
      "statut": "actif",
      "libelle": "Centre Test Beta",
      "code": "XYZ",
@@ -6701,7 +6702,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "310",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -6716,7 +6717,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "308",
+     "valeur": "309",
      "indice": null
     }
    ],
@@ -6814,7 +6815,7 @@
   },
   "cartesTexte": [
    "Activités pilotées Colonnes Exporter Piloter une activité ACTIVITÉ MODULE ÉTAT MOTIF DEPUIS LE ACTIONS Banque de sang 1 écran(s) M5 Fermée La clinique ne pratique pas la banque de sang. 21/08/2026 Donneurs & transfusions 1 écran(s) M5 Fermée La clinique ne pratique pas la transfusion. 21/08/2026 Affichage de 1 à 2 sur 2 enregistrements",
-   "Modules du logiciel — activer seulement ce que l’établissement exerce Fermer un module n’empêche jamais un autre de travailler. Les stocks, la paie ou les ressources humaines fonctionnent Accueil et Soins fermés : les files que le module fermé alimentait cessent simplement de se remplir, ses données restent en place, et la saisie directe des autres postes demeure ouverte — c’est la doctrine du laboratoire (saisie manuelle) et de l’accueil externe, appliquée partout. M2 — RDV, Visites & Consultations 9 écran(s) · Accueil Ouvert M1 — Patients & Dossier médical 10 écran(s) · Soins Ouvert M3 — Hospitalisation 20 écran(s) · Soins Ouvert M4 — Maternité, Naissances & Décès 14 écran(s) · Soins Ouvert M5 — Laboratoire 15 écran(s) · Soins Ouvert M6 — Pharmacie & Stocks 17 écran(s) · Logistique Ouvert M7 — Achats & Fournisseurs 9 écran(s) · Logistique Ouvert M8 — Facturation & Caisse 11 écran(s) · Financier Ouvert M9 — Assurances & Créances 10 écran(s) · Financier Ouvert MECEF — MECeF — Facture normalisée 6 écran(s) · Financier Ouvert M12 — Comptabilité SYSCOHADA 19 écran(s) · Financier Ouvert M10 — Ressources humaines 24 écran(s) · RH Ouvert M11 — Paie & Primes 9 écran(s) · RH Ouvert M13 — Administration & Ambulance 11 écran(s) · Administration Ouvert GED — Gestion documentaire 3 écran(s) · Administration Ouvert RAP — Rapports & Impression 4 écran(s) · Administration Ouvert M14 — Sécurité & Utilisateurs 7 écran(s) · Système Ouvert CFG — Configuration Clinique NOYAU : porte cet interrupteur — un interrupteur qui se coupe lui-même ne se rallume plus Toujours ouvert IMP — Importation de données 10 écran(s) · Système Ouvert MERE — Exploitation de la synchronisation 7 écran(s) · Poste mère Ouvert RLS — Relais en ligne (apps/web) 12 écran(s) · Relais en ligne Ouvert PIL — Pilotage & analyse 13 écran(s) · Pilotage Ouvert DASH — Tableaux de bord par poste NOYAU : porte la page d’accueil de chaque rôle — la fermer laisserait la connexion sans destination Toujours ouvert",
+   "Modules du logiciel — activer seulement ce que l’établissement exerce Fermer un module n’empêche jamais un autre de travailler. Les stocks, la paie ou les ressources humaines fonctionnent Accueil et Soins fermés : les files que le module fermé alimentait cessent simplement de se remplir, ses données restent en place, et la saisie directe des autres postes demeure ouverte — c’est la doctrine du laboratoire (saisie manuelle) et de l’accueil externe, appliquée partout. M2 — RDV, Visites & Consultations 9 écran(s) · Accueil Ouvert M1 — Patients & Dossier médical 10 écran(s) · Soins Ouvert M3 — Hospitalisation 20 écran(s) · Soins Ouvert M4 — Maternité, Naissances & Décès 14 écran(s) · Soins Ouvert M5 — Laboratoire 15 écran(s) · Soins Ouvert M6 — Pharmacie & Stocks 17 écran(s) · Logistique Ouvert M7 — Achats & Fournisseurs 9 écran(s) · Logistique Ouvert M8 — Facturation & Caisse 11 écran(s) · Financier Ouvert M9 — Assurances & Créances 10 écran(s) · Financier Ouvert MECEF — MECeF — Facture normalisée 6 écran(s) · Financier Ouvert M12 — Comptabilité SYSCOHADA 19 écran(s) · Financier Ouvert M10 — Ressources humaines 24 écran(s) · RH Ouvert M11 — Paie & Primes 9 écran(s) · RH Ouvert M13 — Administration & Ambulance 11 écran(s) · Administration Ouvert GED — Gestion documentaire 3 écran(s) · Administration Ouvert RAP — Rapports & Impression 4 écran(s) · Administration Ouvert M14 — Sécurité & Utilisateurs 8 écran(s) · Système Ouvert CFG — Configuration Clinique NOYAU : porte cet interrupteur — un interrupteur qui se coupe lui-même ne se rallume plus Toujours ouvert IMP — Importation de données 10 écran(s) · Système Ouvert MERE — Exploitation de la synchronisation 7 écran(s) · Poste mère Ouvert RLS — Relais en ligne (apps/web) 12 écran(s) · Relais en ligne Ouvert PIL — Pilotage & analyse 13 écran(s) · Pilotage Ouvert DASH — Tableaux de bord par poste NOYAU : porte la page d’accueil de chaque rôle — la fermer laisserait la connexion sans destination Toujours ouvert",
    "M2 — RDV, Visites & Consultations 9 écran(s) · Accueil Ouvert",
    "M1 — Patients & Dossier médical 10 écran(s) · Soins Ouvert",
    "M3 — Hospitalisation 20 écran(s) · Soins Ouvert",
@@ -6831,7 +6832,7 @@
    "M13 — Administration & Ambulance 11 écran(s) · Administration Ouvert",
    "GED — Gestion documentaire 3 écran(s) · Administration Ouvert",
    "RAP — Rapports & Impression 4 écran(s) · Administration Ouvert",
-   "M14 — Sécurité & Utilisateurs 7 écran(s) · Système Ouvert",
+   "M14 — Sécurité & Utilisateurs 8 écran(s) · Système Ouvert",
    "CFG — Configuration Clinique NOYAU : porte cet interrupteur — un interrupteur qui se coupe lui-même ne se rallume plus Toujours ouvert",
    "IMP — Importation de données 10 écran(s) · Système Ouvert",
    "MERE — Exploitation de la synchronisation 7 écran(s) · Poste mère Ouvert",
@@ -6942,7 +6943,7 @@
     ]
    },
    {
-    "texte": "M14 — Sécurité & Utilisateurs 7 écran(s) · Système Ouvert",
+    "texte": "M14 — Sécurité & Utilisateurs 8 écran(s) · Système Ouvert",
     "boutons": [
      "Fermer le module M14"
     ]
@@ -6980,7 +6981,7 @@
     "boutons": []
    }
   ],
-  "tousEcrans": 310,
+  "tousEcrans": 311,
   "modulesListe": [
    [
     "M2",
@@ -7099,7 +7100,7 @@
     "Sécurité & Utilisateurs",
     "shield",
     "Système",
-    7
+    8
    ],
    [
     "CFG",
@@ -7147,7 +7148,7 @@
   "fermerM7Confirmation": "Fermer « Module — Achats & Fournisseurs » ? Le module M7 entier disparaîtra du méga-menu, de la recherche globale et de ses adresses, pour tous les rôles, administrateur compris. Aucune donnée n’est supprimée : la réouverture rend les écrans en l’état. Motif (consigné dans le journal d’audit) Annuler Fermer l’activité",
   "fermerM7": {
    "fiche": {
-    "id": "MODxmvuswn4042t8x",
+    "id": "MODxmvuswn40ere6c",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7182,7 +7183,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "310",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -7197,7 +7198,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "299",
+     "valeur": "300",
      "indice": null
     }
    ],
@@ -7407,7 +7408,7 @@
   "rouvrirM7Confirmation": "Rouvrir « Module — Achats & Fournisseurs » ? Le module M7 réapparaîtra au méga-menu, avec leurs données inchangées. Annuler Rouvrir l’activité",
   "rouvrirM7": {
    "fiche": {
-    "id": "MODxmvuswn4042t8x",
+    "id": "MODxmvuswn40ere6c",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7439,7 +7440,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "310",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -7454,7 +7455,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "308",
+     "valeur": "309",
      "indice": null
     }
    ],
@@ -7575,11 +7576,11 @@
      "DASH — Tableaux de bord par poste"
     ]
    ],
-   "nbEcrans": 310
+   "nbEcrans": 311
   },
   "declarerCfg": {
    "fiche": {
-    "id": "MODxmvuswn408albd",
+    "id": "MODxmvuswn40u3c27",
     "statut": "actif",
     "libelle": "Activité noyau test",
     "module": "CFG",
@@ -7610,7 +7611,7 @@
   },
   "declarerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn40wc6uh",
+    "id": "MODxmvuswn40w3zb7",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
@@ -7635,7 +7636,7 @@
   },
   "fermerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn40wc6uh",
+    "id": "MODxmvuswn40w3zb7",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
@@ -7658,7 +7659,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "310",
+     "valeur": "311",
      "indice": null
     },
     {
@@ -7673,7 +7674,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "306",
+     "valeur": "307",
      "indice": null
     }
    ],

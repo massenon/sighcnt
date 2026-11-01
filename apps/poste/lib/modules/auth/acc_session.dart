@@ -35,6 +35,21 @@ class SessionPoste extends ChangeNotifier {
   AccCompte? _compte;
   EtatSession _etat;
 
+  /// La fiche de CETTE session au registre (`sessionsUtilisateur`), posée à la connexion ; `null` pour un poste sans session nominative.
+  String? sessionId;
+
+  /// Posé à la connexion : dit si la fiche de la session a été CLOTURÉE au registre (par l'administrateur, de ce poste ou d'un autre). Contrôlé au prochain
+  /// geste de l'agent ; une session clôturée ne se rouvre pas.
+  bool Function(String sessionId)? estCloturee;
+
+  /// Posé à la connexion : le verrou suspend / reprend la fiche de la session au registre (`active` / `suspendue`).
+  void Function(String sessionId, String etat)? surEtat;
+
+  /// Pourquoi la session s'est fermée d'elle-même (`'cloturee'`) : l'écran de connexion le DIT. `null` après une déconnexion voulue.
+  String? motifFermeture;
+
+  DateTime? _dernierControle;
+
   EtatSession get etat => _etat;
   AccCompte? get compte => _compte;
   String? get role => _compte?.role;
@@ -56,11 +71,16 @@ class SessionPoste extends ChangeNotifier {
     _etat = EtatSession.connectee;
     verrou.abandonner();
     verrou.activite(horloge());
+    motifFermeture = null;
     notifyListeners();
   }
 
   /// Ferme la session (l'agent change de compte).
   void deconnecter() {
+    sessionId = null;
+    estCloturee = null;
+    surEtat = null;
+    motifFermeture = null;
     _compte = null;
     _etat = exigeConnexion ? EtatSession.deconnectee : EtatSession.connectee;
     verrou.abandonner();
@@ -68,13 +88,40 @@ class SessionPoste extends ChangeNotifier {
   }
 
   /// Un geste de l'agent (clic, touche, défilement, mouvement) : relance le compte à rebours. Sans effet sur une session verrouillée.
-  void activite() => verrou.activite(horloge());
+  /// C'est aussi le PROCHAIN GESTE où une clôture se constate : la session clôturée ferme le poste (contrôle au plus deux fois par seconde).
+  void activite() {
+    verrou.activite(horloge());
+    verifierCloture();
+  }
+
+  /// La session de ce poste a-t-elle été clôturée au registre ? Si oui : elle se ferme, le poste retombe sur la connexion et dit pourquoi. Rend vrai quand
+  /// la fermeture vient d'avoir lieu.
+  bool verifierCloture({bool force = false}) {
+    final id = sessionId;
+    final test = estCloturee;
+    if (id == null || test == null || _compte == null) return false;
+    final maintenant = horloge();
+    final dernier = _dernierControle;
+    if (!force && dernier != null && maintenant.difference(dernier).inMilliseconds < 500) return false;
+    _dernierControle = maintenant;
+    if (!test(id)) return false;
+    fermerParCloture();
+    return true;
+  }
+
+  /// Ferme la session parce qu'elle a été clôturée : l'agent se reconnecte, et c'est une AUTRE session.
+  void fermerParCloture() {
+    deconnecter();
+    motifFermeture = 'cloturee';
+    notifyListeners();
+  }
 
   /// Le délai d'inactivité est-il écoulé ? Si oui, la session est SUSPENDUE et l'écran à retrouver retenu. Rend vrai quand le verrou vient de se poser.
   bool verifier(String ecranCourant, {String? onglet}) {
     if (_etat != EtatSession.connectee || !verrou.echu(horloge())) return false;
     verrou.verrouiller(horloge(), ecranCourant, onglet: onglet);
     _etat = EtatSession.verrouillee;
+    if (sessionId != null) surEtat?.call(sessionId!, 'suspendue');
     notifyListeners();
     return true;
   }
@@ -85,20 +132,27 @@ class SessionPoste extends ChangeNotifier {
     if (_etat != EtatSession.connectee) return false;
     verrou.verrouiller(horloge(), ecranCourant, onglet: onglet);
     _etat = EtatSession.verrouillee;
+    if (sessionId != null) surEtat?.call(sessionId!, 'suspendue');
     notifyListeners();
     return true;
   }
 
   /// Le déverrouillage rend la session et CONSOMME l'adresse de retour (usage unique). `null` : retour à l'accueil du rôle.
   AccRetour? deverrouiller() {
+    // Une session clôturée pendant le verrouillage ne se reprend pas : elle se ferme, l'agent se reconnecte.
+    if (verifierCloture(force: true)) return null;
     final r = verrou.deverrouiller(horloge());
     _etat = EtatSession.connectee;
+    if (sessionId != null) surEtat?.call(sessionId!, 'active');
     notifyListeners();
     return r;
   }
 
   /// « Se connecter avec un autre compte » : la session et l'adresse de retour disparaissent.
   void abandonner() {
+    sessionId = null;
+    estCloturee = null;
+    surEtat = null;
     _compte = null;
     _etat = exigeConnexion ? EtatSession.deconnectee : EtatSession.connectee;
     verrou.abandonner();

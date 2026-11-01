@@ -628,6 +628,7 @@
    ],
    "ecrans": [
     "m14-utilisateurs",
+    "m14-securite-utilisateurs",
     "m14-roles",
     "m14-soignants",
     "m14-sessions",
@@ -5146,6 +5147,21 @@
     "admin",
     "direction",
     "da"
+   ]
+  },
+  {
+   "id": "m14-securite-utilisateurs",
+   "label": "Sécurité des utilisateurs",
+   "icone": "shield-check",
+   "module": "M14",
+   "moduleLabel": "Sécurité & Utilisateurs",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin"
    ]
   },
   {

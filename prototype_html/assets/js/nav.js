@@ -638,6 +638,7 @@
           roles: ['admin', 'direction', 'da'],
           items: [
             { id: 'm14-utilisateurs', label: 'Utilisateurs', icon: 'user-cog' },
+            { id: 'm14-securite-utilisateurs', label: 'Sécurité des utilisateurs', icon: 'shield-check', roles: ['admin'] },
             { id: 'm14-roles', label: 'Rôles & permissions (RBAC)', icon: 'key-round' },
             { id: 'm14-soignants', label: 'Prescripteurs & exécutants de soins', icon: 'user-round-cog' },
             { id: 'm14-sessions', label: 'Sessions actives', icon: 'monitor' },

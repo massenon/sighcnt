@@ -37,7 +37,9 @@ AccRetour? accRetourDepuisAdresse(String? adresse) {
 
 class AccVerrou {
   AccVerrou({this.delai = accDelaiVerrou});
-  final Duration delai;
+
+  /// Modifiable : la politique de sécurité règle le délai d'inactivité (écran « Sécurité des utilisateurs »), et il s'applique aussitôt.
+  Duration delai;
   DateTime? _derniere;
   AccRetour? _retour;
   bool _verrouille = false;

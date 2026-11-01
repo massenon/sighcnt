@@ -402,6 +402,7 @@
        "hub": "hub-m14",
        "ecrans": [
         "m14-utilisateurs",
+        "m14-securite-utilisateurs",
         "m14-roles",
         "m14-soignants",
         "m14-sessions",

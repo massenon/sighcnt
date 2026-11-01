@@ -1431,6 +1431,10 @@
         "href": "pages/m14-utilisateurs.php"
        },
        {
+        "label": "Sécurité des utilisateurs",
+        "href": "pages/m14-securite-utilisateurs.php"
+       },
+       {
         "label": "Rôles & permissions (RBAC)",
         "href": "pages/m14-roles.php"
        },
@@ -2026,7 +2030,7 @@
     ]
    }
   ],
-  "pied": "318 écrans métier recensés au manifeste, plus 21 pages d’accès et système.",
+  "pied": "319 écrans métier recensés au manifeste, plus 21 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2038,7 +2042,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "318"
+    "valeur": "319"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2359,7 +2363,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "318",
+   "319",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",
