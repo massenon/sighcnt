@@ -449,7 +449,7 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         gestes.avances = g; root.remove();
       }
 
-      /* ---------- Prêts-études et avances -------------------------------------------------------------------------------------------- */
+      /* ---------- Prêts et avances -------------------------------------------------------------------------------------------- */
       {
         poserJeu(); fermerDialogues(); viderToasts();
         const g = {};

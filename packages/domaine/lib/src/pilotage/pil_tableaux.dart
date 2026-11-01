@@ -259,7 +259,7 @@ PilDirection pilDirection({
   final valeurStock = produits.fold(0.0, (a, p) => a + pilN(p['stock']) * pilN(p['cump']));
   final lits = hosChambres.fold(0, (n, ch) => n + ch.lits.length);
   final occupes = admissions.where((a) => a['statut'] == 'en_cours').length;
-  final masse = pilSomme(personnel, 'salaireBase');
+  final masse = sommeOuNul(personnel.map((r) => r['salaireBase']));
   final consMois = consultations.where((c) => duMois(c, 'date')).length;
   final reste = pilSomme(factures, 'reliquat');
   final ruptures = produits.where((p) => p['seuilAlerte'] != null && pilN(p['stock']) <= pilN(p['seuilAlerte'])).length;
@@ -286,7 +286,7 @@ PilDirection pilDirection({
     PilKpi('Patients au répertoire', nombre(patients.length), ton: 'navy'),
     PilKpi('Consultations du mois', nombre(consMois), ton: 'info'),
     PilKpi('Lits occupés', '$occupes / $lits', indice: '${pourcent(occupes / lits * 100)} d’occupation', ton: 'navy'),
-    PilKpi('Effectif', nombre(personnel.length), indice: 'Masse salariale ${money(masse)}'),
+    PilKpi('Effectif', nombre(personnel.length), indice: 'Masse salariale ${moneyOu(masse, 'non renseignée')}'),
     ...pilKpisBfr(b),
   ]);
   // Évolution du chiffre d'affaires (12 mois) : facturé / encaissé.
@@ -323,7 +323,7 @@ PilDirection pilDirection({
       ('Valeur du stock', money(valeurStock)),
       ('Produits sous seuil d’alerte', nombre(ruptures)),
       ('Effectif', '${nombre(personnel.length)} agents'),
-      ('Masse salariale mensuelle', money(masse)),
+      ('Masse salariale mensuelle', moneyOu(masse, 'Non renseignée')),
     ],
   );
 }

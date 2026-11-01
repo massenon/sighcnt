@@ -2744,8 +2744,8 @@
   /* ==========================================================================
    * REPRISE SAGE 100 — traçabilité du stock initial
    * ======================================================================== */
-  global.SIGH.screen('m6-reprise', {
-    title: 'Reprise SAGE 100',
+  global.SIGH.screen('m6-import-grand-stock', {
+    title: 'Importation Grand Stock',
     description: 'Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.',
     regle: 'Le stock initial n’a pas été saisi manuellement : il provient de l’<strong>import de l’inventaire SAGE 100</strong>. '
       + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises '

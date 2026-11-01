@@ -355,7 +355,7 @@
             { id: 'm6-pertes', label: 'Pertes, casses & rebuts', icon: 'trash-2' },
             { id: 'm6-dispensation', label: 'Dispensation', icon: 'package-open' },
             { id: 'm6-etiquetage', label: 'Étiquetage & emplacements', icon: 'tags' },
-            { id: 'm6-reprise', label: 'Reprise SAGE 100', icon: 'database' },
+            { id: 'm6-import-grand-stock', label: 'Importation Grand Stock', icon: 'database' },
             /* Les points du gestionnaire de stock. Ouverts aussi à la caisse,
                à la comptabilité et à la Direction : ce sont les mêmes chiffres
                que chacun recompose aujourd'hui à la main de son côté. */
@@ -534,7 +534,7 @@
           code: 'M11', label: 'Paie & Primes', icon: 'banknote',
           roles: ['rh', 'da', 'comptable', 'admin', 'direction'],
           items: [
-            { id: 'm11-prets-etudes', label: 'Prêts-études et avances', icon: 'graduation-cap' },
+            { id: 'm11-prets-etudes', label: 'Prêts et avances', icon: 'graduation-cap' },
             { id: 'm11-dashboard', label: 'Tableau de bord paie', icon: 'gauge' },
             { id: 'm11-calcul', label: 'Calcul de la paie', icon: 'calculator' },
             { id: 'm11-bulletins', label: 'Bulletins de paie', icon: 'file-text' },

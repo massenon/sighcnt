@@ -1,5 +1,5 @@
 /* =============================================================================
- * VECTEURS DE m6-reprise — « Reprise SAGE 100 » PILOTÉ comme le fait l'agent
+ * VECTEURS DE m6-import-grand-stock — « Importation Grand Stock » PILOTÉ comme le fait l'agent
  * -----------------------------------------------------------------------------
  * 1. Le RÉFÉRENTIEL (inventaire « Grand Stock » du 15/07/2026, lot d'import, catalogue tarifaire, rapprochement) est un référentiel statique de
  *    la maquette (`SIGH.sage`) : il est ENGENDRÉ en Dart (packages/domaine/lib/src/stock/donnees_sage.dart), jamais recopié.
@@ -40,7 +40,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       }));
       const texte = (r) => r.innerText.split('\n').map((x) => x.trim()).filter(Boolean);
       const clicOnglet = async (r, debut) => { const b = [...r.querySelectorAll('button')].find((x) => x.textContent.trim().startsWith(debut)); b.click(); await dormir(60); };
-      const monter = async () => { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m6-reprise'].render(r); await dormir(150); return r; };
+      const monter = async () => { const r = document.createElement('div'); document.body.appendChild(r); SIGH.screens['m6-import-grand-stock'].render(r); await dormir(150); return r; };
       const KPI = ['Articles repris', 'Unités en stock', 'Valeur reprise', 'Articles non valorisés', 'Valorisés par la clinique'];
       const lireKpi = (txt) => KPI.map((lab) => ({ libelle: lab, valeur: txt[txt.indexOf(lab) + 1], indice: /^(Prix de revient|Valorisation|aucune|\d)/.test(txt[txt.indexOf(lab) + 2] || '') || /ajoutés|saisie|Prix de revient|CMUP/.test(txt[txt.indexOf(lab) + 2] || '') ? txt[txt.indexOf(lab) + 2] : null }));
       async function lireTout(r) {
@@ -116,7 +116,7 @@ const { ouvrirMaquette, ecrire, ROOT } = require('./extraire');
       out.fichesDuJeu = fiches.length;
       return out;
     });
-    ecrire('packages/domaine/test/vecteurs/reprise.json', { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-reprise.js — m6-reprise piloté. Ne pas éditer.', ...Object.assign({}, sortie, { referentiel: undefined }) });
+    ecrire('packages/domaine/test/vecteurs/reprise.json', { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-reprise.js — m6-import-grand-stock piloté. Ne pas éditer.', ...Object.assign({}, sortie, { referentiel: undefined }) });
     const ref = sortie.referentiel;
     const dart = `/// ENGENDRÉ par prototype_html/build/vecteurs-reprise.js depuis \`SIGH.sage\` (data-sage.js) — ne pas éditer.
 /// Référentiel STATIQUE de la reprise de l'inventaire « Grand Stock » (SAGE 100, arrêté au 15/07/2026) : lot d'import, ${ref.articles.length} articles,

@@ -22,7 +22,7 @@ import 'pai_commun.dart';
 List<OptionChamp> _optionsAgents(Magasin m, {bool salaire = false}) => [
       for (final e in trierPar(m.collection('personnel').actives, (e) => e['nomComplet']))
         OptionChamp('${e['id']}',
-            salaire ? '${e['matricule']} — ${e['nomComplet']} (salaire ${money(e['salaireBase'])})' : '${e['matricule']} — ${e['nomComplet']}')
+            salaire ? '${e['matricule']} — ${e['nomComplet']} (salaire ${moneyOu(e['salaireBase'], 'non renseigné')})' : '${e['matricule']} — ${e['nomComplet']}')
     ];
 
 Fiche? _agent(ContexteEcran c, Object? id) => c.magasin.collection('personnel').actives.where((x) => x['id'] == id).firstOrNull;

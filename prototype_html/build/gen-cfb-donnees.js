@@ -126,6 +126,10 @@ L.push('/// `S.COLLECTIONS_ESSENTIELLES` : ce que le vidage des jeux de test CON
 L.push('const cfbEssentielles = <String>[');
 for (const e of c.essentielles) L.push(`  ${q(e)},`);
 L.push('];\n');
+L.push('/// `S.CHAMPS_DE_TEST_CONSERVES` : les valeurs de démonstration que le vidage retire des collections CONSERVÉES (la rémunération du personnel).');
+L.push('const cfbChampsDeTestConserves = <String, List<String>>{');
+for (const k of Object.keys(c.champsDeTestConserves)) L.push(`  ${q(k)}: [${c.champsDeTestConserves[k].map(q).join(', ')}],`);
+L.push('};\n');
 L.push('/// `S.libelleCollection` pour les collections du jeu du poste : (module, entité) — « — » / nom technique si la table de la maquette n\'en porte pas.');
 L.push('const cfbLibellesCollections = <String, (String, String)>{');
 for (const k of Object.keys(c.libelles).sort()) L.push(`  ${q(k)}: (${q(c.libelles[k].module)}, ${q(c.libelles[k].entite)}),`);

@@ -131,6 +131,10 @@ class _EtatOrtb extends State<EcranOrtb> {
             BoutonSigh(libelle: 'Obligations', icone: LucideIcons.bookOpenCheck, variante: VarianteBouton.secondaire, onPressed: () => c.aller('cfg-comptabilite')),
           ])),
           const SizedBox(height: 16),
+          ...avisPaie(c),
+          if (rows.isEmpty)
+            const VideSigh('Redevances ORTB non calculables : aucun agent n’a de salaire de base renseigné.', icone: LucideIcons.radioTower)
+          else ...[
           KpiGrilleSigh(kpis: [
             KpiSigh(
                 libelle: 'ORTB Radio — tous les salariés',
@@ -230,6 +234,7 @@ class _EtatOrtb extends State<EcranOrtb> {
                   }),
             ],
           ),
+          ],
         ]);
       },
     );

@@ -57,7 +57,12 @@ class EcranFichesPoste extends StatelessWidget with EcranMaquette {
           return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             KpiGrilleSigh(kpis: rhaKpisW(rhaKpisFichesPoste(rows), const [LucideIcons.fileBadge, LucideIcons.checkCheck, LucideIcons.target, LucideIcons.gauge])),
             const SizedBox(height: 16),
-            const NoteSigh(
+            if (rows.isEmpty)
+              const NoteSigh(
+                  'Aucune fiche de poste n’est enregistrée. Les fiches de démonstration (deux descriptions remises par la clinique, vingt-six postes recensés « à rédiger ») reviennent avec « Régénérer le jeu de données » ; sinon, créer une fiche avec « Nouvelle fiche de poste ».',
+                  icone: LucideIcons.fileQuestionMark)
+            else
+              const NoteSigh(
                 'Seules deux fiches proviennent d’un document remis par la clinique. Les autres postes sont recensés depuis l’organigramme et leur fiche est vide, marquée « à rédiger » — les inventer donnerait à la clinique des missions qu’elle n’a jamais écrites, et ces missions serviraient ensuite à évaluer des agents.',
                 ton: TonSigh.attention,
                 icone: LucideIcons.fileQuestionMark),

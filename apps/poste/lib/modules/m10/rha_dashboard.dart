@@ -65,11 +65,13 @@ class EcranDashboardRh extends StatelessWidget with EcranMaquette {
             rhaCartes([
               CarteSigh(
                   titre: 'Masse salariale par service',
-                  child: GraphiqueBarres(
-                      horizontal: true,
-                      hauteur: 320,
-                      etiquettes: [for (final x in parService) x.service],
-                      series: [SerieGraphique('Masse salariale', [for (final x in parService) x.masse])])),
+                  child: sommeOuNul(p.map((e) => e['salaireBase'])) == null
+                      ? const Text('Aucun salaire de base renseigné : la masse salariale par service n’est pas calculable.', key: Key('rha:masse:vide'))
+                      : GraphiqueBarres(
+                          horizontal: true,
+                          hauteur: 320,
+                          etiquettes: [for (final x in parService) x.service],
+                          series: [SerieGraphique('Masse salariale', [for (final x in parService) x.masse])])),
               CarteSigh(
                   titre: 'Planning du jour',
                   child: GraphiqueAnneau(etiquettes: [for (final x in planning) x.libelle], valeurs: [for (final x in planning) x.nombre])),

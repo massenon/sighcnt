@@ -478,7 +478,7 @@
    "description": "Redevances audiovisuelles prélevées sur les salaires : catégorie Radio et catégorie Télé, mois de prélèvement et suivi de l’exercice."
   },
   "m11-prets-etudes": {
-   "titre": "Prêts-études et avances",
+   "titre": "Prêts et avances",
    "description": "Décaissements consentis au personnel et recouvrement par retenue sur salaire."
   },
   "m11-validation": {
@@ -985,6 +985,10 @@
    "titre": "Étiquetage & emplacements",
    "description": "Organisation des rayons et casiers, classement par date de péremption et édition des étiquettes produits."
   },
+  "m6-import-grand-stock": {
+   "titre": "Importation Grand Stock",
+   "description": "Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock."
+  },
   "m6-inventaire-feuille": {
    "titre": "Feuille d’inventaire",
    "description": "Comptage physique article par article sur un magasin nommé, écarts calculés en direct et valorisés au CUMP."
@@ -1024,10 +1028,6 @@
   "m6-produits": {
    "titre": "Référentiel produits",
    "description": "Catalogue de tous les articles gérés : médicaments, réactifs, consommables, fournitures, entretien, petit matériel et immobilisations."
-  },
-  "m6-reprise": {
-   "titre": "Reprise SAGE 100",
-   "description": "Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock."
   },
   "m6-stock-detail": {
    "titre": "Stock détail (pharmacie d’urgence)",

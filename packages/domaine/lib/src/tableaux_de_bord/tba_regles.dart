@@ -644,7 +644,7 @@ TbaRh tbaRh({required Iterable<FicheTba> personnel, required Iterable<FicheTba> 
     ),
     kpis: [
       TbaKpi('Effectif total', nombre(p.length), indice: 'Organigramme : 44 agents', ton: 'navy', icone: 'users-round'),
-      TbaKpi('Masse salariale (base)', money(tbaSomme(p, (x) => x['salaireBase'])), ton: 'info', icone: 'banknote'),
+      TbaKpi('Masse salariale (base)', moneyOu(sommeOuNul(p.map((x) => x['salaireBase'])), 'Non renseignée'), ton: 'info', icone: 'banknote'),
       TbaKpi('Agents de garde aujourd’hui', nombre(gardes), ton: 'warning', icone: 'moon'),
       TbaKpi('Évaluations du mois', nombre(p.length), indice: 'Barème NS 131', ton: 'success', icone: 'clipboard-check'),
     ],

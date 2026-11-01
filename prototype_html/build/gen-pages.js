@@ -80,6 +80,25 @@ Object.keys(NAV.INDEX).forEach((id) => {
   if (s && !NAV.INDEX[s]) throw new Error('Manifeste : « ' + id + ' » déclare servant « ' + s + ' », qui n\'existe pas.');
 });
 
+/* GARDE : un écran RETIRÉ ne doit plus exister nulle part. « Reprise SAGE 100 » (01/11/2026) est remplacé par
+   « Importation Grand Stock » : l'ancien identifiant est assemblé ici pour ne pas figurer en clair dans les sources qu'on balaie.
+   Le build échoue si le manifeste ou un script de l'interface le cite encore, et retire la page orpheline. */
+const ECRANS_RETIRES = [['m6', 'reprise'].join('-')];
+ECRANS_RETIRES.forEach((id) => {
+  if (NAV.INDEX[id]) throw new Error('Manifeste : l\'écran retiré « ' + id + ' » est encore déclaré.');
+  const page = path.join(pagesDir, id + EXT);
+  if (fs.existsSync(page)) fs.unlinkSync(page);
+  (function balayer(d) {
+    fs.readdirSync(d, { withFileTypes: true }).forEach((e) => {
+      const f = path.join(d, e.name);
+      if (e.isDirectory()) return balayer(f);
+      if (e.name.endsWith('.js') && fs.readFileSync(f, 'utf8').indexOf(id) !== -1) {
+        throw new Error('Source : l\'écran retiré « ' + id + ' » est encore cité dans ' + path.relative(ROOT, f) + '.');
+      }
+    });
+  })(path.join(ROOT, 'assets', 'js'));
+});
+
 Object.keys(NAV.INDEX).forEach((id) => {
   const entry = NAV.INDEX[id];
   if (id === 'index') return; /* la page de connexion est écrite à la main */

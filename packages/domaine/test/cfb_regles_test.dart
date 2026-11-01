@@ -356,7 +356,7 @@ void main() {
         expect([x.total + plus, x.actifs + plus, x.archives], [att[x.nom]![1], att[x.nom]![2], att[x.nom]![3]], reason: x.nom);
       }
     });
-    test('bilan d’un vidage : 103 tables d’activité, 9 549 fiches ; 44 tables de paramétrage préservées', () {
+    test('bilan d’un vidage : 104 tables d’activité, 9 523 fiches ; 43 tables de paramétrage préservées (les fiches de poste ne le sont plus)', () {
       final conservees = {...cfbEssentielles, ...techniques};
       final plan = cfbPlanVidage({for (final n in fiches.keys) n: fiches[n]!.length}, conservees);
       final vd = obj(obj(sy['reinit'])['vider']);
@@ -364,7 +364,17 @@ void main() {
       expect(plan.enregistrements, vd['attenduLignes']);
       expect(plan.collections.toSet(), (vd['videes'] as List).cast<String>().toSet().difference(techniques));
       expect(cfbToastVidage(plan), ((vd['toasts'] as List).first as List).first);
-      expect(fiches.length - plan.tables, 44);
+      expect(fiches.length - plan.tables, 43);
+      expect(plan.collections, contains('fichesPoste'), reason: 'retour de la Direction du 01/11/2026 : les fiches de poste de démonstration partent');
+      expect(cfbEssentielles, isNot(contains('fichesPoste')));
+    });
+    test('le vidage retire AUSSI les valeurs de démonstration du personnel conservé (salaire, échelon, CNSS) : même liste que la maquette', () {
+      expect(cfbChampsDeTestConserves, {for (final e in obj(obj(v['constantes'])['champsDeTestConserves']).entries) e.key: (e.value as List).cast<String>()});
+      final apres = obj(obj(obj(sy['reinit'])['vider'])['personnelApres']);
+      expect(apres['avecSalaire'], 0);
+      expect(apres['avecCnss'], 0);
+      expect(apres['avecEchelon'], 0);
+      expect(apres['effectif'], greaterThan(0), reason: 'l\'effectif est un référentiel : il reste');
     });
     test('corbeille : le libellé d’un élément, l’ordre par date d’archivage décroissante', () {
       final brute = liste(sy['corbeilleBrute']);

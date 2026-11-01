@@ -7,11 +7,11 @@
 |---|---|
 | Écrans du manifeste (hors hubs de module) | **321** |
 | Hubs de module (un par module, engendrés) | 22 |
-| Écrans nommés par au moins un scénario de la maquette | 201 (63 %) |
-| Écrans **sans** scénario (recette à écrire) | 120 |
+| Écrans nommés par au moins un scénario de la maquette | 206 (64 %) |
+| Écrans **sans** scénario (recette à écrire) | 115 |
 | Écrans portés | 321 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 74 |
+| Scénarios de la maquette analysés | 75 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 21 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
 | 5 · assurances et comptabilité | 31 | 19 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 155 | 82 | 155 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 155 | 87 | 155 | 0 |
 
 ## Par écran
 
@@ -60,6 +60,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m6-dashboard` | Tableau de bord stock | M6 | 6 | — | porté |
 | `m6-dispensation` | Dispensation | M6 | 7 | 15, 24 | porté |
 | `m6-etiquetage` | Étiquetage & emplacements | M6 | 7 | 32 | porté |
+| `m6-import-grand-stock` | Importation Grand Stock | M6 | 5 | 37, 75 | porté |
 | `m6-inventaire` | Inventaires | M6 | 6 | 65 | porté |
 | `m6-inventaire-feuille` | Feuille d’inventaire — comptage | M6 | 6 | — | porté |
 | `m6-lots` | Lots & péremptions (FEFO) | M6 | 6 | 11, 42 | porté |
@@ -70,7 +71,6 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m6-point-stock` | Point du stock valorisé | M6 | 7 | 38 | porté |
 | `m6-point-ventes` | Suivi des ventes | M6 | 7 | 38, 57, 69, 70 | porté |
 | `m6-produits` | Référentiel produits | M6 | 7 | 3, 11, 54 | porté |
-| `m6-reprise` | Reprise SAGE 100 | M6 | 5 | 37 | porté |
 | `m6-stock-detail` | Stock détail (pharmacie) | M6 | 6 | 40 | porté |
 | `m6-stock-gros` | Stock gros (magasin) | M6 | 5 | 40, 54 | porté |
 | `m6-transferts` | Transferts gros → détail | M6 | 5 | 4, 40, 42 | porté |
@@ -249,7 +249,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `cfg-poste` | Ce poste (mode fileul / mère) | CFG | 2 | — | porté |
 | `cfg-rappels` | Rappels & messages | CFG | 3 | — | porté |
 | `cfg-regles` | Règles métier versionnées | CFG | 3 | 24 | porté |
-| `cfg-systeme` | Paramètres système | CFG | 3 | 16, 23, 67 | porté |
+| `cfg-systeme` | Paramètres système | CFG | 3 | 16, 23, 67, 75 | porté |
 | `cfg-tarifs` | Référentiel tarifaire | CFG | 4 | 9, 43 | porté |
 | `cfg-types-piece` | Types de pièces certifiantes | CFG | 3 | 33 | porté |
 | `dash-admin-agent` | Agent administratif | DASH | 2 | 36, 41 | porté |
@@ -282,14 +282,14 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m10-badges-verification` | Vérifier un badge | M10 | 5 | 55 | porté |
 | `m10-conges` | Congés | M10 | 3 | — | porté |
 | `m10-contrats` | Contrats | M10 | 3 | 33, 67 | porté |
-| `m10-dashboard` | Tableau de bord RH | M10 | 3 | — | porté |
+| `m10-dashboard` | Tableau de bord RH | M10 | 3 | 75 | porté |
 | `m10-employe-profil` | Fiche employé | M10 | 3 | — | porté |
 | `m10-evaluations` | Évaluations (NS 131) | M10 | 3 | 13, 32, 67 | porté |
 | `m10-evenements` | Événements du personnel | M10 | 3 | 26, 32 | porté |
-| `m10-fiches-poste` | Fiches de poste | M10 | 3 | — | porté |
+| `m10-fiches-poste` | Fiches de poste | M10 | 3 | 75 | porté |
 | `m10-missions` | Ordres de mission | M10 | 3 | 23, 67 | porté |
 | `m10-participations` | Frais de participation | M10 | 3 | 26 | porté |
-| `m10-personnel` | Personnel | M10 | 3 | 23, 39, 54 | porté |
+| `m10-personnel` | Personnel | M10 | 3 | 23, 39, 54, 75 | porté |
 | `m10-planning` | Planning & gardes | M10 | 4 | 26, 33 | porté |
 | `m10-presences` | Présences & absences | M10 | 4 | 33 | porté |
 | `m10-prestataires` | Prestataires externes | M10 | 3 | — | porté |
@@ -300,13 +300,13 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m10-stats-permanences` | Statistiques des permanences | M10 | 4 | 39 | porté |
 | `m10-stats-presence` | Taux de présence par service | M10 | 4 | 39 | porté |
 | `m11-avances` | Avances sur salaire | M11 | 4 | — | porté |
-| `m11-bulletins` | Bulletins de paie | M11 | 4 | 9, 23, 54 | porté |
-| `m11-calcul` | Calcul de la paie | M11 | 4 | 23, 26, 32 | porté |
-| `m11-cotisations` | Cotisations CNSS / ITS / VPS | M11 | 4 | 23 | porté |
-| `m11-dashboard` | Tableau de bord paie | M11 | 4 | — | porté |
-| `m11-heures-sup` | Heures supplémentaires | M11 | 4 | — | porté |
-| `m11-ortb` | Redevance ORTB | M11 | 4 | 23 | porté |
-| `m11-prets-etudes` | Prêts-études et avances | M11 | 4 | — | porté |
+| `m11-bulletins` | Bulletins de paie | M11 | 4 | 9, 23, 54, 75 | porté |
+| `m11-calcul` | Calcul de la paie | M11 | 4 | 23, 26, 32, 75 | porté |
+| `m11-cotisations` | Cotisations CNSS / ITS / VPS | M11 | 4 | 23, 75 | porté |
+| `m11-dashboard` | Tableau de bord paie | M11 | 4 | 75 | porté |
+| `m11-heures-sup` | Heures supplémentaires | M11 | 4 | 75 | porté |
+| `m11-ortb` | Redevance ORTB | M11 | 4 | 23, 75 | porté |
+| `m11-prets-etudes` | Prêts et avances | M11 | 4 | 75 | porté |
 | `m11-validation` | Validation Direction | M11 | 4 | — | porté |
 | `adm-enquetes` | Enquêtes & questionnaires | M13 | 5 | 52, 56 | porté |
 | `adm-satisfaction` | Satisfaction des patients | M13 | 5 | 52, 53 | porté |
@@ -353,7 +353,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `dash-croise` | Tableau de bord dynamique croisé | PIL | 5 | 36, 39, 57 | porté |
 | `dash-da` | Statistiques de la Direction | PIL | 5 | 36, 61 | porté |
 | `dash-direction` | Direction | PIL | 4 | 9, 11, 14, 36 | porté |
-| `m10-cout-agent` | Coût global de l’agent | PIL | 4 | 51 | porté |
+| `m10-cout-agent` | Coût global de l’agent | PIL | 4 | 51, 75 | porté |
 | `m12-rentabilite-groupes` | Recettes & charges par groupe | PIL | 5 | 51, 57 | porté |
 | `m12-tableau-decisionnel` | Tableau de bord décisionnel | PIL | 4 | 65 | porté |
 | `m2-stats-consultations` | Statistiques des consultations | PIL | 5 | 51 | porté |

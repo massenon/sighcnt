@@ -341,11 +341,11 @@ List<(String, String)> rapDonneesSection(String id, RapSources s) {
         ),
       ];
     case 'rh':
-      final masse = _somme(s.personnel, (p) => p['salaireBase']);
+      final masse = sommeOuNul(s.personnel.map((p) => p['salaireBase']));
       return [
         ('Effectif total', num_(n(s.personnel))),
-        ('Masse salariale de base', money(masse)),
-        ('Salaire moyen', money(s.personnel.isEmpty ? 0 : masse / s.personnel.length)),
+        ('Masse salariale de base', moneyOu(masse, 'Non renseignée')),
+        ('Salaire moyen', moneyOu(moyenneOuNul(s.personnel.map((p) => p['salaireBase'])), 'Non renseigné')),
         ('Services représentés', num_({for (final p in s.personnel) '${p['service']}'}.length)),
       ];
     case 'comptable':

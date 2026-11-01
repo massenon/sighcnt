@@ -54,26 +54,29 @@ class EcranDashboardPaie extends StatelessWidget with EcranMaquette {
           ),
           const SizedBox(height: 16),
           KpiGrilleSigh(kpis: [
-            KpiSigh(libelle: 'Masse salariale brute', valeur: money(paiSomme(calc, (x) => x.brut)), icone: LucideIcons.banknote),
-            KpiSigh(libelle: 'Net à payer', valeur: money(paiSomme(calc, (x) => x.net)), icone: LucideIcons.wallet, ton: TonSigh.succes),
-            KpiSigh(libelle: 'Total des primes', valeur: money(paiSomme(calc, (x) => x.totalPrimes)), icone: LucideIcons.gift, ton: TonSigh.info, indice: 'Barème NS 132'),
-            KpiSigh(libelle: 'Sanctions (NS 131)', valeur: money(paiSomme(calc, (x) => x.sanction)), icone: LucideIcons.trendingDown, ton: TonSigh.danger),
+            KpiSigh(libelle: 'Masse salariale brute', valeur: paiMontant(calc, (x) => x.brut), icone: LucideIcons.banknote),
+            KpiSigh(libelle: 'Net à payer', valeur: paiMontant(calc, (x) => x.net), icone: LucideIcons.wallet, ton: TonSigh.succes),
+            KpiSigh(libelle: 'Total des primes', valeur: paiMontant(calc, (x) => x.totalPrimes), icone: LucideIcons.gift, ton: TonSigh.info, indice: 'Barème NS 132'),
+            KpiSigh(libelle: 'Sanctions (NS 131)', valeur: paiMontant(calc, (x) => x.sanction), icone: LucideIcons.trendingDown, ton: TonSigh.danger),
             KpiSigh(
                 libelle: 'CNSS part ouvrière',
-                valeur: money(paiSomme(calc, (x) => x.cnssOuvriere)),
+                valeur: paiMontant(calc, (x) => x.cnssOuvriere),
                 icone: LucideIcons.shield,
                 ton: TonSigh.attention,
                 indice: '${paiNum(paiCnssOuvriere)} %'),
             KpiSigh(
                 libelle: 'CNSS part patronale',
-                valeur: money(paiSomme(calc, (x) => x.cnssPatronale)),
+                valeur: paiMontant(calc, (x) => x.cnssPatronale),
                 icone: LucideIcons.building2,
                 ton: TonSigh.attention,
                 indice: '${paiNum(paiCnssPatronale)} %'),
-            KpiSigh(libelle: 'ITS retenu', valeur: money(paiSomme(calc, (x) => x.its)), icone: LucideIcons.landmark, ton: TonSigh.info),
-            KpiSigh(libelle: 'Coût employeur total', valeur: money(paiSomme(calc, (x) => x.coutEmployeur)), icone: LucideIcons.calculator, ton: TonSigh.neutre),
+            KpiSigh(libelle: 'ITS retenu', valeur: paiMontant(calc, (x) => x.its), icone: LucideIcons.landmark, ton: TonSigh.info),
+            KpiSigh(libelle: 'Coût employeur total', valeur: paiMontant(calc, (x) => x.coutEmployeur), icone: LucideIcons.calculator, ton: TonSigh.neutre),
           ]),
           const SizedBox(height: 16),
+          if (calc.isEmpty)
+            NoteSigh(paiAvisSansSalaire(c.magasin.collection('personnel').actives) ?? 'Aucun agent à calculer.', ton: TonSigh.attention, icone: LucideIcons.wallet)
+          else
           deuxCartes(
             CarteSigh(
                 titre: 'Décomposition de la masse salariale',
@@ -101,7 +104,9 @@ class EcranDashboardPaie extends StatelessWidget with EcranMaquette {
             CarteSigh(titre: 'Masse salariale par service', child: ClassementSigh(tries)),
             CarteSigh(
                 titre: 'Évolution de la masse salariale (12 mois)',
-                child: GraphiqueLigne(etiquettes: labels, series: [SerieGraphique('Masse salariale', masse, couleur: JetonsShell.navy900)])),
+                child: calc.isEmpty
+                    ? const Text('Masse salariale non calculable : aucun salaire de base renseigné.', key: Key('pai:masse:vide'))
+                    : GraphiqueLigne(etiquettes: labels, series: [SerieGraphique('Masse salariale', masse, couleur: JetonsShell.navy900)])),
           ),
         ]);
       },

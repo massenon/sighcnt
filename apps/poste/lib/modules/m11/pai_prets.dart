@@ -9,7 +9,7 @@ import '../m13/adm_commun.dart';
 import '../m3/surv_commun.dart' show sectionDetail;
 import 'pai_commun.dart';
 
-/// `m11-prets-etudes` — « Prêts-études et avances » : les décaissements consentis au personnel, recouvrés par retenue sur salaire. Dispositif relevé sur la
+/// `m11-prets-etudes` — « Prêts et avances » : les décaissements consentis au personnel, recouvrés par retenue sur salaire. Dispositif relevé sur la
 /// description de poste de l'Assistant de Direction (« suivre les décaissements et les recouvrements des prêts-études »).
 ///
 /// LA RÈGLE QUI COMPTE : une échéance est retenue au bulletin du SEUL MOIS de son échéance — la porter chaque mois la prélèverait autant de fois qu'il y a
@@ -23,7 +23,7 @@ class EcranPretsEtudes extends StatelessWidget with EcranMaquette {
   const EcranPretsEtudes({super.key});
 
   @override
-  String get titre => 'Prêts-études et avances';
+  String get titre => 'Prêts et avances';
 
   @override
   String get description => 'Décaissements consentis au personnel et recouvrement par retenue sur salaire.';

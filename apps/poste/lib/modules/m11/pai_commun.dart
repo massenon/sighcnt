@@ -45,6 +45,12 @@ Listenable ecoutePaie(ContexteEcran c, [List<String> enPlus = const []]) => ecou
 
 List<PaiCalcul> calculerTousPaie(ContexteEcran c, int mois) => paiCalculerTous(c.magasin.collection('personnel').actives, paiAnnee, mois, entreesPaie(c.magasin), c.aujourdhui);
 
+/// `avisSansSalaire()` : le bandeau (suivi d'un espace) qui nomme les agents exclus du calcul faute de salaire de base ; vide s'ils sont tous calculables.
+List<Widget> avisPaie(ContexteEcran c) {
+  final avis = paiAvisSansSalaire(c.magasin.collection('personnel').actives);
+  return avis == null ? const [] : [NoteSigh(avis, ton: TonSigh.attention, icone: LucideIcons.wallet), const SizedBox(height: 16)];
+}
+
 /// `String(nombre)` de JavaScript : 10 → « 10 », 3.6 → « 3.6 » (jamais « 10.0 »).
 String paiNum(num v) => v == v.truncate() ? '${v.truncate()}' : '$v';
 

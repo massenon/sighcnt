@@ -188,7 +188,7 @@
               { k: 'Valeur du stock', v: C.money(C.sum(produits(), function (p) { return p.stock * p.cump; })) },
               { k: 'Produits sous seuil d’alerte', v: C.num(ruptures().length) },
               { k: 'Effectif', v: C.num(personnel().length) + ' agents' },
-              { k: 'Masse salariale mensuelle', v: C.money(C.sum(personnel(), 'salaireBase')) },
+              { k: 'Masse salariale mensuelle', v: C.moneyOu(C.sumOuNul(personnel(), 'salaireBase'), 'non renseignée') },
             ]),
             signatures: [{ role: 'Le Directeur Médical', nom: 'BASSONGUI Chabi Séko' },
               { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
@@ -230,7 +230,7 @@
           { label: 'Patients au répertoire', value: C.num(patients().length), icon: 'users', tone: 'navy' },
           { label: 'Consultations du mois', value: C.num(duMois(consultations(), 'date').length), icon: 'stethoscope', tone: 'info', delta: 5.2 },
           { label: 'Lits occupés', value: litsOccupes().length + ' / ' + totalLits(), icon: 'bed-double', tone: 'navy', hint: C.pct(litsOccupes().length / totalLits() * 100) + ' d’occupation' },
-          { label: 'Effectif', value: C.num(personnel().length), icon: 'users-round', tone: 'neutral', hint: 'Masse salariale ' + C.money(C.sum(personnel(), 'salaireBase')) },
+          { label: 'Effectif', value: C.num(personnel().length), icon: 'users-round', tone: 'neutral', hint: 'Masse salariale ' + C.moneyOu(C.sumOuNul(personnel(), 'salaireBase'), 'non renseignée') },
         ];
       },
       kpiCols: 'grid-cols-2 lg:grid-cols-4',
@@ -1595,7 +1595,7 @@
         var p = personnel();
         return [
           { label: 'Effectif total', value: C.num(p.length), icon: 'users-round', tone: 'navy', hint: 'Organigramme : 44 agents' },
-          { label: 'Masse salariale (base)', value: C.money(C.sum(p, 'salaireBase')), icon: 'banknote', tone: 'info' },
+          { label: 'Masse salariale (base)', value: C.moneyOu(C.sumOuNul(p, 'salaireBase'), 'Non renseignée'), icon: 'banknote', tone: 'info' },
           { label: 'Agents de garde aujourd’hui', value: C.num(col('planning').active().filter(function (x) { return x.date === C.iso(AUJ) && x.type === 'garde'; }).length), icon: 'moon', tone: 'warning' },
           { label: 'Évaluations du mois', value: C.num(p.length), icon: 'clipboard-check', tone: 'success', hint: 'Barème NS 131' },
         ];
@@ -2632,7 +2632,7 @@
         },
         mesures: {
           nombre: { label: 'Effectif', unite: null, valeur: function () { return 1; } },
-          masse: { label: 'Masse salariale de base', unite: 'FCFA', valeur: function (r) { return r.salaireBase || 0; } },
+          masse: { label: 'Masse salariale de base', unite: 'FCFA', valeur: function (r) { return r.salaireBase == null ? 0 : r.salaireBase; } },
         },
       },
       {
@@ -4154,6 +4154,13 @@
         var a = agents.filter(function (x) { return x.id === sel.value; })[0];
         C.clear(vue);
         if (!a) return;
+        /* Sans salaire de base (jeu vidé de ses valeurs de démonstration), le coût n'est pas calculable :
+           un zéro se lirait comme un agent qui ne coûte rien. */
+        if (a.salaireBase === null || a.salaireBase === undefined || a.salaireBase === '') {
+          vue.appendChild(K.note('Le salaire de base de ' + a.nomComplet + ' n’est pas renseigné : son coût global n’est pas '
+            + 'calculable. Le renseigner à la fiche de l’agent (Personnel, M10).', { tone: 'warning', icon: 'wallet' }));
+          return;
+        }
         var brut = a.salaireBase || 0;
         var patronale = Math.round(brut * ((PP.cnss && PP.cnss.patronale) || 16.4) / 100);
         var vps = Math.round(brut * ((PP.vps && PP.vps.taux) || 4) / 100);

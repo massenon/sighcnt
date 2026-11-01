@@ -5447,7 +5447,7 @@ async function viderMessages(page) {
        RESTAURE à la fin — un scénario qui mute doit restaurer (doctrine de
        la matrice RBAC), sans quoi la vague 49 (34 fiches confirmées au
        socle) disparaîtrait pour les scénarios suivants. */
-    await ouvrir('m6-reprise.html');
+    await ouvrir('m6-import-grand-stock.html');
     const sansPrix = await page.evaluate(() => {
       const tous = window.SIGH.store.collection('valorisationsSage').all();
       /* sessionStorage : la sauvegarde doit survivre aux navigations du
@@ -5457,7 +5457,7 @@ async function viderMessages(page) {
       window.SIGH.store.save();
       return window.SIGH.sage.INVENTAIRE_SAGE.filter((a) => !a.valorise).length;
     });
-    await ouvrir('m6-reprise.html');
+    await ouvrir('m6-import-grand-stock.html');
     await cliquer('Points à traiter');
     const anomalies = await page.evaluate(() => {
       const t = document.body.textContent;
@@ -5495,7 +5495,7 @@ async function viderMessages(page) {
       });
       return a.code;
     });
-    await ouvrir('m6-reprise.html');
+    await ouvrir('m6-import-grand-stock.html');
     const apres = await page.evaluate(() => {
       const m = document.body.textContent.match(/Articles non valorisés\s*([\d\s]+)/);
       return {
@@ -11706,6 +11706,145 @@ async function viderMessages(page) {
     verifier('Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due', cre, '');
     await page.evaluate(() => window.SIGH.exercice.choisir(String(new Date().getFullYear())));
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  /* ========================================================================
+   * Vague 71 (01/11/2026) — le vidage des jeux de test retire AUSSI la paie et les RH de démonstration
+   * ======================================================================== */
+  {
+    scenario('Vague 71 — le vidage retire masse salariale, fiches de poste et calculs de paie : écrans vides, « non calculable » dit');
+    const texte = () => page.evaluate(() => (document.querySelector('#page-content') || document.body).innerText.replace(/\s+/g, ' '));
+
+    /* --- Avant : le jeu frais porte une masse salariale, des fiches de poste, une paie calculée ------------------- */
+    await ouvrir('m10-fiches-poste.html');
+    await attendreEcritures();
+    const fichesAvant = await page.evaluate(() => (window.SIGH.store.raw().fichesPoste || []).length);
+    await ouvrir('m11-calcul.html');
+    const avant = await page.evaluate(() => {
+      const S = window.SIGH.store, db = S.raw();
+      const p = db.personnel || [];
+      return {
+        salaires: p.filter((e) => typeof e.salaireBase === 'number' && e.salaireBase > 0).length, effectif: p.length,
+        fiches: 0, grille: (db.grillePrimes || []).length, regimes: (db.regimesTravail || []).length,
+        param: !!(window.SIGH.data.PARAM_PAIE && window.SIGH.data.PARAM_PAIE.cnss),
+      };
+    });
+    verifier('Le jeu frais porte une masse salariale et des fiches de poste (le cas qui survivait au vidage)',
+      avant.salaires > 0 && avant.salaires === avant.effectif && fichesAvant > 0, JSON.stringify(avant) + ' fiches ' + fichesAvant);
+    const calculAvant = await texte();
+    verifier('Le calcul de la paie du jeu frais calcule des agents', /Agents concernés [1-9]/.test(calculAvant) && !/Non calculable/.test(calculAvant), calculAvant.slice(0, 200));
+
+    /* --- Le vidage ---------------------------------------------------------------------------------------------- */
+    const bilan = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const b = S.viderActivite('scénario 71');
+      return { valeursRetirees: b.valeursRetirees, collections: b.collections, champs: S.CHAMPS_DE_TEST_CONSERVES };
+    });
+    await attendreEcritures();
+    verifier('Le vidage retire les valeurs de démonstration du personnel et vide les fiches de poste',
+      bilan.valeursRetirees > 0 && bilan.collections.indexOf('fichesPoste') >= 0 && bilan.champs.personnel.indexOf('salaireBase') >= 0, JSON.stringify(bilan.champs));
+
+    await ouvrir('cfg-systeme.html');   /* relu depuis la BASE */
+    const apres = await page.evaluate(() => {
+      const db = window.SIGH.store.raw();
+      const p = db.personnel || [];
+      const n = (k) => (db[k] || []).length;
+      return {
+        effectif: p.length, avecSalaire: p.filter((e) => e.salaireBase !== null && e.salaireBase !== undefined).length,
+        avecCnss: p.filter((e) => e.cnss !== null && e.cnss !== undefined).length,
+        fiches: n('fichesPoste'), bulletins: n('bulletins'), heuresSup: n('heuresSup'), avances: n('avances'), prets: n('pretsEtudes'),
+        grille: n('grillePrimes'), regimes: n('regimesTravail'), bareme: n('baremeNS131'), soignants: n('soignants'),
+        param: !!(window.SIGH.data.PARAM_PAIE && window.SIGH.data.PARAM_PAIE.cnss && window.SIGH.data.PARAM_PAIE.ortb),
+      };
+    });
+    verifier('Après relecture depuis la base : l’effectif reste, mais plus aucun salaire ni numéro CNSS de démonstration',
+      apres.effectif === avant.effectif && apres.avecSalaire === 0 && apres.avecCnss === 0, JSON.stringify(apres));
+    verifier('Plus de fiche de poste, de bulletin, d’heure supplémentaire, d’avance ni de prêt',
+      apres.fiches === 0 && apres.bulletins === 0 && apres.heuresSup === 0 && apres.avances === 0 && apres.prets === 0, JSON.stringify(apres));
+    verifier('Le référentiel essentiel de la paie survit : paramètres, grille des primes, régimes, barème NS 131, soignants',
+      apres.param && apres.grille > 0 && apres.regimes > 0 && apres.bareme > 0 && apres.soignants > 0, JSON.stringify(apres));
+
+    /* --- Chaque écran cité par la Direction affiche un état vide propre ------------------------------------------ */
+    const erreurs = [];
+    const lire = async (id) => { await ouvrir(id + '.html'); erreurs.push(...erreursJS.map((x) => id + ' : ' + x)); return texte(); };
+
+    const tdb = await lire('m11-dashboard');
+    verifier('Tableau de bord Paie : « Non calculable », aucun montant, avertissement nommé',
+      /Masse salariale brute Non calculable/.test(tdb) && /Net à payer Non calculable/.test(tdb) && /Aucun salaire de base/.test(tdb)
+        && !/[1-9][\d  ]*\s*FCFA/.test(tdb.replace(/Barème NS 132/, '')), tdb.slice(0, 500));
+
+    const calc = await lire('m11-calcul');
+    verifier('Calcul de la paie : zéro agent, masses « Non calculable », aucune ligne de calcul',
+      /Agents concernés 0/.test(calc) && /Masse salariale brute Non calculable/.test(calc) && /Net à payer Non calculable/.test(calc) && /Aucun salaire de base/.test(calc),
+      calc.slice(0, 500));
+    const lignesCalcul = await page.evaluate(() => document.querySelectorAll('#page-content tbody tr:not(.empty)').length);
+    verifier('Le tableau du calcul ne porte aucune ligne d’agent', lignesCalcul <= 1, String(lignesCalcul));
+
+    const ortb = await lire('m11-ortb');
+    verifier('Redevance ORTB : non calculable, sans compte d’agents ni montant dû',
+      /non calculables/.test(ortb) && !/\b44\b/.test(ortb) && !/Total dû/.test(ortb), ortb.slice(0, 400));
+
+    const cot = await lire('m11-cotisations');
+    verifier('Cotisations : CNSS, ITS, VPS et masse brute « Non calculable »',
+      /CNSS part ouvrière Non calculable/.test(cot) && /ITS retenu Non calculable/.test(cot) && /Masse salariale brute Non calculable/.test(cot), cot.slice(0, 500));
+
+    await lire('m10-cout-agent');
+    const cout = await page.evaluate(async () => {
+      const combo = document.querySelector('#page-content .combo');
+      if (!combo) return { combo: false };
+      const premier = window.SIGH.store.raw().personnel[0];
+      combo.value = premier.id;
+      combo.dispatchEvent(new Event('change', { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 500));
+      return { combo: true, texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' ') };
+    });
+    verifier('Coût global de l’agent : un agent sans salaire dit « pas calculable » et n’affiche aucun coût',
+      cout.combo && /n’est pas renseigné/.test(cout.texte) && !/Coût employeur mensuel/.test(cout.texte), JSON.stringify(cout).slice(0, 400));
+
+    const fiches = await lire('m10-fiches-poste');
+    verifier('Fiches de poste : aucune fiche, aucun poste recensé d’office, et l’écran dit comment les retrouver',
+      /Postes recensés 0/.test(fiches) && /Aucune fiche de poste n’est enregistrée/.test(fiches), fiches.slice(0, 400));
+    const fichesBase = await page.evaluate(() => (window.SIGH.store.raw().fichesPoste || []).length);
+    verifier('Ouvrir l’écran ne fait pas renaître les fiches (amorçage gardé)', fichesBase === 0, String(fichesBase));
+
+    const pers = await lire('m10-personnel');
+    verifier('Personnel : l’effectif reste, la masse et le salaire moyen sont « non renseignés »',
+      /Effectif 44/.test(pers) && /Masse salariale Non renseignée/.test(pers) && /Salaire moyen Non renseigné/.test(pers), pers.slice(0, 300));
+
+    const rh = await lire('m10-dashboard');
+    verifier('Tableau de bord RH : masse salariale non renseignée', /Masse salariale \(base\) Non renseignée/.test(rh), rh.slice(0, 300));
+
+    const hs = await lire('m11-heures-sup');
+    const bul = await lire('m11-bulletins');
+    const pre = await lire('m11-prets-etudes');
+    verifier('Heures supplémentaires, bulletins et prêts : vides, et le bulletin ne chiffre pas une masse inexistante',
+      /Déclarations 0/.test(hs) && /Bulletins générés 0/.test(bul) && /Masse salariale brute 0/.test(bul) && /Prêts et avances 0/.test(pre),
+      hs.slice(0, 120) + ' | ' + bul.slice(0, 160) + ' | ' + pre.slice(0, 100));
+    const toutesBases = await page.evaluate(() => { const db = window.SIGH.store.raw(); return ['bulletins', 'heuresSup', 'avances', 'pretsEtudes', 'fichesPoste'].map((k) => (db[k] || []).length); });
+    verifier('Aucune de ces collections n’a été ré-amorcée par l’ouverture des écrans', toutesBases.every((x) => x === 0), toutesBases.join(','));
+
+    const lib = await page.evaluate(() => {
+      const N = window.SIGH.nav;
+      return {
+        libelle: (N.get('m11-prets-etudes') || {}).label,
+        reprise: !!N.get(['m6', 'reprise'].join('-')), import: (N.get('m6-import-grand-stock') || {}).label,
+      };
+    });
+    verifier('Le ruban dit « Prêts et avances » et « Importation Grand Stock » ; l’ancien écran de reprise n’existe plus',
+      lib.libelle === 'Prêts et avances' && lib.import === 'Importation Grand Stock' && lib.reprise === false, JSON.stringify(lib));
+
+    /* --- On REND le jeu : la régénération restitue salaires et fiches ---------------------------------------------- */
+    await page.evaluate(() => { window.SIGH.store.reset(); });
+    await attendreEcritures();
+    await ouvrir('m10-fiches-poste.html');
+    const rendu = await page.evaluate(() => {
+      const db = window.SIGH.store.raw();
+      return { salaires: (db.personnel || []).filter((e) => typeof e.salaireBase === 'number' && e.salaireBase > 0).length,
+        fiches: (db.fichesPoste || []).length, jeuVide: window.SIGH.store.jeuVide() };
+    });
+    verifier('« Régénérer » rend les salaires de démonstration et les fiches de poste, et lève le drapeau',
+      rendu.salaires === avant.effectif && rendu.fiches > 0 && !rendu.jeuVide, JSON.stringify(rendu));
+    verifier('Aucune erreur JavaScript sur ces écrans', erreurs.length === 0, erreurs.join(' | '));
   }
 
   await browser.close();

@@ -2068,7 +2068,7 @@
         "editer": false,
         "annuler": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m8-facture-avoir": {
@@ -2872,7 +2872,7 @@
         "editer": false,
         "annuler": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m8-facture-avoir": {
@@ -3088,7 +3088,7 @@
        "m6-inventaire": {
         "voir": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m6-point-ventes": {
@@ -3824,7 +3824,7 @@
        "m6-inventaire": {
         "voir": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m6-point-ventes": {
@@ -10946,7 +10946,7 @@
        "m6-inventaire": {
         "voir": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m6-point-ventes": {
@@ -11230,7 +11230,7 @@
        "m6-inventaire": {
         "voir": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m6-point-ventes": {
@@ -11393,7 +11393,7 @@
       "m6-inventaire": {
        "voir": false
       },
-      "m6-reprise": {
+      "m6-import-grand-stock": {
        "voir": false
       },
       "m6-point-ventes": {
@@ -12517,7 +12517,7 @@
         "editer": false,
         "annuler": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m8-facture-avoir": {
@@ -12869,7 +12869,7 @@
         "editer": false,
         "annuler": false
        },
-       "m6-reprise": {
+       "m6-import-grand-stock": {
         "voir": false
        },
        "m8-facture-avoir": {
@@ -13100,7 +13100,7 @@
        "editer": false,
        "annuler": false
       },
-      "m6-reprise": {
+      "m6-import-grand-stock": {
        "voir": false
       },
       "m8-facture-avoir": {

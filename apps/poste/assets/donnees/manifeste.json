@@ -337,7 +337,7 @@
     "m6-pertes",
     "m6-dispensation",
     "m6-etiquetage",
-    "m6-reprise",
+    "m6-import-grand-stock",
     "m6-point-ventes",
     "m6-point-stock"
    ]
@@ -2823,8 +2823,8 @@
    ]
   },
   {
-   "id": "m6-reprise",
-   "label": "Reprise SAGE 100",
+   "id": "m6-import-grand-stock",
+   "label": "Importation Grand Stock",
    "icone": "database",
    "module": "M6",
    "moduleLabel": "Pharmacie & Stocks",
@@ -4511,7 +4511,7 @@
   },
   {
    "id": "m11-prets-etudes",
-   "label": "Prêts-études et avances",
+   "label": "Prêts et avances",
    "icone": "graduation-cap",
    "module": "M11",
    "moduleLabel": "Paie & Primes",

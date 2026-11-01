@@ -142,7 +142,7 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
         paramPaie: { cnss: D.PARAM_PAIE.cnss, vps: D.PARAM_PAIE.vps, ortb: D.PARAM_PAIE.ortb },
         brand: { nom: C.BRAND.nom, forme: C.BRAND.forme, ifu: C.BRAND.ifu, rccm: C.BRAND.rccm, autorisation: C.BRAND.autorisation, bp: C.BRAND.bp, devise: C.BRAND.devise, codeDevise: C.BRAND.codeDevise },
         profilsAudio: NT.PROFILS_AUDIO, defautsNotif: NT.DEFAUTS,
-        essentielles: S.COLLECTIONS_ESSENTIELLES,
+        essentielles: S.COLLECTIONS_ESSENTIELLES, champsDeTestConserves: S.CHAMPS_DE_TEST_CONSERVES,
         mois: C.MOIS,
         roles: Object.keys(N.ROLES).map((r) => [r, N.ROLES[r].label, !!N.roleArchive(r)]),
         libelles: Object.fromEntries(Object.keys(window.__jeu).map((k) => [k, S.libelleCollection(k)])),
@@ -469,7 +469,7 @@ const NOMS_JEU = fs.readdirSync(JEU).filter((f) => f.endsWith('.json') && f !== 
       const clone = JSON.parse(JSON.stringify(S.raw()));
       window.__clone = clone;
       H.viderToasts(); await H.confirmerBtn('Vider les jeux de test', 'Fin de la recette');
-      out.reinit.vider = { toasts: H.toasts(), audit0: H.audit0(), nbAudit: S.raw().audit.length, attenduTables: attendu.length, attenduLignes: attendu.reduce((n, a) => n + a[1], 0), videes: attendu.map((a) => a[0]), restantes: Object.keys(S.raw()).filter((k) => k.charAt(0) !== '_' && Array.isArray(S.raw()[k]) && S.raw()[k].length).map((k) => [k, S.raw()[k].length]), echeances: S.raw().echeancesFiscales.length, echeancesPayees: S.raw().echeancesFiscales.filter((e) => e.paye).length, jeuVide: S.raw()._jeuVide };
+      out.reinit.vider = { toasts: H.toasts(), audit0: H.audit0(), nbAudit: S.raw().audit.length, attenduTables: attendu.length, attenduLignes: attendu.reduce((n, a) => n + a[1], 0), videes: attendu.map((a) => a[0]), restantes: Object.keys(S.raw()).filter((k) => k.charAt(0) !== '_' && Array.isArray(S.raw()[k]) && S.raw()[k].length).map((k) => [k, S.raw()[k].length]), echeances: S.raw().echeancesFiscales.length, echeancesPayees: S.raw().echeancesFiscales.filter((e) => e.paye).length, jeuVide: S.raw()._jeuVide, personnelApres: { effectif: S.raw().personnel.length, avecSalaire: S.raw().personnel.filter((e) => e.salaireBase !== null && e.salaireBase !== undefined).length, avecCnss: S.raw().personnel.filter((e) => e.cnss !== null && e.cnss !== undefined).length, avecEchelon: S.raw().personnel.filter((e) => e.categorie !== null && e.categorie !== undefined).length } };
       // verrouiller de nouveau
       const bas2 = document.getElementById('f_reinit'); bas2.checked = false; bas2.dispatchEvent(new Event('change', { bubbles: true })); await H.dormir(250);
       out.reinit.reverrouillee = { cle: S.storage.get('sigh-cnt:reinit-autorisee'), audit: H.audit0(), cartesTexte: H.cartesTexte(root).slice(-1) };
