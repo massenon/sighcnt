@@ -15,6 +15,9 @@ class JetonsShell {
   static const Color navy800 = Color(0xFF2A4670);
   static const Color navy900 = Color(0xFF12315E);
   static const Color navy950 = Color(0xFF0B1E3D);
+
+  /// Le VOILE derrière une modale ou un tiroir : navy-950 à 40 % (`bg-navy-950/40` de la maquette). Le seul voile du poste.
+  static const Color scrim = Color(0x660B1E3D);
   static const Color success50 = Color(0xFFEEFBF4);
   static const Color success100 = Color(0xFFD6F5E3);
   static const Color success200 = Color(0xFFB0E9CC);

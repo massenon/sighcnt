@@ -11,6 +11,8 @@ import '../sync/etat_sync.dart';
 import 'barre_superieure.dart';
 import 'ecran_a_porter.dart';
 import 'page_standard.dart';
+import 'pied_legal.dart';
+import '../core/jetons_shell.dart';
 import 'contexte_ecran.dart';
 import 'contexte_autonome.dart';
 import '../modules/auth/acc_session.dart';
@@ -149,6 +151,11 @@ class _CoquePosteState extends State<CoquePoste> {
     final s = _session;
     _compteVu = s?.compte;
     HardwareKeyboard.instance.addHandler(_surClavier);
+    // Le repli du plein écran du démarrage est DIT, jamais muet.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final refus = widget.fenetre?.refusDemarrage ?? _fenetreSysteme?.refusDemarrage;
+      if (mounted && refus != null) ToastsSigh.afficher(context, refus, type: TypeToast.attention);
+    });
     if (s != null) {
       s.addListener(_surSession);
       // Le délai est mesuré sur l'horloge INJECTÉE de la session ; le minuteur ne fait que la consulter.
@@ -404,7 +411,11 @@ class _CoquePosteState extends State<CoquePoste> {
                 parametres: publique ? widget.parametres : const {},
                 aller: publique ? (_) {} : _allerDepuisAutonome,
                 accueil: () => (_session?.exigeConnexion ?? false) && _session!.etat == EtatSession.deconnectee ? 'index' : _accueilDuRole(),
-                child: Builder(builder: (c) => porte(c, widget.config)))));
+                child: Builder(
+                    builder: (c) => Column(children: [
+                          Expanded(child: porte(c, widget.config)),
+                          const PiedLegal(fond: JetonsShell.slate100),
+                        ])))));
   }
 
   @override
@@ -450,7 +461,8 @@ class _CoquePosteState extends State<CoquePoste> {
         _barre(nomRole, null),
         const Expanded(
             child: Center(
-                child: Text('Aucun module n’est ouvert à votre profil.')))
+                child: Text('Aucun module n’est ouvert à votre profil.'))),
+        const PiedLegal(),
       ]));
     }
     final demande = widget.ecranInitial;
@@ -489,6 +501,7 @@ class _CoquePosteState extends State<CoquePoste> {
             child: KeyedSubtree(
                 key: ValueKey('$courant|${widget.config.mode.name}'),
                 child: _page(courant, ruban, libelleMode))),
+        const PiedLegal(),
       ]),
     );
   }

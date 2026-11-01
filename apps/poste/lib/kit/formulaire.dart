@@ -413,6 +413,7 @@ class _Date extends StatelessWidget {
         onTap: () async {
           final base = DateTime.tryParse(v) ?? DateTime.now();
           final d = await showDatePicker(
+            barrierColor: JetonsShell.scrim,
               context: context,
               initialDate: base,
               firstDate: DateTime(1900),
@@ -463,12 +464,14 @@ class _DateHeure extends StatelessWidget {
         onTap: () async {
           final base = DateTime.tryParse(v) ?? DateTime.now();
           final d = await showDatePicker(
+            barrierColor: JetonsShell.scrim,
               context: context,
               initialDate: base,
               firstDate: DateTime(1900),
               lastDate: DateTime(2100));
           if (d == null || !context.mounted) return;
           final h = await showTimePicker(
+            barrierColor: JetonsShell.scrim,
               context: context,
               initialTime: TimeOfDay(hour: base.hour, minute: base.minute));
           if (h == null) return;
@@ -742,4 +745,80 @@ class _Ligne extends StatelessWidget {
           ),
         ),
       );
+}
+
+/// LA LISTE DÉROULANTE du kit pour un champ posé HORS d'un [FormulaireSigh] (un écran construit à la main, une modale de console) : le MÊME panneau que `U.combo`
+/// (fond blanc, rayon 12, ombre `pop`, recherche dès neuf entrées), à la place du menu natif de Material (`DropdownButton`, `DropdownButtonFormField`), dont le
+/// fond, le rayon et l'ombre ne suivent pas le design system. Un test garde (`modaux_design_test.dart`) interdit le menu natif hors du kit.
+///
+/// [valeur] est la valeur courante (`''` si rien n'est choisi) ; [surChange] reçoit la valeur choisie. Une option de valeur `''` est une entrée comme une autre
+/// (« — », « Aucun commentaire général »).
+class SelecteurSigh extends StatefulWidget {
+  const SelecteurSigh(
+      {super.key,
+      required this.libelle,
+      required this.options,
+      required this.valeur,
+      required this.surChange,
+      this.indicatif,
+      this.recherche});
+
+  /// Le libellé lu par les lecteurs d'écran (le libellé visible est posé par l'appelant, comme pour un champ natif).
+  final String libelle;
+  final List<OptionChamp> options;
+  final String valeur;
+  final ValueChanged<String> surChange;
+  final String? indicatif;
+  final bool? recherche;
+
+  @override
+  State<SelecteurSigh> createState() => _SelecteurSighState();
+}
+
+class _SelecteurSighState extends State<SelecteurSigh> {
+  late ControleurFormulaire _ctl;
+  late ChampDef _def;
+
+  void _creer() {
+    // `requis` masque la ligne « Aucun » (les options portent leur propre entrée vide) ; la valeur initiale est posée telle quelle, sans présélection.
+    _def = ChampDef(
+        nom: 'v',
+        libelle: widget.libelle,
+        type: TypeChamp.select,
+        requis: true,
+        options: widget.options,
+        indicatif: widget.indicatif,
+        recherche: widget.recherche);
+    _ctl = ControleurFormulaire([_def])..poser('v', widget.valeur);
+    _ctl.addListener(_surChoix);
+  }
+
+  void _surChoix() {
+    final v = '${_ctl['v'] ?? ''}';
+    if (v != widget.valeur) widget.surChange(v);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _creer();
+  }
+
+  @override
+  void didUpdateWidget(SelecteurSigh ancien) {
+    super.didUpdateWidget(ancien);
+    _ctl.removeListener(_surChoix);
+    _ctl.dispose();
+    _creer();
+  }
+
+  @override
+  void dispose() {
+    _ctl.removeListener(_surChoix);
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => _Liste(_ctl, _def, false);
 }

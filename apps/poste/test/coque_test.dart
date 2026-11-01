@@ -137,7 +137,7 @@ void main() {
   });
 
   testWidgets(
-      'un écran de la maquette pas encore converti se NOMME : tranche et parité, jamais une page vide',
+      'un identifiant sans widget se NOMME : tranche, domaine et module, jamais une page vide ni un chantier',
       (t) async {
     // Tous les écrans du manifeste sont désormais portés : le repli de la coque se vérifie avec un registre d'écrans VIDE, comme au premier jour.
     t.view.physicalSize = const Size(1600, 1000);
@@ -154,6 +154,10 @@ void main() {
     expect(find.byKey(const Key('ecran-a-porter')), findsOneWidget);
     expect(find.textContaining('Identifiant : rls-tableau'), findsOneWidget);
     expect(find.textContaining('tranche 6'), findsOneWidget);
+    // L'état dit où l'écran vit et ce qu'il faut faire ; jamais « à convertir » (Direction, 01/11/2026).
+    expect(find.text('Cet écran n’est pas disponible sur ce poste'), findsOneWidget);
+    expect(find.textContaining('signaler l’incident'), findsOneWidget);
+    expect(find.textContaining('à convertir'), findsNothing);
     expect(find.byKey(const Key('fil-ariane')), findsOneWidget);
   });
 

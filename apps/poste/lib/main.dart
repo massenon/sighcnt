@@ -31,21 +31,34 @@ const String secretAdmin =
 const String roleDev =
     String.fromEnvironment('SIGH_ROLE', defaultValue: 'admin');
 
-/// `SIGH_CONNEXION=oui` : le poste démarre sur l'écran de connexion et verrouille la session après quinze minutes d'inactivité. Par défaut (`non`), il
-/// s'ouvre sous `SIGH_ROLE`, comme avant. ATTENTION : le poste n'a pas encore d'authentification réelle (limite A5) — la connexion reconnaît un compte du
-/// jeu sans vérifier le mot de passe ; elle n'est pas une barrière.
+/// LA CONNEXION EST ACTIVÉE PAR DÉFAUT (Direction, 01/11/2026) : le poste démarre sur l'écran de connexion de la maquette (`index`), puis ouvre le tableau
+/// de bord du rôle et le modal de notifications d'ouverture ; le verrou d'inactivité (quinze minutes) joue. `SIGH_CONNEXION=non` rétablit l'ancien mode
+/// sans connexion (le poste s'ouvre sous `SIGH_ROLE`) : il ne sert plus qu'aux tests et au développement.
 const String connexionExigee =
-    String.fromEnvironment('SIGH_CONNEXION', defaultValue: 'non');
+    String.fromEnvironment('SIGH_CONNEXION', defaultValue: 'oui');
+
+/// `SIGH_PLEIN_ECRAN=non` : ne pas passer en plein écran au démarrage (développement). Par défaut le poste se lance en plein écran.
+const String pleinEcranAuDemarrage =
+    String.fromEnvironment('SIGH_PLEIN_ECRAN', defaultValue: 'oui');
 
 /// Dossier des données du poste. À remplacer par le dossier d'application du système à l'installation (tâche de packaging).
 const String dossierDonnees =
     String.fromEnvironment('SIGH_DONNEES', defaultValue: 'donnees-poste');
 
+/// La session du démarrage : la connexion est EXIGÉE sauf `SIGH_CONNEXION=non` (tests et développement). [connexion] surcharge la constante de compilation
+/// pour les tests.
+SessionPoste? sessionDemarrage({String connexion = connexionExigee, DateTime Function()? horloge}) =>
+    connexion != 'non' ? SessionPoste(exigeConnexion: true, horloge: horloge) : null;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // La fenêtre pilotable (plein écran de la barre supérieure) : un poste sans fenêtre native n'empêche pas le démarrage, le bouton le dira.
+  // La fenêtre pilotable : un poste sans fenêtre native n'empêche pas le démarrage. Le poste se lance en PLEIN ÉCRAN (Direction, 01/11/2026) ; si la
+  // plateforme refuse, le repli est nommé et la coque le dit au premier affichage. F11 et la barre supérieure basculent ensuite.
+  FenetreSysteme? fenetre;
   try {
     await windowManager.ensureInitialized();
+    fenetre = FenetreSysteme();
+    if (pleinEcranAuDemarrage != 'non') await fenetre.demarrerPleinEcran();
   } catch (_) {}
   final stockage = StockageFichier('$dossierDonnees/poste.json');
   final activation = ActivationMere(
@@ -83,7 +96,8 @@ Future<void> main() async {
       controleur: controleur,
       donnees: await DonneesNavigation.chargerAssets(),
       magasin: magasin,
-      session: connexionExigee == 'oui' ? SessionPoste(exigeConnexion: true) : null,
+      session: sessionDemarrage(),
+      fenetre: fenetre,
       etatSync: moteur.source()));
 }
 

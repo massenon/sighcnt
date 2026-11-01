@@ -178,6 +178,8 @@
      part. L'application lit l'horloge RÉELLE ; c'est le BANC D'ESSAI qui décale
      l'horloge sur la date du jeu (build/_banc.js), jamais le code livré. */
   function aujourdhui() { return new Date(); }
+  /** LA MENTION LÉGALE DU PIED DE PAGE (Direction, 01/11/2026) : dénomination, IFU, RCCM, lus de l'identité unique C.BRAND. Les séparateurs sont une identité imprimée, pas de la ponctuation rédigée. */
+  function mentionLegale() { return BRAND.nom + ' — IFU ' + BRAND.ifu + ' — RCCM ' + BRAND.rccm + '.'; }
   /** Valeur d'un champ `datetime-local` à l'heure LOCALE — `toISOString()` rend
    *  l'heure UTC, et le Bénin est à UTC+1 : l'heure proposée était fausse d'une heure. */
   function isoLocal(d) {
@@ -530,7 +532,7 @@
     ageDe: ageDe, ageTexte: ageTexte, ageEstDeclare: ageEstDeclare,
     params: params, ancre: ancre,
     dateHeure: dateHeure, iso: iso, moisAnnee: moisAnnee, ilYA: ilYA,
-    aujourdhui: aujourdhui, isoLocal: isoLocal,
+    aujourdhui: aujourdhui, isoLocal: isoLocal, mentionLegale: mentionLegale,
     addDays: addDays, daysBetween: daysBetween, toDate: toDate,
     PERIODES: PERIODES, bornes: bornes, bornesLibres: bornesLibres,
     dansBornes: dansBornes, libellePeriode: libellePeriode,

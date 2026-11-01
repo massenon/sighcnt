@@ -1355,6 +1355,9 @@
       if (PAGE.standalone) {
         var host0 = $('#page') || document.body;
         if (PAGE.render) PAGE.render(host0);
+        /* Le pied légal figure aussi sur les pages autonomes (Direction, 01/11/2026). */
+        document.body.appendChild(el('footer.no-print.bg-slate-100.px-4.pb-6.pt-2.text-center', null,
+          el('p.text-xs.text-slate-500', { text: C.mentionLegale(), 'data-pied-legal': '1' })));
         U.icons(document.body);
         return;
       }
@@ -1423,7 +1426,8 @@
 
       main.appendChild(el('footer.no-print.mx-auto.w-full.max-w-\\[100rem\\].px-4.pb-8.pt-4.sm\\:px-6', null,
         el('p.border-t.border-slate-200.pt-4.text-xs.text-slate-400', {
-          text: C.BRAND.nom + ' — IFU ' + C.BRAND.ifu + ' — RCCM ' + C.BRAND.rccm + '. Prototype SIGH-CNT, jeu de données de démonstration.',
+          text: C.mentionLegale(),
+          'data-pied-legal': '1',
         })));
       document.body.appendChild(main);
 

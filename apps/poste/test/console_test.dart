@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/mere/client_mere.dart';
 import 'package:sigh_poste/mere/console.dart';
 
@@ -173,8 +174,14 @@ Future<FauxService> monter(WidgetTester t, {FauxService? faux}) async {
   return f;
 }
 
+/// Un message de la console (toast du kit) arme sa minuterie de 4 s : elle est vidée AVANT la fin du test, que le test ait ou non affiché un message.
+void testConsole(String description, Future<void> Function(WidgetTester) corps) => testWidgets(description, (t) async {
+      await corps(t);
+      ToastsSigh.viderPourTests();
+    });
+
 void main() {
-  testWidgets(
+  testConsole(
       'supervision : époque, opérations, retard vers le relais, conflits, alertes nommées',
       (t) async {
     await monter(t);
@@ -186,7 +193,7 @@ void main() {
     expect(find.textContaining('Horloge à vérifier'), findsOneWidget);
   });
 
-  testWidgets(
+  testConsole(
       'appareils : liste, retard par appareil, horloge à vérifier, révoqué sans bouton',
       (t) async {
     final f = await monter(t);
@@ -200,7 +207,7 @@ void main() {
     await t.tap(find.text('Révoquer').first);
     await t.pumpAndSettle();
     expect(find.text('Révoquer cet appareil ?'), findsOneWidget);
-    await t.tap(find.widgetWithText(FilledButton, 'Révoquer'));
+    await t.tap(find.widgetWithText(BoutonSigh, 'Révoquer'));
     await t.pumpAndSettle();
     expect(
         f.appels.any(
@@ -208,7 +215,7 @@ void main() {
         isTrue);
   });
 
-  testWidgets('appairer un poste : le code s\'affiche, à usage unique',
+  testConsole('appairer un poste : le code s\'affiche, à usage unique',
       (t) async {
     final f = await monter(t);
     await t.tap(find.text('Appareils'));
@@ -226,7 +233,7 @@ void main() {
         isTrue);
   });
 
-  testWidgets('appairer un mobile : le code ET la clé de clinique s\'affichent',
+  testConsole('appairer un mobile : le code ET la clé de clinique s\'affichent',
       (t) async {
     await monter(t);
     await t.tap(find.text('Appareils'));
@@ -242,7 +249,7 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets(
+  testConsole(
       'conflits : seuls les conflits OUVERTS ; garder B et classer un doublon appellent la mère',
       (t) async {
     final f = await monter(t);
@@ -270,7 +277,7 @@ void main() {
         isTrue);
   });
 
-  testWidgets(
+  testConsole(
       'maintenance : fenêtre fermée → la réinitialisation est ABSENTE ; ouverte → saisie préservée',
       (t) async {
     final f = await monter(t);
@@ -302,7 +309,7 @@ void main() {
         isTrue);
   });
 
-  testWidgets(
+  testConsole(
       'un refus de la mère s\'affiche avec SA cause, sans reformulation',
       (t) async {
     final f = await monter(t);
@@ -321,7 +328,7 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets('service injoignable : bandeau explicite, pas de page blanche',
+  testConsole('service injoignable : bandeau explicite, pas de page blanche',
       (t) async {
     final client = ClientMere(
         base: Uri.parse('http://mere.test'),
@@ -336,7 +343,7 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets(
+  testConsole(
       'supervision : santé globale, contrôles nommés, « inconnu » jamais présenté comme OK',
       (t) async {
     await monter(t);
@@ -346,7 +353,7 @@ void main() {
     expect(find.text('Inconnu'), findsOneWidget);
   });
 
-  testWidgets('« Sauvegarder maintenant » appelle la mère', (t) async {
+  testConsole('« Sauvegarder maintenant » appelle la mère', (t) async {
     final f = await monter(t);
     await t.tap(find.byKey(const Key('sauvegarder')));
     await t.pumpAndSettle();
@@ -355,7 +362,7 @@ void main() {
     expect(find.text('Sauvegarde chiffrée effectuée.'), findsOneWidget);
   });
 
-  testWidgets(
+  testConsole(
       'onglet Journal : évènements les plus récents d\'abord, niveau visible',
       (t) async {
     await monter(t);

@@ -101,7 +101,7 @@ Future<T?> afficherModale<T>(
       context: context,
       barrierDismissible: fermetureParFond,
       barrierLabel: 'Fermer la fenêtre',
-      barrierColor: JetonsShell.navy950.withValues(alpha: 0.4),
+      barrierColor: JetonsShell.scrim,
       transitionDuration: const Duration(milliseconds: 150),
       transitionBuilder: (_, a, __, child) => FadeTransition(
           opacity: a,
@@ -208,7 +208,7 @@ Future<T?> afficherTiroir<T>(
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Fermer le panneau',
-      barrierColor: JetonsShell.navy950.withValues(alpha: 0.4),
+      barrierColor: JetonsShell.scrim,
       transitionDuration: const Duration(milliseconds: 200),
       transitionBuilder: (_, a, __, child) => SlideTransition(
           position: Tween(begin: const Offset(1, 0), end: Offset.zero)

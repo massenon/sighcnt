@@ -235,8 +235,9 @@ void main() {
           final attendu = (l['champ'] as Map).cast<String, Object?>();
           final w = t.widget(champ);
           if (attendu['balise'] == 'select') {
-            expect(w is DropdownButton<String>, isTrue, reason: '$code est une liste');
-            expect((w as DropdownButton<String>).items!.length, (attendu['options'] as List).length, reason: '$code : options');
+            expect(w is SelecteurSigh, isTrue, reason: '$code est une liste');
+            // La maquette compte l'entrée vide « — » parmi les options de la liste.
+            expect((w as SelecteurSigh).options.length, (attendu['options'] as List).length, reason: '$code : options');
           } else {
             expect(w is TextField, isTrue, reason: '$code est un champ');
           }

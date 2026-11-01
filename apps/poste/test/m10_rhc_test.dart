@@ -410,7 +410,10 @@ void main() {
       for (final mot in ['YENI M’PO FLORENT', 'Matricule 5', 'Médecin Généraliste', 'Ce badge est la propriété de la Clinique NASSIERA TOO SARL.', 'À restituer au départ de l’agent.', 'Contrôle SIGH']) {
         expect(find.textContaining(mot), findsWidgets, reason: mot);
       }
-      expect(find.textContaining('IFU'), findsNothing);
+      // Le pied légal de la coque (bande fixe de la Direction, 01/11/2026) porte l'IFU de la clinique : la carte, elle, n'en porte pas.
+      for (final face in ['rhc:carte:recto', 'rhc:carte:verso']) {
+        expect(find.descendant(of: find.byKey(Key(face)), matching: find.textContaining('IFU')), findsNothing, reason: 'IFU sur $face');
+      }
       await fermerToasts(t);
     });
   });

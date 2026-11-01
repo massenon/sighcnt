@@ -756,25 +756,17 @@ class _EtatModaleSaisie extends State<_ModaleSaisie> {
     if (['binaire', 'ternaire', 'titre', 'liste', 'reactif', 'commentaire'].contains(type)) {
       final options = _options(v);
       final choisi = options.contains('${_saisies[code] ?? ''}') ? '${_saisies[code]}' : '';
-      final selecteur = InputDecorator(
-          decoration: deco(),
-          child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                  key: Key('res:champ:$code'),
-                  isDense: true,
-                  isExpanded: true,
-                  value: choisi,
-                  style: styleSaisie,
-                  items: [
-                    const DropdownMenuItem(value: '', child: Text('—')),
-                    for (final o in options) DropdownMenuItem(value: o, child: Text(o)),
-                  ],
-                  onChanged: (x) => setState(() {
-                        _saisies[code] = x ?? '';
-                        if (type == 'commentaire' || type == 'reactif') {
-                          ctl.text = ctl.text;
-                        }
-                      }))));
+      final selecteur = SelecteurSigh(
+          key: Key('res:champ:$code'),
+          libelle: '${v['libelle']}',
+          valeur: choisi,
+          options: [const OptionChamp('', '—'), for (final o in options) OptionChamp(o)],
+          surChange: (x) => setState(() {
+                _saisies[code] = x;
+                if (type == 'commentaire' || type == 'reactif') {
+                  ctl.text = ctl.text;
+                }
+              }));
       if (type == 'commentaire' || type == 'reactif') {
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           selecteur,
@@ -980,25 +972,18 @@ class _EtatModaleSaisie extends State<_ModaleSaisie> {
             const NoteSigh(
                 'À ne pas confondre avec le commentaire d’un examen : celui-ci porte sur l’échantillon et le compte rendu — « hémolysé, reprendre le prélèvement » — et non sur l’interprétation d’un résultat.'),
             const SizedBox(height: 8),
-            InputDecorator(
-                decoration: decorationChamp(),
-                child: DropdownButtonHideUnderline(
-                    child: DropdownButton<String>(
-                        key: const Key('res:motif'),
-                        isDense: true,
-                        isExpanded: true,
-                        value: _motif,
-                        style: styleSaisie,
-                        items: [
-                          const DropdownMenuItem(
-                              value: '', child: Text('Aucun commentaire général')),
-                          for (final x in motifsCommentaireGeneral)
-                            DropdownMenuItem(value: x, child: Text(x)),
-                        ],
-                        onChanged: (x) => setState(() {
-                              _motif = x ?? '';
-                              if (_motif.isNotEmpty) _general.text = _motif;
-                            })))),
+            SelecteurSigh(
+                key: const Key('res:motif'),
+                libelle: 'Commentaire général',
+                valeur: _motif,
+                options: [
+                  const OptionChamp('', 'Aucun commentaire général'),
+                  for (final x in motifsCommentaireGeneral) OptionChamp(x),
+                ],
+                surChange: (x) => setState(() {
+                      _motif = x;
+                      if (_motif.isNotEmpty) _general.text = _motif;
+                    })),
             const SizedBox(height: 8),
             TextField(
                 key: const Key('res:general'),
@@ -1011,19 +996,12 @@ class _EtatModaleSaisie extends State<_ModaleSaisie> {
           ])),
       const SizedBox(height: 12),
       const LibelleChamp('Validé par'),
-      InputDecorator(
-          decoration: decorationChamp(),
-          child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                  key: const Key('res:valideur'),
-                  isDense: true,
-                  isExpanded: true,
-                  value: _valideurs.contains(_valideur) ? _valideur : null,
-                  style: styleSaisie,
-                  items: [
-                    for (final x in _valideurs) DropdownMenuItem(value: x, child: Text(x))
-                  ],
-                  onChanged: (x) => setState(() => _valideur = x ?? '')))),
+      SelecteurSigh(
+          key: const Key('res:valideur'),
+          libelle: 'Validé par',
+          valeur: _valideurs.contains(_valideur) ? _valideur : '',
+          options: [for (final x in _valideurs) OptionChamp(x)],
+          surChange: (x) => setState(() => _valideur = x)),
       const SizedBox(height: 16),
       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
         BoutonSigh(

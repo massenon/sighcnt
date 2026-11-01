@@ -6,8 +6,9 @@ import '../core/donnees_navigation.dart';
 import '../core/jetons_shell.dart';
 import 'page_standard.dart';
 
-/// Écran de la maquette pas encore converti en Dart. Il DIT où il en est : sa tranche, son statut, et ce qu'il reste à
-/// faire — jamais une page vide ni une erreur. Le prototype de référence est `prototype_html/pages/<id>.php`.
+/// L'ÉTAT « écran indisponible sur ce poste » (Direction, 01/11/2026 : plus aucun gabarit de chantier). Tous les écrans du manifeste sont portés ; cet état
+/// n'est que le filet d'un identifiant qui n'aurait pas de widget dans la configuration du poste. Il NOMME où l'écran vit (domaine, module, tranche) et ce
+/// qu'il faut faire, jamais une page vide ni un chantier. Le test `ecrans_sans_chantier_test.dart` interdit qu'un rôle autorisé y parvienne.
 class EcranAPorter extends StatelessWidget {
   const EcranAPorter(
       {super.key,
@@ -36,25 +37,25 @@ class EcranAPorter extends StatelessWidget {
             border: Border.all(color: JetonsShell.slate200),
             borderRadius: BorderRadius.circular(12)),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Icon(LucideIcons.construction,
+          const Icon(LucideIcons.circleOff,
               size: 22, color: JetonsShell.slate400),
           const SizedBox(width: 14),
           Expanded(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('Écran de la maquette à convertir',
+              const Text('Cet écran n’est pas disponible sur ce poste',
                   style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
                       color: JetonsShell.slate900)),
               const SizedBox(height: 6),
               Text(
-                  'Identifiant : ${ecran.id} · module ${ecran.module}${t != null ? ' · tranche $t' : ''} · parité : ${donnees.statut(ecran.id)}.',
+                  'Identifiant : ${ecran.id} · module ${ecran.module}${t != null ? ' · tranche $t' : ''}.',
                   style: const TextStyle(
                       color: JetonsShell.slate500, fontSize: 13)),
               const SizedBox(height: 4),
-              const Text(
-                  'Même contenu, même structure et même comportement que la maquette PHP — voir docs/plans/PLAN-conversion-305-ecrans.md.',
+              Text(
+                  'Il appartient au domaine « ${ecran.domaine} », module « ${ecran.moduleLabel} ». Aucun écran n’est enregistré pour lui dans la configuration de ce poste : signaler l’incident à l’administrateur.',
                   style: TextStyle(color: JetonsShell.slate500, fontSize: 13)),
             ]),
           ),

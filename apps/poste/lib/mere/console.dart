@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:sigh_domaine/sigh_domaine.dart' show mobFonctions, mobLibelleFonction;
 
+import '../core/jetons_shell.dart';
 import '../core/theme.dart';
+import '../kit/kit.dart';
 import 'client_mere.dart';
 
 /// CONSOLE DU POSTE MÈRE — DAF / administrateur (spec §13). Elle ne décide de rien : elle montre l'état que la mère
@@ -82,12 +84,9 @@ class _ConsoleMereState extends State<ConsoleMere> {
   Future<void> _geste(Future<void> Function() f, {String? ok}) async {
     try {
       await f();
-      if (ok != null && mounted)
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(ok)));
+      if (ok != null && mounted) ToastsSigh.afficher(context, ok, type: TypeToast.succes);
     } catch (e) {
-      if (mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$e'), backgroundColor: ThemeSigh.danger));
+      if (mounted) ToastsSigh.afficher(context, '$e', type: TypeToast.erreur);
     }
     await _actualiser();
   }
@@ -351,25 +350,15 @@ class _ConsoleMereState extends State<ConsoleMere> {
   }
 
   Future<void> _revoquer(Appareil a) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (c) => AlertDialog(
-        title: const Text('Révoquer cet appareil ?'),
-        content: Text(
-            '« ${a.etiquette.isEmpty ? a.uuid : a.etiquette} » ne pourra plus synchroniser. Ses données locales sont conservées (poste) ou effacées à son prochain contact (mobile).'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(c, false),
-              child: const Text('Annuler')),
-          FilledButton(
-              onPressed: () => Navigator.pop(c, true),
-              child: const Text('Révoquer'))
-        ],
-      ),
-    );
-    if (ok == true)
-      await _geste(() => widget.client.revoquer(a.uuid),
-          ok: 'Appareil révoqué.');
+    final ok = await confirmerSigh(context,
+        titre: 'Révoquer cet appareil ?',
+        message:
+            '« ${a.etiquette.isEmpty ? a.uuid : a.etiquette} » ne pourra plus synchroniser. Ses données locales sont conservées (poste) ou effacées à son prochain contact (mobile).',
+        libelleOk: 'Révoquer',
+        dangereux: true);
+    if (ok) {
+      await _geste(() => widget.client.revoquer(a.uuid), ok: 'Appareil révoqué.');
+    }
   }
 
   Future<void> _appairer({required bool mobile}) async {
@@ -377,48 +366,45 @@ class _ConsoleMereState extends State<ConsoleMere> {
     // E1600 : pour un mobile, la console affecte le PROFIL et la FONCTION du soignant ; le téléphone les reçoit de la mère et ne peut plus les déclarer.
     var profil = 'soignant';
     var fonction = mobFonctions.first;
-    final etiquette = await showDialog<String>(
-      context: context,
-      builder: (c) => StatefulBuilder(
-        builder: (c, majEtat) => AlertDialog(
-          title: Text(mobile ? 'Appairer un mobile' : 'Appairer un poste'),
-          content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            TextField(
-                controller: nom,
-                autofocus: true,
-                decoration: const InputDecoration(labelText: 'Nom de l’appareil (ex. Réception, Dr Yeni)')),
-            if (mobile) ...[
+    final etiquette = await afficherModale<String>(
+      context,
+      titre: mobile ? 'Appairer un mobile' : 'Appairer un poste',
+      taille: TailleModale.sm,
+      corps: StatefulBuilder(
+        builder: (c, majEtat) => Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const LibelleChamp('Nom de l’appareil (ex. Réception, Dr Yeni)'),
+          TextField(controller: nom, autofocus: true, style: styleSaisie, decoration: decorationChamp()),
+          if (mobile) ...[
+            const SizedBox(height: 12),
+            const LibelleChamp('Profil du téléphone'),
+            SelecteurSigh(
+              key: const Key('console-profil'),
+              libelle: 'Profil du téléphone',
+              valeur: profil,
+              options: const [OptionChamp('soignant', 'Soignant'), OptionChamp('reception', 'Réception de secours')],
+              surChange: (v) => majEtat(() => profil = v),
+            ),
+            if (profil == 'soignant') ...[
               const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                key: const Key('console-profil'),
-                initialValue: profil,
-                decoration: const InputDecoration(labelText: 'Profil du téléphone'),
-                items: const [
-                  DropdownMenuItem(value: 'soignant', child: Text('Soignant')),
-                  DropdownMenuItem(value: 'reception', child: Text('Réception de secours')),
-                ],
-                onChanged: (v) => majEtat(() => profil = v ?? profil),
+              const LibelleChamp('Fonction du soignant'),
+              SelecteurSigh(
+                key: const Key('console-fonction'),
+                libelle: 'Fonction du soignant',
+                valeur: fonction,
+                options: [for (final f in mobFonctions) OptionChamp(f, mobLibelleFonction(f))],
+                surChange: (v) => majEtat(() => fonction = v),
               ),
-              if (profil == 'soignant') ...[
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  key: const Key('console-fonction'),
-                  initialValue: fonction,
-                  decoration: const InputDecoration(labelText: 'Fonction du soignant'),
-                  items: [for (final f in mobFonctions) DropdownMenuItem(value: f, child: Text(mobLibelleFonction(f)))],
-                  onChanged: (v) => majEtat(() => fonction = v ?? fonction),
-                ),
-                const SizedBox(height: 4),
-                const Text('La fonction est fixée par ce code : le téléphone ne peut ni la choisir ni la changer.', style: TextStyle(fontSize: 12)),
-              ],
+              const SizedBox(height: 4),
+              const Text('La fonction est fixée par ce code : le téléphone ne peut ni la choisir ni la changer.',
+                  style: TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)),
             ],
-          ]),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(c), child: const Text('Annuler')),
-            FilledButton(onPressed: () => Navigator.pop(c, nom.text.trim()), child: const Text('Générer le code'))
           ],
-        ),
+        ]),
       ),
+      pied: (fermer) => [
+        BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+        BoutonSigh(libelle: 'Générer le code', onPressed: () => Navigator.of(context, rootNavigator: true).pop(nom.text.trim())),
+      ],
     );
     if (etiquette == null || etiquette.isEmpty) return;
     try {
@@ -432,40 +418,27 @@ class _ConsoleMereState extends State<ConsoleMere> {
         code = await widget.client.codeAppareil(etiquette);
       }
       if (!mounted) return;
-      await showDialog<void>(
-        context: context,
-        builder: (c) => AlertDialog(
-          title: const Text('Code d’appairage'),
-          content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SelectableText(code,
-                    style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 4)),
-                const Text('À usage unique, valable 15 minutes.'),
-                if (cle != null) ...[
-                  const SizedBox(height: 12),
-                  const Text(
-                      'Clé de la clinique à saisir sur le téléphone (ne jamais l’envoyer par messagerie) :'),
-                  SelectableText(cle,
-                      style: const TextStyle(
-                          fontFamily: 'monospace', fontSize: 12)),
-                ],
-              ]),
-          actions: [
-            FilledButton(
-                onPressed: () => Navigator.pop(c), child: const Text('Fermer'))
+      await afficherModale<void>(
+        context,
+        titre: 'Code d’appairage',
+        taille: TailleModale.sm,
+        corps: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SelectableText(code,
+              style: const TextStyle(color: JetonsShell.slate900, fontSize: 32, fontWeight: FontWeight.w700, letterSpacing: 4)),
+          const Text('À usage unique, valable 15 minutes.',
+              style: TextStyle(color: JetonsShell.slate600, fontSize: 14, height: 20 / 14)),
+          if (cle != null) ...[
+            const SizedBox(height: 12),
+            const Text('Clé de la clinique à saisir sur le téléphone (ne jamais l’envoyer par messagerie) :',
+                style: TextStyle(color: JetonsShell.slate600, fontSize: 14, height: 20 / 14)),
+            SelectableText(cle, style: const TextStyle(color: JetonsShell.slate900, fontFamily: 'monospace', fontSize: 12)),
           ],
-        ),
+        ]),
+        pied: (fermer) => [BoutonSigh(libelle: 'Fermer', onPressed: fermer)],
       );
       await _actualiser();
     } catch (e) {
-      if (mounted)
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('$e'), backgroundColor: ThemeSigh.danger));
+      if (mounted) ToastsSigh.afficher(context, '$e', type: TypeToast.erreur);
     }
   }
 
@@ -565,9 +538,7 @@ class _ConsoleMereState extends State<ConsoleMere> {
                   final sauv = await widget.client.reinitialiser(
                       confirmation: _confirmation.text,
                       second: _secondProfil.text);
-                  if (mounted)
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text('Réinitialisé. Sauvegarde : $sauv')));
+                  if (mounted) ToastsSigh.afficher(context, 'Réinitialisé. Sauvegarde : $sauv', type: TypeToast.succes);
                 }),
                 child: const Text('Réinitialiser'),
               ),

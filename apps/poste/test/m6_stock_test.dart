@@ -105,6 +105,8 @@ String ligneAffichee(WidgetTester t, String repere, {int occurrence = 0}) {
   for (final e in find.byType(Text).evaluate()) {
     final w = e.widget as Text;
     if (w.data == null || w.data!.trim().isEmpty) continue;
+    // Le pied légal de la coque (bande fixe en bas de fenêtre) n'est pas une cellule de tableau.
+    if (w.key == const Key('pied-legal:texte')) continue;
     final c = t.getCenter(find.byWidget(w));
     if ((c.dy - dy).abs() <= 22 && c.dy > 0) {
       // les cellules sont rangées par COLONNE (bord gauche), puis de haut en bas pour une cellule sur deux lignes
