@@ -2450,30 +2450,6 @@
           + 'Servir le dossier via un petit serveur local rétablit la persistance.', { tone: 'warning', icon: 'hard-drive' }));
       }
 
-      /* ARCHITECTURE CIBLE — PROPOSITION, ET L'ÉCRAN LE DIT.
-       * La cible desktop en réseau local a été abandonnée au profit d'une
-       * application web hébergée. Tant que la Direction n'a pas arrêté la
-       * pile par écrit, cette fiche est une PROPOSITION : l'afficher comme
-       * un fait engagerait un choix que personne n'a signé. */
-      host.appendChild(U.card('Architecture cible — proposition', U.descList([
-        ['Application', 'Web — Laravel 12 (PHP 8.3) avec Vue 3 via Inertia'],
-        ['Postes de travail', 'Navigateur ; application installable (PWA) sur chaque poste'],
-        ['Base de données', 'PostgreSQL, hébergée avec l’application'],
-        ['Hébergement', 'Serveur mutualisé cPanel — déploiement Git, SSL automatique'],
-        ['Poste caisse', 'Enveloppe Tauri si l’imprimante ticket ou la MECeF l’exigent'],
-        ['Reporting', 'Gabarits d’impression du navigateur ; PDF archivés côté serveur'],
-        ['Sauvegarde', 'Export chiffré planifié HORS de l’hébergeur — jamais un seul dépositaire'],
-        ['Continuité électrique', 'Onduleurs aux postes critiques, box sur onduleur, secours 4G, mode dégradé papier'],
-        ['Ce prototype', 'HTML, CSS et JavaScript — sans dépendance réseau'],
-      ], 'grid-cols-1 sm:grid-cols-2')));
-
-      host.appendChild(K.note('Cette architecture est une <strong>proposition technique</strong>, pas une décision : '
-        + 'elle attend l’arbitrage écrit de la Direction. Deux conséquences y sont attachées et doivent être '
-        + 'assumées avec elle — l’exploitation dépend désormais de la connexion Internet de la clinique et de la '
-        + 'disponibilité de l’hébergeur, d’où les onduleurs, la liaison de secours et le mode dégradé papier ; '
-        + 'et les sauvegardes doivent sortir de chez l’hébergeur, des données de santé ne pouvant reposer sur un '
-        + 'seul prestataire.', { tone: 'warning', icon: 'flag' }));
-
       host.appendChild(U.card('Contenu du jeu de données', U.dataTable({
         rows: collections.map(function (k) {
           return {

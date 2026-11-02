@@ -186,8 +186,8 @@
   {
    "id": "cfg-systeme",
    "mesure": true,
-   "attendus": 22,
-   "presents": 22,
+   "attendus": 21,
+   "presents": 21,
    "taux": 1.0,
    "manquants": []
   },

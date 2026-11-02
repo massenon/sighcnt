@@ -5,6 +5,7 @@ import 'package:window_manager/window_manager.dart';
 
 import 'donnees/magasin.dart';
 import 'donnees/persistance.dart';
+import 'modules/cfg/cfb_systeme.dart' show CfbPersistance;
 import 'core/config_poste.dart';
 import 'core/controleur_poste.dart';
 import 'core/donnees_navigation.dart';
@@ -124,6 +125,7 @@ Future<void> main() async {
   final persistance = PersistanceFichiers('$dossierDonnees/magasin');
   if (repartirAZero == 'oui') await persistance.mettreDeCote();
   await magasin.brancherPersistance(persistance);
+  CfbPersistance.disponible = () => true;
   for (final probleme in persistance.problemes) {
     debugPrint(probleme);
   }

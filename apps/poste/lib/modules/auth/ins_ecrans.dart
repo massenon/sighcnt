@@ -354,10 +354,6 @@ class _EtatRecuperation extends State<EcranRecuperationAdmin> {
         if (_erreur != null) Padding(padding: const EdgeInsets.only(top: 16), child: MessageErreurAcces(_erreur!)),
         const SizedBox(height: 16),
         BoutonSigh(key: const Key('sec:valider'), libelle: 'Remplacer le mot de passe', taille: TailleBouton.lg, icone: LucideIcons.keyRound, onPressed: _recuperer),
-        const SizedBox(height: 16),
-        const NoteSigh(
-            'Cinq essais faux bloquent cette page quinze minutes. Le code ne vaut que pour un compte administrateur. Pour un autre agent, un administrateur réinitialise le mot de passe depuis « Comptes utilisateurs ».',
-            icone: LucideIcons.shieldCheck),
       ]),
       pied: LienAcces('← Retour à la connexion', onTap: () => ContexteAutonome.of(context).aller('index')),
     );

@@ -18,7 +18,6 @@
   "Configuration Clinique"
  ],
  "regle": [
-  "Cette architecture est une proposition technique, pas une décision : elle attend l’arbitrage écrit de la Direction. Deux conséquences y sont attachées et doivent être assumées avec elle — l’exploitation dépend désormais de la connexion Internet de la clinique et de la disponibilité de l’hébergeur, d’où les onduleurs, la liaison de secours et le mode dégradé papier ; et les sauvegardes doivent sortir de chez l’hébergeur, des données de santé ne pouvant reposer sur un seul prestataire.",
   "Ce prototype fonctionne intégralement hors ligne : la feuille de style, les polices, la bibliothèque de graphiques et les icônes sont hébergées dans le dossier du projet. Aucune requête réseau n’est émise."
  ],
  "onglets": [
@@ -34,7 +33,6 @@
   "Version du prototype"
  ],
  "cartes": [
-  "Architecture cible — proposition",
   "Contenu du jeu de données",
   "Maintenance du prototype"
  ],
@@ -57,7 +55,6 @@
   "2",
   "3",
   "4",
-  "5",
   "Réinitialiser le jeu de données",
   "Exporter les données",
   "Plan du site",

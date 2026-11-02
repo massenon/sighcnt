@@ -36,8 +36,10 @@ void main() {
     expect(find.byWidgetPredicate((w) => w is Text && (w.data ?? '').replaceAll(RegExp(r'[\s  ]'), '') == '$total'), findsWidgets);
     expect(find.text('Mémoire'), findsOneWidget);
     expect(find.text('Version du prototype'), findsOneWidget);
-    expect(find.text('Architecture cible — proposition'), findsOneWidget);
-    expect(find.textContaining('Cette architecture est une proposition technique, pas une décision'), findsOneWidget);
+    // La fiche « Architecture cible » et sa note sont retirées (Direction, 02/11/2026) : elles décrivaient une proposition web, non le poste.
+    expect(find.text('Architecture cible — proposition'), findsNothing);
+    expect(find.textContaining('Cette architecture est une proposition technique'), findsNothing);
+    expect(find.textContaining('base locale chiffrée du poste n’est pas encore branchée'), findsNothing);
     for (final b in ['Réinitialiser le jeu de données', 'Exporter les données', 'Plan du site', 'Sauvegardes']) {
       expect(find.widgetWithText(BoutonSigh, b), findsOneWidget, reason: b);
     }
@@ -125,11 +127,14 @@ void main() {
     expect(m.collection('patients').toutes.length, avant);
   });
 
-  casM14('autoriser puis vider : motif exigé ; les données d’ACTIVITÉ partent, le paramétrage, les droits et le journal restent ; le vidage est la 1re entrée du journal', (t) async {
+  casM14('autoriser puis vider : motif exigé ; les données d’ACTIVITÉ, la corbeille et le journal partent, le paramétrage et les droits restent ; le vidage est l’UNIQUE entrée du journal neuf', (t) async {
     final m = magasinM14();
     final produits = m.collection('produits').toutes.length;
     final patients = m.collection('patients').toutes.length;
-    final auditAvant = m.collection('audit').toutes.length;
+    // Une fiche archivée pendant les essais (référentiel conservé) : la corbeille doit être vide après le vidage (Direction, 02/11/2026).
+    m.collection('centresCouts').archiver(m.collection('centresCouts').actives.first['id']);
+    final archivees = cfbNomsCollections().fold<int>(0, (a, n) => a + m.collection(n).archivees.length);
+    expect(archivees, greaterThan(0));
     final plan = cfbPlanVidage({for (final n in cfbNomsCollections()) n: m.collection(n).toutes.length}, {...cfbEssentielles, ...cfbCollectionsTechniques});
     final effectif = m.collection('personnel').toutes.length;
     final fiches = m.collection('fichesPoste').toutes.length;
@@ -165,10 +170,16 @@ void main() {
     expect(m.collection('modulesManifeste').toutes, isNotEmpty, reason: 'la matrice engendrée du poste survit à tout vidage');
     expect(m.collection('echeancesFiscales').toutes.length, 63, reason: 'le calendrier, dérivé d’un document, revient SANS règlement');
     expect(m.collection('echeancesFiscales').toutes.any((e) => e['paye'] == true), isFalse);
-    expect(m.collection('audit').toutes.length, greaterThanOrEqualTo(auditAvant), reason: 'le journal se garde : il trace ce que le vidage conserve');
+    expect(cfbCorbeille(m), isEmpty, reason: 'la corbeille est vidée avec les jeux de test');
+    expect(cfbNomsCollections().fold<int>(0, (a, n) => a + m.collection(n).archivees.length), 0);
+    expect(m.collection('audit').toutes.length, 1, reason: 'le journal est vidé ; seule reste l’entrée qui dit le vidage (RG-12)');
     final j = m.collection('audit').toutes.first;
     expect([j['action'], j['module'], j['entite'], j['reference']], ['Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage']);
-    expect(j['apres'], {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'valeursRetirees': valeursDeTest, 'motif': 'Fin de la recette'});
+    final apres = (j['apres'] as Map).cast<String, Object?>();
+    expect({for (final k in ['tables', 'enregistrements', 'valeursRetirees', 'motif']) k: apres[k]},
+        {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'valeursRetirees': valeursDeTest, 'motif': 'Fin de la recette'});
+    expect(apres['archiveesRetirees'], archivees);
+    expect(apres['entreesJournalRetirees'], greaterThan(0));
     // Retour de la Direction du 01/11/2026 : l'effectif reste, ni sa rémunération de démonstration ni les fiches de poste.
     expect(m.collection('personnel').toutes.length, effectif);
     for (final f in m.collection('personnel').toutes) {

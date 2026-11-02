@@ -17,14 +17,37 @@ import 'cfb_commun.dart';
 class CfbAudio {
   const CfbAudio._();
   static bool Function() disponible = () => Platform.isWindows || Platform.isMacOS;
-  static Future<({bool joue, String? motif})> Function() tester = () async {
-    if (!disponible()) return (joue: false, motif: 'Aucun périphérique audio détecté.');
+
+  /// Joue UN son : [fort] pour une alerte grave, court sinon. Le son sort par le système (Windows : sons du système lus par PowerShell ; macOS : `afplay`),
+  /// et à défaut par le bip de la plateforme. Rend faux si rien n'a pu être lancé. Injectable : un test ne joue pas de son.
+  static Future<bool> Function({bool fort}) jouer = ({bool fort = false}) async {
+    try {
+      if (Platform.isWindows) {
+        // `Play()` est asynchrone : la pause garde le processus en vie le temps du son.
+        final son = fort ? 'Hand' : 'Asterisk';
+        await Process.start('powershell', ['-NoProfile', '-NonInteractive', '-WindowStyle', 'Hidden', '-Command', '[System.Media.SystemSounds]::$son.Play(); Start-Sleep -Milliseconds 900'],
+            mode: ProcessStartMode.detached);
+        return true;
+      }
+      if (Platform.isMacOS) {
+        await Process.start('afplay', [fort ? '/System/Library/Sounds/Basso.aiff' : '/System/Library/Sounds/Ping.aiff'], mode: ProcessStartMode.detached);
+        return true;
+      }
+    } catch (_) {
+      // On retombe sur le bip de la plateforme.
+    }
     try {
       await SystemSound.play(SystemSoundType.alert);
-      return (joue: true, motif: null);
+      return true;
     } catch (_) {
-      return (joue: false, motif: 'Le système a refusé la lecture — réessayer.');
+      return false;
     }
+  };
+
+  static Future<({bool joue, String? motif})> Function() tester = () async {
+    if (!disponible()) return (joue: false, motif: 'Aucun périphérique audio détecté.');
+    final ok = await jouer(fort: false);
+    return ok ? (joue: true, motif: null) : (joue: false, motif: 'Le système a refusé la lecture, réessayer.');
   };
 }
 

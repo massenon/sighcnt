@@ -80,8 +80,29 @@ CfbPlanVidage cfbViderActivite(Magasin m, String motif) {
         }
     ]);
   });
-  m.journaliser('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
-      {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'valeursRetirees': valeursRetirees, 'motif': motif});
+  // LA CORBEILLE ET LE JOURNAL SONT VIDÉS (Direction, 02/11/2026) : un jeu de test remis à neuf ne garde ni les fiches archivées pendant les essais, ni le journal
+  // d'audit des essais. Exception explicite à RG-14, limitée à cette commande : l'archivage reste la règle partout ailleurs. Les fiches archivées des
+  // référentiels conservés sont retirées aussi, sans quoi la corbeille se remplirait de ce que les essais ont archivé.
+  var archiveesRetirees = 0;
+  for (final n in cfbNomsCollections()) {
+    final col = m.collection(n);
+    final arch = col.archivees.length;
+    if (arch > 0) {
+      archiveesRetirees += arch;
+      col.remplacerContenu(col.actives);
+    }
+  }
+  final entreesJournal = m.collection('audit').toutes.length;
+  m.collection('audit').remplacerContenu(const []);
+  // La première entrée du journal neuf dit ce qui vient d'être fait (RG-12) : le vidage lui-même ne s'efface pas.
+  m.journaliser('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null, {
+    'tables': plan.tables,
+    'enregistrements': plan.enregistrements,
+    'valeursRetirees': valeursRetirees,
+    'archiveesRetirees': archiveesRetirees,
+    'entreesJournalRetirees': entreesJournal,
+    'motif': motif
+  });
   return plan;
 }
 
@@ -207,29 +228,6 @@ class _Installation extends StatelessWidget {
         CfaKpi('Persistance', persistant ? 'Base locale' : 'Mémoire', 'hard-drive', persistant ? 'success' : 'warning', persistant ? 'Stockage local actif' : 'Stockage local indisponible'),
         const CfaKpi('Version du prototype', 'v1.0', 'tag', 'neutral'),
       ]),
-      if (!persistant)
-        cfbNote(
-            'La base locale chiffrée du poste n’est pas encore branchée derrière le magasin : le poste fonctionne en mémoire. Les modifications restent pleinement opérationnelles mais ne survivent pas à la fermeture du poste.',
-            ton: 'warning',
-            icone: LucideIcons.hardDrive),
-      // ARCHITECTURE CIBLE — PROPOSITION, ET L'ÉCRAN LE DIT : la maquette décrit l'hébergement web ; le poste (hors ligne d'abord) relève des ADR 0002 et 0005.
-      CarteSigh(
-          titre: 'Architecture cible — proposition',
-          child: const DescListeSigh([
-            ('Application', 'Web — Laravel 12 (PHP 8.3) avec Vue 3 via Inertia'),
-            ('Postes de travail', 'Navigateur ; application installable (PWA) sur chaque poste'),
-            ('Base de données', 'PostgreSQL, hébergée avec l’application'),
-            ('Hébergement', 'Serveur mutualisé cPanel — déploiement Git, SSL automatique'),
-            ('Poste caisse', 'Enveloppe Tauri si l’imprimante ticket ou la MECeF l’exigent'),
-            ('Reporting', 'Gabarits d’impression du navigateur ; PDF archivés côté serveur'),
-            ('Sauvegarde', 'Export chiffré planifié HORS de l’hébergeur — jamais un seul dépositaire'),
-            ('Continuité électrique', 'Onduleurs aux postes critiques, box sur onduleur, secours 4G, mode dégradé papier'),
-            ('Ce prototype', 'HTML, CSS et JavaScript — sans dépendance réseau'),
-          ])),
-      cfbNote(
-          'Cette architecture est une proposition technique, pas une décision : elle attend l’arbitrage écrit de la Direction. Deux conséquences y sont attachées et doivent être assumées avec elle — l’exploitation dépend désormais de la connexion Internet de la clinique et de la disponibilité de l’hébergeur, d’où les onduleurs, la liaison de secours et le mode dégradé papier ; et les sauvegardes doivent sortir de chez l’hébergeur, des données de santé ne pouvant reposer sur un seul prestataire.',
-          ton: 'warning',
-          icone: LucideIcons.flag),
       CarteSigh(
           titre: 'Contenu du jeu de données',
           sansRemplissage: true,

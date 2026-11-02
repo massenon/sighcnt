@@ -12,6 +12,7 @@ import 'barre_superieure.dart';
 import 'ecran_a_porter.dart';
 import 'page_standard.dart';
 import 'pied_legal.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../core/jetons_shell.dart';
 import 'contexte_ecran.dart';
 import 'contexte_autonome.dart';
@@ -25,6 +26,7 @@ import 'centre_notifications.dart';
 import 'fenetre_poste.dart';
 import 'menus_barre.dart';
 import 'modal_notifications.dart';
+import 'son_alertes.dart';
 import '../core/service_installation.dart';
 import '../modules/auth/ins_modale.dart';
 import 'recherche_globale.dart';
@@ -101,10 +103,13 @@ class _CoquePosteState extends State<CoquePoste> {
   CentreNotifications get _centre {
     final m = widget.magasin ?? _magasinVide;
     if (_centreNotif == null || !identical(_centreSur, m)) {
+      _son?.arreter();
       _centreNotif?.dispose();
       _centreSur = m;
       _centreNotif = CentreNotifications(
           magasin: m, donnees: () => _nav, role: () => _role, horloge: _maintenant, audioDisponible: () => CfbAudio.disponible());
+      // La sonorisation : le son est un canal, il écoute le centre et sonne pour toute alerte nouvelle non acquittée.
+      _son = SonAlertes(_centreNotif!, horloge: _maintenant)..demarrer();
     }
     return _centreNotif!;
   }
@@ -180,6 +185,7 @@ class _CoquePosteState extends State<CoquePoste> {
     HardwareKeyboard.instance.removeHandler(_surClavier);
     _service?.removeListener(_majInstallation);
     _installationEnCours.dispose();
+    _son?.arreter();
     _centreNotif?.dispose();
     super.dispose();
   }
@@ -195,6 +201,10 @@ class _CoquePosteState extends State<CoquePoste> {
     }
     if (e.logicalKey == LogicalKeyboardKey.f11) {
       _basculerPleinEcran();
+      return true;
+    }
+    if (e.logicalKey == LogicalKeyboardKey.f5) {
+      _actualiser();
       return true;
     }
     return false;
@@ -260,6 +270,7 @@ class _CoquePosteState extends State<CoquePoste> {
   }
 
   // --- L'assistant de première installation : la pastille de la barre, et la modale qui s'ouvre seule sur le tableau de bord de l'administrateur. ---
+  SonAlertes? _son;
   late final ValueNotifier<bool> _installationEnCours = ValueNotifier<bool>(false);
 
   ServiceInstallation? get _service => widget.magasin == null ? null : ServiceInstallation.de(widget.magasin!);
@@ -475,7 +486,7 @@ class _CoquePosteState extends State<CoquePoste> {
   Widget build(BuildContext context) {
     final s = _session;
     // Sans session : comportement historique (un écran autonome demandé prend simplement la place de la coque).
-    if (s == null) return _autonome != null ? _pleinEcran(_autonome!) : _coquePrincipale(context);
+    if (s == null) return _avecMenuContextuel(_autonome != null ? _pleinEcran(_autonome!) : _coquePrincipale(context));
     final deconnecte = s.exigeConnexion && s.etat == EtatSession.deconnectee;
     final Widget corps;
     if (deconnecte) {
@@ -500,7 +511,44 @@ class _CoquePosteState extends State<CoquePoste> {
         onPointerDown: (_) => s.activite(),
         onPointerMove: (_) => s.activite(),
         onPointerSignal: (_) => s.activite(),
-        child: corps);
+        // La structure reste la MÊME verrouillée ou non (le travail en cours reste monté sous l'écran verrouillé) : seul le geste est coupé.
+        child: _avecMenuContextuel(corps, actif: s.etat != EtatSession.verrouillee));
+  }
+
+  // --- Actualiser : le clic droit sur un écran offre le menu contextuel « Actualiser », F5 aussi. ---
+  int _actualisations = 0;
+
+  /// Enveloppe l'écran : un clic droit (hors champ de saisie, qui garde son propre menu copier/coller) ouvre « Actualiser ». Actualiser reconstruit l'écran
+  /// courant : il relit le magasin et repart de son état d'ouverture, comme une page rechargée.
+  Widget _avecMenuContextuel(Widget corps, {bool actif = true}) => GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onSecondaryTapUp: actif ? (d) => _ouvrirMenuContextuel(d.globalPosition) : null,
+      child: KeyedSubtree(key: ValueKey('actualisation-$_actualisations'), child: corps));
+
+  Future<void> _ouvrirMenuContextuel(Offset position) async {
+    final choix = await showMenu<String>(
+        context: context,
+        position: RelativeRect.fromLTRB(position.dx, position.dy, position.dx, position.dy),
+        items: const [
+          PopupMenuItem<String>(
+              key: Key('menu-actualiser'),
+              value: 'actualiser',
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(LucideIcons.refreshCw, size: 16, color: JetonsShell.slate600),
+                SizedBox(width: 8),
+                Text('Actualiser', style: TextStyle(fontSize: 14, color: JetonsShell.slate800)),
+                SizedBox(width: 16),
+                Text('F5', style: TextStyle(fontSize: 12, color: JetonsShell.slate400)),
+              ])),
+        ]);
+    if (choix == 'actualiser') _actualiser();
+  }
+
+  /// Reconstruit l'écran courant (relecture du magasin, état d'ouverture) et le dit.
+  void _actualiser() {
+    if (!mounted) return;
+    setState(() => _actualisations++);
+    ToastsSigh.afficher(context, 'Écran actualisé.', type: TypeToast.succes);
   }
 
   Widget _coquePrincipale(BuildContext context) {
