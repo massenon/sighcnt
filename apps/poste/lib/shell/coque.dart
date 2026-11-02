@@ -25,6 +25,8 @@ import 'centre_notifications.dart';
 import 'fenetre_poste.dart';
 import 'menus_barre.dart';
 import 'modal_notifications.dart';
+import '../core/service_installation.dart';
+import '../modules/auth/ins_modale.dart';
 import 'recherche_globale.dart';
 import 'ruban.dart';
 
@@ -146,6 +148,7 @@ class _CoquePosteState extends State<CoquePoste> {
   void initState() {
     super.initState();
     _brancherDroits();
+    _suivreInstallation();
     final demande = widget.ecranInitial;
     if (demande != null && _estAutonome(demande)) _autonome = demande;
     final s = _session;
@@ -175,6 +178,8 @@ class _CoquePosteState extends State<CoquePoste> {
     _minuteur?.cancel();
     _session?.removeListener(_surSession);
     HardwareKeyboard.instance.removeHandler(_surClavier);
+    _service?.removeListener(_majInstallation);
+    _installationEnCours.dispose();
     _centreNotif?.dispose();
     super.dispose();
   }
@@ -243,6 +248,36 @@ class _CoquePosteState extends State<CoquePoste> {
     }
   }
 
+  // --- L'assistant de première installation : la pastille de la barre, et la modale qui s'ouvre seule sur le tableau de bord de l'administrateur. ---
+  late final ValueNotifier<bool> _installationEnCours = ValueNotifier<bool>(false);
+
+  ServiceInstallation? get _service => widget.magasin == null ? null : ServiceInstallation.de(widget.magasin!);
+
+  /// L'assistant est-il à proposer à cet agent ? En cours sur ce poste, et l'agent est administrateur.
+  bool get _installationVisible => (_service?.enCours ?? false) && _role == 'admin';
+
+  void _suivreInstallation() {
+    final s = _service;
+    if (s == null) return;
+    s.removeListener(_majInstallation);
+    s.addListener(_majInstallation);
+    _majInstallation();
+  }
+
+  void _majInstallation() {
+    if (mounted) _installationEnCours.value = _installationVisible;
+  }
+
+  Future<void> _ouvrirInstallation() {
+    final m = widget.magasin;
+    if (m == null) return Future.value();
+    return ouvrirModaleInstallation(context,
+        magasin: m,
+        aller: (e) => _allerDepuisBarre(e),
+        estMere: widget.config.estMere,
+        ouvert: (e) => ecranOuvertAuRole(_nav, _role, e));
+  }
+
   Future<void> _ouvrirNotifications({bool ouverture = false}) =>
       ouvrirCentreNotifications(context, centre: _centre, ouverture: ouverture, aller: (e) => _allerDepuisBarre(e));
 
@@ -308,11 +343,18 @@ class _CoquePosteState extends State<CoquePoste> {
       if (s.etat == EtatSession.deconnectee) _autonome = null;
       _compteVu = s.compte;
     });
-    // À la CONNEXION, le centre de notifications s'ouvre de lui-même sur le tableau de bord du poste : ce qui attend l'agent, routé par son rôle.
+    _suivreInstallation();
+    // À la CONNEXION, le centre de notifications s'ouvre de lui-même sur le tableau de bord du poste : ce qui attend l'agent, routé par son rôle. Tant que
+    // l'assistant d'installation est en cours, c'est SA modale qui s'ouvre à la place (les alertes restent à la cloche).
     if (_notifierALArrivee) {
       _notifierALArrivee = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _barreActive) _ouvrirNotifications(ouverture: true);
+        if (!mounted || !_barreActive) return;
+        if (_installationVisible) {
+          _ouvrirInstallation();
+        } else {
+          _ouvrirNotifications(ouverture: true);
+        }
       });
     }
   }
@@ -527,7 +569,9 @@ class _CoquePosteState extends State<CoquePoste> {
       surPleinEcran: _basculerPleinEcran,
       pleinEcran: _fenetre.pleinEcran,
       surNotifications: _ouvrirNotifications,
-      surProfil: _ouvrirProfil);
+      surProfil: _ouvrirProfil,
+      installation: _installationEnCours,
+      surInstallation: _ouvrirInstallation);
 
   /// Les maillons cliquables du fil (comme la maquette) : « Accueil » ramène à la page d'accueil du rôle ; l'intitulé du module ouvre la page d'accueil du module
   /// (sauf sur cette page elle-même), s'il est ouvert au profil.

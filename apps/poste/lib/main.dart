@@ -131,7 +131,9 @@ Future<void> main() async {
   // d'aval) par le moteur de la fiche de consultation ; une pièce non transcriptible est refusée en le disant.
   if (connexionExigee != 'non' && assistantInstallation != 'non' && motDePasseDemo.isEmpty) {
     // Poste neuf : l'assistant propose « Première installation » ou « Rejoindre une clinique ». L'état d'installation vit dans les paramètres du poste.
-    await ServiceInstallation.de(magasin).attacher(stockage, await activation.parametres());
+    final installation = ServiceInstallation.de(magasin);
+    await installation.attacher(stockage, await activation.parametres());
+    installation.activerMere = controleur.activer;
   } else if (connexionExigee != 'non') {
     final ident = ServiceIdentifiants.de(magasin);
     final maintenant = DateTime.now();

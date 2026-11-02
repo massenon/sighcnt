@@ -27,7 +27,9 @@ class BarreSuperieure extends StatelessWidget {
       this.surPleinEcran,
       this.pleinEcran,
       this.surNotifications,
-      this.surProfil});
+      this.surProfil,
+      this.installation,
+      this.surInstallation});
   final ConfigPoste config;
   final SourceEtatSync etatSync;
   final String nomRole;
@@ -42,6 +44,10 @@ class BarreSuperieure extends StatelessWidget {
   /// Le moteur de notifications : le badge de la cloche en est le compte RÉEL des alertes non acquittées, routées pour ce rôle.
   final CentreNotifications? centre;
   final VoidCallback? surRecherche, surActions, surPleinEcran, surNotifications, surProfil;
+
+  /// L'assistant de première installation : tant qu'il est en cours, une pastille « Configurations à faire » rouvre sa modale (administrateur seulement).
+  final ValueListenable<bool>? installation;
+  final VoidCallback? surInstallation;
 
   /// L'état réel du plein écran (suit F11 et la sortie par le système) ; absent = fenêtre.
   final ValueListenable<bool>? pleinEcran;
@@ -132,6 +138,14 @@ class BarreSuperieure extends StatelessWidget {
         else
           _Outil(cle: 'barre-plein-ecran', icone: LucideIcons.maximize, info: 'Plein écran (F11)', surTap: surPleinEcran),
         const SizedBox(width: 6),
+        if (installation != null)
+          ValueListenableBuilder<bool>(
+              valueListenable: installation!,
+              builder: (_, on, __) => on
+                  ? Padding(
+                      padding: const EdgeInsets.only(right: 6),
+                      child: _Outil(cle: 'barre-installation', icone: LucideIcons.listChecks, info: 'Configurations à faire avant l’utilisation', surTap: surInstallation))
+                  : const SizedBox.shrink()),
         PastilleSync(source: etatSync),
         const SizedBox(width: 6),
         _Cloche(centre: centre, repli: nombreAlertes, surTap: surNotifications),

@@ -13,6 +13,7 @@ import 'package:sigh_poste/core/service_installation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
+import 'package:sigh_poste/mere/activation.dart' show ActivationRefusee;
 import 'package:sigh_poste/modules/auth/acc_session.dart';
 
 import 'aide_polices.dart';
@@ -180,5 +181,124 @@ void main() {
         '${m.collection('utilisateurs').toutes.firstWhere((u) => u['identifiant'] == 'k.adjovi')['id']}', 'Nouveau#Mot2Passe9'));
     expect(ok, isTrue, reason: id);
     await fin(t);
+  });
+
+  mainModale();
+}
+
+/// PLAN étapes 6 à 8 : la modale « Configurations à faire », l'activation de la mère (reportable), la clôture qui exige un second administrateur.
+Future<(Magasin, SessionPoste, ServiceInstallation)> installeEtConnecte(WidgetTester t) async {
+  final m = await posteNeuf(t);
+  final s = SessionPoste(exigeConnexion: true, horloge: () => auj);
+  await monter(t, m, s);
+  await toucher(t, find.byKey(const Key('ins:premiere')));
+  await saisir(t, 'ins:nom', 'ADJOVI Koffi');
+  await saisir(t, 'ins:identifiant', 'k.adjovi');
+  await saisir(t, 'ins:motdepasse', secret);
+  await saisir(t, 'ins:confirmation', secret);
+  await toucher(t, find.byKey(const Key('ins:creer')));
+  await calculer(t);
+  await toucher(t, find.byKey(const Key('ins:range')));
+  await toucher(t, find.byKey(const Key('ins:suite')));
+  for (var i = 0; i < 4; i++) {
+    await t.pump(const Duration(milliseconds: 200));
+  }
+  return (m, s, ServiceInstallation.de(m));
+}
+
+void mainModale() {
+  group('modale « Configurations à faire »', () {
+    testWidgets('elle s’ouvre seule sur le tableau de bord de l’administrateur, avec la pastille de la barre', (t) async {
+      final (_, s, _) = await installeEtConnecte(t);
+      expect(s.etat, EtatSession.connectee);
+      expect(find.text('Configurations à faire avant l’utilisation'), findsOneWidget);
+      expect(find.byKey(const Key('ins:progression')), findsOneWidget);
+      expect(find.textContaining('0 étape(s) faite(s) sur 4'), findsOneWidget);
+      await toucher(t, find.byKey(const Key('ins:modale-fermer')));
+      expect(find.text('Configurations à faire avant l’utilisation'), findsNothing);
+      expect(find.byKey(const Key('barre-installation')), findsOneWidget, reason: 'la pastille rouvre la modale');
+      await toucher(t, find.byKey(const Key('barre-installation')));
+      expect(find.text('Configurations à faire avant l’utilisation'), findsOneWidget);
+      await fin(t);
+    });
+
+    Future<void> champ(WidgetTester t, String nom, String texte) async {
+      await t.enterText(find.descendant(of: find.byKey(Key('kit:champ:$nom')), matching: find.byType(TextField)), texte);
+      await t.pump();
+    }
+
+    Future<void> remplirActivation(WidgetTester t) async {
+      await toucher(t, find.byKey(const Key('ins:activer')));
+      await champ(t, 'relais', 'https://relais.exemple.bj');
+      await champ(t, 'secret', 'secret-de-la-mere');
+      await champ(t, 'cle', 'cle-de-clinique-0123456789');
+      await toucher(t, find.byKey(const Key('ins:activer-valider')));
+      for (var i = 0; i < 3; i++) {
+        await t.pump(const Duration(milliseconds: 100));
+      }
+    }
+
+    testWidgets('les étapes B, C, D sont verrouillées avec leur motif tant que la mère n’est pas réglée ; l’activation échoue en le disant, puis se reporte', (t) async {
+      final (_, _, service) = await installeEtConnecte(t);
+      for (final id in ['configurations', 'comptes', 'appairages']) {
+        expect((t.widget(find.byKey(Key('ins:motif-$id'))) as Text).data, contains('Activer d’abord la mère'));
+        expect(find.byKey(Key('ins:fait-$id')), findsNothing, reason: 'une étape verrouillée n’offre aucune commande');
+      }
+      service.activerMere = ({required relais, required secretMere, required cleClinique, nomPoste}) async =>
+          throw ActivationRefusee('relais_injoignable', 'Le relais n’a pas répondu : l’activation exige de le joindre.');
+      await remplirActivation(t);
+      expect(find.byKey(const Key('ins:erreur-activation')), findsOneWidget);
+      expect(find.textContaining('Le relais n’a pas répondu'), findsOneWidget);
+      expect(service.etat.etat('mere'), EtapeEtat.aFaire, reason: 'un échec ne marque rien');
+      await toucher(t, find.byKey(const Key('ins:reporter')));
+      expect(service.etat.etat('mere'), EtapeEtat.reportee);
+      expect(find.byKey(const Key('ins:fait-configurations')), findsOneWidget, reason: 'reportée, la mère déverrouille les autres étapes');
+      await fin(t);
+    });
+
+    testWidgets('l’activation réussie marque l’étape et passe par le geste réel du poste', (t) async {
+      final (_, _, service) = await installeEtConnecte(t);
+      Map<String, String?>? recu;
+      service.activerMere = ({required relais, required secretMere, required cleClinique, nomPoste}) async =>
+          recu = {'relais': relais, 'secret': secretMere, 'cle': cleClinique};
+      await remplirActivation(t);
+      expect(recu!['relais'], 'https://relais.exemple.bj');
+      expect(service.etat.etat('mere'), EtapeEtat.faite);
+      expect(find.text('La mère est activée.'), findsOneWidget);
+      await fin(t);
+    });
+
+    testWidgets('la clôture exige les quatre étapes ET un second administrateur ; une fois close, la pastille disparaît et le dernier administrateur ne s’archive plus', (t) async {
+      final (m, _, service) = await installeEtConnecte(t);
+      service.activerMere = ({required relais, required secretMere, required cleClinique, nomPoste}) async {};
+      await remplirActivation(t);
+      expect((t.widget(find.byKey(const Key('ins:cloturer'))) as BoutonSigh).onPressed, isNull, reason: 'il reste des étapes');
+      expect(find.textContaining('Il reste des étapes'), findsOneWidget);
+      for (final id in ['configurations', 'comptes', 'appairages']) {
+        await toucher(t, find.byKey(Key('ins:fait-$id')));
+      }
+      expect(find.byKey(const Key('ins:refus-cloture')), findsOneWidget);
+      expect(find.textContaining('second administrateur est obligatoire'), findsOneWidget);
+      expect((t.widget(find.byKey(const Key('ins:cloturer'))) as BoutonSigh).onPressed, isNull);
+
+      // Un second administrateur, avec un mot de passe : la clôture s'ouvre.
+      m.collection('utilisateurs').inserer({'id': 'USR900', 'statut': 'actif', 'identifiant': 'a.second', 'nomComplet': 'SECOND Admin', 'role': 'admin'});
+      await t.runAsync(() => ServiceIdentifiants.de(m).definir('USR900', secret, par: 'test', doitChanger: false, maintenant: auj));
+      service.notifyListeners();
+      await t.pump(const Duration(milliseconds: 100));
+      expect(find.byKey(const Key('ins:refus-cloture')), findsNothing);
+      await toucher(t, find.byKey(const Key('ins:cloturer')));
+      expect(service.etat.phase, PhaseInstallation.cloturee);
+      expect(find.text('L’assistant est clos.'), findsOneWidget);
+      expect(m.collection('audit').toutes.map((f) => f['action']), contains('Assistant d’installation clos'));
+
+      // Le moteur refuse d'archiver un administrateur qui laisserait moins de deux administrateurs actifs.
+      final premier = m.collection('utilisateurs').toutes.firstWhere((u) => u['identifiant'] == 'k.adjovi');
+      expect(() => m.collection('utilisateurs').archiver(premier['id']), throwsA(isA<EcritureRefusee>()));
+      expect(m.collection('utilisateurs').parId(premier['id'])!['statut'], 'actif');
+      await toucher(t, find.byKey(const Key('ins:modale-fermer')));
+      expect(find.byKey(const Key('barre-installation')), findsNothing, reason: 'l’assistant clos n’a plus de pastille');
+      await fin(t);
+    });
   });
 }
