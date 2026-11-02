@@ -1,5 +1,5 @@
 # PRD — Poste : première installation, activation de la mère et rejoindre une clinique
-Statut : brouillon (02/11/2026) ; Q1, Q3, Q4, Q5, Q7 arbitrées par la Direction le 02/11/2026 ; Q2 et Q6 restent ouvertes (voir §10)
+Statut : arrêté le 02/11/2026 par la Direction (Q1 à Q7) ; Q2 et Q6 arbitrées aussi le 02/11/2026 (voir §10) ; plan : `docs/plans/PLAN-poste-premiere-installation.md`
 Sources : demande de la Direction du 02/11/2026 ; `docs/specs/SPEC-protocole-synchronisation.md` §3 (appairage, EF-SYNC-16) ; `docs/architecture/adr/ADR-0005-*` ; `apps/poste/lib/mere/activation.dart` ; `apps/poste/lib/core/identifiants.dart` ; `CLAUDE.md` (RG-12, RG-13, RG-14, arbitrage « connexion par défaut » du 01/11/2026).
 
 ## 1. Problème
@@ -94,8 +94,7 @@ Rendus par la Direction le 02/11/2026 :
 - Q5 Compte de l'installateur distinct du super administrateur du panneau web : OUI. Arbitré.
 - Q7 Liste de configurations : celle des écrans `cfg-*` de la maquette (EF-INST-04). Arbitré.
 
-Restent ouvertes :
-| # | Question | Option recommandée |
-|---|---|---|
-| Q2 | Ordre : activer la mère avant les configurations ou après ? | Avant : toute configuration devient une opération de journal diffusée sans reprise ; activation reportable si le relais est injoignable |
-| Q6 | L'administrateur d'installation peut-il rester seul administrateur ? | Non : au moins un second administrateur à créer avant la clôture de l'assistant ; archivage seulement (RG-14) |
+- Q2 Ordre : la mère est activée AVANT les configurations ; l'activation est reportable si le relais est injoignable. Arbitré.
+- Q6 Second administrateur : OBLIGATOIRE avant la clôture de l'assistant ; archivage seulement (RG-14). Arbitré.
+
+Aucune question ouverte.
