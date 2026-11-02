@@ -201,6 +201,120 @@ class ServiceIdentifiants {
   }
 }
 
+/// LE CODE DE SECOURS DE L'ADMINISTRATEUR (PRD-POSTE-premiere-installation, EF-INST-09). Règles pures : `packages/domaine/lib/src/acces/acc_secours.dart`.
+/// Seule l'EMPREINTE du code est gardée (collection `codesSecours`), jamais le code : un code perdu ne se retrouve pas.
+extension SecoursAdministrateur on ServiceIdentifiants {
+  CollectionMagasin get _codes => _magasin.collection('codesSecours');
+  CollectionMagasin get _etatChemin => _magasin.collection('etatSecours');
+
+  /// Le compte a-t-il un code de secours utilisable ?
+  bool secoursDisponible(String utilisateurId) => accSecoursUtilisable(_codes.parId('SEC-$utilisateurId'));
+
+  /// Engendre un NOUVEAU code de secours pour l'administrateur (le précédent, s'il y en avait un, cesse de valoir) et le rend à l'affichage, groupé par cinq.
+  /// Il ne sera plus jamais relisible : l'appelant l'affiche UNE fois.
+  Future<String> genererCodeSecours(String utilisateurId, {required String par, required DateTime maintenant}) async {
+    final code = accGenererCodeSecours(ServiceIdentifiants.aleatoire());
+    final sel = _tirerSel();
+    final hash = await _deriver(code, sel, ServiceIdentifiants.parametres);
+    final fiche = accFicheSecours(
+        utilisateurId: utilisateurId,
+        hash: base64.encode(hash),
+        sel: base64.encode(sel),
+        parametres: ServiceIdentifiants.parametres,
+        maintenant: maintenant,
+        creePar: par);
+    if (_codes.parId(fiche['id']) == null) {
+      _codes.inserer(fiche, prefixe: 'SEC');
+    } else {
+      _codes.mettreAJour(fiche['id'], fiche);
+    }
+    // Le journal dit le GESTE, jamais le code (RG-12).
+    _magasin.journaliser('Code de secours généré', 'M14', 'Identifiant', utilisateurId, null, null);
+    return accFormaterCodeSecours(code);
+  }
+
+  /// « J'ai perdu mon mot de passe administrateur » : identifiant + code de secours + nouveau mot de passe. Un essai faux (identifiant inconnu, compte qui n'est
+  /// pas administrateur, code faux ou déjà consommé) coûte le même temps de calcul, compte pareil, et reçoit LE MÊME message. Au cinquième, le chemin est
+  /// bloqué quinze minutes. La politique du mot de passe est contrôlée AVANT de consommer le code : un mot de passe refusé ne brûle pas le code.
+  Future<ResultatSecours> recuperer({
+    required String identifiant,
+    required String code,
+    required String nouveau,
+    required String confirmation,
+    required DateTime maintenant,
+  }) async {
+    final etat = _etatChemin.parId('CHEMIN') ?? <String, Object?>{};
+    final bloque = accSecoursBloqueJusqua(etat, maintenant);
+    if (bloque != null) {
+      return ResultatSecours.refus(accMessageSecoursBloque(bloque), bloqueJusqua: bloque);
+    }
+    final id = identifiant.trim();
+    final compte = _magasin.collection('utilisateurs').toutes.where((u) => '${u['identifiant']}' == id && '${u['statut'] ?? 'actif'}' == 'actif').firstOrNull;
+    final fiche = compte == null ? null : _codes.parId('SEC-${compte['id'] ?? id}');
+    final valide = compte != null &&
+        accSecoursPourRole('${compte['role']}') &&
+        accSecoursUtilisable(fiche) &&
+        accCodeSecoursBienForme(code);
+    var bon = false;
+    if (valide) {
+      final p = AccParametresHachage.depuisFiche(fiche!);
+      final calcule = await _deriver(accNormaliserCodeSecours(code), base64.decode('${fiche['sel']}'), p);
+      bon = ServiceIdentifiants._egaux(calcule, base64.decode('${fiche['hash']}'));
+    } else {
+      await _leurre(code); // même durée qu'un vrai contrôle
+    }
+    if (!bon) {
+      final r = accSecoursApresEchec(etat, maintenant);
+      _ecrireEtat({...etat, ...r.patch});
+      _magasin.utilisateur = id.isEmpty ? 'Inconnu' : id;
+      _magasin.collection('tentativesConnexion').inserer({
+        'identifiant': id,
+        'nom': '${compte?['nomComplet'] ?? id}',
+        'role': '${compte?['role'] ?? '—'}',
+        'motif': 'Code de secours refusé',
+        'horodatage': maintenant.toIso8601String(),
+        'poste': 'Récupération administrateur',
+        'traitee': false,
+      }, prefixe: 'TNT');
+      final fin = r.bloque ? maintenant.add(accDureeBlocageSecours) : null;
+      return ResultatSecours.refus(fin != null ? accMessageSecoursBloque(fin) : accMessageSecoursRefus, bloqueJusqua: fin);
+    }
+    final refusPolitique = accControlerNouveauMotDePasse(nouveau, confirmation, identifiant: id);
+    if (refusPolitique != null) return ResultatSecours.refus(refusPolitique, codeBon: true);
+    final cle = '${compte!['id'] ?? id}';
+    await definir(cle, nouveau, par: 'Code de secours', doitChanger: false, maintenant: maintenant);
+    _codes.mettreAJour(fiche!['id'], {'consommeLe': maintenant.toIso8601String()});
+    _ecrireEtat({...etat, ...accSecoursApresSucces()});
+    _magasin.journaliser('Récupération administrateur', 'M14', 'Identifiant', cle, null, {'codeConsomme': true});
+    final nouveauCode = await genererCodeSecours(cle, par: 'Récupération administrateur', maintenant: maintenant);
+    return ResultatSecours.ok(nouveauCode);
+  }
+
+  void _ecrireEtat(Map<String, Object?> e) {
+    if (_etatChemin.parId('CHEMIN') == null) {
+      _etatChemin.inserer({'id': 'CHEMIN', ...e}, prefixe: 'CHEMIN');
+    } else {
+      _etatChemin.mettreAJour('CHEMIN', e);
+    }
+  }
+}
+
+/// Le résultat de la récupération : le nouveau code (affiché une fois), ou un refus NOMMÉ.
+class ResultatSecours {
+  const ResultatSecours.ok(String this.nouveauCode)
+      : message = null,
+        bloqueJusqua = null,
+        codeBon = true;
+  const ResultatSecours.refus(String this.message, {this.bloqueJusqua, this.codeBon = false}) : nouveauCode = null;
+  final String? nouveauCode;
+  final String? message;
+  final DateTime? bloqueJusqua;
+
+  /// Le code était bon mais le nouveau mot de passe a été refusé : le code n'est pas consommé.
+  final bool codeBon;
+  bool get ok => nouveauCode != null;
+}
+
 /// Le mot de passe provisoire de l'administrateur initial. À afficher UNE fois, jamais à écrire.
 class ProvisoireAdmin {
   const ProvisoireAdmin({required this.identifiant, required this.motDePasse});

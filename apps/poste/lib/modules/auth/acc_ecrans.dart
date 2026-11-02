@@ -80,11 +80,43 @@ Widget _bandeauProvisoire(ProvisoireAdmin p) => Padding(
               style: const TextStyle(color: JetonsShell.warning800, fontSize: 12, height: 16 / 12)),
         ])));
 
+/// La politique de mot de passe avec ses coches (réutilisée par l'assistant d'installation et la récupération).
+Widget reglesPolitiqueAcces(String saisie, String? identifiant) => _reglesPolitique(saisie, identifiant);
+
 Widget _lienRetour(BuildContext c, String texte, String cible) => LienAcces(texte, onTap: () => ContexteAutonome.of(c).aller(cible));
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 // index — connexion
 // ------------------------------------------------------------------------------------------------------------------------------------------------
+
+/// Ouvre la session d'un compte DÉJÀ vérifié (connexion, changement obligatoire, première installation, récupération) : acteur du journal, fiche du registre
+/// des sessions, délai de verrou de la politique de sécurité ; sans session de poste, aiguille vers l'accueil du rôle.
+void ouvrirSessionAcces(ContexteAutonome x, AccCompte c) {
+  final m = x.magasin;
+  // L'administrateur a ouvert sa session : le mot de passe provisoire n'est plus affiché (il ne l'était qu'une fois).
+  if (ServiceIdentifiants.provisoireAffiche?.identifiant == c.identifiant) ServiceIdentifiants.provisoireAffiche = null;
+  m.poserActeur(c.agent ?? agentDemonstration(c.role, nom: c.nom));
+  // Le journal dit ce qui s'est passé : le mot de passe a été VÉRIFIÉ contre le haché.
+  m.journaliser('Connexion', 'M14', 'Session', c.identifiant, null, {'role': c.role, 'motDePasseVerifie': true});
+  final s = x.session;
+  if (s != null) {
+    s.connecter(c);
+    // Le REGISTRE des sessions : une fiche nouvelle à chaque connexion (jamais la réouverture d'une session clôturée), un contrôle de clôture au
+    // prochain geste, le verrou qui suspend et reprend la fiche.
+    final reg = RegistreSessions.de(m);
+    final id = reg.ouvrir(identifiant: c.identifiant, nomComplet: c.nom, role: c.role, poste: Platform.localHostname, maintenant: x.maintenant);
+    s.sessionId = id;
+    s.estCloturee = reg.estCloturee;
+    s.surEtat = (i, e) => reg.changerEtat(i, e, x.maintenant);
+    reg.surCloturePropre = s.fermerParCloture;
+    reg.appliquerDelaiVerrou = (d) => s.verrou.delai = d;
+    // Le délai d'inactivité de la politique de sécurité, quand l'administrateur l'a réglée.
+    final pol = m.collection('politiqueSecurite').actives.firstOrNull;
+    if (pol != null) s.verrou.delai = Duration(minutes: secPolitique(pol)['inactiviteMin']!);
+  } else {
+    x.aller(x.donnees?.matrice.accueil(c.role) ?? 'plan-du-site');
+  }
+}
 
 class EcranConnexion extends StatefulWidget with EcranAutonome {
   const EcranConnexion({super.key});
@@ -180,31 +212,8 @@ class _EtatConnexion extends State<EcranConnexion> {
   }
 
   void _ouvrirSession(ContexteAutonome x, AccCompte c) {
-    final m = x.magasin;
-    // L'administrateur a ouvert sa session : le mot de passe provisoire n'est plus affiché (il ne l'était qu'une fois).
-    if (ServiceIdentifiants.provisoireAffiche?.identifiant == c.identifiant) ServiceIdentifiants.provisoireAffiche = null;
-    m.poserActeur(c.agent ?? agentDemonstration(c.role, nom: c.nom));
-    // Le journal dit ce qui s'est passé : le mot de passe a été VÉRIFIÉ contre le haché.
-    m.journaliser('Connexion', 'M14', 'Session', c.identifiant, null, {'role': c.role, 'motDePasseVerifie': true});
+    ouvrirSessionAcces(x, c);
     setState(() => _erreur = null);
-    final s = x.session;
-    if (s != null) {
-      s.connecter(c);
-      // Le REGISTRE des sessions : une fiche nouvelle à chaque connexion (jamais la réouverture d'une session clôturée), un contrôle de clôture au
-      // prochain geste, le verrou qui suspend et reprend la fiche.
-      final reg = RegistreSessions.de(m);
-      final id = reg.ouvrir(identifiant: c.identifiant, nomComplet: c.nom, role: c.role, poste: Platform.localHostname, maintenant: x.maintenant);
-      s.sessionId = id;
-      s.estCloturee = reg.estCloturee;
-      s.surEtat = (i, e) => reg.changerEtat(i, e, x.maintenant);
-      reg.surCloturePropre = s.fermerParCloture;
-      reg.appliquerDelaiVerrou = (d) => s.verrou.delai = d;
-      // Le délai d'inactivité de la politique de sécurité, quand l'administrateur l'a réglée.
-      final pol = m.collection('politiqueSecurite').actives.firstOrNull;
-      if (pol != null) s.verrou.delai = Duration(minutes: secPolitique(pol)['inactiviteMin']!);
-    } else {
-      x.aller(x.donnees?.matrice.accueil(c.role) ?? 'plan-du-site');
-    }
   }
 
   /// Le changement OBLIGATOIRE : le nouveau mot de passe respecte la politique et diffère de l'actuel ; il remplace le provisoire, puis la session s'ouvre.
@@ -346,6 +355,8 @@ class _EtatConnexion extends State<EcranConnexion> {
         if (_erreur != null) Padding(padding: const EdgeInsets.only(top: 16), child: MessageErreurAcces(_erreur!)),
         const SizedBox(height: 16),
         BoutonSigh(libelle: 'Se connecter', taille: TailleBouton.lg, icone: LucideIcons.logIn, onPressed: _soumettre),
+        const SizedBox(height: 16),
+        Center(child: LienAcces('J’ai perdu mon mot de passe administrateur', petit: true, onTap: () => ContexteAutonome.of(context).aller('auth-secours'))),
         const SizedBox(height: 16),
         _noteSecurite(noteConnexion),
         if (ServiceIdentifiants.provisoireAffiche != null) _bandeauProvisoire(ServiceIdentifiants.provisoireAffiche!),

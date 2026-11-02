@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/config_poste.dart';
 import 'acc_ecrans.dart';
+import 'ins_ecrans.dart';
 import 'acc_support.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
@@ -12,7 +13,9 @@ typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste con
 /// Les huit premiers sont AUTONOMES (`EcranAutonome`) : la coque les sert en plein écran, sans barre, sans ruban, sans page standard. `aide-apropos` et
 /// `contact-editeur` sont des écrans ordinaires de la coque, hors ruban.
 final Map<String, ConstruireEcran> ecransAUTH = {
-  'index': (c, cfg) => const EcranConnexion(),
+  'index': (c, cfg) => const EcranIndex(),
+  'ins-premiere': (c, cfg) => const EcranPremiereInstallation(),
+  'auth-secours': (c, cfg) => const EcranRecuperationAdmin(),
   'auth-forgot': (c, cfg) => const EcranMotDePasseOublie(),
   'auth-reset': (c, cfg) => const EcranReinitialisation(),
   'auth-2fa': (c, cfg) => const EcranDoubleFacteur(),

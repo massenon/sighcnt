@@ -9,6 +9,7 @@ import 'core/config_poste.dart';
 import 'core/controleur_poste.dart';
 import 'core/donnees_navigation.dart';
 import 'core/identifiants.dart';
+import 'core/service_installation.dart';
 import 'core/parametres_poste.dart';
 import 'core/theme.dart';
 import 'mere/activation.dart';
@@ -53,6 +54,11 @@ const String motDePasseDemo =
 /// pas supprimé : il est renommé `magasin.ancien-<date>`.
 const String repartirAZero =
     String.fromEnvironment('SIGH_REPARTIR_A_ZERO', defaultValue: 'non');
+
+/// `SIGH_ASSISTANT=non` : DÉVELOPPEMENT. Pas d'assistant de première installation : le poste garde l'ancien chemin (administrateur `admin.systeme` avec un mot
+/// de passe provisoire affiché sur l'écran de connexion). Par défaut, un poste sans compte connectable démarre sur l'assistant.
+const String assistantInstallation =
+    String.fromEnvironment('SIGH_ASSISTANT', defaultValue: 'oui');
 
 /// Dossier des données du poste. À remplacer par le dossier d'application du système à l'installation (tâche de packaging).
 const String dossierDonnees =
@@ -123,7 +129,10 @@ Future<void> main() async {
   });
   // E1559 : les prescriptions que les téléphones des soignants envoient par la mère sont TRANSCRITES ici (ordonnance, facture de la caisse, files
   // d'aval) par le moteur de la fiche de consultation ; une pièce non transcriptible est refusée en le disant.
-  if (connexionExigee != 'non') {
+  if (connexionExigee != 'non' && assistantInstallation != 'non' && motDePasseDemo.isEmpty) {
+    // Poste neuf : l'assistant propose « Première installation » ou « Rejoindre une clinique ». L'état d'installation vit dans les paramètres du poste.
+    await ServiceInstallation.de(magasin).attacher(stockage, await activation.parametres());
+  } else if (connexionExigee != 'non') {
     final ident = ServiceIdentifiants.de(magasin);
     final maintenant = DateTime.now();
     if (motDePasseDemo.isEmpty) {

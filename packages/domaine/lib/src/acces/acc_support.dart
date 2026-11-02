@@ -232,6 +232,10 @@ const Set<String> accEcransPleinEcran = {
   'error-403',
   'plan-du-site',
   'enquete-publique',
+  // Écrans de la CIBLE uniquement (PRD-POSTE-premiere-installation) : première installation, rejoindre une clinique, récupération administrateur.
+  'ins-premiere',
+  'ins-rejoindre',
+  'auth-secours',
 };
 
 /// Les pages PUBLIQUES : elles ne reçoivent ni session, ni navigation, ni manifeste. Une page d'enquête qui afficherait la coquille de l'application serait
