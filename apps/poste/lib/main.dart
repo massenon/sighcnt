@@ -38,9 +38,10 @@ const String roleDev =
 const String connexionExigee =
     String.fromEnvironment('SIGH_CONNEXION', defaultValue: 'oui');
 
-/// `SIGH_PLEIN_ECRAN=non` : ne pas passer en plein écran au démarrage (développement). Par défaut le poste se lance en plein écran.
+/// `SIGH_PLEIN_ECRAN=oui` : démarrer en vrai plein écran (la barre des tâches disparaît). Par défaut (Direction, 02/11/2026) le poste démarre MAXIMISÉ, barre
+/// des tâches visible, comme les logiciels de bureautique ; F11 et la barre supérieure basculent en plein écran à la demande.
 const String pleinEcranAuDemarrage =
-    String.fromEnvironment('SIGH_PLEIN_ECRAN', defaultValue: 'oui');
+    String.fromEnvironment('SIGH_PLEIN_ECRAN', defaultValue: 'non');
 
 /// `SIGH_MDP_DEMO=<mot de passe>` : DÉVELOPPEMENT SEULEMENT. Définit ce mot de passe pour tous les comptes actifs du jeu, avec changement obligatoire à la
 /// première connexion. Vide (défaut) : seul l'administrateur reçoit un mot de passe provisoire aléatoire, affiché sur l'écran de connexion.
@@ -58,13 +59,21 @@ SessionPoste? sessionDemarrage({String connexion = connexionExigee, DateTime Fun
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // La fenêtre pilotable : un poste sans fenêtre native n'empêche pas le démarrage. Le poste se lance en PLEIN ÉCRAN (Direction, 01/11/2026) ; si la
+  // La fenêtre pilotable : un poste sans fenêtre native n'empêche pas le démarrage. Le poste se lance MAXIMISÉ (Direction, 02/11/2026 ; le plein écran du 01/11 reste à la demande) ; si la
   // plateforme refuse, le repli est nommé et la coque le dit au premier affichage. F11 et la barre supérieure basculent ensuite.
   FenetreSysteme? fenetre;
   try {
     await windowManager.ensureInitialized();
     fenetre = FenetreSysteme();
-    if (pleinEcranAuDemarrage != 'non') await fenetre.demarrerPleinEcran();
+    if (pleinEcranAuDemarrage != 'non') {
+      await fenetre.demarrerPleinEcran();
+    } else {
+      await windowManager.waitUntilReadyToShow(const WindowOptions(title: 'SIGH-CNT'), () async {
+        await windowManager.maximize();
+        await windowManager.show();
+        await windowManager.focus();
+      });
+    }
   } catch (_) {}
   final stockage = StockageFichier('$dossierDonnees/poste.json');
   final activation = ActivationMere(

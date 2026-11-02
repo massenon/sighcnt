@@ -464,15 +464,15 @@ void main() {
 
   // ============================================================================================================================ LOGO
   group('le logo de la clinique', () {
-    test('il est déclaré aux assets du poste, présent, et se décode (131 × 82 JPEG)', () {
+    test('il est déclaré aux assets du poste, présent, et se décode (131 × 82 PNG, converti du JPEG)', () {
       final pubspec = File('pubspec.yaml').readAsStringSync();
       expect(pubspec, contains('- assets/img/'), reason: 'le dossier des images est déclaré');
       final f = File(LogoClinique.asset);
       expect(f.existsSync(), isTrue);
       final b = f.readAsBytesSync();
-      expect(b.sublist(0, 3), [0xFF, 0xD8, 0xFF], reason: 'un JPEG, non altéré (aucune conversion de fin de ligne)');
+      expect(b.sublist(0, 4), [0x89, 0x50, 0x4E, 0x47], reason: 'un PNG, non altéré (aucune conversion de fin de ligne)');
       expect(b.length, greaterThan(5000));
-      expect(File('../../.gitattributes').readAsStringSync(), contains('*.jpeg binary'), reason: 'un checkout Windows ne convertit jamais le logo');
+      expect(File('../../.gitattributes').readAsStringSync(), contains('*.png binary'), reason: 'un checkout Windows ne convertit jamais le logo');
     });
 
     testWidgets('la barre l\'AFFICHE réellement (image décodée, pas le monogramme de repli)', (t) async {

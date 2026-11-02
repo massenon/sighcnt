@@ -3,7 +3,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../core/jetons_shell.dart';
 
-/// Le LOGO de la clinique (`assets/img/logo.jpeg`, déclaré par `assets/img/` dans `pubspec.yaml`). UN seul endroit le charge pour la barre, la connexion,
+/// Le LOGO de la clinique (`assets/img/logo.png`, converti du JPEG le 02/11/2026 ; déclaré par `assets/img/` dans `pubspec.yaml`). UN seul endroit le charge pour la barre, la connexion,
 /// le verrou et la feuille A4 : un logo qui manque ne doit JAMAIS disparaître en silence (retour de terrain du 01/11/2026, poste Windows : l'ancien
 /// `errorBuilder` rendait une boîte vide, et rien ne disait que le fichier n'avait pas été lu). En cas d'échec, le monogramme « CNT » prend la place et
 /// la cause est écrite dans la console.
@@ -11,7 +11,7 @@ class LogoClinique extends StatelessWidget {
   const LogoClinique({super.key, this.largeur = 48, this.hauteur = 48, this.fondSombre = false});
 
   /// Chemin de l'asset (testé : il doit figurer dans les assets déclarés et se décoder).
-  static const asset = 'assets/img/logo.jpeg';
+  static const asset = 'assets/img/logo.png';
 
   final double largeur, hauteur;
 

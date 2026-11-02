@@ -1,5 +1,5 @@
 # PRD — Poste : première installation, activation de la mère et rejoindre une clinique
-Statut : brouillon (02/11/2026), en attente d'arbitrage de la Direction (voir §10)
+Statut : brouillon (02/11/2026) ; Q1, Q3, Q4, Q5, Q7 arbitrées par la Direction le 02/11/2026 ; Q2 et Q6 restent ouvertes (voir §10)
 Sources : demande de la Direction du 02/11/2026 ; `docs/specs/SPEC-protocole-synchronisation.md` §3 (appairage, EF-SYNC-16) ; `docs/architecture/adr/ADR-0005-*` ; `apps/poste/lib/mere/activation.dart` ; `apps/poste/lib/core/identifiants.dart` ; `CLAUDE.md` (RG-12, RG-13, RG-14, arbitrage « connexion par défaut » du 01/11/2026).
 
 ## 1. Problème
@@ -52,9 +52,15 @@ Mobile : appairé par la mère uniquement (code + clé de clinique), jamais de c
 - **EF-INST-06** Diffusion : une configuration saisie sur la mère atteint le relais, les fileuls en attente et les mobiles par le journal d'opérations. Les fileuls « en attente » (non encore appairés) la reçoivent dans l'instantané de leur appairage. Acceptation : scénario de banc à deux postes (SYNC).
 - **EF-INST-07** Un fileul ne propose AUCUN écran de configuration modifiable : les écrans `cfg-*` y sont en lecture seule et le disent (« réglé sur la mère »). Source : demande 02/11 (« pas besoin de configurations »).
 - **EF-INST-08** Rejoindre : refus nommés pour code expiré, code déjà utilisé, mère injoignable, schéma incompatible, appareil déjà appairé. Source : SPEC §3 et SYNC-R18.
-- **EF-INST-09** Mot de passe oublié de l'administrateur système : voir §10 Q4 (aucune solution inventée ici).
-- **EF-INST-10** Barre des tâches : le poste démarre MAXIMISÉ (barre des tâches visible) ; le vrai plein écran est un choix de l'agent (F11 et bouton de la barre supérieure). Cela remplace le plein écran forcé au démarrage, sous réserve de l'arbitrage Q1.
-- **EF-INST-11** Logo : l'application affiche le logo dans la barre, la connexion et le verrou ; en cas d'échec de lecture, le monogramme remplace le logo ET la cause est écrite à l'écran de diagnostic, pas seulement dans la console. L'icône de la fenêtre et de l'exécutable Windows est celle de la clinique, non l'icône par défaut de Flutter. Voir §9 pour ce qui n'est pas établi.
+- **EF-INST-09** Mot de passe oublié (arbitrage Q4, 02/11/2026). Le lien « Mot de passe oublié ? » de la connexion affiche « Contactez l'administrateur » : aucune réinitialisation par e-mail.
+  1. Utilisateur : un administrateur ouvre « Comptes utilisateurs » et choisit « Réinitialiser le mot de passe ». L'application génère un mot de passe temporaire de 14 caractères, affiché UNE fois avec « Copier », valable 24 h. À la connexion suivante, changement obligatoire (8 caractères au moins, différent du temporaire et de l'ancien) ; les sessions ouvertes du compte sont fermées.
+  2. Chaque réinitialisation est journalisée (qui, quel compte, quand ; jamais le mot de passe). Compte du poste et compte du web sont distincts : changer l'un ne change pas l'autre.
+  3. Un administrateur ne réinitialise ni son propre compte par ce chemin, ni celui d'un super administrateur s'il est simple administrateur.
+  4. Administrateur sans autre administrateur : « J'ai perdu mon mot de passe administrateur » demande identifiant, code de secours de 25 caractères et nouveau mot de passe ; le code est consommé et un nouveau est affiché UNE fois. Après 5 essais faux, le chemin est bloqué 15 minutes, avec le même message que le compte existe ou non. Le code ne vaut que pour un compte administrateur ; l'application n'en garde que l'empreinte.
+  5. Le code est créé à la création du premier compte administrateur (« Copier » et « Imprimer »), à ranger au coffre. Au poste, SANS le code il n'existe aucun chemin d'urgence (volontaire) : la réinstallation supprimerait les saisies non synchronisées. Le poste le dit avant que l'installateur ferme l'écran du code.
+  6. Côté web (relais), la génération passe par une commande d'exploitation ; son existence et son nom dans `apps/web` sont à vérifier avant de l'écrire dans un guide (non établi ici).
+- **EF-INST-10** Barre des tâches : le poste démarre MAXIMISÉ (barre des tâches visible), comme les logiciels de bureautique ; le vrai plein écran est un choix de l'agent (F11 et bouton de la barre supérieure). Arbitré le 02/11/2026 (Q1) ; remplace le plein écran forcé du 01/11. Fait : `SIGH_PLEIN_ECRAN` vaut `non` par défaut.
+- **EF-INST-11** Logo : l'application affiche le logo dans la barre, la connexion et le verrou ; en cas d'échec de lecture, le monogramme remplace le logo ET la cause est écrite à l'écran de diagnostic, pas seulement dans la console. L'icône de la fenêtre et de l'exécutable Windows est celle de la clinique, non l'icône par défaut de Flutter. Fait le 02/11/2026 : `assets/img/logo.png` (converti du JPEG) et `windows/runner/resources/app_icon.ico` (7 tailles, 16 à 256 px). À vérifier sur le poste Windows.
 
 ## 6. Données
 - Nouvelle collection locale de paramètres d'installation (état : `non_installe`, `installe`, étapes cochées, date et auteur de clôture) : donnée locale du poste, NON synchronisée (elle décrit CE poste). L'état « configuration reçue de la mère » est, lui, tiré de l'instantané.
@@ -76,17 +82,20 @@ Aucune pièce imprimée, hormis (proposé) une fiche « Clé de clinique et iden
 
 ## 9. Ce qui n'est pas documenté / pas établi
 - Le contenu exact de la liste B est une PROPOSITION : aucun document de cadrage ne fixe l'ordre de mise en service. À valider par la Direction.
-- Ce que « logo de l'appli » désigne n'est pas établi (logo dans l'interface ou icône de la fenêtre/de la barre des tâches). Le fichier `assets/img/logo.jpeg` est un JPEG valide (131 x 82, 7,8 Ko) et il est déclaré aux assets ; la cause du logo absent n'a pas pu être reproduite ici (pas de Windows ni de SDK Flutter dans l'environnement de rédaction). À établir sur le poste : relever la ligne « Logo de la clinique illisible » de la console de `flutter run`.
+- La cause du logo absent n'a pas été reproduite (pas de Windows ni de SDK Flutter dans l'environnement de rédaction) : le JPEG d'origine était valide. La Direction a demandé la conversion en PNG et en ICO, faite le 02/11/2026. Si le logo manque encore, la console de `flutter run` porte la ligne « Logo de la clinique illisible ».
 - Politique de mot de passe de l'installateur, durée de conservation du séquestre papier de la clé de clinique : reprises de la SPEC, non rouvertes.
 - Écart à lever : la SPEC dit « le mot de passe n'est jamais conservé, la mère vérifie à chaque synchronisation » alors que le poste vérifie un haché Argon2id local. Voir Q3.
 
-## 10. Questions ouvertes pour la Direction
+## 10. Arbitrages
+Rendus par la Direction le 02/11/2026 :
+- Q1 Plein écran : démarrage MAXIMISÉ, barre des tâches visible, plein écran à la demande (F11). Arbitré.
+- Q3 Mots de passe sur un fileul : le haché Argon2id local est CONSERVÉ et répliqué (travail hors ligne). Arbitré. Écart à reporter dans la SPEC §3.7 (« jamais conservé »), à corriger par ADR ou mise à jour de la spec.
+- Q4 Mot de passe oublié : parcours EF-INST-09. Arbitré.
+- Q5 Compte de l'installateur distinct du super administrateur du panneau web : OUI. Arbitré.
+- Q7 Liste de configurations : celle des écrans `cfg-*` de la maquette (EF-INST-04). Arbitré.
+
+Restent ouvertes :
 | # | Question | Option recommandée |
 |---|---|---|
-| Q1 | Plein écran forcé (arbitrage du 01/11) ou barre des tâches visible ? | Maximisé par défaut, plein écran à la demande (F11) : un poste de caisse a besoin de la barre des tâches (imprimante, réseau) |
-| Q2 | Ordre : activer la mère avant les configurations ou après ? | Avant : toute configuration devient alors une opération de journal diffusée sans reprise ; la mère peut être reportée si le relais est injoignable |
-| Q3 | Un fileul vérifie-t-il les mots de passe sur son haché local répliqué, ou auprès de la mère ? | Haché local répliqué pour travailler hors ligne ; à confirmer avec la SPEC §3.7 |
-| Q4 | Mot de passe oublié de l'administrateur système | Code de récupération imprimé et scellé à l'installation, comme la clé de clinique |
-| Q5 | Le compte de l'installateur est-il distinct du super administrateur du panneau web (relais) ? | Oui, deux comptes distincts : le relais reste opaque et sans autorité métier |
-| Q6 | Le même identifiant « admin système » peut-il rester actif après la mise en service ? | Oui, archivable seulement (RG-14), avec au moins un second administrateur obligatoire |
-| Q7 | Contenu et ordre de la liste B (EF-INST-04) | Valider ou corriger la proposition ci-dessus |
+| Q2 | Ordre : activer la mère avant les configurations ou après ? | Avant : toute configuration devient une opération de journal diffusée sans reprise ; activation reportable si le relais est injoignable |
+| Q6 | L'administrateur d'installation peut-il rester seul administrateur ? | Non : au moins un second administrateur à créer avant la clôture de l'assistant ; archivage seulement (RG-14) |

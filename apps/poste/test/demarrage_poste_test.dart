@@ -92,8 +92,8 @@ void main() {
   });
 
   group('2. plein écran au démarrage', () {
-    test('le démarrage est demandé par défaut ; F11 et la barre basculent ensuite', () {
-      expect(pleinEcranAuDemarrage, 'oui');
+    test('le démarrage est MAXIMISÉ par défaut (barre des tâches visible) ; F11 et la barre basculent en plein écran', () {
+      expect(pleinEcranAuDemarrage, 'non');
     });
 
     test('FenetreMemoire : le démarrage passe en plein écran, ou nomme son repli', () async {
