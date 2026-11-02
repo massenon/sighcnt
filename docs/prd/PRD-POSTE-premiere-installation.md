@@ -1,5 +1,5 @@
 # PRD — Poste : première installation, activation de la mère et rejoindre une clinique
-Statut : arrêté le 02/11/2026 par la Direction (Q1 à Q7) ; Q2 et Q6 arbitrées aussi le 02/11/2026 (voir §10) ; plan : `docs/plans/PLAN-poste-premiere-installation.md`
+Statut : arrêté le 02/11/2026 par la Direction (Q1 à Q7) ; mis en œuvre le 02/11/2026, limites en `ECARTS-MAQUETTE.md` E2100 à E2121 ; Q2 et Q6 arbitrées aussi le 02/11/2026 (voir §10) ; plan : `docs/plans/PLAN-poste-premiere-installation.md`
 Sources : demande de la Direction du 02/11/2026 ; `docs/specs/SPEC-protocole-synchronisation.md` §3 (appairage, EF-SYNC-16) ; `docs/architecture/adr/ADR-0005-*` ; `apps/poste/lib/mere/activation.dart` ; `apps/poste/lib/core/identifiants.dart` ; `CLAUDE.md` (RG-12, RG-13, RG-14, arbitrage « connexion par défaut » du 01/11/2026).
 
 ## 1. Problème

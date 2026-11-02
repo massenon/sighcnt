@@ -187,6 +187,18 @@ git fetch origin && git switch -C <branche> origin/<branche>
 Ne jamais `git clean -fd` sans `-n` d'abord : `api/config.local.php` et `node_modules` sont ignorés
 (ils ne sont pas touchés sans `-x`), mais des fichiers de travail non commis le sont.
 
+## 8 bis. Première installation du poste Flutter (02/11/2026)
+
+Un poste neuf (aucun compte avec mot de passe) démarre sur l'assistant, pas sur la connexion :
+
+1. **Première installation** : vous créez le compte administrateur (nom, identifiant, mot de passe que VOUS choisissez), puis le **code de secours** s'affiche une seule fois (copier, imprimer, case « je l'ai rangé » obligatoire). Rangez-le au coffre : sans lui il n'y a aucun chemin d'urgence au poste.
+2. Le tableau de bord s'ouvre avec la modale **Configurations à faire** (pastille dans la barre pour la rouvrir) : activer la mère (ou la reporter si le relais est injoignable), configurer la clinique, créer les comptes dont un **second administrateur**, appairer les postes et les mobiles. L'assistant ne se clôt qu'avec les quatre étapes faites et deux administrateurs.
+3. **Rejoindre une clinique** (poste fileul) : adresse de la mère (`http://hôte:9000`) et code d'appairage émis sur la console de la mère. La configuration et les comptes sont repris tout seuls ; ce poste n'a rien à régler.
+
+Mot de passe perdu : un autre administrateur le réinitialise (« Utilisateurs », mot de passe temporaire de 14 caractères valable 24 h) ; à défaut, « J'ai perdu mon mot de passe administrateur » avec le code de secours. Les comptes se rangent maintenant sur disque (`donnees-poste/magasin/`, fichiers en CLAIR, SQLCipher n'est pas branché).
+
+Réglages de développement (`--dart-define=…`) : `SIGH_ASSISTANT=non` (ancien chemin : administrateur `admin.systeme` avec mot de passe provisoire affiché à la connexion), `SIGH_MDP_DEMO=<mot de passe>` (le donne à tous les comptes du jeu), `SIGH_REPARTIR_A_ZERO=oui` (met de côté le magasin enregistré), `SIGH_PLEIN_ECRAN=oui` (démarrage en plein écran).
+
 ## 9. Pièges rencontrés (à ne pas réapprendre)
 
 - Régénérer la **safelist avant la CSS** (`npm run build` le fait dans le bon ordre).

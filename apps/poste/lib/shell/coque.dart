@@ -248,6 +248,17 @@ class _CoquePosteState extends State<CoquePoste> {
     }
   }
 
+  /// Les écrans qui se règlent sur la MÈRE : sur un poste fileul rattaché à une clinique ils sont en LECTURE SEULE (le moteur refuse aussi l'écriture, voir
+  /// `ApplicateurConfiguration`). Les écrans de configuration (module CFG), les droits, les comptes et la configuration fiscale.
+  static const Set<String> _reglesSurLaMere = {'m14-roles', 'm14-utilisateurs', 'mecef-config'};
+
+  Droit _droitDe(String id) {
+    final d = _nav.matrice.droit(_role, id);
+    if (!(_service?.rattache ?? false)) return d;
+    final regle = _nav.manifeste.ecran(id)?.module == 'CFG' || _reglesSurLaMere.contains(id);
+    return regle ? Droit(voir: d.voir, editer: false, annuler: false) : d;
+  }
+
   // --- L'assistant de première installation : la pastille de la barre, et la modale qui s'ouvre seule sur le tableau de bord de l'administrateur. ---
   late final ValueNotifier<bool> _installationEnCours = ValueNotifier<bool>(false);
 
@@ -602,7 +613,7 @@ class _CoquePosteState extends State<CoquePoste> {
     if (widget.horloge != null) widget.magasin?.horloge = widget.horloge!;
     return Builder(builder: (context) {
       // Les droits sont ceux de l'ÉCRAN (une surcharge d'écran l'emporte sur son module) ; un servant hérite du registre qu'il alimente.
-      final droit = _nav.matrice.droit(_role, id);
+      final droit = _droitDe(id);
       return ContexteEcran(
         ecranId: id,
         role: _role,

@@ -200,6 +200,10 @@ void main() {
     return mesure;
   }
 
+  // Écrans de la CIBLE sans équivalent à la maquette (assistant de première installation, récupération administrateur) : hors manifeste, donc hors de la
+  // parité N1 ; ils sont couverts par `installation_ecrans_test.dart`. Le test ci-dessous vérifie qu'ils sont bien absents du manifeste.
+  const ecransDeLaCible = {'ins-premiere', 'ins-rejoindre', 'auth-secours'};
+
   final portes = ecransPortes(
           controleur: ControleurPoste(
               activation: ActivationMere(
@@ -209,6 +213,7 @@ void main() {
               config: const ConfigPoste(mode: ModePoste.fileul)),
           client: ClientMere(base: Uri.parse('http://x'), secretAdmin: 's'))
       .keys
+      .where((id) => !ecransDeLaCible.contains(id))
       .toList()
     ..sort();
 
@@ -217,6 +222,7 @@ void main() {
   // `ecransPortes` doit être déclaré : un statut en retard fait mentir `PARITE-MAQUETTE.md`.
   test('statuts déclarés et ecransPortes disent la même chose', () {
     final manifeste = {for (final e in donnees.manifeste.tousLesEcrans) e.id};
+    expect(manifeste.intersection(ecransDeLaCible), isEmpty, reason: 'un écran de la cible ne figure pas au manifeste de la maquette');
     final declares = {
       for (final e in statuts.entries)
         if (e.value == 'porté' || e.value == 'recetté') e.key

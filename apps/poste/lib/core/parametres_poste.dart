@@ -14,7 +14,9 @@ class ParametresPoste {
       this.nomPoste = 'Poste',
       this.relais = '',
       this.activeDepuis,
-      this.installation = EtatInstallation.vide});
+      this.installation = EtatInstallation.vide,
+      this.adresseMere = '',
+      this.rejoint = false});
   final String uuidPoste;
   final ModePoste mode;
   final String nomPoste;
@@ -24,12 +26,18 @@ class ParametresPoste {
   /// Où en est l'assistant de première installation (donnée locale de CE poste, jamais synchronisée).
   final EtatInstallation installation;
 
+  /// Poste FILEUL rattaché à une clinique : l'adresse de la mère (`http://hôte:port`) et le fait d'avoir rejoint. Vide / faux : le poste n'a rejoint personne.
+  final String adresseMere;
+  final bool rejoint;
+
   ParametresPoste avec(
           {ModePoste? mode,
           String? nomPoste,
           String? relais,
           DateTime? activeDepuis,
           EtatInstallation? installation,
+          String? adresseMere,
+          bool? rejoint,
           bool effacerActivation = false}) =>
       ParametresPoste(
         uuidPoste: uuidPoste,
@@ -39,6 +47,8 @@ class ParametresPoste {
         activeDepuis:
             effacerActivation ? null : (activeDepuis ?? this.activeDepuis),
         installation: installation ?? this.installation,
+        adresseMere: adresseMere ?? this.adresseMere,
+        rejoint: rejoint ?? this.rejoint,
       );
 
   Map<String, Object?> toJson() => {
@@ -48,6 +58,8 @@ class ParametresPoste {
         'relais': relais,
         'active_depuis': activeDepuis?.toIso8601String(),
         'installation': installation.toJson(),
+        'adresse_mere': adresseMere,
+        'rejoint': rejoint,
       };
 
   factory ParametresPoste.depuisJson(Map<String, Object?> j) => ParametresPoste(
@@ -59,6 +71,8 @@ class ParametresPoste {
             ? null
             : DateTime.tryParse('${j['active_depuis']}'),
         installation: EtatInstallation.depuisJson(j['installation']),
+        adresseMere: '${j['adresse_mere'] ?? ''}',
+        rejoint: j['rejoint'] == true,
       );
 }
 

@@ -15,6 +15,7 @@ typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste con
 final Map<String, ConstruireEcran> ecransAUTH = {
   'index': (c, cfg) => const EcranIndex(),
   'ins-premiere': (c, cfg) => const EcranPremiereInstallation(),
+  'ins-rejoindre': (c, cfg) => const EcranRejoindre(),
   'auth-secours': (c, cfg) => const EcranRecuperationAdmin(),
   'auth-forgot': (c, cfg) => const EcranMotDePasseOublie(),
   'auth-reset': (c, cfg) => const EcranReinitialisation(),

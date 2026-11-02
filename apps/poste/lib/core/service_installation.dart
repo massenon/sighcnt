@@ -55,6 +55,65 @@ class ServiceInstallation extends ChangeNotifier {
   /// Le geste réel d'activation de la mère (posé par `main`, qui détient le contrôleur du poste). `null` : l'activation n'est pas disponible sur ce poste.
   Future<void> Function({required String relais, required String secretMere, required String cleClinique, String? nomPoste})? activerMere;
 
+  /// Le geste réel de rattachement (posé par `main`, qui détient le moteur de synchronisation) : redirige vers la mère et consomme le code d'appairage.
+  Future<void> Function({required String adresse, required String code})? rattacherMoteur;
+
+  /// Appelé une fois le poste rattaché : `main` y démarre l'application de la configuration reçue.
+  void Function(String adresse)? surRattache;
+
+  static final RegExp _adresse = RegExp(r'^https?://[^\s/:]+(:\d{1,5})?(/.*)?$');
+
+  /// Les règles de l'adresse de la mère : `http://hôte:port` (ex. `http://192.168.1.10:9000`).
+  static String? controlerAdresse(String saisie) {
+    final a = saisie.trim();
+    if (a.isEmpty) return 'L’adresse de la mère est obligatoire.';
+    if (!_adresse.hasMatch(a)) return 'Adresse invalide : saisissez http://adresse:port (ex. http://192.168.1.10:9000).';
+    return null;
+  }
+
+  /// REJOINDRE UNE CLINIQUE : redirige le moteur vers la mère, consomme le code d'appairage, range l'adresse et marque le poste RATTACHÉ. L'assistant n'a
+  /// plus rien à proposer sur un poste rattaché : il est clos d'office. Rend le refus NOMMÉ (code expiré, déjà utilisé, mère injoignable…), ou `null`.
+  Future<String?> rejoindre({required String adresse, required String code, required DateTime maintenant}) async {
+    final refusAdresse = controlerAdresse(adresse);
+    if (refusAdresse != null) return refusAdresse;
+    if (code.trim().isEmpty) return 'Le code d’appairage est obligatoire.';
+    final geste = rattacherMoteur;
+    if (geste == null) return 'Le rattachement à une clinique n’est pas disponible sur ce poste.';
+    final a = adresse.trim().replaceAll(RegExp(r'/+$'), '');
+    try {
+      await geste(adresse: a, code: code.trim().toUpperCase());
+    } on StateError catch (e) {
+      return _motifAppairage(e.message);
+    } catch (e) {
+      return 'La mère n’a pas répondu à $a (${e.runtimeType}). Vérifiez l’adresse, le réseau et que la mère est démarrée.';
+    }
+    final st = _stockage;
+    if (st != null) {
+      final courant = (await st.lire()) ?? _parametres!;
+      final clos = EtatInstallation.vide.creer(maintenant: maintenant, par: 'Rattachement').cloturer(maintenant: maintenant, par: 'Rattachement');
+      _parametres = courant.avec(adresseMere: a, rejoint: true, installation: clos);
+      await st.ecrire(_parametres!);
+      _etat = clos;
+    }
+    _magasin.journaliser('Poste rattaché à la clinique', 'M14', 'Poste', a, null, null);
+    surRattache?.call(a);
+    notifyListeners();
+    return null;
+  }
+
+  static String _motifAppairage(String brut) {
+    final code = brut.split(' — ').first.trim();
+    return switch (code) {
+      'code_expire' => 'Ce code d’appairage a expiré (15 minutes). Demandez-en un nouveau sur la mère.',
+      'code_utilise' => 'Ce code d’appairage a déjà servi. Demandez-en un nouveau sur la mère.',
+      'code_invalide' || 'code_inconnu' => 'Code d’appairage inconnu. Vérifiez-le ou demandez-en un nouveau sur la mère.',
+      _ => 'La mère a refusé l’appairage : $brut',
+    };
+  }
+
+  /// Ce poste a-t-il rejoint une clinique ? (fileul rattaché : ses configurations sont reprises de la mère, en lecture seule.)
+  bool get rattache => _parametres?.rejoint ?? false;
+
   /// Nombre d'administrateurs que la clôture exige (arbitrage de la Direction, 02/11/2026).
   static const int administrateursRequis = 2;
 

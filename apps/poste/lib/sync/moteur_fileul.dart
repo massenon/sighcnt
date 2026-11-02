@@ -29,6 +29,16 @@ class MoteurFileul {
   /// La base de synchronisation du poste, vue par la transcription des prescriptions du mobile (E1559).
   SourcePiecesMobile get pieces => SourcePiecesFileul(_fileul);
 
+  /// Rattache ce poste à la mère d'une clinique : redirige le moteur vers [adresse], puis consomme le code d'appairage. Refus nommé (`StateError`) si la mère
+  /// refuse (code expiré, déjà utilisé…) ou ne répond pas.
+  Future<void> rattacher(String adresse, String code) async {
+    _fileul.rediriger(adresse);
+    await appairer(code);
+  }
+
+  /// Les fiches d'une collection telles que la mère les a diffusées (état confirmé du fileul).
+  Future<List<PieceSync>> liste(String collection) => pieces.liste(collection);
+
   Future<void> appairer(String code) async {
     final (statut, corps) =
         await _fileul.commande('POST /appairer', {'code': code}, const {});

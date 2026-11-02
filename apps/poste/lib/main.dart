@@ -19,6 +19,7 @@ import 'modules/registre.dart';
 import 'shell/coque.dart';
 import 'shell/fenetre_poste.dart';
 import 'sync/etat_sync.dart';
+import 'sync/configuration_sync.dart';
 import 'sync/moteur_fileul.dart';
 import 'sync/transcription_mobile.dart';
 
@@ -112,8 +113,10 @@ Future<void> main() async {
     // Redémarrage d'une mère : le service repart (la place au relais est déjà la sienne).
     await activation.service.demarrer();
   }
+  // Un poste RATTACHÉ à une clinique parle à SA mère (adresse enregistrée), pas à l'adresse de compilation.
   final moteur = MoteurFileul.creer(
-      dbChemin: '$dossierDonnees/poste.db', mere: adresseMere)
+      dbChemin: '$dossierDonnees/poste.db',
+      mere: params.rejoint && params.adresseMere.isNotEmpty ? params.adresseMere : adresseMere)
     ..demarrer();
   final magasin = await Magasin.depuisAssets(Magasin.collectionsDuJeu);
   // Le magasin se range sur disque : comptes, mots de passe (hachés), saisies et journal survivent à la fermeture du poste. Sans cela, tout repartait du
@@ -133,7 +136,21 @@ Future<void> main() async {
     // Poste neuf : l'assistant propose « Première installation » ou « Rejoindre une clinique ». L'état d'installation vit dans les paramètres du poste.
     final installation = ServiceInstallation.de(magasin);
     await installation.attacher(stockage, await activation.parametres());
-    installation.activerMere = controleur.activer;
+    // MÈRE : ses configurations et ses comptes partent vers le relais et les fileuls par le journal. FILEUL RATTACHÉ : il les reprend.
+    PublicateurConfiguration? publicateur;
+    void demarrerPublication() => publicateur ??= PublicateurConfiguration(
+        magasin, publierVersMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin))
+      ..demarrer();
+    ApplicateurConfiguration? applicateur;
+    void demarrerApplication() => applicateur ??= ApplicateurConfiguration(magasin, moteur.liste)..demarrer();
+    installation.activerMere = ({required relais, required secretMere, required cleClinique, nomPoste}) async {
+      await controleur.activer(relais: relais, secretMere: secretMere, cleClinique: cleClinique, nomPoste: nomPoste);
+      demarrerPublication();
+    };
+    installation.rattacherMoteur = ({required adresse, required code}) => moteur.rattacher(adresse, code);
+    installation.surRattache = (_) => demarrerApplication();
+    if (params.mode == ModePoste.mere) demarrerPublication();
+    if (installation.rattache) demarrerApplication();
   } else if (connexionExigee != 'non') {
     final ident = ServiceIdentifiants.de(magasin);
     final maintenant = DateTime.now();

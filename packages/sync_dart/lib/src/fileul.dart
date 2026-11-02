@@ -68,8 +68,14 @@ class Fileul {
     _client.idleTimeout = const Duration(seconds: 3);
   }
 
-  final ConfigFileul cfg;
+  ConfigFileul cfg;
   final Base base;
+
+  /// Redirige le fileul vers une autre mère (« rejoindre une clinique » : l'adresse n'est connue qu'à l'exécution). Les requêtes suivantes partent vers
+  /// la nouvelle adresse ; l'état de synchronisation déjà tenu (jetons, curseur) n'est pas touché, l'appairage qui suit le renouvelle.
+  void rediriger(String mere) => cfg = ConfigFileul(
+      port: cfg.port, mere: mere, dbChemin: cfg.dbChemin, nom: cfg.nom, decalageMs: cfg.decalageMs, intervalleMs: cfg.intervalleMs);
+
   final Etat etat = Etat();
   final HttpClient _client = HttpClient();
   HttpServer? _serveur;

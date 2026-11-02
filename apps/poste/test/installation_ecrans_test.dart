@@ -184,6 +184,7 @@ void main() {
   });
 
   mainModale();
+  mainRejoindre();
 }
 
 /// PLAN étapes 6 à 8 : la modale « Configurations à faire », l'activation de la mère (reportable), la clôture qui exige un second administrateur.
@@ -298,6 +299,69 @@ void mainModale() {
       expect(m.collection('utilisateurs').parId(premier['id'])!['statut'], 'actif');
       await toucher(t, find.byKey(const Key('ins:modale-fermer')));
       expect(find.byKey(const Key('barre-installation')), findsNothing, reason: 'l’assistant clos n’a plus de pastille');
+      await fin(t);
+    });
+  });
+}
+
+void mainRejoindre() {
+  group('rejoindre une clinique', () {
+    testWidgets('adresse et code : refus nommés, puis rattachement ; l’écran attend les comptes de la mère', (t) async {
+      final m = await posteNeuf(t);
+      final service = ServiceInstallation.de(m);
+      var appels = 0;
+      service.rattacherMoteur = ({required adresse, required code}) async {
+        appels++;
+        if (code == 'EXPIRE23') throw StateError('code_expire — Ce code a expiré.');
+        if (code == 'DEJAUTI2') throw StateError('code_utilise');
+        if (adresse.contains('mort')) throw const SocketException('connexion refusée');
+      };
+      final s = SessionPoste(exigeConnexion: true, horloge: () => auj);
+      await monter(t, m, s);
+      await toucher(t, find.byKey(const Key('ins:rejoindre')));
+      expect(find.text('Rejoindre une clinique'), findsOneWidget);
+
+      await saisir(t, 'rej:adresse', 'nimporte quoi');
+      await saisir(t, 'rej:code', 'ABCD2345');
+      await toucher(t, find.byKey(const Key('rej:valider')));
+      await calculer(t);
+      expect(find.textContaining('Adresse invalide'), findsOneWidget);
+      expect(appels, 0, reason: 'une adresse invalide ne part pas');
+
+      await saisir(t, 'rej:adresse', 'http://192.168.1.10:9000');
+      await saisir(t, 'rej:code', 'expire23');
+      await toucher(t, find.byKey(const Key('rej:valider')));
+      await calculer(t);
+      expect(find.textContaining('a expiré'), findsOneWidget);
+      await saisir(t, 'rej:code', 'DEJAUTI2');
+      await toucher(t, find.byKey(const Key('rej:valider')));
+      await calculer(t);
+      expect(find.textContaining('a déjà servi'), findsOneWidget);
+      await saisir(t, 'rej:adresse', 'http://mort:9000');
+      await saisir(t, 'rej:code', 'ABCD2345');
+      await toucher(t, find.byKey(const Key('rej:valider')));
+      await calculer(t);
+      expect(find.textContaining('n’a pas répondu'), findsOneWidget);
+      expect(service.rattache, isFalse, reason: 'aucun échec ne rattache');
+
+      await saisir(t, 'rej:adresse', 'http://192.168.1.10:9000/');
+      await saisir(t, 'rej:code', 'ABCD2345');
+      await toucher(t, find.byKey(const Key('rej:valider')));
+      await calculer(t);
+      expect(service.rattache, isTrue);
+      expect(service.parametres!.adresseMere, 'http://192.168.1.10:9000', reason: 'l’adresse est rangée sans la barre finale');
+      expect(service.etat.phase, PhaseInstallation.cloturee, reason: 'un poste rattaché n’a plus d’assistant à proposer');
+      expect(find.text('Réception de la configuration'), findsOneWidget);
+      expect((t.widget(find.byKey(const Key('ins:vers-connexion'))) as BoutonSigh).onPressed, isNull, reason: 'pas de compte tant que la mère n’a rien diffusé');
+
+      // La mère diffuse ses comptes : l'écran le voit et ouvre la connexion.
+      await t.runAsync(() => ServiceIdentifiants.de(m).definir('USR001', secret, par: 'mère', doitChanger: false, maintenant: auj));
+      await t.pump(const Duration(milliseconds: 600));
+      await t.pump(const Duration(milliseconds: 600));
+      expect(find.text('Poste rattaché'), findsOneWidget);
+      await toucher(t, find.byKey(const Key('ins:vers-connexion')));
+      expect(find.byKey(const Key('acces:identifiant')), findsOneWidget, reason: 'la connexion, avec les comptes de la clinique');
+      expect(appels, 4);
       await fin(t);
     });
   });

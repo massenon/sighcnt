@@ -9,7 +9,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:sigh_domaine/sigh_domaine.dart' show RefusMobile, mobMotifFonctionNonHabilitee, mobPeutPrescrire, mobRefusAffectation, mobRefusFonctionPiece;
+import 'package:sigh_domaine/sigh_domaine.dart'
+    show RefusMobile, cfbEssentielles, mobMotifFonctionNonHabilitee, mobPeutPrescrire, mobRefusAffectation, mobRefusFonctionPiece;
 
 import 'commun.dart';
 import 'depot.dart';
@@ -18,7 +19,12 @@ import 'supervision.dart';
 
 /// Une famille par collection (PRD §8) : A fiche descriptive · B journal · C pièce émise · D agrégat à invariant ·
 /// R référentiel (la mère seule écrit).
-const familles = <String, String>{
+final familles = <String, String>{
+  ...familleDeBase,
+  // La CONFIGURATION de la clinique (PRD-POSTE-premiere-installation) : référentiels, droits, comptes. Famille R : la mère seule écrit, les postes fileuls la reprennent.
+  for (final n in collectionsConfigurationPoste) n: 'R',
+};
+const familleDeBase = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
   'constantes': 'B', 'notes': 'B',
   'cpn': 'B', 'cpon': 'B', 'surveillances': 'B', 'orientations': 'B', // suite du mobile (E1650 à E1660)
@@ -27,6 +33,16 @@ const familles = <String, String>{
   'tarifs': 'R', 'chambres': 'R', 'produits': 'R', 'transcriptions': 'B',
 };
 const essentielles = {'tarifs', 'chambres'};
+
+/// Les collections de CONFIGURATION que la mère diffuse aux POSTES : les essentielles du paramétrage plus les comptes. Les noms viennent du domaine (la même
+/// liste que le vidage des jeux de test conserve), jamais recopiés ici. Le poste en choisit l'usage ; la mère ne fait que les accepter et les journaliser.
+final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs', 'identifiants'}
+    .difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'})
+    .difference(familleDeBase.keys.toSet());
+
+/// Ce qu'un MOBILE ne reçoit JAMAIS : les comptes et leurs hachés, les droits, le personnel, tout le paramétrage de la clinique, sauf les référentiels que ses
+/// écrans lisent (`produits`, déjà au journal avant la configuration). Un téléphone perdu ne doit pas emporter les empreintes des mots de passe (RG-13).
+final Set<String> collectionsPosteSeulement = collectionsConfigurationPoste.difference({'produits'});
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{
@@ -469,7 +485,11 @@ class Mere {
         if ((int.tryParse(q['epoch'] ?? '') ?? -1) != epoch) throw Err(409, 'epoch_inconnue', 'Époque inconnue de la mère.', {'epoch_mere': epoch});
         final depuis = int.tryParse(q['depuis'] ?? '') ?? 0;
         final limite = min(int.tryParse(q['limite'] ?? '') ?? 500, 500);
-        final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>? ORDER BY seq LIMIT ?', [depuis, limite]))
+        // Un mobile ne reçoit pas la configuration de la clinique (comptes, hachés, droits…) : le filtre est dans la requête, de sorte que chaque page soit pleine
+        // d'opérations visibles et que le curseur du téléphone avance toujours.
+        final exclues = app.role == 'mobile' ? collectionsPosteSeulement.toList() : const <String>[];
+        final filtre = exclues.isEmpty ? '' : ' AND collection NOT IN (${List.filled(exclues.length, '?').join(',')})';
+        final ops = (await base.select('SELECT seq,id,appareil,collection,fiche,type,champs FROM operations WHERE seq>?$filtre ORDER BY seq LIMIT ?', [depuis, ...exclues, limite]))
             .map((o) => {...o, 'champs': jsonDecode(o['champs'] as String)})
             .toList();
         await base.exec('UPDATE appareils SET dernier_seq = CASE WHEN dernier_seq > ? THEN dernier_seq ELSE ? END WHERE uuid=?', [depuis, depuis, app.uuid]);

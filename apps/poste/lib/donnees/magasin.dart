@@ -89,6 +89,25 @@ class CollectionMagasin extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Applique une fiche REÇUE d'un autre poste (la mère) : insérée si elle manque, remplacée sinon. Sans journal local (la mère l'a déjà écrit), sans garde
+  /// (la garde protège contre l'écriture de l'agent, pas contre la mère) et sans prendre la tête de la collection. Rend vrai si quelque chose a changé.
+  bool appliquerDistante(Fiche f) {
+    final id = f['id'];
+    final i = _fiches.indexWhere((x) => x['id'] == id);
+    if (i < 0) {
+      _fiches.add({...f});
+    } else {
+      if (_memeContenu(_fiches[i], f)) return false;
+      _fiches[i]
+        ..clear()
+        ..addAll(f);
+    }
+    notifyListeners();
+    return true;
+  }
+
+  static bool _memeContenu(Fiche a, Fiche b) => jsonEncode(a) == jsonEncode(b);
+
   static bool estArchivee(Fiche f) => f['statut'] == 'archive';
 
   List<Fiche> get actives => [

@@ -30,56 +30,56 @@ Source : `docs/prd/PRD-POSTE-premiere-installation.md` (Q1, Q2, Q3, Q4, Q5, Q6, 
 - Vérification : `flutter test test/installation_etat_test.dart` → vert ; `flutter test test/demarrage_poste_test.dart` → inchangé.
 - Peut être livrée seule : oui.
 
-### Étape 3 — Écran d'accueil à deux choix et première installation (création du compte administrateur)
+### Étape 3 — Écran d'accueil à deux choix et première installation (création du compte administrateur) [FAITE 02/11/2026]
 - Fichiers : `lib/modules/auth/ins_ecrans.dart` (nouveau), `lib/modules/auth/acc_registre_sessions.dart` (routage), `lib/main.dart` (route de démarrage).
 - Ce qu'on fait : écran autonome à deux choix ; formulaire du premier compte (identifiant, nom, mot de passe + confirmation, politique affichée) ; `ServiceIdentifiants.definir` sans changement obligatoire ; entrée de journal « Installation initiale » (RG-12) ; ouverture de session puis tableau de bord.
 - Pièges à éviter : aucun mot de passe en clair écrit ni journalisé ; le provisoire aléatoire de `main.dart` n'est plus posé sur un poste vide installé de cette façon ; l'écran est absent dès que l'état est `installe` (adresse directe incluse, comme `/403`).
 - Vérification : `flutter test test/installation_ecrans_test.dart` → vert (sondes : hash seul en base, journal, route fermée après installation).
 - Peut être livrée seule : oui.
 
-### Étape 4 — Code de secours à la création du compte, et chemin « J'ai perdu mon mot de passe administrateur »
+### Étape 4 — Code de secours à la création du compte, et chemin « J'ai perdu mon mot de passe administrateur » [FAITE 02/11/2026]
 - Fichiers : `ins_ecrans.dart` (affichage du code avec « Copier » et « Imprimer », case « je l'ai rangé » bloquante), `acc_ecrans.dart` (lien et écran de récupération), `core/identifiants.dart` (stockage de l'empreinte, consommation, nouveau code).
 - Ce qu'on fait : le code s'affiche UNE fois ; l'empreinte seule est gardée ; l'écran de récupération prend identifiant, code, nouveau mot de passe ; le code est consommé et un nouveau est affiché ; 5 essais faux bloquent 15 minutes ; ne vaut que pour un compte administrateur. Message sans oracle d'existence du compte.
 - Pièges à éviter : ne jamais écrire le code dans le journal ni dans `tentativesConnexion` ; l'impression passe par le gabarit A4 à entête unique (`P.etat` côté maquette, `impression/pdf.dart` côté poste) ; le poste dit avant de fermer l'écran du code que sans lui il n'y a aucun chemin d'urgence.
 - Vérification : `flutter test test/installation_secours_test.dart` → vert (bon code, mauvais code ×5, blocage, rejeu du code consommé, compte non administrateur).
 - Peut être livrée seule : oui (dépend des étapes 1 et 3).
 
-### Étape 5 — Réinitialisation par un administrateur (compte utilisateur)
+### Étape 5 — Réinitialisation par un administrateur (compte utilisateur) [FAITE 02/11/2026]
 - Fichiers : `lib/modules/m14/utilisateurs.dart`, `m14/mot_de_passe.dart`, `core/identifiants.dart`.
 - Ce qu'on fait : commande « Réinitialiser le mot de passe » (gardée par `K.commande`, absente sans droit) ; mot de passe temporaire de 14 caractères affiché une fois avec « Copier », valable 24 h ; changement obligatoire à la connexion suivante ; fermeture des sessions ouvertes du compte ; journal sans le mot de passe. Interdits : réinitialiser son propre compte par ce chemin, ou un super administrateur depuis un simple administrateur. Le lien « Mot de passe oublié ? » affiche « Contactez l'administrateur ».
 - Pièges à éviter : `EcranMotDePasseOublie` existe, vérifier ce qu'il fait avant de le modifier (il ne doit promettre aucun e-mail) ; l'interdit d'auto-réinitialisation se contrôle au moteur, pas seulement par un bouton absent.
 - Vérification : `flutter test test/installation_reinit_test.dart` et `flutter test test/identite_test.dart` → verts.
 - Peut être livrée seule : oui.
 
-### Étape 6 — Tableau de bord et modale « Configurations à faire »
+### Étape 6 — Tableau de bord et modale « Configurations à faire » [FAITE 02/11/2026]
 - Fichiers : `lib/modules/auth/ins_modale.dart` (nouveau), tableau de bord de l'administrateur système, `lib/shell/` (pastille de réouverture).
 - Ce qu'on fait : à la première ouverture du tableau de bord après installation, la modale s'ouvre seule ; étapes A (mère), B (liste des `cfg-*`), C (comptes dont le second administrateur), D (appairages) ; chaque ligne renvoie à l'écran existant, une étape dont la précédente manque est visible, non cliquable, avec son motif ; pastille pour la rouvrir ; ne se rouvre plus seule après la clôture.
 - Pièges à éviter : le contenu de la liste B est celui des écrans `cfg-*` arbitré le 02/11 (Q7) ; ne pas ajouter de ligne sans écran existant ; utiliser les jetons de thème (fond de modale du design system), aucune couleur en dur.
 - Vérification : `flutter test test/installation_modale_test.dart` → vert (ouverture automatique, ordre, ligne verrouillée avec motif, pastille).
 - Peut être livrée seule : oui.
 
-### Étape 7 — Activation de la mère en premier, reportable
+### Étape 7 — Activation de la mère en premier, reportable [FAITE 02/11/2026]
 - Fichiers : `ins_modale.dart`, `lib/mere/activation.dart` (réutilisé tel quel), `lib/mere/console.dart` (renvoi).
 - Ce qu'on fait : l'étape A appelle `ActivationMere.activer` (relais, secret, clé de clinique) ; sur `relais_injoignable`, l'étape reste « reportée » avec le geste « réessayer » et la mention « mère non activée, rien n'est encore diffusé » ; les configurations saisies avant l'activation partent dans le journal à l'activation.
 - Pièges à éviter : ne pas dupliquer la validation de l'activation ; la clé de clinique est affichée une fois pour séquestre papier (SPEC §158) ; le secret n'est pas conservé.
 - Vérification : `flutter test test/mere_activation_test.dart` (existant) + `flutter test test/installation_activation_test.dart` → verts.
 - Peut être livrée seule : oui.
 
-### Étape 8 — Second administrateur obligatoire à la clôture, et clôture de l'assistant
+### Étape 8 — Second administrateur obligatoire à la clôture, et clôture de l'assistant [FAITE 02/11/2026]
 - Fichiers : `ins_modale.dart`, `m14/utilisateurs.dart`, `core/etat_installation.dart`.
 - Ce qu'on fait : la clôture est refusée tant qu'il n'existe pas au moins deux comptes administrateurs actifs, avec le motif nommé ; archivage seulement (RG-14) ; à la clôture, l'écran d'installation devient absent du ruban pour tout rôle sauf administrateur système ; date et auteur journalisés.
 - Pièges à éviter : le contrôle se refait à l'archivage d'un administrateur après la clôture (on ne retombe pas sous deux sans le dire) ; le second administrateur reçoit son propre code de secours.
 - Vérification : `flutter test test/installation_cloture_test.dart` → vert (un seul admin refusé, deux acceptés, archivage du second refusé).
 - Peut être livrée seule : oui.
 
-### Étape 9 — Rejoindre une clinique (fileul) et lecture seule des configurations
+### Étape 9 — Rejoindre une clinique (fileul) et lecture seule des configurations [FAITE 02/11/2026]
 - Fichiers : `ins_ecrans.dart`, `lib/sync/moteur_fileul.dart`, `lib/modules/cfg/*` (lecture seule sur fileul), `lib/core/controleur_poste.dart`.
 - Ce qu'on fait : saisie de l'adresse de la mère et du code d'appairage ; refus nommés (code expiré, déjà utilisé, mère injoignable, schéma incompatible, appareil déjà appairé) ; réception de l'instantané (configurations, comptes, droits) ; message « Configuration reçue de <mère>, version N » ; sur un fileul les écrans `cfg-*` sont en lecture seule et disent « réglé sur la mère » (droits résolus par le moteur, pas par un bouton masqué).
 - Pièges à éviter : le haché Argon2id des comptes voyage avec l'instantané (Q3, arbitré) : à ajouter à la SPEC §3.7 ; un fileul doit refuser un schéma plus récent que le sien en le disant ; test de portée : créer les données APRÈS l'appairage.
 - Vérification : `flutter test test/installation_fileul_test.dart` → vert ; `npm run banc:sync` à la racine → scénario de diffusion d'une configuration de la mère vers un fileul, hub coupé puis rétabli.
 - Peut être livrée seule : non (dépend de l'activation et de l'instantané côté mère).
 
-### Étape 10 — Documentation
+### Étape 10 — Documentation [FAITE 02/11/2026]
 - Fichiers : `docs/specs/SPEC-protocole-synchronisation.md` (§3.7 : le haché local est conservé), `docs/architecture/ECARTS-MAQUETTE.md`, `docs/guides/GUIDE-DEMARRAGE.md` (première installation), `docs/prd/PRD-POSTE-premiere-installation.md` (statut), `docs/prd/README.md`, `CLAUDE.md` (vague 71 : section de l'assistant).
 - Ce qu'on fait : mettre à jour les statuts, consigner les écarts, retirer du guide l'usage de `SIGH_MDP_DEMO` hors développement.
 - Vérification : `node --test` dans `packages/rbac` et `flutter test test/parite_ecrans_test.dart` → verts.
