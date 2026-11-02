@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'config_poste.dart';
+import 'etat_installation.dart';
 
 /// Réglages PERSISTANTS du poste : c'est ici, et non à la compilation, que se décide qu'un poste est la mère.
 /// Le secret de la mère et la clé de clinique NE SONT PAS conservés dans ce fichier (ils vont au coffre du système,
@@ -12,18 +13,23 @@ class ParametresPoste {
       this.mode = ModePoste.fileul,
       this.nomPoste = 'Poste',
       this.relais = '',
-      this.activeDepuis});
+      this.activeDepuis,
+      this.installation = EtatInstallation.vide});
   final String uuidPoste;
   final ModePoste mode;
   final String nomPoste;
   final String relais;
   final DateTime? activeDepuis;
 
+  /// Où en est l'assistant de première installation (donnée locale de CE poste, jamais synchronisée).
+  final EtatInstallation installation;
+
   ParametresPoste avec(
           {ModePoste? mode,
           String? nomPoste,
           String? relais,
           DateTime? activeDepuis,
+          EtatInstallation? installation,
           bool effacerActivation = false}) =>
       ParametresPoste(
         uuidPoste: uuidPoste,
@@ -32,6 +38,7 @@ class ParametresPoste {
         relais: relais ?? this.relais,
         activeDepuis:
             effacerActivation ? null : (activeDepuis ?? this.activeDepuis),
+        installation: installation ?? this.installation,
       );
 
   Map<String, Object?> toJson() => {
@@ -39,7 +46,8 @@ class ParametresPoste {
         'mode': mode.name,
         'nom_poste': nomPoste,
         'relais': relais,
-        'active_depuis': activeDepuis?.toIso8601String()
+        'active_depuis': activeDepuis?.toIso8601String(),
+        'installation': installation.toJson(),
       };
 
   factory ParametresPoste.depuisJson(Map<String, Object?> j) => ParametresPoste(
@@ -50,6 +58,7 @@ class ParametresPoste {
         activeDepuis: j['active_depuis'] == null
             ? null
             : DateTime.tryParse('${j['active_depuis']}'),
+        installation: EtatInstallation.depuisJson(j['installation']),
       );
 }
 
