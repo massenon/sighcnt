@@ -1,7 +1,7 @@
 {
  "_doc": "ENGENDRÉ par apps/poste/test/parite_ecrans_test.dart — ne pas éditer. Parité N1 (contenu) des écrans Flutter portés contre la maquette.",
- "ecrans_du_manifeste": 321,
- "ecrans_portes": 309,
+ "ecrans_du_manifeste": 332,
+ "ecrans_portes": 355,
  "ecrans": [
   {
    "id": "adm-enquetes",
@@ -447,6 +447,270 @@
    "manquants": []
   },
   {
+   "id": "hub-cfg",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-dash",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-ged",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-imp",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m1",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m10",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m11",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m12",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m13",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m14",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m2",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m3",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m4",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m5",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m6",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m7",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m8",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-m9",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-mecef",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-mere",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-pil",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-rap",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "hub-rls",
+   "mesure": true,
+   "attendus": 2,
+   "presents": 2,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-accueil",
+   "mesure": true,
+   "attendus": 18,
+   "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-actes",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-analyses",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-assureurs",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-fournisseurs",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-patients",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-personnel",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-plan-comptable",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-soldes-ouverture",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "imp-souscripteurs",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "index",
    "mesure": false,
    "raison": "aucune fiche de la maquette (lancer extraire-ecrans.js), ou écran autonome mesuré à part (parite_autonomes_test.dart)"
@@ -822,8 +1086,8 @@
   {
    "id": "m11-prets-etudes",
    "mesure": true,
-   "attendus": 17,
-   "presents": 17,
+   "attendus": 16,
+   "presents": 16,
    "taux": 1.0,
    "manquants": []
   },
@@ -1108,10 +1372,18 @@
    "manquants": []
   },
   {
+   "id": "m14-securite-utilisateurs",
+   "mesure": true,
+   "attendus": 20,
+   "presents": 20,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m14-sessions",
    "mesure": true,
-   "attendus": 19,
-   "presents": 19,
+   "attendus": 21,
+   "presents": 21,
    "taux": 1.0,
    "manquants": []
   },
@@ -1836,6 +2108,14 @@
    "manquants": []
   },
   {
+   "id": "m6-import-grand-stock",
+   "mesure": true,
+   "attendus": 19,
+   "presents": 19,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
    "id": "m6-inventaire",
    "mesure": true,
    "attendus": 10,
@@ -1912,14 +2192,6 @@
    "mesure": true,
    "attendus": 23,
    "presents": 23,
-   "taux": 1.0,
-   "manquants": []
-  },
-  {
-   "id": "m6-import-grand-stock",
-   "mesure": true,
-   "attendus": 22,
-   "presents": 22,
    "taux": 1.0,
    "manquants": []
   },
@@ -2445,6 +2717,102 @@
    "mesure": true,
    "attendus": 18,
    "presents": 18,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-alertes",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-appareils",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-boites",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-codes",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-hebergement",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-indicateurs",
+   "mesure": true,
+   "attendus": 9,
+   "presents": 9,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-journal",
+   "mesure": true,
+   "attendus": 7,
+   "presents": 7,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-opacite",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-parametres",
+   "mesure": true,
+   "attendus": 6,
+   "presents": 6,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-sauvegarde",
+   "mesure": true,
+   "attendus": 8,
+   "presents": 8,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-superadmin",
+   "mesure": true,
+   "attendus": 12,
+   "presents": 12,
+   "taux": 1.0,
+   "manquants": []
+  },
+  {
+   "id": "rls-tableau",
+   "mesure": true,
+   "attendus": 10,
+   "presents": 10,
    "taux": 1.0,
    "manquants": []
   }

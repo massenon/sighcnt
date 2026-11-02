@@ -16,14 +16,14 @@ Source : `docs/prd/PRD-POSTE-premiere-installation.md` (Q1, Q2, Q3, Q4, Q5, Q6, 
 - Pas de « code de secours » dans le poste aujourd'hui (recherche faite) : à créer.
 
 ## Étapes
-### Étape 1 — Fixer les règles pures du code de secours et de la réinitialisation (domaine)
+### Étape 1 — Fixer les règles pures du code de secours et de la réinitialisation (domaine) [FAITE 02/11/2026]
 - Fichiers : `packages/domaine/lib/src/securite/` (nouveau `sec_secours.dart`), export dans `sigh_domaine.dart`, vecteurs `packages/domaine/test/vecteurs/` + test.
 - Ce qu'on fait : génération du code de 25 caractères sans caractères ambigus, empreinte, compteur de 5 essais et blocage 15 minutes, politique du mot de passe temporaire (14 caractères, 24 h) et du nouveau mot de passe (8 caractères au moins, différent du temporaire et de l'ancien). Fonctions pures, horloge injectée.
 - Pièges à éviter : ne pas recopier la politique de mot de passe (réutiliser `accControlerNouveauMotDePasse`) ; le message de refus est identique que le compte existe ou non ; l'aléa est injecté pour que le test le rejoue.
 - Vérification : `cd packages/domaine && dart test test/securite_secours_test.dart` → vert.
 - Peut être livrée seule : oui.
 
-### Étape 2 — État d'installation du poste (local, non synchronisé)
+### Étape 2 — État d'installation du poste (local, non synchronisé) [FAITE 02/11/2026]
 - Fichiers : `lib/core/parametres_poste.dart`, `lib/core/etat_installation.dart` (nouveau).
 - Ce qu'on fait : `EtatInstallation` (`non_installe`, `installe`), étapes cochées A à D, date et auteur de clôture ; stocké dans les paramètres du poste, jamais dans le magasin partagé. Détection « poste vide » = aucun paramètre d'installation ET aucun compte.
 - Pièges à éviter : un poste qui a déjà des comptes (jeu de démonstration, test) ne doit pas retomber sur l'assistant ; `SIGH_CONNEXION=non` et les tests existants gardent leur chemin.
@@ -95,8 +95,11 @@ Source : `docs/prd/PRD-POSTE-premiere-installation.md` (Q1, Q2, Q3, Q4, Q5, Q6, 
 - Code d'appairage : jeton à usage unique (8 caractères, 15 min).
 - Invariants à vérifier au banc : une seule mère par clinique ; un code consommé ne se rejoue pas ; une configuration saisie avant l'activation part après elle.
 
+## Persistance du poste (faite 02/11/2026, en fichiers)
+Le magasin se range sur disque (`lib/donnees/persistance.dart`, `Magasin.brancherPersistance`). Fichiers en clair : voir E2104 à E2107 de `ECARTS-MAQUETTE.md`. La persistance chiffrée SQLCipher reste à faire avant des données réelles.
+
 ## Hors périmètre de ce plan
-- Persistance chiffrée du poste (SQLCipher) : sans elle, comptes et configurations se perdent à la fermeture du poste. C'est le préalable à toute vraie mise en service ; plan à part.
+- Persistance chiffrée du poste (SQLCipher) : les fichiers actuels sont en clair ; préalable à toute donnée médicale réelle ; plan à part.
 - Commande web de génération du code de secours : à vérifier dans `apps/web` avant de l'écrire dans un guide.
 - Installeur signé et packaging.
 - Contrôle de version de schéma complet entre mère et fileul : seule la détection d'incompatibilité est faite ici.
@@ -104,7 +107,7 @@ Source : `docs/prd/PRD-POSTE-premiere-installation.md` (Q1, Q2, Q3, Q4, Q5, Q6, 
 ## Risques
 | Risque | Signal précoce | Parade |
 |---|---|---|
-| Magasin en mémoire : l'installation est perdue à la fermeture | l'assistant se relance à chaque démarrage | n'annoncer « installé » qu'avec la persistance ; livrer le plan de persistance avant la recette |
+| Données en clair sur disque | audit de sécurité avant mise en service | SQLCipher avant toute donnée réelle ; ne pas déployer en clinique sur la persistance par fichiers |
 | Code de secours perdu | demande de récupération sans code | écran qui le dit avant la fermeture ; case de confirmation bloquante |
 | Divergence spec / décision sur les hachés | audit de la SPEC §3.7 | étape 10 |
 | Régression du démarrage existant (tests, `SIGH_CONNEXION=non`) | `demarrage_poste_test` rouge | étape 2 : détection « poste vide » stricte |

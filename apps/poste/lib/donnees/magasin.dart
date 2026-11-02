@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:sigh_domaine/sigh_domaine.dart' show Agent, cpaDoublonsDuPlan, cpcGardeEcritures;
+
+import 'persistance.dart';
 
 typedef Fiche = Map<String, Object?>;
 
@@ -198,6 +201,68 @@ class Magasin {
     utilisateur = a.nom;
   }
 
+  // --- Persistance -------------------------------------------------------------------------------------------------------------------------------
+  Persistance? _persistance;
+  final Set<String> _sales = {};
+  Timer? _minuterie;
+  Duration _delaiEcriture = const Duration(milliseconds: 400);
+  Future<void> _enCours = Future.value();
+
+  /// Les problèmes de relecture du dernier démarrage (fichier illisible mis de côté), à dire à l'écran.
+  List<String> get problemesPersistance => _persistance?.problemes ?? const [];
+
+  /// BRANCHE LE DISQUE. Ce qui a été écrit lors d'un démarrage précédent REMPLACE le jeu d'origine, collection par collection ; une collection jamais
+  /// écrite reste celle du jeu. Ensuite chaque écriture marque sa collection, et une minuterie (400 ms après le dernier geste) ne réécrit que celles
+  /// qui ont changé : sérialiser tout le magasin à chaque geste serait quadratique. À appeler UNE fois, avant la première lecture d'une collection.
+  Future<void> brancherPersistance(Persistance p, {Duration delai = const Duration(milliseconds: 400)}) async {
+    if (_persistance != null) throw StateError('La persistance est déjà branchée.');
+    if (_c.isNotEmpty) throw StateError('La persistance se branche avant la première lecture d\'une collection.');
+    _delaiEcriture = delai;
+    final ecrit = await p.lireTout();
+    for (final e in ecrit.entries) {
+      _jeux[e.key] = e.value;
+    }
+    _persistance = p;
+  }
+
+  void _marquerSale(String nom) {
+    _sales.add(nom);
+    _minuterie ??= Timer(_delaiEcriture, () {
+      _minuterie = null;
+      ecrireMaintenant();
+    });
+  }
+
+  /// Écrit tout de suite les collections modifiées (fermeture du poste, perte du focus, test). Rend quand c'est écrit.
+  Future<void> ecrireMaintenant() {
+    final p = _persistance;
+    if (p == null) return Future.value();
+    _minuterie?.cancel();
+    _minuterie = null;
+    final noms = _sales.toList();
+    _sales.clear();
+    _enCours = _enCours.then((_) async {
+      var echec = false;
+      for (final n in noms) {
+        final col = _c[n];
+        if (col == null) continue;
+        try {
+          await p.ecrire(n, col.toutes);
+        } catch (e) {
+          // Une écriture qui échoue est REPROGRAMMÉE, jamais perdue en silence ; la coque la dit par [erreurPersistance].
+          echec = true;
+          erreurPersistance.value = 'Écriture de « $n » impossible sur le disque : $e';
+          _marquerSale(n);
+        }
+      }
+      if (!echec) erreurPersistance.value = null;
+    });
+    return _enCours;
+  }
+
+  /// Le dernier échec d'écriture sur le disque (`null` : tout va bien). La coque le montre ; un poste qui ne sait plus écrire doit le dire.
+  final ValueNotifier<String?> erreurPersistance = ValueNotifier<String?>(null);
+
   /// Horloge du journal (fixable par un test).
   DateTime Function() horloge = DateTime.now;
 
@@ -380,6 +445,7 @@ class Magasin {
                     ? (a, m, e, r, avant, apres) => journaliser(a, m, e, r, null, null)
                     : journaliser),
             module: _modules[nom] ?? '—');
+        if (_persistance != null) c.addListener(() => _marquerSale(nom));
         // `S.garder('ecritures', …)` de la maquette : la lecture seule d'un exercice clos est tenue AU MOTEUR, sur la collection — masquer un bouton ne
         // protège rien. La garde relit les exercices À CHAQUE écriture (une clôture validée ferme aussitôt).
         if (nom == 'ecritures') {

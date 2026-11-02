@@ -4,6 +4,7 @@ import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'donnees/magasin.dart';
+import 'donnees/persistance.dart';
 import 'core/config_poste.dart';
 import 'core/controleur_poste.dart';
 import 'core/donnees_navigation.dart';
@@ -47,6 +48,11 @@ const String pleinEcranAuDemarrage =
 /// première connexion. Vide (défaut) : seul l'administrateur reçoit un mot de passe provisoire aléatoire, affiché sur l'écran de connexion.
 const String motDePasseDemo =
     String.fromEnvironment('SIGH_MDP_DEMO', defaultValue: '');
+
+/// `SIGH_REPARTIR_A_ZERO=oui` : DÉVELOPPEMENT. Met de côté le magasin enregistré du poste (comptes, saisies) et repart du jeu d'origine. Le dossier n'est
+/// pas supprimé : il est renommé `magasin.ancien-<date>`.
+const String repartirAZero =
+    String.fromEnvironment('SIGH_REPARTIR_A_ZERO', defaultValue: 'non');
 
 /// Dossier des données du poste. À remplacer par le dossier d'application du système à l'installation (tâche de packaging).
 const String dossierDonnees =
@@ -104,6 +110,17 @@ Future<void> main() async {
       dbChemin: '$dossierDonnees/poste.db', mere: adresseMere)
     ..demarrer();
   final magasin = await Magasin.depuisAssets(Magasin.collectionsDuJeu);
+  // Le magasin se range sur disque : comptes, mots de passe (hachés), saisies et journal survivent à la fermeture du poste. Sans cela, tout repartait du
+  // jeu d'origine à chaque lancement. Les fichiers sont en clair (le chiffrement SQLCipher est l'étape suivante du plan).
+  final persistance = PersistanceFichiers('$dossierDonnees/magasin');
+  if (repartirAZero == 'oui') await persistance.mettreDeCote();
+  await magasin.brancherPersistance(persistance);
+  for (final probleme in persistance.problemes) {
+    debugPrint(probleme);
+  }
+  AppLifecycleListener(onStateChange: (e) {
+    if (e != AppLifecycleState.resumed) magasin.ecrireMaintenant();
+  });
   // E1559 : les prescriptions que les téléphones des soignants envoient par la mère sont TRANSCRITES ici (ordonnance, facture de la caisse, files
   // d'aval) par le moteur de la fiche de consultation ; une pièce non transcriptible est refusée en le disant.
   if (connexionExigee != 'non') {
