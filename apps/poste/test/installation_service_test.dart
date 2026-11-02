@@ -158,4 +158,77 @@ void main() {
       expect(r.message, accMessageSecoursRefus);
     });
   });
+
+  group('réinitialisation par un administrateur', () {
+    Future<(Magasin, String, String)> deuxComptes() async {
+      final m = magasin();
+      m.collection('utilisateurs').inserer({'id': 'USR002', 'statut': 'actif', 'identifiant': 'a.second', 'nomComplet': 'SECOND Admin', 'role': 'admin'});
+      final ident = ServiceIdentifiants.de(m);
+      await ident.definir('USR001', bon, par: 'test', doitChanger: false, maintenant: auj);
+      return (m, 'USR000', 'USR001');
+    }
+
+    test('mot de passe temporaire de 14 caractères valable 24 h, changement imposé, journal sans le secret', () async {
+      final (m, admin, cible) = await deuxComptes();
+      final r = await ServiceIdentifiants.de(m).reinitialiser(cibleId: cible, acteurRole: 'admin', acteurId: admin, acteurNom: 'ADMIN', maintenant: auj);
+      expect(r.ok, isTrue);
+      expect(r.temporaire!.length, 14);
+      expect(r.jusqua, auj.add(const Duration(hours: 24)));
+      final f = ServiceIdentifiants.de(m).fiche(cible)!;
+      expect(accChangementObligatoire(f, auj), isTrue);
+      expect(await ServiceIdentifiants.de(m).motDePasseActuel(cible, r.temporaire!), isTrue);
+      expect(await ServiceIdentifiants.de(m).motDePasseActuel(cible, bon), isFalse, reason: 'l’ancien mot de passe ne vaut plus');
+      final audit = m.collection('audit').toutes.where((e) => e['action'] == 'Mot de passe réinitialisé').single;
+      expect(audit['reference'], cible);
+      expect('${m.collection('audit').toutes}', isNot(contains(r.temporaire!)));
+    });
+
+    test('le nouveau mot de passe ne peut pas être celui d’avant la réinitialisation', () async {
+      final (m, admin, cible) = await deuxComptes();
+      final ident = ServiceIdentifiants.de(m);
+      await ident.reinitialiser(cibleId: cible, acteurRole: 'admin', acteurId: admin, acteurNom: 'ADMIN', maintenant: auj);
+      expect(await ident.memeQuePrecedent(cible, bon), isTrue);
+      expect(await ident.memeQuePrecedent(cible, 'Autre#Mot2Passe9'), isFalse);
+    });
+
+    test('refus nommés : propre compte, non administrateur, compte inconnu', () async {
+      final (m, admin, cible) = await deuxComptes();
+      final ident = ServiceIdentifiants.de(m);
+      final soi = await ident.reinitialiser(cibleId: admin, acteurRole: 'admin', acteurId: admin, acteurNom: 'ADMIN', maintenant: auj);
+      expect(soi.refus!.code, 'reinit_propre_compte');
+      final medecin = await ident.reinitialiser(cibleId: cible, acteurRole: 'medecin', acteurId: 'USR001', acteurNom: 'M', maintenant: auj);
+      expect(medecin.refus!.code, 'reinit_non_admin');
+      final inconnu = await ident.reinitialiser(cibleId: 'USR999', acteurRole: 'admin', acteurId: admin, acteurNom: 'ADMIN', maintenant: auj);
+      expect(inconnu.refus!.code, 'reinit_compte_inconnu');
+      expect(ident.possede(admin), isFalse, reason: 'rien n’est écrit sur un refus');
+    });
+
+    test('les sessions ouvertes du compte sont clôturées, les autres non', () async {
+      final (m, admin, cible) = await deuxComptes();
+      final sessions = m.collection('sessionsUtilisateur');
+      sessions.ajouterSansJournal({'id': 'S1', 'identifiant': 'f.yeni', 'etat': 'active'});
+      sessions.ajouterSansJournal({'id': 'S2', 'identifiant': 'f.yeni', 'etat': 'suspendue'});
+      sessions.ajouterSansJournal({'id': 'S3', 'identifiant': 'autre', 'etat': 'active'});
+      await ServiceIdentifiants.de(m).reinitialiser(cibleId: cible, acteurRole: 'admin', acteurId: admin, acteurNom: 'ADMIN', maintenant: auj);
+      expect(sessions.parId('S1')!['etat'], 'cloturee');
+      expect(sessions.parId('S2')!['etat'], 'cloturee');
+      expect(sessions.parId('S3')!['etat'], 'active');
+      expect(sessions.parId('S1')!['clotureMotif'], 'Mot de passe réinitialisé');
+    });
+
+    test('connexion avec un temporaire périmé : refus nommé, tentative écrite ; dans le délai : accepté avec changement obligatoire', () async {
+      final (m, admin, cible) = await deuxComptes();
+      final ident = ServiceIdentifiants.de(m);
+      final r = await ident.reinitialiser(cibleId: cible, acteurRole: 'admin', acteurId: admin, acteurNom: 'ADMIN', maintenant: auj);
+      Future<ResultatConnexion> essai(DateTime quand) => ident.verifier(
+          identifiant: 'f.yeni', motDePasse: r.temporaire!, rolesArchives: const {}, libelleRole: (x) => x, maintenant: quand);
+      final dans = await essai(auj.add(const Duration(hours: 23)));
+      expect(dans.decision.accepte, isTrue);
+      expect(dans.doitChanger, isTrue);
+      final perime = await essai(auj.add(const Duration(hours: 25)));
+      expect(perime.decision.accepte, isFalse);
+      expect(perime.decision.message, accMessageTemporairePerime);
+      expect(m.collection('tentativesConnexion').toutes.last['motif'], accMotifTemporairePerime);
+    });
+  });
 }

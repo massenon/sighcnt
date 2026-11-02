@@ -169,6 +169,12 @@ class ServiceIdentifiants {
       _ecrireTentative(id, d, maintenant, poste);
       return ResultatConnexion(decision: d, verrouJusqua: fin2, motifJournal: d.motif);
     }
+    if (accTemporairePerime(f, maintenant)) {
+      // Le mot de passe est juste mais son délai de 24 h est passé : refus NOMMÉ (l'agent doit savoir quoi faire), tentative écrite (RG-12).
+      const d = AccDecision(AccIssue.refuse, message: accMessageTemporairePerime, motif: accMotifTemporairePerime);
+      _ecrireTentative(id, AccDecision(AccIssue.refuse, compte: decision.compte, message: d.message, motif: d.motif), maintenant, poste);
+      return const ResultatConnexion(decision: d, motifJournal: accMotifTemporairePerime);
+    }
     _col.mettreAJour(cle, accApresSucces(maintenant));
     if (decision.accepte) {
       _magasin.collection('utilisateurs').mettreAJour(cle, {'echecs': 0, 'dernierAcces': maintenant.toIso8601String().substring(0, 10)});
@@ -290,6 +296,65 @@ extension SecoursAdministrateur on ServiceIdentifiants {
     return ResultatSecours.ok(nouveauCode);
   }
 
+
+  /// RÉINITIALISATION PAR UN ADMINISTRATEUR (EF-INST-09). Le moteur décide qui peut ([accRefusReinitialisation]) : masquer un bouton ne protège rien. Rend le mot
+  /// de passe TEMPORAIRE (14 caractères, valable 24 h), à afficher UNE fois ; le compte devra le remplacer à sa prochaine connexion, et ses sessions ouvertes
+  /// sont CLÔTURÉES (la clôture se voit au registre des sessions). Le journal dit le geste (qui, quel compte, quand), jamais le mot de passe. Le haché de l'ancien
+  /// mot de passe est gardé pour refuser qu'il soit remis tel quel (`precedentHash`) ; il disparaît au prochain changement.
+  Future<ResultatReinit> reinitialiser({
+    required String cibleId,
+    required String acteurRole,
+    required String acteurId,
+    required String acteurNom,
+    required DateTime maintenant,
+    bool acteurSuper = false,
+    bool cibleSuper = false,
+  }) async {
+    final refus = accRefusReinitialisation(acteurRole: acteurRole, acteurId: acteurId, cibleId: cibleId, acteurSuper: acteurSuper, cibleSuper: cibleSuper);
+    if (refus != null) return ResultatReinit.refus(refus);
+    final compte = _magasin.collection('utilisateurs').parId(cibleId);
+    if (compte == null || '${compte['statut'] ?? 'actif'}' != 'actif') {
+      return const ResultatReinit.refus(RefusReinit('reinit_compte_inconnu', 'Ce compte n’existe pas ou est archivé.', 'Actualiser la liste des comptes.'));
+    }
+    // Copie AVANT `definir` : la fiche du magasin est mise à jour sur place, le haché d'avant serait perdu.
+    final ancienne = _col.parId(cibleId);
+    final ancien = ancienne == null ? null : <String, Object?>{...ancienne};
+    final temporaire = accGenererMotDePasseTemporaire(ServiceIdentifiants.aleatoire());
+    await definir(cibleId, temporaire, par: acteurNom, doitChanger: true, maintenant: maintenant);
+    _col.mettreAJour(cibleId, {
+      'temporaireJusqua': accEcheanceTemporaire(maintenant).toIso8601String(),
+      if (ancien != null) ...{
+        'precedentHash': ancien['hash'],
+        'precedentSel': ancien['sel'],
+        'precedentParametres': {for (final k in ['memoireKio', 'iterations', 'parallelisme', 'longueur']) k: ancien[k]},
+      },
+    });
+    var fermees = 0;
+    final sessions = _magasin.collection('sessionsUtilisateur');
+    for (final f in sessions.actives.where((f) => '${f['identifiant']}' == '${compte['identifiant']}' && '${f['etat']}' != 'cloturee').toList()) {
+      sessions.mettreAJour(f['id'], {
+        'etat': 'cloturee',
+        'clotureLe': maintenant.toIso8601String(),
+        'cloturePar': acteurNom,
+        'clotureParIdentifiant': acteurId,
+        'clotureMotif': 'Mot de passe réinitialisé',
+        'cloturePropre': false,
+      });
+      fermees++;
+    }
+    _magasin.journaliser('Mot de passe réinitialisé', 'M14', 'Identifiant', cibleId, null, {'par': acteurNom, 'sessionsFermees': fermees});
+    return ResultatReinit.ok(temporaire, accEcheanceTemporaire(maintenant));
+  }
+
+  /// Le mot de passe proposé est-il celui d'AVANT la réinitialisation ? (refusé au changement obligatoire.) Faux si aucun précédent n'est gardé.
+  Future<bool> memeQuePrecedent(String utilisateurId, String motDePasse) async {
+    final f = _col.parId(utilisateurId);
+    if (f == null || f['precedentHash'] == null || f['precedentSel'] == null) return false;
+    final pr = (f['precedentParametres'] is Map) ? (f['precedentParametres'] as Map).cast<String, Object?>() : <String, Object?>{};
+    final calcule = await _deriver(motDePasse, base64.decode('${f['precedentSel']}'), AccParametresHachage.depuisFiche(pr));
+    return ServiceIdentifiants._egaux(calcule, base64.decode('${f['precedentHash']}'));
+  }
+
   void _ecrireEtat(Map<String, Object?> e) {
     if (_etatChemin.parId('CHEMIN') == null) {
       _etatChemin.inserer({'id': 'CHEMIN', ...e}, prefixe: 'CHEMIN');
@@ -297,6 +362,18 @@ extension SecoursAdministrateur on ServiceIdentifiants {
       _etatChemin.mettreAJour('CHEMIN', e);
     }
   }
+}
+
+/// Le résultat d'une réinitialisation : le mot de passe temporaire et son échéance, ou le refus nommé.
+class ResultatReinit {
+  const ResultatReinit.ok(String this.temporaire, DateTime this.jusqua) : refus = null;
+  const ResultatReinit.refus(RefusReinit this.refus)
+      : temporaire = null,
+        jusqua = null;
+  final String? temporaire;
+  final DateTime? jusqua;
+  final RefusReinit? refus;
+  bool get ok => temporaire != null;
 }
 
 /// Le résultat de la récupération : le nouveau code (affiché une fois), ou un refus NOMMÉ.

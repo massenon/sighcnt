@@ -228,6 +228,15 @@ class _EtatConnexion extends State<EcranConnexion> {
     if (_occupe) return;
     setState(() => _occupe = true);
     final id = c.agent?.utilisateurId ?? c.identifiant;
+    // Après une réinitialisation par un administrateur, le nouveau mot de passe ne peut pas être celui d'AVANT (EF-INST-09).
+    if (await ServiceIdentifiants.de(x.magasin).memeQuePrecedent(id, _nouveau.text)) {
+      if (!mounted) return;
+      setState(() {
+        _occupe = false;
+        _erreur = 'Le nouveau mot de passe doit être différent de l’ancien.';
+      });
+      return;
+    }
     await ServiceIdentifiants.de(x.magasin).definir(id, _nouveau.text, par: c.nom, doitChanger: false, maintenant: x.maintenant);
     if (!mounted) return;
     setState(() {

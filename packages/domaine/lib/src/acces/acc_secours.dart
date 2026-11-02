@@ -129,6 +129,10 @@ bool accTemporairePerime(Map<String, Object?> fiche, DateTime maintenant) {
   return fin != null && !fin.isAfter(maintenant);
 }
 
+/// Le refus affiché quand le mot de passe temporaire est juste mais périmé, et le motif écrit dans `tentativesConnexion`.
+const String accMessageTemporairePerime = 'Ce mot de passe temporaire a expiré (24 h). Demandez à un administrateur d’en générer un nouveau.';
+const String accMotifTemporairePerime = 'Mot de passe temporaire expiré';
+
 /// Le refus nommé d'une réinitialisation.
 class RefusReinit {
   const RefusReinit(this.code, this.motif, this.geste);

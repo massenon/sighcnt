@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
@@ -103,4 +104,77 @@ String etatIdentifiant(Magasin m, String utilisateurId, DateTime maintenant) {
   final defini = '${f['definiLe'] ?? ''}'.split('T').first;
   final suite = accChangementObligatoire(f, maintenant) ? ' (changement obligatoire à la prochaine connexion)' : '';
   return 'Défini le $defini$suite';
+}
+
+/// « Réinitialiser le mot de passe » (EF-INST-09) : confirmation, puis le mot de passe TEMPORAIRE de 14 caractères, affiché UNE fois avec « Copier ». Valable
+/// 24 h ; l'agent le remplacera à sa prochaine connexion ; ses sessions ouvertes sont fermées. Le moteur refuse en nommant (propre compte, non administrateur).
+void afficherModaleReinitialisation(BuildContext ctx, ContexteEcran c, Fiche compte) {
+  final svc = ServiceIdentifiants.de(c.magasin);
+  var occupe = false;
+  afficherModale<void>(ctx,
+      titre: 'Réinitialiser le mot de passe',
+      sousTitre: '${compte['identifiant'] ?? ''}, ${compte['nomComplet'] ?? ''}',
+      taille: TailleModale.md,
+      corps: const NoteSigh(
+          'Un mot de passe temporaire de 14 caractères est généré et affiché une seule fois. Il vaut 24 heures. À sa prochaine connexion, l’agent est obligé d’en choisir un nouveau avant d’accéder à quoi que ce soit, et ses sessions ouvertes sont fermées. L’opération est journalisée (le mot de passe n’y figure jamais).'),
+      pied: (fermer) => [
+            BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+            BoutonSigh(
+                key: const Key('m14:reinit-confirmer'),
+                libelle: 'Générer le mot de passe temporaire',
+                icone: LucideIcons.rotateCcwKey,
+                onPressed: () async {
+                  if (occupe) return;
+                  occupe = true;
+                  final r = await svc.reinitialiser(
+                      cibleId: '${compte['id']}',
+                      acteurRole: c.role,
+                      acteurId: c.agent.utilisateurId,
+                      acteurNom: c.agent.nom,
+                      maintenant: c.aujourdhui);
+                  occupe = false;
+                  fermer();
+                  if (!ctx.mounted) return;
+                  if (!r.ok) {
+                    ToastsSigh.afficher(ctx, r.refus!.motif, type: TypeToast.erreur, detail: r.refus!.geste);
+                    return;
+                  }
+                  _afficherTemporaire(ctx, compte, r.temporaire!, r.jusqua!);
+                }),
+          ]);
+}
+
+/// L'affichage unique du mot de passe temporaire (modale distincte de la confirmation : le pied d'une modale est figé à son ouverture).
+void _afficherTemporaire(BuildContext ctx, Fiche compte, String temporaire, DateTime jusqua) {
+  String d(int n) => n.toString().padLeft(2, '0');
+  afficherModale<void>(ctx,
+      titre: 'Mot de passe temporaire',
+      sousTitre: '${compte['identifiant'] ?? ''}, ${compte['nomComplet'] ?? ''}',
+      taille: TailleModale.md,
+      corps: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        const NoteSigh('Communiquez-le à l’agent de vive voix ou par un canal de confiance. Il ne sera plus affiché.', icone: LucideIcons.triangleAlert),
+        const SizedBox(height: 12),
+        Container(
+            key: const Key('m14:mdp-temporaire'),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: JetonsShell.slate50, border: Border.all(color: JetonsShell.slate200), borderRadius: BorderRadius.circular(8)),
+            child: SelectableText(temporaire,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: 'LiberationMono', fontWeight: FontWeight.w700, fontSize: 18, color: JetonsShell.slate900))),
+        const SizedBox(height: 8),
+        Text('Valable jusqu’au ${d(jusqua.day)}/${d(jusqua.month)}/${jusqua.year} à ${d(jusqua.hour)}:${d(jusqua.minute)}.',
+            style: const TextStyle(color: JetonsShell.slate600, fontSize: 12, height: 16 / 12)),
+      ]),
+      pied: (fermer) => [
+            BoutonSigh(
+                key: const Key('m14:copier-temporaire'),
+                libelle: 'Copier',
+                variante: VarianteBouton.secondaire,
+                icone: LucideIcons.copy,
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: temporaire));
+                  if (ctx.mounted) ToastsSigh.afficher(ctx, 'Mot de passe copié.', type: TypeToast.succes);
+                }),
+            BoutonSigh(libelle: 'Fermer', onPressed: fermer),
+          ]);
 }

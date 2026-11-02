@@ -317,6 +317,19 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
                     variante: VarianteBouton.secondaire,
                     icone: LucideIcons.keyRound,
                     onPressed: () => afficherModaleMotDePasse(ctx, c, u))),
+          // Réinitialiser : ABSENT sans le droit d'éditer, et sur son PROPRE compte (le moteur le refuse aussi). Le mot de passe temporaire est généré, affiché
+          // une fois, valable 24 h.
+          if (c.droit.editer && c.agent.utilisateurId != '${u['id']}')
+            Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: BoutonSigh(
+                        key: const Key('m14:reinitialiser'),
+                        libelle: 'Réinitialiser le mot de passe',
+                        variante: VarianteBouton.secondaire,
+                        icone: LucideIcons.rotateCcwKey,
+                        onPressed: () => afficherModaleReinitialisation(ctx, c, u)))),
           if (c.droit.editer) const SizedBox(height: 16),
           CarteSigh(
               titre: 'Périmètre d’accès (RBAC)',
