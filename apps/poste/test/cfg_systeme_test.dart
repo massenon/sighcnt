@@ -133,7 +133,9 @@ void main() {
     final patients = m.collection('patients').toutes.length;
     // Une fiche archivée pendant les essais (référentiel conservé) : la corbeille doit être vide après le vidage (Direction, 02/11/2026).
     m.collection('centresCouts').archiver(m.collection('centresCouts').actives.first['id']);
-    final archivees = cfbNomsCollections().fold<int>(0, (a, n) => a + m.collection(n).archivees.length);
+    // Un rôle archivé (`rbac`) et un compte archivé (`utilisateurs`) ferment un accès : le vidage les garde.
+    const gardees = {'rbac', 'utilisateurs'};
+    final archivees = cfbNomsCollections().where((n) => !gardees.contains(n)).fold<int>(0, (a, n) => a + m.collection(n).archivees.length);
     expect(archivees, greaterThan(0));
     final plan = cfbPlanVidage({for (final n in cfbNomsCollections()) n: m.collection(n).toutes.length}, {...cfbEssentielles, ...cfbCollectionsTechniques});
     final effectif = m.collection('personnel').toutes.length;
@@ -170,8 +172,8 @@ void main() {
     expect(m.collection('modulesManifeste').toutes, isNotEmpty, reason: 'la matrice engendrée du poste survit à tout vidage');
     expect(m.collection('echeancesFiscales').toutes.length, 63, reason: 'le calendrier, dérivé d’un document, revient SANS règlement');
     expect(m.collection('echeancesFiscales').toutes.any((e) => e['paye'] == true), isFalse);
-    expect(cfbCorbeille(m), isEmpty, reason: 'la corbeille est vidée avec les jeux de test');
-    expect(cfbNomsCollections().fold<int>(0, (a, n) => a + m.collection(n).archivees.length), 0);
+    expect(cfbCorbeille(m).where((l) => !gardees.contains(l.collection)), isEmpty, reason: 'la corbeille est vidée avec les jeux de test');
+    expect(cfbNomsCollections().where((n) => !gardees.contains(n)).fold<int>(0, (a, n) => a + m.collection(n).archivees.length), 0);
     expect(m.collection('audit').toutes.length, 1, reason: 'le journal est vidé ; seule reste l’entrée qui dit le vidage (RG-12)');
     final j = m.collection('audit').toutes.first;
     expect([j['action'], j['module'], j['entite'], j['reference']], ['Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage']);
