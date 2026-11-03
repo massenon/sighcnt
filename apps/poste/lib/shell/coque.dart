@@ -35,6 +35,10 @@ import 'ruban.dart';
 /// Coque UNIQUE du poste (fileul et mère) : barre supérieure → ruban à méga-menus → page. Elle reproduit la structure de
 /// la maquette (`#app-menubar`) ; tout ce qu'elle affiche est DÉRIVÉ du manifeste et de la matrice des droits.
 class CoquePoste extends StatefulWidget {
+  /// Le panneau du méga-menu est-il ouvert à l'ouverture du poste et à la connexion ? NON (Direction, 03/11/2026). Les bancs de test qui ont été écrits sur
+  /// la mise en page panneau ouvert le posent à `true` (`test/flutter_test_config.dart`) ; `coque_test.dart` mesure, lui, le défaut livré.
+  static bool panneauOuvertAuDemarrage = false;
+
   const CoquePoste(
       {super.key,
       required this.config,
@@ -81,7 +85,7 @@ class _CoquePosteState extends State<CoquePoste> {
   String? _domaine;
   /// À l'ouverture du poste, et à chaque connexion, le panneau du méga-menu est REPLIÉ (Direction, 03/11/2026) : l'agent arrive sur son tableau de bord, le
   /// panneau s'ouvre quand il clique sur un domaine.
-  bool _panneauOuvert = false;
+  bool _panneauOuvert = CoquePoste.panneauOuvertAuDemarrage;
 
   /// L'écran AUTONOME affiché (plein écran, sans chrome), s'il y en a un. Il prend le pas sur l'écran de la coque sans le détruire.
   String? _autonome;
@@ -373,7 +377,7 @@ class _CoquePosteState extends State<CoquePoste> {
         _ecran = null;
         _domaine = null;
         _autonome = null;
-        _panneauOuvert = false;
+        _panneauOuvert = CoquePoste.panneauOuvertAuDemarrage;
         _notifierALArrivee = s.compte != null;
       }
       // L'écran autonome ne cède la place QU'À L'INSTANT où la session se ferme : toute autre notification de la session (minuteur, horloge) le laissait

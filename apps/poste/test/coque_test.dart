@@ -42,6 +42,9 @@ Future<void> ouvrir(WidgetTester t, String domaine, String ecran) async {
 void main() {
   // Les VRAIES polices : en Ahem, chaque lettre est un carré de 14 px et le ruban déborde, ce que la maquette ne fait pas.
   setUpAll(chargerPolices);
+  // Le défaut LIVRÉ : le panneau du méga-menu est replié à l'ouverture.
+  setUp(() => CoquePoste.panneauOuvertAuDemarrage = false);
+  tearDownAll(() => CoquePoste.panneauOuvertAuDemarrage = true);
 
   testWidgets(
       'le ruban est celui de la maquette : barre supérieure, onglets de domaine, panneau à rangées de pastilles',
