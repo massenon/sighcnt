@@ -127,7 +127,7 @@ class _ReglagesPosteState extends State<ReglagesPoste> {
                 controller: _relais,
                 decoration: const InputDecoration(
                     labelText: 'Adresse du relais',
-                    hintText: 'https://relais.exemple.bj')),
+                    hintText: 'sighcnt.nassieratoo.com')),
             TextField(
                 key: const Key('secret'),
                 controller: _secret,

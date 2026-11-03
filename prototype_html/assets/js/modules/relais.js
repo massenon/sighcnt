@@ -111,7 +111,7 @@
   });
 
   ecran('rls-hebergement', {
-    title: 'Hébergement (cPanel)', description: 'Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat.',
+    title: 'Hébergement', description: 'Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat.',
     regle: 'Contraintes connues : PHP 8.2 ou plus, PostgreSQL, <strong>cron toutes les minutes</strong>, pas de SSH, pas de Redis, pas de WebSocket (la mère interroge, le relais n’appelle jamais).',
   }, function (root) {
     page(root, [U.kpiGrid([kpi('PHP', '8.3.12', 'code', 'success'), kpi('Base', 'PostgreSQL 15', 'database', 'success'), kpi('Cron', 'il y a 40 s', 'timer', 'success'), kpi('Disque', '38 %', 'hard-drive')]),

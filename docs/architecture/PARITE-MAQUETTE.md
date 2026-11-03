@@ -381,7 +381,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `rls-appareils` | Appareils | RLS | 1 | — | porté |
 | `rls-boites` | Boîtes aux lettres | RLS | 1 | — | porté |
 | `rls-codes` | Codes d’appairage | RLS | 1 | — | porté |
-| `rls-hebergement` | Hébergement (cPanel) | RLS | 1 | — | porté |
+| `rls-hebergement` | Hébergement | RLS | 1 | — | porté |
 | `rls-indicateurs` | Indicateurs reçus | RLS | 1 | — | porté |
 | `rls-journal` | Journal d’audit du relais | RLS | 1 | — | porté |
 | `rls-opacite` | Preuve d’opacité | RLS | 1 | — | porté |

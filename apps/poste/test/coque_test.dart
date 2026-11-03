@@ -68,8 +68,12 @@ void main() {
     ]) {
       expect(find.byKey(Key('domaine-$d')), findsOneWidget, reason: d);
     }
+    // À l'ouverture du poste le panneau du méga-menu est REPLIÉ (Direction, 03/11/2026) : aucun domaine n'étale ses pastilles.
+    expect(find.byKey(const Key('pastille-dash-admin')), findsNothing, reason: 'le méga-menu de Pilotage ne s\'affiche pas à l\'ouverture');
+    await t.tap(find.byKey(const Key('domaine-Pilotage')));
+    await t.pump();
     expect(find.byKey(const Key('panneau-ruban')), findsOneWidget);
-    // Le panneau s'ouvre sur le domaine de la page d'accueil du rôle (Pilotage pour l'administrateur), pas sur les autres.
+    // Le panneau s'ouvre sur le domaine cliqué (Pilotage), pas sur les autres.
     expect(find.byKey(const Key('pastille-dash-admin')), findsOneWidget);
     expect(find.byKey(const Key('pastille-m14-utilisateurs')), findsNothing,
         reason: 'le panneau n\'ouvre que le domaine courant');
@@ -84,7 +88,7 @@ void main() {
       (t) async {
     await monter(t,
         config: const ConfigPoste(mode: ModePoste.fileul, role: 'admin'));
-    expect(find.byKey(const Key('pastille-dash-admin')), findsOneWidget);
+    expect(find.byKey(const Key('pastille-dash-admin')), findsNothing, reason: 'panneau replié à l\'ouverture');
     for (final r in ['Patients', 'Consultations', 'Pharmacie', 'Facturation']) {
       expect(find.byKey(Key('raccourci-$r')), findsOneWidget, reason: r);
     }

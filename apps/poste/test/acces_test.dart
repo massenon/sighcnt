@@ -471,12 +471,8 @@ void main() {
       await mdp(t, m, '${compte['id']}', 'Provisoire#2026ab', doitChanger: true);
       await monter(t, m, ecran: 'auth-reset');
       final r = obj(v['reinit']);
-      for (final regle in (r['regles'] as List).cast<String>()) {
-        expect(find.text(regle), findsOneWidget);
-      }
-      // Sans saisie, 3 règles sur 4 sont en défaut (croix) ; un mot de passe conforme les coche toutes.
-      final croix = find.descendant(of: find.byKey(const Key('acces:politique')), matching: find.byIcon(LucideIcons.x));
-      expect(croix, findsNWidgets(3));
+      // La liste des règles n'est plus affichée (Direction, 03/11/2026) : la politique reste appliquée, le refus ci-dessous nomme la règle.
+      expect(find.byKey(const Key('acces:politique')), findsNothing);
       await saisir(t, 'acces:identifiant', 'a.kassa');
       await saisir(t, 'acces:actuel', 'Provisoire#2026ab');
       await saisir(t, 'acces:nouveau', 'a');
@@ -484,7 +480,6 @@ void main() {
       await bouton(t, 'Définir le mot de passe');
       expect(find.textContaining('non conforme à la politique'), findsOneWidget, reason: 'E1076 : « a » / « a » n’est plus accepté');
       await saisir(t, 'acces:nouveau', 'Motdepasse#2026');
-      expect(croix, findsNothing);
       await saisir(t, 'acces:confirmation', 'autre');
       await bouton(t, 'Définir le mot de passe');
       expect(find.text('${fl(r['discordance']).single['titre']}'), findsOneWidget);

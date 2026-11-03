@@ -1,11 +1,11 @@
 # Diagramme entité-relation
 
 > **ENGENDRÉ** par `prototype_html/build/gen-erd.js` depuis `packages/schema/postgres/` — ne pas éditer. Dictionnaire des colonnes : [`DICTIONNAIRE-DONNEES.md`](DICTIONNAIRE-DONNEES.md).
-> Ne figurent que les relations **déclarées** au schéma (71 clés étrangères sur 139 tables, 18 schémas). Les liens que le jeu courant ne respecte pas à 100 % ne sont pas déclarés (ils bloqueraient l'écriture) : la cible, avec un seul chemin d'écriture ordonné, les appliquera.
+> Ne figurent que les relations **déclarées** au schéma (71 clés étrangères sur 144 tables, 18 schémas). Les liens que le jeu courant ne respecte pas à 100 % ne sont pas déclarés (ils bloqueraient l'écriture) : la cible, avec un seul chemin d'écriture ordonné, les appliquera.
 
 | Mesure | Valeur |
 |---|---|
-| Tables | 139 |
+| Tables | 144 |
 | Schémas (un par module) | 18 |
 | Clés étrangères déclarées | 71 (dont 16 tables filles, 55 entre collections) |
 
@@ -206,7 +206,7 @@ Aucune relation déclarée.
 
 ## Tables sans aucune relation déclarée
 
-70 tables sur 139 : ce sont des registres autonomes (référentiels, journaux, pièces émises) ou des collections dont les liens ne sont pas encore garantis.
+75 tables sur 144 : ce sont des registres autonomes (référentiels, journaux, pièces émises) ou des collections dont les liens ne sont pas encore garantis.
 
 <details><summary>Liste</summary>
 
@@ -225,6 +225,7 @@ Aucune relation déclarée.
 - `m10.assurances_personnel`
 - `m10.badges`
 - `m10.bareme_ns131`
+- `m10.beneficiaires_primes`
 - `m10.evaluations`
 - `m10.fiches_poste`
 - `m10.grille_primes`
@@ -235,6 +236,8 @@ Aucune relation déclarée.
 - `m10.planning`
 - `m10.presences`
 - `m10.regimes_travail`
+- `m11.avances`
+- `m11.heures_sup`
 - `m11.prets_etudes`
 - `m12.banques`
 - `m12.centres_couts`
@@ -263,8 +266,10 @@ Aucune relation déclarée.
 - `m3.cpa`
 - `m3.observations`
 - `m5.analyses`
+- `m5.donneurs`
 - `m5.examens_labo`
 - `m5.plages_reactif`
+- `m5.poches`
 - `m5.unites_labo`
 - `m5.variables_labo`
 - `m6.dispensations`

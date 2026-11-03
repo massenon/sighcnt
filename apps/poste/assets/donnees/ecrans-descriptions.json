@@ -1354,7 +1354,7 @@
    "description": "Codes à usage unique créés par la mère : ils expirent, ne servent qu’une fois, ne sont jamais conservés en clair."
   },
   "rls-hebergement": {
-   "titre": "Hébergement (cPanel)",
+   "titre": "Hébergement",
    "description": "Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat."
   },
   "rls-indicateurs": {

@@ -1,5 +1,5 @@
 <div>
-    @include('livewire.panneau._entete', ['titre' => 'Hébergement (cPanel)', 'description' => 'Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat.', 'regle' => 'Contraintes connues : PHP 8.2 ou plus, PostgreSQL, cron toutes les minutes, pas de SSH, pas de Redis, pas de WebSocket (la mère interroge, le relais n’appelle jamais).'])
+    @include('livewire.panneau._entete', ['titre' => 'Hébergement', 'description' => 'Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat.', 'regle' => 'Contraintes connues : PHP 8.2 ou plus, PostgreSQL, cron toutes les minutes, pas de SSH, pas de Redis, pas de WebSocket (la mère interroge, le relais n’appelle jamais).'])
     @php $etats = ['ok' => ['OK', 'ok'], 'attention' => ['À surveiller', 'attention'], 'alerte' => ['ALERTE', 'alerte']]; @endphp
     <div class="grille">
         <div class="carte"><h2>PHP</h2><div class="valeur">{{ $php }}</div><span class="puce {{ version_compare($php, '8.2.0', '>=') ? 'ok' : 'alerte' }}">{{ version_compare($php, '8.2.0', '>=') ? 'OK' : 'ALERTE' }}</span></div>

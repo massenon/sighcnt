@@ -189,7 +189,7 @@ const List<String> rlsControlesHebergement = ['Cron schedule:run', 'Certificat T
 class EcranRlsHebergement extends EcranRls {
   const EcranRlsHebergement({super.key});
   @override
-  String get titre => 'Hébergement (cPanel)';
+  String get titre => 'Hébergement';
   @override
   String get description => 'Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat.';
   @override

@@ -38,14 +38,6 @@ void afficherModaleMotDePasse(BuildContext ctx, ContexteEcran c, Fiche compte) {
                 const SizedBox(height: 12),
                 FormulaireSigh(controleur: f),
                 const SizedBox(height: 8),
-                Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(color: JetonsShell.slate50, borderRadius: BorderRadius.circular(8)),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      for (final r in accRegleMotDePasse)
-                        Text(r, style: const TextStyle(color: JetonsShell.slate600, fontSize: 12, height: 16 / 12)),
-                    ])),
-                const SizedBox(height: 8),
                 BoutonSigh(
                     libelle: 'Générer un mot de passe provisoire',
                     variante: VarianteBouton.secondaire,

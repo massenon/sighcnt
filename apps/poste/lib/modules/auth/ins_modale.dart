@@ -210,7 +210,7 @@ class _EtatCorps extends State<_Corps> {
 
   void _modaleActivation(BuildContext context) {
     final f = ControleurFormulaire(const [
-      ChampDef(nom: 'relais', libelle: 'Adresse du relais web', requis: true, col: ColChamp.plein, indicatif: 'https://relais.exemple.bj'),
+      ChampDef(nom: 'relais', libelle: 'Adresse du relais web', requis: true, col: ColChamp.plein, indicatif: 'sighcnt.nassieratoo.com'),
       ChampDef(nom: 'secret', libelle: 'Secret de la mère', type: TypeChamp.motDePasse, requis: true, col: ColChamp.plein),
       ChampDef(
           nom: 'cle',

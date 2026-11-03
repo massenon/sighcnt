@@ -5504,7 +5504,7 @@
   },
   {
    "id": "rls-hebergement",
-   "label": "Hébergement (cPanel)",
+   "label": "Hébergement",
    "module": "RLS",
    "domaine": "Relais en ligne",
    "tranche": 6,

@@ -15,7 +15,7 @@ Prototype : domaine « Relais en ligne » de la maquette, module `RLS`, 12 pages
 | `rls-alertes` | Alertes et notifications | ⬜ | règles (battement, appareil bloqué, disque, cron), courriel |
 | `rls-superadmin` | Comptes superadmin | ⬜ | comptes, sessions, double facteur |
 | `rls-parametres` | Paramètres du relais | ⬜ | seuil de battement, rétention, secret (jamais en base) |
-| `rls-hebergement` | Hébergement (cPanel) | ⬜ | PHP, base, cron, disque, certificat |
+| `rls-hebergement` | Hébergement | ⬜ | PHP, base, cron, disque, certificat |
 | `rls-sauvegarde` | Sauvegarde du relais | ⬜ | export avant migration |
 | `rls-opacite` | Preuve d'opacité | ⬜ | ce que le relais voit et ne voit pas |
 

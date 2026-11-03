@@ -2650,7 +2650,7 @@
   {
    "id": "rls-hebergement",
    "acces": "ouvert",
-   "titre": "Hébergement (cPanel)",
+   "titre": "Hébergement",
    "kpis": 4,
    "tableaux": 1,
    "onglets": 0,

@@ -79,7 +79,9 @@ class CoquePoste extends StatefulWidget {
 class _CoquePosteState extends State<CoquePoste> {
   String? _ecran;
   String? _domaine;
-  bool _panneauOuvert = true;
+  /// À l'ouverture du poste, et à chaque connexion, le panneau du méga-menu est REPLIÉ (Direction, 03/11/2026) : l'agent arrive sur son tableau de bord, le
+  /// panneau s'ouvre quand il clique sur un domaine.
+  bool _panneauOuvert = false;
 
   /// L'écran AUTONOME affiché (plein écran, sans chrome), s'il y en a un. Il prend le pas sur l'écran de la coque sans le détruire.
   String? _autonome;
@@ -362,6 +364,7 @@ class _CoquePosteState extends State<CoquePoste> {
 
   /// La session change (connexion, déverrouillage, changement de compte) : l'écran autonome affiché cède la place, l'écran courant repart de l'accueil.
   AccCompte? _compteVu;
+  EtatSession? _etatVu;
   void _surSession() {
     final s = _session!;
     setState(() {
@@ -370,10 +373,13 @@ class _CoquePosteState extends State<CoquePoste> {
         _ecran = null;
         _domaine = null;
         _autonome = null;
-        _panneauOuvert = true;
+        _panneauOuvert = false;
         _notifierALArrivee = s.compte != null;
       }
-      if (s.etat == EtatSession.deconnectee) _autonome = null;
+      // L'écran autonome ne cède la place QU'À L'INSTANT où la session se ferme : toute autre notification de la session (minuteur, horloge) le laissait
+      // revenir à la connexion, si bien que « Rejoindre une clinique existante » s'ouvrait puis disparaissait aussitôt.
+      if (s.etat == EtatSession.deconnectee && _etatVu != EtatSession.deconnectee) _autonome = null;
+      _etatVu = s.etat;
       _compteVu = s.compte;
     });
     _suivreInstallation();

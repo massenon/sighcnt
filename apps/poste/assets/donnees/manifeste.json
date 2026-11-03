@@ -6323,7 +6323,7 @@
   },
   {
    "id": "rls-hebergement",
-   "label": "Hébergement (cPanel)",
+   "label": "Hébergement",
    "icone": "server",
    "module": "RLS",
    "moduleLabel": "Relais en ligne (apps/web)",

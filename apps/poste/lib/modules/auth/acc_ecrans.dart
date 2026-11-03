@@ -34,29 +34,9 @@ String _horodatage(DateTime d) =>
 String initialesAcces(String nom) =>
     nom.trim().split(RegExp(r'\s+')).take(2).map((w) => w.isEmpty ? '' : w[0]).join().toUpperCase();
 
-/// Les quatre règles de la politique, avec une coche VERTE pour chacune que le mot de passe saisi respecte et une croix sinon : la politique est APPLIQUÉE
-/// (le refus nomme les règles manquantes), l'écran la montre avant de refuser.
-Widget _reglesPolitique(String saisie, String? identifiant) {
-  final manque = accRegleManquantes(saisie, identifiant: identifiant);
-  return Container(
-      key: const Key('acces:politique'),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: JetonsShell.slate50, borderRadius: BorderRadius.circular(8)),
-      child: Column(children: [
-        for (final r in accRegleMotDePasse)
-          Padding(
-              padding: const EdgeInsets.symmetric(vertical: 3),
-              child: Row(children: [
-                Icon(
-                    // « Renouvellement tous les 90 jours » est une règle de DURÉE, pas une propriété de la saisie : toujours cochée.
-                    manque.contains(r) ? LucideIcons.x : LucideIcons.check,
-                    size: 14,
-                    color: manque.contains(r) ? JetonsShell.danger600 : JetonsShell.success600),
-                const SizedBox(width: 8),
-                Expanded(child: Text(r, style: const TextStyle(color: JetonsShell.slate600, fontSize: 12, height: 16 / 12))),
-              ])),
-      ]));
-}
+/// La liste des règles n'est PLUS affichée sur les écrans de saisie (Direction, 03/11/2026) : la politique reste APPLIQUÉE, et le refus nomme les règles
+/// manquantes. Les appelants gardent leur emplacement ; il ne porte plus rien.
+Widget _reglesPolitique(String saisie, String? identifiant) => const SizedBox.shrink();
 
 /// Le mot de passe provisoire de l'administrateur initial, affiché UNE fois à la première mise en service : ni dans le dépôt, ni dans un fichier.
 Widget _bandeauProvisoire(ProvisoireAdmin p) => Padding(

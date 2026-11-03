@@ -775,7 +775,7 @@
             { id: 'rls-journal', label: 'Journal d’audit du relais', icon: 'scroll-text' },
             { id: 'rls-superadmin', label: 'Comptes superadmin', icon: 'user-cog' },
             { id: 'rls-parametres', label: 'Paramètres du relais', icon: 'sliders-horizontal' },
-            { id: 'rls-hebergement', label: 'Hébergement (cPanel)', icon: 'server' },
+            { id: 'rls-hebergement', label: 'Hébergement', icon: 'server' },
             { id: 'rls-sauvegarde', label: 'Sauvegarde du relais', icon: 'database-backup' },
             { id: 'rls-opacite', label: 'Preuve d’opacité', icon: 'eye-off' },
           ],

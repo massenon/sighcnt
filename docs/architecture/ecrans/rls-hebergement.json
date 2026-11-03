@@ -2,15 +2,15 @@
  "id": "rls-hebergement",
  "module": "RLS",
  "domaine": "Relais en ligne",
- "libelleManifeste": "Hébergement (cPanel)",
+ "libelleManifeste": "Hébergement",
  "acces": "ouvert",
- "titre": "Hébergement (cPanel)",
+ "titre": "Hébergement",
  "description": "Santé de l’hébergement mutualisé : PHP, base, cron, disque, certificat.",
  "fil": [
   "Accueil",
   "Relais en ligne",
   "Relais en ligne (apps/web)",
-  "Hébergement (cPanel)"
+  "Hébergement"
  ],
  "actions": [
   "Tableau de bord du relais",

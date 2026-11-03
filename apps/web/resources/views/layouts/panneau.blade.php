@@ -20,7 +20,7 @@
         'panneau.journal' => 'Journal d’audit du relais',
         'panneau.superadmin' => 'Comptes superadmin',
         'panneau.parametres' => 'Paramètres du relais',
-        'panneau.hebergement' => 'Hébergement (cPanel)',
+        'panneau.hebergement' => 'Hébergement',
         'panneau.sauvegarde' => 'Sauvegarde du relais',
         'panneau.opacite' => 'Preuve d’opacité',
     ];
