@@ -12,7 +12,10 @@ import 'dart:math';
 import 'commun.dart';
 
 class ConfigFileul {
-  ConfigFileul({required this.port, required this.mere, required this.dbChemin, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 150});
+  ConfigFileul({required this.port, required this.mere, required this.dbChemin, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 150, this.cleStockage = ''});
+
+  /// La clé (hexadécimale, 256 bits) qui chiffre la base du poste au repos ; `''` : base en clair.
+  final String cleStockage;
   final int port;
   final String mere;
   final String dbChemin;
@@ -53,7 +56,7 @@ class _S {
 }
 
 class Fileul {
-  Fileul(this.cfg) : base = Base(cfg.dbChemin) {
+  Fileul(this.cfg) : base = Base(cfg.dbChemin, cfg.cleStockage) {
     base.exec('''
       CREATE TABLE IF NOT EXISTS confirme (collection TEXT, id TEXT, data TEXT, fieldseq TEXT, archive INTEGER, PRIMARY KEY (collection, id));
       CREATE TABLE IF NOT EXISTS file (ordre INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT UNIQUE, op TEXT, etat TEXT, resultat TEXT);
@@ -334,7 +337,7 @@ class Fileul {
         etat.suspendu = false;
         return (200, {'uuid': uuid});
       case 'POST /plage':
-        final j = await http1('POST', '/sync/plage', {'nom': 'patients', 'taille': b['taille'] ?? 50});
+        final j = await http1('POST', '/sync/plage', {'nom': 'patients', 'taille': b['taille'] ?? 50, 'minimum': b['minimum'] ?? 0});
         base.exec("INSERT INTO plage(nom,prochain,fin) VALUES('patients',?,?) ON CONFLICT(nom) DO UPDATE SET prochain=excluded.prochain, fin=excluded.fin", [j['debut'], j['fin']]);
         return (200, j);
       case 'POST /bail':

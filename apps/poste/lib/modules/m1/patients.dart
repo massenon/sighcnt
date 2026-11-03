@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
+import '../../core/plages_codes.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
@@ -396,7 +397,7 @@ class _EtatPatientNouveau extends State<EcranPatientNouveau> {
     _champs = champsPatient(c, null);
     _f = ControleurFormulaire(_champs, valeursPatient(null));
     // Le code est réservé à l'ouverture de l'écran.
-    _code = patProchainCode(c.magasin.collection('patients').toutes, c.aujourdhui);
+    _code = PlagesCodes.de(c.magasin).prochainCode(c.magasin.collection('patients').toutes, c.aujourdhui);
   }
 
   Widget _etape(String titre, String detail, String date, Color couleur) => Padding(

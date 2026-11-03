@@ -11,6 +11,8 @@ import 'dart:io';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:sqlite3/sqlite3.dart' as sq;
 
+import 'commun.dart' show ouvrirSqlite;
+
 typedef Ligne = Map<String, Object?>;
 
 /// Exclusion mutuelle : une seule opération touche le dépôt à la fois. Indispensable avec une SEULE connexion
@@ -73,16 +75,16 @@ abstract class Depot {
   Future<void> poserMeta(String k, Object? v) => exec('INSERT INTO meta(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v', [k, '$v']);
 
   /// Ouvre le dépôt désigné : `postgres://utilisateur:mot_de_passe@hôte:port/base` ou un chemin SQLite (`:memory:` accepté).
-  static Future<Depot> ouvrir(String cible) async {
+  static Future<Depot> ouvrir(String cible, [String cle = '']) async {
     if (cible.startsWith('postgres://') || cible.startsWith('postgresql://')) return DepotPostgres.ouvrir(Uri.parse(cible));
-    return DepotSqlite(cible);
+    return DepotSqlite(cible, cle);
   }
 }
 
 const tablesMere = ['meta', 'operations', 'resultats', 'fiches', 'appareils', 'codes', 'conflits', 'plages', 'baux', 'acks', 'portee', 'sortie'];
 
 class DepotSqlite extends Depot {
-  DepotSqlite(this.chemin) : db = chemin == ':memory:' ? sq.sqlite3.openInMemory() : sq.sqlite3.open(chemin) {
+  DepotSqlite(this.chemin, [String cle = '']) : db = ouvrirSqlite(chemin, cle) {
     db.execute('PRAGMA journal_mode = WAL');
     db.execute('PRAGMA busy_timeout = 5000');
   }

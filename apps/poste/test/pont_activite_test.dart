@@ -133,8 +133,11 @@ void main() {
     }
   });
 
-  test('l’activité exclue (factures, stock…) n’est jamais portée par le pont', () {
-    for (final c in ['factures', 'avoirs', 'ecritures', 'produits', 'lots', 'mouvements', 'admissions', 'lits']) {
+  test('ce qui porte une règle de fusion voyage ; le reste (journal, état du pont, plages) reste propre au poste', () {
+    for (final c in ['factures', 'avoirs', 'ecritures', 'produits', 'lots', 'mouvements', 'admissions']) {
+      expect(collectionsActivite.contains(c), isTrue, reason: c);
+    }
+    for (final c in ['audit', 'pontEtat', 'plagesCodes', 'sessions', 'codesSecours']) {
       expect(collectionsActivite.contains(c), isFalse, reason: c);
     }
   });

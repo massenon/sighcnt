@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles;
@@ -22,6 +23,7 @@ import 'shell/coque.dart';
 import 'shell/fenetre_poste.dart';
 import 'sync/etat_sync.dart';
 import 'sync/configuration_sync.dart';
+import 'core/plages_codes.dart';
 import 'sync/pont_activite.dart';
 import 'sync/moteur_fileul.dart';
 import 'sync/transcription_mobile.dart';
@@ -95,13 +97,18 @@ Future<void> main() async {
       });
     }
   } catch (_) {}
-  final stockage = StockageFichier('$dossierDonnees/poste.json');
+  // LA CLÉ DU POSTE, d'abord : elle chiffre les fichiers du magasin ET les bases SQLite de la synchronisation (la mère et le journal de ce poste), qui portent
+  // tout autant les dossiers des patients. Sans chiffrement (`SIGH_CHIFFREMENT=non`), tout reste en clair, pour le développement seulement.
+  final cle = chiffrementActif != 'non' ? await CleLocale('$dossierDonnees/cle-poste.bin').obtenir() : null;
+  final cleSqlite = cle == null ? '' : cle.map((o) => o.toRadixString(16).padLeft(2, '0')).join();
+  final stockage = StockageFichier('$dossierDonnees/poste.json', cle: cle);
   final activation = ActivationMere(
     stockage: stockage,
     service: ServiceMereLocal(ConfigMere(
         port: 9000,
         dbChemin: '$dossierDonnees/mere.db',
         admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin,
+        cleStockage: cleSqlite,
         dossierSauvegardes: '$dossierDonnees/sauvegardes')),
     relaisPour: (relais, secret) => RelaisMereHttp(
         base: Uri.parse(relais), secretMere: secret, client: http.Client()),
@@ -123,13 +130,14 @@ Future<void> main() async {
   // Un poste RATTACHÉ à une clinique parle à SA mère (adresse enregistrée), pas à l'adresse de compilation.
   final moteur = MoteurFileul.creer(
       dbChemin: '$dossierDonnees/poste.db',
+      cleStockage: cleSqlite,
       mere: params.rejoint && params.adresseMere.isNotEmpty ? params.adresseMere : adresseMere)
     ..demarrer();
   final magasin = await Magasin.depuisAssets(Magasin.collectionsDuJeu);
   // Le magasin se range sur disque : comptes, mots de passe (hachés), saisies et journal survivent à la fermeture du poste. Sans cela, tout repartait du
   // jeu d'origine à chaque lancement. Les fichiers sont en clair (le chiffrement SQLCipher est l'étape suivante du plan).
   // Les fichiers sont CHIFFRÉS (AES-256-GCM, clé liée à la session Windows par DPAPI) ; `SIGH_CHIFFREMENT=non` les garde en clair (développement).
-  final cle = chiffrementActif != 'non' ? await CleLocale('$dossierDonnees/cle-poste.bin').obtenir() : null;
+  if (chiffrementActif != 'non') CleLocale.courante = CleLocale('$dossierDonnees/cle-poste.bin');
   final persistance = PersistanceFichiers('$dossierDonnees/magasin', cle: cle);
   if (repartirAZero == 'oui') await persistance.mettreDeCote();
   // Un jeu d'origine qui change (nouvelle version) n'écrase rien : ses fiches de référentiel manquantes sont ajoutées au magasin enregistré.
@@ -154,16 +162,26 @@ Future<void> main() async {
       ..demarrer();
     // L'ACTIVITÉ et les mots de passe voyagent dans les deux sens (pont magasin / journal, E2130 à E2134).
     PontActivite? pontMere, pontFileul;
-    void demarrerPontMere() => pontMere ??= PontActivite(
-        magasin, TransportMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin), etiquette: 'M')
-      ..demarrer();
-    void demarrerPontFileul() => pontFileul ??= PontActivite(
+    void demarrerPontMere() {
+      final transport = TransportMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin);
+      // La mère prend ses numéros de dossier dans le même carnet que les fileuls (RG-01).
+      PlagesCodes.de(magasin).obtenir = transport.plage;
+      unawaited(PlagesCodes.de(magasin).recharger());
+      pontMere ??= PontActivite(magasin, transport, etiquette: 'M')..demarrer();
+    }
+    PontActivite creerPontFileul() => PontActivite(
         magasin,
         TransportFileul(
             lire: moteur.liste,
             ecrireFiche: (c, f, {required existe, required champs}) => moteur.ecrire(c, f, existe: existe, champs: champs)),
+        enLectureSeule: collectionsDeLaMereSeule,
         etiquette: moteur.uuid.replaceAll('-', '').substring(0, 6))
       ..demarrer();
+    void demarrerPontFileul() {
+      PlagesCodes.de(magasin).obtenir = (taille, minimum) => moteur.demanderPlage(taille: taille, minimum: minimum);
+      unawaited(PlagesCodes.de(magasin).recharger());
+      pontFileul ??= creerPontFileul();
+    }
     ApplicateurConfiguration? applicateur;
     void demarrerApplication() => applicateur ??= ApplicateurConfiguration(magasin, moteur.liste)..demarrer();
     void demarrerApplicationEtPont() {

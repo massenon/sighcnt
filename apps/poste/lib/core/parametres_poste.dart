@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cryptography/cryptography.dart';
+
 import 'config_poste.dart';
 import 'etat_installation.dart';
 
@@ -94,16 +96,46 @@ class StockageMemoire implements StockageParametres {
 /// Fichier JSON écrit de façon ATOMIQUE (fichier temporaire puis renommage) : une coupure de courant pendant l'écriture
 /// ne doit jamais laisser un poste sans réglages, ni à moitié mère.
 class StockageFichier implements StockageParametres {
-  StockageFichier(this.chemin);
+  StockageFichier(this.chemin, {List<int>? cle}) : _cle = cle;
   final String chemin;
+
+  /// La clé du poste : les réglages portent des SECRETS (clé de la clinique, secret de la mère). Avec elle, le fichier est chiffré (AES-256-GCM, en-tête `SGHP`) ;
+  /// un fichier en clair d'un poste d'avant est lu puis réécrit chiffré aussitôt. Sans elle : JSON en clair (développement).
+  final List<int>? _cle;
+  static final _aes = AesGcm.with256bits();
+  static const _entete = 'SGHP';
+
+  Future<void> _poser(ParametresPoste p) async {
+    final tmp = File('$chemin.tmp');
+    await tmp.parent.create(recursive: true);
+    final texte = const JsonEncoder.withIndent(' ').convert(p.toJson());
+    if (_cle == null) {
+      await tmp.writeAsString(texte, flush: true);
+    } else {
+      final boite = await _aes.encrypt(utf8.encode(texte), secretKey: SecretKey(_cle!), aad: utf8.encode(_entete));
+      await tmp.writeAsBytes([...utf8.encode(_entete), ...boite.concatenation()], flush: true);
+    }
+    await tmp.rename(chemin);
+  }
 
   @override
   Future<ParametresPoste?> lire() async {
     final f = File(chemin);
     if (!await f.exists()) return null;
     try {
-      return ParametresPoste.depuisJson(
-          (jsonDecode(await f.readAsString()) as Map).cast<String, Object?>());
+      final brut = await f.readAsBytes();
+      final chiffre = brut.length > 4 && utf8.decode(brut.sublist(0, 4), allowMalformed: true) == _entete;
+      final String texte;
+      if (chiffre) {
+        if (_cle == null) return null;
+        texte = utf8.decode(await _aes.decrypt(SecretBox.fromConcatenation(brut.sublist(4), nonceLength: 12, macLength: 16), secretKey: SecretKey(_cle!), aad: utf8.encode(_entete)));
+      } else {
+        texte = utf8.decode(brut);
+      }
+      final p = ParametresPoste.depuisJson((jsonDecode(texte) as Map).cast<String, Object?>());
+      // Un fichier en clair d'avant le chiffrement est réécrit chiffré tout de suite : la migration ne laisse pas de copie lisible.
+      if (!chiffre && _cle != null) await _poser(p);
+      return p;
     } catch (_) {
       // Fichier illisible : on ne devine pas. Le poste redémarre en fileul, jamais en mère par défaut.
       return null;
@@ -111,12 +143,5 @@ class StockageFichier implements StockageParametres {
   }
 
   @override
-  Future<void> ecrire(ParametresPoste p) async {
-    final tmp = File('$chemin.tmp');
-    await tmp.parent.create(recursive: true);
-    await tmp.writeAsString(
-        const JsonEncoder.withIndent(' ').convert(p.toJson()),
-        flush: true);
-    await tmp.rename(chemin);
-  }
+  Future<void> ecrire(ParametresPoste p) => _poser(p);
 }

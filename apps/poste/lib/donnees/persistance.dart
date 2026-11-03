@@ -49,6 +49,56 @@ class CleLocale {
     return sortie;
   }
 
+  /// La clé du poste en service (posée par `main`) : l'écran « Sauvegarder la clé de chiffrement » l'exporte. `null` : poste sans chiffrement.
+  static CleLocale? courante;
+
+  static final _pbkdf2 = Pbkdf2(macAlgorithm: Hmac.sha256(), iterations: 200000, bits: 256);
+  static const _enteteCle = 'SGHK';
+
+  /// SAUVEGARDE DE LA CLÉ (limite levée le 03/11/2026) : une clé perdue rend toutes les données du poste illisibles. L'export écrit la clé CHIFFRÉE par une
+  /// phrase de passe (PBKDF2-SHA256 200 000 tours, AES-256-GCM) : le fichier peut être rangé au coffre ou sur une clé USB sans exposer les données. Refus
+  /// nommé si la phrase fait moins de 12 caractères.
+  Future<String> exporter(String destination, String phrase) async {
+    if (phrase.length < 12) throw StateError('La phrase de passe doit comporter au moins 12 caractères.');
+    final cle = await obtenir();
+    final sel = _aleatoire().sublist(0, 16);
+    final derivee = await _pbkdf2.deriveKeyFromPassword(password: phrase, nonce: sel);
+    final boite = await AesGcm.with256bits().encrypt(cle, secretKey: derivee, aad: utf8.encode(_enteteCle));
+    final f = File(destination);
+    await f.parent.create(recursive: true);
+    await f.writeAsBytes([...utf8.encode(_enteteCle), ...sel, ...boite.concatenation()], flush: true);
+    return f.path;
+  }
+
+  /// Relit une clé sauvegardée et la REMET en service (la protège de nouveau par DPAPI sous Windows). Mauvaise phrase ou fichier altéré : refus nommé, rien
+  /// n'est écrasé. À utiliser quand le fichier de clé du poste est perdu (poste remplacé, session Windows réinstallée).
+  Future<List<int>> importer(String source, String phrase) async {
+    final brut = await File(source).readAsBytes();
+    if (brut.length < 4 + 16 + 12 + 16 || utf8.decode(brut.sublist(0, 4), allowMalformed: true) != _enteteCle) {
+      throw StateError('Ce fichier n’est pas une sauvegarde de clé SIGH.');
+    }
+    final sel = brut.sublist(4, 20);
+    final derivee = await _pbkdf2.deriveKeyFromPassword(password: phrase, nonce: sel);
+    List<int> cle;
+    try {
+      cle = await AesGcm.with256bits().decrypt(SecretBox.fromConcatenation(brut.sublist(20), nonceLength: 12, macLength: 16), secretKey: derivee, aad: utf8.encode(_enteteCle));
+    } catch (_) {
+      throw StateError('Phrase de passe incorrecte, ou sauvegarde de clé altérée.');
+    }
+    if (cle.length != 32) throw StateError('Sauvegarde de clé invalide.');
+    final f = File(chemin);
+    await f.parent.create(recursive: true);
+    if (Platform.isWindows) {
+      await f.writeAsString(await _dpapi('proteger', base64.encode(cle)), flush: true);
+    } else {
+      await f.writeAsString(base64.encode(cle), flush: true);
+      try {
+        await Process.run('chmod', ['600', f.path]);
+      } catch (_) {}
+    }
+    return cle;
+  }
+
   /// Rend la clé (la crée au premier usage). Lève [StateError] si elle est illisible : on ne devine jamais une clé.
   Future<List<int>> obtenir() async {
     final f = File(chemin);

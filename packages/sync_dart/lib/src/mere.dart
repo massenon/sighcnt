@@ -31,6 +31,10 @@ const familleDeBase = <String, String>{
   'releves': 'A', 'observations': 'A', 'visites': 'A', 'appels': 'A', 'consultations': 'A', 'dossiersConsultation': 'A', 'antecedents': 'A',
   // Les hachés des mots de passe : écrits par le poste où l'agent change son mot de passe, dans les DEUX sens (E2131).
   'identifiants': 'A',
+  // Les pièces et les compteurs que le pont fusionne par des règles PROPRES à chaque famille (E2140 à E2146) : voir `fusion_activite.dart` du poste.
+  'avoirs': 'A', 'ecritures': 'A', 'mouvements': 'A', 'lots': 'A', 'admissions': 'A',
+  // Les VARIATIONS de stock (une fiche par variation, jamais modifiée) : le stock se reconstitue par addition.
+  'deltasCompteurs': 'A',
   'constantes': 'B', 'notes': 'B',
   'cpn': 'B', 'cpon': 'B', 'surveillances': 'B', 'orientations': 'B', // suite du mobile (E1650 à E1660)
   'factures': 'C', 'prescriptions': 'C',
@@ -128,7 +132,11 @@ class ConfigMere {
     this.dossierSauvegardes = 'sauvegardes',
     this.heureSauvegarde = 2,
     this.conservation = 7,
+    this.cleStockage = '',
   });
+
+  /// La clé (hexadécimale, 256 bits) qui chiffre la base SQLite de la mère au repos ; `''` : base en clair (bancs, développement).
+  final String cleStockage;
   final int port;
 
   /// Chemin SQLite, `:memory:` ou `postgres://utilisateur:mot_de_passe@hôte:port/base`.
@@ -158,7 +166,7 @@ class Mere {
   Timer? _sauvegardeur;
 
   static Future<Mere> creer(ConfigMere cfg) async {
-    final base = await Depot.ouvrir(cfg.dbChemin);
+    final base = await Depot.ouvrir(cfg.dbChemin, cfg.cleStockage);
     await base.initialiser(_ddl);
     // Migration (E1600) : une base d'avant la fonction authentifiée reçoit les colonnes ; un appareil déjà appairé garde `fonction` à NULL et la mère
     // refuse alors ses pièces en le disant (nouvel appairage).
@@ -204,6 +212,17 @@ class Mere {
   void evenementAsync(String niveau, String source, String message) {
     unawaited(verrou.executer(() => evenement(niveau, source, message)).catchError((Object _) {}));
   }
+
+  /// Alloue une plage de numéros de dossier à [appareil] (RG-01). [minimum] : le plus petit rang acceptable (le poste demandeur connaît ses propres dossiers ;
+  /// une plage qui commencerait en dessous réattribuerait un code déjà donné).
+  Future<Map<String, Object?>> allouerPlage(String appareil, Object nom, int taille, int minimum) => base.tx(() async {
+        var debut = await base.metaInt('next_patient');
+        if (minimum > debut) debut = minimum;
+        final fin = debut + taille - 1;
+        await base.poserMeta('next_patient', fin + 1);
+        await base.exec('INSERT INTO plages(appareil,nom,debut,fin) VALUES(?,?,?,?)', [appareil, nom, debut, fin]);
+        return {'debut': debut, 'fin': fin};
+      });
 
   Future<num> reserve(String article) async =>
       (await base.select('SELECT CAST(COALESCE(SUM(reste),0) AS BIGINT) AS s FROM baux WHERE article=?', [article])).first['s'] as num;
@@ -273,7 +292,7 @@ class Mere {
       String? numero;
       if (collection == 'patients') {
         final code = '${champs['code'] ?? ''}';
-        final m = RegExp(r'^CNT/(\d+)/26$').firstMatch(code);
+        final m = RegExp(r'^CNT/(\d+)/\d{2}$').firstMatch(code);
         if (code.isEmpty || code.startsWith('PROV-')) {
           final n = await base.metaInt('next_patient');
           await base.poserMeta('next_patient', n + 1);
@@ -283,7 +302,8 @@ class Mere {
           return refus('numero_invalide', 'Code patient mal formé : $code', 'Laisser le poste attribuer le code');
         } else {
           final n = int.parse(m.group(1)!);
-          final ok = await base.select('SELECT 1 FROM plages WHERE appareil=? AND nom=? AND debut<=? AND fin>=?', [app.uuid, 'patients', n, n]);
+          // La MÈRE fait foi : ses dossiers déjà existants (d'avant les plages) ne sont pas refusés ; l'unicité du code est contrôlée juste après.
+          final ok = app.role == 'mere' ? [1] : await base.select('SELECT 1 FROM plages WHERE appareil=? AND nom=? AND debut<=? AND fin>=?', [app.uuid, 'patients', n, n]);
           if (ok.isEmpty) return refus('numero_hors_plage', 'Le code $code n’appartient pas à la plage de ce poste.', 'Demander une nouvelle plage');
         }
         final dup = await base.select("SELECT 1 FROM fiches WHERE collection='patients' AND ${base.champJson('data', 'code')}=?", ['${champs['code']}']);
@@ -504,13 +524,11 @@ class Mere {
       case 'POST /sync/plage':
         final app2 = await auth(req);
         final taille = max(1, min(nb(b['taille']).toInt() == 0 ? 50 : nb(b['taille']).toInt(), 1000));
-        return base.tx(() async {
-          final debut = await base.metaInt('next_patient');
-          final fin = debut + taille - 1;
-          await base.poserMeta('next_patient', fin + 1);
-          await base.exec('INSERT INTO plages(appareil,nom,debut,fin) VALUES(?,?,?,?)', [app2.uuid, b['nom'] ?? 'patients', debut, fin]);
-          return {'debut': debut, 'fin': fin};
-        });
+        return allouerPlage(app2.uuid, b['nom'] ?? 'patients', taille, nb(b['minimum']).toInt());
+      case 'POST /admin/plage':
+        // La MÈRE, poste qui crée aussi des dossiers, prend ses numéros dans le même carnet que les fileuls : jamais deux plages qui se chevauchent.
+        adminOk(req);
+        return allouerPlage('mere', b['nom'] ?? 'patients', max(1, min(nb(b['taille']).toInt() == 0 ? 50 : nb(b['taille']).toInt(), 1000)), nb(b['minimum']).toInt());
       case 'POST /sync/bail':
         final app3 = await auth(req);
         return base.tx(() async {

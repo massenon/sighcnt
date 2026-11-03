@@ -8,6 +8,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/persistance.dart' show CleLocale;
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'cfa_commun.dart';
@@ -216,6 +217,47 @@ class _Installation extends StatelessWidget {
     rafraichir();
   }
 
+  /// La clé qui chiffre les données du poste, exportée sous une phrase de passe. Sans elle, une session Windows réinstallée ou un poste remplacé rend les
+  /// données illisibles : le fichier se range au coffre, avec les sauvegardes.
+  void _sauvegarderCle(BuildContext ctx) {
+    final f = ControleurFormulaire(const [
+      ChampDef(nom: 'phrase', libelle: 'Phrase de passe (12 caractères au moins)', type: TypeChamp.motDePasse, requis: true, col: ColChamp.plein),
+      ChampDef(nom: 'confirmation', libelle: 'Confirmer la phrase de passe', type: TypeChamp.motDePasse, requis: true, col: ColChamp.plein),
+    ], const {});
+    afficherModale<void>(ctx,
+        titre: 'Sauvegarder la clé de chiffrement',
+        taille: TailleModale.md,
+        corps: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const NoteSigh('Les données de ce poste sont chiffrées. La clé qui les ouvre est protégée par votre session Windows : si elle est perdue, les données sont illisibles. Le fichier exporté ne contient la clé que CHIFFRÉE par votre phrase de passe ; conservez les deux séparément, au coffre.'),
+          const SizedBox(height: 12),
+          FormulaireSigh(controleur: f),
+        ]),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  key: const Key('cfg:cle-exporter'),
+                  libelle: 'Exporter la clé',
+                  icone: LucideIcons.download,
+                  onPressed: () async {
+                    final v = f.valider();
+                    if (v == null) return;
+                    if (v['phrase'] != v['confirmation']) {
+                      ToastsSigh.afficher(ctx, 'Les deux phrases de passe ne correspondent pas.', type: TypeToast.erreur);
+                      return;
+                    }
+                    try {
+                      final dossier = Platform.environment['USERPROFILE'] ?? Platform.environment['HOME'] ?? Directory.systemTemp.path;
+                      final chemin = await CleLocale.courante!.exporter('$dossier${Platform.pathSeparator}sigh-cle-${cfbIso(c.aujourdhui)}.cle', '${v['phrase']}');
+                      c.magasin.journaliser('Sauvegarde de la clé de chiffrement', 'CFG', 'Systeme', 'cle-poste', null, {'fichier': chemin});
+                      fermer();
+                      if (ctx.mounted) ToastsSigh.afficher(ctx, 'Clé sauvegardée.', type: TypeToast.succes, detail: chemin);
+                    } catch (e) {
+                      if (ctx.mounted) ToastsSigh.afficher(ctx, '$e', type: TypeToast.erreur);
+                    }
+                  }),
+            ]);
+  }
+
   Future<void> _exporter(BuildContext ctx) async {
     try {
       final contenu = const JsonEncoder.withIndent('  ').convert({for (final n in cfbNomsCollections()) n: c.magasin.collection(n).toutes});
@@ -271,6 +313,13 @@ class _Installation extends StatelessWidget {
           child: Wrap(spacing: 8, runSpacing: 8, children: [
             if (c.droit.editer) BoutonSigh(libelle: 'Réinitialiser le jeu de données', icone: LucideIcons.rotateCcw, variante: VarianteBouton.danger, onPressed: () => _reinitialiser(context)),
             BoutonSigh(libelle: 'Exporter les données', icone: LucideIcons.download, variante: VarianteBouton.secondaire, onPressed: () => _exporter(context)),
+            if (CleLocale.courante != null)
+              BoutonSigh(
+                  key: const Key('cfg:sauvegarder-cle'),
+                  libelle: 'Sauvegarder la clé de chiffrement',
+                  icone: LucideIcons.keyRound,
+                  variante: VarianteBouton.secondaire,
+                  onPressed: () => _sauvegarderCle(context)),
             BoutonSigh(libelle: 'Plan du site', icone: LucideIcons.map, variante: VarianteBouton.secondaire, onPressed: () => c.aller('plan-du-site')),
             BoutonSigh(libelle: 'Sauvegardes', icone: LucideIcons.databaseBackup, variante: VarianteBouton.secondaire, onPressed: () => c.aller('m14-sauvegardes')),
           ])),

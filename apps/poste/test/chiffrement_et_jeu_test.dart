@@ -86,6 +86,33 @@ void main() {
     }, skip: Platform.isWindows ? 'DPAPI : essayé sur Windows seulement' : false);
   });
 
+  group('SAUVEGARDE DE LA CLÉ', () {
+    test('la clé exportée sous phrase de passe se relit à l’identique ; mauvaise phrase, fichier altéré ou étranger : refus nommé, rien d’écrasé', () async {
+      final k = CleLocale('${d.path}/cle.bin');
+      final cle = await k.obtenir();
+      final fichier = await k.exporter('${d.path}/coffre/cle.cle', 'phrase de passe longue');
+      expect(File(fichier).readAsBytesSync().length, 4 + 16 + 12 + 32 + 16);
+      expect(latin1.decode(File(fichier).readAsBytesSync()), isNot(contains(base64.encode(cle))));
+      // Le poste est remplacé : le fichier de clé a disparu.
+      File('${d.path}/cle.bin').deleteSync();
+      final neuf = CleLocale('${d.path}/cle.bin');
+      expect(await neuf.importer(fichier, 'phrase de passe longue'), cle);
+      expect(await neuf.obtenir(), cle, reason: 'la clé est remise en service');
+      // Les données chiffrées par l'ancienne clé se rouvrent avec la clé restaurée.
+      final p = PersistanceFichiers('${d.path}/m', cle: cle);
+      await p.ecrire('patients', [
+        {'id': 'P1', 'nom': 'AGBO'}
+      ]);
+      expect((await PersistanceFichiers('${d.path}/m', cle: await neuf.obtenir()).lireTout())['patients']!.single['nom'], 'AGBO');
+      await expectLater(neuf.importer(fichier, 'autre phrase de passe'), throwsA(isA<StateError>().having((e) => '$e', 'message', contains('incorrecte'))));
+      final altere = File('${d.path}/altere.cle')..writeAsBytesSync([...File(fichier).readAsBytesSync()]..[40] ^= 1);
+      await expectLater(neuf.importer(altere.path, 'phrase de passe longue'), throwsA(isA<StateError>()));
+      File('${d.path}/etranger.cle').writeAsStringSync('rien à voir');
+      await expectLater(neuf.importer('${d.path}/etranger.cle', 'phrase de passe longue'), throwsA(isA<StateError>()));
+      await expectLater(k.exporter('${d.path}/x.cle', 'courte'), throwsA(isA<StateError>().having((e) => '$e', 'message', contains('12 caractères'))));
+    });
+  });
+
   group('un jeu d’origine qui change ne se perd pas', () {
     test('les fiches de référentiel nouvelles sont ajoutées, rien n’est écrasé ni retiré, l’activité de démonstration ne revient pas', () async {
       final p = PersistanceMemoire();

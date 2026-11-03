@@ -192,7 +192,24 @@ class Magasin {
     Map<String, Iterable<Fiche>> jeux = const {},
     this.poste = 'POSTE',
     this.referentiels = const {},
-  ]) : _jeux = {for (final e in jeux.entries) e.key: e.value};
+  ])  : _jeux = {for (final e in jeux.entries) e.key: e.value},
+        _origine = {for (final e in jeux.entries) e.key: e.value},
+        _idsOrigine = {
+          for (final e in jeux.entries) e.key: {for (final f in e.value) '${f['id']}'}
+        };
+
+  /// Le jeu d'origine tel que livré (jamais modifié : les collections en tiennent des COPIES) et son index par identifiant, construit à la demande.
+  final Map<String, Iterable<Fiche>> _origine;
+  final Map<String, Map<String, Fiche>> _indexOrigine = {};
+
+  /// La fiche du jeu d'origine d'identifiant [id], ou `null` (fiche créée depuis). Sert de point de départ commun aux compteurs (stock, règlements).
+  Fiche? ficheOrigine(String nom, String id) =>
+      (_indexOrigine[nom] ??= {for (final f in (_origine[nom] ?? const <Fiche>[])) '${f['id']}': f})[id];
+
+  /// Les identifiants des fiches du jeu D'ORIGINE livré avec le poste, par collection (avant toute fusion avec le disque). Ces fiches existent à l'identique sur
+  /// TOUS les postes : leur identité de synchronisation est leur identifiant même.
+  final Map<String, Set<String>> _idsOrigine;
+  Set<String> idsOrigine(String nom) => _idsOrigine[nom] ?? const <String>{};
 
   /// Référentiels STATIQUES de la maquette (`D.ANALYSES`, `D.TYPES_CHAMBRE`…) : ils ne sont pas des collections, on ne les écrit pas.
   final Map<String, Object?> referentiels;

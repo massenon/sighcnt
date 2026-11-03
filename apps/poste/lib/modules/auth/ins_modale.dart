@@ -210,8 +210,20 @@ class _EtatCorps extends State<_Corps> {
 
   void _modaleActivation(BuildContext context) {
     final f = ControleurFormulaire(const [
-      ChampDef(nom: 'relais', libelle: 'Adresse du relais web', requis: true, col: ColChamp.plein, indicatif: 'sighcnt.nassieratoo.com'),
-      ChampDef(nom: 'secret', libelle: 'Secret de la mère', type: TypeChamp.motDePasse, requis: true, col: ColChamp.plein),
+      ChampDef(
+          nom: 'relais',
+          libelle: 'Adresse du relais web',
+          requis: true,
+          col: ColChamp.plein,
+          indicatif: 'sighcnt.nassieratoo.com',
+          aide: 'L’adresse du site où le relais est installé, sans « https:// » ni rien après le nom (le poste ajoute https://).'),
+      ChampDef(
+          nom: 'secret',
+          libelle: 'Secret de la mère',
+          type: TypeChamp.motDePasse,
+          requis: true,
+          col: ColChamp.plein,
+          aide: 'Le même texte que RELAIS_SECRET_MERE dans le fichier .env du relais. Long et aléatoire (32 caractères au moins) ; il identifie la mère auprès du relais.'),
       ChampDef(
           nom: 'cle',
           libelle: 'Clé de clinique (16 caractères au moins)',
@@ -219,7 +231,7 @@ class _EtatCorps extends State<_Corps> {
           requis: true,
           col: ColChamp.plein,
           aide: 'À ranger sur papier, sous scellé : sans elle, rien de ce qui quitte le serveur ne peut être restauré.'),
-      ChampDef(nom: 'nom', libelle: 'Nom de ce poste (facultatif)', col: ColChamp.plein),
+      ChampDef(nom: 'nom', libelle: 'Nom de ce poste (facultatif)', col: ColChamp.plein, aide: 'Ce que le panneau du relais affichera, par exemple « Poste principal, bureau de la Direction ».'),
     ], {});
     final etat = ValueNotifier<({String? erreur, bool injoignable})>((erreur: null, injoignable: false));
     var occupe = false;

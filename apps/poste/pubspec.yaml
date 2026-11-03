@@ -58,3 +58,9 @@ flutter:
           weight: 700
         - asset: assets/polices/Inter-Italic.otf
           style: italic
+
+# Les bases SQLite de la mère et du journal du poste sont CHIFFRÉES au repos : SQLite3 Multiple Ciphers remplace SQLite dans le binaire (docs/architecture/ECARTS-MAQUETTE.md, E2147).
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc

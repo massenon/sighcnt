@@ -101,6 +101,17 @@ class ServiceMereLocal implements ServiceMere {
   }
 }
 
+/// Un nom de site (`xxx.yyy`), `localhost` ou une adresse IP : « pas-une-adresse » n'en est pas une.
+bool _hoteValide(String h) => h == 'localhost' || h.contains('.');
+
+/// L'adresse du relais telle qu'on la tape : « sighcnt.nassieratoo.com » suffit, le poste ajoute `https://` (un relais en ligne est toujours servi en HTTPS).
+/// Une adresse qui commence déjà par `http://` ou `https://` est gardée telle quelle (essai sur un réseau local).
+String normaliserAdresseRelais(String saisie) {
+  final s = saisie.trim().replaceAll(RegExp(r'/+$'), '');
+  if (s.isEmpty) return '';
+  return RegExp(r'^[a-zA-Z][a-zA-Z0-9+.-]*://').hasMatch(s) ? s : 'https://$s';
+}
+
 /// Activation et désactivation du MODE MÈRE sur ce poste. Atomique : si le service ne démarre pas, la déclaration au
 /// relais est retirée et le poste reste fileul — jamais « mère déclarée » sans service pour la servir.
 class ActivationMere {
@@ -130,9 +141,10 @@ class ActivationMere {
       bool remplacer = false}) async {
     final p = await parametres();
     if (p.mode == ModePoste.mere && service.enMarche) return p;
-    if (relais.trim().isEmpty || Uri.tryParse(relais.trim())?.hasScheme != true)
+    relais = normaliserAdresseRelais(relais);
+    if (relais.isEmpty || Uri.tryParse(relais)?.hasScheme != true || !_hoteValide(Uri.tryParse(relais)?.host ?? ''))
       throw ActivationRefusee('relais_invalide',
-          'Adresse du relais invalide (ex. https://relais.exemple.bj).');
+          'Adresse du relais invalide (ex. sighcnt.nassieratoo.com).');
     if (secretMere.trim().isEmpty)
       throw ActivationRefusee(
           'secret_requis', 'Le secret de la mère est obligatoire.');

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../donnees/magasin.dart';
+import 'fusion_activite.dart';
 import 'transcription_mobile.dart' show PieceSync;
 
 /// LE PONT ENTRE LE MAGASIN DU POSTE ET LE JOURNAL D'OPÉRATIONS (PLAN de synchronisation S2 à S4 ; E2130 à E2134).
@@ -26,7 +27,24 @@ const Set<String> collectionsActivite = {
   'consultations',
   'dossiersConsultation',
   'antecedents',
+  // Les pièces et les compteurs, avec leurs règles de fusion propres (`fusion_activite.dart`).
+  'factures',
+  'avoirs',
+  'ecritures',
+  'mouvements',
+  'lots',
+  'produits',
+  'admissions',
 };
+
+/// Les référentiels d'ACTIVITÉ que la mère seule écrit (famille R de la mère) : un fileul les reçoit, il ne les envoie pas.
+const Set<String> collectionsDeLaMereSeule = {'produits'};
+
+/// Le registre des VARIATIONS de compteur dans le journal (stock des produits, quantité restante des lots).
+const String collectionDeltas = 'deltasCompteurs';
+
+/// Les marqueurs que chaque poste DÉDUIT lui-même des mêmes données : ils ne voyagent pas (un marqueur synchronisé ferait des allers-retours sans fin).
+const Set<String> marqueursLocaux = {'codeEnDoublon', 'numeroEnDoublon', 'litEnConflit', 'stockNegatifDetecte', 'encaissementEnDoublon'};
 
 /// Les fiches qui voyagent EN UN BLOC : un haché et son sel ne se mélangent jamais champ à champ entre deux postes.
 const Set<String> collectionsAtomiques = {'identifiants'};
@@ -72,6 +90,17 @@ class TransportMereLocale implements TransportPont {
     ];
   }
 
+  /// Une plage de numéros de dossier pour la mère elle-même (`POST /admin/plage`) : le même carnet que celui des fileuls.
+  Future<(int, int)> plage(int taille, int minimum) async {
+    final r = await _c
+        .post(Uri.parse('http://127.0.0.1:$port/admin/plage'),
+            headers: {'content-type': 'application/json', 'x-admin': admin}, body: jsonEncode({'nom': 'patients', 'taille': taille, 'minimum': minimum}))
+        .timeout(const Duration(seconds: 8));
+    if (r.statusCode != 200) throw StateError('la mère a répondu ${r.statusCode}');
+    final c = jsonDecode(r.body) as Map;
+    return ((c['debut'] as num).toInt(), (c['fin'] as num).toInt());
+  }
+
   @override
   Future<void> ecrire(String collection, String fiche, {required bool existe, required Map<String, Object?> champs}) async {
     final r = await _c
@@ -88,7 +117,7 @@ String _j(Object? o) => jsonEncode(o);
 
 class PontActivite {
   PontActivite(this.magasin, this.transport,
-      {required this.etiquette, Set<String>? collections, this.delai = const Duration(seconds: 1)})
+      {required this.etiquette, Set<String>? collections, this.enLectureSeule = const {}, this.delai = const Duration(seconds: 1)})
       : collections = collections ?? {...collectionsActivite, ...collectionsAtomiques};
   final Magasin magasin;
   final TransportPont transport;
@@ -96,6 +125,10 @@ class PontActivite {
   /// Le préfixe propre à ce poste : un identifiant local `ID00042` qui existe sur deux postes à la fois devient `<étiquette>-ID00042`, unique dans la clinique.
   final String etiquette;
   final Set<String> collections;
+
+  /// Les collections que ce poste REÇOIT sans jamais les envoyer : les référentiels que la mère seule écrit (le catalogue des produits, famille R). Un fileul
+  /// qui en enverrait une fiche s'attirerait un refus sans objet à chaque tour.
+  final Set<String> enLectureSeule;
   final Duration delai;
 
   /// La dernière version SYNCHRONISÉE de chaque fiche (clé `collection/idSync`) : sert de base à la fusion champ à champ.
@@ -105,6 +138,10 @@ class PontActivite {
   bool _enCours = false;
 
   final ValueNotifier<String?> erreur = ValueNotifier<String?>(null);
+  /// Les fiches que la mère a REFUSÉES (clé `collection/identifiant` → motif) : jamais perdues en silence, comptées ici et lisibles.
+  final Map<String, String> motifsRefus = {};
+  final Map<String, String> _refusees = {};
+  final ValueNotifier<int> refus = ValueNotifier<int>(0);
   final ValueNotifier<int> envoyees = ValueNotifier<int>(0);
   final ValueNotifier<int> recues = ValueNotifier<int>(0);
 
@@ -142,7 +179,10 @@ class PontActivite {
     _enCours = true;
     try {
       await pousser();
+      await _pousserCompteurs();
       await tirer();
+      await _tirerCompteurs();
+      _deduireMarqueurs();
       erreur.value = null;
     } catch (e) {
       erreur.value = 'Synchronisation de l’activité impossible : $e';
@@ -156,21 +196,44 @@ class PontActivite {
   /// La forme d'une fiche dans le journal. Une fiche atomique devient un champ unique.
   Map<String, Object?> _versJournal(String c, Fiche f) {
     if (_atomique(c)) return {'atome': _j({...f}..removeWhere((k, _) => champsLocauxDuHache.contains(k)))};
-    return {...f}..remove('id');
+    final champs = {...f}..remove('id');
+    for (final k in marqueursLocaux) {
+      champs.remove(k);
+    }
+    // Un compteur ne voyage JAMAIS comme un champ : il voyage par ses variations (une sortie de stock d'un poste ne remplace pas celle d'un autre).
+    for (final k in champsCompteurs[c] ?? const <String>{}) {
+      champs.remove(k);
+    }
+    return champs;
   }
 
   Map<String, Object?> _sansLocaux(String c, Map<String, Object?> d) => d;
 
   String _cleSync(String c, Fiche f) => _atomique(c) ? '${f['id']}' : '${f['idSync']}';
 
+  /// Donne à chaque fiche son identité de synchronisation (y compris dans les collections que ce poste ne fait que recevoir : sans elle, la fiche reçue
+  /// remplacerait la fiche locale au lieu de la rejoindre). Une fiche du jeu d'ORIGINE existe à l'identique sur tous les postes : son identité est son
+  /// identifiant ; toute autre fiche porte l'étiquette de son poste.
+  void _identifier() {
+    for (final c in collections) {
+      if (_atomique(c)) continue;
+      for (final f in magasin.collection(c).toutes) {
+        if ('${f['id'] ?? ''}'.isEmpty || '${f['idSync'] ?? ''}'.isNotEmpty) continue;
+        f['idSync'] = magasin.idsOrigine(c).contains('${f['id']}') ? '${f['id']}' : '$etiquette-${f['id']}';
+      }
+    }
+  }
+
   Future<int> pousser() async {
+    _identifier();
     var n = 0;
     for (final c in collections) {
+      if (enLectureSeule.contains(c)) continue;
       final col = magasin.collection(c);
       List<PieceSync>? distant;
       for (final f in List<Fiche>.of(col.toutes)) {
         if ('${f['id'] ?? ''}'.isEmpty) continue;
-        if (!_atomique(c) && '${f['idSync'] ?? ''}'.isEmpty) f['idSync'] = '$etiquette-${f['id']}';
+
         final cle = _cleSync(c, f);
         final champs = _versJournal(c, f);
         var base = _base['$c/$cle'];
@@ -197,7 +260,20 @@ class PontActivite {
           final i = DateTime.tryParse('${f['definiLe'] ?? ''}');
           if (d != null && (i == null || d.isAfter(i))) continue;
         }
-        await transport.ecrire(c, cle, existe: existe, champs: diff);
+        final empreinteRefus = _j(champs);
+        if (_refusees['$c/$cle'] == empreinteRefus) continue;
+        try {
+          await transport.ecrire(c, cle, existe: existe, champs: diff);
+        } on StateError catch (e) {
+          // Un refus NOMMÉ de la mère ne bloque pas le reste : la fiche est mise de côté, dite, et réessayée dès qu'elle change.
+          _refusees['$c/$cle'] = empreinteRefus;
+          motifsRefus['$c/$cle'] = '$e';
+          refus.value = motifsRefus.length;
+          continue;
+        }
+        _refusees.remove('$c/$cle');
+        motifsRefus.remove('$c/$cle');
+        refus.value = motifsRefus.length;
         _base['$c/$cle'] = champs;
         n++;
       }
@@ -254,13 +330,19 @@ class PontActivite {
           if (v != null) fusion[k] = v;
         }
         fusion['id'] = local['id'];
+        // Les règles propres à la famille : un règlement ne se perd pas.
+        if (c == 'factures') {
+          final regle = fusionnerFacture(fusion, local, recu);
+          fusion
+            ..clear()
+            ..addAll(regle);
+        }
         if (_j(fusion) != _j(local)) {
           col.appliquerDistante(fusion);
           n++;
         }
         _base['$c/$cle'] = recu;
       }
-      if (c == 'patients') _marquerDoublons(col);
     }
     recues.value += n;
     return n;
@@ -273,26 +355,184 @@ class PontActivite {
     return null;
   }
 
-  /// RG-01 : deux dossiers ne portent jamais le même code. Si la rencontre de deux postes l'a produit, les deux fiches sont MARQUÉES, pas renumérotées (un code
-  /// attribué ne se modifie pas) : la Direction tranche.
-  void _marquerDoublons(CollectionMagasin col) {
-    final vus = <String, List<Fiche>>{};
-    for (final f in col.toutes) {
-      final code = '${f['code'] ?? ''}';
-      if (code.isEmpty || CollectionMagasin.estArchivee(f)) continue;
-      (vus[code] ??= []).add(f);
+  // ---------------------------------------------------------------------------------------------------------------------------------------------
+  // LES COMPTEURS (stock des produits, quantité restante des lots)
+  // ---------------------------------------------------------------------------------------------------------------------------------------------
+
+  /// Le total que le journal porte, tel que CE poste le connaît (clé `collection/idSync/champ`), et les variations déjà prises en compte. Ils vivent au magasin
+  /// (collection locale `pontEtat`) : un redémarrage ne doit pas faire compter une variation deux fois.
+  final Map<String, num> _totaux = {};
+  final Set<String> _appliques = {};
+  bool _etatCharge = false;
+  int _serie = 0;
+
+  /// Le nombre de produits ou de lots dont le compteur est NÉGATIF après fusion (RG-03) : détecté, marqué `stockNegatifDetecte`, jamais corrigé en silence.
+  final ValueNotifier<int> stocksNegatifs = ValueNotifier<int>(0);
+
+  static num _n(Object? v) => v is num ? v : (num.tryParse('${v ?? ''}') ?? 0);
+
+  void _chargerEtat() {
+    if (_etatCharge) return;
+    _etatCharge = true;
+    final f = magasin.collection('pontEtat').parId('compteurs');
+    if (f == null) return;
+    for (final e in ((f['totaux'] as Map?) ?? const {}).entries) {
+      _totaux['${e.key}'] = _n(e.value);
     }
-    var n = 0;
-    for (final g in vus.values) {
-      final doublon = g.length > 1;
-      for (final f in g) {
-        if (doublon) n++;
-        if ((f['codeEnDoublon'] == true) != doublon) {
-          f['codeEnDoublon'] = doublon;
-          col.appliquerDistante({...f});
+    _appliques.addAll([for (final i in (f['appliques'] as List? ?? const [])) '$i']);
+  }
+
+  void _sauverEtat() {
+    final col = magasin.collection('pontEtat');
+    final fiche = <String, Object?>{'id': 'compteurs', 'totaux': {..._totaux}, 'appliques': [..._appliques]};
+    if (col.parId('compteurs') == null) {
+      col.ajouterSansJournal(fiche);
+    } else {
+      col.appliquerDistante(fiche);
+    }
+  }
+
+  static ({String collection, String cle, String champ})? _decouper(String cleC) {
+    final i = cleC.indexOf('/'), j = cleC.lastIndexOf('/');
+    if (i < 0 || j <= i) return null;
+    return (collection: cleC.substring(0, i), cle: cleC.substring(i + 1, j), champ: cleC.substring(j + 1));
+  }
+
+  /// Envoie les variations de ce poste. Le POINT DE DÉPART d'un compteur est le même partout : la valeur du jeu d'origine pour une fiche livrée avec le poste,
+  /// zéro pour une fiche créée depuis. Tout ce qui s'en écarte localement part comme une variation, et rien d'autre : un poste qui rejoint la clinique avec ses
+  /// propres sorties les publie, et reçoit celles des autres.
+  Future<int> _pousserCompteurs() async {
+    _chargerEtat();
+    var n = 0, change = false;
+    for (final e in champsCompteurs.entries) {
+      if (!collections.contains(e.key)) continue;
+      final col = magasin.collection(e.key);
+      for (final f in List<Fiche>.of(col.toutes)) {
+        final idSync = '${f['idSync'] ?? ''}';
+        if (idSync.isEmpty) continue;
+        final origine = idSync == '${f['id']}' ? magasin.ficheOrigine(e.key, idSync) : null;
+        for (final k in e.value) {
+          final cleC = '${e.key}/$idSync/$k';
+          if (!_totaux.containsKey(cleC)) {
+            _totaux[cleC] = origine != null && origine.containsKey(k) ? _n(origine[k]) : 0;
+            change = true;
+          }
+          if (!f.containsKey(k)) continue;
+          final diff = _n(f[k]) - _totaux[cleC]!;
+          if (diff == 0) continue;
+          final id = '$etiquette~${DateTime.now().microsecondsSinceEpoch}~${_serie++}';
+          try {
+            await transport.ecrire(collectionDeltas, id, existe: false, champs: {'cle': cleC, 'delta': diff, 'poste': etiquette});
+          } on StateError {
+            continue;
+          }
+          _totaux[cleC] = _totaux[cleC]! + diff;
+          _appliques.add(id);
+          change = true;
+          n++;
         }
       }
     }
-    doublonsDeCode.value = n;
+    if (change) _sauverEtat();
+    return n;
   }
+
+  /// Additionne les variations des AUTRES postes aux compteurs locaux (celles que ce poste a lui-même publiées sont déjà comptées).
+  Future<int> _tirerCompteurs() async {
+    _chargerEtat();
+    final deltas = await transport.liste(collectionDeltas);
+    var n = 0, change = false;
+    for (final d in deltas) {
+      if (_appliques.contains(d.id)) continue;
+      final cleC = '${d.data['cle']}';
+      final cible = _decouper(cleC);
+      if (cible == null || !collections.contains(cible.collection)) continue;
+      final col = magasin.collection(cible.collection);
+      final f = _parSync(col, cible.cle);
+      if (f == null) continue;
+      if (!_totaux.containsKey(cleC)) {
+        final origine = cible.cle == '${f['id']}' ? magasin.ficheOrigine(cible.collection, cible.cle) : null;
+        _totaux[cleC] = origine != null && origine.containsKey(cible.champ) ? _n(origine[cible.champ]) : 0;
+      }
+      final delta = _n(d.data['delta']);
+      f[cible.champ] = _n(f[cible.champ]) + delta;
+      col.appliquerDistante({...f});
+      _totaux[cleC] = _totaux[cleC]! + delta;
+      _appliques.add(d.id);
+      change = true;
+      n++;
+    }
+    if (change) _sauverEtat();
+    recues.value += n;
+    return n;
+  }
+
+  // ---------------------------------------------------------------------------------------------------------------------------------------------
+  // LES MARQUEURS QUE CHAQUE POSTE DÉDUIT DES MÊMES DONNÉES
+  // ---------------------------------------------------------------------------------------------------------------------------------------------
+
+  /// Les pièces au même numéro (par collection) : le nombre de fiches concernées.
+  final Map<String, int> doublonsDeNumero = {};
+
+  void _marquer(CollectionMagasin col, Iterable<Fiche> toutes, Set<Fiche> concernees, String marqueur) {
+    for (final f in toutes) {
+      final doit = concernees.any((x) => identical(x, f));
+      if ((f[marqueur] == true) != doit) {
+        if (doit) {
+          f[marqueur] = true;
+        } else {
+          f.remove(marqueur);
+        }
+        col.appliquerDistante({...f});
+      }
+    }
+  }
+
+  String _identitePiece(String c, Fiche f) {
+    if (c == 'ecritures') return '${f['pieceId'] ?? '${f['_creePar']}|${f['date']}|${f['libelle']}'}';
+    return '${f['idSync'] ?? f['id']}';
+  }
+
+  void _deduireMarqueurs() {
+    for (final e in champsNumero.entries) {
+      if (!collections.contains(e.key)) continue;
+      final col = magasin.collection(e.key);
+      final groupes = numerosEnDoublon(col.toutes, e.value.champ, (f) => _identitePiece(e.key, f));
+      final concernees = {for (final g in groupes) ...g};
+      _marquer(col, col.toutes, concernees, e.value.marqueur);
+      if (e.key == 'patients') {
+        doublonsDeCode.value = concernees.length;
+      } else {
+        doublonsDeNumero[e.key] = concernees.length;
+      }
+    }
+    if (collections.contains('admissions')) {
+      final col = magasin.collection('admissions');
+      final conflits = {for (final g in litsEnConflit(col.toutes)) ...g};
+      _marquer(col, col.toutes, conflits, 'litEnConflit');
+      litsEnConflitCompte.value = conflits.length;
+    }
+    var neg = 0;
+    for (final e in champsCompteurs.entries) {
+      if (!collections.contains(e.key)) continue;
+      final col = magasin.collection(e.key);
+      final negatives = <Fiche>{
+        for (final f in col.toutes)
+          if (e.value.any((k) => f[k] is num && (f[k] as num) < 0)) f
+      };
+      neg += negatives.length;
+      _marquer(col, col.toutes, negatives, 'stockNegatifDetecte');
+    }
+    stocksNegatifs.value = neg;
+    if (collections.contains('factures')) {
+      final col = magasin.collection('factures');
+      for (final f in List<Fiche>.of(col.toutes)) {
+        final voulu = statutPaiementDepuis(f);
+        if (voulu != null) col.appliquerDistante({...f, 'statutPaiement': voulu});
+      }
+    }
+  }
+
+  /// Les admissions actives dont le lit est aussi pris par une autre admission active (un lit, une admission active).
+  final ValueNotifier<int> litsEnConflitCompte = ValueNotifier<int>(0);
 }

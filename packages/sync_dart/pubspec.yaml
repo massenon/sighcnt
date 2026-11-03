@@ -14,3 +14,7 @@ dependencies:
 dev_dependencies:
   test: any
   lints: any
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc

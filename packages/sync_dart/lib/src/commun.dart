@@ -66,9 +66,38 @@ class Err implements Exception {
   String toString() => 'Err($statut, $code, $motif)';
 }
 
+/// Ouvre une base SQLite, CHIFFRÉE quand [cle] (hexadécimal, 256 bits) est fournie (SQLite3 Multiple Ciphers, ChaCha20-Poly1305 : le moteur est celui du hook
+/// `sqlite3: source: sqlite3mc` du `pubspec.yaml`). Une base EN CLAIR d'avant (poste mis à jour) est chiffrée SUR PLACE à la première ouverture. Une clé fausse
+/// est un refus nommé, jamais une base lue de travers. Sans clé (`''`) : SQLite ordinaire (bancs d'essai, développement).
+Database ouvrirSqlite(String chemin, [String cle = '']) {
+  if (chemin == ':memory:') return sqlite3.openInMemory();
+  final f = File(chemin);
+  var clair = false;
+  if (f.existsSync() && f.lengthSync() >= 16) {
+    final tete = f.openSync()..setPositionSync(0);
+    final b = tete.readSync(16);
+    tete.closeSync();
+    clair = String.fromCharCodes(b.sublist(0, 15)) == 'SQLite format 3';
+  }
+  final db = sqlite3.open(chemin);
+  if (cle.isEmpty) return db;
+  try {
+    if (clair) {
+      db.execute("PRAGMA hexrekey = '$cle'");
+    } else {
+      db.execute("PRAGMA hexkey = '$cle'");
+    }
+    db.select('SELECT count(*) FROM sqlite_master');
+  } catch (e) {
+    db.dispose();
+    throw StateError('Base chiffrée illisible ($chemin) : clé incorrecte ou base altérée.');
+  }
+  return db;
+}
+
 /// Base locale SQLite : méta-données, transactions (la plus extérieure décide).
 class Base {
-  Base(String chemin) : db = chemin == ':memory:' ? sqlite3.openInMemory() : sqlite3.open(chemin) {
+  Base(String chemin, [String cle = '']) : db = ouvrirSqlite(chemin, cle) {
     db.execute('PRAGMA journal_mode = WAL');
     db.execute('PRAGMA busy_timeout = 5000');
     db.execute('CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT)');
