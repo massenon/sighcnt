@@ -25,6 +25,7 @@ import 'sync/etat_sync.dart';
 import 'sync/configuration_sync.dart';
 import 'core/plages_codes.dart';
 import 'sync/pont_activite.dart';
+import 'sync/reservation_stock.dart';
 import 'sync/moteur_fileul.dart';
 import 'sync/transcription_mobile.dart';
 
@@ -166,8 +167,11 @@ Future<void> main() async {
       final transport = TransportMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin);
       // La mère prend ses numéros de dossier dans le même carnet que les fileuls (RG-01).
       PlagesCodes.de(magasin).obtenir = transport.plage;
+      ReservationStock.de(magasin)
+        ..actif = true
+        ..installer(magasin);
       unawaited(PlagesCodes.de(magasin).recharger());
-      pontMere ??= PontActivite(magasin, transport, etiquette: 'M')..demarrer();
+      pontMere ??= PontActivite(magasin, transport, etiquette: 'M', surveillerLesAutres: true)..demarrer();
     }
     PontActivite creerPontFileul() => PontActivite(
         magasin,
@@ -175,10 +179,17 @@ Future<void> main() async {
             lire: moteur.liste,
             ecrireFiche: (c, f, {required existe, required champs}) => moteur.ecrire(c, f, existe: existe, champs: champs)),
         enLectureSeule: collectionsDeLaMereSeule,
+        liaison: () async {
+          final i = await moteur.instantane();
+          return !i.horsLigne && !i.suspendu;
+        },
         etiquette: moteur.uuid.replaceAll('-', '').substring(0, 6))
       ..demarrer();
     void demarrerPontFileul() {
       PlagesCodes.de(magasin).obtenir = (taille, minimum) => moteur.demanderPlage(taille: taille, minimum: minimum);
+      ReservationStock.de(magasin)
+        ..actif = true
+        ..installer(magasin);
       unawaited(PlagesCodes.de(magasin).recharger());
       pontFileul ??= creerPontFileul();
     }

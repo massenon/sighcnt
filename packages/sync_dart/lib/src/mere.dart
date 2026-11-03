@@ -35,6 +35,8 @@ const familleDeBase = <String, String>{
   'avoirs': 'A', 'ecritures': 'A', 'mouvements': 'A', 'lots': 'A', 'admissions': 'A',
   // Les VARIATIONS de stock (une fiche par variation, jamais modifiée) : le stock se reconstitue par addition.
   'deltasCompteurs': 'A',
+  // Un battement par poste : de quoi compter les postes d'une clinique.
+  'postesClinique': 'A',
   'constantes': 'B', 'notes': 'B',
   'cpn': 'B', 'cpon': 'B', 'surveillances': 'B', 'orientations': 'B', // suite du mobile (E1650 à E1660)
   'factures': 'C', 'prescriptions': 'C',

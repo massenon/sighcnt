@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/sync/fusion_activite.dart';
 import 'package:sigh_poste/sync/pont_activite.dart';
+import 'package:sigh_poste/sync/reservation_stock.dart';
 import 'package:sigh_poste/sync/transcription_mobile.dart' show PieceSync;
 
 /// Les règles de fusion des pièces et des compteurs (limites levées le 03/11/2026) : factures, avoirs, écritures, stock, lots, mouvements, admissions et lits.
@@ -234,4 +235,128 @@ void main() {
       }
     });
   });
+
+  group('RÉSERVATION : la part de chaque poste quand il est hors ligne (RG-03)', () {
+    late bool coupe;
+    late DateTime horloge;
+    late Magasin x, y;
+    late PontActivite px, py;
+
+    Future<void> cycles(List<PontActivite> ps) async {
+      for (var i = 0; i < 3; i++) {
+        for (final p in ps) {
+          await p.cycle();
+        }
+      }
+    }
+
+    setUp(() async {
+      coupe = false;
+      horloge = DateTime(2026, 11, 3, 9);
+      j = Journal();
+      x = poste();
+      y = poste();
+      Transport t() => _Coupable(j, () => coupe);
+      px = PontActivite(x, t(), etiquette: 'X');
+      py = PontActivite(y, t(), etiquette: 'Y');
+      for (final m in [x, y]) {
+        ReservationStock.de(m)
+          ..actif = true
+          ..maintenant = (() => horloge)
+          ..installer(m);
+      }
+      await cycles([px, py]);
+    });
+
+    test('EN LIAISON : aucune restriction, la règle ordinaire du stock s’applique', () {
+      expect(ReservationStock.de(x).horsLigne, isFalse);
+      x.collection('produits').mettreAJour('PRD1', {'stockGros': 0});
+      expect(stockDe(x), 0);
+    });
+
+    test('HORS LIGNE : un poste ne sort que sa part (stock connu / nombre de postes) ; la somme des parts ne rend jamais le stock négatif', () async {
+      expect(ReservationStock.de(x).nbPostes, 2, reason: 'deux postes ont battu au journal');
+      coupe = true;
+      horloge = horloge.add(const Duration(minutes: 5));
+      await px.cycle();
+      expect(ReservationStock.de(x).horsLigne, isTrue);
+      // La part de chacun : 10 / 2 = 5.
+      x.collection('produits').mettreAJour('PRD1', {'stockGros': 6}); // 4 sorties
+      x.collection('produits').mettreAJour('PRD1', {'stockGros': 5}); // la 5e : permise
+      expect(
+          () => x.collection('produits').mettreAJour('PRD1', {'stockGros': 4}),
+          throwsA(isA<EcritureRefusee>().having((e) => e.motif, 'motif', allOf(contains('part de ce poste'), contains('5 unité'), contains('2 postes')))),
+          reason: 'la 6e dépasserait la part');
+      expect(stockDe(x), 5);
+      // L'autre poste, lui aussi hors ligne, sort sa part : 5 + 5 = 10, pas un de plus.
+      await py.cycle();
+      y.collection('produits').mettreAJour('PRD1', {'stockGros': 5});
+      expect(() => y.collection('produits').mettreAJour('PRD1', {'stockGros': 4}), throwsA(isA<EcritureRefusee>()));
+      // Reconnexion : les deux sorties s'additionnent, le stock est à zéro, jamais négatif.
+      coupe = false;
+      await cycles([px, py]);
+      expect([stockDe(x), stockDe(y)], [0, 0]);
+      expect(x.collection('produits').parId('PRD1')!.containsKey('stockNegatifDetecte'), isFalse);
+      expect(ReservationStock.de(x).horsLigne, isFalse);
+    });
+
+    test('un FILEUL dont la mère est injoignable est hors ligne même si sa base locale répond (la liaison dit la vérité)', () async {
+      var joint = true;
+      final f = poste();
+      ReservationStock.de(f)
+        ..actif = true
+        ..maintenant = (() => horloge)
+        ..installer(f);
+      final pf = PontActivite(f, Transport(j), etiquette: 'F', liaison: () async => joint);
+      await pf.cycle();
+      expect(ReservationStock.de(f).horsLigne, isFalse);
+      joint = false;
+      horloge = horloge.add(const Duration(minutes: 1));
+      await pf.cycle();
+      expect(ReservationStock.de(f).horsLigne, isTrue, reason: 'le tour a réussi en local, mais la mère n’est pas atteinte');
+    });
+
+    test('la MÈRE se sait coupée d’un fileul par son battement : un poste silencieux depuis trop longtemps la met hors ligne', () async {
+      final m = poste();
+      ReservationStock.de(m)
+        ..actif = true
+        ..maintenant = (() => horloge)
+        ..installer(m);
+      final pm = PontActivite(m, Transport(j), etiquette: 'M', surveillerLesAutres: true);
+      await pm.cycle();
+      expect(ReservationStock.de(m).horsLigne, isFalse, reason: 'les autres postes ont battu à l’instant');
+      // Un fileul se tait depuis dix minutes.
+      j.fiches['postesClinique']!['Z'] = {'vuLe': DateTime.now().subtract(const Duration(minutes: 10)).toIso8601String()};
+      horloge = horloge.add(const Duration(minutes: 1));
+      await pm.cycle();
+      expect(ReservationStock.de(m).horsLigne, isTrue);
+      expect(ReservationStock.de(m).nbPostes, 3, reason: 'le nombre de postes est celui du dernier tour en liaison (mère, X et Y) ; un poste silencieux ne le fait pas tomber');
+    });
+
+    test('un poste autonome (service inactif) n’est limité par rien', () {
+      final seul = poste();
+      ReservationStock.de(seul)
+        ..actif = false
+        ..installer(seul);
+      seul.collection('produits').mettreAJour('PRD1', {'stockGros': 0});
+      expect(seul.collection('produits').parId('PRD1')!['stockGros'], 0);
+    });
+  });
+}
+
+/// Un transport dont la liaison se coupe d'un geste (le test simule un câble débranché).
+class _Coupable extends Transport {
+  _Coupable(super.j, this.coupe);
+  final bool Function() coupe;
+  @override
+  Future<List<PieceSync>> liste(String c) async {
+    if (coupe()) throw StateError('liaison coupée');
+    return super.liste(c);
+  }
+
+  @override
+  Future<void> ecrire(String c, String fiche, {required bool existe, required M champs}) async {
+    if (coupe()) throw StateError('liaison coupée');
+    return super.ecrire(c, fiche, existe: existe, champs: champs);
+  }
 }

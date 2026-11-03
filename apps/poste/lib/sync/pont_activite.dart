@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../donnees/magasin.dart';
 import 'fusion_activite.dart';
+import 'reservation_stock.dart';
 import 'transcription_mobile.dart' show PieceSync;
 
 /// LE PONT ENTRE LE MAGASIN DU POSTE ET LE JOURNAL D'OPÉRATIONS (PLAN de synchronisation S2 à S4 ; E2130 à E2134).
@@ -117,7 +118,12 @@ String _j(Object? o) => jsonEncode(o);
 
 class PontActivite {
   PontActivite(this.magasin, this.transport,
-      {required this.etiquette, Set<String>? collections, this.enLectureSeule = const {}, this.delai = const Duration(seconds: 1)})
+      {required this.etiquette,
+      Set<String>? collections,
+      this.enLectureSeule = const {},
+      this.liaison,
+      this.surveillerLesAutres = false,
+      this.delai = const Duration(seconds: 1)})
       : collections = collections ?? {...collectionsActivite, ...collectionsAtomiques};
   final Magasin magasin;
   final TransportPont transport;
@@ -129,6 +135,13 @@ class PontActivite {
   /// Les collections que ce poste REÇOIT sans jamais les envoyer : les référentiels que la mère seule écrit (le catalogue des produits, famille R). Un fileul
   /// qui en enverrait une fiche s'attirerait un refus sans objet à chaque tour.
   final Set<String> enLectureSeule;
+
+  /// Ce poste atteint-il VRAIMENT sa mère ? Le transport d'un fileul est sa base locale : il répond toujours, même mère injoignable. Cette fonction dit la
+  /// vérité (`MoteurFileul.instantane`). Absente : le tour réussi suffit (la mère, qui parle à son propre service).
+  final Future<bool> Function()? liaison;
+
+  /// La MÈRE ne se sait pas coupée d'un fileul : elle le déduit de son battement. Vrai : elle n'est « en liaison » que si TOUS les postes connus ont battu récemment.
+  final bool surveillerLesAutres;
   final Duration delai;
 
   /// La dernière version SYNCHRONISÉE de chaque fiche (clé `collection/idSync`) : sert de base à la fusion champ à champ.
@@ -183,6 +196,10 @@ class PontActivite {
       await tirer();
       await _tirerCompteurs();
       _deduireMarqueurs();
+      await _battement();
+      var joint = liaison == null ? true : await liaison!();
+      if (joint && surveillerLesAutres) joint = _tousFrais;
+      if (joint) ReservationStock.de(magasin).synchronise(magasin, collections, postes: _nbPostes);
       erreur.value = null;
     } catch (e) {
       erreur.value = 'Synchronisation de l’activité impossible : $e';
@@ -354,6 +371,43 @@ class PontActivite {
     }
     return null;
   }
+
+  // ---------------------------------------------------------------------------------------------------------------------------------------------
+  // LE BATTEMENT : combien de postes dans la clinique ?
+  // ---------------------------------------------------------------------------------------------------------------------------------------------
+
+  DateTime? _dernierBattement;
+  int? _nbPostes;
+  static const String collectionBattements = 'postesClinique';
+
+  /// Chaque poste publie un battement (au plus un toutes les 30 secondes) ; les postes qui ont battu dans les sept derniers jours forment la clinique. Le nombre sert à
+  /// partager le stock entre postes quand l'un d'eux est hors ligne (`ReservationStock`).
+  Future<void> _battement() async {
+    final now = DateTime.now();
+    final liste = await transport.liste(collectionBattements);
+    if (_dernierBattement == null || now.difference(_dernierBattement!) > const Duration(seconds: 30)) {
+      final existe = liste.any((p) => p.id == etiquette);
+      try {
+        await transport.ecrire(collectionBattements, etiquette, existe: existe, champs: {'vuLe': now.toIso8601String()});
+        _dernierBattement = now;
+      } on StateError {
+        // refus : on garde ce qu'on sait
+      }
+    }
+    final actifs = {
+      etiquette,
+      for (final p in liste)
+        if ((DateTime.tryParse('${p.data['vuLe'] ?? ''}') ?? DateTime(2000)).isAfter(now.subtract(const Duration(days: 7)))) p.id,
+    };
+    _nbPostes = actifs.length;
+    // Les AUTRES postes ont-ils battu il y a moins de 75 s ? (la mère n'a pas d'autre moyen de savoir qu'un fileul est coupé)
+    _tousFrais = [
+      for (final p in liste)
+        if (p.id != etiquette) DateTime.tryParse('${p.data['vuLe'] ?? ''}') ?? DateTime(2000)
+    ].every((d) => now.difference(d) <= const Duration(seconds: 75));
+  }
+
+  bool _tousFrais = true;
 
   // ---------------------------------------------------------------------------------------------------------------------------------------------
   // LES COMPTEURS (stock des produits, quantité restante des lots)
