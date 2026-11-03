@@ -222,7 +222,7 @@ void main() {
     }
   }, timeout: const Timeout(Duration(seconds: 120)));
 
-  test('RG-13 : un MOBILE ne reçoit jamais la configuration (comptes, hachés, droits) ; un fileul, si', () async {
+  test('un MOBILE reçoit la configuration de la clinique mais JAMAIS les hachés des mots de passe (RG-13) ; un fileul reçoit tout', () async {
     const port = 19434;
     final mere0 = await Mere.creer(ConfigMere(port: port, dbChemin: ':memory:', admin: 'secret-test', dossierSauvegardes: '/tmp/sigh-test-sauvegardes-cfg2'));
     await mere0.demarrer();
@@ -256,9 +256,8 @@ void main() {
       expect(fileul, containsAll(['utilisateurs', 'identifiants', 'actes', 'personnel', 'produits']));
       final mobile = await collectionsRecues('mobile', {'profil': 'reception'});
       expect(mobile, contains('produits'), reason: 'le référentiel que ses écrans lisent lui reste visible');
-      for (final interdit in ['utilisateurs', 'identifiants', 'personnel', 'actes']) {
-        expect(mobile, isNot(contains(interdit)), reason: 'un téléphone perdu ne doit pas emporter $interdit');
-      }
+      expect(mobile, containsAll(['actes', 'utilisateurs', 'personnel']), reason: 'la configuration de la clinique arrive sur le téléphone');
+      expect(mobile, isNot(contains('identifiants')), reason: 'un téléphone perdu ne doit pas emporter les empreintes des mots de passe');
     } finally {
       http0.close(force: true);
       try {

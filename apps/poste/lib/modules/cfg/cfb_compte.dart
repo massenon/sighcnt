@@ -183,7 +183,7 @@ class _EtatCompte extends State<EcranCompte> {
                 titre: 'Sécurité du compte',
                 child: cfaPile([
                   FormulaireSigh(controleur: _securite!),
-                  cfbNote('Politique en vigueur : 12 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.'),
+                  cfbNote('Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.'),
                   Align(
                       alignment: Alignment.centerLeft,
                       child: BoutonSigh(libelle: 'Modifier le mot de passe', icone: LucideIcons.keyRound, onPressed: () => _modifierMotDePasse(ctx, c))),

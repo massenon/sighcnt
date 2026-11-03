@@ -233,15 +233,58 @@ class Magasin {
   /// BRANCHE LE DISQUE. Ce qui a été écrit lors d'un démarrage précédent REMPLACE le jeu d'origine, collection par collection ; une collection jamais
   /// écrite reste celle du jeu. Ensuite chaque écriture marque sa collection, et une minuterie (400 ms après le dernier geste) ne réécrit que celles
   /// qui ont changé : sérialiser tout le magasin à chaque geste serait quadratique. À appeler UNE fois, avant la première lecture d'une collection.
-  Future<void> brancherPersistance(Persistance p, {Duration delai = const Duration(milliseconds: 400)}) async {
+  Future<void> brancherPersistance(Persistance p,
+      {Duration delai = const Duration(milliseconds: 400), Set<String> fusionnables = const {}}) async {
     if (_persistance != null) throw StateError('La persistance est déjà branchée.');
     if (_c.isNotEmpty) throw StateError('La persistance se branche avant la première lecture d\'une collection.');
     _delaiEcriture = delai;
     final ecrit = await p.lireTout();
-    for (final e in ecrit.entries) {
-      _jeux[e.key] = e.value;
+    final meta = await p.lireMeta();
+    // UN JEU D'ORIGINE QUI CHANGE NE SE PERD PAS (Direction, 03/11/2026) : quand le jeu livré avec le poste a changé depuis le dernier lancement, les fiches
+    // des collections de [fusionnables] (référentiels, paramétrage) qui MANQUENT au magasin enregistré y sont ajoutées. On n'écrase rien, on ne retire rien :
+    // ce que l'agent a saisi ou modifié reste, ce que la nouvelle version apporte arrive. L'activité de démonstration, elle, n'est jamais rajoutée.
+    final empreinte = _empreinteJeu(fusionnables);
+    final fusionnees = <String, List<Fiche>>{};
+    if (ecrit.isNotEmpty && meta['jeu'] != empreinte) {
+      for (final n in fusionnables) {
+        final present = ecrit[n];
+        if (present == null) continue;
+        final ids = {for (final f in present) f['id']};
+        final manquantes = [
+          for (final f in (_jeux[n] ?? const <Fiche>[]))
+            if (!ids.contains(f['id'])) {...f}
+        ];
+        if (manquantes.isNotEmpty) fusionnees[n] = [...present, ...manquantes];
+      }
     }
+    for (final e in ecrit.entries) {
+      _jeux[e.key] = fusionnees[e.key] ?? e.value;
+    }
+    for (final e in fusionnees.entries) {
+      await p.ecrire(e.key, e.value);
+    }
+    if (meta['jeu'] != empreinte) await p.ecrireMeta({...meta, 'jeu': empreinte});
+    jeuxFusionnes = fusionnees.map((k, v) => MapEntry(k, v.length - (ecrit[k]?.length ?? 0)));
     _persistance = p;
+  }
+
+  /// Les collections dont des fiches nouvelles du jeu d'origine ont été ajoutées au démarrage, et combien (vide si le jeu n'a pas changé).
+  Map<String, int> jeuxFusionnes = const {};
+
+  /// L'empreinte du jeu d'origine : les identifiants des fiches des collections fusionnables (FNV-1a). Elle change quand une version livre de nouvelles fiches.
+  String _empreinteJeu(Set<String> noms) {
+    var h = 0x811c9dc5;
+    for (final n in (noms.toList()..sort())) {
+      for (final c in '$n:'.codeUnits) {
+        h = ((h ^ c) * 0x01000193) & 0xffffffff;
+      }
+      for (final f in (_jeux[n] ?? const <Fiche>[])) {
+        for (final c in '${f['id']},'.codeUnits) {
+          h = ((h ^ c) * 0x01000193) & 0xffffffff;
+        }
+      }
+    }
+    return h.toRadixString(16);
   }
 
   void _marquerSale(String nom) {

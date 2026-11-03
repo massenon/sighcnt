@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles;
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -62,6 +63,10 @@ const String repartirAZero =
 const String assistantInstallation =
     String.fromEnvironment('SIGH_ASSISTANT', defaultValue: 'oui');
 
+/// `SIGH_CHIFFREMENT=non` : DÉVELOPPEMENT. Garde le magasin du poste en JSON clair. Par défaut, les fichiers sont chiffrés.
+const String chiffrementActif =
+    String.fromEnvironment('SIGH_CHIFFREMENT', defaultValue: 'oui');
+
 /// Dossier des données du poste. À remplacer par le dossier d'application du système à l'installation (tâche de packaging).
 const String dossierDonnees =
     String.fromEnvironment('SIGH_DONNEES', defaultValue: 'donnees-poste');
@@ -122,9 +127,12 @@ Future<void> main() async {
   final magasin = await Magasin.depuisAssets(Magasin.collectionsDuJeu);
   // Le magasin se range sur disque : comptes, mots de passe (hachés), saisies et journal survivent à la fermeture du poste. Sans cela, tout repartait du
   // jeu d'origine à chaque lancement. Les fichiers sont en clair (le chiffrement SQLCipher est l'étape suivante du plan).
-  final persistance = PersistanceFichiers('$dossierDonnees/magasin');
+  // Les fichiers sont CHIFFRÉS (AES-256-GCM, clé liée à la session Windows par DPAPI) ; `SIGH_CHIFFREMENT=non` les garde en clair (développement).
+  final cle = chiffrementActif != 'non' ? await CleLocale('$dossierDonnees/cle-poste.bin').obtenir() : null;
+  final persistance = PersistanceFichiers('$dossierDonnees/magasin', cle: cle);
   if (repartirAZero == 'oui') await persistance.mettreDeCote();
-  await magasin.brancherPersistance(persistance);
+  // Un jeu d'origine qui change (nouvelle version) n'écrase rien : ses fiches de référentiel manquantes sont ajoutées au magasin enregistré.
+  await magasin.brancherPersistance(persistance, fusionnables: {...cfbEssentielles}.difference({'utilisateurs', 'identifiants'}));
   CfbPersistance.disponible = () => true;
   for (final probleme in persistance.problemes) {
     debugPrint(probleme);
@@ -149,6 +157,9 @@ Future<void> main() async {
       await controleur.activer(relais: relais, secretMere: secretMere, cleClinique: cleClinique, nomPoste: nomPoste);
       demarrerPublication();
     };
+    // La détection de l'étape « appairages » : combien d'appareils la mère connaît (sa console, sur le port local de son service).
+    final consoleMere = ClientMere(base: Uri.parse('http://127.0.0.1:9000'), secretAdmin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin);
+    installation.compterAppareils = () async => (await consoleMere.etat()).appareils.length;
     installation.rattacherMoteur = ({required adresse, required code}) => moteur.rattacher(adresse, code);
     installation.surRattache = (_) => demarrerApplication();
     if (params.mode == ModePoste.mere) demarrerPublication();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
@@ -48,13 +50,39 @@ Future<void> ouvrirModaleInstallation(
       pied: (fermer) => [BoutonSigh(key: const Key('ins:modale-fermer'), libelle: 'Fermer', variante: VarianteBouton.secondaire, onPressed: fermer)]);
 }
 
-class _Corps extends StatelessWidget {
+class _Corps extends StatefulWidget {
   const _Corps({required this.service, required this.magasin, required this.aller, required this.estMere, required this.ouvert});
   final ServiceInstallation service;
   final Magasin magasin;
   final void Function(String) aller;
   final bool estMere;
   final bool Function(String) ouvert;
+
+  @override
+  State<_Corps> createState() => _EtatCorps();
+}
+
+class _EtatCorps extends State<_Corps> {
+  Timer? _detection;
+  ServiceInstallation get service => widget.service;
+  Magasin get magasin => widget.magasin;
+  void Function(String) get aller => widget.aller;
+  bool get estMere => widget.estMere;
+  bool Function(String) get ouvert => widget.ouvert;
+
+  @override
+  void initState() {
+    super.initState();
+    // Les étapes se DÉTECTENT : l'administrateur n'a rien à cocher. Un tour à l'ouverture, puis toutes les deux secondes tant que la modale est là.
+    unawaited(service.detecter());
+    _detection = Timer.periodic(const Duration(seconds: 2), (_) => unawaited(service.detecter()));
+  }
+
+  @override
+  void dispose() {
+    _detection?.cancel();
+    super.dispose();
+  }
 
   EtatInstallation get e => service.etat;
 
@@ -102,13 +130,28 @@ class _Corps extends StatelessWidget {
         onPressed: ok ? () => aller(id) : null);
   }
 
-  Widget _coche(String id) => e.etat(id) == EtapeEtat.faite
-      ? BoutonSigh(key: Key('ins:rouvrir-$id'), libelle: 'Rouvrir', variante: VarianteBouton.fantome, onPressed: () => service.marquer(id, EtapeEtat.aFaire))
-      : BoutonSigh(key: Key('ins:fait-$id'), libelle: 'Marquer comme faite', icone: LucideIcons.check, onPressed: () => service.marquer(id, EtapeEtat.faite));
+  /// Une ligne de l'étape B : l'écran, ce que la détection en a vu (écrit, vérifié, à faire), et « Rien à changer » pour un écran qu'on a regardé sans le modifier.
+  Widget _ligneConfiguration(String id, String libelle, ({bool ecrit, bool verifie}) l) {
+    final fait = l.ecrit || l.verifie;
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      _lien(id, libelle),
+      const SizedBox(width: 6),
+      if (fait)
+        BadgeSigh(l.ecrit ? 'Configurée' : 'Vérifiée', ton: TonSigh.succes)
+      else
+        InkWell(
+            key: Key('ins:verifier-$id'),
+            onTap: () => service.verifierConfiguration(id),
+            child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                child: Text('Rien à changer', style: TextStyle(color: JetonsShell.navy700, fontSize: 12, fontWeight: FontWeight.w500)))),
+    ]);
+  }
 
   @override
   Widget build(BuildContext context) {
     final refus = service.motifRefusCloture();
+    final lignes = service.lignesConfiguration();
     final admins = service.administrateursActifs();
     final cloture = e.phase == PhaseInstallation.cloturee;
     return Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -127,18 +170,21 @@ class _Corps extends StatelessWidget {
               onPressed: () => _modaleActivation(context)),
       ]),
       _etape(context, 'configurations',
-          'Réglez la clinique sur ce poste : chaque réglage part vers le relais et les autres postes. Vous marquez l’étape comme faite quand vous avez fini.', [
-        for (final (id, libelle) in ecransConfigurationsInstallation) _lien(id, libelle),
-        _coche('configurations'),
+          'Réglez la clinique sur ce poste : chaque réglage part vers le relais et les autres postes. Une configuration est détectée dès qu’elle est enregistrée ; un écran qui n’a rien à changer se marque « Rien à changer ». L’étape se termine toute seule.', [
+        for (final (id, libelle) in ecransConfigurationsInstallation) _ligneConfiguration(id, libelle, lignes[id] ?? (ecrit: false, verifie: false)),
       ]),
       _etape(context, 'comptes',
-          'Créez les comptes des agents (identifiant, rôle) et donnez-leur un mot de passe. Un SECOND administrateur est obligatoire pour clore l’assistant : $admins sur ${ServiceInstallation.administrateursRequis} pour l’instant.',
-          [_lien('m14-utilisateurs', 'Comptes utilisateurs'), _coche('comptes')]),
+          'Créez les comptes des agents (identifiant, rôle) et donnez-leur un mot de passe. Un SECOND administrateur est obligatoire pour clore l’assistant : $admins sur ${ServiceInstallation.administrateursRequis} pour l’instant. L’étape se termine toute seule dès que le second administrateur existe.',
+          [_lien('m14-utilisateurs', 'Comptes utilisateurs')]),
       _etape(context, 'appairages',
           estMere
               ? 'Émettez un code d’appairage (8 caractères, 15 minutes, usage unique) pour chaque poste fileul et chaque mobile. Un poste fileul qui s’appaire reprend les configurations : il n’a rien à refaire.'
               : 'L’appairage des postes et des mobiles se fait depuis la mère : activez-la d’abord (étape 1).',
-          [if (estMere) _lien(ecranAppairages, 'Appareils et appairage'), _coche('appairages')]),
+          [
+            if (estMere) _lien(ecranAppairages, 'Appareils et appairage'),
+            Text(service.appareilsAppaires == null ? 'Appairages non relevés.' : '${service.appareilsAppaires} appareil(s) appairé(s).',
+                key: const Key('ins:appareils'), style: const TextStyle(color: JetonsShell.slate600, fontSize: 12)),
+          ]),
       const SizedBox(height: 4),
       if (cloture)
         const NoteSigh('L’assistant est clos.', icone: LucideIcons.circleCheck)

@@ -262,11 +262,22 @@ class _CoquePosteState extends State<CoquePoste> {
   /// `ApplicateurConfiguration`). Les écrans de configuration (module CFG), les droits, les comptes et la configuration fiscale.
   static const Set<String> _reglesSurLaMere = {'m14-roles', 'm14-utilisateurs', 'mecef-config'};
 
+  /// Sur un fileul rattaché, un écran réglé sur la mère le DIT en tête de sa règle (et pas seulement par le refus d'écriture).
+  String? _regleAvecMere(String id, String? regle) {
+    if (!_surLaMere(id)) return regle;
+    const phrase = 'Réglé sur la mère : cette configuration se modifie sur le poste principal, puis elle est reprise ici. Cet écran est en lecture seule sur ce poste.';
+    return regle == null || regle.isEmpty ? phrase : '$phrase $regle';
+  }
+
+  bool _surLaMere(String id) {
+    if (!(_service?.rattache ?? false)) return false;
+    return _nav.manifeste.ecran(id)?.module == 'CFG' || _reglesSurLaMere.contains(id);
+  }
+
   Droit _droitDe(String id) {
     final d = _nav.matrice.droit(_role, id);
     if (!(_service?.rattache ?? false)) return d;
-    final regle = _nav.manifeste.ecran(id)?.module == 'CFG' || _reglesSurLaMere.contains(id);
-    return regle ? Droit(voir: d.voir, editer: false, annuler: false) : d;
+    return _surLaMere(id) ? Droit(voir: d.voir, editer: false, annuler: false) : d;
   }
 
   // --- L'assistant de première installation : la pastille de la barre, et la modale qui s'ouvre seule sur le tableau de bord de l'administrateur. ---
@@ -685,7 +696,7 @@ class _CoquePosteState extends State<CoquePoste> {
               module: e.module,
               defilable: w is EcranMaquette ? true : false,
               description: w is EcranMaquette ? w.description : null,
-              regle: w is EcranMaquette ? w.regle : null,
+              regle: _regleAvecMere(id, w is EcranMaquette ? w.regle : null),
               actions: _actions(context, e, ruban, w),
               child: w);
         }),

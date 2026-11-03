@@ -203,7 +203,7 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
                 requis: true,
                 col: ColChamp.demi,
                 aide:
-                    '12 caractères au minimum, majuscule, minuscule, chiffre et caractère spécial. Il n’est conservé que haché (Argon2id) : l’agent devra le changer à sa première connexion.'),
+                    '8 caractères au minimum, majuscule, minuscule, chiffre et caractère spécial. Il n’est conservé que haché (Argon2id) : l’agent devra le changer à sa première connexion.'),
             ChampDef(
                 nom: 'motDePasseConfirmation',
                 libelle: 'Confirmer le mot de passe',
@@ -219,7 +219,7 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
       avant: (ctx, saisie, record) {
         final refus = secVerifierCompte(saisie, comptes: m.collection('utilisateurs').toutes, record: record);
         if (refus != null) return refus;
-        // A5 : la politique est APPLIQUÉE (12 caractères, familles de caractères, pas l'identifiant), non plus seulement affichée (E1076, E883).
+        // A5 : la politique est APPLIQUÉE (8 caractères, familles de caractères, pas l'identifiant), non plus seulement affichée (E1076, E883).
         if (record == null) return accRefusPolitique('${saisie['motDePasse'] ?? ''}', identifiant: '${saisie['identifiant'] ?? ''}');
         return null;
       },

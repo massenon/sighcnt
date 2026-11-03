@@ -15,6 +15,7 @@ import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
 import 'package:sigh_poste/mere/activation.dart' show ActivationRefusee;
 import 'package:sigh_poste/modules/auth/acc_session.dart';
+import 'package:sigh_poste/modules/auth/ins_modale.dart' show ecransConfigurationsInstallation;
 
 import 'aide_polices.dart';
 
@@ -243,7 +244,7 @@ void mainModale() {
       final (_, _, service) = await installeEtConnecte(t);
       for (final id in ['configurations', 'comptes', 'appairages']) {
         expect((t.widget(find.byKey(Key('ins:motif-$id'))) as Text).data, contains('Activer d’abord la mère'));
-        expect(find.byKey(Key('ins:fait-$id')), findsNothing, reason: 'une étape verrouillée n’offre aucune commande');
+        expect(find.byKey(Key('ins:verifier-cfg-entetes')), findsNothing, reason: 'une étape verrouillée n’offre aucune commande');
       }
       service.activerMere = ({required relais, required secretMere, required cleClinique, nomPoste}) async =>
           throw ActivationRefusee('relais_injoignable', 'Le relais n’a pas répondu : l’activation exige de le joindre.');
@@ -253,7 +254,7 @@ void mainModale() {
       expect(service.etat.etat('mere'), EtapeEtat.aFaire, reason: 'un échec ne marque rien');
       await toucher(t, find.byKey(const Key('ins:reporter')));
       expect(service.etat.etat('mere'), EtapeEtat.reportee);
-      expect(find.byKey(const Key('ins:fait-configurations')), findsOneWidget, reason: 'reportée, la mère déverrouille les autres étapes');
+      expect(find.byKey(const Key('ins:verifier-cfg-entetes')), findsOneWidget, reason: 'reportée, la mère déverrouille les autres étapes');
       await fin(t);
     });
 
@@ -274,10 +275,17 @@ void mainModale() {
       service.activerMere = ({required relais, required secretMere, required cleClinique, nomPoste}) async {};
       await remplirActivation(t);
       expect((t.widget(find.byKey(const Key('ins:cloturer'))) as BoutonSigh).onPressed, isNull, reason: 'il reste des étapes');
-      expect(find.textContaining('Il reste des étapes'), findsOneWidget);
-      for (final id in ['configurations', 'comptes', 'appairages']) {
-        await toucher(t, find.byKey(Key('ins:fait-$id')));
+      expect(find.textContaining('second administrateur est obligatoire'), findsOneWidget);
+      // Les étapes se DÉTECTENT : configurations (écrites ou vérifiées), appairages (un appareil connu de la mère) ; les comptes, quand le second administrateur existe.
+      service.compterAppareils = () async => 2;
+      for (final (id, _) in ecransConfigurationsInstallation) {
+        await toucher(t, find.byKey(Key('ins:verifier-$id')));
       }
+      await t.pump(const Duration(milliseconds: 300));
+      expect(service.etat.etat('configurations'), EtapeEtat.faite, reason: 'sept écrans vérifiés : l’étape se termine toute seule');
+      expect(service.etat.etat('appairages'), EtapeEtat.faite, reason: 'deux appareils appairés détectés');
+      expect(service.etat.etat('comptes'), EtapeEtat.aFaire, reason: 'un seul administrateur');
+      expect(find.byKey(const Key('ins:fait-comptes')), findsNothing, reason: 'plus rien à cocher');
       expect(find.byKey(const Key('ins:refus-cloture')), findsOneWidget);
       expect(find.textContaining('second administrateur est obligatoire'), findsOneWidget);
       expect((t.widget(find.byKey(const Key('ins:cloturer'))) as BoutonSigh).onPressed, isNull);
@@ -285,8 +293,9 @@ void mainModale() {
       // Un second administrateur, avec un mot de passe : la clôture s'ouvre.
       m.collection('utilisateurs').inserer({'id': 'USR900', 'statut': 'actif', 'identifiant': 'a.second', 'nomComplet': 'SECOND Admin', 'role': 'admin'});
       await t.runAsync(() => ServiceIdentifiants.de(m).definir('USR900', secret, par: 'test', doitChanger: false, maintenant: auj));
-      service.notifyListeners();
+      await t.runAsync(() => service.detecter());
       await t.pump(const Duration(milliseconds: 100));
+      expect(service.etat.etat('comptes'), EtapeEtat.faite, reason: 'deux administrateurs : détecté');
       expect(find.byKey(const Key('ins:refus-cloture')), findsNothing);
       await toucher(t, find.byKey(const Key('ins:cloturer')));
       expect(service.etat.phase, PhaseInstallation.cloturee);

@@ -248,16 +248,16 @@ void main() {
 
   group('cfg-compte', () {
     final cm = obj(v['compte']);
-    test('mot de passe : confirmation d’abord, puis douze caractères ; la politique affichée n’est pas contrôlée', () {
+    test('mot de passe : confirmation d’abord, puis huit caractères ; la politique affichée n’est pas contrôlée', () {
       expect(cfbRefusMotDePasse('MotDePasse#2026X', 'MotDePasse#2027X'), 'Les deux mots de passe ne correspondent pas.');
-      expect(cfbRefusMotDePasse('Court#1', 'Court#1'), 'Le mot de passe doit comporter au moins 12 caractères.');
+      expect(cfbRefusMotDePasse('Court#1', 'Court#1'), 'Le mot de passe doit comporter au moins 8 caractères.');
       expect(cfbRefusMotDePasse('Exact12Chars', 'Exact12Chars'), isNull);
       expect(cfbRefusMotDePasse('aaaaaaaaaaaa', 'aaaaaaaaaaaa'), isNull);
       expect(obj(cm['mdpDivergent'])['toasts'], [
         ['Les deux mots de passe ne correspondent pas.']
       ]);
       expect(obj(cm['mdpCourt'])['toasts'], [
-        ['Le mot de passe doit comporter au moins 12 caractères.']
+        ['Le mot de passe doit comporter au moins 8 caractères.']
       ]);
     });
     test('authentification à deux facteurs cochée d’office pour admin, direction, dm, da — et pour eux seuls', () {

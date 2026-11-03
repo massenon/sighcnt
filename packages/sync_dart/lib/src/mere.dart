@@ -40,9 +40,10 @@ final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisat
     .difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'})
     .difference(familleDeBase.keys.toSet());
 
-/// Ce qu'un MOBILE ne reçoit JAMAIS : les comptes et leurs hachés, les droits, le personnel, tout le paramétrage de la clinique, sauf les référentiels que ses
-/// écrans lisent (`produits`, déjà au journal avant la configuration). Un téléphone perdu ne doit pas emporter les empreintes des mots de passe (RG-13).
-final Set<String> collectionsPosteSeulement = collectionsConfigurationPoste.difference({'produits'});
+/// Ce qu'un MOBILE ne reçoit JAMAIS : les hachés des mots de passe (`identifiants`). Le téléphone reçoit toute la configuration de la clinique (référentiels,
+/// droits, modules, comptes sans secret : Direction, 03/11/2026) mais il ne vérifie pas les mots de passe du poste, il a son code PIN ; un téléphone perdu ne
+/// doit pas emporter les empreintes de tous les comptes (RG-13). La rémunération du personnel n'est publiée à personne.
+final Set<String> collectionsPosteSeulement = {'identifiants'};
 const _clinique = 'NASSIERA TOO';
 const _deriveMaxMs = 2 * 60 * 1000;
 const autorise = <String, Set<String>>{

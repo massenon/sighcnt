@@ -493,7 +493,7 @@ class _EtatReinit extends State<EcranReinitialisation> {
   }
 
   /// A5 : la réinitialisation est RÉELLE. Elle prouve d'abord l'identité (identifiant + mot de passe actuel ou provisoire, vérifié contre le haché, avec le
-  /// même verrou que la connexion), applique la politique (12 caractères, familles, différent de l'actuel), puis remplace le haché. Le secret n'est ni
+  /// même verrou que la connexion), applique la politique (8 caractères, familles, différent de l'actuel), puis remplace le haché. Le secret n'est ni
   /// gardé ni journalisé : seul le geste l'est.
   Future<void> _definir() async {
     if (_occupe) return;

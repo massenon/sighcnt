@@ -281,7 +281,7 @@ bool cfbMfaParDefaut(String role) => const ['admin', 'direction', 'dm', 'da'].co
 /// (majuscules, minuscules, chiffre, caractère spécial) n'est PAS contrôlé par la maquette — voir E883.
 String? cfbRefusMotDePasse(String nouveau, String confirmation) {
   if (nouveau != confirmation) return 'Les deux mots de passe ne correspondent pas.';
-  if (nouveau.length < 12) return 'Le mot de passe doit comporter au moins 12 caractères.';
+  if (nouveau.length < 8) return 'Le mot de passe doit comporter au moins 8 caractères.';
   return null;
 }
 

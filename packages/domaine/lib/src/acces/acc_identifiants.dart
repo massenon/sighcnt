@@ -59,7 +59,7 @@ const int accLongueurSel = 16;
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 
 /// La longueur minimale : la politique que la maquette AFFICHE (E1076, E883) et que le poste APPLIQUE.
-const int accLongueurMinMotDePasse = 12;
+const int accLongueurMinMotDePasse = 8;
 
 /// Renouvellement obligatoire, en jours (« Renouvellement obligatoire tous les 90 jours »).
 const int accRenouvellementJours = 90;

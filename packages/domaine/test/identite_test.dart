@@ -113,9 +113,9 @@ void main() {
       expect(accRegleManquantes('Clinique#Natitingou26'), isEmpty);
     });
 
-    test('douze caractères au minimum : onze refusés, douze acceptés', () {
-      expect(accRegleManquantes('Abcdefgh#1x'), contains('12 caractères minimum'));
-      expect(accRegleManquantes('Abcdefgh#1xy'), isEmpty);
+    test('huit caractères au minimum (Direction, 02/11/2026) : sept refusés, huit acceptés', () {
+      expect(accRegleManquantes('Abcde#1'), contains('8 caractères minimum'));
+      expect(accRegleManquantes('Abcdef#1'), isEmpty);
     });
 
     test('le mot de passe ne contient pas l\'identifiant de connexion', () {
@@ -124,7 +124,7 @@ void main() {
     });
 
     test('le refus est une phrase qui nomme les règles ; null si conforme', () {
-      expect(accRefusPolitique('a'), startsWith('Mot de passe non conforme à la politique : 12 caractères minimum'));
+      expect(accRefusPolitique('a'), startsWith('Mot de passe non conforme à la politique : 8 caractères minimum'));
       expect(accRefusPolitique('Clinique#Natitingou26'), isNull);
     });
 

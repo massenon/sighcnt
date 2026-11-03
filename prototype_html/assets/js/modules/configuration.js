@@ -1943,14 +1943,14 @@
       ], {});
       principal.appendChild(U.card('Sécurité du compte', el('div', null, [
         securite,
-        el('div.mt-3', null, K.note('Politique en vigueur : 12 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.', { tone: 'info' })),
+        el('div.mt-3', null, K.note('Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.', { tone: 'info' })),
         el('div.mt-4', null, K.btn('Modifier le mot de passe', {
           variant: 'primary', icon: 'key-round',
           onclick: function () {
             var v = securite.collect();
             if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
             if (v.nouveau !== v.confirmation) { U.toast('Les deux mots de passe ne correspondent pas.', { type: 'error' }); return; }
-            if (String(v.nouveau).length < 12) { U.toast('Le mot de passe doit comporter au moins 12 caractères.', { type: 'error' }); return; }
+            if (String(v.nouveau).length < 8) { U.toast('Le mot de passe doit comporter au moins 8 caractères.', { type: 'error' }); return; }
             S.log('Modification', 'M14', 'Utilisateur', s.identifiant || s.nom, null, { motDePasse: 'modifié' });
             U.toast('Mot de passe modifié.', { type: 'success' });
           },

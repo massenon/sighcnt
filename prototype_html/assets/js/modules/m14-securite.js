@@ -1437,7 +1437,7 @@
    * plus. Droits : administrateur seul.
    * ======================================================================== */
   var POLITIQUE_DEFAUT = {
-    longueurMin: 12, expirationJours: 90, historique: 5, echecsMax: 3, blocageMin: 15, inactiviteMin: 15,
+    longueurMin: 8, expirationJours: 90, historique: 5, echecsMax: 3, blocageMin: 15, inactiviteMin: 15,
   };
   var PARAMETRES_POLITIQUE = [
     { cle: 'longueurMin', libelle: 'Longueur minimale du mot de passe', unite: 'caractères', min: 8, max: 64,

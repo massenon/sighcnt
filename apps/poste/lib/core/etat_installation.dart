@@ -36,7 +36,7 @@ const Map<String, String> libellesEtapesInstallation = {
 };
 
 class EtatInstallation {
-  const EtatInstallation({this.creeLe, this.creePar, this.etapes = const {}, this.clotureLe, this.cloturePar});
+  const EtatInstallation({this.creeLe, this.creePar, this.etapes = const {}, this.clotureLe, this.cloturePar, this.lignesVerifiees = const {}});
 
   /// L'état d'un poste jamais installé.
   static const vide = EtatInstallation();
@@ -48,6 +48,9 @@ class EtatInstallation {
   final Map<String, String> etapes;
   final DateTime? clotureLe;
   final String? cloturePar;
+
+  /// Les écrans de configuration que l'administrateur a vérifiés SANS rien y changer (la détection ne voit que ce qui s'écrit).
+  final Set<String> lignesVerifiees;
 
   PhaseInstallation get phase =>
       clotureLe != null ? PhaseInstallation.cloturee : (creeLe != null ? PhaseInstallation.enCours : PhaseInstallation.nonInstalle);
@@ -76,7 +79,7 @@ class EtatInstallation {
 
   /// Le premier compte vient d'être créé.
   EtatInstallation creer({required DateTime maintenant, required String par}) =>
-      EtatInstallation(creeLe: maintenant, creePar: par, etapes: etapes, clotureLe: clotureLe, cloturePar: cloturePar);
+      EtatInstallation(creeLe: maintenant, creePar: par, etapes: etapes, clotureLe: clotureLe, cloturePar: cloturePar, lignesVerifiees: lignesVerifiees);
 
   /// Marque une étape. Une étape inconnue est refusée (une faute de frappe ne doit pas passer pour une étape faite).
   EtatInstallation marquer(String etape, EtapeEtat valeur) {
@@ -90,13 +93,17 @@ class EtatInstallation {
       case EtapeEtat.faite:
         suite[etape] = 'faite';
     }
-    return EtatInstallation(creeLe: creeLe, creePar: creePar, etapes: suite, clotureLe: clotureLe, cloturePar: cloturePar);
+    return EtatInstallation(creeLe: creeLe, creePar: creePar, etapes: suite, clotureLe: clotureLe, cloturePar: cloturePar, lignesVerifiees: lignesVerifiees);
   }
 
   EtatInstallation cloturer({required DateTime maintenant, required String par}) =>
-      EtatInstallation(creeLe: creeLe, creePar: creePar, etapes: etapes, clotureLe: maintenant, cloturePar: par);
+      EtatInstallation(creeLe: creeLe, creePar: creePar, etapes: etapes, clotureLe: maintenant, cloturePar: par, lignesVerifiees: lignesVerifiees);
+
+  EtatInstallation verifierLigne(String ecran) =>
+      EtatInstallation(creeLe: creeLe, creePar: creePar, etapes: etapes, clotureLe: clotureLe, cloturePar: cloturePar, lignesVerifiees: {...lignesVerifiees, ecran});
 
   Map<String, Object?> toJson() => {
+        'lignes_verifiees': lignesVerifiees.toList(),
         'cree_le': creeLe?.toIso8601String(),
         'cree_par': creePar,
         'etapes': etapes,
@@ -114,6 +121,7 @@ class EtatInstallation {
       etapes: e is Map ? {for (final k in e.keys) if (etapesInstallation.contains('$k')) '$k': '${e[k]}'} : const {},
       clotureLe: DateTime.tryParse('${j['cloture_le'] ?? ''}'),
       cloturePar: j['cloture_par'] as String?,
+      lignesVerifiees: j['lignes_verifiees'] is List ? {for (final x in j['lignes_verifiees'] as List) '$x'} : const {},
     );
   }
 }

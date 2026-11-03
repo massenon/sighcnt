@@ -372,7 +372,7 @@ void main() {
       await saisir(t, 'acces:nouveau', 'court');
       await saisir(t, 'acces:confirmation', 'court');
       await bouton(t, 'Définir le mot de passe et se connecter');
-      expect(find.textContaining('12 caractères minimum'), findsWidgets);
+      expect(find.textContaining('8 caractères minimum'), findsWidgets);
       expect(find.textContaining('non conforme à la politique'), findsOneWidget);
       expect(s.etat, EtatSession.deconnectee);
       // Identique à l'actuel : refusé.

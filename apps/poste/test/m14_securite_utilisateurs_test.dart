@@ -35,7 +35,7 @@ void main() {
       expect(find.text(p.libelle), findsOneWidget, reason: p.cle);
       expect(find.text(p.source), findsWidgets, reason: p.cle);
     }
-    expect(find.text('12 caractères'), findsOneWidget);
+    expect(find.text('8 caractères'), findsOneWidget);
     expect(find.text('Historique des mots de passe interdits'), findsOneWidget);
     expect(find.textContaining('Proposition à valider'), findsOneWidget, reason: 'l\'historique n\'a aucune source : il le dit');
     expect(find.text('Composition du mot de passe'), findsOneWidget);
@@ -54,7 +54,7 @@ void main() {
     await saisir(t, 'longueurMin', '7');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
     expect(find.textContaining('Longueur minimale du mot de passe : une valeur entière entre 8 et 64 est attendue.'), findsOneWidget);
-    expect(m.collection('politiqueSecurite').actives.single['longueurMin'], 12, reason: 'rien n\'est écrit');
+    expect(m.collection('politiqueSecurite').actives.single['longueurMin'], 8, reason: 'rien n\'est écrit');
     await saisir(t, 'longueurMin', '14');
     await saisir(t, 'inactiviteMin', '10');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));

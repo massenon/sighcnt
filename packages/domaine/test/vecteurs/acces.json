@@ -144,7 +144,7 @@
    "Politique de mot de passe de la clinique (CDCT §12.2).",
    "Nouveau mot de passe",
    "Confirmer le mot de passe",
-   "12 caractères minimum",
+   "8 caractères minimum",
    "Au moins une majuscule et une minuscule",
    "Au moins un chiffre et un caractère spécial",
    "Renouvellement obligatoire tous les 90 jours",
@@ -178,7 +178,7 @@
    "index.php"
   ],
   "regles": [
-   "12 caractères minimum",
+   "8 caractères minimum",
    "Au moins une majuscule et une minuscule",
    "Au moins un chiffre et un caractère spécial",
    "Renouvellement obligatoire tous les 90 jours"

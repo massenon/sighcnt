@@ -18,7 +18,7 @@
   "Configuration Clinique"
  ],
  "regle": [
-  "Politique en vigueur : 12 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses."
+  "Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses."
  ],
  "onglets": [],
  "kpis": [],

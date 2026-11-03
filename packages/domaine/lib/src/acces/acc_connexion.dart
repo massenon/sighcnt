@@ -138,7 +138,7 @@ List<(String, String)> accLignesRefus(AccDecision d, String dateHeure) => [
 /// Les quatre règles de la politique de mot de passe affichées par la réinitialisation (CDCT §12.2). La maquette les AFFICHE avec des coches vertes mais
 /// ne les APPLIQUE PAS : seule la concordance des deux saisies est contrôlée (écart consigné).
 const List<String> accRegleMotDePasse = [
-  '12 caractères minimum',
+  '8 caractères minimum',
   'Au moins une majuscule et une minuscule',
   'Au moins un chiffre et un caractère spécial',
   'Renouvellement obligatoire tous les 90 jours',

@@ -362,7 +362,7 @@
       f.appendChild(el('div', null, [el('label.label', { text: 'Confirmer le mot de passe' }), pw2]));
 
       var regles = el('ul.space-y-1\\.5.rounded-lg.bg-slate-50.p-3');
-      [['12 caractères minimum'], ['Au moins une majuscule et une minuscule'], ['Au moins un chiffre et un caractère spécial'],
+      [['8 caractères minimum'], ['Au moins une majuscule et une minuscule'], ['Au moins un chiffre et un caractère spécial'],
        ['Renouvellement obligatoire tous les 90 jours']].forEach(function (r) {
         regles.appendChild(el('li.flex.items-center.gap-2.text-xs.text-slate-600', null, [
           C.icon('check', 'h-3.5 w-3.5 text-success-600'), el('span', { text: r[0] }),

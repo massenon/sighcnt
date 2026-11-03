@@ -174,7 +174,7 @@ List<FicheSec> secLignesSessions(Iterable<FicheSec> fiches) {
 // --- Politique de sécurité des comptes ---------------------------------------------------------------------------------------------------------
 
 const secPolitiqueDefaut = <String, int>{
-  'longueurMin': 12,
+  'longueurMin': 8,
   'expirationJours': 90,
   'historique': 5,
   'echecsMax': 3,

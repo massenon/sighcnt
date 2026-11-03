@@ -82,7 +82,7 @@ void main() {
     await saisir(t, 'nouveau', 'Court#1');
     await saisir(t, 'confirmation', 'Court#1');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Modifier le mot de passe'));
-    expect(find.text('Le mot de passe doit comporter au moins 12 caractères.'), findsOneWidget);
+    expect(find.text('Le mot de passe doit comporter au moins 8 caractères.'), findsOneWidget);
     expect(m.collection('audit').toutes.length, avant);
   });
 

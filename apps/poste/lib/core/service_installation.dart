@@ -39,12 +39,34 @@ class ServiceInstallation extends ChangeNotifier {
     // Après la clôture, un administrateur ne s'archive pas s'il laisse moins de deux administrateurs actifs : le moteur le refuse, pas seulement l'écran.
     if (!_gardePosee) {
       _gardePosee = true;
+      final refus = 'laisserait %d administrateur actif : il en faut au moins ${ServiceInstallation.administrateursRequis}. Créez ou restaurez un autre administrateur d’abord.';
+      String? motif(String idCompte) {
+        final restants = administrateursActifs(sauf: idCompte);
+        return restants >= administrateursRequis ? null : refus.replaceFirst('%d', '$restants');
+      }
+
+      // Après la clôture, un administrateur ne PERD pas son rôle, son activité ni son mot de passe s'il laisse moins de deux administrateurs actifs : le moteur
+      // le refuse (archivage, changement de rôle, désactivation, blocage), pas seulement l'écran.
       _magasin.collection('utilisateurs').garder((op, f) {
-        if (op != 'archiver' || _etat.phase != PhaseInstallation.cloturee || '${f['role']}' != 'admin') return null;
-        final restants = administrateursActifs(sauf: '${f['id']}');
-        return restants >= administrateursRequis
-            ? null
-            : 'Archiver cet administrateur laisserait $restants administrateur actif : il en faut au moins $administrateursRequis. Créez ou restaurez un autre administrateur d’abord.';
+        if (_etat.phase != PhaseInstallation.cloturee) return null;
+        final ancien = _magasin.collection('utilisateurs').parId(f['id']) ?? f;
+        if ('${ancien['role']}' != 'admin') return null;
+        final quitte = switch (op) {
+          'archiver' => true,
+          'modifier' => '${f['role']}' != 'admin' || '${f['statut'] ?? 'actif'}' != 'actif' || f['actif'] == false || f['bloque'] == true,
+          _ => false,
+        };
+        if (!quitte) return null;
+        final m = motif('${ancien['id']}');
+        return m == null ? null : 'Cette opération $m';
+      });
+      // Retirer son mot de passe (archiver son haché) revient à fermer le compte.
+      _magasin.collection('identifiants').garder((op, f) {
+        if (op != 'archiver' || _etat.phase != PhaseInstallation.cloturee) return null;
+        final compte = _magasin.collection('utilisateurs').parId(f['utilisateurId'] ?? f['id']);
+        if (compte == null || '${compte['role']}' != 'admin') return null;
+        final m = motif('${compte['id']}');
+        return m == null ? null : 'Retirer ce mot de passe $m';
       });
     }
     notifyListeners();
@@ -129,11 +151,11 @@ class ServiceInstallation extends ChangeNotifier {
 
   /// Pourquoi l'assistant ne peut pas encore être clos, ou `null` s'il peut l'être.
   String? motifRefusCloture() {
-    if (!_etat.toutesFaites) return 'Il reste des étapes à faire (${_etat.nombreFaites} sur ${etapesInstallation.length}).';
     final n = administrateursActifs();
     if (n < administrateursRequis) {
       return 'Un second administrateur est obligatoire : $n administrateur actif pour l’instant. Créez-le à « Utilisateurs », puis définissez-lui un mot de passe.';
     }
+    if (!_etat.toutesFaites) return 'Il reste des étapes à faire (${_etat.nombreFaites} sur ${etapesInstallation.length}).';
     return null;
   }
 
@@ -166,6 +188,72 @@ class ServiceInstallation extends ChangeNotifier {
   Future<void> reporterMere() async {
     _magasin.journaliser('Activation de la mère reportée', 'M14', 'Poste', _parametres?.uuidPoste ?? '', null, null);
     await poser(_etat.marquer('mere', EtapeEtat.reportee));
+  }
+
+
+  /// Combien d'appareils (postes fileuls, mobiles) sont appairés à la mère : posé par `main` (la console de la mère le sait). `null` : non disponible.
+  Future<int> Function()? compterAppareils;
+
+  /// Le dernier nombre d'appareils appairés relevé par la détection (`null` : jamais relevé).
+  int? appareilsAppaires;
+
+  /// Les collections que chaque écran de configuration écrit : l'`entite` de ses entrées de journal. Une configuration est « faite » quand une écriture
+  /// la concerne depuis l'installation, ou quand l'administrateur l'a vérifiée sans rien y changer.
+  static const Map<String, Set<String>> collectionsDesConfigurations = {
+    'cfg-entetes': {'ressources'},
+    'cfg-modules': {'modulesActifs'},
+    'cfg-tarifs': {'actes', 'analyses', 'catalogueTarifs', 'produits', 'typesPiece'},
+    'cfg-natures-facture': {'naturesFacture'},
+    'cfg-comptabilite': {'reglages'},
+    'mecef-config': {'reglages'},
+    'm14-roles': {'rbac'},
+  };
+
+  /// Pour chaque écran de configuration : a-t-il été configuré (écriture au journal depuis l'installation) ou vérifié ?
+  Map<String, ({bool ecrit, bool verifie})> lignesConfiguration() {
+    final depuis = _etat.creeLe;
+    final ecrites = <String>{};
+    for (final a in _magasin.collection('audit').toutes) {
+      if (!const {'Création', 'Modification', 'Archivage', 'Restauration'}.contains('${a['action']}')) continue;
+      final d = DateTime.tryParse('${a['dateHeure']}');
+      if (depuis != null && d != null && d.isBefore(depuis)) continue;
+      ecrites.add('${a['entite']}');
+    }
+    return {
+      for (final e in collectionsDesConfigurations.entries)
+        e.key: (ecrit: e.value.any(ecrites.contains), verifie: _etat.lignesVerifiees.contains(e.key)),
+    };
+  }
+
+  /// DÉTECTE les étapes faites, sans que l'administrateur les coche : configurations (toutes écrites ou vérifiées), comptes (deux administrateurs ou plus),
+  /// appairages (au moins un appareil appairé à la mère). Une détection ne fait que MARQUER « faite » : une étape rouverte à la main reste rouverte jusqu'à
+  /// ce que la détection la revoie vraie. Rien n'est détecté tant que la mère n'est pas réglée (les autres étapes sont verrouillées).
+  Future<void> detecter() async {
+    if (!enCours || !_etat.mereReglee) return;
+    var e = _etat;
+    final lignes = lignesConfiguration();
+    if (lignes.values.every((l) => l.ecrit || l.verifie)) e = e.marquer('configurations', EtapeEtat.faite);
+    if (administrateursActifs() >= administrateursRequis) e = e.marquer('comptes', EtapeEtat.faite);
+    final compter = compterAppareils;
+    if (compter != null) {
+      try {
+        appareilsAppaires = await compter();
+        if (appareilsAppaires! > 0) e = e.marquer('appairages', EtapeEtat.faite);
+      } catch (_) {
+        // La console de la mère ne répond pas : l'étape reste ce qu'elle était.
+      }
+    }
+    if (e.etapes.toString() != _etat.etapes.toString()) {
+      await poser(e);
+    } else {
+      notifyListeners();
+    }
+  }
+
+  /// L'administrateur a ouvert un écran de configuration et n'a rien à y changer.
+  Future<void> verifierConfiguration(String ecran) async {
+    await poser(_etat.verifierLigne(ecran));
+    await detecter();
   }
 
   /// Marque une étape comme faite (ou la rouvre).

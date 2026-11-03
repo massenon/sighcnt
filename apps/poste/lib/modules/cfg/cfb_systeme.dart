@@ -96,6 +96,13 @@ CfbPlanVidage cfbViderActivite(Magasin m, String motif) {
       col.remplacerContenu(col.actives);
     }
   }
+  // LES COMPTES DE DÉMONSTRATION PARTENT (Direction, 03/11/2026) : les fiches du jeu, qui n'ont ni mot de passe ni été créées par l'installation, ne servent
+  // à personne. Un compte qui a un mot de passe, ou que l'assistant d'installation a créé, reste : le vidage ne doit jamais fermer la porte à celui qui l'a lancé.
+  final avecMotDePasse = {for (final f in m.collection('identifiants').toutes) '${f['utilisateurId'] ?? f['id']}'};
+  final comptes = m.collection('utilisateurs');
+  final gardes = [for (final u in comptes.toutes) if ('${u['source']}' == 'installation' || avecMotDePasse.contains('${u['id']}')) u];
+  final comptesDemoRetires = comptes.toutes.length - gardes.length;
+  comptes.remplacerContenu(gardes);
   final entreesJournal = m.collection('audit').toutes.length;
   m.collection('audit').remplacerContenu(const []);
   // La première entrée du journal neuf dit ce qui vient d'être fait (RG-12) : le vidage lui-même ne s'efface pas.
@@ -104,6 +111,7 @@ CfbPlanVidage cfbViderActivite(Magasin m, String motif) {
     'enregistrements': plan.enregistrements,
     'valeursRetirees': valeursRetirees,
     'archiveesRetirees': archiveesRetirees,
+    'comptesDemoRetires': comptesDemoRetires,
     'entreesJournalRetirees': entreesJournal,
     'motif': motif
   });

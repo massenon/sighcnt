@@ -137,6 +137,7 @@ void main() {
     const gardees = {'rbac', 'utilisateurs'};
     final archivees = cfbNomsCollections().where((n) => !gardees.contains(n)).fold<int>(0, (a, n) => a + m.collection(n).archivees.length);
     expect(archivees, greaterThan(0));
+    final comptesAvant = m.collection('utilisateurs').toutes.length;
     final plan = cfbPlanVidage({for (final n in cfbNomsCollections()) n: m.collection(n).toutes.length}, {...cfbEssentielles, ...cfbCollectionsTechniques});
     final effectif = m.collection('personnel').toutes.length;
     final fiches = m.collection('fichesPoste').toutes.length;
@@ -181,6 +182,8 @@ void main() {
     expect({for (final k in ['tables', 'enregistrements', 'valeursRetirees', 'motif']) k: apres[k]},
         {'tables': plan.tables, 'enregistrements': plan.enregistrements, 'valeursRetirees': valeursDeTest, 'motif': 'Fin de la recette'});
     expect(apres['archiveesRetirees'], archivees);
+    expect(apres['comptesDemoRetires'], comptesAvant, reason: 'aucun compte du jeu n’a de mot de passe : tous partent');
+    expect(m.collection('utilisateurs').toutes, isEmpty);
     expect(apres['entreesJournalRetirees'], greaterThan(0));
     // Retour de la Direction du 01/11/2026 : l'effectif reste, ni sa rémunération de démonstration ni les fiches de poste.
     expect(m.collection('personnel').toutes.length, effectif);
