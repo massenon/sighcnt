@@ -83,8 +83,12 @@ CfbPlanVidage cfbViderActivite(Magasin m, String motif) {
   // LA CORBEILLE ET LE JOURNAL SONT VIDÉS (Direction, 02/11/2026) : un jeu de test remis à neuf ne garde ni les fiches archivées pendant les essais, ni le journal
   // d'audit des essais. Exception explicite à RG-14, limitée à cette commande : l'archivage reste la règle partout ailleurs. Les fiches archivées des
   // référentiels conservés sont retirées aussi, sans quoi la corbeille se remplirait de ce que les essais ont archivé.
+  // Deux exceptions : l'archivage d'un RÔLE (`rbac`) ou d'un COMPTE (`utilisateurs`) n'est pas un déchet d'essai, il FERME un accès. Le retirer rouvrirait le rôle
+  // ou le compte que la Direction a fermé (RG-14, décisions d'archivage du 28/08).
+  const gardees = {'rbac', 'utilisateurs'};
   var archiveesRetirees = 0;
   for (final n in cfbNomsCollections()) {
+    if (gardees.contains(n)) continue;
     final col = m.collection(n);
     final arch = col.archivees.length;
     if (arch > 0) {

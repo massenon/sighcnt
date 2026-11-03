@@ -3650,12 +3650,24 @@
     db._jeuVideLe = new Date().toISOString();
     /* Le peuplement du parcours transactionnel ne doit pas repartir non plus. */
     db._parcoursAmorces = true;
-    db.audit = db.audit || [];
+    /* LA CORBEILLE ET LE JOURNAL SONT VIDÉS (Direction, 02/11/2026) : un jeu de test remis à neuf ne garde ni les fiches
+       archivées pendant les essais ni le journal d'audit des essais. Exception explicite à RG-14 et RG-12, limitée à cette
+       commande. Deux collections gardent leurs archives : un RÔLE archivé (rbac) et un COMPTE archivé (utilisateurs)
+       FERMENT un accès, les retirer rouvrirait ce que la Direction a fermé. */
+    var archivees = 0;
+    Object.keys(db).forEach(function (k) {
+      if (k.charAt(0) === '_' || !Array.isArray(db[k]) || k === 'audit' || k === 'rbac' || k === 'utilisateurs') return;
+      var gardees = db[k].filter(function (r) { return !(r && r.statut === 'archive'); });
+      archivees += db[k].length - gardees.length;
+      db[k] = gardees;
+    });
+    var entrees = (db.audit || []).length;
+    db.audit = [];
     save();
-    /* Le vidage s'inscrit en tête du journal conservé (RG-12). */
+    /* La première entrée du journal NEUF dit le vidage (RG-12) : il ne s'efface pas lui-même. */
     log('Réinitialisation des jeux de test', 'CFG', 'Base', 'vidage', null,
-      { tables: tables, enregistrements: lignes, valeursRetirees: champsVides, motif: motif || '' });
-    return { tables: tables, enregistrements: lignes, collections: vidées, valeursRetirees: champsVides };
+      { tables: tables, enregistrements: lignes, valeursRetirees: champsVides, archiveesRetirees: archivees, entreesJournalRetirees: entrees, motif: motif || '' });
+    return { tables: tables, enregistrements: lignes, collections: vidées, valeursRetirees: champsVides, archiveesRetirees: archivees, entreesJournalRetirees: entrees };
   }
 
   function reset() {

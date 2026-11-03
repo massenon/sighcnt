@@ -11034,8 +11034,12 @@ async function viderMessages(page) {
 
     const vidage = await page.evaluate(() => {
       const S = window.SIGH.store;
+      /* Une fiche ARCHIVÉE d'un référentiel conservé (la corbeille doit être vidée), et un journal bien rempli. */
+      const actes = S.collection('actes').active();
+      S.collection('actes').archive(actes[0].id, 'scénario 67 : essai de corbeille');
+      const archiveesAvant = S.corbeille().length;
       const bilan = S.viderActivite('scénario 67');
-      return { tables: bilan.tables, lignes: bilan.enregistrements, jeuVide: S.jeuVide() };
+      return { tables: bilan.tables, lignes: bilan.enregistrements, jeuVide: S.jeuVide(), archiveesAvant: archiveesAvant, archiveesRetirees: bilan.archiveesRetirees, entrees: bilan.entreesJournalRetirees };
     });
     await attendreEcritures();
     verifier('Le vidage retire les tables d’activité et pose le drapeau',
@@ -11060,6 +11064,13 @@ async function viderMessages(page) {
         && apres.actes > 0 && apres.grillePrimes > 0 && apres.examensImagerie > 0, JSON.stringify(apres));
     verifier('Le journal neuf commence par le vidage lui-même (RG-12)',
       /Réinitialisation des jeux de test/.test(apres.derniereEntree), apres.derniereEntree);
+    const neuf = await page.evaluate(() => {
+      const S = window.SIGH.store, db = S.raw();
+      return { corbeille: S.corbeille().filter((x) => x.collection !== 'rbac' && x.collection !== 'utilisateurs').length, journal: (db.audit || []).length };
+    });
+    verifier('Le vidage retire la corbeille (fiches archivées pendant les essais) et vide le journal : seule reste l’entrée du vidage',
+      vidage.archiveesAvant > 0 && vidage.archiveesRetirees >= 1 && vidage.entrees > 1 && neuf.corbeille === 0 && neuf.journal === 1,
+      JSON.stringify({ vidage, neuf }));
 
     /* Les écrans qui amorçaient leur collection NE LA RESSUSCITENT PAS. */
     /* Les écrans sondés sont ceux que la relecture adversariale a pris en défaut : ils
