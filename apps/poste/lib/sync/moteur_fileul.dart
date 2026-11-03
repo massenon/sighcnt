@@ -39,6 +39,13 @@ class MoteurFileul {
   /// Les fiches d'une collection telles que la mère les a diffusées (état confirmé du fileul).
   Future<List<PieceSync>> liste(String collection) => pieces.liste(collection);
 
+  /// Écrit une fiche dans le journal du poste (`creer` si la fiche est nouvelle, `modifier` sinon) ; un refus nommé de la file locale lève `StateError`.
+  Map<String, Object?> ecrire(String collection, String fiche, {required bool existe, required Map<String, Object?> champs}) {
+    final r = _fileul.ecrire({'collection': collection, 'fiche': fiche, 'type': existe ? 'modifier' : 'creer', 'champs': champs});
+    if (r['refus'] != null) throw StateError('${r['motif'] ?? r['refus']}');
+    return r;
+  }
+
   Future<void> appairer(String code) async {
     final (statut, corps) =
         await _fileul.commande('POST /appairer', {'code': code}, const {});

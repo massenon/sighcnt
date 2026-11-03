@@ -22,6 +22,7 @@ import 'shell/coque.dart';
 import 'shell/fenetre_poste.dart';
 import 'sync/etat_sync.dart';
 import 'sync/configuration_sync.dart';
+import 'sync/pont_activite.dart';
 import 'sync/moteur_fileul.dart';
 import 'sync/transcription_mobile.dart';
 
@@ -151,19 +152,39 @@ Future<void> main() async {
     void demarrerPublication() => publicateur ??= PublicateurConfiguration(
         magasin, publierVersMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin))
       ..demarrer();
+    // L'ACTIVITÉ et les mots de passe voyagent dans les deux sens (pont magasin / journal, E2130 à E2134).
+    PontActivite? pontMere, pontFileul;
+    void demarrerPontMere() => pontMere ??= PontActivite(
+        magasin, TransportMereLocale(port: 9000, admin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin), etiquette: 'M')
+      ..demarrer();
+    void demarrerPontFileul() => pontFileul ??= PontActivite(
+        magasin,
+        TransportFileul(
+            lire: moteur.liste,
+            ecrireFiche: (c, f, {required existe, required champs}) => moteur.ecrire(c, f, existe: existe, champs: champs)),
+        etiquette: moteur.uuid.replaceAll('-', '').substring(0, 6))
+      ..demarrer();
     ApplicateurConfiguration? applicateur;
     void demarrerApplication() => applicateur ??= ApplicateurConfiguration(magasin, moteur.liste)..demarrer();
+    void demarrerApplicationEtPont() {
+      demarrerApplication();
+      demarrerPontFileul();
+    }
     installation.activerMere = ({required relais, required secretMere, required cleClinique, nomPoste}) async {
       await controleur.activer(relais: relais, secretMere: secretMere, cleClinique: cleClinique, nomPoste: nomPoste);
       demarrerPublication();
+      demarrerPontMere();
     };
     // La détection de l'étape « appairages » : combien d'appareils la mère connaît (sa console, sur le port local de son service).
     final consoleMere = ClientMere(base: Uri.parse('http://127.0.0.1:9000'), secretAdmin: secretAdmin.isEmpty ? 'admin-local' : secretAdmin);
     installation.compterAppareils = () async => (await consoleMere.etat()).appareils.length;
     installation.rattacherMoteur = ({required adresse, required code}) => moteur.rattacher(adresse, code);
-    installation.surRattache = (_) => demarrerApplication();
-    if (params.mode == ModePoste.mere) demarrerPublication();
-    if (installation.rattache) demarrerApplication();
+    installation.surRattache = (_) => demarrerApplicationEtPont();
+    if (params.mode == ModePoste.mere) {
+      demarrerPublication();
+      demarrerPontMere();
+    }
+    if (installation.rattache) demarrerApplicationEtPont();
   } else if (connexionExigee != 'non') {
     final ident = ServiceIdentifiants.de(magasin);
     final maintenant = DateTime.now();

@@ -8,6 +8,7 @@ import 'package:sigh_poste/core/identifiants.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/mere/client_mere.dart';
 import 'package:sigh_poste/sync/configuration_sync.dart';
+import 'package:sigh_poste/sync/pont_activite.dart';
 import 'package:sigh_poste/sync/moteur_fileul.dart';
 import 'package:sigh_poste/sync/transcription_mobile.dart';
 import 'package:sigh_sync/sigh_sync.dart';
@@ -143,29 +144,6 @@ void main() {
       expect(m.collection('utilisateurs').parId('USR001')!['echecs'], 1, reason: 'le compteur d’échecs est local au poste');
     });
 
-    test('un compte local n’est jamais écrasé ; un haché n’est remplacé que par un haché plus récent', () async {
-      final m = fileul();
-      m.collection('utilisateurs').inserer({'id': 'USR001', 'identifiant': 'k.adjovi', 'echecs': 3});
-      m.collection('identifiants').inserer({'id': 'USR001', 'hash': 'LOCAL', 'definiLe': '2026-11-02T10:00:00.000'});
-      final diffuse = {
-        'utilisateurs': [
-          {'id': 'USR001', 'identifiant': 'k.adjovi', 'echecs': 0}
-        ],
-        'identifiants': [
-          {'id': 'USR001', 'hash': 'ANCIEN', 'definiLe': '2026-11-02T09:00:00.000'}
-        ]
-      };
-      final a = appl(m, diffuse);
-      await a.tirer();
-      expect(m.collection('utilisateurs').parId('USR001')!['echecs'], 3);
-      expect(m.collection('identifiants').parId('USR001')!['hash'], 'LOCAL', reason: 'un mot de passe changé ici ne revient pas à l’ancien');
-      diffuse['identifiants'] = [
-        {'id': 'USR001', 'hash': 'REINIT', 'definiLe': '2026-11-02T11:00:00.000'}
-      ];
-      await a.tirer();
-      expect(m.collection('identifiants').parId('USR001')!['hash'], 'REINIT', reason: 'une réinitialisation faite sur la mère arrive');
-    });
-
     test('une fiche archivée sur la mère l’est sur le fileul (RG-14)', () async {
       final m = fileul();
       final a = appl(m, {
@@ -192,8 +170,18 @@ void main() {
     final moteur = MoteurFileul.creer(dbChemin: ':memory:', mere: 'http://127.0.0.1:1', nom: 'Caisse');
     final mf = fileul();
     final appl = ApplicateurConfiguration(mf, moteur.liste);
+    final envoyes = <String>[];
+    final pontM = PontActivite(mm, TransportMereLocale(port: port, admin: 'secret-test'), etiquette: 'M');
+    final pontF = PontActivite(mf,
+        TransportFileul(lire: moteur.liste, ecrireFiche: (c, f, {required existe, required champs}) {
+          envoyes.add('$c/$f existe=$existe ${champs}');
+          moteur.ecrire(c, f, existe: existe, champs: champs);
+        }),
+        etiquette: 'F');
     try {
-      expect(await pub.pousser(), greaterThanOrEqualTo(4));
+      expect(await pub.pousser(), greaterThanOrEqualTo(3));
+      await pontM.cycle();
+      expect(pontM.erreur.value, isNull);
       expect(pub.erreur.value, isNull);
       final code = await console.codeAppareil('Caisse').timeout(const Duration(seconds: 20));
       // Le fileul ne connaît pas encore la mère : l'adresse est saisie à l'écran « Rejoindre », puis le code est consommé.
@@ -202,6 +190,7 @@ void main() {
       final fin = DateTime.now().add(const Duration(seconds: 25));
       while (mf.collection('actes').toutes.length < 2 || mf.collection('identifiants').toutes.isEmpty) {
         await appl.tirer();
+        await pontF.cycle();
         if (DateTime.now().isAfter(fin)) fail('la configuration n’est pas arrivée : ${mf.collection('actes').toutes.length} actes, ${mf.collection('identifiants').toutes.length} identifiants');
         await Future<void>.delayed(const Duration(milliseconds: 200));
       }
@@ -210,9 +199,23 @@ void main() {
       // Le haché voyage : le mot de passe défini sur la mère ouvre la session sur le fileul.
       final r = await ServiceIdentifiants.de(mf).verifier(identifiant: 'k.adjovi', motDePasse: secret, rolesArchives: const {}, libelleRole: (x) => x, maintenant: auj);
       expect(r.decision.accepte, isTrue);
-      // L'activité et la rémunération ne sont pas parties.
-      expect(mf.collection('patients').toutes, isEmpty);
+      // L'activité synchronisable arrive aussi (le pont) ; la rémunération, elle, ne part pas.
+      await pontF.cycle();
+      expect(mf.collection('patients').toutes.single['nom'], 'BIO');
       expect(mf.collection('personnel').toutes.single.containsKey('salaireBase'), isFalse);
+      // MOT DE PASSE REMONTÉ : l'agent le change sur le fileul, la mère le reçoit et le vérifie.
+      const nouveau = 'Nouveau-mdp-9';
+      await ServiceIdentifiants.de(mf).definir('USR001', nouveau, par: 'k.adjovi', doitChanger: false, maintenant: auj.add(const Duration(days: 1)));
+      final fin2 = DateTime.now().add(const Duration(seconds: 25));
+      while (true) {
+        await pontF.cycle();
+        await pontM.cycle();
+        if (mm.collection('identifiants').parId('USR001')!['hash'] == mf.collection('identifiants').parId('USR001')!['hash']) break;
+        if (DateTime.now().isAfter(fin2)) fail('le mot de passe changé sur le fileul n’est pas remonté à la mère (envoyés : $envoyes, erreurs : ${pontF.erreur.value} ${pontM.erreur.value})');
+        await Future<void>.delayed(const Duration(milliseconds: 200));
+      }
+      final r2 = await ServiceIdentifiants.de(mm).verifier(identifiant: 'k.adjovi', motDePasse: nouveau, rolesArchives: const {}, libelleRole: (x) => x, maintenant: auj.add(const Duration(days: 1)));
+      expect(r2.decision.accepte, isTrue, reason: 'la mère ouvre la session avec le NOUVEAU mot de passe');
     } finally {
       appl.arreter();
       pub.arreter();
@@ -241,6 +244,7 @@ void main() {
       await ServiceIdentifiants.de(mm).definir('USR001', secret, par: 'test', doitChanger: false, maintenant: auj);
       final pub = PublicateurConfiguration(mm, publierVersMereLocale(port: port, admin: 'secret-test'), delai: Duration.zero);
       await pub.pousser();
+      await PontActivite(mm, TransportMereLocale(port: port, admin: 'secret-test'), etiquette: 'M').cycle();
       // Une opération de la famille d'origine (produits), que le mobile a le droit de lire.
       await appel('POST', '/admin/referentiel', corps: {'collection': 'produits', 'fiche': 'PRD1', 'champs': {'libelle': 'Paracétamol'}}, entetes: {'x-admin': 'secret-test'});
 

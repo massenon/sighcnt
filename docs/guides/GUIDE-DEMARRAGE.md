@@ -191,7 +191,7 @@ Ne jamais `git clean -fd` sans `-n` d'abord : `api/config.local.php` et `node_mo
 
 Un poste neuf (aucun compte avec mot de passe) démarre sur l'assistant, pas sur la connexion :
 
-1. **Première installation** : vous créez le compte administrateur (nom, identifiant, mot de passe que VOUS choisissez), puis le **code de secours** s'affiche une seule fois (copier, imprimer, case « je l'ai rangé » obligatoire). Rangez-le au coffre : sans lui il n'y a aucun chemin d'urgence au poste.
+1. **Première installation** : vous créez le compte administrateur (nom, identifiant, mot de passe que VOUS choisissez, 8 caractères minimum), puis le **code de secours** s'affiche une seule fois (copier, imprimer, case « je l'ai rangé » obligatoire). Rangez-le au coffre : sans lui il n'y a aucun chemin d'urgence au poste.
 2. Le tableau de bord s'ouvre avec la modale **Configurations à faire** (pastille dans la barre pour la rouvrir) : activer la mère (ou la reporter si le relais est injoignable), configurer la clinique, créer les comptes dont un **second administrateur**, appairer les postes et les mobiles. L'assistant ne se clôt qu'avec les quatre étapes faites et deux administrateurs.
 3. **Rejoindre une clinique** (poste fileul) : adresse de la mère (`http://hôte:9000`) et code d'appairage émis sur la console de la mère. La configuration et les comptes sont repris tout seuls ; ce poste n'a rien à régler.
 
@@ -217,3 +217,8 @@ Réglages de développement (`--dart-define=…`) : `SIGH_ASSISTANT=non` (ancien
   [`../prd/PRD-SOCLE-synchronisation-bidirectionnelle.md`](../prd/PRD-SOCLE-synchronisation-bidirectionnelle.md) et
   [`../plans/PLAN-synchronisation-bidirectionnelle.md`](../plans/PLAN-synchronisation-bidirectionnelle.md)
 - Doctrine, règles de gestion RG-01→14 et pièges : `CLAUDE.md` à la racine.
+
+### Sécurité et synchronisation du poste (03/11/2026)
+
+- Les fichiers du poste sont **chiffrés** (`magasin/*.sigh`) ; la clé est dans `cle-poste.bin` (protégée par Windows). **Sauvegardez ce fichier avec le dossier de données** : sans lui, les données sont illisibles (elles sont alors mises de côté et nommées, jamais lues de travers). `SIGH_CHIFFREMENT=non` garde le clair, pour le développement seulement.
+- L'activité sûre (dossiers, rendez-vous, constantes, consultations…) se synchronise seule entre la mère et les fileuls, et un mot de passe changé sur un fileul remonte à la mère. Factures, stock et écritures ne se synchronisent pas encore. Deux dossiers qui portent le même code `CNT/n/AA` sont marqués `codeEnDoublon` : la Direction tranche.

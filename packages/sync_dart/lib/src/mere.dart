@@ -26,6 +26,11 @@ final familles = <String, String>{
 };
 const familleDeBase = <String, String>{
   'patients': 'A', 'rendezvous': 'A',
+  // L'ACTIVITÉ que le pont du poste synchronise (E2130) : des fiches descriptives, sans invariant entre fiches. Factures, stock, écritures et lits en restent
+  // exclus tant que leurs règles de fusion (numérotation, RG-03, unicité du lit) ne sont pas posées.
+  'releves': 'A', 'observations': 'A', 'visites': 'A', 'appels': 'A', 'consultations': 'A', 'dossiersConsultation': 'A', 'antecedents': 'A',
+  // Les hachés des mots de passe : écrits par le poste où l'agent change son mot de passe, dans les DEUX sens (E2131).
+  'identifiants': 'A',
   'constantes': 'B', 'notes': 'B',
   'cpn': 'B', 'cpon': 'B', 'surveillances': 'B', 'orientations': 'B', // suite du mobile (E1650 à E1660)
   'factures': 'C', 'prescriptions': 'C',
@@ -36,7 +41,7 @@ const essentielles = {'tarifs', 'chambres'};
 
 /// Les collections de CONFIGURATION que la mère diffuse aux POSTES : les essentielles du paramétrage plus les comptes. Les noms viennent du domaine (la même
 /// liste que le vidage des jeux de test conserve), jamais recopiés ici. Le poste en choisit l'usage ; la mère ne fait que les accepter et les journaliser.
-final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs', 'identifiants'}
+final Set<String> collectionsConfigurationPoste = {...cfbEssentielles, 'utilisateurs'}
     .difference({'rolesBase', 'modulesManifeste', 'reglages', 'audit'})
     .difference(familleDeBase.keys.toSet());
 
@@ -574,6 +579,12 @@ class Mere {
         adminOk(req);
         final lim = min(int.tryParse(q['limite'] ?? '') ?? 100, 500);
         return (await base.select('SELECT id,quand,niveau,source,message FROM evenements ORDER BY id DESC LIMIT ?', [lim])).toList();
+      case 'GET /admin/liste':
+        adminOk(req);
+        final lignes = await base.select('SELECT id,data,archive FROM fiches WHERE collection=? ORDER BY id', [q['collection'] ?? '']);
+        return [
+          for (final r in lignes) {'id': r['id'], 'data': jsonDecode(r['data'] as String), 'archive': (r['archive'] as num) != 0}
+        ];
       case 'GET /admin/fiche':
         adminOk(req);
         final f = await lire(q['collection'] ?? '', q['id'] ?? '');
