@@ -51,6 +51,13 @@ class EcranValidationPaie extends StatelessWidget with EcranMaquette {
       ToastsSigh.afficher(ctx, 'Validation refusée.', type: TypeToast.erreur, detail: refus);
       return;
     }
+    // E1175 : un net négatif ne se valide pas.
+    final netNegatif = paiControleNetNegatif(lot);
+    if (netNegatif != null) {
+      c.magasin.journaliser('Validation de paie refusée, net négatif', 'M11', 'BulletinPaie', l.periode, null, {'motif': netNegatif});
+      ToastsSigh.afficher(ctx, 'Validation refusée.', type: TypeToast.erreur, detail: netNegatif);
+      return;
+    }
     // B6 : la pièce comptable d'abord (RG-10 contrôlé) ; refusée, rien n'est validé.
     final ecritures = c.magasin.collection('ecritures');
     final piece = paiPieceDePaie(l.periode, lot, date: iso(c.aujourdhui), ecritures: ecritures.toutes, montantTexte: money);
@@ -75,9 +82,19 @@ class EcranValidationPaie extends StatelessWidget with EcranMaquette {
     for (final b in lot) {
       annulations.add(col.mettreAJour(b['id'], {'statutBulletin': 'valide', 'validePar': validateur, 'valideParId': acteur(c).utilisateurId, 'dateValidation': iso(c.aujourdhui), 'ecritureNumero': piece.numero}));
     }
+    // E1174 : les retenues du lot sont écrites (prêts, avances, participations), annulables d'un bloc avec la validation.
+    final imputations = paiImputationsDeRetenues(lot,
+        prets: c.magasin.collection('pretsEtudes').actives,
+        avances: c.magasin.collection('avances').actives,
+        participations: c.magasin.collection('participations').actives,
+        date: iso(c.aujourdhui),
+        acteur: validateur);
+    for (final i in imputations) {
+      annulations.add(c.magasin.collection(i.collection).mettreAJour(i.id, i.champs));
+    }
     ToastsSigh.afficher(ctx, 'Paie de ${l.periode} validée par $validateur.',
         type: TypeToast.succes,
-        detail: '${lot.length} bulletin(s) autorisé(s) à la diffusion ; écriture ${piece.numero} posée en brouillon.',
+        detail: '${lot.length} bulletin(s) autorisé(s) à la diffusion ; écriture ${piece.numero} posée en brouillon ; ${imputations.length} retenue(s) imputée(s).',
         annuler: () {
           for (final u in annulations) {
             u();

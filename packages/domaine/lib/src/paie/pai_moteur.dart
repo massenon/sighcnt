@@ -769,6 +769,64 @@ String? paiControleSeparation(Iterable<PaiFiche> lot, String validateur, {String
   return 'Séparation des tâches : la paie de ${meme['periode']} a été générée par ${meme['genereePar']} ; elle doit être validée par une autre personne.';
 }
 
+/// E1175 (arbitrage du 04/11/2026) : un bulletin dont le net est NÉGATIF ne se valide pas. Aucun plafond de retenue n'est inventé : le refus nomme l'agent,
+/// le déficit et les retenues en cause, et dit où corriger. Rend le motif de refus, ou `null`.
+String? paiControleNetNegatif(Iterable<PaiFiche> lot) {
+  final fautifs = lot.where((b) => _n(b['net']) < 0).toList();
+  if (fautifs.isEmpty) return null;
+  final noms = fautifs.map((b) {
+    final causes = <String>[
+      if (_n(b['prets']) > 0) 'échéance de prêt ${money(_n(b['prets']))}',
+      if (_n(b['avances']) > 0) 'avance ${money(_n(b['avances']))}',
+      if (_n(b['participations']) > 0) 'participation ${money(_n(b['participations']))}',
+    ];
+    return '${b['employe']} (net ${money(_n(b['net']))}, déficit ${money(-_n(b['net']))}${causes.isEmpty ? '' : ' ; retenues en cause : ${causes.join(', ')}'})';
+  }).join(' ; ');
+  return 'Net négatif : $noms. Reporter l’échéance ou réduire la retenue à l’écran du prêt, de l’avance ou de la participation, puis régénérer le bulletin.';
+}
+
+/// Une écriture à poser sur une fiche d'une autre collection à la validation d'un lot.
+class PaiImputation {
+  const PaiImputation(this.collection, this.id, this.champs);
+  final String collection;
+  final Object? id;
+  final Map<String, Object?> champs;
+}
+
+/// E1174 (arbitrage du 04/11/2026) : la validation d'un lot ÉCRIT les retenues qu'il porte. Échéance de prêt : le mois est ajouté à `retenues`. Avance en
+/// cours : `rembourse` augmente de la mensualité, soldée quand elle atteint le montant. Participation sur salaire : réglée par retenue. Idempotent : ce
+/// qui est déjà imputé n'est pas retouché. Fonction pure : l'appelant pose les écritures (une seule voie d'écriture, annulable d'un bloc).
+List<PaiImputation> paiImputationsDeRetenues(
+  Iterable<PaiFiche> lot, {
+  required Iterable<PaiFiche> prets,
+  required Iterable<PaiFiche> avances,
+  required Iterable<PaiFiche> participations,
+  required String date,
+  required String acteur,
+}) {
+  final out = <PaiImputation>[];
+  for (final b in lot) {
+    final moisRetenue = '${_n(b['annee']).toInt().toString().padLeft(4, '0')}-${(_n(b['mois']).toInt() + 1).toString().padLeft(2, '0')}';
+    for (final d in (b['pretsDetail'] as List? ?? const [])) {
+      final dm = d as Map;
+      final pr = prets.where((x) => x['id'] == dm['pretId']).firstOrNull;
+      if (pr == null) continue;
+      final deja = [for (final m in (pr['retenues'] as List? ?? const [])) '$m'];
+      if (deja.contains('${dm['mois']}')) continue;
+      out.add(PaiImputation('pretsEtudes', pr['id'], {'retenues': [...deja, '${dm['mois']}']}));
+    }
+    for (final a in avances.where((a) => a['employeId'] == b['employeId'] && a['statutAvance'] == 'en_cours')) {
+      final montant = _n(a['montant']);
+      final rembourse = (_n(a['rembourse']) + _n(a['mensualite'])).clamp(0, montant);
+      out.add(PaiImputation('avances', a['id'], {'rembourse': rembourse, if (rembourse >= montant) 'statutAvance': 'solde'}));
+    }
+    for (final x in participations.where((x) => x['employeId'] == b['employeId'] && x['mode'] == 'salaire' && x['periodeRetenue'] == moisRetenue && x['statutPaiement'] != 'paye')) {
+      out.add(PaiImputation('participations', x['id'], {'statutPaiement': 'paye', 'datePaiement': date, 'recu': 'Retenue sur salaire $moisRetenue', 'encaissePar': acteur}));
+    }
+  }
+  return out;
+}
+
 // --- heures supplémentaires ---------------------------------------------------------------------------------------------------------------
 /// Le taux horaire majoré : salaire de base / 173,33, majoré de `Number(majoration) || 25` %, arrondi au franc.
 int paiTauxHoraire(num salaireBase, Object? majoration) {

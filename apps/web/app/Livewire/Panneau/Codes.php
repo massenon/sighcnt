@@ -17,10 +17,10 @@ class Codes extends Component
 
         return view('livewire.panneau.codes', [
             'codes' => DB::table('relais_codes')->orderBy('utilise')->orderByDesc('cree')->orderBy('hash')->get(),
-            'valides' => DB::table('relais_codes')->where('utilise', false)->count(),
+            'valides' => DB::table('relais_codes')->where('utilise', false)->where(fn ($q) => $q->whereNull('expire_le')->orWhere('expire_le', '>=', Format::maintenant()))->count(),
             'utilises' => DB::table('relais_codes')->where('utilise', true)->where(fn ($q) => $q->where('utilise_le', '>=', $depuis30j)->orWhereNull('utilise_le'))->count(),
-            // Le relais n'applique aucune expiration aux codes (le contrat n'en porte pas) : aucun code n'y est jamais « expiré ».
-            'expires' => 0,
+            // E1424 : un code non utilisé dont l'échéance déclarée par la mère est passée est « expiré » (refusé à l'appairage).
+            'expires' => DB::table('relais_codes')->where('utilise', false)->whereNotNull('expire_le')->where('expire_le', '<', Format::maintenant())->count(),
         ]);
     }
 }

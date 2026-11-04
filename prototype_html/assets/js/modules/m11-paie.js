@@ -1298,6 +1298,55 @@
       + ' ; elle doit être validée par une autre personne.';
   }
 
+  /** E1175 (arbitrage du 04/11/2026) : un bulletin dont le net est NÉGATIF ne se valide pas. Aucun plafond de retenue n'est inventé : le refus nomme
+      l'agent, le déficit et les retenues en cause, et dit où corriger. Rend un motif de refus, ou null. */
+  function controleNetNegatif(bulletinsLot) {
+    var fautifs = bulletinsLot.filter(function (b) { return Number(b.net) < 0; });
+    if (!fautifs.length) return null;
+    return 'Net négatif : ' + fautifs.map(function (b) {
+      var causes = [];
+      if (Number(b.prets) > 0) causes.push('échéance de prêt ' + C.money(b.prets));
+      if (Number(b.avances) > 0) causes.push('avance ' + C.money(b.avances));
+      if (Number(b.participations) > 0) causes.push('participation ' + C.money(b.participations));
+      return b.employe + ' (net ' + C.money(b.net) + ', déficit ' + C.money(-Number(b.net)) + (causes.length ? ' ; retenues en cause : ' + causes.join(', ') : '') + ')';
+    }).join(' ; ') + '. Reporter l’échéance ou réduire la retenue à l’écran du prêt, de l’avance ou de la participation, puis régénérer le bulletin.';
+  }
+
+  /** E1174 (arbitrage du 04/11/2026) : la validation d'un lot ÉCRIT les retenues qu'il porte. Échéance de prêt : le mois est ajouté à `retenues`. Avance :
+      `rembourse` augmente de la mensualité (soldée quand elle atteint le montant). Participation sur salaire : réglée par retenue. Une seule voie
+      d'écriture (la validation), annulable d'un bloc. Idempotent : ce qui est déjà imputé n'est pas retouché. */
+  function imputerRetenues(bulletinsLot) {
+    var annulations = [];
+    var aujourdhui = C.iso(C.aujourdhui());
+    var acteur = S.currentUser();
+    bulletinsLot.forEach(function (b) {
+      var moisRetenue = C.pad(b.annee, 4) + '-' + C.pad(Number(b.mois) + 1, 2);
+      (b.pretsDetail || []).forEach(function (d) {
+        var pr = colPrets().all().filter(function (x) { return x.id === d.pretId; })[0];
+        if (!pr || (pr.retenues || []).indexOf(d.mois) !== -1) return;
+        annulations.push(colPrets().update(pr.id, { retenues: (pr.retenues || []).concat([d.mois]) }));
+      });
+      avances().active().filter(function (a) { return a.employeId === b.employeId && a.statutAvance === 'en_cours'; }).forEach(function (a) {
+        var rembourse = Math.min(Number(a.montant) || 0, (Number(a.rembourse) || 0) + (Number(a.mensualite) || 0));
+        var maj = { rembourse: rembourse };
+        if (rembourse >= (Number(a.montant) || 0)) maj.statutAvance = 'solde';
+        annulations.push(avances().update(a.id, maj));
+      });
+      S.collection('participations').active().filter(function (x) {
+        return x.employeId === b.employeId && x.mode === 'salaire' && x.periodeRetenue === moisRetenue && x.statutPaiement !== 'paye';
+      }).forEach(function (x) {
+        annulations.push(S.collection('participations').update(x.id, {
+          statutPaiement: 'paye', datePaiement: aujourdhui, recu: 'Retenue sur salaire ' + moisRetenue, encaissePar: acteur,
+        }));
+      });
+    });
+    annulations = annulations.filter(Boolean);   /* une écriture refusée par le magasin rend null : rien à annuler */
+    return { n: annulations.length, annuler: function () { annulations.forEach(function (u) { u.undo(); }); } };
+  }
+
+  /* Exposé pour être SONDÉ (scénario 77), comme les autres moteurs. */
+  global.SIGH.paieValidation = { controleNetNegatif: controleNetNegatif, imputerRetenues: imputerRetenues };
+
   global.SIGH.screen('m11-validation', {
     title: 'Validation de la paie',
     description: 'Soumission des bulletins à la Direction pour validation avant diffusion aux agents.',
@@ -1388,6 +1437,9 @@
           var validateur = S.currentUser();
           var refus = controleSeparation(lot, validateur);
           if (refus) { S.log('Validation de paie refusée', 'M11', 'BulletinPaie', l.periode, null, { motif: refus }); U.toast('Validation refusée.', { type: 'error', detail: refus }); return; }
+          /* E1175 : un net négatif ne se valide pas. */
+          var netNeg = controleNetNegatif(lot);
+          if (netNeg) { S.log('Validation de paie refusée, net négatif', 'M11', 'BulletinPaie', l.periode, null, { motif: netNeg }); U.toast('Validation refusée.', { type: 'error', detail: netNeg }); return; }
           /* B6 : la pièce comptable d'abord (RG-10 contrôlé) ; refusée, rien n'est validé. */
           var ecr = ecrirePaie(l.periode, lot);
           if (!ecr.ok) { U.toast('Validation refusée.', { type: 'error', detail: ecr.motif }); return; }
@@ -1395,11 +1447,13 @@
           lot.forEach(function (b) {
             majs.push(col.update(b.id, { statutBulletin: 'valide', validePar: validateur, dateValidation: C.iso(C.aujourdhui()), ecritureNumero: ecr.numero }));
           });
+          /* E1174 : les retenues du lot sont écrites (prêts, avances, participations). */
+          var imp = imputerRetenues(lot);
           table.refresh();
           U.toast('Paie de ' + l.periode + ' validée par ' + validateur + '.', {
             type: 'success',
-            detail: majs.length + ' bulletin(s) autorisé(s) à la diffusion ; écriture ' + ecr.numero + ' posée en brouillon.',
-            undo: function () { majs.forEach(function (m) { m.undo(); }); ecr.annuler(); table.refresh(); },
+            detail: majs.length + ' bulletin(s) autorisé(s) à la diffusion ; écriture ' + ecr.numero + ' posée en brouillon ; ' + imp.n + ' retenue(s) imputée(s).',
+            undo: function () { majs.forEach(function (m) { m.undo(); }); ecr.annuler(); imp.annuler(); table.refresh(); },
           });
         });
       }

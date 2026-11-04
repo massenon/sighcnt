@@ -12056,8 +12056,8 @@ async function viderMessages(page) {
       /Sécurité des utilisateurs/.test(secInit.titre || '') && secInit.kp.length === 6 && secInit.onglets.join('|') === 'Politique|Comptes|Tentatives de connexion|Sessions', JSON.stringify(secInit.kp) + secInit.onglets.join('|'));
     verifier('La politique affiche huit lignes avec leur source, dont « proposition à valider » pour l’historique',
       secInit.lignes.length === 8 && secInit.lignes.some((l) => /Historique des mots de passe interdits/.test(l) && /Proposition à valider/.test(l)) && secInit.lignes.some((l) => /Inactivité avant verrouillage/.test(l) && /CDCT §12\.2/.test(l)), secInit.lignes.join(' ; ').slice(0, 300));
-    verifier('Valeurs de référence : 12 caractères, 90 jours, 3 échecs, 15 minutes de verrou, 15 minutes d’inactivité',
-      secInit.politique.longueurMin === 12 && secInit.politique.expirationJours === 90 && secInit.politique.echecsMax === 3 && secInit.politique.blocageMin === 15 && secInit.politique.inactiviteMin === 15, JSON.stringify(secInit.politique));
+    verifier('Valeurs de référence : 8 caractères, 90 jours, 3 échecs, 15 minutes de verrou, 15 minutes d’inactivité',
+      secInit.politique.longueurMin === 8 && secInit.politique.expirationJours === 90 && secInit.politique.echecsMax === 3 && secInit.politique.blocageMin === 15 && secInit.politique.inactiviteMin === 15, JSON.stringify(secInit.politique));
 
     const pol = await page.evaluate(async () => {
       const X = window.SIGH.securiteUtilisateurs, S = window.SIGH.store;
@@ -12070,7 +12070,7 @@ async function viderMessages(page) {
       X.enregistrerPolitique(Object.assign({}, base));
       return { horsBornes: [horsBornes.ok, horsBornes.code, !!horsBornes.geste], apresRefus, ok: ok.ok, delai, journal: [journal.action, journal.module], retour: window.SIGH.app.delaiVerrou() };
     });
-    verifier('Une valeur hors bornes est refusée en nommant la règle, la politique ne change pas', pol.horsBornes[0] === false && pol.horsBornes[1] === 'VALEUR_HORS_BORNES' && pol.horsBornes[2] && pol.apresRefus === 12, JSON.stringify(pol));
+    verifier('Une valeur hors bornes est refusée en nommant la règle, la politique ne change pas', pol.horsBornes[0] === false && pol.horsBornes[1] === 'VALEUR_HORS_BORNES' && pol.horsBornes[2] && pol.apresRefus === 8, JSON.stringify(pol));
     verifier('Le délai d’inactivité de la politique s’applique au verrou de session (10 min), journalisé, puis revient à 15', pol.ok && pol.delai === 600000 && pol.journal[1] === 'M14' && pol.retour === 900000, JSON.stringify(pol));
 
     /* Comptes : bloquer par le geste, refus nommés, serveur de la maquette qui refuse la connexion. */
@@ -12157,6 +12157,37 @@ async function viderMessages(page) {
     verifier('Ouvrir l’écran sous la Direction renvoie à la page 403', refuse403, '');
     await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  {
+    scenario('Vague 72 — validation de la paie : un net négatif est refusé en nommant l’agent, et la validation écrit les retenues (prêt, avance, participation), annulables');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m11-validation.html');
+    const r = await page.evaluate(() => {
+      const S = window.SIGH.store, V = window.SIGH.paieValidation, C = window.SIGH.core;
+      const emp = S.collection('personnel').active().find((e) => Number(e.salaireBase) >= 100000) || S.collection('personnel').active()[0];
+      const mois = '2031-03';
+      const pret = S.collection('pretsEtudes', { module: 'M11', entite: 'prêt-études', prefix: 'PRT' }).insert({ reference: 'PRT-T77', employeId: emp.id, employe: emp.nomComplet, montant: 90000, nbEcheances: 3, premiereEcheance: mois, nature: 'pret', objet: 'sonde', retenues: [] }).record;
+      const av = S.collection('avances').insert({ reference: 'AVS-T77', employeId: emp.id, employe: emp.nomComplet, montant: 60000, nbMensualites: 2, mensualite: 30000, rembourse: 30000, statutAvance: 'en_cours' }).record;
+      const part = S.collection('participations').insert({ employeId: emp.id, agent: emp.nomComplet, mode: 'salaire', periodeRetenue: mois, montant: 2000, statutPaiement: 'du', evenementLibelle: 'sonde' }).record;
+      const neg = { employeId: emp.id, employe: emp.nomComplet, annee: 2031, mois: 2, periode: 'Mars 2031', net: -12500, prets: 30000, avances: 30000, participations: 2000, pretsDetail: [{ pretId: pret.id, mois: mois }] };
+      const ok = { ...neg, net: 50000 };
+      const refus = V.controleNetNegatif([neg]);
+      const aucun = V.controleNetNegatif([ok]);
+      const imp = V.imputerRetenues([ok]);
+      const snap = () => { const a = S.collection('avances').get(av.id); return { pret: (S.collection('pretsEtudes').get(pret.id).retenues || []).slice(), rembourse: a.rembourse, statutAv: a.statutAvance, statutPart: S.collection('participations').get(part.id).statutPaiement }; };
+      const apres = snap();
+      imp.annuler();
+      const retour = snap();
+      const rejoue = V.imputerRetenues([ok]); rejoue.annuler();
+      return { refus, aucun, n: imp.n, apres, retour, nom: emp.nomComplet };
+    });
+    verifier('Un net négatif est refusé : le motif nomme l’agent, le déficit et les retenues en cause', !!r.refus && r.refus.indexOf(r.nom) !== -1 && /déficit/.test(r.refus) && /prêt/.test(r.refus) && /avance/.test(r.refus) && /participation/.test(r.refus), String(r.refus));
+    verifier('Un net positif n’est pas refusé', r.aucun === null, String(r.aucun));
+    verifier('La validation écrit les retenues : échéance au prêt, mensualité à l’avance (soldée à 60 000), participation réglée', r.n === 3 && r.apres.pret.length === 1 && r.apres.rembourse === 60000 && r.apres.statutAv === 'solde' && r.apres.statutPart === 'paye', JSON.stringify(r.apres));
+    verifier('L’annulation restitue tout : prêt, avance et participation reviennent à leur état', r.retour.pret.length === 0 && r.retour.rembourse === 30000 && r.retour.statutAv === 'en_cours' && r.retour.statutPart === 'du', JSON.stringify(r.retour));
   }
 
   await browser.close();

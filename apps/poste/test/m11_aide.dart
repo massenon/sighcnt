@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show nombreOuZero;
 import 'package:sigh_poste/main.dart';
 
 /// Aides communes des tests de M11 (paie). L'horloge du poste est posée au 30/10/2026 10 h — celle du pilote des vecteurs (`vecteurs-paie.js`) : les
@@ -98,6 +99,25 @@ void poserBulletins(Magasin m) {
   final col = m.collection('bulletins');
   for (final b in bulletinsVecteur().reversed) {
     col.inserer({...b, 'statut': 'actif'});
+  }
+}
+
+/// E1175 : le jeu de la maquette porte des nets NÉGATIFS (échéances de prêt tirées au hasard), qu'une validation refuse désormais. Pour valider le lot
+/// d'essai, le déficit est retiré des retenues (prêt, puis avance, puis participation) : le net passe à zéro et l'écriture de paie reste équilibrée.
+void neutraliserNetsNegatifs(Magasin m) {
+  final col = m.collection('bulletins');
+  for (final b in col.actives.where((b) => nombreOuZero(b['net']) < 0)) {
+    var reste = -nombreOuZero(b['net']);
+    final champs = <String, Object?>{};
+    for (final k in ['prets', 'avances', 'participations']) {
+      final v = nombreOuZero(b[k]);
+      final pris = reste < v ? reste : v;
+      if (pris > 0) champs[k] = v - pris;
+      reste -= pris;
+    }
+    champs['net'] = 0;
+    champs['totalRetenues'] = nombreOuZero(b['totalRetenues']) - (-nombreOuZero(b['net']));
+    col.mettreAJour(b['id'], champs);
   }
 }
 

@@ -34,6 +34,7 @@ PaiEntrees entreesDe(M e) => PaiEntrees(
     prets: liste(e['pretsEtudes']));
 
 void main() {
+  paieValidationTests();
   final v = lireVecteurs('paie');
   final auj = DateTime.parse('${v['aujInstant']}');
   final scenarios = m(v['scenarios']);
@@ -561,3 +562,36 @@ void main() {
 String mo2(num v) => sp(money(v));
 
 List<String> ligneUnique(Object? table) => [for (final c in ((m(table)['lignes'] as List).single as List)) '$c'];
+
+// E1175 et E1174 (arbitrages du 04/11/2026) : un net négatif ne se valide pas ; la validation écrit les retenues.
+void paieValidationTests() {
+  group('validation de la paie : net négatif et retenues imputées', () {
+    final neg = <String, Object?>{'employe': 'AGBO Marie', 'net': -12500, 'prets': 30000, 'avances': 30000, 'participations': 2000};
+    test('un net négatif est refusé en nommant l’agent, le déficit et les retenues en cause', () {
+      final r = paiControleNetNegatif([neg])!;
+      expect(r, contains('AGBO Marie'));
+      expect(r, contains('déficit'));
+      expect(r, allOf(contains('prêt'), contains('avance'), contains('participation')));
+    });
+    test('un net positif ou nul n’est pas refusé', () {
+      expect(paiControleNetNegatif([{...neg, 'net': 0}]), isNull);
+      expect(paiControleNetNegatif([{...neg, 'net': 50000}]), isNull);
+    });
+    test('les retenues sont imputées : échéance au prêt, mensualité à l’avance (soldée), participation réglée ; rejouer ne double rien', () {
+      final ok = <String, Object?>{'employeId': 'E1', 'annee': 2031, 'mois': 2, 'pretsDetail': [{'pretId': 'P1', 'mois': '2031-03'}]};
+      final prets = [<String, Object?>{'id': 'P1', 'retenues': []}];
+      final avances = [<String, Object?>{'id': 'A1', 'employeId': 'E1', 'statutAvance': 'en_cours', 'montant': 60000, 'rembourse': 30000, 'mensualite': 30000}];
+      final parts = [<String, Object?>{'id': 'X1', 'employeId': 'E1', 'mode': 'salaire', 'periodeRetenue': '2031-03', 'statutPaiement': 'du'}];
+      final imp = paiImputationsDeRetenues([ok], prets: prets, avances: avances, participations: parts, date: '2031-03-31', acteur: 'DAF');
+      expect(imp.length, 3);
+      expect(imp.firstWhere((i) => i.collection == 'pretsEtudes').champs['retenues'], ['2031-03']);
+      final av = imp.firstWhere((i) => i.collection == 'avances').champs;
+      expect(av['rembourse'], 60000);
+      expect(av['statutAvance'], 'solde');
+      expect(imp.firstWhere((i) => i.collection == 'participations').champs['statutPaiement'], 'paye');
+      final deja = paiImputationsDeRetenues([ok],
+          prets: [<String, Object?>{'id': 'P1', 'retenues': ['2031-03']}], avances: const [], participations: [<String, Object?>{...parts.first, 'statutPaiement': 'paye'}], date: 'd', acteur: 'a');
+      expect(deja, isEmpty);
+    });
+  });
+}

@@ -59,6 +59,22 @@ class RelaisTest extends TestCase
     }
 
     /** Un appareil déjà appairé ne reprend pas un autre code : changer de fonction exige un NOUVEL appareil. Le code n'est pas consommé. */
+    public function test_un_code_echu_est_refuse_en_le_nommant_et_un_code_en_cours_ou_sans_echeance_reste_valable(): void
+    {
+        $echu = 'ECHU-'.bin2hex(random_bytes(3));
+        $this->postJson('/mere/code', ['hash' => hash('sha256', $echu), 'expire_le' => (int) (microtime(true) * 1000) - 1000], $this->mere())->assertOk();
+        $this->postJson('/appairage', ['code' => $echu, 'uuid' => 'tel-echu'])->assertStatus(403)->assertJson(['code' => 'code_expire']);
+        $this->assertDatabaseMissing('relais_appareils', ['uuid' => 'tel-echu']);
+
+        $encours = 'COURS-'.bin2hex(random_bytes(3));
+        $this->postJson('/mere/code', ['hash' => hash('sha256', $encours), 'expire_le' => (int) (microtime(true) * 1000) + 900000], $this->mere())->assertOk();
+        $this->postJson('/appairage', ['code' => $encours, 'uuid' => 'tel-cours'])->assertOk()->assertJsonStructure(['jeton']);
+
+        $ancien = 'ANCIEN-'.bin2hex(random_bytes(3));
+        $this->postJson('/mere/code', ['hash' => hash('sha256', $ancien)], $this->mere())->assertOk();
+        $this->postJson('/appairage', ['code' => $ancien, 'uuid' => 'tel-ancien'])->assertOk();
+    }
+
     public function test_un_appareil_deja_appaire_ne_reprend_pas_un_code(): void
     {
         $this->appairer('m-1');

@@ -82,8 +82,10 @@ class RelaisController extends Controller
            pas la valeur. L'autorité est la table de la mère, relue à chaque dépôt. */
         $profil = $r->input('profil');
         $fonction = $r->input('fonction');
+        $expire = $r->input('expire_le');
         DB::table('relais_codes')->insertOrIgnore([
             'hash' => (string) $r->input('hash'), 'utilise' => false, 'cree' => (int) (microtime(true) * 1000),
+            'expire_le' => is_numeric($expire) && (int) $expire > 0 ? (int) $expire : null,
             'profil' => is_string($profil) && $profil !== '' ? mb_substr($profil, 0, 32) : null,
             'fonction' => is_string($fonction) && $fonction !== '' ? mb_substr($fonction, 0, 32) : null,
         ]);
@@ -101,6 +103,9 @@ class RelaisController extends Controller
         }
         if ($c->utilise) {
             $this->refus(403, 'code_utilise', 'Code déjà utilisé.');
+        }
+        if ($c->expire_le !== null && (int) (microtime(true) * 1000) > (int) $c->expire_le) {
+            $this->refus(403, 'code_expire', 'Ce code a expiré : demander un nouveau code à la console de la mère.');
         }
         $uuid = (string) $r->input('uuid');
         if ($uuid === '') {

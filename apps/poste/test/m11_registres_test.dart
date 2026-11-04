@@ -126,7 +126,8 @@ void main() {
         }
       }
       expect(find.text('Valider le lot'), findsNWidgets(2));
-      // le lot de mai (première ligne de la maquette)
+      // le lot de mai (première ligne de la maquette) ; ses nets négatifs (jeu tiré au hasard) sont d'abord neutralisés : E1175 les refuse
+      neutraliserNetsNegatifs(m);
       await toucher(t, find.text('Valider le lot').first);
       await t.pumpAndSettle();
       expect(find.text('Valider la paie de Mai 2026 ?'), findsOneWidget);
@@ -142,7 +143,8 @@ void main() {
           reason: 'validePar est l’agent connecté, plus un nom écrit en dur');
       expect(col.actives.where((b) => b['periode'] == 'Octobre 2026').every((b) => b['statutBulletin'] == 'a_valider'), true, reason: 'l’autre lot reste à valider');
       expect(find.text('Paie de Mai 2026 validée par $agent.'), findsOneWidget);
-      expect(find.text('44 bulletin(s) autorisé(s) à la diffusion ; écriture SAL-2026-00128 posée en brouillon.'), findsOneWidget);
+      expect(find.textContaining('44 bulletin(s) autorisé(s) à la diffusion ; écriture SAL-2026-00128 posée en brouillon ; '), findsOneWidget);
+      expect(find.textContaining('retenue(s) imputée(s).'), findsOneWidget, reason: 'E1174 : la validation écrit les retenues');
       expect(find.text('Valider le lot'), findsOneWidget, reason: 'le lot validé n’offre plus la commande');
       expect(find.text('Diffuser'), findsOneWidget, reason: 'le lot validé offre la diffusion');
       expect(kpisAffiches(t)['Bulletins validés'], '44');
@@ -150,7 +152,9 @@ void main() {
       // l'écriture de paie : les lignes de la maquette (compte, libellé, montants), en brouillon, équilibrées
       final posees = m.collection('ecritures').actives.where((e) => e['pieceId'] == 'PAIE-Mai 2026').toList();
       final attendues = lm(mm(mm(mm(paie['validation'])['ecart'])['inserts'])['ecritures']);
-      String cle(Map<String, Object?> f) => '${f['numero']}|${f['compte']}|${f['libelle']}|${nombreOuZero(f['debit']).round()}|${nombreOuZero(f['credit']).round()}|${f['statut']}|${f['centreCout']}';
+      // E1175 : les nets négatifs du jeu ayant été neutralisés pour que le lot soit validable, les MONTANTS ne sont plus ceux de la maquette ; la structure
+      // (numéro, compte, libellé, statut, centre) l'est, et l'équilibre est vérifié ci-dessous.
+      String cle(Map<String, Object?> f) => '${f['numero']}|${f['compte']}|${f['libelle']}|${f['statut']}|${f['centreCout']}';
       expect({for (final f in posees) cle(f)}, {for (final a in attendues) cle(a)});
       expect(posees.fold<num>(0, (a, f) => a + nombreOuZero(f['debit'])), posees.fold<num>(0, (a, f) => a + nombreOuZero(f['credit'])), reason: 'RG-10');
       // « Annuler » du message : l'état d'avant revient, l'écriture sort du journal (archivée, jamais supprimée)
@@ -182,7 +186,8 @@ void main() {
       expect(col.actives.where((b) => b['periode'] == 'Mai 2026').every((b) => b['statutBulletin'] == 'a_valider'), true);
       expect(m.collection('ecritures').actives.where((e) => '${e['pieceId']}'.startsWith('PAIE-')), isEmpty);
       await t.pump(const Duration(seconds: 10));
-      // un lot dont le net a été trafiqué : l'écart est dit, rien n'est validé
+      // un lot dont le net a été trafiqué : l'écart est dit, rien n'est validé (les nets négatifs du jeu sont d'abord neutralisés, E1175)
+      neutraliserNetsNegatifs(m);
       for (final b in col.actives.where((b) => b['periode'] == 'Mai 2026').toList()) {
         col.mettreAJour(b['id'], {'genereePar': 'Autre agent'});
       }
