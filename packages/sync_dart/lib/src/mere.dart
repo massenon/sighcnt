@@ -157,6 +157,10 @@ class ConfigMere {
   final int conservation;
 }
 
+/// Durée de la fenêtre de réinitialisation (arbitrage de la Direction du 04/11/2026 : 30 minutes, jamais 24 heures). C'est la MÈRE qui la tient : console
+/// fermée, la fenêtre se referme quand même.
+const Duration dureeFenetreReinit = Duration(minutes: 30);
+
 class Mere {
   Mere._(this.cfg, this.base);
 
@@ -207,6 +211,17 @@ class Mere {
   }
 
   /// Journal technique de la mère (RG-12) : erreurs, alertes, gestes d'administration. Jamais de donnée de santé.
+  /// Vrai si la fenêtre est ouverte ET non échue. Une fenêtre échue (ou ouverte sans heure connue) est refermée et l'événement est écrit.
+  Future<bool> reinitOuverte() async {
+    if (await base.meta('reinit_ouverte') != '1') return false;
+    final depuis = await base.metaInt('reinit_ouverte_ms');
+    if (depuis > 0 && maintenantMs() - depuis <= dureeFenetreReinit.inMilliseconds) return true;
+    await base.poserMeta('reinit_ouverte', 0);
+    await base.poserMeta('reinit_ouverte_ms', 0);
+    await evenement('info', 'administration', 'Fenêtre de réinitialisation refermée (échéance de ${dureeFenetreReinit.inMinutes} minutes)');
+    return false;
+  }
+
   Future<void> evenement(String niveau, String source, String message) =>
       base.exec('INSERT INTO evenements(quand,niveau,source,message) VALUES(?,?,?,?)', [maintenantMs(), niveau, source, message]);
 
@@ -579,7 +594,7 @@ class Mere {
             'marque': marqueOk,
             'acks': marqueOk == null ? [] : (await base.select('SELECT appareil FROM acks WHERE marque=?', [marqueOk])).map((x) => x['appareil']).toList(),
           },
-          'reinit_ouverte': await base.meta('reinit_ouverte') == '1',
+          'reinit_ouverte': await reinitOuverte(),
           'nb_operations': (await base.select('SELECT COUNT(*) AS n FROM operations')).first['n'],
           'rep_seq': await base.metaInt('rep_seq'),
           'rep_n': await base.metaInt('rep_n'),
@@ -657,10 +672,11 @@ class Mere {
       case 'POST /admin/reinit-fenetre':
         adminOk(req);
         await base.poserMeta('reinit_ouverte', b['ouvrir'] == true ? 1 : 0);
-        return {'ouverte': b['ouvrir'] == true};
+        await base.poserMeta('reinit_ouverte_ms', b['ouvrir'] == true ? maintenantMs() : 0);
+        return {'ouverte': b['ouvrir'] == true, 'duree_minutes': dureeFenetreReinit.inMinutes};
       case 'POST /admin/reinitialiser':
         adminOk(req);
-        if (await base.meta('reinit_ouverte') != '1') throw Err(403, 'reinit_fermee', 'La réinitialisation est fermée : l’administrateur doit ouvrir la fenêtre.');
+        if (!await reinitOuverte()) throw Err(403, 'reinit_fermee', 'La réinitialisation est fermée : l’administrateur doit ouvrir la fenêtre.');
         if (b['confirmation'] != _clinique) throw Err(422, 'confirmation_invalide', 'Saisir le nom de la clinique pour confirmer.');
         if (b['second'] == null || b['second'] == '' || b['second'] == false) throw Err(422, 'second_profil_requis', 'Un second profil (DAF ou Direction) doit confirmer.');
         final sauvegarde = await base.sauvegarder('avant-reinit');
@@ -674,6 +690,7 @@ class Mere {
           }
           await base.poserMeta('epoch', await base.metaInt('epoch') + 1);
           await base.poserMeta('reinit_ouverte', 0);
+          await base.poserMeta('reinit_ouverte_ms', 0);
           await base.poserMeta('next_patient', 1000);
           await base.poserMeta('marqueur_epoch', 1);
         });
