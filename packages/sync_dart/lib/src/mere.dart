@@ -726,7 +726,7 @@ class Mere {
     await verrou.executer(() => base.exec('INSERT INTO codes(code,etiquette,role,expire,profil,fonction) VALUES(?,?,?,?,?,?)',
         [code, b['etiquette'] ?? '', 'mobile', maintenantMs() + cfg.codeTtl, aff.profil, aff.fonction]));
     // Le relais ne reçoit que l'empreinte ET, comme étiquette d'affichage (jamais une autorité), le profil et la fonction du code.
-    await pont.declarerCode(sha256hex(code), profil: aff.profil, fonction: aff.fonction);
+    await pont.declarerCode(sha256hex(code), profil: aff.profil, fonction: aff.fonction, expireLe: maintenantMs() + cfg.codeTtl);
     return {'code': code, 'cle': pont.cleBase64, 'profil': aff.profil, 'fonction': aff.fonction};
   }
 

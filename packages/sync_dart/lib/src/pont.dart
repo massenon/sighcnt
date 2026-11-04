@@ -96,8 +96,8 @@ class Pont {
   int _dernierOk = 0;
 
   // --- côté administration ------------------------------------------------------------------------------
-  Future<void> declarerCode(String hash, {String? profil, String? fonction}) async {
-    await rel('POST', '/mere/code', {'hash': hash, if (profil != null) 'profil': profil, if (fonction != null) 'fonction': fonction});
+  Future<void> declarerCode(String hash, {String? profil, String? fonction, int? expireLe}) async {
+    await rel('POST', '/mere/code', {'hash': hash, if (profil != null) 'profil': profil, if (fonction != null) 'fonction': fonction, if (expireLe != null) 'expire_le': expireLe});
   }
 
   void revoquerAuRelais(String uuid) {

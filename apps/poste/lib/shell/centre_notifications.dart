@@ -222,6 +222,25 @@ final List<_Source> _sources = [
     }
     return out;
   }),
+  // E2143 (arbitrage du 04/11/2026) : un doublon détecté par la synchronisation n'est JAMAIS corrigé en silence (RG-01, pièce émise intouchable) ; il est
+  // signalé à ceux qui tranchent, avec le nom de l'objet et l'écran où il se traite.
+  _Source('sync_a_arbitrer', 'metier', 'Synchronisation', (m, auj) {
+    const postes = ['direction', 'da', 'comptable', 'admin'];
+    List<_Ligne> par(String col, String marqueur, String prefixe, String titre, String detail, String lien, String Function(Map<String, Object?>) nom, [String priorite = 'important']) => [
+          for (final f in m.collection(col).actives)
+            if (f[marqueur] == true) _Ligne('$prefixe:${f['id']}', priorite, '$titre : ${nom(f)}', detail, lien, postes),
+        ];
+    String ou(Object? a, Object? b) => '${a ?? b ?? ''}';
+    return [
+      ...par('patients', 'codeEnDoublon', 'dbl-pat', 'Dossier en doublon', 'Deux dossiers portent le même code CNT. Le code n’est jamais renuméroté (RG-01) : la Direction décide du dossier à conserver ou à fusionner.', 'm1-patients', (f) => ou(f['code'], f['id'])),
+      ...par('factures', 'numeroEnDoublon', 'dbl-fac', 'Facture au numéro en double', 'Une pièce émise ne se réécrit pas : régler par avoir et réémission, ou justifier par écrit.', 'm8-factures', (f) => ou(f['numero'], f['id'])),
+      ...par('factures', 'encaissementEnDoublon', 'dbl-enc', 'Encaissement en double', 'La même ligne a été encaissée par deux guichets : vérifier la caisse et rembourser par avoir si besoin.', 'm8-factures', (f) => ou(f['numero'], f['id']), 'critique'),
+      ...par('avoirs', 'numeroEnDoublon', 'dbl-avo', 'Avoir au numéro en double', 'Une pièce émise ne se réécrit pas : la Direction tranche.', 'm8-facture-avoir', (f) => ou(f['numero'], f['id'])),
+      ...par('ecritures', 'numeroEnDoublon', 'dbl-ecr', 'Écriture au numéro en double', 'Une pièce comptable ne se renumérote pas : le comptable tranche.', 'm12-ecritures', (f) => ou(f['numero'], f['id'])),
+      ...par('admissions', 'litEnConflit', 'dbl-lit', 'Lit en conflit', 'Deux admissions actives sur le même lit : transférer l’un des patients.', 'm3-admissions', (f) => ou(f['lit'], f['id']), 'critique'),
+      ...par('produits', 'stockNegatifDetecte', 'dbl-stk', 'Stock négatif détecté', 'Deux postes ont sorti le dernier exemplaire hors ligne (RG-03) : régulariser par un inventaire.', 'm6-stock-detail', (f) => ou(f['designation'], f['id']), 'critique'),
+    ];
+  }),
   _Source('poste', 'metier', 'Poste', (m, auj) => [
         // Notifications de POSTE, écrites par le moteur transactionnel : elles s'adressent à un poste, pas à une personne.
         for (final n in m.collection('notifications').actives)
@@ -271,6 +290,9 @@ class CentreNotifications extends ChangeNotifier {
     'demandesAnalyses',
     'besoins',
     'ecritures',
+    'patients',
+    'avoirs',
+    'admissions',
     'notifications',
     'reglages',
   ];
