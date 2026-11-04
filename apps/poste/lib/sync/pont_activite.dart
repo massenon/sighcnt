@@ -380,12 +380,12 @@ class PontActivite {
   int? _nbPostes;
   static const String collectionBattements = 'postesClinique';
 
-  /// Chaque poste publie un battement (au plus un toutes les 30 secondes) ; les postes qui ont battu dans les sept derniers jours forment la clinique. Le nombre sert à
+  /// Chaque poste publie un battement (au plus un toutes les 10 secondes) ; les postes qui ont battu dans les sept derniers jours forment la clinique. Le nombre sert à
   /// partager le stock entre postes quand l'un d'eux est hors ligne (`ReservationStock`).
   Future<void> _battement() async {
     final now = DateTime.now();
     final liste = await transport.liste(collectionBattements);
-    if (_dernierBattement == null || now.difference(_dernierBattement!) > const Duration(seconds: 30)) {
+    if (_dernierBattement == null || now.difference(_dernierBattement!) > const Duration(seconds: 10)) {
       final existe = liste.any((p) => p.id == etiquette);
       try {
         await transport.ecrire(collectionBattements, etiquette, existe: existe, champs: {'vuLe': now.toIso8601String()});
@@ -400,11 +400,11 @@ class PontActivite {
         if ((DateTime.tryParse('${p.data['vuLe'] ?? ''}') ?? DateTime(2000)).isAfter(now.subtract(const Duration(days: 7)))) p.id,
     };
     _nbPostes = actifs.length;
-    // Les AUTRES postes ont-ils battu il y a moins de 75 s ? (la mère n'a pas d'autre moyen de savoir qu'un fileul est coupé)
+    // Les AUTRES postes ont-ils battu il y a moins de 30 s ? (la mère n'a pas d'autre moyen de savoir qu'un fileul est coupé)
     _tousFrais = [
       for (final p in liste)
         if (p.id != etiquette) DateTime.tryParse('${p.data['vuLe'] ?? ''}') ?? DateTime(2000)
-    ].every((d) => now.difference(d) <= const Duration(seconds: 75));
+    ].every((d) => now.difference(d) <= const Duration(seconds: 30));
   }
 
   bool _tousFrais = true;
