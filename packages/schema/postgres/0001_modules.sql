@@ -134,10 +134,19 @@ COMMENT ON TABLE "cfg"."examens_imagerie" IS 'Collection « examensImagerie » �
 CREATE INDEX IF NOT EXISTS "ix_examens_imagerie_code" ON "cfg"."examens_imagerie" ("code");
 CREATE INDEX IF NOT EXISTS "ix_examens_imagerie_statut" ON "cfg"."examens_imagerie" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."modeles_message" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "actif" boolean,
+  "texte" text,
+  "source" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "libelle" text,
+  "cree_par" text,
+  "occasion" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."modeles_message" IS 'Collection « modelesMessage » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_modeles_message_statut" ON "cfg"."modeles_message" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."modules_actifs" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -166,10 +175,20 @@ COMMENT ON TABLE "cfg"."natures_facture" IS 'Collection « naturesFacture » —
 CREATE INDEX IF NOT EXISTS "ix_natures_facture_code" ON "cfg"."natures_facture" ("code");
 CREATE INDEX IF NOT EXISTS "ix_natures_facture_statut" ON "cfg"."natures_facture" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."postes" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "chef" boolean,
+  "role" text,
+  "poste" text,
+  "source" text,
+  "statut" text,
+  "effectif" integer,
+  "parent_id" text,
+  "titulaire" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."postes" IS 'Collection « postes » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_postes_statut" ON "cfg"."postes" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_postes_parent_id" ON "cfg"."postes" ("parent_id");
 CREATE TABLE IF NOT EXISTS "cfg"."rappels" (
   "_rang" integer PRIMARY KEY,
   "extra" jsonb
@@ -266,10 +285,31 @@ CREATE TABLE IF NOT EXISTS "m10"."assurances_personnel" (
 );
 COMMENT ON TABLE "m10"."assurances_personnel" IS 'Collection « assurancesPersonnel » — M10 Ressources humaines';
 CREATE TABLE IF NOT EXISTS "m10"."badges" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "etat" text,
+  "agent" text,
+  "photo" text,
+  "poste" text,
+  "emis_le" date,
+  "numero" text,
+  "statut" text,
+  "emis_par" text,
+  "remis_le" date,
+  "service" text,
+  "expire_le" date,
+  "modele_id" text,
+  "retire_le" text,
+  "matricule" text,
+  "personnel_id" text,
+  "motif_retrait" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m10"."badges" IS 'Collection « badges » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_badges_etat" ON "m10"."badges" ("etat");
+CREATE INDEX IF NOT EXISTS "ix_badges_numero" ON "m10"."badges" ("numero");
+CREATE INDEX IF NOT EXISTS "ix_badges_statut" ON "m10"."badges" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_badges_modele_id" ON "m10"."badges" ("modele_id");
+CREATE INDEX IF NOT EXISTS "ix_badges_personnel_id" ON "m10"."badges" ("personnel_id");
 CREATE TABLE IF NOT EXISTS "m10"."bareme_ns131" (
   "id" text PRIMARY KEY,
   "num" text,
@@ -286,11 +326,79 @@ CREATE TABLE IF NOT EXISTS "m10"."bareme_ns131" (
 COMMENT ON TABLE "m10"."bareme_ns131" IS 'Collection « baremeNS131 » — M10 Ressources humaines';
 CREATE INDEX IF NOT EXISTS "ix_bareme_ns131_statut" ON "m10"."bareme_ns131" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_bareme_ns131_critere_id" ON "m10"."bareme_ns131" ("critere_id");
-CREATE TABLE IF NOT EXISTS "m10"."evaluations" (
+CREATE TABLE IF NOT EXISTS "m10"."beneficiaires_primes" (
   "_rang" integer PRIMARY KEY,
   "extra" jsonb
 );
+COMMENT ON TABLE "m10"."beneficiaires_primes" IS 'Collection « beneficiairesPrimes » — M10 Ressources humaines';
+CREATE TABLE IF NOT EXISTS "m10"."conges" (
+  "id" text PRIMARY KEY,
+  "duree" integer,
+  "nature" text,
+  "statut" text,
+  "date_fin" date,
+  "employe" text,
+  "service" text,
+  "date_debut" date,
+  "employe_id" text,
+  "matricule" text,
+  "reference" text,
+  "remplacant" text,
+  "statut_conge" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m10"."conges" IS 'Collection « conges » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_conges_nature" ON "m10"."conges" ("nature");
+CREATE INDEX IF NOT EXISTS "ix_conges_statut" ON "m10"."conges" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_conges_employe_id" ON "m10"."conges" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_conges_reference" ON "m10"."conges" ("reference");
+CREATE TABLE IF NOT EXISTS "m10"."contrats" (
+  "id" text PRIMARY KEY,
+  "essai" text,
+  "poste" text,
+  "nature" text,
+  "statut" text,
+  "date_fin" date,
+  "employe" text,
+  "salaire" integer,
+  "fonction" text,
+  "date_debut" date,
+  "employe_id" text,
+  "matricule" text,
+  "reference" text,
+  "statut_contrat" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m10"."contrats" IS 'Collection « contrats » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_contrats_nature" ON "m10"."contrats" ("nature");
+CREATE INDEX IF NOT EXISTS "ix_contrats_statut" ON "m10"."contrats" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_contrats_employe_id" ON "m10"."contrats" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_contrats_reference" ON "m10"."contrats" ("reference");
+CREATE TABLE IF NOT EXISTS "m10"."evaluations" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "employe" text,
+  "periode" text,
+  "service" text,
+  "criteres" jsonb,
+  "fonction" text,
+  "categorie" text,
+  "employe_id" text,
+  "matricule" text,
+  "reference" text,
+  "date_bareme" date,
+  "evaluateur" text,
+  "salaire_brut" integer,
+  "observations" text,
+  "prelevement_pct" integer,
+  "prelevement_montant" integer,
+  "extra" jsonb
+);
 COMMENT ON TABLE "m10"."evaluations" IS 'Collection « evaluations » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_evaluations_statut" ON "m10"."evaluations" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_evaluations_periode" ON "m10"."evaluations" ("periode");
+CREATE INDEX IF NOT EXISTS "ix_evaluations_employe_id" ON "m10"."evaluations" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_evaluations_reference" ON "m10"."evaluations" ("reference");
 CREATE TABLE IF NOT EXISTS "m10"."evenements" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -315,10 +423,43 @@ CREATE INDEX IF NOT EXISTS "ix_evenements_statut" ON "m10"."evenements" ("statut
 CREATE INDEX IF NOT EXISTS "ix_evenements_reference" ON "m10"."evenements" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_evenements_beneficiaire_id" ON "m10"."evenements" ("beneficiaire_id");
 CREATE TABLE IF NOT EXISTS "m10"."fiches_poste" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "resume" text,
+  "source" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "redigee" boolean,
+  "cree_par" text,
+  "intitule" text,
+  "rattachement" text,
+  "textes" text,
+  "niveau_n" text,
+  "anomalie" text,
+  "diplomes" text,
+  "archivage" text,
+  "niveau_inf" text,
+  "niveau_sup" text,
+  "savoir_etre" text,
+  "elaboration" date,
+  "savoir_faire" text,
+  "environnement" text,
+  "relations_externes" text,
+  "relations_internes" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m10"."fiches_poste" IS 'Collection « fichesPoste » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_fiches_poste_statut" ON "m10"."fiches_poste" ("statut");
+CREATE TABLE IF NOT EXISTS "m10"."fiches_poste_missions" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "mission" text,
+  "activites" jsonb,
+  "indicateurs" jsonb,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m10"."fiches_poste" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m10"."fiches_poste_missions" IS 'Lignes « missions » de « fichesPoste »';
 CREATE TABLE IF NOT EXISTS "m10"."grille_primes" (
   "id" text PRIMARY KEY,
   "mode" text,
@@ -345,36 +486,72 @@ CREATE TABLE IF NOT EXISTS "m10"."historique_primes" (
 );
 COMMENT ON TABLE "m10"."historique_primes" IS 'Collection « historiquePrimes » — M10 Ressources humaines';
 CREATE TABLE IF NOT EXISTS "m10"."missions" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "agent" text,
+  "moyen" text,
+  "objet" text,
+  "nature" text,
+  "statut" text,
+  "agent_id" text,
+  "libelle" text,
+  "fonction" text,
+  "reference" text,
+  "validee_le" date,
+  "date_depart" date,
+  "date_retour" date,
+  "validee_par" text,
+  "destination" text,
+  "observation" text,
+  "statut_mission" text,
+  "structure_prise" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m10"."missions" IS 'Collection « missions » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_missions_nature" ON "m10"."missions" ("nature");
+CREATE INDEX IF NOT EXISTS "ix_missions_statut" ON "m10"."missions" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_missions_agent_id" ON "m10"."missions" ("agent_id");
+CREATE INDEX IF NOT EXISTS "ix_missions_reference" ON "m10"."missions" ("reference");
 CREATE TABLE IF NOT EXISTS "m10"."modeles_badge" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "zones" jsonb,
+  "defaut" boolean,
+  "format" text,
+  "source" text,
+  "statut" text,
+  "libelle" text,
+  "a_valider" boolean,
+  "orientation" text,
+  "mentions_verso" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m10"."modeles_badge" IS 'Collection « modelesBadge » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_modeles_badge_statut" ON "m10"."modeles_badge" ("statut");
 CREATE TABLE IF NOT EXISTS "m10"."participations" (
   "id" text PRIMARY KEY,
   "mode" text,
   "agent" text,
-  "regle" boolean,
+  "nature" text,
   "statut" text,
   "cree_le" timestamptz,
-  "agent_id" text,
   "montant" integer,
+  "service" text,
   "cree_par" text,
+  "fonction" text,
+  "employe_id" text,
   "matricule" text,
   "reference" text,
   "evenement_id" text,
-  "date_reglement" date,
+  "date_paiement" date,
+  "date_evenement" date,
   "periode_retenue" text,
+  "statut_paiement" text,
   "evenement_libelle" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m10"."participations" IS 'Collection « participations » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_participations_nature" ON "m10"."participations" ("nature");
 CREATE INDEX IF NOT EXISTS "ix_participations_statut" ON "m10"."participations" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_participations_agent_id" ON "m10"."participations" ("agent_id");
+CREATE INDEX IF NOT EXISTS "ix_participations_employe_id" ON "m10"."participations" ("employe_id");
 CREATE INDEX IF NOT EXISTS "ix_participations_reference" ON "m10"."participations" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_participations_evenement_id" ON "m10"."participations" ("evenement_id");
 CREATE TABLE IF NOT EXISTS "m10"."personnel" (
@@ -434,6 +611,22 @@ CREATE INDEX IF NOT EXISTS "ix_presences_date" ON "m10"."presences" ("date");
 CREATE INDEX IF NOT EXISTS "ix_presences_etat" ON "m10"."presences" ("etat");
 CREATE INDEX IF NOT EXISTS "ix_presences_statut" ON "m10"."presences" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_presences_employe_id" ON "m10"."presences" ("employe_id");
+CREATE TABLE IF NOT EXISTS "m10"."prestataires" (
+  "id" text PRIMARY KEY,
+  "ifu" text,
+  "nom" text,
+  "statut" text,
+  "reference" text,
+  "tarif_acte" integer,
+  "telephone" text,
+  "specialite" text,
+  "actes_realises" integer,
+  "facture_normalisee" boolean,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m10"."prestataires" IS 'Collection « prestataires » — M10 Ressources humaines';
+CREATE INDEX IF NOT EXISTS "ix_prestataires_statut" ON "m10"."prestataires" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_prestataires_reference" ON "m10"."prestataires" ("reference");
 CREATE TABLE IF NOT EXISTS "m10"."regimes_travail" (
   "id" text PRIMARY KEY,
   "cycle" integer,
@@ -452,6 +645,50 @@ CREATE TABLE IF NOT EXISTS "m10"."regimes_travail" (
 );
 COMMENT ON TABLE "m10"."regimes_travail" IS 'Collection « regimesTravail » — M10 Ressources humaines';
 CREATE INDEX IF NOT EXISTS "ix_regimes_travail_statut" ON "m10"."regimes_travail" ("statut");
+CREATE TABLE IF NOT EXISTS "m11"."avances" (
+  "id" text PRIMARY KEY,
+  "date" date,
+  "motif" text,
+  "statut" text,
+  "employe" text,
+  "montant" integer,
+  "service" text,
+  "employe_id" text,
+  "matricule" text,
+  "reference" text,
+  "rembourse" integer,
+  "mensualite" integer,
+  "statut_avance" text,
+  "nb_mensualites" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m11"."avances" IS 'Collection « avances » — M11 Paie & primes';
+CREATE INDEX IF NOT EXISTS "ix_avances_date" ON "m11"."avances" ("date");
+CREATE INDEX IF NOT EXISTS "ix_avances_statut" ON "m11"."avances" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_avances_employe_id" ON "m11"."avances" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_avances_reference" ON "m11"."avances" ("reference");
+CREATE TABLE IF NOT EXISTS "m11"."heures_sup" (
+  "id" text PRIMARY KEY,
+  "motif" text,
+  "heures" integer,
+  "statut" text,
+  "valide" boolean,
+  "employe" text,
+  "montant" integer,
+  "periode" text,
+  "service" text,
+  "employe_id" text,
+  "matricule" text,
+  "reference" text,
+  "majoration" integer,
+  "taux_horaire" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m11"."heures_sup" IS 'Collection « heuresSup » — M11 Paie & primes';
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_statut" ON "m11"."heures_sup" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_periode" ON "m11"."heures_sup" ("periode");
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_employe_id" ON "m11"."heures_sup" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_heures_sup_reference" ON "m11"."heures_sup" ("reference");
 CREATE TABLE IF NOT EXISTS "m11"."prets_etudes" (
   "id" text PRIMARY KEY,
   "agent" text,
@@ -492,6 +729,21 @@ CREATE TABLE IF NOT EXISTS "m12"."banques" (
 COMMENT ON TABLE "m12"."banques" IS 'Collection « banques » — M12 Comptabilité SYSCOHADA';
 CREATE INDEX IF NOT EXISTS "ix_banques_nature" ON "m12"."banques" ("nature");
 CREATE INDEX IF NOT EXISTS "ix_banques_statut" ON "m12"."banques" ("statut");
+CREATE TABLE IF NOT EXISTS "m12"."budgets" (
+  "id" text PRIMARY KEY,
+  "prevu" integer,
+  "centre" text,
+  "nature" text,
+  "statut" text,
+  "exercice" integer,
+  "reference" text,
+  "centre_cout" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m12"."budgets" IS 'Collection « budgets » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_budgets_nature" ON "m12"."budgets" ("nature");
+CREATE INDEX IF NOT EXISTS "ix_budgets_statut" ON "m12"."budgets" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_budgets_reference" ON "m12"."budgets" ("reference");
 CREATE TABLE IF NOT EXISTS "m12"."centres_couts" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -507,10 +759,37 @@ CREATE INDEX IF NOT EXISTS "ix_centres_couts_code" ON "m12"."centres_couts" ("co
 CREATE INDEX IF NOT EXISTS "ix_centres_couts_type" ON "m12"."centres_couts" ("type");
 CREATE INDEX IF NOT EXISTS "ix_centres_couts_statut" ON "m12"."centres_couts" ("statut");
 CREATE TABLE IF NOT EXISTS "m12"."depenses" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "date" date,
+  "statut" text,
+  "libelle" text,
+  "montant" integer,
+  "saisi_le" date,
+  "saisi_par" text,
+  "categorie" text,
+  "reference" text,
+  "ecriture_id" text,
+  "compte_charge" text,
+  "justificatif" jsonb,
+  "compte_tresorerie" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."depenses" IS 'Collection « depenses » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_depenses_date" ON "m12"."depenses" ("date");
+CREATE INDEX IF NOT EXISTS "ix_depenses_statut" ON "m12"."depenses" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_depenses_reference" ON "m12"."depenses" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_depenses_ecriture_id" ON "m12"."depenses" ("ecriture_id");
+CREATE TABLE IF NOT EXISTS "m12"."depenses_lignes" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "libelle" text,
+  "montant" integer,
+  "compte_charge" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m12"."depenses" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m12"."depenses_lignes" IS 'Lignes « lignes » de « depenses »';
 CREATE TABLE IF NOT EXISTS "m12"."echeances_fiscales" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -589,10 +868,23 @@ CREATE INDEX IF NOT EXISTS "ix_exercices_etat" ON "m12"."exercices" ("etat");
 CREATE INDEX IF NOT EXISTS "ix_exercices_annee" ON "m12"."exercices" ("annee");
 CREATE INDEX IF NOT EXISTS "ix_exercices_statut" ON "m12"."exercices" ("statut");
 CREATE TABLE IF NOT EXISTS "m12"."immobilisations" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "etat" text,
+  "compte" text,
+  "statut" text,
+  "categorie" text,
+  "reference" text,
+  "designation" text,
+  "fournisseur" text,
+  "date_acquisition" date,
+  "valeur_acquisition" integer,
+  "duree_amortissement" integer,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."immobilisations" IS 'Collection « immobilisations » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_immobilisations_etat" ON "m12"."immobilisations" ("etat");
+CREATE INDEX IF NOT EXISTS "ix_immobilisations_statut" ON "m12"."immobilisations" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_immobilisations_reference" ON "m12"."immobilisations" ("reference");
 CREATE TABLE IF NOT EXISTS "m12"."objectifs_pilotage" (
   "id" text PRIMARY KEY,
   "axe" text,
@@ -609,6 +901,24 @@ CREATE TABLE IF NOT EXISTS "m12"."objectifs_pilotage" (
 );
 COMMENT ON TABLE "m12"."objectifs_pilotage" IS 'Collection « objectifsPilotage » — M12 Comptabilité SYSCOHADA';
 CREATE INDEX IF NOT EXISTS "ix_objectifs_pilotage_statut" ON "m12"."objectifs_pilotage" ("statut");
+CREATE TABLE IF NOT EXISTS "m12"."rapprochements" (
+  "id" text PRIMARY KEY,
+  "ecart" integer,
+  "banque" text,
+  "compte" text,
+  "statut" text,
+  "periode" text,
+  "operateur" text,
+  "reference" text,
+  "solde_releve" integer,
+  "statut_rappro" text,
+  "solde_comptable" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m12"."rapprochements" IS 'Collection « rapprochements » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_rapprochements_statut" ON "m12"."rapprochements" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_rapprochements_periode" ON "m12"."rapprochements" ("periode");
+CREATE INDEX IF NOT EXISTS "ix_rapprochements_reference" ON "m12"."rapprochements" ("reference");
 CREATE TABLE IF NOT EXISTS "m13"."ambulance" (
   "id" text PRIMARY KEY,
   "etat" text,
@@ -636,10 +946,24 @@ CREATE INDEX IF NOT EXISTS "ix_ambulance_date_heure" ON "m13"."ambulance" ("date
 CREATE INDEX IF NOT EXISTS "ix_ambulance_patient_id" ON "m13"."ambulance" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_ambulance_reference" ON "m13"."ambulance" ("reference");
 CREATE TABLE IF NOT EXISTS "m13"."ambulances" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "base" text,
+  "type" text,
+  "source" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "contact" text,
+  "libelle" text,
+  "cree_par" text,
+  "telephone" text,
+  "verifie_le" date,
+  "a_completer" boolean,
+  "disponibilite" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m13"."ambulances" IS 'Collection « ambulances » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_ambulances_type" ON "m13"."ambulances" ("type");
+CREATE INDEX IF NOT EXISTS "ix_ambulances_statut" ON "m13"."ambulances" ("statut");
 CREATE TABLE IF NOT EXISTS "m13"."courriers" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -663,30 +987,106 @@ CREATE INDEX IF NOT EXISTS "ix_courriers_nature" ON "m13"."courriers" ("nature")
 CREATE INDEX IF NOT EXISTS "ix_courriers_statut" ON "m13"."courriers" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_courriers_reference" ON "m13"."courriers" ("reference");
 CREATE TABLE IF NOT EXISTS "m13"."enquetes" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "titre" text,
+  "cree_le" date,
+  "source" text,
+  "statut" text,
+  "a_valider" boolean,
+  "valide_le" date,
+  "reference" text,
+  "valide_par" text,
+  "description" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m13"."enquetes" IS 'Collection « enquetes » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_enquetes_statut" ON "m13"."enquetes" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_enquetes_reference" ON "m13"."enquetes" ("reference");
+CREATE TABLE IF NOT EXISTS "m13"."enquetes_questions" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "code" text,
+  "type" text,
+  "libelle" text,
+  "options" jsonb,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m13"."enquetes" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m13"."enquetes_questions" IS 'Lignes « questions » de « enquetes »';
 CREATE TABLE IF NOT EXISTS "m13"."evenements_etablissement" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "date" date,
+  "lieu" text,
+  "heure" text,
+  "canaux" jsonb,
+  "statut" text,
+  "libelle" text,
+  "notifier" boolean,
+  "categorie" text,
+  "reference" text,
+  "responsable" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m13"."evenements_etablissement" IS 'Collection « evenementsEtablissement » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_date" ON "m13"."evenements_etablissement" ("date");
+CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_statut" ON "m13"."evenements_etablissement" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_evenements_etablissement_reference" ON "m13"."evenements_etablissement" ("reference");
 CREATE TABLE IF NOT EXISTS "m13"."jetons_enquete" (
   "_rang" integer PRIMARY KEY,
   "extra" jsonb
 );
 COMMENT ON TABLE "m13"."jetons_enquete" IS 'Collection « jetonsEnquete » — M13 Administration & ambulance';
 CREATE TABLE IF NOT EXISTS "m13"."materiel" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "etat" text,
+  "marque" text,
+  "statut" text,
+  "libelle" text,
+  "categorie" text,
+  "reference" text,
+  "a_completer" boolean,
+  "numero_serie" text,
+  "observation" text,
+  "localisation" text,
+  "mise_en_service" text,
+  "periodicite_mois" integer,
+  "dernier_entretien" date,
   "extra" jsonb
 );
 COMMENT ON TABLE "m13"."materiel" IS 'Collection « materiel » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_materiel_etat" ON "m13"."materiel" ("etat");
+CREATE INDEX IF NOT EXISTS "ix_materiel_statut" ON "m13"."materiel" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_materiel_reference" ON "m13"."materiel" ("reference");
+CREATE TABLE IF NOT EXISTS "m13"."plan_annuel" (
+  "id" text PRIMARY KEY,
+  "axe" text,
+  "action" text,
+  "statut" text,
+  "reference" text,
+  "avancement" text,
+  "responsable" text,
+  "trimestre_fin" integer,
+  "trimestre_debut" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m13"."plan_annuel" IS 'Collection « planAnnuel » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_plan_annuel_statut" ON "m13"."plan_annuel" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_plan_annuel_reference" ON "m13"."plan_annuel" ("reference");
 CREATE TABLE IF NOT EXISTS "m13"."reponses_enquetes" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "date" date,
+  "canal" text,
+  "statut" text,
+  "reponses" jsonb,
+  "saisi_par" text,
+  "enquete_id" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m13"."reponses_enquetes" IS 'Collection « reponsesEnquetes » — M13 Administration & ambulance';
+CREATE INDEX IF NOT EXISTS "ix_reponses_enquetes_date" ON "m13"."reponses_enquetes" ("date");
+CREATE INDEX IF NOT EXISTS "ix_reponses_enquetes_statut" ON "m13"."reponses_enquetes" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_reponses_enquetes_enquete_id" ON "m13"."reponses_enquetes" ("enquete_id");
 CREATE TABLE IF NOT EXISTS "m13"."reunions" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -709,27 +1109,21 @@ CREATE INDEX IF NOT EXISTS "ix_reunions_reference" ON "m13"."reunions" ("referen
 CREATE TABLE IF NOT EXISTS "m14"."audit" (
   "_rang" integer PRIMARY KEY,
   "id" text,
-  "role" text,
-  "apres" text,
-  "avant" text,
+  "poste" text,
   "action" text,
   "entite" text,
-  "statut" text,
-  "reference" text,
-  "horodatage" timestamptz,
-  "utilisateur" text,
-  "poste" text,
   "module" text,
   "succes" boolean,
   "date_heure" timestamptz,
+  "reference" text,
+  "utilisateur" text,
   "ancienne_valeur" text,
   "nouvelle_valeur" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."audit" IS 'Collection « audit » — M14 Sécurité & audit';
-CREATE INDEX IF NOT EXISTS "ix_audit_statut" ON "m14"."audit" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_audit_reference" ON "m14"."audit" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_audit_date_heure" ON "m14"."audit" ("date_heure");
+CREATE INDEX IF NOT EXISTS "ix_audit_reference" ON "m14"."audit" ("reference");
 CREATE TABLE IF NOT EXISTS "m14"."comptes" (
   "id" text PRIMARY KEY,
   "num" text,
@@ -738,15 +1132,28 @@ CREATE TABLE IF NOT EXISTS "m14"."comptes" (
   "statut" text,
   "journal" text,
   "libelle" text,
+  "archive_le" timestamptz,
+  "archive_par" text,
+  "motif_archivage" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."comptes" IS 'Collection « comptes » — M14 Sécurité & audit';
 CREATE INDEX IF NOT EXISTS "ix_comptes_statut" ON "m14"."comptes" ("statut");
 CREATE TABLE IF NOT EXISTS "m14"."fichiers_sauvegarde" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "date" date,
+  "heure" text,
+  "portee" text,
+  "statut" text,
+  "tables" integer,
+  "taille" integer,
+  "fichier" text,
+  "generee_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."fichiers_sauvegarde" IS 'Collection « fichiersSauvegarde » — M14 Sécurité & audit';
+CREATE INDEX IF NOT EXISTS "ix_fichiers_sauvegarde_date" ON "m14"."fichiers_sauvegarde" ("date");
+CREATE INDEX IF NOT EXISTS "ix_fichiers_sauvegarde_statut" ON "m14"."fichiers_sauvegarde" ("statut");
 CREATE TABLE IF NOT EXISTS "m14"."notifications" (
   "id" text PRIMARY KEY,
   "lue" boolean,
@@ -775,6 +1182,21 @@ CREATE INDEX IF NOT EXISTS "ix_notifications_facture_id" ON "m14"."notifications
 CREATE INDEX IF NOT EXISTS "ix_notifications_patient_id" ON "m14"."notifications" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_notifications_reference" ON "m14"."notifications" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_notifications_ordonnance_id" ON "m14"."notifications" ("ordonnance_id");
+CREATE TABLE IF NOT EXISTS "m14"."politique_securite" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "cree_le" date,
+  "cree_par" text,
+  "echecs_max" integer,
+  "blocage_min" integer,
+  "historique" integer,
+  "longueur_min" integer,
+  "inactivite_min" integer,
+  "expiration_jours" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m14"."politique_securite" IS 'Collection « politiqueSecurite » — M14 Sécurité & audit';
+CREATE INDEX IF NOT EXISTS "ix_politique_securite_statut" ON "m14"."politique_securite" ("statut");
 CREATE TABLE IF NOT EXISTS "m14"."rbac" (
   "id" text PRIMARY KEY,
   "role" text,
@@ -795,6 +1217,28 @@ CREATE TABLE IF NOT EXISTS "m14"."rbac" (
 );
 COMMENT ON TABLE "m14"."rbac" IS 'Collection « rbac » — M14 Sécurité & audit';
 CREATE INDEX IF NOT EXISTS "ix_rbac_statut" ON "m14"."rbac" ("statut");
+CREATE TABLE IF NOT EXISTS "m14"."sessions_utilisateur" (
+  "id" text PRIMARY KEY,
+  "etat" text,
+  "role" text,
+  "debut" timestamptz,
+  "poste" text,
+  "source" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "adresse_ip" text,
+  "inactivite" integer,
+  "nom_complet" text,
+  "identifiant" text,
+  "derniere_activite" timestamptz,
+  "utilisateur_id" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m14"."sessions_utilisateur" IS 'Collection « sessionsUtilisateur » — M14 Sécurité & audit';
+CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_etat" ON "m14"."sessions_utilisateur" ("etat");
+CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_statut" ON "m14"."sessions_utilisateur" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_utilisateur_id" ON "m14"."sessions_utilisateur" ("utilisateur_id");
 CREATE TABLE IF NOT EXISTS "m14"."soignants" (
   "id" text PRIMARY KEY,
   "poste" text,
@@ -819,10 +1263,26 @@ CREATE TABLE IF NOT EXISTS "m14"."tentatives_connexion" (
 );
 COMMENT ON TABLE "m14"."tentatives_connexion" IS 'Collection « tentativesConnexion » — M14 Sécurité & audit';
 CREATE TABLE IF NOT EXISTS "m14"."utilisateurs" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "mfa" boolean,
+  "role" text,
+  "actif" boolean,
+  "poste" text,
+  "cree_le" date,
+  "echecs" integer,
+  "statut" text,
+  "service" text,
+  "nom_complet" text,
+  "identifiant" text,
+  "dernier_acces" date,
+  "employe_id" text,
+  "matricule" text,
+  "note" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."utilisateurs" IS 'Collection « utilisateurs » — M14 Sécurité & audit';
+CREATE INDEX IF NOT EXISTS "ix_utilisateurs_statut" ON "m14"."utilisateurs" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_utilisateurs_employe_id" ON "m14"."utilisateurs" ("employe_id");
 CREATE TABLE IF NOT EXISTS "m1"."constantes" (
   "fr" integer,
   "id" text PRIMARY KEY,
@@ -888,10 +1348,30 @@ CREATE INDEX IF NOT EXISTS "ix_contre_references_statut" ON "m1"."contre_referen
 CREATE INDEX IF NOT EXISTS "ix_contre_references_patient_id" ON "m1"."contre_references" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_contre_references_reference" ON "m1"."contre_references" ("reference");
 CREATE TABLE IF NOT EXISTS "m1"."documents_patient" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "code" text,
+  "date" date,
+  "etat" text,
+  "type" text,
+  "depose" text,
+  "format" text,
+  "statut" text,
+  "taille" integer,
+  "donnees" text,
+  "fichier" text,
+  "patient" text,
+  "patient_id" text,
+  "reference" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m1"."documents_patient" IS 'Collection « documentsPatient » — M1 Patients & DMI';
+CREATE INDEX IF NOT EXISTS "ix_documents_patient_code" ON "m1"."documents_patient" ("code");
+CREATE INDEX IF NOT EXISTS "ix_documents_patient_date" ON "m1"."documents_patient" ("date");
+CREATE INDEX IF NOT EXISTS "ix_documents_patient_etat" ON "m1"."documents_patient" ("etat");
+CREATE INDEX IF NOT EXISTS "ix_documents_patient_type" ON "m1"."documents_patient" ("type");
+CREATE INDEX IF NOT EXISTS "ix_documents_patient_statut" ON "m1"."documents_patient" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_documents_patient_patient_id" ON "m1"."documents_patient" ("patient_id");
+CREATE INDEX IF NOT EXISTS "ix_documents_patient_reference" ON "m1"."documents_patient" ("reference");
 CREATE TABLE IF NOT EXISTS "m1"."fiches_reference" (
   "id" text PRIMARY KEY,
   "age" integer,
@@ -1483,10 +1963,29 @@ CREATE TABLE IF NOT EXISTS "m3"."checklists_bloc_items" (
 );
 COMMENT ON TABLE "m3"."checklists_bloc_items" IS 'Lignes « items » de « checklistsBloc »';
 CREATE TABLE IF NOT EXISTS "m3"."cpa" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "asa" text,
+  "date" date,
+  "statut" text,
+  "patient" text,
+  "allergies" text,
+  "patient_id" text,
+  "reference" text,
+  "technique" text,
+  "conclusion" text,
+  "mallampati" text,
+  "patient_code" text,
+  "anesthesiste" text,
+  "observations" text,
+  "jeune_consigne" boolean,
+  "antecedents_anesthesiques" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m3"."cpa" IS 'Collection « cpa » — M3 Hospitalisation & bloc';
+CREATE INDEX IF NOT EXISTS "ix_cpa_date" ON "m3"."cpa" ("date");
+CREATE INDEX IF NOT EXISTS "ix_cpa_statut" ON "m3"."cpa" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_cpa_patient_id" ON "m3"."cpa" ("patient_id");
+CREATE INDEX IF NOT EXISTS "ix_cpa_reference" ON "m3"."cpa" ("reference");
 CREATE TABLE IF NOT EXISTS "m3"."cr_operatoires" (
   "id" text PRIMARY KEY,
   "cro" text,
@@ -1518,10 +2017,45 @@ CREATE INDEX IF NOT EXISTS "ix_cr_operatoires_operateur_id" ON "m3"."cr_operatoi
 CREATE INDEX IF NOT EXISTS "ix_cr_operatoires_anesthesiste_id" ON "m3"."cr_operatoires" ("anesthesiste_id");
 CREATE INDEX IF NOT EXISTS "ix_cr_operatoires_aide_operateur_id" ON "m3"."cr_operatoires" ("aide_operateur_id");
 CREATE TABLE IF NOT EXISTS "m3"."observations" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "motif" text,
+  "place" text,
+  "unite" text,
+  "statut" text,
+  "medecin" text,
+  "patient" text,
+  "infirmier" text,
+  "patient_id" text,
+  "reference" text,
+  "conclusion" text,
+  "date_entree" timestamptz,
+  "date_sortie" timestamptz,
+  "unite_label" text,
+  "orientation" text,
+  "patient_code" text,
+  "orientation_label" text,
+  "statut_observation" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m3"."observations" IS 'Collection « observations » — M3 Hospitalisation & bloc';
+CREATE INDEX IF NOT EXISTS "ix_observations_statut" ON "m3"."observations" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_observations_patient_id" ON "m3"."observations" ("patient_id");
+CREATE INDEX IF NOT EXISTS "ix_observations_reference" ON "m3"."observations" ("reference");
+CREATE TABLE IF NOT EXISTS "m3"."observations_constantes" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "par" text,
+  "spo2" integer,
+  "heure" timestamptz,
+  "pouls" integer,
+  "tension" text,
+  "observation" text,
+  "temperature" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m3"."observations" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m3"."observations_constantes" IS 'Lignes « constantes » de « observations »';
 CREATE TABLE IF NOT EXISTS "m3"."rapports_medicaux" (
   "id" text PRIMARY KEY,
   "age" integer,
@@ -2212,6 +2746,11 @@ CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_ordonnance_id" ON "m5"."demande
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_preleve_par_id" ON "m5"."demandes_analyses" ("preleve_par_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_dossier_consultation_id" ON "m5"."demandes_analyses" ("dossier_consultation_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_facture_id" ON "m5"."demandes_analyses" ("facture_id");
+CREATE TABLE IF NOT EXISTS "m5"."donneurs" (
+  "_rang" integer PRIMARY KEY,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m5"."donneurs" IS 'Collection « donneurs » — M5 Laboratoire';
 CREATE TABLE IF NOT EXISTS "m5"."examens_labo" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -2235,6 +2774,11 @@ CREATE TABLE IF NOT EXISTS "m5"."plages_reactif" (
   "extra" jsonb
 );
 COMMENT ON TABLE "m5"."plages_reactif" IS 'Collection « plagesReactif » — M5 Laboratoire';
+CREATE TABLE IF NOT EXISTS "m5"."poches" (
+  "_rang" integer PRIMARY KEY,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m5"."poches" IS 'Collection « poches » — M5 Laboratoire';
 CREATE TABLE IF NOT EXISTS "m5"."unites_labo" (
   "id" text PRIMARY KEY,
   "source" text,
@@ -2430,12 +2974,40 @@ CREATE INDEX IF NOT EXISTS "ix_valorisations_sage_code" ON "m6"."valorisations_s
 CREATE INDEX IF NOT EXISTS "ix_valorisations_sage_date" ON "m6"."valorisations_sage" ("date");
 CREATE INDEX IF NOT EXISTS "ix_valorisations_sage_statut" ON "m6"."valorisations_sage" ("statut");
 CREATE TABLE IF NOT EXISTS "m7"."besoins" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "date" date,
+  "etape" text,
+  "motif" text,
+  "statut" text,
+  "service" text,
+  "demandeur" text,
+  "reference" text,
+  "validee_par" text,
+  "montant_estime" integer,
   "extra" jsonb
 );
 COMMENT ON TABLE "m7"."besoins" IS 'Collection « besoins » — M7 Achats & fournisseurs';
+CREATE INDEX IF NOT EXISTS "ix_besoins_date" ON "m7"."besoins" ("date");
+CREATE INDEX IF NOT EXISTS "ix_besoins_statut" ON "m7"."besoins" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_besoins_reference" ON "m7"."besoins" ("reference");
+CREATE TABLE IF NOT EXISTS "m7"."besoins_lignes" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "unite" text,
+  "produit" text,
+  "prix_achat" integer,
+  "produit_id" text,
+  "quantite_livree" integer,
+  "quantite_accordee" integer,
+  "quantite_demandee" integer,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m7"."besoins" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m7"."besoins_lignes" IS 'Lignes « lignes » de « besoins »';
 CREATE TABLE IF NOT EXISTS "m7"."commandes" (
-  "id" text PRIMARY KEY,
+  "_rang" integer PRIMARY KEY,
+  "id" text,
   "date" date,
   "statut" text,
   "montant" integer,
@@ -2462,8 +3034,7 @@ CREATE TABLE IF NOT EXISTS "m7"."commandes_lignes" (
   "produit_id" text,
   "prix_unitaire" integer,
   "extra" jsonb,
-  PRIMARY KEY ("parent_id", "rang"),
-  FOREIGN KEY ("parent_id") REFERENCES "m7"."commandes" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+  PRIMARY KEY ("parent_id", "rang")
 );
 COMMENT ON TABLE "m7"."commandes_lignes" IS 'Lignes « lignes » de « commandes »';
 CREATE TABLE IF NOT EXISTS "m7"."factures_fournisseurs" (
@@ -2515,7 +3086,8 @@ CREATE INDEX IF NOT EXISTS "ix_fournisseurs_code" ON "m7"."fournisseurs" ("code"
 CREATE INDEX IF NOT EXISTS "ix_fournisseurs_type" ON "m7"."fournisseurs" ("type");
 CREATE INDEX IF NOT EXISTS "ix_fournisseurs_statut" ON "m7"."fournisseurs" ("statut");
 CREATE TABLE IF NOT EXISTS "m7"."livraisons" (
-  "id" text PRIMARY KEY,
+  "_rang" integer PRIMARY KEY,
+  "id" text,
   "date" date,
   "statut" text,
   "montant" integer,
@@ -2543,15 +3115,43 @@ CREATE TABLE IF NOT EXISTS "m7"."livraisons_lignes" (
   "prix_unitaire" integer,
   "quantite_livree" integer,
   "extra" jsonb,
-  PRIMARY KEY ("parent_id", "rang"),
-  FOREIGN KEY ("parent_id") REFERENCES "m7"."livraisons" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+  PRIMARY KEY ("parent_id", "rang")
 );
 COMMENT ON TABLE "m7"."livraisons_lignes" IS 'Lignes « lignes » de « livraisons »';
 CREATE TABLE IF NOT EXISTS "m7"."pv_receptions" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "date" date,
+  "nature" text,
+  "statut" text,
+  "reserves" text,
+  "reference" text,
+  "conclusion" text,
+  "magasinier" text,
+  "chaine_froid" boolean,
+  "commande_ref" text,
+  "livraison_ref" text,
+  "fournisseur_nom" text,
+  "representant_fournisseur" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m7"."pv_receptions" IS 'Collection « pvReceptions » — M7 Achats & fournisseurs';
+CREATE INDEX IF NOT EXISTS "ix_pv_receptions_date" ON "m7"."pv_receptions" ("date");
+CREATE INDEX IF NOT EXISTS "ix_pv_receptions_nature" ON "m7"."pv_receptions" ("nature");
+CREATE INDEX IF NOT EXISTS "ix_pv_receptions_statut" ON "m7"."pv_receptions" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_pv_receptions_reference" ON "m7"."pv_receptions" ("reference");
+CREATE TABLE IF NOT EXISTS "m7"."pv_receptions_lignes" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "ecart" integer,
+  "unite" text,
+  "livree" integer,
+  "produit" text,
+  "commandee" integer,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m7"."pv_receptions" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m7"."pv_receptions_lignes" IS 'Lignes « lignes » de « pvReceptions »';
 CREATE TABLE IF NOT EXISTS "m8"."avoirs" (
   "_rang" integer PRIMARY KEY,
   "extra" jsonb
@@ -2728,6 +3328,23 @@ CREATE TABLE IF NOT EXISTS "m9"."souscripteurs" (
 );
 COMMENT ON TABLE "m9"."souscripteurs" IS 'Collection « souscripteurs » — M9 Assurances & créances';
 CREATE INDEX IF NOT EXISTS "ix_souscripteurs_statut" ON "m9"."souscripteurs" ("statut");
+CREATE TABLE IF NOT EXISTS "socle"."appels" (
+  "id" text PRIMARY KEY,
+  "sens" text,
+  "agent" text,
+  "objet" text,
+  "suite" text,
+  "statut" text,
+  "date_heure" timestamptz,
+  "reference" text,
+  "telephone" text,
+  "interlocuteur" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "socle"."appels" IS 'Collection « appels » — Socle commun (référentiels lus par plusieurs modules)';
+CREATE INDEX IF NOT EXISTS "ix_appels_statut" ON "socle"."appels" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_appels_date_heure" ON "socle"."appels" ("date_heure");
+CREATE INDEX IF NOT EXISTS "ix_appels_reference" ON "socle"."appels" ("reference");
 CREATE TABLE IF NOT EXISTS "socle"."taches" (
   "id" text PRIMARY KEY,
   "date" timestamptz,
@@ -2767,169 +3384,27 @@ CREATE INDEX IF NOT EXISTS "ix_taches_facture_id" ON "socle"."taches" ("facture_
 CREATE INDEX IF NOT EXISTS "ix_taches_reference" ON "socle"."taches" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_taches_ordonnance_id" ON "socle"."taches" ("ordonnance_id");
 CREATE INDEX IF NOT EXISTS "ix_taches_patient_id" ON "socle"."taches" ("patient_id");
+CREATE TABLE IF NOT EXISTS "socle"."visites_hospi" (
+  "id" text PRIMARY KEY,
+  "lit" text,
+  "date" date,
+  "type" text,
+  "heure" text,
+  "statut" text,
+  "patient" text,
+  "visiteur" text,
+  "admission_id" text,
+  "observation" text,
+  "patient_code" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "socle"."visites_hospi" IS 'Collection « visitesHospi » — Socle commun (référentiels lus par plusieurs modules)';
+CREATE INDEX IF NOT EXISTS "ix_visites_hospi_date" ON "socle"."visites_hospi" ("date");
+CREATE INDEX IF NOT EXISTS "ix_visites_hospi_type" ON "socle"."visites_hospi" ("type");
+CREATE INDEX IF NOT EXISTS "ix_visites_hospi_statut" ON "socle"."visites_hospi" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_visites_hospi_admission_id" ON "socle"."visites_hospi" ("admission_id");
 CREATE TABLE IF NOT EXISTS "sup"."support" (
   "_rang" integer PRIMARY KEY,
   "extra" jsonb
 );
 COMMENT ON TABLE "sup"."support" IS 'Collection « support » — Support';
-
--- Clés étrangères : seulement celles que les données actuelles respectent à 100 %.
-DO $$ BEGIN ALTER TABLE "m4"."accouchements" ADD CONSTRAINT "fk_accouchements_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."administrations" ADD CONSTRAINT "fk_administrations_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."administrations" ADD CONSTRAINT "fk_administrations_prescription_id" FOREIGN KEY ("prescription_id") REFERENCES "m2"."prescriptions" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."admissions" ADD CONSTRAINT "fk_admissions_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m13"."ambulance" ADD CONSTRAINT "fk_ambulance_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."checklists_bloc" ADD CONSTRAINT "fk_checklists_bloc_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m1"."constantes" ADD CONSTRAINT "fk_constantes_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."consultations" ADD CONSTRAINT "fk_consultations_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m1"."contre_references" ADD CONSTRAINT "fk_contre_references_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."cpon" ADD CONSTRAINT "fk_cpon_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."cr_maternite" ADD CONSTRAINT "fk_cr_maternite_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."cr_operatoires" ADD CONSTRAINT "fk_cr_operatoires_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."deces" ADD CONSTRAINT "fk_deces_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m5"."demandes_analyses" ADD CONSTRAINT "fk_demandes_analyses_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m5"."demandes_analyses" ADD CONSTRAINT "fk_demandes_analyses_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m5"."demandes_analyses" ADD CONSTRAINT "fk_demandes_analyses_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."demandes_imagerie" ADD CONSTRAINT "fk_demandes_imagerie_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."demandes_imagerie" ADD CONSTRAINT "fk_demandes_imagerie_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."dossiers_consultation" ADD CONSTRAINT "fk_dossiers_consultation_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."dossiers_obstetricaux" ADD CONSTRAINT "fk_dossiers_obstetricaux_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m8"."factures" ADD CONSTRAINT "fk_factures_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m8"."factures" ADD CONSTRAINT "fk_factures_personnel_id" FOREIGN KEY ("personnel_id") REFERENCES "m10"."personnel" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m8"."factures" ADD CONSTRAINT "fk_factures_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m1"."fiches_reference" ADD CONSTRAINT "fk_fiches_reference_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."file_attente" ADD CONSTRAINT "fk_file_attente_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."grossesses" ADD CONSTRAINT "fk_grossesses_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m6"."lots" ADD CONSTRAINT "fk_lots_produit_id" FOREIGN KEY ("produit_id") REFERENCES "m6"."produits" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m6"."mouvements" ADD CONSTRAINT "fk_mouvements_produit_id" FOREIGN KEY ("produit_id") REFERENCES "m6"."produits" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."naissances" ADD CONSTRAINT "fk_naissances_accouchement_id" FOREIGN KEY ("accouchement_id") REFERENCES "m4"."accouchements" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m14"."notifications" ADD CONSTRAINT "fk_notifications_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."ordonnances" ADD CONSTRAINT "fk_ordonnances_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."ordonnances" ADD CONSTRAINT "fk_ordonnances_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m10"."participations" ADD CONSTRAINT "fk_participations_evenement_id" FOREIGN KEY ("evenement_id") REFERENCES "m10"."evenements" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."partogrammes" ADD CONSTRAINT "fk_partogrammes_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m1"."patients" ADD CONSTRAINT "fk_patients_souscripteur_id" FOREIGN KEY ("souscripteur_id") REFERENCES "m9"."souscripteurs" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m1"."patients" ADD CONSTRAINT "fk_patients_personnel_id" FOREIGN KEY ("personnel_id") REFERENCES "m10"."personnel" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m1"."pieces" ADD CONSTRAINT "fk_pieces_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."planification_familiale" ADD CONSTRAINT "fk_planification_familiale_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."prescriptions" ADD CONSTRAINT "fk_prescriptions_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."prescriptions" ADD CONSTRAINT "fk_prescriptions_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."ptme" ADD CONSTRAINT "fk_ptme_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."rapports_medicaux" ADD CONSTRAINT "fk_rapports_medicaux_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."registre_sonu" ADD CONSTRAINT "fk_registre_sonu_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."releves" ADD CONSTRAINT "fk_releves_admission_id" FOREIGN KEY ("admission_id") REFERENCES "m3"."admissions" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."resultats_imagerie" ADD CONSTRAINT "fk_resultats_imagerie_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."scores_glasgow" ADD CONSTRAINT "fk_scores_glasgow_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m14"."soignants" ADD CONSTRAINT "fk_soignants_personnel_id" FOREIGN KEY ("personnel_id") REFERENCES "m10"."personnel" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."soins" ADD CONSTRAINT "fk_soins_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m2"."soins" ADD CONSTRAINT "fk_soins_admission_id" FOREIGN KEY ("admission_id") REFERENCES "m3"."admissions" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."soins_curatifs_maternite" ADD CONSTRAINT "fk_soins_curatifs_maternite_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m4"."suivi_maternite" ADD CONSTRAINT "fk_suivi_maternite_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "m3"."surveillances_transfusion" ADD CONSTRAINT "fk_surveillances_transfusion_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "socle"."taches" ADD CONSTRAINT "fk_taches_facture_id" FOREIGN KEY ("facture_id") REFERENCES "m8"."factures" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "socle"."taches" ADD CONSTRAINT "fk_taches_ordonnance_id" FOREIGN KEY ("ordonnance_id") REFERENCES "m2"."ordonnances" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN ALTER TABLE "socle"."taches" ADD CONSTRAINT "fk_taches_patient_id" FOREIGN KEY ("patient_id") REFERENCES "m1"."patients" ("id") DEFERRABLE INITIALLY DEFERRED; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-
--- Banque de sang (E203 : poches et donneurs)
-CREATE SCHEMA IF NOT EXISTS "m5";
-CREATE TABLE IF NOT EXISTS "m5"."donneurs" (
-  "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
-  "nom" text,
-  "telephone" text,
-  "groupe" text,
-  "dernier_don" date,
-  "nb_dons" integer,
-  "eligible" boolean,
-  "type" text,
-  "extra" jsonb
-);
-COMMENT ON TABLE "m5"."donneurs" IS 'Collection « donneurs » — M5 Laboratoire';
-CREATE INDEX IF NOT EXISTS "ix_donneurs_statut" ON "m5"."donneurs" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_donneurs_reference" ON "m5"."donneurs" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_donneurs_type" ON "m5"."donneurs" ("type");
-
-CREATE TABLE IF NOT EXISTS "m5"."poches" (
-  "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
-  "groupe" text,
-  "volume" integer,
-  "date_prelevement" date,
-  "date_peremption" date,
-  "donneur" text,
-  "etat" text,
-  "reserve" boolean,
-  "extra" jsonb
-);
-COMMENT ON TABLE "m5"."poches" IS 'Collection « poches » — M5 Laboratoire';
-CREATE INDEX IF NOT EXISTS "ix_poches_statut" ON "m5"."poches" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_poches_reference" ON "m5"."poches" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_poches_etat" ON "m5"."poches" ("etat");
-
--- Paie et primes : avances, heures supplémentaires, bénéficiaires de primes
-CREATE SCHEMA IF NOT EXISTS "m10";
-CREATE SCHEMA IF NOT EXISTS "m11";
-CREATE TABLE IF NOT EXISTS "m11"."avances" (
-  "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
-  "employe_id" text,
-  "employe" text,
-  "matricule" text,
-  "service" text,
-  "date" date,
-  "montant" integer,
-  "nb_mensualites" integer,
-  "mensualite" integer,
-  "rembourse" integer,
-  "motif" text,
-  "statut_avance" text,
-  "extra" jsonb
-);
-COMMENT ON TABLE "m11"."avances" IS 'Collection « avances » — M11 Paie & primes';
-CREATE INDEX IF NOT EXISTS "ix_avances_statut" ON "m11"."avances" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_avances_reference" ON "m11"."avances" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_avances_employe_id" ON "m11"."avances" ("employe_id");
-CREATE INDEX IF NOT EXISTS "ix_avances_date" ON "m11"."avances" ("date");
-
-CREATE TABLE IF NOT EXISTS "m10"."beneficiaires_primes" (
-  "id" text PRIMARY KEY,
-  "statut" text,
-  "prime_id" text,
-  "agent_id" text,
-  "debut" date,
-  "fin" text,
-  "cree_le" timestamptz,
-  "cree_par" text,
-  "extra" jsonb
-);
-COMMENT ON TABLE "m10"."beneficiaires_primes" IS 'Collection « beneficiairesPrimes » — M10 Ressources humaines';
-CREATE INDEX IF NOT EXISTS "ix_beneficiaires_primes_statut" ON "m10"."beneficiaires_primes" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_beneficiaires_primes_prime_id" ON "m10"."beneficiaires_primes" ("prime_id");
-CREATE INDEX IF NOT EXISTS "ix_beneficiaires_primes_agent_id" ON "m10"."beneficiaires_primes" ("agent_id");
-
-CREATE TABLE IF NOT EXISTS "m11"."heures_sup" (
-  "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
-  "periode" text,
-  "employe_id" text,
-  "employe" text,
-  "matricule" text,
-  "service" text,
-  "heures" integer,
-  "taux_horaire" integer,
-  "majoration" integer,
-  "montant" integer,
-  "motif" text,
-  "valide" boolean,
-  "extra" jsonb
-);
-COMMENT ON TABLE "m11"."heures_sup" IS 'Collection « heuresSup » — M11 Paie & primes';
-CREATE INDEX IF NOT EXISTS "ix_heures_sup_statut" ON "m11"."heures_sup" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_heures_sup_reference" ON "m11"."heures_sup" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_heures_sup_periode" ON "m11"."heures_sup" ("periode");
-CREATE INDEX IF NOT EXISTS "ix_heures_sup_employe_id" ON "m11"."heures_sup" ("employe_id");
-

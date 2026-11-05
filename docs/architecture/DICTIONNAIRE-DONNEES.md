@@ -4,23 +4,23 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 
 | Schéma (module) | Tables | Tables filles | Colonnes typées | Fiches observées |
 |---|---:|---:|---:|---:|
-| `cfg` — Configuration | 12 | 2 | 90 | 568 |
+| `cfg` — Configuration | 12 | 2 | 108 | 590 |
 | `ged` — GED | 1 | 0 | 18 | 220 |
-| `m1` — M1 Patients & DMI | 6 | 0 | 142 | 427 |
-| `m10` — M10 Ressources humaines | 16 | 0 | 97 | 2957 |
-| `m11` — M11 Paie & primes | 1 | 0 | 16 | 12 |
-| `m12` — M12 Comptabilité SYSCOHADA | 8 | 0 | 82 | 585 |
-| `m13` — M13 Administration & ambulance | 9 | 0 | 42 | 90 |
-| `m14` — M14 Sécurité & audit | 8 | 0 | 67 | 649 |
-| `m2` — M2 RDV, visites, consultations, imagerie | 10 | 3 | 238 | 1219 |
-| `m3` — M3 Hospitalisation & bloc | 10 | 2 | 147 | 618 |
+| `m1` — M1 Patients & DMI | 6 | 0 | 156 | 526 |
+| `m10` — M10 Ressources humaines | 20 | 1 | 222 | 3118 |
+| `m11` — M11 Paie & primes | 3 | 0 | 44 | 44 |
+| `m12` — M12 Comptabilité SYSCOHADA | 10 | 1 | 125 | 808 |
+| `m13` — M13 Administration & ambulance | 10 | 1 | 106 | 162 |
+| `m14` — M14 Sécurité & audit | 10 | 0 | 114 | 717 |
+| `m2` — M2 RDV, visites, consultations, imagerie | 10 | 3 | 238 | 1221 |
+| `m3` — M3 Hospitalisation & bloc | 10 | 3 | 181 | 623 |
 | `m4` — M4 Maternité, naissances, décès | 13 | 4 | 283 | 331 |
-| `m5` — M5 Laboratoire | 6 | 0 | 109 | 662 |
+| `m5` — M5 Laboratoire | 8 | 0 | 109 | 659 |
 | `m6` — M6 Pharmacie & stocks | 8 | 1 | 82 | 1286 |
-| `m7` — M7 Achats & fournisseurs | 6 | 2 | 55 | 39 |
+| `m7` — M7 Achats & fournisseurs | 6 | 4 | 78 | 92 |
 | `m8` — M8 Facturation & caisse | 2 | 1 | 39 | 409 |
 | `m9` — M9 Assurances & créances | 5 | 1 | 48 | 35 |
-| `socle` — Socle commun (référentiels lus par plusieurs modules) | 1 | 0 | 28 | 451 |
+| `socle` — Socle commun (référentiels lus par plusieurs modules) | 3 | 0 | 49 | 581 |
 | `sup` — Support | 1 | 0 | 0 | 0 |
 
 ## Détail par table
@@ -90,10 +90,19 @@ Table fille `cfg.actes_variantes_grille` — 16 lignes : code text, source text,
 | `tarif_code` | tarifCode | text |  |
 | `a_valider` | aValider | text |  |
 
-### `cfg.modeles_message` (collection « modelesMessage », 0 fiches)
+### `cfg.modeles_message` (collection « modelesMessage », 6 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `actif` | actif | boolean |  |
+| `texte` | texte | text |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `libelle` | libelle | text |  |
+| `cree_par` | _creePar | text |  |
+| `occasion` | occasion | text |  |
 
 ### `cfg.modules_actifs` (collection « modulesActifs », 2 fiches)
 
@@ -121,10 +130,19 @@ Table fille `cfg.actes_variantes_grille` — 16 lignes : code text, source text,
 | `libelle` | libelle | text |  |
 | `secteur` | secteur | text |  |
 
-### `cfg.postes` (collection « postes », 0 fiches)
+### `cfg.postes` (collection « postes », 16 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `chef` | chef | boolean |  |
+| `role` | role | text |  |
+| `poste` | poste | text |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `effectif` | effectif | integer |  |
+| `parent_id` | parentId | text |  |
+| `titulaire` | titulaire | text |  |
 
 ### `cfg.rappels` (collection « rappels », 0 fiches)
 
@@ -207,10 +225,27 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
-### `m10.badges` (collection « badges », 0 fiches)
+### `m10.badges` (collection « badges », 14 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `etat` | etat | text |  |
+| `agent` | agent | text |  |
+| `photo` | photo | text |  |
+| `poste` | poste | text |  |
+| `emis_le` | emisLe | date |  |
+| `numero` | numero | text |  |
+| `statut` | statut | text |  |
+| `emis_par` | emisPar | text |  |
+| `remis_le` | remisLe | date |  |
+| `service` | service | text |  |
+| `expire_le` | expireLe | date |  |
+| `modele_id` | modeleId | text |  |
+| `retire_le` | retireLe | text |  |
+| `matricule` | matricule | text |  |
+| `personnel_id` | personnelId | text | → personnel (FK) |
+| `motif_retrait` | motifRetrait | text |  |
 
 ### `m10.bareme_ns131` (collection « baremeNS131 », 4 fiches)
 
@@ -227,10 +262,69 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `date_effet` | dateEffet | date |  |
 | `sanctions` | sanctions | jsonb |  |
 
-### `m10.evaluations` (collection « evaluations », 0 fiches)
+### `m10.beneficiaires_primes` (collection « beneficiairesPrimes », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+
+### `m10.conges` (collection « conges », 22 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `duree` | duree | integer |  |
+| `nature` | nature | text |  |
+| `statut` | statut | text |  |
+| `date_fin` | dateFin | date |  |
+| `employe` | employe | text |  |
+| `service` | service | text |  |
+| `date_debut` | dateDebut | date |  |
+| `employe_id` | employeId | text |  |
+| `matricule` | matricule | text |  |
+| `reference` | reference | text |  |
+| `remplacant` | remplacant | text |  |
+| `statut_conge` | statutConge | text |  |
+
+### `m10.contrats` (collection « contrats », 44 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `essai` | essai | text |  |
+| `poste` | poste | text |  |
+| `nature` | nature | text |  |
+| `statut` | statut | text |  |
+| `date_fin` | dateFin | date |  |
+| `employe` | employe | text |  |
+| `salaire` | salaire | integer |  |
+| `fonction` | fonction | text |  |
+| `date_debut` | dateDebut | date |  |
+| `employe_id` | employeId | text |  |
+| `matricule` | matricule | text |  |
+| `reference` | reference | text |  |
+| `statut_contrat` | statutContrat | text |  |
+
+### `m10.evaluations` (collection « evaluations », 24 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `employe` | employe | text |  |
+| `periode` | periode | text |  |
+| `service` | service | text |  |
+| `criteres` | criteres | jsonb |  |
+| `fonction` | fonction | text |  |
+| `categorie` | categorie | text |  |
+| `employe_id` | employeId | text |  |
+| `matricule` | matricule | text |  |
+| `reference` | reference | text |  |
+| `date_bareme` | dateBareme | date |  |
+| `evaluateur` | evaluateur | text |  |
+| `salaire_brut` | salaireBrut | integer |  |
+| `observations` | observations | text |  |
+| `prelevement_pct` | prelevementPct | integer |  |
+| `prelevement_montant` | prelevementMontant | integer |  |
 
 ### `m10.evenements` (collection « evenements », 9 fiches)
 
@@ -251,10 +345,34 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `montant_par_agent` | montantParAgent | integer |  |
 | `periode_paiement` | periodePaiement | text |  |
 
-### `m10.fiches_poste` (collection « fichesPoste », 0 fiches)
+### `m10.fiches_poste` (collection « fichesPoste », 28 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `resume` | resume | text |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `redigee` | redigee | boolean |  |
+| `cree_par` | _creePar | text |  |
+| `intitule` | intitule | text |  |
+| `rattachement` | rattachement | text |  |
+| `textes` | textes | text |  |
+| `niveau_n` | niveauN | text |  |
+| `anomalie` | anomalie | text |  |
+| `diplomes` | diplomes | text |  |
+| `archivage` | archivage | text |  |
+| `niveau_inf` | niveauInf | text |  |
+| `niveau_sup` | niveauSup | text |  |
+| `savoir_etre` | savoirEtre | text |  |
+| `elaboration` | elaboration | date |  |
+| `savoir_faire` | savoirFaire | text |  |
+| `environnement` | environnement | text |  |
+| `relations_externes` | relationsExternes | text |  |
+| `relations_internes` | relationsInternes | text |  |
+
+Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites jsonb, indicateurs jsonb
 
 ### `m10.grille_primes` (collection « grillePrimes », 11 fiches)
 
@@ -280,15 +398,43 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
-### `m10.missions` (collection « missions », 0 fiches)
+### `m10.missions` (collection « missions », 14 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `agent` | agent | text |  |
+| `moyen` | moyen | text |  |
+| `objet` | objet | text |  |
+| `nature` | nature | text |  |
+| `statut` | statut | text |  |
+| `agent_id` | agentId | text |  |
+| `libelle` | libelle | text |  |
+| `fonction` | fonction | text |  |
+| `reference` | reference | text |  |
+| `validee_le` | valideeLe | date |  |
+| `date_depart` | dateDepart | date |  |
+| `date_retour` | dateRetour | date |  |
+| `validee_par` | valideePar | text |  |
+| `destination` | destination | text |  |
+| `observation` | observation | text |  |
+| `statut_mission` | statutMission | text |  |
+| `structure_prise` | structurePrise | text |  |
 
-### `m10.modeles_badge` (collection « modelesBadge », 0 fiches)
+### `m10.modeles_badge` (collection « modelesBadge », 1 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `zones` | zones | jsonb |  |
+| `defaut` | defaut | boolean |  |
+| `format` | format | text |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `libelle` | libelle | text |  |
+| `a_valider` | aValider | boolean |  |
+| `orientation` | orientation | text |  |
+| `mentions_verso` | mentionsVerso | text |  |
 
 ### `m10.participations` (collection « participations », 387 fiches)
 
@@ -297,17 +443,21 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `id` | id | text |  |
 | `mode` | mode | text |  |
 | `agent` | agent | text |  |
-| `regle` | regle | boolean |  |
+| `nature` | nature | text |  |
 | `statut` | statut | text |  |
 | `cree_le` | _creeLe | timestamptz |  |
-| `agent_id` | agentId | text |  |
 | `montant` | montant | integer |  |
+| `service` | service | text |  |
 | `cree_par` | _creePar | text |  |
+| `fonction` | fonction | text |  |
+| `employe_id` | employeId | text |  |
 | `matricule` | matricule | text |  |
 | `reference` | reference | text |  |
 | `evenement_id` | evenementId | text | → evenements (FK) |
-| `date_reglement` | dateReglement | date |  |
+| `date_paiement` | datePaiement | date |  |
+| `date_evenement` | dateEvenement | date |  |
 | `periode_retenue` | periodeRetenue | text |  |
+| `statut_paiement` | statutPaiement | text |  |
 | `evenement_libelle` | evenementLibelle | text |  |
 
 ### `m10.personnel` (collection « personnel », 44 fiches)
@@ -361,6 +511,21 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `heure_depart` | heureDepart | text |  |
 | `heure_arrivee` | heureArrivee | text |  |
 
+### `m10.prestataires` (collection « prestataires », 14 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `ifu` | ifu | text |  |
+| `nom` | nom | text |  |
+| `statut` | statut | text |  |
+| `reference` | reference | text |  |
+| `tarif_acte` | tarifActe | integer |  |
+| `telephone` | telephone | text |  |
+| `specialite` | specialite | text |  |
+| `actes_realises` | actesRealises | integer |  |
+| `facture_normalisee` | factureNormalisee | boolean |  |
+
 ### `m10.regimes_travail` (collection « regimesTravail », 8 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -378,6 +543,44 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `honoraire` | honoraire | integer |  |
 | `honoraire_mode` | honoraireMode | text |  |
 | `honoraire_periodicite` | honorairePeriodicite | text |  |
+
+### `m11.avances` (collection « avances », 12 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `motif` | motif | text |  |
+| `statut` | statut | text |  |
+| `employe` | employe | text |  |
+| `montant` | montant | integer |  |
+| `service` | service | text |  |
+| `employe_id` | employeId | text |  |
+| `matricule` | matricule | text |  |
+| `reference` | reference | text |  |
+| `rembourse` | rembourse | integer |  |
+| `mensualite` | mensualite | integer |  |
+| `statut_avance` | statutAvance | text |  |
+| `nb_mensualites` | nbMensualites | integer |  |
+
+### `m11.heures_sup` (collection « heuresSup », 20 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `motif` | motif | text |  |
+| `heures` | heures | integer |  |
+| `statut` | statut | text |  |
+| `valide` | valide | boolean |  |
+| `employe` | employe | text |  |
+| `montant` | montant | integer |  |
+| `periode` | periode | text |  |
+| `service` | service | text |  |
+| `employe_id` | employeId | text |  |
+| `matricule` | matricule | text |  |
+| `reference` | reference | text |  |
+| `majoration` | majoration | integer |  |
+| `taux_horaire` | tauxHoraire | integer |  |
 
 ### `m11.prets_etudes` (collection « pretsEtudes », 12 fiches)
 
@@ -415,6 +618,19 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `statut_compte` | statutCompte | text |  |
 | `compte_comptable` | compteComptable | text |  |
 
+### `m12.budgets` (collection « budgets », 7 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `prevu` | prevu | integer |  |
+| `centre` | centre | text |  |
+| `nature` | nature | text |  |
+| `statut` | statut | text |  |
+| `exercice` | exercice | integer |  |
+| `reference` | reference | text |  |
+| `centre_cout` | centreCout | text |  |
+
 ### `m12.centres_couts` (collection « centresCouts », 7 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -427,10 +643,25 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `libelle` | libelle | text |  |
 | `responsable` | responsable | text |  |
 
-### `m12.depenses` (collection « depenses », 0 fiches)
+### `m12.depenses` (collection « depenses », 190 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `statut` | statut | text |  |
+| `libelle` | libelle | text |  |
+| `montant` | montant | integer |  |
+| `saisi_le` | saisiLe | date |  |
+| `saisi_par` | saisiPar | text |  |
+| `categorie` | categorie | text |  |
+| `reference` | reference | text |  |
+| `ecriture_id` | ecritureId | text |  |
+| `compte_charge` | compteCharge | text |  |
+| `justificatif` | justificatif | jsonb |  |
+| `compte_tresorerie` | compteTresorerie | text |  |
+
+Table fille `m12.depenses_lignes` — 244 lignes : libelle text, montant integer, compte_charge text
 
 ### `m12.echeances_fiscales` (collection « echeancesFiscales », 63 fiches)
 
@@ -460,7 +691,7 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `modifie_le` | _modifieLe | timestamptz |  |
 | `modifie_par` | _modifiePar | text |  |
 
-### `m12.ecritures` (collection « ecritures », 500 fiches)
+### `m12.ecritures` (collection « ecritures », 498 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -475,7 +706,7 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `journal` | journal | text |  |
 | `libelle` | libelle | text |  |
 | `origine` | origine | text |  |
-| `piece_id` | pieceId | text | → pieces (240 orphelin(s) sur 240, pas de FK) |
+| `piece_id` | pieceId | text | → pieces (238 orphelin(s) sur 238, pas de FK) |
 | `cree_par` | _creePar | text |  |
 | `piece_numero` | pieceNumero | text |  |
 | `compte_libelle` | compteLibelle | text |  |
@@ -501,10 +732,21 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `valide_le` | valideLe | date |  |
 | `valide_par` | validePar | text |  |
 
-### `m12.immobilisations` (collection « immobilisations », 0 fiches)
+### `m12.immobilisations` (collection « immobilisations », 10 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `etat` | etat | text |  |
+| `compte` | compte | text |  |
+| `statut` | statut | text |  |
+| `categorie` | categorie | text |  |
+| `reference` | reference | text |  |
+| `designation` | designation | text |  |
+| `fournisseur` | fournisseur | text |  |
+| `date_acquisition` | dateAcquisition | date |  |
+| `valeur_acquisition` | valeurAcquisition | integer |  |
+| `duree_amortissement` | dureeAmortissement | integer |  |
 
 ### `m12.objectifs_pilotage` (collection « objectifsPilotage », 8 fiches)
 
@@ -521,6 +763,22 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `source` | source | text |  |
 | `statut` | statut | text |  |
 | `a_valider` | aValider | boolean |  |
+
+### `m12.rapprochements` (collection « rapprochements », 18 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `ecart` | ecart | integer |  |
+| `banque` | banque | text |  |
+| `compte` | compte | text |  |
+| `statut` | statut | text |  |
+| `periode` | periode | text |  |
+| `operateur` | operateur | text |  |
+| `reference` | reference | text |  |
+| `solde_releve` | soldeReleve | integer |  |
+| `statut_rappro` | statutRappro | text |  |
+| `solde_comptable` | soldeComptable | integer |  |
 
 ### `m13.ambulance` (collection « ambulance », 38 fiches)
 
@@ -544,10 +802,23 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `patient_code` | patientCode | text |  |
 | `accompagnant` | accompagnant | text |  |
 
-### `m13.ambulances` (collection « ambulances », 0 fiches)
+### `m13.ambulances` (collection « ambulances », 5 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `base` | base | text |  |
+| `type` | type | text |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `contact` | contact | text |  |
+| `libelle` | libelle | text |  |
+| `cree_par` | _creePar | text |  |
+| `telephone` | telephone | text |  |
+| `verifie_le` | verifieLe | date |  |
+| `a_completer` | aCompleter | boolean |  |
+| `disponibilite` | disponibilite | text |  |
 
 ### `m13.courriers` (collection « courriers », 34 fiches)
 
@@ -568,30 +839,88 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `correspondant` | correspondant | text |  |
 | `accuse_reception` | accuseReception | boolean |  |
 
-### `m13.enquetes` (collection « enquetes », 0 fiches)
+### `m13.enquetes` (collection « enquetes », 1 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `titre` | titre | text |  |
+| `cree_le` | creeLe | date |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `a_valider` | aValider | boolean |  |
+| `valide_le` | valideLe | date |  |
+| `reference` | reference | text |  |
+| `valide_par` | validePar | text |  |
+| `description` | description | text |  |
 
-### `m13.evenements_etablissement` (collection « evenementsEtablissement », 0 fiches)
+Table fille `m13.enquetes_questions` — 6 lignes : code text, type text, libelle text, options jsonb
+
+### `m13.evenements_etablissement` (collection « evenementsEtablissement », 10 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `lieu` | lieu | text |  |
+| `heure` | heure | text |  |
+| `canaux` | canaux | jsonb |  |
+| `statut` | statut | text |  |
+| `libelle` | libelle | text |  |
+| `notifier` | notifier | boolean |  |
+| `categorie` | categorie | text |  |
+| `reference` | reference | text |  |
+| `responsable` | responsable | text |  |
 
 ### `m13.jetons_enquete` (collection « jetonsEnquete », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
-### `m13.materiel` (collection « materiel », 0 fiches)
+### `m13.materiel` (collection « materiel », 18 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `etat` | etat | text |  |
+| `marque` | marque | text |  |
+| `statut` | statut | text |  |
+| `libelle` | libelle | text |  |
+| `categorie` | categorie | text |  |
+| `reference` | reference | text |  |
+| `a_completer` | aCompleter | boolean |  |
+| `numero_serie` | numeroSerie | text |  |
+| `observation` | observation | text |  |
+| `localisation` | localisation | text |  |
+| `mise_en_service` | miseEnService | text |  |
+| `periodicite_mois` | periodiciteMois | integer |  |
+| `dernier_entretien` | dernierEntretien | date |  |
 
-### `m13.reponses_enquetes` (collection « reponsesEnquetes », 0 fiches)
+### `m13.plan_annuel` (collection « planAnnuel », 12 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `axe` | axe | text |  |
+| `action` | action | text |  |
+| `statut` | statut | text |  |
+| `reference` | reference | text |  |
+| `avancement` | avancement | text |  |
+| `responsable` | responsable | text |  |
+| `trimestre_fin` | trimestreFin | integer |  |
+| `trimestre_debut` | trimestreDebut | integer |  |
+
+### `m13.reponses_enquetes` (collection « reponsesEnquetes », 26 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `canal` | canal | text |  |
+| `statut` | statut | text |  |
+| `reponses` | reponses | jsonb |  |
+| `saisi_par` | saisiPar | text |  |
+| `enquete_id` | enqueteId | text | → enquetes (FK) |
 
 ### `m13.reunions` (collection « reunions », 18 fiches)
 
@@ -614,19 +943,14 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 | `id` | id | text |  |
-| `role` | role | text |  |
-| `apres` | apres | text |  |
-| `avant` | avant | text |  |
+| `poste` | poste | text |  |
 | `action` | action | text |  |
 | `entite` | entite | text |  |
-| `statut` | statut | text |  |
-| `reference` | reference | text |  |
-| `horodatage` | horodatage | timestamptz |  |
-| `utilisateur` | utilisateur | text |  |
-| `poste` | poste | text |  |
 | `module` | module | text |  |
 | `succes` | succes | boolean |  |
 | `date_heure` | dateHeure | timestamptz |  |
+| `reference` | reference | text |  |
+| `utilisateur` | utilisateur | text |  |
 | `ancienne_valeur` | ancienneValeur | text |  |
 | `nouvelle_valeur` | nouvelleValeur | text |  |
 
@@ -641,11 +965,23 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `statut` | statut | text |  |
 | `journal` | journal | text |  |
 | `libelle` | libelle | text |  |
+| `archive_le` | _archiveLe | timestamptz |  |
+| `archive_par` | _archivePar | text |  |
+| `motif_archivage` | _motifArchivage | text |  |
 
-### `m14.fichiers_sauvegarde` (collection « fichiersSauvegarde », 0 fiches)
+### `m14.fichiers_sauvegarde` (collection « fichiersSauvegarde », 6 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `heure` | heure | text |  |
+| `portee` | portee | text |  |
+| `statut` | statut | text |  |
+| `tables` | tables | integer |  |
+| `taille` | taille | integer |  |
+| `fichier` | fichier | text |  |
+| `generee_par` | genereePar | text |  |
 
 ### `m14.notifications` (collection « notifications », 100 fiches)
 
@@ -669,6 +1005,21 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `destinataire` | destinataire | text |  |
 | `ordonnance_id` | ordonnanceId | text |  |
 
+### `m14.politique_securite` (collection « politiqueSecurite », 1 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | date |  |
+| `cree_par` | _creePar | text |  |
+| `echecs_max` | echecsMax | integer |  |
+| `blocage_min` | blocageMin | integer |  |
+| `historique` | historique | integer |  |
+| `longueur_min` | longueurMin | integer |  |
+| `inactivite_min` | inactiviteMin | integer |  |
+| `expiration_jours` | expirationJours | integer |  |
+
 ### `m14.rbac` (collection « rbac », 22 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -688,6 +1039,26 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `accueil` | accueil | text |  |
 | `couleur` | couleur | text |  |
 | `nouveau` | nouveau | boolean |  |
+
+### `m14.sessions_utilisateur` (collection « sessionsUtilisateur », 13 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `etat` | etat | text |  |
+| `role` | role | text |  |
+| `debut` | debut | timestamptz |  |
+| `poste` | poste | text |  |
+| `source` | source | text |  |
+| `statut` | statut | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
+| `adresse_ip` | adresseIp | text |  |
+| `inactivite` | inactivite | integer |  |
+| `nom_complet` | nomComplet | text |  |
+| `identifiant` | identifiant | text |  |
+| `derniere_activite` | derniereActivite | timestamptz |  |
+| `utilisateur_id` | utilisateurId | text | → utilisateurs (FK) |
 
 ### `m14.soignants` (collection « soignants », 15 fiches)
 
@@ -711,10 +1082,25 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
-### `m14.utilisateurs` (collection « utilisateurs », 0 fiches)
+### `m14.utilisateurs` (collection « utilisateurs », 48 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `mfa` | mfa | boolean |  |
+| `role` | role | text |  |
+| `actif` | actif | boolean |  |
+| `poste` | poste | text |  |
+| `cree_le` | creeLe | date |  |
+| `echecs` | echecs | integer |  |
+| `statut` | statut | text |  |
+| `service` | service | text |  |
+| `nom_complet` | nomComplet | text |  |
+| `identifiant` | identifiant | text |  |
+| `dernier_acces` | dernierAcces | date |  |
+| `employe_id` | employeId | text |  |
+| `matricule` | matricule | text |  |
+| `note` | note | text |  |
 
 ### `m1.constantes` (collection « constantes », 91 fiches)
 
@@ -774,10 +1160,24 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `motif_non_justifiee` | motifNonJustifiee | text |  |
 | `structure_provenance` | structureProvenance | text |  |
 
-### `m1.documents_patient` (collection « documentsPatient », 0 fiches)
+### `m1.documents_patient` (collection « documentsPatient », 99 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `code` | code | text |  |
+| `date` | date | date |  |
+| `etat` | etat | text |  |
+| `type` | type | text |  |
+| `depose` | depose | text |  |
+| `format` | format | text |  |
+| `statut` | statut | text |  |
+| `taille` | taille | integer |  |
+| `donnees` | donnees | text |  |
+| `fichier` | fichier | text |  |
+| `patient` | patient | text |  |
+| `patient_id` | patientId | text | → patients (FK) |
+| `reference` | reference | text |  |
 
 ### `m1.fiches_reference` (collection « fichesReference », 30 fiches)
 
@@ -1076,9 +1476,9 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `statut_dispensation` | statutDispensation | text |  |
 | `dossier_consultation_id` | dossierConsultationId | text |  |
 
-Table fille `m2.ordonnances_analyses` — 330 lignes : code text, prix integer, delai text, categorie text, designation text, echantillon text
+Table fille `m2.ordonnances_analyses` — 327 lignes : code text, prix integer, delai text, categorie text, designation text, echantillon text
 
-Table fille `m2.ordonnances_medicaments` — 181 lignes : prix integer, duree text, total integer, unite text, produit text, quantite integer, posologie text, produit_id text
+Table fille `m2.ordonnances_medicaments` — 179 lignes : prix integer, duree text, total integer, unite text, produit text, quantite integer, posologie text, produit_id text
 
 ### `m2.pathologies` (collection « pathologies », 55 fiches)
 
@@ -1095,7 +1495,7 @@ Table fille `m2.ordonnances_medicaments` — 181 lignes : prix integer, duree te
 | `valide_par` | validePar | text |  |
 | `notifiable` | notifiable | boolean |  |
 
-### `m2.prescriptions` (collection « prescriptions », 158 fiches)
+### `m2.prescriptions` (collection « prescriptions », 157 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1124,7 +1524,7 @@ Table fille `m2.ordonnances_medicaments` — 181 lignes : prix integer, duree te
 | `modifie_par` | _modifiePar | text |  |
 | `admission_id` | admissionId | text |  |
 
-Table fille `m2.prescriptions_lignes` — 305 lignes : prix integer, duree text, libelle text, quantite integer, posologie text, produit_id text, nb_administrations integer, tarif text, famille text, acte_code text, frequence text, motif_tarif text, prix_a_valider boolean
+Table fille `m2.prescriptions_lignes` — 308 lignes : prix integer, duree text, libelle text, quantite integer, posologie text, produit_id text, nb_administrations integer, tarif text, famille text, acte_code text, frequence text, motif_tarif text, prix_a_valider boolean
 
 ### `m2.resultats_imagerie` (collection « resultatsImagerie », 156 fiches)
 
@@ -1160,7 +1560,7 @@ Table fille `m2.prescriptions_lignes` — 305 lignes : prix integer, duree text,
 | `modifie_le` | _modifieLe | timestamptz |  |
 | `modifie_par` | _modifiePar | text |  |
 
-### `m2.soins` (collection « soins », 354 fiches)
+### `m2.soins` (collection « soins », 357 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1182,7 +1582,7 @@ Table fille `m2.prescriptions_lignes` — 305 lignes : prix integer, duree text,
 | `patient_code` | patientCode | text |  |
 | `observations` | observations | text |  |
 
-### `m3.administrations` (collection « administrations », 125 fiches)
+### `m3.administrations` (collection « administrations », 105 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1208,7 +1608,7 @@ Table fille `m2.prescriptions_lignes` — 305 lignes : prix integer, duree text,
 | `prescription_id` | prescriptionId | text | → prescriptions (FK) |
 | `prescription_ref` | prescriptionRef | text |  |
 
-### `m3.admissions` (collection « admissions », 91 fiches)
+### `m3.admissions` (collection « admissions », 92 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1251,10 +1651,26 @@ Table fille `m2.prescriptions_lignes` — 305 lignes : prix integer, duree text,
 
 Table fille `m3.checklists_bloc_items` — 546 lignes : coche boolean, label text
 
-### `m3.cpa` (collection « cpa », 0 fiches)
+### `m3.cpa` (collection « cpa », 6 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `asa` | asa | text |  |
+| `date` | date | date |  |
+| `statut` | statut | text |  |
+| `patient` | patient | text |  |
+| `allergies` | allergies | text |  |
+| `patient_id` | patientId | text | → patients (FK) |
+| `reference` | reference | text |  |
+| `technique` | technique | text |  |
+| `conclusion` | conclusion | text |  |
+| `mallampati` | mallampati | text |  |
+| `patient_code` | patientCode | text |  |
+| `anesthesiste` | anesthesiste | text |  |
+| `observations` | observations | text |  |
+| `jeune_consigne` | jeuneConsigne | boolean |  |
+| `antecedents_anesthesiques` | antecedentsAnesthesiques | text |  |
 
 ### `m3.cr_operatoires` (collection « crOperatoires », 26 fiches)
 
@@ -1281,10 +1697,30 @@ Table fille `m3.checklists_bloc_items` — 546 lignes : coche boolean, label tex
 | `aide_operateur_id` | aideOperateurId | text |  |
 | `diagnostic_peroperatoire` | diagnosticPeroperatoire | text |  |
 
-### `m3.observations` (collection « observations », 0 fiches)
+### `m3.observations` (collection « observations », 18 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `motif` | motif | text |  |
+| `place` | place | text |  |
+| `unite` | unite | text |  |
+| `statut` | statut | text |  |
+| `medecin` | medecin | text |  |
+| `patient` | patient | text |  |
+| `infirmier` | infirmier | text |  |
+| `patient_id` | patientId | text | → patients (FK) |
+| `reference` | reference | text |  |
+| `conclusion` | conclusion | text |  |
+| `date_entree` | dateEntree | timestamptz |  |
+| `date_sortie` | dateSortie | timestamptz |  |
+| `unite_label` | uniteLabel | text |  |
+| `orientation` | orientation | text |  |
+| `patient_code` | patientCode | text |  |
+| `orientation_label` | orientationLabel | text |  |
+| `statut_observation` | statutObservation | text |  |
+
+Table fille `m3.observations_constantes` — 67 lignes : par text, spo2 integer, heure timestamptz, pouls integer, tension text, observation text, temperature text
 
 ### `m3.rapports_medicaux` (collection « rapportsMedicaux », 22 fiches)
 
@@ -1754,7 +2190,7 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `echantillon` | echantillon | text |  |
 | `tarif_provisoire` | tarifProvisoire | boolean |  |
 
-### `m5.demandes_analyses` (collection « demandesAnalyses », 358 fiches)
+### `m5.demandes_analyses` (collection « demandesAnalyses », 355 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1815,6 +2251,11 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `valide_bio_le` | valideBioLe | date |  |
 | `valide_bio_par` | valideBioPar | text |  |
 
+### `m5.donneurs` (collection « donneurs », 0 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+
 ### `m5.examens_labo` (collection « examensLabo », 70 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -1833,6 +2274,11 @@ Table fille `m4.ptme_dispensations` — 19 lignes : mois text, servie boolean
 | `section_resultat` | sectionResultat | text |  |
 
 ### `m5.plages_reactif` (collection « plagesReactif », 0 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+
+### `m5.poches` (collection « poches », 0 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2002,12 +2448,24 @@ Table fille `m6.transferts_lignes` — 139 lignes : lot text, code text, cump nu
 | `observation` | observation | text |  |
 | `prix_revient` | prixRevient | integer |  |
 
-### `m7.besoins` (collection « besoins », 0 fiches)
+### `m7.besoins` (collection « besoins », 20 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `etape` | etape | text |  |
+| `motif` | motif | text |  |
+| `statut` | statut | text |  |
+| `service` | service | text |  |
+| `demandeur` | demandeur | text |  |
+| `reference` | reference | text |  |
+| `validee_par` | valideePar | text |  |
+| `montant_estime` | montantEstime | integer |  |
 
-### `m7.commandes` (collection « commandes », 15 fiches)
+Table fille `m7.besoins_lignes` — 51 lignes : unite text, produit text, prix_achat integer, produit_id text, quantite_livree integer, quantite_accordee integer, quantite_demandee integer
+
+### `m7.commandes` (collection « commandes », 30 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2023,7 +2481,7 @@ Table fille `m6.transferts_lignes` — 139 lignes : lot text, code text, cump nu
 | `fournisseur_nom` | fournisseurNom | text |  |
 | `statut_commande` | statutCommande | text |  |
 
-Table fille `m7.commandes_lignes` — 46 lignes : unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer
+Table fille `m7.commandes_lignes` — 89 lignes : unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer
 
 ### `m7.factures_fournisseurs` (collection « facturesFournisseurs », 9 fiches)
 
@@ -2069,7 +2527,7 @@ Table fille `m7.commandes_lignes` — 46 lignes : unite text, montant integer, p
 | `code_client` | codeClient | text |  |
 | `certification` | certification | text |  |
 
-### `m7.livraisons` (collection « livraisons », 9 fiches)
+### `m7.livraisons` (collection « livraisons », 20 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2084,12 +2542,27 @@ Table fille `m7.commandes_lignes` — 46 lignes : unite text, montant integer, p
 | `fournisseur_nom` | fournisseurNom | text |  |
 | `statut_reception` | statutReception | text |  |
 
-Table fille `m7.livraisons_lignes` — 24 lignes : ecart integer, unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer, quantite_livree integer
+Table fille `m7.livraisons_lignes` — 58 lignes : ecart integer, unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer, quantite_livree integer
 
-### `m7.pv_receptions` (collection « pvReceptions », 0 fiches)
+### `m7.pv_receptions` (collection « pvReceptions », 7 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
+| `id` | id | text |  |
+| `date` | date | date |  |
+| `nature` | nature | text |  |
+| `statut` | statut | text |  |
+| `reserves` | reserves | text |  |
+| `reference` | reference | text |  |
+| `conclusion` | conclusion | text |  |
+| `magasinier` | magasinier | text |  |
+| `chaine_froid` | chaineFroid | boolean |  |
+| `commande_ref` | commandeRef | text |  |
+| `livraison_ref` | livraisonRef | text |  |
+| `fournisseur_nom` | fournisseurNom | text |  |
+| `representant_fournisseur` | representantFournisseur | text |  |
+
+Table fille `m7.pv_receptions_lignes` — 12 lignes : ecart integer, unite text, livree integer, produit text, commandee integer
 
 ### `m8.avoirs` (collection « avoirs », 0 fiches)
 
@@ -2140,7 +2613,7 @@ Table fille `m7.livraisons_lignes` — 24 lignes : ecart integer, unite text, mo
 | `motif_remise` | motifRemise | text |  |
 | `souscripteur` | souscripteur | text |  |
 
-Table fille `m8.factures_lignes` — 1037 lignes : id text, paye_le timestamptz, remise integer, montant integer, paye_par text, acte_code text, quantite integer, categorie text, demande_id text, produit_id text, designation text, montant_brut integer, motif_remise text, part_patient integer, montant_regle integer, part_assureur integer, prix_unitaire integer, part_personnel integer, statut_paiement text, prix_unitaire_net integer, demande_imagerie_id text, taux_remise integer
+Table fille `m8.factures_lignes` — 1032 lignes : id text, paye_le timestamptz, remise integer, montant integer, paye_par text, acte_code text, quantite integer, categorie text, demande_id text, produit_id text, designation text, montant_brut integer, motif_remise text, part_patient integer, montant_regle integer, part_assureur integer, prix_unitaire integer, part_personnel integer, statut_paiement text, prix_unitaire_net integer, demande_imagerie_id text, taux_remise integer
 
 ### `m9.assureurs` (collection « assureurs », 13 fiches)
 
@@ -2217,7 +2690,22 @@ Table fille `m9.factures_mere_souscripteurs` — 31 lignes : montant integer, pa
 | `produits_exclus` | produitsExclus | jsonb |  |
 | `accord_prealable` | accordPrealable | jsonb |  |
 
-### `socle.taches` (collection « taches », 451 fiches)
+### `socle.appels` (collection « appels », 90 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `sens` | sens | text |  |
+| `agent` | agent | text |  |
+| `objet` | objet | text |  |
+| `suite` | suite | text |  |
+| `statut` | statut | text |  |
+| `date_heure` | dateHeure | timestamptz |  |
+| `reference` | reference | text |  |
+| `telephone` | telephone | text |  |
+| `interlocuteur` | interlocuteur | text |  |
+
+### `socle.taches` (collection « taches », 450 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2249,6 +2737,22 @@ Table fille `m9.factures_mere_souscripteurs` — 31 lignes : montant integer, pa
 | `cree_le_2` | creeLe | timestamptz |  |
 | `libelle` | libelle | text |  |
 | `patient_id` | patientId | text | → patients (FK) |
+
+### `socle.visites_hospi` (collection « visitesHospi », 41 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `lit` | lit | text |  |
+| `date` | date | date |  |
+| `type` | type | text |  |
+| `heure` | heure | text |  |
+| `statut` | statut | text |  |
+| `patient` | patient | text |  |
+| `visiteur` | visiteur | text |  |
+| `admission_id` | admissionId | text | → admissions (FK) |
+| `observation` | observation | text |  |
+| `patient_code` | patientCode | text |  |
 
 ### `sup.support` (collection « support », 0 fiches)
 

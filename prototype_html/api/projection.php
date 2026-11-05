@@ -53,9 +53,46 @@ function sigh_proj_installer(PDO $pdo): bool
     foreach ($heritees as $h) {
         $pdo->exec('ALTER TABLE "' . $h[0] . '"."' . $h[1] . '" DROP CONSTRAINT "' . $h[2] . '"');
     }
+    /* Le schéma s'applique à la première installation ET à chaque fois que le manifeste change (collection ou champ ajouté) : le fichier ne contient que des
+       CREATE ... IF NOT EXISTS et des ADD COLUMN IF NOT EXISTS, donc le rejouer est sans danger. Sans cela, une base déjà installée ne recevait jamais les
+       tables ajoutées depuis, et la copie relationnelle nommait des erreurs à chaque écriture. */
+    $pdo->exec('CREATE TABLE IF NOT EXISTS projection_schema (id INT PRIMARY KEY, empreinte VARCHAR(64) NOT NULL)');
+    $empreinte = hash('sha256', (string) file_get_contents(__DIR__ . '/schema/schema.sql'));
+    $deja = $pdo->query('SELECT empreinte FROM projection_schema WHERE id = 1')->fetchColumn();
     $existe = $pdo->query("SELECT to_regclass('m1.patients')")->fetchColumn();
-    if (!$existe) {
-        $pdo->exec((string) file_get_contents(__DIR__ . '/schema/schema.sql'));
+    if (!$existe || $deja !== $empreinte) {
+        $sql = (string) file_get_contents(__DIR__ . '/schema/schema.sql');
+        $reconstruire = false;
+        try {
+            $pdo->exec($sql);
+        } catch (Throwable $e) {
+            /* Une table dont la FORME a changé (clé, type) ne se met pas à niveau par ADD COLUMN. La copie relationnelle est DÉRIVÉE du magasin JSON, qui reste
+               l'autorité : on la jette et on la reconstruit. Les schémas supprimés sont ceux du manifeste, jamais `public`. */
+            foreach (array_unique(array_map(fn ($t) => $t['schema'], sigh_proj_manifeste()['tables'])) as $schema) {
+                $pdo->exec('DROP SCHEMA IF EXISTS "' . $schema . '" CASCADE');
+            }
+            $pdo->exec('DELETE FROM projection_etat');
+            $pdo->exec($sql);
+            $reconstruire = true;
+        }
+        /* Les erreurs d'avant la mise à niveau décrivaient un schéma périmé : elles ne disent plus rien d'actuel. */
+        $pdo->exec('DELETE FROM projection_erreurs');
+        $pdo->prepare('INSERT INTO projection_schema (id, empreinte) VALUES (1, ?) ON CONFLICT (id) DO UPDATE SET empreinte = EXCLUDED.empreinte')->execute([$empreinte]);
+        if ($reconstruire) {
+            $tout = [];
+            foreach ($pdo->query('SELECT nom, donnees FROM collections') as $l) {
+                $tout[$l['nom']] = json_decode($l['donnees'], true);
+            }
+            try {
+                $pdo->beginTransaction();
+                sigh_proj_projeter($pdo, $tout);
+                $pdo->commit();
+            } catch (Throwable $e) {
+                if ($pdo->inTransaction()) {
+                    $pdo->rollBack();
+                }
+            }
+        }
     }
     $fait = true;
     return true;

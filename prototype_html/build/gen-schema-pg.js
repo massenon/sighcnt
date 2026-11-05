@@ -184,6 +184,8 @@ Array.from(new Set(Object.values(tables).map((t) => t.schema))).sort().forEach((
 });
 out.push('');
 const manifeste = { version: 1, tables: {} };
+/* Mise à niveau d'une base DÉJÀ installée : CREATE TABLE IF NOT EXISTS n'ajoute pas les colonnes d'une table qui existe. Ces ALTER ne vont que dans le schéma d'exécution du prototype (api/schema), pas dans la copie du projet cible. */
+const MONTEE = ' -- @montee';
 Object.values(tables).sort((a, b) => (a.schema + a.table).localeCompare(b.schema + b.table)).forEach((t) => {
   const nomT = q(t.schema) + '.' + q(t.table);
   const lignes = [];
@@ -194,6 +196,8 @@ Object.values(tables).sort((a, b) => (a.schema + a.table).localeCompare(b.schema
   if (!t.aId) lignes.unshift('  "_rang" integer PRIMARY KEY');
   lignes.push('  "extra" jsonb');
   out.push('CREATE TABLE IF NOT EXISTS ' + nomT + ' (\n' + lignes.join(',\n') + '\n);');
+  t.colonnes.filter((c) => !(c.champ === 'id' && t.aId)).forEach((c) => out.push('ALTER TABLE ' + nomT + ' ADD COLUMN IF NOT EXISTS ' + q(c.col) + ' ' + c.typ + ';' + MONTEE));
+  out.push('ALTER TABLE ' + nomT + ' ADD COLUMN IF NOT EXISTS "extra" jsonb;' + MONTEE);
   out.push('COMMENT ON TABLE ' + nomT + ' IS ' + "'Collection « " + t.collection + " » — " + (LIBELLE_MODULE[t.schema] || t.schema).replace(/'/g, "''") + "'" + ';');
   const idx = new Set();
   t.colonnes.forEach((c) => {
@@ -208,6 +212,8 @@ Object.values(tables).sort((a, b) => (a.schema + a.table).localeCompare(b.schema
     cl.push('  "extra" jsonb', '  PRIMARY KEY ("parent_id", "rang")');
     if (t.aId) cl.push('  FOREIGN KEY ("parent_id") REFERENCES ' + nomT + ' ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED');
     out.push('CREATE TABLE IF NOT EXISTS ' + nf + ' (\n' + cl.join(',\n') + '\n);');
+    f.colonnes.forEach((c) => out.push('ALTER TABLE ' + nf + ' ADD COLUMN IF NOT EXISTS ' + q(c.col) + ' ' + c.typ + ';' + MONTEE));
+    out.push('ALTER TABLE ' + nf + ' ADD COLUMN IF NOT EXISTS "extra" jsonb;' + MONTEE);
     out.push('COMMENT ON TABLE ' + nf + ' IS ' + "'Lignes « " + f.champ + " » de « " + t.collection + " »';");
   });
   manifeste.tables[t.collection] = {
@@ -241,7 +247,7 @@ manifeste.ignorees = IGNOREES;
 fs.writeFileSync(path.join(RACINE, 'api/schema/schema.sql'), sql + '\n');
 fs.writeFileSync(path.join(RACINE, 'api/schema/manifeste.json'), JSON.stringify(manifeste));
 fs.mkdirSync(path.resolve(RACINE, '../packages/schema/postgres'), { recursive: true });
-fs.writeFileSync(path.resolve(RACINE, '../packages/schema/postgres/0001_modules.sql'), sql + '\n');
+fs.writeFileSync(path.resolve(RACINE, '../packages/schema/postgres/0001_modules.sql'), sql.split('\n').filter((l) => l.indexOf('@montee') < 0).join('\n') + '\n');
 fs.writeFileSync(path.resolve(RACINE, '../packages/schema/postgres/0002_cles_etrangeres.sql'), sqlFk + '\n');
 
 /* --- Dictionnaire lisible -------------------------------------------------- */
