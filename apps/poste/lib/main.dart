@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles;
+import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles, droitsDepuisMatrice;
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -255,7 +255,15 @@ Future<void> main() async {
   try {
     final cp = ConfigPairPoste.lire(dossierDonnees);
     if (cp != null) {
-      moteurPair = MoteurPair.creer(magasin: magasin, dbChemin: '$dossierDonnees/pair.db', relais: cp.relais, cleHex: cp.cleHex, nom: cp.nom);
+      // Les droits de l'échange viennent de la MATRICE RBAC engendrée (la même que celle de la navigation), plus de la table du banc.
+      final matrice = (await DonneesNavigation.chargerAssets()).matrice;
+      moteurPair = MoteurPair.creer(
+          magasin: magasin,
+          dbChemin: '$dossierDonnees/pair.db',
+          relais: cp.relais,
+          cleHex: cp.cleHex,
+          nom: cp.nom,
+          droits: droitsDepuisMatrice(peutEditer: matrice.peutEditer, peutAnnuler: matrice.peutAnnuler));
       if (!moteurPair.appaire && cp.code != null) {
         try {
           await moteurPair.appairer(cp.code!);

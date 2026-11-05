@@ -1,6 +1,7 @@
 // ADR-0006 : le moteur pair du poste recopie les conflits marqués dans la collection locale `conflitsPair` et les archive (RG-14) quand la décision les lève.
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
@@ -35,16 +36,18 @@ void main() {
     expect(moteur.etat()['ops'], 0);
   });
   test('le pont pair ne porte que les familles A : ni factures, ni stock, ni lots', () {
-    expect(MoteurPair.collectionsDuPont, {'patients', 'rendezvous'});
+    const a = {'patients', 'rendezvous', 'consultations', 'dossiersConsultation', 'antecedents', 'appels', 'observations'};
+    expect(MoteurPair.collectionsDuPont, a);
     final m = Magasin({}, 'POSTE', {});
     final pair = FileulPair(ConfigPair(port: 0, relais: 'http://127.0.0.1:1', dbChemin: ':memory:', cleHex: '00' * 32));
     final pont = MoteurPair.pour(pair, m).pont(role: () => 'da');
-    expect(pont.collections, {'patients', 'rendezvous'});
+    expect(pont.collections, a);
     for (final interdite in ['factures', 'produits', 'lots', 'mouvements', 'ecritures', 'avoirs', 'admissions']) {
       expect(pont.collections.contains(interdite), isFalse, reason: interdite);
     }
   });
   suitePont();
+  main2();
 }
 
 // Suite : écritures du poste par le transport pair, et la modale « Conflits à trancher ».
@@ -102,5 +105,16 @@ void suitePont() {
     expect((await t.liste('patients')).single.data['telephone'], '90');
     await tester.pumpWidget(const SizedBox());
     await tester.pump(const Duration(seconds: 30));
+  });
+}
+
+void main2() {
+  test('droits de la MATRICE RBAC : le caissier ne peut pas écrire un patient, la réception si', () {
+    final matrice = MatriceDroits.depuisJson((jsonDecode(File('../../packages/rbac/data/rbac.json').readAsStringSync()) as Map).cast<String, Object?>());
+    final droits = droitsDepuisMatrice(peutEditer: matrice.peutEditer, peutAnnuler: matrice.peutAnnuler);
+    final pair = FileulPair(ConfigPair(port: 0, relais: 'http://127.0.0.1:1', dbChemin: ':memory:', cleHex: '00' * 32, droits: droits));
+    pair.base.poserMeta('uuid', 'A');
+    expect(() => pair.emettre({'collection': 'patients', 'fiche': 'p1', 'type': 'creer', 'champs': {'nom': 'x'}, 'role': 'caissier'}), throwsA(isA<Err>()));
+    expect(pair.emettre({'collection': 'patients', 'fiche': 'p1', 'type': 'creer', 'champs': {'nom': 'x'}, 'role': 'reception'}).fiche, 'p1');
   });
 }

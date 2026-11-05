@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:sigh_domaine/sigh_domaine.dart' show famillesPair;
+import 'package:sigh_domaine/sigh_domaine.dart' show famillesPair, DroitsOperation;
 import 'package:sigh_sync/sigh_sync.dart';
 
 import '../donnees/magasin.dart';
@@ -16,8 +16,8 @@ class MoteurPair {
   final Magasin _magasin;
   Timer? _miroir;
 
-  static MoteurPair creer({required Magasin magasin, required String dbChemin, required String relais, required String cleHex, String nom = 'poste'}) =>
-      MoteurPair._(FileulPair(ConfigPair(port: 0, relais: relais, dbChemin: dbChemin, cleHex: cleHex, nom: nom)), magasin);
+  static MoteurPair creer({required Magasin magasin, required String dbChemin, required String relais, required String cleHex, String nom = 'poste', DroitsOperation? droits}) =>
+      MoteurPair._(FileulPair(ConfigPair(port: 0, relais: relais, dbChemin: dbChemin, cleHex: cleHex, nom: nom, droits: droits)), magasin);
 
   /// Pour les tests : un moteur sur un [FileulPair] déjà construit.
   factory MoteurPair.pour(FileulPair pair, Magasin magasin) => MoteurPair._(pair, magasin);

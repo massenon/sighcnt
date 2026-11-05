@@ -16,7 +16,8 @@
  * Ce qui est appliqué sans la mère est PROVISOIRE : une fiche touchée par une opération sans `seq` (attribué par la mère) l'est.
  * ========================================================================== */
 
-const FAMILLES = { patients: 'A', rendezvous: 'A', constantes: 'B', notes: 'B', factures: 'C', prescriptions: 'C', stock: 'D', besoins: 'W' };
+const FAMILLES = { patients: 'A', rendezvous: 'A', constantes: 'B', notes: 'B', factures: 'C', prescriptions: 'C', stock: 'D', besoins: 'W',
+  consultations: 'A', dossiersConsultation: 'A', antecedents: 'A', appels: 'A', observations: 'A', releves: 'B' };
 
 /** Ordre total identique sur tous les appareils. */
 function comparer(a, b) {
@@ -148,6 +149,12 @@ const DROITS_BANC = {
   notes: { '*': ['infirmier', 'medecin', 'x'] },
   factures: { '*': ['caissier', 'da', 'x'], trancher: ['da', 'mere'] },
   prescriptions: { '*': ['medecin', 'x'] },
+  consultations: { '*': ['medecin', 'da', 'x'], trancher: ['da', 'mere'] },
+  dossiersConsultation: { '*': ['medecin', 'x'], trancher: ['da', 'mere'] },
+  antecedents: { '*': ['medecin', 'infirmier', 'x'], trancher: ['da', 'mere'] },
+  appels: { '*': ['reception', 'da', 'x'], trancher: ['da', 'mere'] },
+  observations: { '*': ['infirmier', 'medecin', 'x'], trancher: ['da', 'mere'] },
+  releves: { '*': ['infirmier', 'medecin', 'x'] },
 };
 function droitsBanc(op) {
   const c = DROITS_BANC[op.collection]; if (!c) return false;

@@ -14,9 +14,12 @@ import 'commun.dart';
 import 'pont.dart' show Enveloppes;
 
 class ConfigPair {
-  ConfigPair({required this.port, required this.relais, required this.dbChemin, required this.cleHex, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 120, this.cleStockage = ''});
+  ConfigPair({required this.port, required this.relais, required this.dbChemin, required this.cleHex, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 120, this.cleStockage = '', this.droits});
   final int port, decalageMs, intervalleMs;
   final String relais, dbChemin, cleHex, nom, cleStockage;
+
+  /// Les droits de l'échange : la matrice RBAC en production (`droitsDepuisMatrice`), la table du banc par défaut.
+  final DroitsOperation? droits;
 }
 
 List<int> _octets(String hex) => [for (var i = 0; i + 1 < hex.length; i += 2) int.parse(hex.substring(i, i + 2), radix: 16)];
@@ -32,7 +35,7 @@ class FileulPair {
       CREATE TABLE IF NOT EXISTS foi (id TEXT PRIMARY KEY, seq INTEGER);
       CREATE TABLE IF NOT EXISTS anomalies (k INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, detail TEXT);''');
     horloge.dernier = base.metaInt('hlc');
-    droits = droitsDepuisTable(droitsBancPair);
+    droits = cfg.droits ?? droitsDepuisTable(droitsBancPair);
   }
 
   final ConfigPair cfg;

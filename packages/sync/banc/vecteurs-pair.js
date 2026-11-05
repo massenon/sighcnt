@@ -54,6 +54,19 @@ ajouter('trancher refusé sur pièce émise et sur fiche archivée', [
   op('F1', 4, 'patients', 'z', 'creer', { nom: 'A' }, { role: 'reception' }), op('F1', 5, 'patients', 'z', 'archiver', {}, { role: 'reception' }), op('mere', 6, 'patients', 'z', 'trancher', { nom: 'B' }, { role: 'mere' }),
 ]);
 
+/* chaque collection ajoutée a SES cas : écriture concurrente (famille A) ou ajout seul (famille B), rôle sans droit refusé, décision de la personne habilitée */
+for (const [col, role, intrus] of [['consultations', 'medecin', 'caissier'], ['dossiersConsultation', 'medecin', 'reception'], ['antecedents', 'infirmier', 'caissier'], ['appels', 'reception', 'medecin'], ['observations', 'infirmier', 'caissier']]) {
+  ajouter('collection ' + col + ' : concurrence marquée, décision, rôle sans droit refusé', [
+    op('F1', 1, col, 'k', 'creer', { v: 'a' }, { role }), op('F1', 5, col, 'k', 'modifier', { v: 'b' }, { role, vu: { v: 1 } }),
+    op('F2', 6, col, 'k', 'modifier', { v: 'c' }, { role, vu: { v: 1 } }), op('F3', 7, col, 'k', 'modifier', { v: 'x' }, { role: intrus, vu: { v: 6 } }),
+    op('F1', 9, col, 'k', 'trancher', { v: 'b' }, { role: 'da' }),
+  ]);
+}
+ajouter('collection releves (journal) : ajout seul, deux postes, rôle sans droit refusé', [
+  op('F1', 1, 'releves', 'r1', 'creer', { t: 37 }, { role: 'infirmier' }), op('F2', 1, 'releves', 'r2', 'creer', { t: 38 }, { role: 'medecin' }),
+  op('F3', 2, 'releves', 'r3', 'creer', { t: 39 }, { role: 'caissier' }), op('F1', 3, 'releves', 'r1', 'modifier', { t: 40 }, { role: 'infirmier' }),
+]);
+
 /* cas engendrés (graine fixe) : mélange de familles, rôles valides ou non, hlc égaux entre appareils, doublons */
 let s = 20261105;
 const alea = (m) => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s % m; };

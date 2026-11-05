@@ -23,6 +23,12 @@ const Map<String, String> famillesPair = {
   'prescriptions': 'C',
   'stock': 'D',
   'besoins': 'W',
+  'consultations': 'A',
+  'dossiersConsultation': 'A',
+  'antecedents': 'A',
+  'appels': 'A',
+  'observations': 'A',
+  'releves': 'B',
 };
 
 /// Une opération échangée entre pairs (déjà déchiffrée). `seq` n'est posé que par la mère.
@@ -369,6 +375,12 @@ const Map<String, Map<String, List<String>>> droitsBancPair = {
   'notes': {'*': ['infirmier', 'medecin', 'x']},
   'factures': {'*': ['caissier', 'da', 'x'], 'trancher': ['da', 'mere']},
   'prescriptions': {'*': ['medecin', 'x']},
+  'consultations': {'*': ['medecin', 'da', 'x'], 'trancher': ['da', 'mere']},
+  'dossiersConsultation': {'*': ['medecin', 'x'], 'trancher': ['da', 'mere']},
+  'antecedents': {'*': ['medecin', 'infirmier', 'x'], 'trancher': ['da', 'mere']},
+  'appels': {'*': ['reception', 'da', 'x'], 'trancher': ['da', 'mere']},
+  'observations': {'*': ['infirmier', 'medecin', 'x'], 'trancher': ['da', 'mere']},
+  'releves': {'*': ['infirmier', 'medecin', 'x']},
 };
 
 /// Construit un contrôle de droits depuis une table (celle du banc, ou celle déduite de la matrice RBAC quand le poste la branchera).
@@ -400,3 +412,52 @@ class JournalPair {
 
   Iterable<String> get appareils => _parAppareil.keys;
 }
+
+/// L'écran du manifeste qui PORTE chaque collection de la règle de fusion : ses droits (voir, éditer, annuler) sont ceux que la matrice `rbac.json` donne au rôle
+/// sur cet écran. Une collection ajoutée à [famillesPair] sans ligne ici est REFUSÉE à l'émission (refus nommé), jamais ouverte à tous.
+const Map<String, String> ecranParCollectionPair = {
+  'patients': 'm1-patients',
+  'rendezvous': 'm2-rendezvous',
+  'constantes': 'm1-constantes',
+  'notes': 'm13-notes-service',
+  'factures': 'm8-factures',
+  'prescriptions': 'm2-prescriptions',
+  'stock': 'm6-stock-detail',
+  'besoins': 'm7-besoins',
+  'consultations': 'm2-consultations',
+  'dossiersConsultation': 'm2-dossiers-consultation',
+  'antecedents': 'm1-antecedents',
+  'appels': 'm2-registre-appels',
+  'observations': 'm3-observation',
+  'releves': 'm3-feuille-temperature',
+};
+
+/// Ceux qui TRANCHENT un conflit ou VALIDENT un flux : une décision institutionnelle, pas une saisie. `mere` est l'appareil de la mère (ses décisions à son retour).
+const List<String> rolesQuiTranchentPair = ['da', 'direction', 'admin', 'mere'];
+const List<String> rolesQuiValidentPair = ['da', 'admin'];
+
+/// Les droits de la règle de fusion, DÉDUITS de la matrice RBAC (source unique, engendrée par la maquette) au lieu de la table du banc : écrire = éditer l'écran
+/// de la collection ; archiver ou restaurer = annuler ; trancher et valider = rôles institutionnels. Tout ce qui n'est pas listé est refusé.
+/// [peutEditer] et [peutAnnuler] : `(role, ecran) -> bool`, c'est-à-dire `MatriceDroits.peutEditer`.
+DroitsOperation droitsDepuisMatrice({
+  required bool Function(String role, String ecran) peutEditer,
+  required bool Function(String role, String ecran) peutAnnuler,
+  Map<String, String> ecrans = ecranParCollectionPair,
+}) =>
+    (op) {
+      final role = op.role;
+      final ecran = ecrans[op.collection];
+      if (role == null || ecran == null) return false;
+      switch (op.type) {
+        case 'trancher':
+          return rolesQuiTranchentPair.contains(role);
+        case 'valider':
+        case 'rejeter':
+          return rolesQuiValidentPair.contains(role);
+        case 'archiver':
+        case 'restaurer':
+          return peutAnnuler(role, ecran);
+        default:
+          return peutEditer(role, ecran);
+      }
+    };
