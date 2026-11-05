@@ -6,3 +6,7 @@
 *.ttf binary
 *.ico binary
 *.pdf binary
+
+# Scripts Windows : fins de ligne CRLF (un .bat en LF casse ses etiquettes)
+*.bat text eol=crlf
+*.iss text eol=crlf

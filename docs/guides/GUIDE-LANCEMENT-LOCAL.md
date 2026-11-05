@@ -76,3 +76,12 @@ Voir `docs/guides/GUIDE-DEMARRAGE.md` (`npm install`, `npm run prototype:serveur
 ## Ce qui n'est PAS vérifié ici
 
 `flutter build windows` et la protection DPAPI de la clé n'ont pas été exécutés sur un vrai Windows ; le mobile n'a pas tourné sur un appareil Android ; la synchronisation n'a pas été mesurée sur deux postes physiques. Si une commande échoue, envoyer la sortie complète.
+
+## Construire l'installateur Windows du poste
+
+```powershell
+cd apps\poste
+.\build_windows.bat
+```
+
+Résultat : `build\installer\SIGH_Poste_Setup_<version>.exe` et son `.sha256`. Prérequis : Flutter (Desktop Windows), Visual Studio 2022 (C++), Inno Setup 6. La version se change dans `apps\poste\pubspec.yaml`. Le script s'arrête à la première étape en échec et nomme le fichier manquant. Les données du poste vivent dans `%LOCALAPPDATA%\SIGHCNT\donnees` (en développement, `--dart-define=SIGH_DONNEES=<dossier>` les redirige). Non exécuté dans l'environnement de rédaction : voir `docs/prd/PRD-POSTE-installateur-windows.md`, section 11.

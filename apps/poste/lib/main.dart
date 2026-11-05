@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -5,10 +6,12 @@ import 'package:sigh_domaine/sigh_domaine.dart' show cfbEssentielles;
 import 'package:sigh_sync/sigh_sync.dart';
 import 'package:window_manager/window_manager.dart';
 
+
 import 'donnees/magasin.dart';
 import 'donnees/persistance.dart';
 import 'modules/cfg/cfb_systeme.dart' show CfbPersistance;
 import 'core/config_poste.dart';
+import 'core/dossier_donnees.dart';
 import 'core/controleur_poste.dart';
 import 'core/donnees_navigation.dart';
 import 'core/identifiants.dart';
@@ -71,9 +74,11 @@ const String assistantInstallation =
 const String chiffrementActif =
     String.fromEnvironment('SIGH_CHIFFREMENT', defaultValue: 'oui');
 
-/// Dossier des données du poste. À remplacer par le dossier d'application du système à l'installation (tâche de packaging).
-const String dossierDonnees =
-    String.fromEnvironment('SIGH_DONNEES', defaultValue: 'donnees-poste');
+/// `SIGH_DONNEES` : DÉVELOPPEMENT et tests. Fixe le dossier des données tel quel. Absent, le dossier est celui du système (`%LOCALAPPDATA%\SIGHCNT\donnees`).
+const String donneesSurcharge = String.fromEnvironment('SIGH_DONNEES');
+
+/// Dossier des données du poste, résolu AU DÉMARRAGE par [preparerDossierDonnees] (jamais dans le dossier d'installation).
+String dossierDonnees = 'donnees-poste';
 
 /// La session du démarrage : la connexion est EXIGÉE sauf `SIGH_CONNEXION=non` (tests et développement). [connexion] surcharge la constante de compilation
 /// pour les tests.
@@ -82,6 +87,16 @@ SessionPoste? sessionDemarrage({String connexion = connexionExigee, DateTime Fun
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    dossierDonnees = await preparerDossierDonnees(
+        resoudreDossierDonnees(surcharge: donneesSurcharge, env: Platform.environment, windows: Platform.isWindows));
+  } on DossierDonneesInutilisable catch (e) {
+    // Un refus NOMMÉ à l'écran : le poste ne démarre pas sur une base qu'il ne saura pas ouvrir.
+    runApp(MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(body: Center(child: Padding(padding: const EdgeInsets.all(24), child: SelectableText('SIGH-CNT ne peut pas démarrer.\n\n${e.motif}'))))));
+    return;
+  }
   // La fenêtre pilotable : un poste sans fenêtre native n'empêche pas le démarrage. Le poste se lance MAXIMISÉ (Direction, 02/11/2026 ; le plein écran du 01/11 reste à la demande) ; si la
   // plateforme refuse, le repli est nommé et la coque le dit au premier affichage. F11 et la barre supérieure basculent ensuite.
   FenetreSysteme? fenetre;

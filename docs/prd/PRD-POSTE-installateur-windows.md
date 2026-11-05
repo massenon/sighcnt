@@ -1,6 +1,6 @@
 # PRD : Poste, installateur Windows (build_windows.bat + Inno Setup)
 
-Statut : **proposé le 05/11/2026**, en attente des arbitrages de la section 9.
+Statut : **proposé le 05/11/2026** ; Q1 (suppression des données sur Oui) et Q3 (administrateur) VALIDÉES par la Direction le 05/11/2026, Q8 acceptée (vérification sur un vrai poste Windows) ; phase A et phase B **mises en œuvre le 05/11/2026**, recette sur poste Windows à faire (section 11).
 Sources : demande de la Direction du 05/11/2026 (deux exemples d'installateurs Inno Setup déjà livrés sur d'autres projets), `docs/guides/GUIDE-LANCEMENT-LOCAL.md`, `apps/poste/lib/main.dart`, `apps/poste/windows/`.
 Règle de rédaction : pas de tiret cadratin comme ponctuation.
 
@@ -39,7 +39,7 @@ Enchaînement, avec arrêt à la première erreur (`if errorlevel 1`) et message
 4. `flutter pub get`.
 5. **Génération de code** : `dart run build_runner build` (sans `--delete-conflicting-outputs`, absent des versions récentes). Étape sautée si aucun `build_runner` n'est déclaré, voir Q7.
 6. `flutter build windows --release`.
-7. **Vérification des sources de l'installateur** : chaque fichier référencé par le `.iss` est testé et le premier absent est NOMMÉ (l'incident connu : « The system cannot find the path specified » sans nom). Liste minimale : `sigh_poste.exe`, `flutter_windows.dll`, `sqlite3.dll`, `data\app.so`, `data\icudtl.dat`, `data\flutter_assets`, icône, `installer\poste.example.json`.
+7. **Vérification des sources de l'installateur** : chaque fichier référencé par le `.iss` est testé et le premier absent est NOMMÉ (l'incident connu : « The system cannot find the path specified » sans nom). Liste minimale : `sigh_poste.exe`, `flutter_windows.dll`, `sqlite3.dll`, `data\app.so`, `data\icudtl.dat`, `data\flutter_assets`, icône, `installer\sigh_poste.iss`.
 8. **Runtime Visual C++** : copier `msvcp140.dll`, `vcruntime140.dll`, `vcruntime140_1.dll` depuis `%SystemRoot%\System32` vers le dossier de sortie ; s'arrêter si l'une manque.
 9. `ISCC.exe /DAppVersion=%VERSION% installer\sigh_poste.iss`.
 10. **Contrôle final** : le `.exe` existe, sa taille est affichée, son SHA-256 est écrit à côté (`.sha256`).
@@ -48,7 +48,7 @@ Enchaînement, avec arrêt à la première erreur (`if errorlevel 1`) et message
 
 - **AppId fixe**, généré UNE fois (`{{GUID}`) et jamais changé. Il est consigné dans ce PRD et dans le `.iss`, avec le commentaire « ne jamais changer ».
 - `AppName=SIGH-CNT Poste`, éditeur : Clinique Nassiera Too, `DefaultDirName={autopf}\SIGH-CNT`, `ArchitecturesAllowed=x64compatible`, `CloseApplications=yes`.
-- `[Files]` : tout `build\windows\x64\runner\Release\*` plus le modèle `poste.example.json` (aucune valeur réelle).
+- `[Files]` : tout `build\windows\x64\runner\Release\*`. Aucun modèle de configuration : la configuration du poste naît de l'assistant de première installation.
 - `[Icons]` : menu Démarrer, désinstallation, bureau (case décochée par défaut).
 - `[Languages]` : français.
 - `OutputDir=..\build\installer`, `OutputBaseFilename=SIGH_Poste_Setup_{#AppVersion}`.
@@ -59,10 +59,10 @@ Enchaînement, avec arrêt à la première erreur (`if errorlevel 1`) et message
 | Quoi | Où | Pourquoi |
 |---|---|---|
 | Base mère/fileul, magasin de fichiers, clé locale, sauvegardes de la mère | `%LOCALAPPDATA%\SIGHCNT\donnees\` | machine locale, non itinérant, volumineux |
-| Configuration du poste (mode, adresse du relais, appairage) | `%APPDATA%\SIGHCNT\` | configuration de l'utilisateur |
-| Archives de clôture exportées, états PDF | `Documents\SIGH-CNT\` | l'utilisateur doit les retrouver |
+| Configuration du poste (`poste.json` : mode, adresse du relais, appairage) | dans le même dossier `donnees\` | elle est chiffrée avec la clé du poste ; la séparer ne protégerait rien |
+| Exports faits par l'utilisateur (sauvegardes, états) | dossier « Téléchargements » de l'utilisateur (`SIGH_EXPORTS` pour le changer) | ils appartiennent à l'utilisateur : la désinstallation n'y touche JAMAIS |
 
-**Prérequis de code (bloquant)** : aujourd'hui `dossierDonnees` est `String.fromEnvironment('SIGH_DONNEES', defaultValue: 'donnees-poste')`. Il faut résoudre le dossier à l'exécution : si `SIGH_DONNEES` est défini (développement, tests), l'utiliser ; sinon `%LOCALAPPDATA%\SIGHCNT\donnees` sous Windows, avec création au premier démarrage et un message NOMMÉ si le dossier n'est pas inscriptible. Les tests continuent de passer un dossier explicite. Aucune donnée ne s'écrit sous `{app}`.
+**Prérequis de code (fait le 05/11/2026, `lib/core/dossier_donnees.dart`)** : avant,  `dossierDonnees` est `String.fromEnvironment('SIGH_DONNEES', defaultValue: 'donnees-poste')`. Il faut résoudre le dossier à l'exécution : si `SIGH_DONNEES` est défini (développement, tests), l'utiliser ; sinon `%LOCALAPPDATA%\SIGHCNT\donnees` sous Windows, avec création au premier démarrage et un message NOMMÉ si le dossier n'est pas inscriptible. Les tests continuent de passer un dossier explicite. Aucune donnée ne s'écrit sous `{app}`.
 
 Mise à jour : l'installateur ne lit, ne déplace ni ne supprime jamais ces dossiers.
 
@@ -72,7 +72,7 @@ Ordre des gestes (interface) :
 
 1. **Fermeture** du poste en cours (`taskkill`), car une base ouverte ne se copie pas de façon cohérente.
 2. **Proposition de sauvegarde** (Oui par défaut) : copie des données vers `Documents\SIGH-CNT-Sauvegarde-AAAA-MM-JJ_HHMM`, jamais supprimée par la désinstallation. Échec de sauvegarde : message et choix de continuer ou d'annuler (annuler par défaut).
-3. **Avertissement** Oui/Non avec **Non par défaut**, qui liste ce qui sera supprimé (base locale, clé de chiffrement, configuration, archives exportées) et le dit : les saisies NON SYNCHRONISÉES seront perdues, définitivement. Un poste MÈRE reçoit un avertissement renforcé : sa base est la copie de référence de la clinique, les fileuls ne la reconstituent pas entièrement.
+3. **Avertissement** Oui/Non avec **Non par défaut**, qui liste ce qui sera supprimé (base locale, clé de chiffrement, configuration du poste, sauvegardes de la mère) et le dit : les saisies NON SYNCHRONISÉES seront perdues, définitivement. Un poste MÈRE reçoit un avertissement renforcé : sa base est la copie de référence de la clinique, les fileuls ne la reconstituent pas entièrement.
 4. **Oui** : désinstaller et supprimer les données (`[UninstallDelete]` sous condition `SupprimerLesDonnees`). **Non** : la désinstallation est annulée, rien n'est retiré.
 5. **Mode silencieux** (`/SILENT`, `/VERYSILENT`) : les données sont GARDÉES, aucune question, aucune suppression.
 
