@@ -58,7 +58,7 @@ async function monde(opts = {}) {
   const lancer = (script, args) => new Promise((ok, ko) => {
     /* SIGH_MERE / SIGH_FILEUL / SIGH_MOBILE = dart : le MÊME banc pilote l'exécutable Dart (packages/sync_dart/build/) ;
        l'exécutable annonce « PRET <port> » sur sa sortie standard. On peut MÉLANGER (mère Dart, postes Node…). */
-    const exe = { 'mere.js': 'mere', 'fileul.js': 'fileul', 'mobile.js': 'mobile' }[script];
+    const exe = { 'mere.js': 'mere', 'fileul.js': 'fileul', 'mobile.js': 'mobile', 'pair-fileul.js': 'pair' }[script];
     if (exe && process.env['SIGH_' + exe.toUpperCase()] === 'dart') {
       const bin = path.join(__dirname, '..', '..', 'sync_dart', 'build', exe + '_bundle', 'bundle', 'bin', exe);
       const proc = require('node:child_process').spawn(bin, args, { stdio: ['ignore', 'pipe', 'inherit'] });
