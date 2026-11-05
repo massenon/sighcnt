@@ -189,3 +189,76 @@ class _Voisin extends StatelessWidget {
         ),
       );
 }
+
+/// LES GROUPES DE CARTES DE « PARAMÈTRES SYSTÈME » (arbitrage du 05/11/2026), miroir de `K.groupesCartes` de la maquette : un groupe par module (titre, nombre
+/// d'écrans, cartes en flex qui passent à la ligne). La matière vient de `Manifeste.cartesParametres`, déjà filtrée par les droits : jamais une carte vers
+/// un écran interdit (RG-13).
+class GroupesCartes extends StatelessWidget {
+  const GroupesCartes({super.key, required this.domaines, required this.nav, required this.aller});
+  final List<DomaineRuban> domaines;
+  final DonneesNavigation nav;
+  final void Function(String id) aller;
+
+  @override
+  Widget build(BuildContext context) {
+    final groupes = [
+      for (final d in domaines)
+        for (final r in d.rangees) r,
+    ];
+    if (groupes.isEmpty) {
+      return const NoteSigh('Aucun écran de cette rubrique n’est accessible à votre profil.', ton: TonSigh.neutre, icone: LucideIcons.lock);
+    }
+    return Column(key: const Key('groupes-cartes'), crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      for (final r in groupes) ...[
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(children: [
+            Icon(icone(r.icone), size: 16, color: JetonsShell.navy700),
+            const SizedBox(width: 8),
+            Text(r.label, style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate700)),
+            const SizedBox(width: 8),
+            Text('${r.ecrans.length} écran(s)', style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate400)),
+          ]),
+        ),
+        LayoutBuilder(builder: (_, w) {
+          // `flex flex-wrap gap-3` avec `grow basis-72` (18 rem).
+          final colonnes = (w.maxWidth / (288 + 12)).floor().clamp(1, 6);
+          final large = (w.maxWidth - 12 * (colonnes - 1)) / colonnes;
+          return Wrap(spacing: 12, runSpacing: 12, children: [
+            for (final e in r.ecrans)
+              SizedBox(
+                  width: large,
+                  child: _CarteModule(
+                      carte: CarteHub(
+                          id: e.id,
+                          titre: nav.titreDeclare(e.id) ?? e.label,
+                          description: nav.descriptionDeclaree(e.id) ?? 'Écran du module ${r.label}.',
+                          icone: e.icone ?? r.icone),
+                      surClic: () => aller(e.id))),
+          ]);
+        }),
+        const SizedBox(height: 20),
+      ],
+    ]);
+  }
+}
+
+/// `parametres-hub` : « Paramètres système » pour tout profil qui n'a pas l'onglet « Système » du ruban. Les écrans du système que SES droits ouvrent, en cartes,
+/// et rien d'autre. Sur un poste fileul : ni le poste mère ni le relais.
+class EcranParametresHub extends StatelessWidget with EcranMaquette {
+  const EcranParametresHub({super.key, this.estMere = false});
+  final bool estMere;
+  @override
+  String get titre => 'Paramètres système';
+  @override
+  String get description => 'Les écrans du système que votre profil peut ouvrir, en cartes.';
+
+  @override
+  Widget build(BuildContext context) {
+    final c = ContexteEcran.of(context);
+    final nav = c.donnees;
+    if (nav == null) return const NoteSigh('Le manifeste de navigation est indisponible.', ton: TonSigh.attention, icone: LucideIcons.triangleAlert);
+    final domaines = nav.manifeste.cartesParametres(nav.matrice, c.role, estMere: estMere, domaines: const {'Système', 'Poste mère', 'Relais en ligne'});
+    return GroupesCartes(domaines: domaines, nav: nav, aller: c.aller);
+  }
+}

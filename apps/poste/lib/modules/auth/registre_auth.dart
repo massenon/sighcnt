@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../shell/ecran_hub.dart';
 import '../../core/config_poste.dart';
 import 'acc_ecrans.dart';
 import 'ins_ecrans.dart';
@@ -25,5 +26,6 @@ final Map<String, ConstruireEcran> ecransAUTH = {
   'error-403': (c, cfg) => page403,
   'plan-du-site': (c, cfg) => const EcranPlanDuSite(),
   'aide-apropos': (c, cfg) => const EcranAide(),
+  'parametres-hub': (c, cfg) => EcranParametresHub(estMere: cfg.estMere),
   'contact-editeur': (c, cfg) => const EcranContactEditeur(),
 };

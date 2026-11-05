@@ -11,10 +11,12 @@ const { ouvrirMaquette, ecrire } = require('./extraire');
       const N = SIGH.nav; N.invaliderRbac(); N.invaliderModules(); N.appliquerRenommages();
       return Object.keys(N.ROLES).map((role) => ({
         role, archive: !!N.roleArchive(role),
-        domaines: N.tree(role).map((d) => ({ domaine: d.domain, rangees: d.modules.map((mo) => ({ code: mo.code, label: mo.label, hub: mo.hub || null, ecrans: mo.items.map((i) => i.id) })) })),
+        domaines: N.treeRuban(role).map((d) => ({ domaine: d.domain, rangees: d.modules.map((mo) => ({ code: mo.code, label: mo.label, hub: mo.hub || null, ecrans: mo.items.map((i) => i.id) })) })),
+        /* Les cartes de « Paramètres système » (arbitrage du 05/11/2026) : le relais et le système, filtrés par les droits du rôle. */
+        cartes: N.treeParametres(role, ['Système', 'Poste mère', 'Relais en ligne']).map((d) => ({ domaine: d.domain, rangees: d.modules.map((mo) => ({ code: mo.code, label: mo.label, hub: mo.hub || null, ecrans: mo.items.map((i) => i.id) })) })),
       }));
     });
-    ecrire('packages/domaine/test/vecteurs/ruban.json', { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-ruban.js — N.tree(rôle) de la maquette. Ne pas éditer.', cas });
+    ecrire('packages/domaine/test/vecteurs/ruban.json', { _doc: 'ENGENDRÉ par prototype_html/build/vecteurs-ruban.js — N.treeRuban(rôle) et N.treeParametres(rôle) de la maquette. Ne pas éditer.', cas });
     console.log(`  ${cas.length} rôles · ${cas.reduce((a, c) => a + c.domaines.reduce((b, d) => b + d.rangees.reduce((x, r) => x + r.ecrans.length, 0), 0), 0)} entrées de ruban`);
   } finally { await m.fermer(); }
 })().catch((e) => { console.error(e); process.exit(1); });

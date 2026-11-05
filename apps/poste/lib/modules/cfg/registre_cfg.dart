@@ -40,5 +40,5 @@ final Map<String, ConstruireEcran> ecransCFG = {
   'cfg-notifications': (c, cfg) => const EcranNotifications(),
   'cfg-compte': (c, cfg) => const EcranCompte(),
   'cfg-modules': (c, cfg) => const EcranModules(),
-  'cfg-systeme': (c, cfg) => const EcranSysteme(),
+  'cfg-systeme': (c, cfg) => EcranSysteme(estMere: cfg.estMere),
 };

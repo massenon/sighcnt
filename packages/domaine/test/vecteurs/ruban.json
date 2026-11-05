@@ -1,5 +1,5 @@
 {
- "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-ruban.js — N.tree(rôle) de la maquette. Ne pas éditer.",
+ "_doc": "ENGENDRÉ par prototype_html/build/vecteurs-ruban.js — N.treeRuban(rôle) et N.treeParametres(rôle) de la maquette. Ne pas éditer.",
  "cas": [
   {
    "role": "admin",
@@ -519,30 +519,6 @@
      ]
     },
     {
-     "domaine": "Relais en ligne",
-     "rangees": [
-      {
-       "code": "RLS",
-       "label": "Relais en ligne (apps/web)",
-       "hub": "hub-rls",
-       "ecrans": [
-        "rls-tableau",
-        "rls-appareils",
-        "rls-boites",
-        "rls-codes",
-        "rls-indicateurs",
-        "rls-alertes",
-        "rls-journal",
-        "rls-superadmin",
-        "rls-parametres",
-        "rls-hebergement",
-        "rls-sauvegarde",
-        "rls-opacite"
-       ]
-      }
-     ]
-    },
-    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -599,6 +575,157 @@
         "dash-aide-comptable",
         "dash-maternite",
         "dash-patient"
+       ]
+      }
+     ]
+    }
+   ],
+   "cartes": [
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "M14",
+       "label": "Sécurité & Utilisateurs",
+       "hub": "hub-m14",
+       "ecrans": [
+        "m14-utilisateurs",
+        "m14-securite-utilisateurs",
+        "m14-roles",
+        "m14-soignants",
+        "m14-sessions",
+        "m14-audit",
+        "m14-sauvegardes",
+        "m14-taches"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Configuration Clinique",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-organisation",
+        "cfg-branding",
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-imagerie-catalogue",
+        "cfg-entetes",
+        "cfg-types-piece",
+        "cfg-rappels",
+        "cfg-certificats",
+        "cfg-natures-facture",
+        "cfg-centres-couts",
+        "cfg-regles",
+        "cfg-fiscalite",
+        "cfg-comptabilite",
+        "cfg-notifications",
+        "cfg-compte",
+        "cfg-modules",
+        "cfg-systeme",
+        "cfg-poste"
+       ]
+      },
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients",
+        "imp-personnel",
+        "imp-actes",
+        "imp-analyses",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Poste mère",
+     "rangees": [
+      {
+       "code": "MERE",
+       "label": "Exploitation de la synchronisation",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-supervision",
+        "mere-appareils",
+        "mere-conflits",
+        "mere-a-traiter",
+        "mere-journal-operations",
+        "mere-plages-baux",
+        "mere-lots-tournee"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Sécurité et continuité",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-journal-technique",
+        "mere-sauvegardes",
+        "mere-cle-clinique",
+        "mere-integrite",
+        "mere-reinit"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Liaison avec le relais",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-relais",
+        "mere-indicateurs"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Plateforme locale",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-service",
+        "mere-base",
+        "mere-reseau",
+        "mere-planificateur",
+        "mere-notifications"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Cycle de vie",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-mise-en-service",
+        "mere-mises-a-jour",
+        "mere-import"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Relais en ligne",
+     "rangees": [
+      {
+       "code": "RLS",
+       "label": "Relais en ligne (apps/web)",
+       "hub": "hub-rls",
+       "ecrans": [
+        "rls-tableau",
+        "rls-appareils",
+        "rls-boites",
+        "rls-codes",
+        "rls-indicateurs",
+        "rls-alertes",
+        "rls-journal",
+        "rls-superadmin",
+        "rls-parametres",
+        "rls-hebergement",
+        "rls-sauvegarde",
+        "rls-opacite"
        ]
       }
      ]
@@ -998,6 +1125,53 @@
      ]
     },
     {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "PIL",
+       "label": "Pilotage & analyse",
+       "hub": "hub-pil",
+       "ecrans": [
+        "dash-direction",
+        "dash-da",
+        "dash-croise",
+        "m4-stats-maternite",
+        "m2-stats-echographie",
+        "m5-stats-examens",
+        "m2-stats-consultations",
+        "m3-stats-bloc",
+        "m3-stats-hospitalisations",
+        "m10-cout-agent",
+        "m12-rentabilite-groupes",
+        "m12-tableau-decisionnel"
+       ]
+      },
+      {
+       "code": "M12",
+       "label": "Gestion & trésorerie",
+       "hub": "hub-m12",
+       "ecrans": [
+        "m12-bfr",
+        "m12-cout-activite"
+       ]
+      },
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-pharmacien",
+        "dash-chirurgien",
+        "dash-anesthesiste",
+        "dash-aide-comptable",
+        "dash-maternite"
+       ]
+      }
+     ]
+    }
+   ],
+   "cartes": [
+    {
      "domaine": "Système",
      "rangees": [
       {
@@ -1046,51 +1220,6 @@
        "ecrans": [
         "imp-accueil",
         "imp-actes"
-       ]
-      }
-     ]
-    },
-    {
-     "domaine": "Pilotage",
-     "rangees": [
-      {
-       "code": "PIL",
-       "label": "Pilotage & analyse",
-       "hub": "hub-pil",
-       "ecrans": [
-        "dash-direction",
-        "dash-da",
-        "dash-croise",
-        "m4-stats-maternite",
-        "m2-stats-echographie",
-        "m5-stats-examens",
-        "m2-stats-consultations",
-        "m3-stats-bloc",
-        "m3-stats-hospitalisations",
-        "m10-cout-agent",
-        "m12-rentabilite-groupes",
-        "m12-tableau-decisionnel"
-       ]
-      },
-      {
-       "code": "M12",
-       "label": "Gestion & trésorerie",
-       "hub": "hub-m12",
-       "ecrans": [
-        "m12-bfr",
-        "m12-cout-activite"
-       ]
-      },
-      {
-       "code": "DASH",
-       "label": "Tableaux de bord par poste",
-       "hub": "hub-dash",
-       "ecrans": [
-        "dash-pharmacien",
-        "dash-chirurgien",
-        "dash-anesthesiste",
-        "dash-aide-comptable",
-        "dash-maternite"
        ]
       }
      ]
@@ -1364,7 +1493,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "da",
@@ -1817,6 +1947,132 @@
       }
      ]
     }
+   ],
+   "cartes": [
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "M14",
+       "label": "Sécurité & Utilisateurs",
+       "hub": "hub-m14",
+       "ecrans": [
+        "m14-utilisateurs",
+        "m14-roles",
+        "m14-soignants",
+        "m14-sessions",
+        "m14-audit",
+        "m14-sauvegardes",
+        "m14-taches"
+       ]
+      },
+      {
+       "code": "CFG",
+       "label": "Configuration Clinique",
+       "hub": "hub-cfg",
+       "ecrans": [
+        "cfg-organisation",
+        "cfg-branding",
+        "cfg-tarifs",
+        "cfg-catalogue",
+        "cfg-imagerie-catalogue",
+        "cfg-entetes",
+        "cfg-types-piece",
+        "cfg-rappels",
+        "cfg-certificats",
+        "cfg-natures-facture",
+        "cfg-centres-couts",
+        "cfg-regles",
+        "cfg-fiscalite",
+        "cfg-comptabilite",
+        "cfg-notifications",
+        "cfg-compte",
+        "cfg-modules",
+        "cfg-systeme",
+        "cfg-poste"
+       ]
+      },
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-patients",
+        "imp-personnel",
+        "imp-actes",
+        "imp-analyses",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    },
+    {
+     "domaine": "Poste mère",
+     "rangees": [
+      {
+       "code": "MERE",
+       "label": "Exploitation de la synchronisation",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-supervision",
+        "mere-appareils",
+        "mere-conflits",
+        "mere-a-traiter",
+        "mere-journal-operations",
+        "mere-plages-baux",
+        "mere-lots-tournee"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Sécurité et continuité",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-journal-technique",
+        "mere-sauvegardes",
+        "mere-cle-clinique",
+        "mere-integrite",
+        "mere-reinit"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Liaison avec le relais",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-relais",
+        "mere-indicateurs"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Plateforme locale",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-service",
+        "mere-base",
+        "mere-reseau",
+        "mere-planificateur",
+        "mere-notifications"
+       ]
+      },
+      {
+       "code": "MERE",
+       "label": "Cycle de vie",
+       "hub": "hub-mere",
+       "ecrans": [
+        "mere-mise-en-service",
+        "mere-mises-a-jour",
+        "mere-import"
+       ]
+      }
+     ]
+    }
    ]
   },
   {
@@ -2040,7 +2296,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "infirmier",
@@ -2251,12 +2508,14 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "pharmacien",
    "archive": true,
-   "domaines": []
+   "domaines": [],
+   "cartes": []
   },
   {
    "role": "laborantin",
@@ -2342,20 +2601,6 @@
      ]
     },
     {
-     "domaine": "Système",
-     "rangees": [
-      {
-       "code": "IMP",
-       "label": "Importation de données",
-       "hub": "hub-imp",
-       "ecrans": [
-        "imp-accueil",
-        "imp-analyses"
-       ]
-      }
-     ]
-    },
-    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -2372,6 +2617,22 @@
        "hub": "hub-dash",
        "ecrans": [
         "dash-laborantin"
+       ]
+      }
+     ]
+    }
+   ],
+   "cartes": [
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-analyses"
        ]
       }
      ]
@@ -2462,20 +2723,6 @@
      ]
     },
     {
-     "domaine": "Système",
-     "rangees": [
-      {
-       "code": "IMP",
-       "label": "Importation de données",
-       "hub": "hub-imp",
-       "ecrans": [
-        "imp-accueil",
-        "imp-fournisseurs"
-       ]
-      }
-     ]
-    },
-    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -2485,6 +2732,22 @@
        "ecrans": [
         "dash-pharmacien",
         "dash-stock"
+       ]
+      }
+     ]
+    }
+   ],
+   "cartes": [
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-fournisseurs"
        ]
       }
      ]
@@ -2632,7 +2895,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "comptable",
@@ -2844,24 +3108,6 @@
      ]
     },
     {
-     "domaine": "Système",
-     "rangees": [
-      {
-       "code": "IMP",
-       "label": "Importation de données",
-       "hub": "hub-imp",
-       "ecrans": [
-        "imp-accueil",
-        "imp-fournisseurs",
-        "imp-assureurs",
-        "imp-souscripteurs",
-        "imp-plan-comptable",
-        "imp-soldes-ouverture"
-       ]
-      }
-     ]
-    },
-    {
      "domaine": "Pilotage",
      "rangees": [
       {
@@ -2895,12 +3141,33 @@
       }
      ]
     }
+   ],
+   "cartes": [
+    {
+     "domaine": "Système",
+     "rangees": [
+      {
+       "code": "IMP",
+       "label": "Importation de données",
+       "hub": "hub-imp",
+       "ecrans": [
+        "imp-accueil",
+        "imp-fournisseurs",
+        "imp-assureurs",
+        "imp-souscripteurs",
+        "imp-plan-comptable",
+        "imp-soldes-ouverture"
+       ]
+      }
+     ]
+    }
    ]
   },
   {
    "role": "rh",
    "archive": true,
-   "domaines": []
+   "domaines": [],
+   "cartes": []
   },
   {
    "role": "reception",
@@ -3051,6 +3318,22 @@
      ]
     },
     {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-receptionniste",
+        "dash-patient"
+       ]
+      }
+     ]
+    }
+   ],
+   "cartes": [
+    {
      "domaine": "Système",
      "rangees": [
       {
@@ -3070,20 +3353,6 @@
        "ecrans": [
         "imp-accueil",
         "imp-patients"
-       ]
-      }
-     ]
-    },
-    {
-     "domaine": "Pilotage",
-     "rangees": [
-      {
-       "code": "DASH",
-       "label": "Tableaux de bord par poste",
-       "hub": "hub-dash",
-       "ecrans": [
-        "dash-receptionniste",
-        "dash-patient"
        ]
       }
      ]
@@ -3183,6 +3452,21 @@
      ]
     },
     {
+     "domaine": "Pilotage",
+     "rangees": [
+      {
+       "code": "DASH",
+       "label": "Tableaux de bord par poste",
+       "hub": "hub-dash",
+       "ecrans": [
+        "dash-admin-agent"
+       ]
+      }
+     ]
+    }
+   ],
+   "cartes": [
+    {
      "domaine": "Système",
      "rangees": [
       {
@@ -3192,19 +3476,6 @@
        "ecrans": [
         "imp-accueil",
         "imp-patients"
-       ]
-      }
-     ]
-    },
-    {
-     "domaine": "Pilotage",
-     "rangees": [
-      {
-       "code": "DASH",
-       "label": "Tableaux de bord par poste",
-       "hub": "hub-dash",
-       "ecrans": [
-        "dash-admin-agent"
        ]
       }
      ]
@@ -3297,7 +3568,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "aide_soignant",
@@ -3378,7 +3650,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "echographiste",
@@ -3524,7 +3797,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "surveillant",
@@ -3597,7 +3871,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "assistant_comptable",
@@ -3708,7 +3983,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "chirurgien",
@@ -3891,7 +4167,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "anesthesiste",
@@ -4029,7 +4306,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   },
   {
    "role": "aide_comptable",
@@ -4172,7 +4450,8 @@
       }
      ]
     }
-   ]
+   ],
+   "cartes": []
   }
  ]
 }

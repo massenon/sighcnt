@@ -11,6 +11,7 @@ import '../../donnees/magasin.dart';
 import '../../donnees/persistance.dart' show CleLocale;
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../shell/ecran_hub.dart';
 import 'cfa_commun.dart';
 import 'cfb_commun.dart';
 
@@ -159,7 +160,8 @@ List<CfbLigneCorbeille> cfbCorbeille(Magasin m) {
 /// `cfg-systeme` — « Paramètres système » : l'installation et le contenu des données, la CORBEILLE (RG-14 : rien n'est jamais supprimé, tout ce qui a été
 /// archivé dans n'importe quel module se retrouve et se restaure ici), la porte du barème NS 131 et les jeux de test.
 class EcranSysteme extends StatefulWidget with EcranMaquette {
-  const EcranSysteme({super.key});
+  const EcranSysteme({super.key, this.estMere = false});
+  final bool estMere;
   @override
   String get titre => 'Paramètres système';
   @override
@@ -170,6 +172,27 @@ class EcranSysteme extends StatefulWidget with EcranMaquette {
 
   @override
   State<EcranSysteme> createState() => _EtatSysteme();
+}
+
+/// L'onglet « Relais en ligne » : les écrans du relais en cartes de hub (ils ont quitté le ruban, arbitrage du 05/11/2026). Absent d'un poste fileul : le
+/// relais s'administre depuis la mère.
+class _Relais extends StatelessWidget {
+  const _Relais({required this.c, required this.estMere});
+  final ContexteEcran c;
+  final bool estMere;
+  @override
+  Widget build(BuildContext context) {
+    final nav = c.donnees;
+    if (nav == null) return const SizedBox.shrink();
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      const NoteSigh(
+          'Le relais en ligne (apps/web) est opaque : il transporte les opérations chiffrées entre la mère, les fileuls et les mobiles, sans jamais les lire. Ses écrans ne sont plus au ruban : ils sont ici.',
+          ton: TonSigh.info,
+          icone: LucideIcons.cloud),
+      const SizedBox(height: 12),
+      GroupesCartes(domaines: nav.manifeste.cartesParametres(nav.matrice, c.role, estMere: estMere, domaines: const {'Relais en ligne'}), nav: nav, aller: c.aller),
+    ]);
+  }
 }
 
 class _EtatSysteme extends State<EcranSysteme> {
@@ -185,6 +208,7 @@ class _EtatSysteme extends State<EcranSysteme> {
               OngletDef(id: 'corbeille', libelle: 'Corbeille', compte: cfbCorbeille(c.magasin).length, construire: (_) => _Corbeille(c: c)),
               OngletDef(id: 'bareme', libelle: 'Barème NS 131', construire: (_) => _Bareme(c: c)),
               OngletDef(id: 'reinitialisation', libelle: 'Jeux de test', construire: (_) => _JeuxDeTest(c: c, rafraichir: () => setState(() {}))),
+              OngletDef(id: 'relais', libelle: 'Relais en ligne', construire: (_) => _Relais(c: c, estMere: widget.estMere)),
             ]));
   }
 }

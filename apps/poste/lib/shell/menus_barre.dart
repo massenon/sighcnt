@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:sigh_domaine/sigh_domaine.dart' show rolesRubanSysteme;
 
 import '../core/donnees_navigation.dart';
 import '../core/icones.dart';
@@ -87,7 +88,10 @@ Future<void> ouvrirMenuProfil(
     return e != null && (e.standalone || ecranOuvertAuRole(nav, role, id));
   }
 
-  const liens = [
+  // « Paramètres système » : l'onglet Système du ruban n'est affiché qu'à l'administrateur et à la DA, qui ouvrent l'écran complet ; les autres profils ouvrent la
+  // page de cartes réduite à ce que leurs droits permettent (arbitrage du 05/11/2026).
+  final liens = [
+    ('Paramètres système', rolesRubanSysteme.contains(role) ? 'cfg-systeme' : 'parametres-hub', LucideIcons.settings),
     ('Mon compte', 'cfg-compte', LucideIcons.userCog),
     ('Notifications', 'cfg-notifications', LucideIcons.bell),
     ('Aide & À propos', 'aide-apropos', LucideIcons.lifeBuoy),

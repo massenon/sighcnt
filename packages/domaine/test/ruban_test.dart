@@ -1,4 +1,4 @@
-// Le ruban Dart doit rendre EXACTEMENT ce que N.tree(rôle) rend dans la maquette, pour chaque rôle.
+// Le ruban Dart doit rendre EXACTEMENT ce que N.treeRuban(rôle) rend dans la maquette, pour chaque rôle ; les cartes de « Paramètres système », ce que N.treeParametres rend.
 import 'dart:convert';
 import 'dart:io';
 
@@ -33,6 +33,18 @@ void main() {
         for (final d in manifeste.ruban(matrice, role, estMere: true))
           for (final r in d.rangees)
             [d.nom, r.code, r.label, ...r.ecrans.map((e) => e.id)],
+      ];
+      expect(obtenu, attendu);
+    });
+    test('cartes de « Paramètres système » du rôle « $role » = N.treeParametres de la maquette (poste mère)', () {
+      final attendu = [
+        for (final d in (c['cartes'] as List))
+          for (final r in (d as Map)['rangees'] as List)
+            ['${d['domaine']}', '${(r as Map)['code']}', ...(r['ecrans'] as List).cast<String>()],
+      ];
+      final obtenu = [
+        for (final d in manifeste.cartesParametres(matrice, role, estMere: true, domaines: {'Système', 'Poste mère', 'Relais en ligne'}))
+          for (final r in d.rangees) [d.nom, r.code, ...r.ecrans.map((e) => e.id)],
       ];
       expect(obtenu, attendu);
     });

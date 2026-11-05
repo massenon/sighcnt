@@ -7141,6 +7141,19 @@
    "roles": "*"
   },
   {
+   "id": "parametres-hub",
+   "label": "Paramètres système",
+   "icone": "settings",
+   "module": "SUP",
+   "moduleLabel": "Aide & assistance",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": true,
+   "universel": false,
+   "servant": null,
+   "roles": "*"
+  },
+  {
    "id": "contact-editeur",
    "label": "Contactez l’éditeur",
    "icone": "mail",

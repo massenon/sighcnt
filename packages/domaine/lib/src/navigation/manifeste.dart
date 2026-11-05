@@ -94,7 +94,13 @@ class DomaineRuban {
 }
 
 /// Domaines réservés au mode MÈRE : ils n'existent pas sur un poste fileul, quels que soient les droits.
-const domainesMere = {'Poste mère'};
+const domainesMere = {'Poste mère', 'Relais en ligne'};
+
+/// LE RUBAN ET « PARAMÈTRES SYSTÈME » (arbitrage du 05/11/2026), miroir de `N.treeRuban` de la maquette. « Relais en ligne » QUITTE le ruban : ses écrans sont
+/// des cartes de hub dans « Paramètres système » (on le retire de l'AFFICHAGE, jamais du manifeste ni des droits). L'onglet « Système » n'est affiché qu'à
+/// l'administrateur système et à la Directrice Administrative ; les autres profils retrouvent ce que leurs droits ouvrent par la page de cartes.
+const domainesHorsRuban = {'Relais en ligne'};
+const rolesRubanSysteme = {'admin', 'da'};
 
 /// Raccourci permanent du ruban (`N.RACCOURCIS`) : ouvre la page d'accueil d'un module, si le rôle en voit au moins un écran.
 class RaccourciRuban {
@@ -180,11 +186,22 @@ class Manifeste {
 
   /// Le ruban d'un rôle. `estMere` ouvre les domaines réservés à la mère ; il ne les OUVRE pas aux rôles sans droit :
   /// les droits restent ceux de la matrice.
-  List<DomaineRuban> ruban(MatriceDroits matrice, String role,
-      {required bool estMere}) {
+  List<DomaineRuban> ruban(MatriceDroits matrice, String role, {required bool estMere}) => _domainesVisibles(matrice, role, estMere, (d) {
+        if (domainesHorsRuban.contains(d)) return false;
+        if (d == 'Système') return rolesRubanSysteme.contains(role);
+        return true;
+      });
+
+  /// Les cartes de « Paramètres système » : les domaines nommés, déjà filtrés par les droits (jamais une carte vers un écran interdit, RG-13) et par le mode
+  /// (un poste fileul n'a ni le poste mère ni le relais).
+  List<DomaineRuban> cartesParametres(MatriceDroits matrice, String role, {required bool estMere, required Set<String> domaines}) =>
+      _domainesVisibles(matrice, role, estMere, domaines.contains);
+
+  List<DomaineRuban> _domainesVisibles(MatriceDroits matrice, String role, bool estMere, bool Function(String) retient) {
     final out = <DomaineRuban>[];
     for (final d in domaines) {
       if (!estMere && domainesMere.contains(d.nom)) continue;
+      if (!retient(d.nom)) continue;
       final rangees = <RangeeRuban>[];
       for (final r in this.rangees.where((r) => r.domaine == d.nom)) {
         final visibles = [
@@ -192,15 +209,9 @@ class Manifeste {
             if (_ecrans[id] != null && matrice.peutVoir(role, id)) _ecrans[id]!,
         ];
         if (visibles.isEmpty) continue;
-        rangees.add(RangeeRuban(
-            code: r.code,
-            label: r.label,
-            icone: r.icone,
-            hub: 'hub-${r.code.toLowerCase()}',
-            ecrans: visibles));
+        rangees.add(RangeeRuban(code: r.code, label: r.label, icone: r.icone, hub: 'hub-${r.code.toLowerCase()}', ecrans: visibles));
       }
-      if (rangees.isNotEmpty)
-        out.add(DomaineRuban(nom: d.nom, icone: d.icone, rangees: rangees));
+      if (rangees.isNotEmpty) out.add(DomaineRuban(nom: d.nom, icone: d.icone, rangees: rangees));
     }
     return out;
   }
