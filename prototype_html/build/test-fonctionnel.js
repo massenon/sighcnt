@@ -14,13 +14,15 @@ const fs = require('fs');
 /* --seul=<fragment> (un _ vaut une espace) : ne joue que les scénarios dont le titre contient le fragment (un scénario seul, ou ceux d'un module),
    sans les quatre-vingts autres. Le fichier est recomposé en mémoire : préambule + blocs retenus + restitution. */
 const SEUL = (process.argv.find((a) => a.startsWith('--seul=')) || '').slice(7).replace(/_/g, ' ');
-if (SEUL && !process.env.SIGH_REDUIT) {
+/* --sauf=Motif : tous les scénarios SAUF ceux dont le titre contient le motif (traits bas = espaces). Sert à mesurer le reste d'une suite dont un scénario est connu en échec. */
+const SAUF = (process.argv.find((a) => a.startsWith('--sauf=')) || '').slice(7).replace(/_/g, ' ');
+if ((SEUL || SAUF) && !process.env.SIGH_REDUIT) {
   const lignes = fs.readFileSync(__filename, 'utf8').split('\n');
   const debuts = []; lignes.forEach((l, i) => { if (l === '  {' && /^    scenario\(/.test(lignes[i + 1] || '')) debuts.push(i); });
   const fin = lignes.findIndex((l) => l === '  await browser.close();');
   const gardes = [];
-  debuts.forEach((d, k) => { if (lignes[d + 1].indexOf(SEUL) >= 0) gardes.push(lignes.slice(d, k + 1 < debuts.length ? debuts[k + 1] : fin)); });
-  if (!gardes.length) { console.log('Aucun scénario ne contient « ' + SEUL + ' ».'); process.exit(2); }
+  debuts.forEach((d, k) => { if (SAUF ? lignes[d + 1].indexOf(SAUF) < 0 : lignes[d + 1].indexOf(SEUL) >= 0) gardes.push(lignes.slice(d, k + 1 < debuts.length ? debuts[k + 1] : fin)); });
+  if (!gardes.length) { console.log('Aucun scénario ne contient « ' + (SEUL || SAUF) + ' ».'); process.exit(2); }
   // Un scénario isolé commence sur un document vide : une page est ouverte d'abord (les scénarios suivants héritent de la page du précédent).
   const ouverture = ["  await ouvrir('m14-roles.html');"];
   const reduit = lignes.slice(0, debuts[0]).concat(ouverture, ...gardes, lignes.slice(fin)).join('\n');
