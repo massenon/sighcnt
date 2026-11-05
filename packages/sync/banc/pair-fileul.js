@@ -22,6 +22,7 @@ db.exec(`PRAGMA journal_mode=WAL;
   CREATE TABLE IF NOT EXISTS ops (id TEXT PRIMARY KEY, appareil TEXT, json TEXT);
   CREATE TABLE IF NOT EXISTS sortie (n INTEGER PRIMARY KEY, id TEXT, depose INTEGER DEFAULT 0);
   CREATE TABLE IF NOT EXISTS curseurs (appareil TEXT PRIMARY KEY, n INTEGER);
+  CREATE TABLE IF NOT EXISTS foi (id TEXT PRIMARY KEY, seq INTEGER);
   CREATE TABLE IF NOT EXISTS anomalies (k INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, detail TEXT);`);
 const meta = (k, d = null) => { const r = db.prepare('SELECT v FROM meta WHERE k=?').get(k); return r ? r.v : d; };
 const setMeta = (k, v) => db.prepare('INSERT INTO meta(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v').run(k, String(v));
@@ -36,7 +37,11 @@ async function relais(methode, chemin, corps) {
   let j = {}; try { j = await r.json(); } catch (e) { /* vide */ }
   return { status: r.status, json: j };
 }
-const toutesOps = () => db.prepare('SELECT json FROM ops').all().map((r) => JSON.parse(r.json));
+/* Le `seq` qui FAIT FOI est attribué par la mère à son retour : il arrive dans son journal pair (enveloppe « foi ») et lève le statut provisoire. */
+const toutesOps = () => {
+  const foi = new Map(db.prepare('SELECT id,seq FROM foi').all().map((r) => [r.id, Number(r.seq)]));
+  return db.prepare('SELECT json FROM ops').all().map((r) => { const o = JSON.parse(r.json); return foi.has(o.id) && o.seq == null ? Object.assign(o, { seq: foi.get(o.id) }) : o; });
+};
 const anomalie = (type, detail) => db.prepare('INSERT INTO anomalies(type,detail) VALUES(?,?)').run(type, JSON.stringify(detail));
 
 /* 1. publier, dans l'ordre des rangs, ce qui n'est pas encore déposé (un dépôt rejoué est idempotent au relais) */
@@ -64,13 +69,16 @@ async function relever() {
       let attendu = depuis + 1;
       for (const env of r.json.env) {
         if (env.n !== attendu) { anomalie('trou', { appareil: a.uuid, attendu, recu: env.n }); return; }
-        let op;
-        try { op = dechiffrer(CLE, env); } catch (e) { anomalie('enveloppe_alteree', { appareil: a.uuid, n: env.n }); return; }
+        let charge;
+        try { charge = dechiffrer(CLE, env); } catch (e) { anomalie('enveloppe_alteree', { appareil: a.uuid, n: env.n }); return; }
+        // le journal d'un pair porte des opérations ; celui de la MÈRE porte aussi ses décisions (`op`) et le seq qui fait foi (`foi`)
+        const op = charge.type === 'op' ? charge.op : charge.type === 'foi' ? null : charge;
         db.exec('BEGIN');
-        db.prepare('INSERT OR IGNORE INTO ops(id,appareil,json) VALUES(?,?,?)').run(op.id, op.appareil, JSON.stringify(op));
+        if (charge.type === 'foi') for (const [id, seq] of charge.liste) db.prepare('INSERT OR REPLACE INTO foi(id,seq) VALUES(?,?)').run(id, seq);
+        if (op) db.prepare('INSERT OR IGNORE INTO ops(id,appareil,json) VALUES(?,?,?)').run(op.id, op.appareil, JSON.stringify(op));
         db.prepare('INSERT INTO curseurs(appareil,n) VALUES(?,?) ON CONFLICT(appareil) DO UPDATE SET n=excluded.n').run(a.uuid, env.n);
         db.exec('COMMIT');
-        horloge.recevoir(op.hlc); setMeta('hlc', horloge.dernier);
+        if (op) { horloge.recevoir(op.hlc); setMeta('hlc', horloge.dernier); }
         attendu += 1;
       }
       if (r.json.fin) break;
@@ -98,7 +106,7 @@ function emettre(c) {
   setMeta('hlc', horloge.dernier);
   return op;
 }
-const serialiser = (e) => ({ fiches: e.fiches, stock: e.stock, besoins: e.besoins, conflits: e.conflits, refusees: e.refusees, provisoire: [...e.provisoire].sort() });
+const serialiser = (e) => ({ fiches: e.fiches, stock: e.stock, besoins: e.besoins, conflits: e.conflits, tranches: e.tranches, refusees: e.refusees, provisoire: [...e.provisoire].sort() });
 const routes = {
   'POST /appairer': async (b) => {
     const uuid = nodeCrypto.randomUUID();

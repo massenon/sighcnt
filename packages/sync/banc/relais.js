@@ -56,7 +56,7 @@ const routes = {
       const a = appareil(req);
       /* ADR-0006 : un appareil dépose dans sa propre boîte vers la mère OU dans son PROPRE journal « pair » (lu par les autres appareils, jamais écrit par eux). */
       if (!['vers_mere', 'pair'].includes(e.dir) || e.appareil !== a.uuid) throw new Err(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère ou dans son propre journal pair.');
-    } else if (!['vers_mobile', 'journal'].includes(e.dir)) throw new Err(403, 'depot_interdit', 'Sens inconnu.');
+    } else if (!(['vers_mobile', 'journal'].includes(e.dir) || (e.dir === 'pair' && e.appareil === 'mere'))) throw new Err(403, 'depot_interdit', 'Sens inconnu.'); /* ADR-0006 : la mère de retour publie dans SON journal pair (appareil « mere »), jamais dans celui d'un autre */
     const deja = db.prepare('SELECT rid,appareil,dir,n FROM env WHERE id=?').get(e.id);
     if (deja) return { rid: deja.rid, rejeu: true };
     try {
@@ -66,7 +66,7 @@ const routes = {
   },
   'GET /releve': (req, b, q) => {
     const dir = q.dir; const app = q.appareil; const n = +q.depuis_n || 0; const lim = Math.min(+q.limite || 50, 100);
-    if (mereOk(req)) { if (!['vers_mere', 'journal'].includes(dir)) throw new Err(403, 'lecture_interdite'); return lister(dir, app, n, lim); }
+    if (mereOk(req)) { if (!['vers_mere', 'journal', 'pair'].includes(dir)) throw new Err(403, 'lecture_interdite'); return lister(dir, app, n, lim); }
     const a = appareil(req);
     /* ADR-0006 : le journal « pair » de n'importe quel appareil appairé se lit par tout appareil appairé (même clinique) ; la boîte « vers_mobile » reste privée. */
     if (dir === 'pair') return lister(dir, app, n, lim);
@@ -78,7 +78,7 @@ const routes = {
     return { appareils: db.prepare("SELECT appareil AS uuid, MAX(n) AS max_n FROM env WHERE dir='vers_mere' GROUP BY appareil").all() };
   },
   /* ADR-0006 : les journaux pair existants (appareil, dernier rang), pour que chaque appareil sache quoi relever. Aucun contenu. */
-  'GET /pair/appareils': (req) => { appareil(req); return { appareils: db.prepare("SELECT appareil AS uuid, MAX(n) AS max_n FROM env WHERE dir='pair' GROUP BY appareil").all() }; },
+  'GET /pair/appareils': (req) => { if (!mereOk(req)) appareil(req); return { appareils: db.prepare("SELECT appareil AS uuid, MAX(n) AS max_n FROM env WHERE dir='pair' GROUP BY appareil").all() }; },
   'GET /compteur': (req, b, q) => { const a = appareil(req); return { max_n: db.prepare("SELECT COALESCE(MAX(n),0) AS m FROM env WHERE dir='vers_mobile' AND appareil=?").get(a.uuid).m }; },
   'POST /mere/revoquer': (req, b) => { if (!mereOk(req)) throw new Err(403, 'mere_requise'); db.prepare("UPDATE appareils SET etat='revoque' WHERE uuid=?").run(b.uuid); return { ok: true }; },
   'POST /mere/battement': (req, b) => { if (!mereOk(req)) throw new Err(403, 'mere_requise'); setMeta('battement', Date.now()); return { ok: true }; },

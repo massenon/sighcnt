@@ -66,6 +66,26 @@ test('pièce C : une modification APRÈS l\'émission est marquée ; une modific
   for (const p of permutations(ops)) assert.equal(ser(etat(p)), ser(e));
 });
 
+test('TRANCHER : la décision lève le conflit marqué et fixe la valeur ; un conflit né après elle reste marqué ; refusée sans le droit, sur pièce émise ou fiche archivée', () => {
+  const droits = (o) => !(o.type === 'trancher' && !['da', 'mere'].includes(o.role));
+  const base = [op('F1', 1, 'patients', 'q', 'creer', { nom: 'A' }), op('F1', 5, 'patients', 'q', 'modifier', { nom: 'B' }, { vu: { nom: 1 } }), op('F2', 6, 'patients', 'q', 'modifier', { nom: 'C' }, { vu: { nom: 1 } })];
+  assert.equal(etat(base, droits).conflits.length, 1);
+  const tr = op('mere', 10, 'patients', 'q', 'trancher', { nom: 'B' }, { role: 'mere', seq: 4 });
+  const e = etat([...base, tr], droits);
+  assert.equal(e.conflits.length, 0);
+  assert.equal(e.fiches['patients/q'].data.nom, 'B');
+  assert.deepEqual(e.tranches.map((t) => [t.champ, t.valeur, t.par]), [['nom', 'B', 'mere']]);
+  const tard = op('F3', 12, 'patients', 'q', 'modifier', { nom: 'D' }, { vu: { nom: 1 } });
+  assert.equal(etat([...base, tr, tard], droits).conflits.length, 1, 'un conflit postérieur à la décision reste marqué');
+  for (const p of permutations([...base, tr, tard])) assert.equal(ser(etat(p, droits)), ser(etat([...base, tr, tard], droits)));
+  const sansDroit = op('F2', 11, 'patients', 'q', 'trancher', { nom: 'C' }, { role: 'infirmier' });
+  assert.deepEqual(etat([...base, sansDroit], droits).refusees.map((r) => r.code), ['droit_refuse']);
+  const piece = [op('F1', 1, 'factures', 'f', 'creer', { total: 1 }), op('F1', 2, 'factures', 'f', 'emettre'), op('mere', 3, 'factures', 'f', 'trancher', { total: 9 }, { role: 'mere' })];
+  assert.deepEqual(etat(piece).refusees.map((r) => r.code), ['piece_emise_immuable']);
+  const arch = [op('F1', 1, 'patients', 'z', 'creer', { nom: 'A' }), op('F1', 2, 'patients', 'z', 'archiver'), op('mere', 3, 'patients', 'z', 'trancher', { nom: 'B' }, { role: 'mere' })];
+  assert.deepEqual(etat(arch).refusees.map((r) => r.code), ['fiche_archivee']);
+});
+
 test('journal B : ajout seul, union commutative', () => {
   const ops = [op('F1', 1, 'constantes', 'c1', 'creer', { t: 37 }), op('F2', 2, 'constantes', 'c2', 'creer', { t: 38 }), op('F1', 3, 'constantes', 'c1', 'modifier', { t: 40 })];
   const e = etat(ops);

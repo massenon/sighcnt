@@ -114,6 +114,7 @@ class EtatPair {
   final Map<String, Map<String, Object?>> stock = {};
   final Map<String, Map<String, Object?>> besoins = {};
   final List<Map<String, Object?>> conflits = [];
+  final List<Map<String, Object?>> tranches = [];
   final List<RefusPair> refusees = [];
   final Set<String> provisoire = {};
 
@@ -123,6 +124,7 @@ class EtatPair {
         'stock': stock,
         'besoins': besoins,
         'conflits': conflits,
+        'tranches': tranches,
         'refusees': [for (final r in refusees) {'id': r.id, 'appareil': r.appareil, 'code': r.code}],
         'provisoire': provisoire.toList()..sort(),
       };
@@ -213,6 +215,28 @@ EtatPair etatPair(Iterable<OperationPair> ops, {DroitsOperation? droits}) {
     }
     if (fam == 'C' && op.type == 'emettre') {
       f['emise'] = true;
+      continue;
+    }
+    // TRANCHER (la personne habilitée, ou la mère à son retour) : la valeur choisie remplace celle de l'ordre total et le conflit marqué est levé.
+    // Un conflit qui naît APRÈS cette décision dans l'ordre total reste marqué : on ne tranche que ce qui a été vu.
+    if (op.type == 'trancher') {
+      if (f['archive'] == true) {
+        e.refusees.add(RefusPair(op.id, op.appareil, 'fiche_archivee', 'Restaurer d’abord (RG-14).'));
+        continue;
+      }
+      if (fam == 'C' && f['emise'] == true) {
+        e.refusees.add(RefusPair(op.id, op.appareil, 'piece_emise_immuable', 'Une pièce émise ne se réécrit jamais : établir un avoir.'));
+        continue;
+      }
+      final data = f['data']! as Map<String, Object?>;
+      final hlcs = f['hlc']! as Map<String, Object?>;
+      for (final en in op.champs.entries) {
+        data[en.key] = en.value;
+        hlcs[en.key] = op.hlc;
+        f['dernier'] = op.appareil;
+        e.conflits.removeWhere((c) => c['fiche'] == k && c['champ'] == en.key);
+        e.tranches.add({'fiche': k, 'champ': en.key, 'valeur': en.value, 'par': op.appareil, 'hlc': op.hlc});
+      }
       continue;
     }
     if (op.type == 'modifier') {
@@ -339,11 +363,11 @@ const Map<String, Map<String, List<String>>> droitsBancPair = {
     'valider': ['da'],
     'rejeter': ['da'],
   },
-  'patients': {'*': ['reception', 'infirmier', 'medecin', 'da', 'x']},
-  'rendezvous': {'*': ['reception', 'infirmier', 'medecin', 'da', 'x']},
+  'patients': {'*': ['reception', 'infirmier', 'medecin', 'da', 'x'], 'trancher': ['da', 'mere']},
+  'rendezvous': {'*': ['reception', 'infirmier', 'medecin', 'da', 'x'], 'trancher': ['da', 'mere']},
   'constantes': {'*': ['infirmier', 'medecin', 'x']},
   'notes': {'*': ['infirmier', 'medecin', 'x']},
-  'factures': {'*': ['caissier', 'da', 'x']},
+  'factures': {'*': ['caissier', 'da', 'x'], 'trancher': ['da', 'mere']},
   'prescriptions': {'*': ['medecin', 'x']},
 };
 

@@ -133,7 +133,8 @@ class RelaisController extends Controller
         $dir = is_string($e['dir'] ?? null) ? $e['dir'] : '';
         $appareilCible = is_string($e['appareil'] ?? null) ? $e['appareil'] : '';
         if ($this->estMere($r)) {
-            if (! in_array($dir, ['vers_mobile', 'journal'], true)) {
+            /* ADR-0006 : la mère de retour publie dans SON journal pair (appareil « mere »), jamais dans celui d'un autre. */
+            if (! (in_array($dir, ['vers_mobile', 'journal'], true) || ($dir === 'pair' && $appareilCible === 'mere'))) {
                 $this->refus(403, 'depot_interdit', 'Sens inconnu.');
             }
         } else {
@@ -176,7 +177,7 @@ class RelaisController extends Controller
         $n = (int) $r->query('depuis_n', 0);
         $lim = min((int) $r->query('limite', 50) ?: 50, 100);
         if ($this->estMere($r)) {
-            if (! in_array($dir, ['vers_mere', 'journal'], true)) {
+            if (! in_array($dir, ['vers_mere', 'journal', 'pair'], true)) {
                 $this->refus(403, 'lecture_interdite');
             }
 
@@ -197,7 +198,9 @@ class RelaisController extends Controller
     /* ADR-0006 : les journaux pair existants (appareil, dernier rang), pour que chaque appareil sache quoi relever. Aucun contenu. */
     public function appareilsPair(Request $r): JsonResponse
     {
-        $this->appareil($r);
+        if (! $this->estMere($r)) {
+            $this->appareil($r);
+        }
         $rows = DB::table('relais_enveloppes')->where('dir', 'pair')
             ->selectRaw('appareil as uuid, MAX(n) as max_n')->groupBy('appareil')->get();
 

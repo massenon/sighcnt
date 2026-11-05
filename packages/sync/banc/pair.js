@@ -41,7 +41,7 @@ const cle = (o) => `${o.collection}/${o.fiche}`;
 
 /** L'état de tous les appareils qui ont reçu `ops`. `droits(op) -> true | false` (RBAC) ; `seqMere` n'intervient que pour le drapeau provisoire. */
 function etat(ops, droits = () => true) {
-  const E = { fiches: {}, stock: {}, besoins: {}, conflits: [], refusees: [], provisoire: new Set() };
+  const E = { fiches: {}, stock: {}, besoins: {}, conflits: [], tranches: [], refusees: [], provisoire: new Set() };
   for (const op of sans(ops).sort(comparer)) {
     const fam = FAMILLES[op.collection];
     if (!fam) { marque(E, op, 'collection_inconnue', op.collection); continue; }
@@ -69,6 +69,18 @@ function etat(ops, droits = () => true) {
     if (!f) { marque(E, op, 'fiche_inconnue', k); continue; }
     if (op.type === 'archiver' || op.type === 'restaurer') { f.archive = op.type === 'archiver'; continue; }
     if (fam === 'C' && op.type === 'emettre') { f.emise = true; continue; }
+    /* TRANCHER (la personne habilitée, ou la mère à son retour) : la valeur choisie remplace celle retenue par l'ordre total et le conflit marqué est levé.
+       Un conflit qui naît APRÈS cette décision dans l'ordre total reste marqué : on ne tranche que ce qui a été vu. */
+    if (op.type === 'trancher') {
+      if (f.archive) { marque(E, op, 'fiche_archivee', 'Restaurer d’abord (RG-14).'); continue; }
+      if (fam === 'C' && f.emise) { marque(E, op, 'piece_emise_immuable', 'Une pièce émise ne se réécrit jamais : établir un avoir.'); continue; }
+      for (const [champ, val] of Object.entries(op.champs)) {
+        f.data[champ] = val; f.hlc[champ] = op.hlc; f.dernier = op.appareil;
+        E.conflits = E.conflits.filter((c) => !(c.fiche === k && c.champ === champ));
+        E.tranches.push({ fiche: k, champ, valeur: val, par: op.appareil, hlc: op.hlc });
+      }
+      continue;
+    }
     if (op.type === 'modifier') {
       if (f.archive) { marque(E, op, 'fiche_archivee', 'Restaurer d’abord (RG-14).'); continue; }
       if (fam === 'C' && f.emise) { marque(E, op, 'piece_emise_immuable', 'Une pièce émise ne se réécrit jamais : établir un avoir.'); continue; }
@@ -130,11 +142,11 @@ class JournalRelais {
 const DROITS_BANC = {
   stock: { creer: ['stock', 'da'], entree: ['stock', 'da'], bail: ['stock', 'da'], sortie: ['stock', 'da', 'infirmier', 'pharmacien'] },
   besoins: { soumettre: ['stock', 'infirmier', 'medecin', 'da', 'caissier'], valider: ['da'], rejeter: ['da'] },
-  patients: { '*': ['reception', 'infirmier', 'medecin', 'da', 'x'] },
-  rendezvous: { '*': ['reception', 'infirmier', 'medecin', 'da', 'x'] },
+  patients: { '*': ['reception', 'infirmier', 'medecin', 'da', 'x'], trancher: ['da', 'mere'] },
+  rendezvous: { '*': ['reception', 'infirmier', 'medecin', 'da', 'x'], trancher: ['da', 'mere'] },
   constantes: { '*': ['infirmier', 'medecin', 'x'] },
   notes: { '*': ['infirmier', 'medecin', 'x'] },
-  factures: { '*': ['caissier', 'da', 'x'] },
+  factures: { '*': ['caissier', 'da', 'x'], trancher: ['da', 'mere'] },
   prescriptions: { '*': ['medecin', 'x'] },
 };
 function droitsBanc(op) {

@@ -52,9 +52,23 @@ class PairTest extends TestCase
         $this->assertDatabaseCount('relais_enveloppes', 0);
     }
 
-    public function test_la_mere_ne_depose_pas_dans_un_journal_pair(): void
+    public function test_la_mere_de_retour_ne_depose_que_dans_son_propre_journal_pair_et_relit_tous_les_journaux(): void
     {
-        $this->postJson('/depot', $this->env('m-1', 'mere', 1), ['x-mere' => self::SECRET])->assertStatus(403)->assertJson(['code' => 'depot_interdit']);
+        $mere = ['x-mere' => self::SECRET];
+        $f1 = $this->appairer('F1');
+        // dans le journal d'un fileul : interdit (comme tout autre appareil)
+        $this->postJson('/depot', $this->env('x-1', 'F1', 1), $mere)->assertStatus(403)->assertJson(['code' => 'depot_interdit']);
+        // dans SON journal (appareil « mere ») : permis, idempotent
+        $this->postJson('/depot', $this->env('pair-mere-1', 'mere', 1), $mere)->assertOk();
+        $this->postJson('/depot', $this->env('pair-mere-1', 'mere', 1), $mere)->assertOk()->assertJson(['rejeu' => true]);
+        $this->postJson('/depot', $this->env('F1-pair-1', 'F1', 1), $f1)->assertOk();
+        // la mère relève le journal pair des fileuls et la liste des journaux ; les fileuls relèvent celui de la mère
+        $this->getJson('/releve?dir=pair&appareil=F1&depuis_n=0', $mere)->assertOk()->assertJsonCount(1, 'env');
+        $liste = collect($this->getJson('/pair/appareils', $mere)->assertOk()->json('appareils'))->pluck('max_n', 'uuid')->map(fn ($n) => (int) $n)->all();
+        $this->assertSame(['F1' => 1, 'mere' => 1], $liste);
+        $this->getJson('/releve?dir=pair&appareil=mere&depuis_n=0', $f1)->assertOk()->assertJsonCount(1, 'env');
+        // un sens inconnu reste interdit à la mère
+        $this->postJson('/depot', $this->env('m-2', 'mere', 1, 'inconnu'), $mere)->assertStatus(403)->assertJson(['code' => 'depot_interdit']);
     }
 
     public function test_tout_appareil_appaire_releve_le_journal_pair_des_autres_mais_pas_leur_boite_privee(): void

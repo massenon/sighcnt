@@ -404,6 +404,23 @@ const routes = {
   },
   'POST /admin/debloquer': (req, b) => { adminOk(req); setMeta('bloque:' + b.uuid, ''); return { ok: true }; },
   'POST /admin/resync': (req) => { adminOk(req); const m = String(Date.now()); setMeta('resync', m); return { marque: m }; },
+  /* ADR-0006 : l'état pair vu par la mère (fonction pure des opérations relevées) et la décision de la personne habilitée sur un conflit marqué. */
+  'GET /admin/pair/etat': (req) => {
+    adminOk(req);
+    const e = pairMod.etat(pairOps(), pairMod.droitsBanc);
+    return { fiches: e.fiches, stock: e.stock, besoins: e.besoins, conflits: e.conflits, tranches: e.tranches, refusees: e.refusees, provisoire: [...e.provisoire].sort(), ops: pairOps().length, seq_max: +meta('pair_seq', 0) };
+  },
+  'POST /admin/pair/trancher': (req, b) => {
+    adminOk(req);
+    const [collection, fiche] = String(b.fiche || '').split('/');
+    const e = pairMod.etat(pairOps(), pairMod.droitsBanc);
+    if (!e.conflits.some((c) => c.fiche === b.fiche && c.champ === b.champ)) throw new Err(409, 'aucun_conflit', 'Aucun conflit marqué sur ce champ : rien à trancher.');
+    const op = { id: 'mere-trancher-' + require('node:crypto').randomUUID(), appareil: 'mere', hlc: horlogePair.emettre(), collection, fiche, type: 'trancher', champs: { [b.champ]: b.valeur }, role: 'mere' };
+    setMeta('pair_hlc', horlogePair.dernier);
+    const seq = +meta('pair_seq', 0) + 1; setMeta('pair_seq', seq);
+    tx(() => { db.prepare('INSERT INTO pair_ops(id,json,seq) VALUES(?,?,?)').run(op.id, JSON.stringify(op), seq); pairPublier({ type: 'op', op: Object.assign({}, op, { seq }) }); });
+    return { ok: true, id: op.id, seq };
+  },
   'GET /admin/etat': (req) => {
     adminOk(req);
     const marque = meta('resync') || null;
@@ -596,6 +613,65 @@ async function restaurer() {
     setMeta('restauration', 'terminee');
   } catch (e) { setMeta('restauration', 'echec: ' + e.message); }
 }
+
+/* =============================================================================
+ * LE RETOUR DE LA MÈRE EN MODE PAIR (ADR-0006)
+ * Pendant son absence, les fileuls se sont échangé leurs opérations dans leurs journaux « pair » au relais. À son retour, la mère les RELÈVE, les rejoue par la règle
+ * de fusion de pair.js (même résultat que les fileuls), leur attribue un `seq` qui FAIT FOI (le provisoire tombe), et publie ce résultat dans SON journal pair
+ * (appareil « mere ») : les fileuls le relèvent comme celui d'un pair. Les conflits restent MARQUÉS : la mère ne les tranche pas seule, la console (la personne
+ * habilitée) le fait par une décision `trancher`, publiée de la même façon.
+ * ========================================================================== */
+const pairMod = require('./pair');
+db.exec(`CREATE TABLE IF NOT EXISTS pair_ops (id TEXT PRIMARY KEY, json TEXT, seq INTEGER);
+  CREATE TABLE IF NOT EXISTS pair_curseurs (appareil TEXT PRIMARY KEY, n INTEGER);
+  CREATE TABLE IF NOT EXISTS pair_sortie (n INTEGER PRIMARY KEY, enveloppe TEXT, depose INTEGER DEFAULT 0);`);
+const horlogePair = new pairMod.Horloge(() => Date.now());
+horlogePair.dernier = +meta('pair_hlc', 0);
+function pairOps() { return db.prepare('SELECT json, seq FROM pair_ops').all().map((r) => Object.assign(JSON.parse(r.json), r.seq == null ? {} : { seq: Number(r.seq) })); }
+function pairPublier(payload) {
+  const n = +meta('pair_n', 0) + 1; setMeta('pair_n', n);
+  db.prepare('INSERT INTO pair_sortie(n,enveloppe) VALUES(?,?)').run(n, JSON.stringify(chiffrer(CLE, payload, { id: `pair-mere-${n}`, appareil: 'mere', dir: 'pair', n })));
+}
+async function pairExpedier() {
+  for (const r of db.prepare('SELECT n,enveloppe FROM pair_sortie WHERE depose=0 ORDER BY n').all()) {
+    await rel('POST', '/depot', { enveloppe: JSON.parse(r.enveloppe) });
+    db.prepare('UPDATE pair_sortie SET depose=1 WHERE n=?').run(r.n);
+  }
+}
+async function pairRelever() {
+  const { appareils } = await rel('GET', '/pair/appareils');
+  for (const a of appareils.filter((x) => x.uuid !== 'mere')) {
+    if (meta('pair_bloque:' + a.uuid)) continue;
+    for (;;) {
+      const depuis = (db.prepare('SELECT n FROM pair_curseurs WHERE appareil=?').get(a.uuid) || { n: 0 }).n;
+      const { env, fin } = await rel('GET', `/releve?dir=pair&appareil=${encodeURIComponent(a.uuid)}&depuis_n=${depuis}&limite=50`);
+      if (!env.length) break;
+      let attendu = depuis + 1; const nouveaux = [];
+      for (const e of env) {
+        if (e.n !== attendu) { alerter({ type: 'trou_pair', appareil: a.uuid, attendu, recu: e.n }); setMeta('pair_bloque:' + a.uuid, 'trou'); break; }
+        let op; try { op = dechiffrer(CLE, e); } catch (x) { alerter({ type: 'authentification_pair', appareil: a.uuid, n: e.n }); setMeta('pair_bloque:' + a.uuid, 'auth'); break; }
+        tx(() => {
+          const neuf = db.prepare('INSERT OR IGNORE INTO pair_ops(id,json) VALUES(?,?)').run(op.id, JSON.stringify(op));
+          if (neuf.changes) nouveaux.push(op);
+          db.prepare('INSERT INTO pair_curseurs(appareil,n) VALUES(?,?) ON CONFLICT(appareil) DO UPDATE SET n=excluded.n').run(a.uuid, e.n);
+        });
+        horlogePair.recevoir(op.hlc); setMeta('pair_hlc', horlogePair.dernier);
+        attendu += 1;
+      }
+      // le seq qui FAIT FOI : attribué à l'acceptation, dans l'ordre total de la fusion, jamais l'horloge murale
+      if (nouveaux.length) {
+        const liste = [];
+        for (const op of nouveaux.sort(pairMod.comparer)) {
+          const seq = +meta('pair_seq', 0) + 1; setMeta('pair_seq', seq);
+          db.prepare('UPDATE pair_ops SET seq=? WHERE id=?').run(seq, op.id); liste.push([op.id, seq]);
+        }
+        pairPublier({ type: 'foi', liste });
+      }
+      if (fin || attendu === depuis + 1) break;
+    }
+  }
+}
+
 function demarrerPont() {
   if (!RELAIS) return;
   const tour = (nom, f, ms) => { let occupe = false; setInterval(async () => { if (occupe) return; occupe = true; try { await f(); } catch (e) { /* relais injoignable : on réessaie */ } occupe = false; }, ms); };
@@ -603,6 +679,7 @@ function demarrerPont() {
   tour('relever', () => (meta('restauration') === 'en_cours' ? null : relever()), 250);
   tour('diffuser', () => { diffuser(); return expedier(); }, 250);
   tour('repliquer', repliquer, 250);
+  tour('pair', async () => { await pairRelever(); await pairExpedier(); }, 250);
   tour('battement', async () => {
     await rel('POST', '/mere/battement', {});
     await rel('POST', '/mere/indicateurs', { indicateurs: { patients_actifs: db.prepare("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0").get().n,

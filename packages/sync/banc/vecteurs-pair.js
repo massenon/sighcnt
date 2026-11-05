@@ -7,7 +7,7 @@ const { etat, droitsBanc, DROITS_BANC } = require('./pair.js');
 
 let n = 0;
 const op = (appareil, hlc, collection, fiche, type, champs = {}, extra = {}) => ({ id: `${appareil}-${++n}`, appareil, hlc, collection, fiche, type, champs, role: 'x', ...extra });
-const ser = (e) => JSON.parse(JSON.stringify({ fiches: e.fiches, stock: e.stock, besoins: e.besoins, conflits: e.conflits, refusees: e.refusees.map((r) => ({ id: r.id, appareil: r.appareil, code: r.code })), provisoire: [...e.provisoire].sort() }));
+const ser = (e) => JSON.parse(JSON.stringify({ fiches: e.fiches, stock: e.stock, besoins: e.besoins, conflits: e.conflits, tranches: e.tranches, refusees: e.refusees.map((r) => ({ id: r.id, appareil: r.appareil, code: r.code })), provisoire: [...e.provisoire].sort() }));
 const cas = [];
 const ajouter = (nom, ops) => cas.push({ nom, ops, attendu: ser(etat(ops, droitsBanc)) });
 
@@ -44,6 +44,16 @@ ajouter('archiver, restaurer, modifier une fiche archivée', [
   op('F2', 5, 'patients', 'p', 'modifier', { nom: 'C' }, { role: 'reception', vu: { nom: 1 } }),
 ]);
 
+ajouter('trancher : le conflit est levé, un conflit postérieur reste marqué, refus sans droit', [
+  op('F1', 1, 'patients', 'q', 'creer', { nom: 'A' }, { role: 'reception' }), op('F1', 5, 'patients', 'q', 'modifier', { nom: 'B' }, { role: 'reception', vu: { nom: 1 } }),
+  op('F2', 6, 'patients', 'q', 'modifier', { nom: 'C' }, { role: 'reception', vu: { nom: 1 } }), op('mere', 10, 'patients', 'q', 'trancher', { nom: 'B' }, { role: 'mere', seq: 4 }),
+  op('F3', 12, 'patients', 'q', 'modifier', { nom: 'D' }, { role: 'reception', vu: { nom: 1 } }), op('F2', 13, 'patients', 'q', 'trancher', { nom: 'C' }, { role: 'infirmier' }),
+]);
+ajouter('trancher refusé sur pièce émise et sur fiche archivée', [
+  op('F1', 1, 'factures', 'f', 'creer', { total: 1 }, { role: 'caissier' }), op('F1', 2, 'factures', 'f', 'emettre', {}, { role: 'caissier' }), op('mere', 3, 'factures', 'f', 'trancher', { total: 9 }, { role: 'mere' }),
+  op('F1', 4, 'patients', 'z', 'creer', { nom: 'A' }, { role: 'reception' }), op('F1', 5, 'patients', 'z', 'archiver', {}, { role: 'reception' }), op('mere', 6, 'patients', 'z', 'trancher', { nom: 'B' }, { role: 'mere' }),
+]);
+
 /* cas engendrés (graine fixe) : mélange de familles, rôles valides ou non, hlc égaux entre appareils, doublons */
 let s = 20261105;
 const alea = (m) => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s % m; };
@@ -71,7 +81,7 @@ for (let k = 0; k < 60; k++) {
     else if (t === 4) ops.push(op(a, hlc, 'patients', choix(fiches), 'modifier', { tel: String(alea(9)) }, { role: roleDe('patients', 'modifier'), vu: { tel: dernierVu } }));
     else if (t === 5) { const ty = choix(['soumettre', 'valider', 'rejeter']); ops.push(op(a, hlc, 'besoins', choix(['b1', 'b2']), ty, {}, { role: roleDe('besoins', ty) })); }
     else if (t === 6) ops.push(op(a, hlc, 'factures', choix(['f1', 'f2']), choix(['modifier', 'modifier', 'emettre', 'creer']), { total: 10 * (1 + alea(9)) }, { role: roleDe('factures', 'modifier'), vu: { total: dernierVu } }));
-    else if (t === 7) ops.push(op(a, hlc, 'patients', choix(fiches), choix(['archiver', 'restaurer']), {}, { role: roleDe('patients', 'archiver') }));
+    else if (t === 7) { const ty = choix(['archiver', 'restaurer', 'trancher']); ops.push(op(a, hlc, 'patients', choix(fiches), ty, ty === 'trancher' ? { tel: String(alea(9)) } : {}, { role: roleDe('patients', ty) })); }
     else ops.push(op(a, hlc, 'constantes', 'c' + alea(3), choix(['creer', 'modifier']), { t: 36 + alea(5) }, { role: roleDe('constantes', 'creer') }));
     if (alea(7) === 0) ops.push(ops[ops.length - 1]); // doublon livré deux fois
   }

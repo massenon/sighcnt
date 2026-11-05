@@ -985,6 +985,58 @@ const scenarios = {
     await m.fermer();
   },
 
+  async P4() {
+    courant = 'PAIR-P4 · la mère revient : elle relève les journaux pair, fait foi (seq), laisse le conflit marqué, la console tranche, tous reçoivent la décision';
+    const m = await monde({ relais: true });
+    await m.mere.tuer();
+    m.mere.opts.cle = Buffer.from(m.clePair, 'hex').toString('base64'); // la mère détient la clé de clinique : celle des fileuls
+    const f1 = await m.pair('F1'); const f2 = await m.pair('F2'); const f3 = await m.pair('F3');
+    await f1.emettre({ collection: 'patients', fiche: 'p1', type: 'creer', champs: { nom: 'AKPO', tel: '1' }, role: 'reception' });
+    await f1.emettre({ collection: 'stock', fiche: 'gants', type: 'creer', champs: { qte: 50 }, role: 'stock' });
+    await attendre(async () => (await f2.fiches()).fiches['patients/p1'] && (await f3.fiches()).fiches['patients/p1'], 10000);
+    const vu = (await f2.fiches()).fiches['patients/p1'].hlc.tel;
+    await f2.coupe(); await f3.coupe();
+    await f2.emettre({ collection: 'patients', fiche: 'p1', type: 'modifier', champs: { tel: '91' }, vu: { tel: vu }, role: 'reception' });
+    await f3.emettre({ collection: 'patients', fiche: 'p1', type: 'modifier', champs: { tel: '92' }, vu: { tel: vu }, role: 'reception' });
+    await dormir(300); await f2.rouvre(); await f3.rouvre();
+    const converge = async () => { const a = JSON.stringify(await f1.fiches()); return a === JSON.stringify(await f2.fiches()) && a === JSON.stringify(await f3.fiches()); };
+    verifier('mère éteinte : les trois fileuls convergent, le conflit est marqué, tout est PROVISOIRE', await attendre(async () => (await f1.fiches()).conflits.length === 1 && (await converge()), 15000) && (await f1.fiches()).provisoire.includes('patients/p1'));
+
+    await m.mere.demarrer();
+    const etatMere = () => m.mere.admin('GET', '/admin/pair/etat').then((r) => r.json);
+    const nbOps = (await f1.etat()).ops;
+    verifier('la mère revient et RELÈVE les journaux pair : elle a toutes les opérations', await attendre(async () => (await etatMere()).ops === nbOps, 15000), [(await etatMere()).ops, nbOps]);
+    const M = await etatMere();
+    verifier('elle attribue un seq qui FAIT FOI à chaque opération, sans trou', M.seq_max === nbOps, [M.seq_max, nbOps]);
+    verifier('la mère aboutit au MÊME état que les fileuls (même règle de fusion)', JSON.stringify(M.fiches) === JSON.stringify((await f1.fiches()).fiches) && JSON.stringify(M.stock) === JSON.stringify((await f1.fiches()).stock));
+    verifier('le conflit reste MARQUÉ : la mère ne le tranche pas seule', M.conflits.length === 1 && M.conflits[0].champ === 'tel');
+    verifier('les fileuls reçoivent le seq qui fait foi : plus rien de provisoire', await attendre(async () => (await f1.fiches()).provisoire.length === 0 && (await f2.fiches()).provisoire.length === 0 && (await f3.fiches()).provisoire.length === 0, 15000));
+    verifier('le conflit est toujours visible sur les fileuls (à trancher)', (await f3.fiches()).conflits.length === 1);
+
+    const refus = await m.mere.admin('POST', '/admin/pair/trancher', { fiche: 'patients/p1', champ: 'nom', valeur: 'X' });
+    verifier('trancher un champ SANS conflit est refusé, nommé', refus.status === 409 && refus.json.code === 'aucun_conflit', refus.json);
+    const choix = await m.mere.admin('POST', '/admin/pair/trancher', { fiche: 'patients/p1', champ: 'tel', valeur: '91' });
+    verifier('la console tranche', choix.status === 200 && choix.json.seq > nbOps, choix.json);
+    verifier('tous les fileuls reçoivent la décision : valeur 91, conflit levé, décision tracée', await attendre(async () => {
+      for (const f of [f1, f2, f3]) { const e = await f.fiches(); if (e.conflits.length !== 0 || e.fiches['patients/p1'].data.tel !== '91' || !e.tranches.some((t) => t.champ === 'tel' && t.par === 'mere')) return false; }
+      return true;
+    }, 15000));
+    verifier('toujours le MÊME état partout, mère comprise', await attendre(converge, 10000) && JSON.stringify((await etatMere()).fiches) === JSON.stringify((await f1.fiches()).fiches));
+
+    await m.mere.tuer(); await m.mere.demarrer();
+    await dormir(1200);
+    const apres = await etatMere();
+    verifier('après SIGKILL de la mère : rien relu deux fois, rien republié, mêmes seq', apres.ops === nbOps + 1 && apres.seq_max === nbOps + 1, [apres.ops, apres.seq_max]);
+    await f2.emettre({ collection: 'constantes', fiche: 'c1', type: 'creer', champs: { pouls: 70 }, role: 'infirmier' });
+    verifier('une opération faite APRÈS le retour reçoit aussi son seq (la mère est un pair qui fait foi)', await attendre(async () => (await etatMere()).seq_max === nbOps + 2 && !(await f2.fiches()).provisoire.includes('constantes/c1'), 15000));
+    const tout = (await m.relais.direct('GET', '/banc/tout')).json;
+    const brut = JSON.stringify(tout.lignes);
+    verifier('le relais ne voit toujours AUCUN clair, journal de la mère compris', !/AKPO|patients|trancher|"foi"|"liste"|"tel"/.test(brut.replace(/"ct":"[^"]*"/g, '"ct"').replace(/"nonce":"[^"]*"/g, '"nonce"')) /* les valeurs chiffrées sont écartées : une chaîne base64 peut contenir n'importe quelles lettres par hasard */ && tout.lignes.some((l) => l.dir === 'pair' && l.appareil === 'mere'));
+    const rangs = tout.lignes.filter((l) => l.dir === 'pair' && l.appareil === 'mere').map((l) => l.n).sort((a, c) => a - c);
+    verifier('rangs contigus dans le journal de la mère', rangs.length > 0 && rangs.every((n, i) => n === i + 1), rangs);
+    await m.fermer();
+  },
+
 };
 
 /* --- exécution ------------------------------------------------------------------------------ */
