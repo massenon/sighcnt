@@ -112,6 +112,7 @@ const _libellesGroupe = <String, (String, String)>{
   'labo_a_saisir': ('échantillon(s) reçu(s), résultat à saisir', 'Le prescripteur ne verra rien tant que le résultat n’est pas validé.'),
   'a_valider_besoins': ('bon(s) de besoins à valider', 'Arbitrer chaque bon : validé, complément demandé ou rejeté avec son motif.'),
   'a_valider_ecritures': ('pièce(s) comptable(s) en brouillon', 'Contrôler l’équilibre (RG-10) puis valider.'),
+  'pair_conflits': ('champ(s) modifié(s) en même temps sur deux postes', 'Deux valeurs coexistent, la plus récente est retenue provisoirement : la personne habilitée tranche.'),
   'poste': ('notification(s) de poste', 'À consulter dans les écrans concernés.'),
 };
 
@@ -241,6 +242,15 @@ final List<_Source> _sources = [
       ...par('produits', 'stockNegatifDetecte', 'dbl-stk', 'Stock négatif détecté', 'Deux postes ont sorti le dernier exemplaire hors ligne (RG-03) : régulariser par un inventaire.', 'm6-stock-detail', (f) => ou(f['designation'], f['id']), 'critique'),
     ];
   }),
+  // ADR-0006 (D2) : un champ écrit en même temps par deux postes reste MARQUÉ jusqu'à ce que la personne habilitée tranche ; le moteur pair recopie ces
+  // conflits dans la collection locale `conflitsPair` (jamais synchronisée) et ils s'annoncent à l'ouverture, avec le son, comme toute alerte importante.
+  _Source('pair_conflits', 'metier', 'Échanges entre postes', (m, auj) => [
+        for (final c in m.collection('conflitsPair').actives)
+          _Ligne('pair:${c['collection']}:${c['fiche']}:${c['champ']}', 'important',
+              'Conflit à trancher : ${_ou(c['libelle'], '${c['collection']} / ${c['champ']}')}',
+              'Valeurs en présence : ${_ou(c['valeurs'], '')}. Le conflit reste marqué tant que la Direction ou la DAF ne tranche pas.',
+              _v(c['ecran']) ? '${c['ecran']}' : null, const ['direction', 'da', 'admin']),
+      ]),
   _Source('poste', 'metier', 'Poste', (m, auj) => [
         // Notifications de POSTE, écrites par le moteur transactionnel : elles s'adressent à un poste, pas à une personne.
         for (final n in m.collection('notifications').actives)

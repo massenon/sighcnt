@@ -29,4 +29,14 @@ void main() {
   test('le caissier ne reçoit rien : il ne tranche pas', () => expect(pour(avecMarqueurs(), 'caissier'), isEmpty));
 
   test('sans marqueur, aucune alerte (jamais un doublon inventé)', () => expect(pour(Magasin({}, 'POSTE', {}), 'direction'), isEmpty));
+
+  test('ADR-0006 : un conflit entre pairs est annoncé à ceux qui tranchent, pas aux autres', () {
+    final m = Magasin({}, 'POSTE', {});
+    m.collection('conflitsPair').inserer({'statut': 'actif', 'collection': 'patients', 'fiche': 'p1', 'champ': 'telephone', 'libelle': 'téléphone du patient CNT/12/26', 'valeurs': '90 / 91', 'ecran': 'm1-patients'});
+    List<AlerteNotif> de(String r) => CentreNotifications(magasin: m, donnees: () => donnees, role: () => r, horloge: () => horloge).collecter().where((n) => n.source == 'pair_conflits').toList();
+    expect(de('da').single.titre, 'Conflit à trancher : téléphone du patient CNT/12/26');
+    expect(de('direction'), hasLength(1));
+    expect(de('caissier'), isEmpty);
+    expect(de('medecin'), isEmpty);
+  });
 }

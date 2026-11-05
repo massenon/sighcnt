@@ -193,6 +193,17 @@ class FileulPair {
     };
   }
 
+  /// Les conflits MARQUÉS, tels que la règle de fusion les voit aujourd'hui (le poste les recopie dans sa collection locale `conflitsPair`).
+  List<Map<String, Object?>> conflits() => etatPair(toutesOps(), droits: droits).conflits;
+
+  /// Boucle sans serveur de commande (l'application n'expose aucun port) : publier, relever, recommencer.
+  Future<void> boucle() async {
+    for (;;) {
+      await cycle();
+      await Future<void>.delayed(Duration(milliseconds: cfg.intervalleMs));
+    }
+  }
+
   Map<String, Object?> etat() => {
         'uuid': base.meta('uuid'),
         'nom': cfg.nom,
