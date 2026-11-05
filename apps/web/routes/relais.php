@@ -12,6 +12,7 @@ Route::post('/appairage', [RelaisController::class, 'appairage']);
 Route::post('/depot', [RelaisController::class, 'depot']);
 Route::get('/releve', [RelaisController::class, 'releve']);
 Route::get('/mere/appareils', [RelaisController::class, 'appareilsMere']);
+Route::get('/pair/appareils', [RelaisController::class, 'appareilsPair']);
 Route::get('/compteur', [RelaisController::class, 'compteur']);
 Route::post('/mere/revoquer', [RelaisController::class, 'revoquer']);
 Route::post('/mere/activer', [RelaisController::class, 'activerMere']);

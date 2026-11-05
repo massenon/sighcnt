@@ -98,4 +98,4 @@ Vérifié par mutation : sans le tri, sans le contrôle de part de stock, sans l
 - **P2** un poste hors réseau puis tué (SIGKILL) : sa file persistée repart, rien ne se perd, rien ne se duplique, rangs contigus au relais.
 - **P3** deux postes isolés modifient le même champ : le conflit est marqué avec les deux valeurs, la valeur est la même partout, la fiche reste provisoire.
 
-Vérifié par mutation (sans relève, sans droits à l'émission, sans persistance de la file, sans ordre total : le banc rougit). `SIGH_RELAIS=laravel` ignore P1 à P3 tant que `apps/web` ne porte pas le sens `pair`. Non fait : le retour de la mère (relève des journaux pair, rejeu, attribution du `seq`), le port Dart.
+Vérifié par mutation (sans relève, sans droits à l'émission, sans persistance de la file, sans ordre total : le banc rougit). P1 à P3 passent aussi contre le VRAI relais Laravel (`SIGH_RELAIS=laravel`, 21/21). Port Dart de la règle : `packages/domaine/lib/src/sync/pair.dart` (vecteurs engendrés par `banc/vecteurs-pair.js`). Non fait : le retour de la mère (relève des journaux pair, rejeu, attribution du `seq`), le branchement au poste.

@@ -138,8 +138,9 @@ class RelaisController extends Controller
             }
         } else {
             $a = $this->appareil($r);
-            if ($dir !== 'vers_mere' || $appareilCible !== $a->uuid) {
-                $this->refus(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère.');
+            /* ADR-0006 : un appareil dépose dans sa propre boîte vers la mère OU dans son PROPRE journal « pair » (lu par les autres appareils, jamais écrit par eux). */
+            if (! in_array($dir, ['vers_mere', 'pair'], true) || $appareilCible !== $a->uuid) {
+                $this->refus(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère ou dans son propre journal pair.');
             }
         }
         foreach (['id', 'appareil', 'dir', 'nonce', 'ct'] as $champ) {
@@ -182,11 +183,25 @@ class RelaisController extends Controller
             return response()->json($this->lister($dir, $app, $n, $lim));
         }
         $a = $this->appareil($r);
+        /* ADR-0006 : le journal « pair » de n'importe quel appareil appairé se lit par tout appareil appairé (même clinique) ; la boîte « vers_mobile » reste privée. */
+        if ($dir === 'pair') {
+            return response()->json($this->lister($dir, $app, $n, $lim));
+        }
         if ($dir !== 'vers_mobile' || $app !== $a->uuid) {
             $this->refus(403, 'lecture_interdite', 'Un appareil ne lit que SA boîte.');
         }
 
         return response()->json($this->lister($dir, $app, $n, $lim));
+    }
+
+    /* ADR-0006 : les journaux pair existants (appareil, dernier rang), pour que chaque appareil sache quoi relever. Aucun contenu. */
+    public function appareilsPair(Request $r): JsonResponse
+    {
+        $this->appareil($r);
+        $rows = DB::table('relais_enveloppes')->where('dir', 'pair')
+            ->selectRaw('appareil as uuid, MAX(n) as max_n')->groupBy('appareil')->get();
+
+        return response()->json(['appareils' => $rows]);
     }
 
     public function appareilsMere(Request $r): JsonResponse

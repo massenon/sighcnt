@@ -993,7 +993,6 @@ const scenarios = {
   const noms = Object.keys(scenarios).filter((n) => !voulus.length || voulus.includes(n));
   const t0 = Date.now();
   for (const n of noms) {
-    if (/^P\d/.test(n) && process.env.SIGH_RELAIS === 'laravel') { console.log(`\n▶ ${n} · ignoré : le relais Laravel ne porte pas encore le sens « pair » (ADR-0006, étape relais)`); continue; }
     console.log(`\n▶ ${n}`);
     /* Garde-fou : un scénario qui se bloque ou qui lève une exception ne laisse ni processus
        orphelin ni banc suspendu — il échoue, nommé, et les processus sont tués. */
