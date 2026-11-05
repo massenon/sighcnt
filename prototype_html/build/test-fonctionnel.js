@@ -12336,6 +12336,148 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   }
 
+  {
+    scenario('Vague 74 — le sélecteur d’exercice est dans la barre supérieure : en session, seulement sur les écrans à année, il lit sans jamais écrire');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await page.evaluate(() => { try { sessionStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
+    await ouvrir('m12-ecritures.html');
+    erreursJS = [];
+    const compter = () => page.evaluate(() => {
+      const s = document.getElementById('selecteur-exercice');
+      return { dansBarre: !!(s && s.closest('#app-topbar')), dansPage: !!document.querySelector('#page-actions #selecteur-exercice'), valeur: s ? s.value : null,
+        prec: !!document.getElementById('exercice-precedent'), suiv: !!document.getElementById('exercice-suivant') };
+    });
+    const a = await compter();
+    verifier('Sur un registre comptable, le sélecteur est dans la BARRE SUPÉRIEURE et non plus dans l’en-tête de la page', a.dansBarre && !a.dansPage, JSON.stringify(a));
+    const defaut = await page.evaluate(() => ({ choisi: window.SIGH.exercice.choisi(), parDefaut: window.SIGH.exercice.parDefaut(),
+      ouverts: window.SIGH.exercice.liste().filter((x) => x.etat === 'ouvert').map((x) => x.annee) }));
+    verifier('Sans choix, l’exercice par défaut est l’exercice OUVERT le plus récent', defaut.choisi === Math.max.apply(null, defaut.ouverts) && defaut.parDefaut === defaut.choisi, JSON.stringify(defaut));
+    verifier('Les boutons « exercice précédent » et « suivant » existent quand l’exercice voisin existe', a.prec, JSON.stringify(a));
+
+    const absent = await page.evaluate(async () => {
+      const N = window.SIGH.nav;
+      const ids = ['m8-caisse', 'm12-dashboard', 'dash-comptable', 'm6-point-ventes', 'm6-dashboard', 'm1-patients', 'm2-agenda'];
+      const res = {}; ids.forEach((i) => { res[i] = N.aExercice(N.get(i)); });
+      const presents = ['m12-ecritures', 'm12-balance', 'm8-factures', 'm7-commandes', 'm11-bulletins', 'mecef-factures', 'm9-historique'];
+      presents.forEach((i) => { res[i] = N.aExercice(N.get(i)); });
+      return res;
+    });
+    verifier('Il est absent des écrans du jour (caisse, point de vente, tableaux de bord de poste, accueil) et présent sur les registres et états à année',
+      ['m8-caisse', 'm12-dashboard', 'dash-comptable', 'm6-point-ventes', 'm6-dashboard', 'm1-patients', 'm2-agenda'].every((i) => absent[i] === false)
+      && ['m12-ecritures', 'm12-balance', 'm8-factures', 'm7-commandes', 'm11-bulletins', 'mecef-factures', 'm9-historique'].every((i) => absent[i] === true), JSON.stringify(absent));
+
+    await ouvrir('m8-caisse.html');
+    verifier('Sur la caisse, aucun sélecteur dans la barre', await page.evaluate(() => !document.getElementById('selecteur-exercice')), '');
+
+    /* Changer d'exercice : l'écran se recharge, le choix vit en session, rien n'est écrit, aucun droit n'est donné. */
+    await ouvrir('m8-factures.html');
+    const avant = await page.evaluate(() => ({ audit: window.SIGH.store.raw().audit.length, ecr: window.SIGH.store.collection('ecritures').all().length, fac: window.SIGH.store.collection('factures').all().length,
+      lignes: (document.body.textContent.match(/sur ([\d\s\u00a0\u202f]+) enregistrement/) || [])[1] }));
+    await page.evaluate(() => window.SIGH.exercice.choisir(2025));
+    await ouvrir('m8-factures.html');
+    const apres = await page.evaluate(() => ({ audit: window.SIGH.store.raw().audit.length, ecr: window.SIGH.store.collection('ecritures').all().length, fac: window.SIGH.store.collection('factures').all().length,
+      choisi: window.SIGH.exercice.choisi(), session: sessionStorage.getItem('sigh-cnt:exercice'), local: localStorage.getItem('sigh-cnt:exercice'),
+      affiche: (function () { const tx = document.body.textContent; if (/Aucun enregistrement/.test(tx)) return 0; const m = /sur ([\d\s\u00a0\u202f]+) enregistrement/.exec(tx); return m ? Number(m[1].replace(/[\s\u00a0\u202f]/g, '')) : -1; })(),
+      attendu25: window.SIGH.store.collection('factures').active().filter((f) => window.SIGH.exercice.anneeDe(f.date) === 2025).length,
+      attendu26: window.SIGH.store.collection('factures').active().filter((f) => window.SIGH.exercice.anneeDe(f.date) === 2026).length }));
+    verifier('Le choix est tenu par la SESSION (sessionStorage), jamais par une copie dans le stockage durable', apres.choisi === 2025 && apres.session === '2025' && apres.local === null, JSON.stringify(apres));
+    verifier('Choisir 2025 n’écrit rien : mêmes écritures, mêmes factures, aucune entrée d’audit de plus', apres.ecr === avant.ecr && apres.fac === avant.fac && apres.audit === avant.audit, JSON.stringify([avant, apres]));
+    verifier('Le registre des factures SUIT l’exercice : 2025 ne montre que les factures datées de 2025, pas celles de 2026', apres.affiche === apres.attendu25 && apres.attendu26 > 0 && apres.affiche !== avant.fac, JSON.stringify(apres));
+
+    /* Une pièce s'enregistre dans l'exercice de SA date, jamais dans celui que l'on consulte. */
+    const ecrit = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      X.choisir(2025);
+      const r = ecr.insert({ numero: 'S74-1', date: '2026-08-16', journal: 'VTE', compte: '706000', debit: 0, credit: 50, statut: 'brouillon', origine: 'Saisie manuelle' });
+      const id = r && r.record.id; const fiche = id ? ecr.get(id) : null;
+      const res = { cree: !!fiche, annee: fiche ? X.anneeDe(fiche.date) : null, choisi: X.choisi() };
+      if (r) r.undo();
+      return res;
+    });
+    verifier('Une pièce datée de 2026 s’enregistre dans 2026 même quand on consulte 2025', ecrit.cree && ecrit.annee === 2026 && ecrit.choisi === 2025, JSON.stringify(ecrit));
+
+    /* Dates relatives : consulter 2025 en 2026, c'est voir décembre 2025 sous « ce mois ». */
+    const rel = await page.evaluate(() => {
+      const X = window.SIGH.exercice, C = window.SIGH.core;
+      X.choisir(2025); const r25 = C.iso(X.dateReference());
+      const b25 = C.bornes('mois', X.dateReference());
+      X.choisir(2026); const rN = C.iso(X.dateReference());
+      return { r25: r25, debut25: C.iso(b25.debut), fin25: C.iso(b25.fin), rN: rN, auj: C.iso(C.aujourdhui()) };
+    });
+    verifier('Les dates relatives partent du dernier jour de l’exercice consulté (2025), et d’aujourd’hui pour l’exercice en cours', rel.r25 === '2025-12-31' && rel.fin25 === '2025-12-31' && rel.rN === rel.auj, JSON.stringify(rel));
+    await page.evaluate(() => { try { sessionStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  {
+    scenario('Vague 75 — archive légale d’une clôture : CSV des écritures SYSCOHADA, balance, états, manifeste SHA-256, immuable, vérifiée au téléchargement');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+    const r = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const qui = (role, n) => S.setSession({ role: role, nom: n, nomComplet: n, fonction: role });
+      const mk = (num, date, compte, d, c, centre) => ecr.insert({ numero: num, date: date, journal: 'VTE', journalLibelle: 'sonde', compte: compte, compteLibelle: 'Compte ' + compte, libelle: 'Écriture; "test"',
+        debit: d, credit: c, statut: 'validee', origine: 'Saisie manuelle', centreCout: centre || null });
+      const out = {};
+      qui('comptable', 'Comptable Sonde');
+      mk('S40-1', '2040-03-01', '571000', 8000, 0, null); mk('S40-1', '2040-03-01', '706000', 0, 8000, 'laboratoire');
+      mk('S40-2', '2040-04-01', '604100', 3000, 0, 'pharmacie'); mk('S40-2', '2040-04-01', '571000', 0, 3000, null);
+      X.demarrer(2040);
+      qui('da', 'Direction Sonde');
+      const cl = X.cloturer(2040, 'Clôture de la sonde'); out.cl = cl.ok; out.clMotif = cl.motif || '';
+      const arch = S.collection('archivesExercice').all().filter((a) => a.annee === 2040);
+      out.nb = arch.length;
+      if (!cl.ok || !arch.length) { out.noms = []; out.bom = false; out.manifeste = false; out.empreintes = false; out.ged = []; out.refs = []; return out; }
+      const a = arch[0];
+      out.noms = a.fichiers.map((f) => f.nom);
+      const ec = a.fichiers.filter((f) => /^ecritures-/.test(f.nom))[0] || { contenu: '' };
+      const lignes = ec.contenu.split('\r\n').filter(Boolean);
+      out.bom = ec.contenu.charCodeAt(0) === 0xfeff;
+      out.entete = lignes[0] ? lignes[0].replace('﻿', '') : '';
+      out.nbLignes = lignes.length - 1;
+      out.attendu = ecr.active().filter((e) => X.anneeDe(e.date) === 2040).length;
+      out.date = (lignes[1] || '').split(';')[1];
+      out.guillemets = ec.contenu.indexOf('"Écriture; ""test"""') >= 0;
+      out.empreintes = a.fichiers.every((f) => /^[0-9a-f]{64}$/.test(f.empreinte) && X.sha256(f.contenu) === f.empreinte);
+      const man = a.fichiers.filter((f) => /^manifeste-/.test(f.nom))[0] || { contenu: '' };
+      out.manifeste = a.fichiers.filter((f) => !/^manifeste-/.test(f.nom)).every((f) => man.contenu.indexOf(f.empreinte + '  ' + f.nom) >= 0);
+      out.ged = S.collection('documents').active().filter((d) => d.codeRattachement === 'EX2040').map((d) => d.archiveExercice);
+      out.lectureOk = a.fichiers.every((f) => X.lireArchive(a.reference, f.nom).ok);
+      const col = S.collection('archivesExercice');
+      out.modifie = col.update(a.id, { par: 'quelqu’un' }) !== null;
+      out.archive = col.archive(a.id, 'tentative') !== null;
+      out.redepose = col.insert({ reference: a.reference, annee: 2040, fichiers: [] }) !== null;
+      const brut = col.all().filter((z) => z.reference === a.reference)[0];
+      const f0 = brut.fichiers[0]; const avant = f0.contenu; f0.contenu = avant + 'x';
+      const alt = X.lireArchive(a.reference, f0.nom); f0.contenu = avant;
+      out.altere = alt.ok === false && alt.altere === true && /altéré/.test(alt.motif);
+      out.restaure = X.lireArchive(a.reference, f0.nom).ok;
+      out.empPremiere = a.manifesteEmpreinte;
+      qui('comptable', 'Comptable Sonde');
+      out.rouvre = X.rouvrir(2040, 'Erreur découverte après coup').ok;
+      qui('da', 'Direction Sonde');
+      const cl2 = X.cloturer(2040, 'Seconde clôture'); out.cl2 = cl2.ok; out.cl2Motif = cl2.motif || '';
+      const toutes = S.collection('archivesExercice').all().filter((z) => z.annee === 2040);
+      out.nb2 = toutes.length; out.refs = toutes.map((z) => z.reference).sort();
+      out.premiereIntacte = toutes.filter((z) => z.reference === a.reference)[0].manifesteEmpreinte === out.empPremiere;
+      return out;
+    });
+    verifier('La clôture dépose une archive de quatre fichiers : écritures CSV, balance CSV, états, manifeste', r.cl && r.nb === 1 && r.noms.length === 4 && r.noms.some((n) => /^ecritures-2040\.csv$/.test(n)) && r.noms.some((n) => /^manifeste-/.test(n)), JSON.stringify([r.cl, r.clMotif, r.nb, r.noms]));
+    verifier('Le CSV des écritures suit le format SYSCOHADA révisé : BOM UTF-8, onze colonnes nommées, dates JJ/MM/AAAA, toutes les écritures de l’exercice, guillemets échappés',
+      r.bom && r.entete === 'Journal;Date;N° pièce;Compte;Intitulé du compte;Libellé de l’écriture;Centre de coûts;Débit;Crédit;Lettrage;Statut' && /^\d{2}\/\d{2}\/2040$/.test(r.date || '') && r.nbLignes >= r.attendu && r.guillemets, JSON.stringify([r.bom, r.entete, r.date, r.nbLignes, r.attendu, r.guillemets]));
+    verifier('Le manifeste porte l’empreinte SHA-256 de chaque fichier, et chaque empreinte se recalcule', r.manifeste && r.empreintes, JSON.stringify([r.manifeste, r.empreintes]));
+    verifier('La GED référence l’archive de la clôture', r.ged.length === 1 && /^ARC-2040-01$/.test(r.ged[0] || ''), JSON.stringify(r.ged));
+    verifier('L’archive est IMMUABLE : modification, archivage et second dépôt de la même clôture refusés', r.modifie === false && r.archive === false && r.redepose === false, JSON.stringify([r.modifie, r.archive, r.redepose]));
+    verifier('Chaque téléchargement vérifie l’empreinte : intact, livré ; altéré, REFUSÉ en le disant', r.lectureOk && r.altere && r.restaure, JSON.stringify([r.lectureOk, r.altere, r.restaure]));
+    verifier('Après réouverture et seconde clôture, une SECONDE archive est déposée et la première reste intacte', r.rouvre && r.cl2 && r.nb2 === 2 && r.premiereIntacte && r.refs.join() === 'ARC-2040-01,ARC-2040-02', JSON.stringify([r.rouvre, r.cl2, r.cl2Motif, r.nb2, r.refs, r.premiereIntacte]));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

@@ -489,6 +489,8 @@
          et RIEN N’EST RETIRÉ de la collection (RG-14 : un rendez-vous honoré
          EST la consultation, l’archiver effacerait l’acte). */
       function filtreBase(r) {
+        /* `exerciceChamp` : l'écran SUIT l'exercice choisi à la barre supérieure (arbitrage du 05/11/2026). Le choix ne fait que filtrer ce qu'on lit. */
+        if (cfg.exerciceChamp && global.SIGH.exercice && !global.SIGH.exercice.dansExercice(r[cfg.exerciceChamp])) return false;
         return typeof cfg.filtreBase === 'function' ? cfg.filtreBase(r) : true;
       }
 

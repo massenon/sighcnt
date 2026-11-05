@@ -398,7 +398,7 @@
 
   function buildMenubar(session, currentId) {
     var header = el('header#app-menubar.no-print.sticky.top-0.z-40.bg-navy-950.shadow-lg');
-    header.appendChild(buildTopbar(session));
+    header.appendChild(buildTopbar(session, currentId));
 
     var arbre = N.tree(session.role);
     if (!arbre.length) return header;
@@ -528,7 +528,7 @@
   /* ==========================================================================
    * TOPBAR
    * ======================================================================== */
-  function buildTopbar(session) {
+  function buildTopbar(session, currentId) {
     var bar = el('div#app-topbar.flex.h-14.items-center.gap-3.px-3');
 
     /* Marque */
@@ -556,6 +556,10 @@
     ]);
     bar.appendChild(searchBtn);
     bar.appendChild(el('div.flex-1'));
+
+    /* EXERCICE COMPTABLE : choisir ce que l'on lit, jamais où l'on écrit. Seulement sur les écrans qui ont une notion d'année et la suivent. */
+    var selExoBar = selecteurExercice(N.get(currentId));
+    if (selExoBar) bar.appendChild(selExoBar);
 
     /* Actions rapides */
     bar.appendChild(el('button.ribbon-tool.hidden.lg\\:inline-flex.gap-2.px-3.w-auto.text-sm', {
@@ -1140,10 +1144,9 @@
       return (b && (b.textContent || b.getAttribute && b.getAttribute('title'))) || '';
     });
     var deduites = accesRapides(entry, liste.length, libellesDeclares);
-    var selExo = selecteurExercice(entry);
-    if (liste.length || deduites.length || selExo) {
+    var selExo = N.aExercice(entry);   /* le sélecteur est dans la barre supérieure ; ici seulement le bandeau d'état */
+    if (liste.length || deduites.length) {
       var acts = el('div#page-actions.flex.flex-wrap.items-center.gap-2');
-      if (selExo) acts.appendChild(selExo);
       C.append(acts, liste);
       C.append(acts, deduites);
       row.appendChild(acts);
@@ -1219,27 +1222,30 @@
   }
 
   /**
-   * SÉLECTEUR D'EXERCICE — dans la coquille de tout écran comptable (M12).
-   * Un exercice par poste (mémorisé), l'exercice courant par défaut. Les
+   * SÉLECTEUR D’EXERCICE : dans la BARRE SUPÉRIEURE, sur les écrans à année (N.aExercice).
+   * Le choix vit en session (SIGH.exercice.choisi), le plus récent exercice ouvert par défaut. Les
    * exercices clos sont marqués : le choix dit déjà ce qu'on pourra y faire.
    */
-  var SUIT_EXERCICE = ['mecef-factures', 'mecef-avoirs', 'mecef-transmission', 'mecef-journal', 'm9-factures-assureur', 'm9-historique'];
   function selecteurExercice(entry) {
-    /* L'exercice se choisit sur tout écran comptable (M12) et sur les écrans qui suivent l'exercice :
-       le registre fiscal MECeF et les deux états de flux de M9. Les ENCOURS (créances) ne le suivent pas :
-       une créance non réglée d'un exercice précédent reste due. */
-    if (!global.SIGH.exercice || !entry || !(entry.module === 'M12' || SUIT_EXERCICE.indexOf(entry.id) >= 0)) return null;
+    if (!global.SIGH.exercice || !N.aExercice(entry)) return null;
     var X = global.SIGH.exercice, liste = X.liste(), courant = X.choisi();
     if (!liste.length) return null;
-    var sel = el('select.select.w-auto', { id: 'selecteur-exercice', 'aria-label': 'Exercice comptable', title: 'Exercice comptable' });
+    var sel = el('select.select.w-auto.py-1.text-sm', { id: 'selecteur-exercice', 'aria-label': 'Exercice comptable', title: 'Exercice comptable : ce que l’on lit, jamais où l’on écrit' });
     liste.forEach(function (x) {
       var et = { ouvert: 'ouvert', en_cloture: 'en clôture', clos: 'clôturé' }[x.etat] || x.etat;
       var o = el('option', { value: String(x.annee) }, 'Exercice ' + x.annee + ' — ' + et);
       if (x.annee === courant) o.selected = true;
       sel.appendChild(o);
     });
-    sel.addEventListener('change', function () { X.choisir(sel.value); global.location.reload(); });
-    return el('label.flex.items-center.gap-2.text-xs.text-slate-600', null, [C.icon('calendar', 'h-4 w-4'), sel]);
+    function aller(annee) { X.choisir(annee); global.location.reload(); }
+    sel.addEventListener('change', function () { aller(sel.value); });
+    var prec = X.voisin(-1), suiv = X.voisin(1);
+    /* Une borne atteinte : le bouton est ABSENT, pas grisé sans explication. */
+    var boutons = [];
+    if (prec) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-precedent', title: 'Exercice ' + prec, onclick: function () { aller(prec); } }, '‹ ' + prec));
+    if (suiv) boutons.push(el('button.ribbon-tool.px-2.w-auto.text-xs', { type: 'button', id: 'exercice-suivant', title: 'Exercice ' + suiv, onclick: function () { aller(suiv); } }, suiv + ' ›'));
+    return el('div#bloc-exercice.hidden.items-center.gap-1.md\\:flex', null,
+      [C.icon('calendar', 'h-4 w-4 text-navy-200')].concat(boutons.slice(0, 1), [sel], boutons.slice(1)));
   }
 
   /**

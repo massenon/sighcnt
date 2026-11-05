@@ -735,7 +735,7 @@
 
       table = U.dataTable({
         title: 'Bons de commande',
-        rows: function () { return col.active(); },
+        rows: function () { return col.active().filter(function (c) { return global.SIGH.exercice.dansExercice(c.date); }); },   /* suit l'exercice de la barre supérieure */
         exportName: 'bons-commande', pageSize: 12,
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
@@ -1468,7 +1468,7 @@
       amorcer();
       var col = S.collection('facturesFournisseurs', { module: 'M7', entite: 'FactureFournisseur' });
 
-      var rows = col.active();
+      var rows = col.active().filter(function (r) { return global.SIGH.exercice.dansExercice(r.date); });   /* suit l'exercice de la barre supérieure */
       var host = el('div.space-y-4');
       var anomalies = rows.filter(function (r) { return r.statutRappro === 'anomalie'; });
 

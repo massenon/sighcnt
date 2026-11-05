@@ -2352,6 +2352,31 @@
     return r;
   }
 
+  /* L'archive légale d'une clôture : fichiers, empreintes, et un téléchargement qui VÉRIFIE l'empreinte avant de livrer. */
+  function voirArchive(x) {
+    var archives = S.collection('archivesExercice').active().filter(function (a) { return a.annee === x.annee; })
+      .sort(function (a, b) { return b.version - a.version; });
+    if (!archives.length) { U.toast('Aucune archive pour l’exercice ' + x.annee + '.', { type: 'info', detail: 'Elle naît avec la clôture définitive.' }); return; }
+    var corps = el('div.space-y-4');
+    archives.forEach(function (a) {
+      corps.appendChild(el('p.text-sm.font-semibold.text-slate-800', { text: a.reference + ' : clôture ' + a.clNumero + ', déposée le ' + C.dateFR(a.creeLe) + ' par ' + (a.par || '—') }));
+      corps.appendChild(K.miniTable(['Fichier', 'Taille', 'Empreinte SHA-256', ''], a.fichiers.map(function (f) {
+        return [f.nom, C.num(f.taille) + ' c.', el('span.font-mono.text-xs', { text: f.empreinte.slice(0, 20) + '…' }),
+          K.btn('Télécharger', { size: 'sm', variant: 'secondary', icon: 'download', onclick: function () { telechargerArchive(a.reference, f.nom); } })];
+      })));
+    });
+    corps.appendChild(K.note('L’archive est <strong>immuable</strong> et jamais régénérée. Avant chaque téléchargement, l’empreinte du fichier est recalculée et comparée à celle du manifeste : un fichier altéré est refusé.', { tone: 'info', icon: 'shield-check' }));
+    var m = U.modal({ title: 'Archive légale de l’exercice ' + x.annee, size: 'lg', body: corps, footer: [K.btn('Fermer', { variant: 'secondary', onclick: function () { m.close(); } })] });
+  }
+  function telechargerArchive(reference, nom) {
+    var r = global.SIGH.exercice.lireArchive(reference, nom);
+    if (!r.ok) { U.toast('Téléchargement refusé.', { type: 'error', detail: r.motif }); return; }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([r.fichier.contenu], { type: r.fichier.type }));
+    a.download = nom; document.body.appendChild(a); a.click(); a.remove();
+    U.toast('Fichier vérifié et téléchargé.', { type: 'success', detail: nom + ' : empreinte conforme.' });
+  }
+
   function procesVerbalCloture(x) {
     var X = global.SIGH.exercice, lignes = X.soldes(X.ecrituresDe(x.annee));
     P.etat({
@@ -2484,6 +2509,7 @@
               }
               if (x.etat === 'clos') {
                 if (peutRouvrir) a.push(K.commande('Rouvrir', { size: 'sm', variant: 'danger', icon: 'unlock', onclick: function () { rouvrir(x); } }));
+                a.push(K.btn('Archive légale', { size: 'sm', variant: 'secondary', icon: 'archive', onclick: function () { voirArchive(x); } }));
                 a.push(K.btn('Procès-verbal', { size: 'sm', variant: 'secondary', icon: 'printer', onclick: function () { procesVerbalCloture(x); } }));
                 a.push(K.commande('Archiver dans la GED', { size: 'sm', variant: 'secondary', icon: 'archive', onclick: function () { archiverDansGED(x); } }));
                 a.push(K.btn('Exporter CSV', { size: 'sm', variant: 'secondary', icon: 'download', onclick: function () {
@@ -5305,7 +5331,7 @@
       var selPeriode = el('select.select');
       C.PERIODES.forEach(function (x) { selPeriode.appendChild(el('option', { value: x.id }, x.label)); });
       selPeriode.value = 'annee';
-      var inDate = el('input.input', { type: 'date', value: C.iso(AUJ) });
+      var inDate = el('input.input', { type: 'date', value: C.iso(global.SIGH.exercice.dateReference()) });
       var vue = el('div.space-y-4');
 
       var barre = el('div.card');

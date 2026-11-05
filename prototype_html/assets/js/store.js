@@ -3588,7 +3588,7 @@
     'actes', 'analyses', 'produits', 'assureurs', 'fournisseurs', 'comptes', 'banques',
     'naturesFacture', 'centresCouts', 'secteurs', 'postes', 'personnel', 'soignants',
     'ressources', 'souscripteurs', 'garanties', 'certificats', 'typesPiece',
-    'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel',
+    'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel', 'comptesResultat',
     /* Comptes, droits et activation des modules */
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
     /* Règles datées — régimes, primes, barème */
@@ -3871,6 +3871,7 @@
   var LIBELLES = {
     lotsImportation: 'IMP|Lots d’importation', patients: 'M1|Patients', documentsPatient: 'M1|Documents numérisés du patient',
     documents: 'GED|Bibliothèque documentaire',
+    archivesExercice: 'M12|Archives de clôture', clotures: 'M12|Clôtures et réouvertures', comptesResultat: 'M12|Comptes de résultat (131, 139)',
     consultations: 'M2|Consultations et rendez-vous', support: 'M2|Registre des appels',
     admissions: 'M3|Admissions', soins: 'M3|Soins', observations: 'M3|Mises en observation', sortiesAvisMedical: 'M3|Sorties contre avis médical',
     suiviMaternite: 'M4|Suivi maternité', accouchements: 'M4|Accouchements',

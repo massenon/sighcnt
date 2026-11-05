@@ -63,11 +63,13 @@ function sigh_proj_installer(PDO $pdo): bool
     if (!$existe || $deja !== $empreinte) {
         $sql = (string) file_get_contents(__DIR__ . '/schema/schema.sql');
         $reconstruire = false;
-        try {
+        if (!$existe) {
             $pdo->exec($sql);
-        } catch (Throwable $e) {
-            /* Une table dont la FORME a changé (clé, type) ne se met pas à niveau par ADD COLUMN. La copie relationnelle est DÉRIVÉE du magasin JSON, qui reste
-               l'autorité : on la jette et on la reconstruit. Les schémas supprimés sont ceux du manifeste, jamais `public`. */
+        } else {
+            /* Le schéma a CHANGÉ sur une base déjà installée. Un ADD COLUMN ne change ni une clé primaire ni un type : une table dont la forme a bougé
+               (par exemple `_rang` devenu `id`) resterait de travers sans rien dire. La copie relationnelle est DÉRIVÉE du magasin JSON, qui reste
+               l'autorité : on la jette et on la reconstruit, ce qui est sûr et rare (au déploiement d'une version qui change le schéma). Les schémas
+               supprimés sont ceux du manifeste, jamais `public`. */
             foreach (array_unique(array_map(fn ($t) => $t['schema'], sigh_proj_manifeste()['tables'])) as $schema) {
                 $pdo->exec('DROP SCHEMA IF EXISTS "' . $schema . '" CASCADE');
             }

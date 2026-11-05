@@ -3041,14 +3041,32 @@
   function exercice(annee) { return exercices().filter(function (x) { return x.annee === Number(annee); })[0] || null; }
   function etatExercice(annee) { var x = exercice(annee); return x ? x.etat : 'ouvert'; }
 
+  /* LE CHOIX DE L'EXERCICE VIT DANS LA SESSION DE L'UTILISATEUR, en un seul endroit : cette fonction. Tous les écrans la lisent, aucun ne garde de copie.
+     Il ne fait que CHOISIR CE QUE L'ON LIT : il n'écrit rien, ne donne aucun droit, et une pièce s'enregistre toujours dans l'exercice de SA date.
+     Par défaut : l'exercice ouvert le plus récent, sinon le plus récent tout court. */
+  function exerciceParDefaut() {
+    var liste = exercices();
+    var ouverts = liste.filter(function (x) { return x.etat === 'ouvert'; });
+    return (ouverts[0] || liste[0] || { annee: anneeCourante() }).annee;
+  }
   function exerciceChoisi() {
     var v = null;
-    try { v = Number(global.localStorage.getItem(CLE_EXERCICE)); } catch (e) { /* stockage refusé */ }
-    return v && exercice(v) ? v : anneeCourante();
+    try { v = Number(global.sessionStorage.getItem(CLE_EXERCICE)); } catch (e) { /* stockage refusé */ }
+    return v && exercice(v) ? v : exerciceParDefaut();
   }
   function choisirExercice(annee) {
-    try { global.localStorage.setItem(CLE_EXERCICE, String(annee)); } catch (e) { /* sans effet */ }
+    try { global.sessionStorage.setItem(CLE_EXERCICE, String(annee)); } catch (e) { /* sans effet */ }
     return Number(annee);
+  }
+  /* « Ce mois », « ce trimestre » : calculés depuis aujourd'hui si l'exercice consulté le contient, sinon depuis son dernier jour. Consulter 2025 en 2026,
+     c'est voir décembre 2025 sous « ce mois ». */
+  function dateReference() {
+    var a = exerciceChoisi(), auj = C.aujourdhui();
+    return anneeDe(auj) === a ? auj : new Date(a, 11, 31);
+  }
+  function exerciceVoisin(sens) {
+    var cible = exerciceChoisi() + sens;
+    return exercice(cible) ? cible : null;
   }
 
   /* La garde de lecture seule : posée sur la collection, refusée AVANT l'écriture. */
@@ -3416,10 +3434,13 @@
    */
   function archiverExercice(annee) {
     var col = S.collection('documents', { module: 'GED', entite: 'Document' });
-    var code = 'EX' + annee;
+    var f = exercice(annee) || { annee: annee };
+    /* UNE archive PAR CLÔTURE : une réouverture suivie d'une seconde clôture dépose une seconde archive, sans toucher à la première (piste d'audit). */
+    var nbClotures = S.collection('clotures', { module: 'M12', entite: 'Clôture' }).active().filter(function (c) { return c.annee === Number(annee) && c.type === 'cloture'; }).length;
+    var version = Math.max(1, nbClotures);
+    var code = 'EX' + annee + (version > 1 ? '-V' + version : '');
     var deja = col.active().filter(function (d) { return d.codeRattachement === code; })[0];
     if (deja) return Object.assign({}, deja, { deja: true });
-    var f = exercice(annee) || { annee: annee };
     var esc = function (v) { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
     var csv = ['Compte;Intitulé;Débit;Crédit'].concat(soldesParCompte(ecrituresDe(annee)).map(function (l) {
       return [l.compte, l.libelle, l.debit, l.credit].map(esc).join(';');
@@ -3430,16 +3451,104 @@
       if (m) rang = Math.max(rang, Number(m[1]));
     });
     var empBalance = sha256(csv);
+    var paquet = deposerArchive(annee, version, f);
     var r = col.insert({
       reference: 'DOC-' + an + '-' + ('00000' + (rang + 1)).slice(-5),
-      libelle: 'Clôture de l’exercice ' + annee + ' — balance générale (empreinte ' + String(f.empreinte || empBalance).slice(0, 12) + '…)',
+      libelle: 'Clôture de l’exercice ' + annee + (version > 1 ? ' (clôture n° ' + version + ')' : '') + ' : archive légale, ' + paquet.fichiers.length + ' fichiers (empreinte du manifeste ' + paquet.manifesteEmpreinte.slice(0, 12) + '…)',
       categorie: 'cloture_exercice', rattachement: 'Administration', rattacheA: 'Exercice ' + annee, codeRattachement: code,
-      format: 'CSV', taille: csv.length, version: 1, signe: true, archive: true, etatValidation: 'valide', conservation: 10,
+      format: 'CSV', taille: csv.length, version: version, signe: true, archive: true, etatValidation: 'valide', conservation: 10,
       consultations: 0, date: C.iso(C.aujourdhui()), deposePar: (S.session() || {}).nom || '—',
       empreinte: f.empreinte || empBalance, empreinteBalance: empBalance, resultat: f.resultat == null ? null : f.resultat, contenu: csv,
+      archiveExercice: paquet.reference, manifesteEmpreinte: paquet.manifesteEmpreinte,
     });
     return Object.assign({}, r.record, { deja: false });
   }
+
+  /* =========================================================================
+   * L'ARCHIVE LÉGALE D'UNE CLÔTURE (arbitrage du 05/11/2026)
+   * -------------------------------------------------------------------------
+   * Les écritures et la balance en CSV, les états de synthèse imprimables (HTML : « Enregistrer en PDF » se fait à l'impression), et un MANIFESTE portant
+   * l'empreinte SHA-256 de chaque fichier. Immuable : la collection `archivesExercice` refuse toute modification, tout archivage et tout second dépôt pour la
+   * même clôture ; JAMAIS régénérée. Chaque téléchargement VÉRIFIE l'empreinte avant de livrer : un fichier altéré est un refus nommé, pas un fichier livré.
+   *
+   * LE FORMAT DU CSV DES ÉCRITURES est isolé ICI, en un seul point (`formatEcrituresCsv`) : colonnes du journal SYSCOHADA révisé, séparateur « ; »,
+   * UTF-8 avec BOM, dates JJ/MM/AAAA, montants entiers en FCFA (la monnaie n'a pas de subdivision). Validé par la Direction le 05/11/2026.
+   * ======================================================================= */
+  var ENTETE_ECRITURES = ['Journal', 'Date', 'N° pièce', 'Compte', 'Intitulé du compte', 'Libellé de l’écriture', 'Centre de coûts', 'Débit', 'Crédit', 'Lettrage', 'Statut'];
+  function csvCellule(v) { v = v == null ? '' : String(v); return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }
+  function dateJJMMAAAA(d) { var x = C.toDate(d); return x && !isNaN(x) ? C.pad(x.getDate(), 2) + '/' + C.pad(x.getMonth() + 1, 2) + '/' + x.getFullYear() : ''; }
+  function formatEcrituresCsv(lignes) {
+    var corps = lignes.slice().sort(function (a, b) {
+      return String(a.date).localeCompare(String(b.date)) || String(a.numero).localeCompare(String(b.numero)) || String(a.compte).localeCompare(String(b.compte));
+    }).map(function (e) {
+      return [e.journal, dateJJMMAAAA(e.date), e.numero, e.compte, e.compteLibelle, e.libelle, e.centreCout, Math.round(Number(e.debit) || 0), Math.round(Number(e.credit) || 0), e.lettrage, e.statut].map(csvCellule).join(';');
+    });
+    return '﻿' + [ENTETE_ECRITURES.join(';')].concat(corps).join('\r\n') + '\r\n';
+  }
+  function formatBalanceCsv(soldes) {
+    return '﻿' + ['Compte;Intitulé;Débit;Crédit;Solde'].concat(soldes.map(function (l) {
+      return [l.compte, l.libelle, Math.round(l.debit), Math.round(l.credit), Math.round(l.solde)].map(csvCellule).join(';');
+    })).join('\r\n') + '\r\n';
+  }
+  function htmlEchappe(v) { return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function etatsHtml(annee, f, soldes, lignes) {
+    var classe = function (c) { return soldes.filter(function (l) { return String(l.compte).charAt(0) === c; }); };
+    var somme = function (l, k) { return l.reduce(function (n, x) { return n + x[k]; }, 0); };
+    var bloc = function (titre, l) {
+      return '<h2>' + htmlEchappe(titre) + '</h2><table><tr><th>Compte</th><th>Intitulé</th><th>Débit</th><th>Crédit</th><th>Solde</th></tr>'
+        + l.map(function (x) { return '<tr><td>' + htmlEchappe(x.compte) + '</td><td>' + htmlEchappe(x.libelle) + '</td><td>' + Math.round(x.debit) + '</td><td>' + Math.round(x.credit) + '</td><td>' + Math.round(x.solde) + '</td></tr>'; }).join('')
+        + '<tr><th colspan="2">Total</th><th>' + Math.round(somme(l, 'debit')) + '</th><th>' + Math.round(somme(l, 'credit')) + '</th><th>' + Math.round(somme(l, 'solde')) + '</th></tr></table>';
+    };
+    return '<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>États de l’exercice ' + annee + '</title><style>body{font-family:Arial,sans-serif;font-size:11pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid #888;padding:3px 6px;text-align:right}td:nth-child(-n+2),th:nth-child(-n+2){text-align:left}h2{margin-top:18pt}</style></head><body>'
+      + '<h1>États de synthèse : exercice ' + annee + '</h1><p>Résultat net : <strong>' + Math.round(f.resultat == null ? resultatDe(lignes) : f.resultat) + ' FCFA</strong>. Journal arrêté, clôture ' + htmlEchappe(f.clNumero || '') + '. Les états de la liasse (bilan, compte de résultat, flux) se rééditent à l’identique depuis l’exercice figé ; « Enregistrer en PDF » se fait à l’impression.</p>'
+      + bloc('Classes 1 à 5 : bilan (soldes)', soldes.filter(function (l) { return '12345'.indexOf(String(l.compte).charAt(0)) >= 0; }))
+      + bloc('Classes 6 et 7 : charges et produits', classe('6').concat(classe('7')))
+      + bloc('Classe 8 : hors activités ordinaires', classe('8'))
+      + '</body></html>';
+  }
+  function deposerArchive(annee, version, f) {
+    var archives = S.collection('archivesExercice', { module: 'M12', entite: 'Archive de clôture' });
+    var ref = 'ARC-' + annee + '-' + ('0' + version).slice(-2);
+    var existante = archives.all().filter(function (a) { return a.reference === ref; })[0];
+    if (existante) return existante;
+    var lignes = ecrituresDe(annee, true, true);
+    var soldes = soldesParCompte(ecrituresDe(annee));
+    var fichiers = [
+      { nom: 'ecritures-' + annee + '.csv', type: 'text/csv;charset=utf-8', contenu: formatEcrituresCsv(lignes) },
+      { nom: 'balance-' + annee + '.csv', type: 'text/csv;charset=utf-8', contenu: formatBalanceCsv(soldes) },
+      { nom: 'etats-' + annee + '.html', type: 'text/html;charset=utf-8', contenu: etatsHtml(annee, f, soldes, ecrituresDe(annee)) },
+    ].map(function (x) { return { nom: x.nom, type: x.type, contenu: x.contenu, taille: x.contenu.length, empreinte: sha256(x.contenu) }; });
+    var manifeste = fichiers.map(function (x) { return x.empreinte + '  ' + x.nom; }).join('\n') + '\n';
+    var man = { nom: 'manifeste-' + annee + '.txt', type: 'text/plain;charset=utf-8', contenu: manifeste, taille: manifeste.length, empreinte: sha256(manifeste) };
+    var r = archives.insert({ reference: ref, annee: Number(annee), version: version, creeLe: new Date().toISOString(), par: acteur(),
+      clNumero: f.clNumero || null, anNumero: f.anNumero || null, fichiers: fichiers.concat([man]), manifesteEmpreinte: man.empreinte });
+    return r.record;
+  }
+
+  /* TÉLÉCHARGEMENT : l'empreinte est RECALCULÉE et comparée à celle du manifeste avant de livrer. Un fichier altéré est refusé en le nommant. */
+  function lireArchive(reference, nomFichier) {
+    var a = S.collection('archivesExercice').all().filter(function (x) { return x.reference === reference; })[0];
+    if (!a) return { ok: false, motif: 'Archive ' + reference + ' introuvable.' };
+    var fich = (a.fichiers || []).filter(function (x) { return x.nom === nomFichier; })[0];
+    if (!fich) return { ok: false, motif: 'Le fichier « ' + nomFichier + ' » ne figure pas dans l’archive ' + reference + '.' };
+    var recalc = sha256(fich.contenu);
+    if (recalc !== fich.empreinte) return { ok: false, motif: 'Archive ' + reference + ', fichier ' + nomFichier + ' : l’empreinte ne correspond plus (attendue ' + fich.empreinte.slice(0, 12) + '…, calculée ' + recalc.slice(0, 12) + '…). Le fichier a été altéré : téléchargement refusé.', altere: true };
+    var manifeste = (a.fichiers || []).filter(function (x) { return /^manifeste-/.test(x.nom); })[0];
+    if (manifeste && nomFichier !== manifeste.nom && manifeste.contenu.indexOf(fich.empreinte + '  ' + fich.nom) < 0) {
+      return { ok: false, motif: 'Archive ' + reference + ' : le manifeste ne porte pas l’empreinte de ' + nomFichier + '. Téléchargement refusé.', altere: true };
+    }
+    return { ok: true, fichier: fich, archive: a };
+  }
+  S.garder('archivesExercice', function (op, rec) {
+    if (op === 'inserer') {
+      var deja = S.collection('archivesExercice').all().filter(function (a) { return a.reference === (rec && rec.reference); })[0];
+      return deja ? 'L’archive ' + rec.reference + ' existe déjà : une archive de clôture n’est jamais régénérée.' : null;
+    }
+    return 'Une archive de clôture est immuable : elle ne se modifie ni ne s’archive. Une nouvelle clôture dépose une nouvelle archive.';
+  });
+  S.garder('clotures', function (op) {
+    return op === 'inserer' ? null : 'Le registre des clôtures et réouvertures est une piste d’audit : il ne se modifie ni ne s’archive.';
+  });
 
   /* LETTRAGE : un ensemble de lignes d'UN compte de tiers dont le total s'annule. */
   function lettrer(compte, ids) {
@@ -3464,7 +3573,11 @@
   }
 
   /** La date tombe-t-elle dans l'exercice choisi ? (écrans de flux : registre fiscal, avoirs…) */
-  function dansExerciceChoisi(date) { return !date || anneeDe(date) === exerciceChoisi(); }
+  function dansExerciceChoisi(date) {
+    if (!date) return true;
+    var n = Number(date);   /* une année seule (bulletins de paie) */
+    return (n >= 1900 && n < 3000 && String(date).length === 4 ? n : anneeDe(date)) === exerciceChoisi();
+  }
   /** La fenêtre de l'exercice choisi : du 1er janvier au 31 décembre, ou à aujourd'hui pour l'année en cours. */
   function fenetreExercice() {
     var a = exerciceChoisi(), auj = C.aujourdhui(), fin = a >= auj.getFullYear() ? auj : new Date(a, 11, 31);
@@ -3576,10 +3689,12 @@
   global.SIGH.exercice = {
     dansExercice: dansExerciceChoisi, fenetre: fenetreExercice,
     liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
+    dateReference: dateReference, voisin: exerciceVoisin, parDefaut: exerciceParDefaut,
     anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
     provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, demarrer: demarrerCloture, reprendre: reprendreSaisie,
     valider: validerCloture, cloturer: validerCloture, rouvrir: rouvrirExercice, compteResultat: compteResultat,
-    lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice,
+    lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice, lireArchive: lireArchive,
+    formatEcrituresCsv: formatEcrituresCsv,
   };
 
   /* Le moteur du BFR est EXPOSÉ pour être SONDÉ, jamais recopié : le scénario

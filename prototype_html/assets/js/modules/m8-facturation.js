@@ -1328,7 +1328,7 @@
       ];
     },
     render: K.crud({
-      collection: 'factures', entite: 'facture', entiteP: 'factures', module: 'M8',
+      collection: 'factures', entite: 'facture', entiteP: 'factures', module: 'M8', exerciceChamp: 'date',
       /* Le formulaire générique du kit n'exposerait ni les lignes, ni les
          remises, ni la répartition : la création passe par l'écran d'émission. */
       creerVers: 'm8-facturation',
@@ -2532,7 +2532,7 @@
 
       function afficher() {
         C.clear(vue);
-        var rows = colAvoirs().active();
+        var rows = colAvoirs().active().filter(function (a) { return global.SIGH.exercice.dansExercice(a.date); });   /* suit l'exercice de la barre supérieure */
         var caisse = rows.filter(function (a) { return a.origine === 'caisse'; });
 
         vue.appendChild(U.kpiGrid([

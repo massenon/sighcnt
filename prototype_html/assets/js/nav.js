@@ -1679,6 +1679,19 @@
     ['Éditer un état', 'printer', 'rapports-bibliotheque'],
   ];
 
+  /* LES ÉCRANS « À ANNÉE » (arbitrage du 05/11/2026). Le sélecteur d'exercice de la barre supérieure n'apparaît que sur les écrans qui ont une notion d'année ET qui
+     la SUIVENT : un sélecteur sur un écran qui l'ignore promettrait une lecture qu'il ne fait pas. Les écrans du jour (caisse, points de vente, files, tableaux
+     de bord de poste) n'en ont pas besoin. La règle est déclarée ICI, jamais dans chaque écran. */
+  var EXERCICE_MODULES = ['M12'];
+  var EXERCICE_ECRANS = ['mecef-factures', 'mecef-avoirs', 'mecef-transmission', 'mecef-journal', 'm9-factures-assureur', 'm9-historique',
+    'm8-factures', 'm8-facture-avoir', 'm7-commandes', 'm7-factures-fournisseurs', 'm11-bulletins'];
+  var EXERCICE_SAUF = /dashboard|^dash-|^hub-|caisse$|point-ventes|point-stock|^m12-ouverture$/;
+  function aExercice(entry) {
+    if (!entry || !entry.id) return false;
+    if (EXERCICE_SAUF.test(entry.id)) return false;
+    return EXERCICE_MODULES.indexOf(entry.module) >= 0 || EXERCICE_ECRANS.indexOf(entry.id) >= 0;
+  }
+
   global.SIGH = global.SIGH || {};
   global.SIGH.nav = {
     ROLES: ROLES,
@@ -1701,6 +1714,7 @@
     invaliderModules: invaliderModules,
     invaliderRbac: invaliderRbac,
     appliquerRenommages: appliquerRenommages,
+    aExercice: aExercice,
     tree: tree,
     module: module,
     hubId: hubId,

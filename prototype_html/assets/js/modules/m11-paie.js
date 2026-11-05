@@ -757,7 +757,7 @@
     title: 'Bulletins de paie',
     description: 'Bulletins générés, statut de validation et édition avec l’entête officielle de la clinique.',
     render: K.crud({
-      collection: 'bulletins', entite: 'bulletin', entiteP: 'bulletins', module: 'M11',
+      collection: 'bulletins', entite: 'bulletin', entiteP: 'bulletins', module: 'M11', exerciceChamp: 'annee',
       defaultSort: 'periode', defaultDir: 'desc', pageSize: 15, readonly: true,
       intro: function () {
         return K.note('Les bulletins sont produits par le moteur de calcul : ils ne sont pas modifiables directement. '

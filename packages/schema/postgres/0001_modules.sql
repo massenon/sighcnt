@@ -713,6 +713,36 @@ CREATE INDEX IF NOT EXISTS "ix_prets_etudes_nature" ON "m11"."prets_etudes" ("na
 CREATE INDEX IF NOT EXISTS "ix_prets_etudes_statut" ON "m11"."prets_etudes" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_prets_etudes_employe_id" ON "m11"."prets_etudes" ("employe_id");
 CREATE INDEX IF NOT EXISTS "ix_prets_etudes_reference" ON "m11"."prets_etudes" ("reference");
+CREATE TABLE IF NOT EXISTS "m12"."archives_exercice" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "annee" integer,
+  "version" integer,
+  "cree_le" timestamptz,
+  "par" text,
+  "cl_numero" text,
+  "an_numero" text,
+  "manifeste_empreinte" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m12"."archives_exercice" IS 'Collection « archivesExercice » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_archives_exercice_statut" ON "m12"."archives_exercice" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_archives_exercice_reference" ON "m12"."archives_exercice" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_archives_exercice_annee" ON "m12"."archives_exercice" ("annee");
+CREATE TABLE IF NOT EXISTS "m12"."archives_exercice_fichiers" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "nom" text,
+  "type" text,
+  "contenu" text,
+  "taille" integer,
+  "empreinte" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m12"."archives_exercice" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "m12"."archives_exercice_fichiers" IS 'Lignes « fichiers » de « archivesExercice »';
 CREATE TABLE IF NOT EXISTS "m12"."banques" (
   "id" text PRIMARY KEY,
   "banque" text,
@@ -758,6 +788,37 @@ COMMENT ON TABLE "m12"."centres_couts" IS 'Collection « centresCouts » — M12
 CREATE INDEX IF NOT EXISTS "ix_centres_couts_code" ON "m12"."centres_couts" ("code");
 CREATE INDEX IF NOT EXISTS "ix_centres_couts_type" ON "m12"."centres_couts" ("type");
 CREATE INDEX IF NOT EXISTS "ix_centres_couts_statut" ON "m12"."centres_couts" ("statut");
+CREATE TABLE IF NOT EXISTS "m12"."clotures" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "annee" integer,
+  "type" text,
+  "cl_numero" text,
+  "an_numero" text,
+  "resultat" integer,
+  "par" text,
+  "le" timestamptz,
+  "motif" text,
+  "empreinte" text,
+  "cree_par" text,
+  "cree_le" timestamptz,
+  "contre_passe" jsonb,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m12"."clotures" IS 'Collection « clotures » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_clotures_statut" ON "m12"."clotures" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_clotures_annee" ON "m12"."clotures" ("annee");
+CREATE INDEX IF NOT EXISTS "ix_clotures_type" ON "m12"."clotures" ("type");
+CREATE TABLE IF NOT EXISTS "m12"."comptes_resultat" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "sens" text,
+  "compte" text,
+  "libelle" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m12"."comptes_resultat" IS 'Collection « comptesResultat » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_comptes_resultat_statut" ON "m12"."comptes_resultat" ("statut");
 CREATE TABLE IF NOT EXISTS "m12"."depenses" (
   "id" text PRIMARY KEY,
   "date" date,
@@ -1132,9 +1193,6 @@ CREATE TABLE IF NOT EXISTS "m14"."comptes" (
   "statut" text,
   "journal" text,
   "libelle" text,
-  "archive_le" timestamptz,
-  "archive_par" text,
-  "motif_archivage" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."comptes" IS 'Collection « comptes » — M14 Sécurité & audit';
@@ -1232,13 +1290,11 @@ CREATE TABLE IF NOT EXISTS "m14"."sessions_utilisateur" (
   "nom_complet" text,
   "identifiant" text,
   "derniere_activite" timestamptz,
-  "utilisateur_id" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."sessions_utilisateur" IS 'Collection « sessionsUtilisateur » — M14 Sécurité & audit';
 CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_etat" ON "m14"."sessions_utilisateur" ("etat");
 CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_statut" ON "m14"."sessions_utilisateur" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_utilisateur_id" ON "m14"."sessions_utilisateur" ("utilisateur_id");
 CREATE TABLE IF NOT EXISTS "m14"."soignants" (
   "id" text PRIMARY KEY,
   "poste" text,
@@ -3006,8 +3062,7 @@ CREATE TABLE IF NOT EXISTS "m7"."besoins_lignes" (
 );
 COMMENT ON TABLE "m7"."besoins_lignes" IS 'Lignes « lignes » de « besoins »';
 CREATE TABLE IF NOT EXISTS "m7"."commandes" (
-  "_rang" integer PRIMARY KEY,
-  "id" text,
+  "id" text PRIMARY KEY,
   "date" date,
   "statut" text,
   "montant" integer,
@@ -3034,7 +3089,8 @@ CREATE TABLE IF NOT EXISTS "m7"."commandes_lignes" (
   "produit_id" text,
   "prix_unitaire" integer,
   "extra" jsonb,
-  PRIMARY KEY ("parent_id", "rang")
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m7"."commandes" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE "m7"."commandes_lignes" IS 'Lignes « lignes » de « commandes »';
 CREATE TABLE IF NOT EXISTS "m7"."factures_fournisseurs" (
@@ -3086,8 +3142,7 @@ CREATE INDEX IF NOT EXISTS "ix_fournisseurs_code" ON "m7"."fournisseurs" ("code"
 CREATE INDEX IF NOT EXISTS "ix_fournisseurs_type" ON "m7"."fournisseurs" ("type");
 CREATE INDEX IF NOT EXISTS "ix_fournisseurs_statut" ON "m7"."fournisseurs" ("statut");
 CREATE TABLE IF NOT EXISTS "m7"."livraisons" (
-  "_rang" integer PRIMARY KEY,
-  "id" text,
+  "id" text PRIMARY KEY,
   "date" date,
   "statut" text,
   "montant" integer,
@@ -3115,7 +3170,8 @@ CREATE TABLE IF NOT EXISTS "m7"."livraisons_lignes" (
   "prix_unitaire" integer,
   "quantite_livree" integer,
   "extra" jsonb,
-  PRIMARY KEY ("parent_id", "rang")
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "m7"."livraisons" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
 );
 COMMENT ON TABLE "m7"."livraisons_lignes" IS 'Lignes « lignes » de « livraisons »';
 CREATE TABLE IF NOT EXISTS "m7"."pv_receptions" (

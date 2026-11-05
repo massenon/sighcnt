@@ -9,15 +9,15 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 | `m1` — M1 Patients & DMI | 6 | 0 | 156 | 526 |
 | `m10` — M10 Ressources humaines | 20 | 1 | 222 | 3118 |
 | `m11` — M11 Paie & primes | 3 | 0 | 44 | 44 |
-| `m12` — M12 Comptabilité SYSCOHADA | 10 | 1 | 125 | 808 |
+| `m12` — M12 Comptabilité SYSCOHADA | 13 | 2 | 154 | 813 |
 | `m13` — M13 Administration & ambulance | 10 | 1 | 106 | 162 |
-| `m14` — M14 Sécurité & audit | 10 | 0 | 114 | 717 |
+| `m14` — M14 Sécurité & audit | 10 | 0 | 110 | 706 |
 | `m2` — M2 RDV, visites, consultations, imagerie | 10 | 3 | 238 | 1221 |
 | `m3` — M3 Hospitalisation & bloc | 10 | 3 | 181 | 623 |
 | `m4` — M4 Maternité, naissances, décès | 13 | 4 | 283 | 331 |
 | `m5` — M5 Laboratoire | 8 | 0 | 109 | 659 |
 | `m6` — M6 Pharmacie & stocks | 8 | 1 | 82 | 1286 |
-| `m7` — M7 Achats & fournisseurs | 6 | 4 | 78 | 92 |
+| `m7` — M7 Achats & fournisseurs | 6 | 4 | 78 | 66 |
 | `m8` — M8 Facturation & caisse | 2 | 1 | 39 | 409 |
 | `m9` — M9 Assurances & créances | 5 | 1 | 48 | 35 |
 | `socle` — Socle commun (référentiels lus par plusieurs modules) | 3 | 0 | 49 | 581 |
@@ -603,6 +603,23 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `nb_echeances` | nbEcheances | integer |  |
 | `premiere_echeance` | premiereEcheance | text |  |
 
+### `m12.archives_exercice` (collection « archivesExercice », 1 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `reference` | reference | text |  |
+| `annee` | annee | integer |  |
+| `version` | version | integer |  |
+| `cree_le` | creeLe | timestamptz |  |
+| `par` | par | text |  |
+| `cl_numero` | clNumero | text |  |
+| `an_numero` | anNumero | text |  |
+| `manifeste_empreinte` | manifesteEmpreinte | text |  |
+
+Table fille `m12.archives_exercice_fichiers` — 1 lignes : nom text, type text, contenu text, taille integer, empreinte text
+
 ### `m12.banques` (collection « banques », 4 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -642,6 +659,35 @@ Table fille `m10.fiches_poste_missions` — 8 lignes : mission text, activites j
 | `statut` | statut | text |  |
 | `libelle` | libelle | text |  |
 | `responsable` | responsable | text |  |
+
+### `m12.clotures` (collection « clotures », 2 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `annee` | annee | integer |  |
+| `type` | type | text |  |
+| `cl_numero` | clNumero | text |  |
+| `an_numero` | anNumero | text |  |
+| `resultat` | resultat | integer |  |
+| `par` | par | text |  |
+| `le` | le | timestamptz |  |
+| `motif` | motif | text |  |
+| `empreinte` | empreinte | text |  |
+| `cree_par` | _creePar | text |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `contre_passe` | contrePasse | jsonb |  |
+
+### `m12.comptes_resultat` (collection « comptesResultat », 2 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `sens` | sens | text |  |
+| `compte` | compte | text |  |
+| `libelle` | libelle | text |  |
 
 ### `m12.depenses` (collection « depenses », 190 fiches)
 
@@ -965,9 +1011,6 @@ Table fille `m13.enquetes_questions` — 6 lignes : code text, type text, libell
 | `statut` | statut | text |  |
 | `journal` | journal | text |  |
 | `libelle` | libelle | text |  |
-| `archive_le` | _archiveLe | timestamptz |  |
-| `archive_par` | _archivePar | text |  |
-| `motif_archivage` | _motifArchivage | text |  |
 
 ### `m14.fichiers_sauvegarde` (collection « fichiersSauvegarde », 6 fiches)
 
@@ -1040,7 +1083,7 @@ Table fille `m13.enquetes_questions` — 6 lignes : code text, type text, libell
 | `couleur` | couleur | text |  |
 | `nouveau` | nouveau | boolean |  |
 
-### `m14.sessions_utilisateur` (collection « sessionsUtilisateur », 13 fiches)
+### `m14.sessions_utilisateur` (collection « sessionsUtilisateur », 2 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -1058,7 +1101,6 @@ Table fille `m13.enquetes_questions` — 6 lignes : code text, type text, libell
 | `nom_complet` | nomComplet | text |  |
 | `identifiant` | identifiant | text |  |
 | `derniere_activite` | derniereActivite | timestamptz |  |
-| `utilisateur_id` | utilisateurId | text | → utilisateurs (FK) |
 
 ### `m14.soignants` (collection « soignants », 15 fiches)
 
@@ -1176,7 +1218,7 @@ Table fille `m13.enquetes_questions` — 6 lignes : code text, type text, libell
 | `donnees` | donnees | text |  |
 | `fichier` | fichier | text |  |
 | `patient` | patient | text |  |
-| `patient_id` | patientId | text | → patients (FK) |
+| `patient_id` | patientId | text | → patients (27 orphelin(s) sur 99, pas de FK) |
 | `reference` | reference | text |  |
 
 ### `m1.fiches_reference` (collection « fichesReference », 30 fiches)
@@ -1709,7 +1751,7 @@ Table fille `m3.checklists_bloc_items` — 546 lignes : coche boolean, label tex
 | `medecin` | medecin | text |  |
 | `patient` | patient | text |  |
 | `infirmier` | infirmier | text |  |
-| `patient_id` | patientId | text | → patients (FK) |
+| `patient_id` | patientId | text | → patients (1 orphelin(s) sur 18, pas de FK) |
 | `reference` | reference | text |  |
 | `conclusion` | conclusion | text |  |
 | `date_entree` | dateEntree | timestamptz |  |
@@ -2465,7 +2507,7 @@ Table fille `m6.transferts_lignes` — 139 lignes : lot text, code text, cump nu
 
 Table fille `m7.besoins_lignes` — 51 lignes : unite text, produit text, prix_achat integer, produit_id text, quantite_livree integer, quantite_accordee integer, quantite_demandee integer
 
-### `m7.commandes` (collection « commandes », 30 fiches)
+### `m7.commandes` (collection « commandes », 15 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2481,7 +2523,7 @@ Table fille `m7.besoins_lignes` — 51 lignes : unite text, produit text, prix_a
 | `fournisseur_nom` | fournisseurNom | text |  |
 | `statut_commande` | statutCommande | text |  |
 
-Table fille `m7.commandes_lignes` — 89 lignes : unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer
+Table fille `m7.commandes_lignes` — 46 lignes : unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer
 
 ### `m7.factures_fournisseurs` (collection « facturesFournisseurs », 9 fiches)
 
@@ -2527,7 +2569,7 @@ Table fille `m7.commandes_lignes` — 89 lignes : unite text, montant integer, p
 | `code_client` | codeClient | text |  |
 | `certification` | certification | text |  |
 
-### `m7.livraisons` (collection « livraisons », 20 fiches)
+### `m7.livraisons` (collection « livraisons », 9 fiches)
 
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
@@ -2542,7 +2584,7 @@ Table fille `m7.commandes_lignes` — 89 lignes : unite text, montant integer, p
 | `fournisseur_nom` | fournisseurNom | text |  |
 | `statut_reception` | statutReception | text |  |
 
-Table fille `m7.livraisons_lignes` — 58 lignes : ecart integer, unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer, quantite_livree integer
+Table fille `m7.livraisons_lignes` — 24 lignes : ecart integer, unite text, montant integer, produit text, quantite integer, produit_id text, prix_unitaire integer, quantite_livree integer
 
 ### `m7.pv_receptions` (collection « pvReceptions », 7 fiches)
 
