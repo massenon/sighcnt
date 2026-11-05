@@ -193,6 +193,9 @@ class FileulPair {
     };
   }
 
+  /// L'état fusionné actuel (fiches, conflits, décisions) : fonction pure de toutes les opérations connues.
+  EtatPair etatActuel() => etatPair(toutesOps(), droits: droits);
+
   /// Les conflits MARQUÉS, tels que la règle de fusion les voit aujourd'hui (le poste les recopie dans sa collection locale `conflitsPair`).
   List<Map<String, Object?>> conflits() => etatPair(toutesOps(), droits: droits).conflits;
 
