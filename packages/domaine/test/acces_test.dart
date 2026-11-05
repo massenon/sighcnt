@@ -82,7 +82,10 @@ void main() {
       final r = obj(v['reinit']);
       expect(accControlerReinitialisation('Motdepasse#2026', 'autre'), fl(r['discordance']).single['titre']);
       expect(accControlerReinitialisation('a', 'a'), isNull, reason: 'la maquette accepte « a » : écart consigné');
-      expect(accRegleMotDePasse, (r['regles'] as List).cast<String>());
+      // Depuis le 03/11/2026 (Direction), la maquette n'AFFICHE plus la liste des règles : le vecteur le dit (liste vide). La constante du domaine reste la source des
+      // règles que le REFUS nomme ; elle ne doit plus paraître sur l'écran de saisie.
+      expect((r['regles'] as List), isEmpty);
+      expect(accRegleMotDePasse.length, 4);
     });
   });
 

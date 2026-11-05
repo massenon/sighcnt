@@ -6,6 +6,7 @@ library sigh_domaine;
 export 'src/sync/operation.dart';
 export 'src/sync/familles.dart';
 export 'src/sync/codes.dart';
+export 'src/sync/pair.dart';
 export 'src/format/format_fr.dart';
 export 'src/format/recherche.dart';
 export 'src/format/js.dart' show nombreOuZero, arrondiJs;
