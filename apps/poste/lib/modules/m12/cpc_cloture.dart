@@ -373,6 +373,73 @@ class _EtatCloture extends State<EcranCloture> {
   }
 
   // ----------------------------------------------------------------------------------------------------------------------------------------------
+  // LA TABLE DES COMPTES DE RÉSULTAT (131 bénéfice, 139 perte) : deux fiches, on les MODIFIE, on ne les crée ni ne les archive
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
+  void _modifierCompteResultat(BuildContext ctx, ContexteEcran c, Fiche f) {
+    final form = ControleurFormulaire(const [
+      ChampDef(nom: 'compte', libelle: 'Compte (six chiffres)', requis: true, aide: '131… pour le bénéfice, 139… pour la perte (SYSCOHADA).'),
+      ChampDef(nom: 'libelle', libelle: 'Libellé de la pièce', requis: true, col: ColChamp.plein),
+    ], {'compte': '${f['compte']}', 'libelle': '${f['libelle']}'});
+    afficherModale<void>(ctx,
+        titre: f['sens'] == 'benefice' ? 'Compte du bénéfice' : 'Compte de la perte',
+        corps: FormulaireSigh(controleur: form),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Enregistrer',
+                  onPressed: () {
+                    final motif = cpcControleCompteResultat(f, compte: form['compte'], libelle: form['libelle']);
+                    if (motif != null) {
+                      ToastsSigh.afficher(ctx, 'Compte de résultat refusé.', type: TypeToast.erreur, detail: motif);
+                      return;
+                    }
+                    final avant = {'compte': f['compte'], 'libelle': f['libelle']};
+                    final apres = {'compte': '${form['compte']}'.trim(), 'libelle': '${form['libelle']}'.trim()};
+                    c.magasin.collection('comptesResultat').mettreAJour(f['id'], apres);
+                    c.magasin.journaliser('Compte de résultat modifié', 'M12', 'Compte de résultat', '${f['sens']}', avant, apres);
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Compte de résultat enregistré.', type: TypeToast.succes, detail: 'Il vaut pour les prochaines clôtures.');
+                  }),
+            ]);
+  }
+
+  Widget _comptesResultat(BuildContext ctx, ContexteEcran c, bool peut) {
+    final lignes = c.magasin.collection('comptesResultat').actives;
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      NoteSigh(
+          'La clôture solde les classes 6, 7 et 8 vers le compte de bénéfice (131) ou de perte (139) selon le signe du résultat. Ces comptes se paramètrent ici, jamais dans le code. '
+          '${peut ? 'Une modification vaut pour les prochaines clôtures : les pièces CL déjà écrites ne changent pas.' : 'Réservé au comptable, à la Directrice Administrative et à l’administrateur : vous consultez.'}'),
+      const SizedBox(height: 12),
+      TableauSigh(
+        titre: 'Comptes du résultat net',
+        lignes: lignes,
+        nomExport: 'comptes-resultat',
+        taillePage: 10,
+        recherche: false,
+        colonnes: [
+          ColonneTableau(
+              cle: 'sens',
+              libelle: 'Résultat',
+              texte: (x) => x['sens'] == 'benefice' ? 'Bénéfice' : 'Perte',
+              rendu: (_, x) => x['sens'] == 'benefice' ? const BadgeSigh('Bénéfice', ton: TonSigh.succes) : const BadgeSigh('Perte', ton: TonSigh.danger)),
+          ColonneTableau(cle: 'compte', libelle: 'Compte', sansCoupure: true, texte: (x) => '${x['compte']}', rendu: (_, x) => monoTexte('${x['compte']}')),
+          ColonneTableau(cle: 'libelle', libelle: 'Libellé', texte: (x) => '${x['libelle']}'),
+        ],
+        actionsLigne: peut
+            ? (cx, x) => [
+                  BoutonSigh(
+                      libelle: 'Modifier',
+                      taille: TailleBouton.sm,
+                      variante: VarianteBouton.secondaire,
+                      icone: LucideIcons.pencil,
+                      onPressed: () => _modifierCompteResultat(ctx, c, x)),
+                ]
+            : null,
+      ),
+    ]);
+  }
+
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
   // LES TROIS ONGLETS
   // ----------------------------------------------------------------------------------------------------------------------------------------------
   Widget _exercices(BuildContext ctx, ContexteEcran c, bool peutDemander, bool peutValider, bool peutRouvrir) {
@@ -709,6 +776,7 @@ class _EtatCloture extends State<EcranCloture> {
             OngletDef(id: 'exercices', libelle: 'Exercices', construire: (ctx) => _exercices(context, c, peutDemander, peutValider, peutRouvrir)),
             OngletDef(id: 'periodes', libelle: 'Périodes de l’exercice', construire: (ctx) => _periodes(context, c)),
             OngletDef(id: 'lettrage', libelle: 'Lettrage des tiers', construire: (ctx) => _lettrage(context, c)),
+            OngletDef(id: 'comptes-resultat', libelle: 'Comptes de résultat', construire: (ctx) => _comptesResultat(context, c, c.droit.editer && cpcRolesDemande.contains(c.role))),
           ]),
         ]);
       },

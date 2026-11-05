@@ -24,6 +24,8 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
     await m.page.addScriptTag({ path: path.join(ROOT, 'assets/js/modules/m12-comptabilite.js') });
     const sortie = await m.page.evaluate(async (jeu) => {
       const S = SIGH.store, C = SIGH.core, X = SIGH.exercice;
+      /* La file d'envoi du navigateur de génération n'est pas une règle : le vecteur la fixe à zéro (le contrôle « postes-a-envoyer » est rejoué séparément). */
+      S.fileEnAttente = function () { return 0; };
       const O = window.__O;
       const { propre, texte, dormir, db } = O;
       const poserJeu = () => { Object.keys(jeu).forEach((n) => { db()[n] = propre(jeu[n]); }); };
@@ -129,55 +131,38 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
         db().ecritures = propre(e0);
       }
 
-      /* ---------- 6. les deux gestes de la clôture --------------------------------------------------------------------------------- */
+      /* ---------- 6. la clôture par pièces CL et AN (arbitrage du 05/11/2026) ------------------------------------------------------ */
       {
         poserJeu();
         valideTout();
-        const avant = O.instantane(COL);
         const cl = {};
         session('comptable', 'KASSA Augustin');
         const t0 = O.toasts.length;
-        cl.demandeSansDroitDirection = null;
-        cl.inconnue = propre(X.demander(2031));
-        cl.dejaClos = propre(X.demander(2025));
-        // une demande refusée par les contrôles bloquants (un brouillon)
-        db().ecritures.unshift({ id: 'X-BR', numero: 'BR1', date: '2026-04-04', journal: 'OD', compte: '661100', debit: 10, credit: 0, statut: 'brouillon' });
-        cl.refusBrouillon = propre(X.demander(2026));
-        db().ecritures = db().ecritures.filter((e) => e.id !== 'X-BR');
-        const a1 = O.instantane(COL);
-        cl.demande = propre(X.demander(2026));
-        cl.ecartDemande = O.ecart(a1, O.instantane(COL));
-        cl.secondeDemande = propre(X.demander(2026));
-        cl.validerTropTot = null;
-        // geste 2 : refus nommés
-        cl.validerMemePersonne = propre(X.valider(2026, 'Conforme'));            // rôle comptable : refusé par le rôle
+        cl.inconnue = propre(X.demarrer(2031));
+        cl.dejaClos = propre(X.demarrer(2025));
+        cl.demande = propre(X.demarrer(2026));
+        cl.secondeDemande = propre(X.demarrer(2026));
+        // refus nommés de la clôture définitive
+        cl.validerRole = propre(X.valider(2026, 'Conforme'));                      // le comptable ne clôture pas
         session('direction', 'KASSA Augustin');
-        cl.validerDemandeur = propre(X.valider(2026, 'Conforme'));               // même nom que le demandeur
+        cl.validerDemandeur = propre(X.valider(2026, 'Conforme'));                 // même nom que celui qui a démarré
         session('direction', 'BASSONGUI Chabi Séko');
         cl.validerSansMotif = propre(X.valider(2026, ''));
-        cl.validerMotifCourt = propre(X.valider(2026, 'ok'));
         cl.validerInconnue = propre(X.valider(2030, 'Conforme'));
-        const a2 = O.instantane(COL);
         const v = propre(X.valider(2026, '  Exercice 2026 conforme  '));
         cl.valider = v;
-        cl.ecartValidation = O.ecart(a2, O.instantane(COL));
         cl.etatApres = X.etat(2026);
-        cl.fiche = propre(X.de(2026));
-        cl.fiche2027 = propre(X.de(2027));
-        cl.provisoires2027 = X.provisoires(2027).length;
-        // la lecture seule joue désormais sur 2026
-        const colE = S.collection('ecritures');
-        const g0 = O.toasts.length;
-        const res = colE.insert({ numero: 'T-9', date: '2026-07-01', journal: 'OD', compte: '411100', debit: 10, credit: 0, statut: 'brouillon' });
-        cl.ecritureApresCloture = { rendu: res === null ? null : typeof res, toast: O.toasts.slice(g0).map((t) => t.detail) };
-        cl.seconde = propre(X.valider(2026, 'Conforme'));
-        cl.demandeApres = propre(X.demander(2026));
-        cl.preApres = pre(2026);
-        cl.journal = propre(S.collection('audit').all().slice(0, 12).map((a) => ({ action: a.action, entite: a.entite, reference: a.reference, utilisateur: a.utilisateur })));
-        cl.nbOD = db().ecritures.filter((e) => e.numero === 'OD-2026-RES').length;
+        const fiche = propre(X.de(2026));
+        cl.fiche = { etat: fiche.etat, clNumero: fiche.clNumero, anNumero: fiche.anNumero, resultat: fiche.resultat, motif: fiche.motif };
+        cl.nbCL = db().ecritures.filter((e) => e.journal === 'CL' && e.date === '2026-12-31').length;
         cl.nbAN = db().ecritures.filter((e) => e.journal === 'AN' && e.date === '2027-01-01').length;
-        cl.ecritureArchive = propre(db().documents.filter((d) => d.codeRattachement === 'EX2026').map((d) => ({ libelle: d.libelle, categorie: d.categorie, conservation: d.conservation, contenu: d.contenu })));
-        cl.toasts = O.toasts.slice(t0).map((t) => ({ message: t.message, type: t.type, detail: t.detail }));
+        cl.classesAN = [...new Set(db().ecritures.filter((e) => e.journal === 'AN' && e.date === '2027-01-01').map((e) => String(e.compte)[0]))].sort();
+        const sommeCL = db().ecritures.filter((e) => e.journal === 'CL' && e.date === '2026-12-31');
+        cl.equilibreCL = sommeCL.reduce((a, e) => a + (e.debit || 0) - (e.credit || 0), 0);
+        cl.archive = propre(db().archivesExercice.map((a) => ({ reference: a.reference, annee: a.annee, fichiers: a.fichiers.map((f) => f.nom) })));
+        cl.preApres = pre(2026);
+        cl.journal = propre(S.collection('audit').all().slice(0, 6).map((a) => ({ action: a.action, entite: a.entite, reference: a.reference })));
+        cl.toasts = O.toasts.slice(t0).map((t) => ({ message: t.message, type: t.type }));
         session(base.role, base.nom);
         rep.cloture = cl;
       }
@@ -207,24 +192,24 @@ NOMS.forEach((n) => { jeu[n] = JSON.parse(fs.readFileSync(path.join(JEU_DIR, n +
           const d = O.dialogue();
           ecr.preModale = { texte: texte(d), boutons: [...d.querySelectorAll('button')].map(texte).filter(Boolean),
             lignes: [...d.querySelectorAll('tbody tr')].map((tr) => [...tr.querySelectorAll('td')].map(texte)) };
-          await O.cliquer(d, /Demander la clôture/);
+          await O.cliquer(d, /Démarrer la clôture/);
           const d2 = O.dialogue();
           ecr.confirmationDemande = { texte: texte(d2), boutons: [...d2.querySelectorAll('button')].map(texte).filter(Boolean) };
           root.remove(); O.fermerDialogues();
         }
-        // exercice en attente : affichage direction (bouton « Valider la clôture »)
-        X.demander(2026);
+        // exercice en clôture : affichage direction (bouton « Clôturer définitivement »)
+        X.demarrer(2026);
         ecr.directionEnAttente = await lire('direction', 'BASSONGUI Chabi Séko');
         ecr.comptableEnAttente = await lire('comptable', 'KASSA Augustin');
         {
           session('direction', 'BASSONGUI Chabi Séko');
           const root = await O.monter('m12-cloture');
-          await O.cliquer(root, /Valider la clôture/);
+          await O.cliquer(root, /Clôturer définitivement/);
           const d = O.dialogue();
           ecr.modaleValidation = { texte: texte(d), boutons: [...d.querySelectorAll('button')].map(texte).filter(Boolean) };
           const t0 = O.toasts.length;
           // sans motif : refus
-          await O.cliquer(d, /Valider et clôturer/);
+          await O.cliquer(d, /Clôturer définitivement/);
           ecr.validationSansMotif = O.toasts.slice(t0).map((t) => ({ message: t.message, detail: t.detail }));
           root.remove(); O.fermerDialogues();
         }

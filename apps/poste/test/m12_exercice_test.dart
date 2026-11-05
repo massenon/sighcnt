@@ -152,6 +152,37 @@ void main() {
       expect(m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026)['etat'], 'en_cloture');
     });
 
+    casM14('comptes de résultat : le comptable MODIFIE (refus nommé hors 131/139), la modification vaut pour la clôture suivante ; jamais de création ni d\'archivage', (t) async {
+      final m = magasinComplet();
+      await ouvrirM14(t, m, 'm12-cloture', role: 'comptable');
+      await toucherM14(t, find.text('Comptes de résultat'));
+      expect(find.text('Bénéfice'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Modifier'), findsNWidgets(2));
+      expect(find.widgetWithText(BoutonSigh, 'Archiver'), findsNothing);
+      final rang = m.collection('comptesResultat').actives.indexWhere((f) => f['sens'] == 'benefice');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Modifier').at(rang));
+      await saisir(t, 'compte', '139000');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      expect(find.text('Compte de résultat refusé.'), findsOneWidget);
+      expect(find.textContaining('doit appartenir au compte'), findsOneWidget);
+      await t.pump(const Duration(seconds: 10));
+      await saisir(t, 'compte', '131500');
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
+      final ben = m.collection('comptesResultat').actives.firstWhere((f) => f['sens'] == 'benefice');
+      expect(ben['compte'], '131500');
+      expect(cpcCompteResultatDe(100, m.collection('comptesResultat').actives).compte, '131500');
+      expect(m.collection('audit').actives.any((a) => a['action'] == 'Compte de résultat modifié'), true);
+      await t.pump(const Duration(seconds: 10));
+    });
+
+    casM14('comptes de résultat : un rôle sans le droit de démarrer une clôture consulte sans modifier (commande ABSENTE)', (t) async {
+      final m = magasinComplet();
+      await ouvrirM14(t, m, 'm12-cloture', role: 'direction');
+      await toucherM14(t, find.text('Comptes de résultat'));
+      expect(find.text('Bénéfice'), findsOneWidget);
+      expect(find.widgetWithText(BoutonSigh, 'Modifier'), findsNothing);
+    });
+
     casM14('un exercice clos par le poste imprime son procès-verbal ; l\'empreinte est tronquée à 32 caractères', (t) async {
       final m = magasinComplet();
       validerBrouillons(m);

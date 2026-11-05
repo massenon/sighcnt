@@ -265,6 +265,20 @@ class CpcPreCloture {
   List<CpcControle> get bloquants => [for (final c in controles) if (c.bloquant && !c.ok) c];
 }
 
+/// Contrôle d'une modification de la table des comptes de résultat (miroir de `controleCompteResultat` de la maquette) : un compte de bénéfice est un 131,
+/// un compte de perte un 139 (SYSCOHADA), six chiffres, libellé obligatoire. Retourne le motif du refus, ou null.
+String? cpcControleCompteResultat(CpaFiche fiche, {required Object? compte, required Object? libelle}) {
+  final c = '${compte ?? ''}'.trim();
+  final l = '${libelle ?? ''}'.trim();
+  final benefice = fiche['sens'] == 'benefice';
+  final prefixe = benefice ? '131' : '139';
+  final nom = benefice ? 'bénéfice' : 'perte';
+  if (!RegExp(r'^\d{6}$').hasMatch(c)) return 'Le compte de $nom doit comporter six chiffres (reçu « $c »).';
+  if (!c.startsWith(prefixe)) return 'Le compte de $nom doit appartenir au compte $prefixe du SYSCOHADA (reçu $c).';
+  if (l.length < 3) return 'Le libellé du compte de $nom est obligatoire.';
+  return null;
+}
+
 /// Le compte de résultat (131 bénéfice, 139 perte) lu de la table PARAMÉTRABLE `comptesResultat` : jamais deux constantes dans le moteur. Sans table (ou sans
 /// fiche pour le sens), le repli est le plan SYSCOHADA : 131000 et 139000.
 ({String compte, String libelle}) cpcCompteResultatDe(num resultat, [Iterable<CpaFiche> table = const []]) {

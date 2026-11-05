@@ -88,13 +88,10 @@ void main() {
     void verifie(String nom, List<F> lignes, int annee) {
       final att = carte(carte(v['preCloture'])[nom]);
       final p = cpcPreCloture(lignes, annee);
-      const nouveaux = ['precedent-clos', 'suivant-non-clos', 'postes-a-envoyer'];
-      // Le contrôle « precedent-clos » est postérieur aux vecteurs enregistrés (arbitrage du 05/11/2026) : on compare les six historiques.
-      expect([for (final c in p.controles) if (!nouveaux.contains(c.id)) [c.id, c.bloquant, c.ok, c.libelle, c.ecran, c.detail]],
+      expect([for (final c in p.controles) [c.id, c.bloquant, c.ok, c.libelle, c.ecran, c.detail]],
           [for (final c in liste(att['controles'])) [c['id'], c['bloquant'], c['ok'], c['libelle'], c['ecran'], c['detail']]],
           reason: nom);
-      expect(p.controles.firstWhere((c) => c.id == 'precedent-clos').bloquant, true, reason: nom);
-      expect(p.bloquants.where((c) => !nouveaux.contains(c.id)).length, att['nbBloquants'], reason: nom);
+      expect(p.bloquants.length, att['nbBloquants'], reason: nom);
       expect(p.resultat, closeTo(att['resultat'] as num, 0.001), reason: nom);
       expect(p.nbEcritures, att['nbEcritures'], reason: nom);
     }
@@ -207,6 +204,45 @@ void main() {
       expect(cpcDelettrer(posees, '411100', 'Z', 'Erreur de saisie').motif, carte(r['delettrerInconnu'])['motif']);
       final ok = cpcDelettrer(posees, '411100', 'A', 'Erreur de saisie');
       expect([ok.ok, ok.ids.length], [true, carte(r['delettrer'])['lignes']]);
+    });
+  });
+
+  group('la clôture rejouée sur le vecteur de la maquette (jeu du poste, 30/10/2026)', () {
+    final cl = carte(v['cloture']);
+    final tout = valides(actives(ecr));
+    final maintenant = auj;
+    test('démarrer : mêmes refus nommés, mêmes états', () {
+      expect(cpcDemarrerCloture(exo, tout, 2031, acteur: 'KASSA Augustin', role: 'comptable', maintenant: maintenant).motif, carte(cl['inconnue'])['motif']);
+      expect(cpcDemarrerCloture(exo, tout, 2025, acteur: 'KASSA Augustin', role: 'comptable', maintenant: maintenant).motif, carte(cl['dejaClos'])['motif']);
+      final d = cpcDemarrerCloture(exo, tout, 2026, acteur: 'KASSA Augustin', role: 'comptable', maintenant: maintenant);
+      expect(d.ok, carte(cl['demande'])['ok']);
+      expect(d.patch!['etat'], 'en_cloture');
+    });
+    test('clôturer : les refus nommés de la maquette, puis les pièces, le résultat et l\'équilibre', () {
+      final enC = [for (final x in exo) if (x['annee'] == 2026) {...x, 'etat': 'en_cloture', 'demandePar': 'KASSA Augustin'} else x];
+      CpcValidation val(List<F> e, int a, String motif, String role, String acteur) =>
+          cpcValiderCloture(e, tout, a, motif: motif, acteur: acteur, role: role, maintenant: maintenant, toutesEcritures: tout);
+      expect(carte(cl['validerRole'])['motif'], val(enC, 2026, 'Conforme', 'comptable', 'KASSA Augustin').motif);
+      expect(carte(cl['validerDemandeur'])['motif'], val(enC, 2026, 'Conforme', 'direction', 'KASSA Augustin').motif);
+      expect(carte(cl['validerSansMotif'])['motif'], val(enC, 2026, '', 'direction', 'BASSONGUI Chabi Séko').motif);
+      expect(carte(cl['validerInconnue'])['motif'], val(enC, 2030, 'Conforme', 'direction', 'BASSONGUI Chabi Séko').motif);
+      final r = val(enC, 2026, 'Exercice 2026 conforme', 'direction', 'BASSONGUI Chabi Séko');
+      final att = carte(cl['valider']);
+      expect(r.ok, true, reason: r.motif);
+      expect(r.clNumero, att['clNumero']);
+      expect(r.anNumero, att['anNumero']);
+      expect(r.lignesCL.length, cl['nbCL']);
+      expect(r.lignesAN.length, cl['nbAN']);
+      expect(r.resultat, closeTo(att['resultat'] as num, 0.5));
+      expect({for (final x in r.lignesAN) '${x['compte']}'[0]}.toList()..sort(), cl['classesAN']);
+      expect(r.lignesCL.fold<num>(0, (a, x) => a + (x['debit'] as num) - (x['credit'] as num)).abs() < 1, true);
+      expect(cl['equilibreCL'], 0);
+      expect(r.patch!['clNumero'], carte(cl['fiche'])['clNumero']);
+      expect(r.patch!['motif'], carte(cl['fiche'])['motif']);
+      // l'archive a les mêmes quatre fichiers
+      final apres = [...tout, ...r.lignesCL, ...r.lignesAN];
+      final noms = [for (final x in cpcFichiersArchive(2026, {...enC.first, ...r.patch!}, apres)) x['nom']];
+      expect(noms, liste(cl['archive']).first['fichiers']);
     });
   });
 
@@ -496,5 +532,15 @@ void main() {
     expect(cpcAExercice('hub-m12', 'M12'), false);
     expect(cpcAExercice('m6-point-ventes', 'M6'), false);
     expect(cpcAExercice('', 'M12'), false);
+  });
+
+  test('la table des comptes de résultat : refus nommés, miroir du scénario 76 de la maquette', () {
+    final ben = {'sens': 'benefice'}, per = {'sens': 'perte'};
+    expect(cpcControleCompteResultat(ben, compte: '13100', libelle: 'Bénéfice'), contains('six chiffres'));
+    expect(cpcControleCompteResultat(ben, compte: '139000', libelle: 'Bénéfice'), contains('131'));
+    expect(cpcControleCompteResultat(per, compte: '131000', libelle: 'Perte'), contains('139'));
+    expect(cpcControleCompteResultat(ben, compte: '131000', libelle: ' '), contains('libellé'));
+    expect(cpcControleCompteResultat(ben, compte: '131500', libelle: 'Bénéfice paramétré'), isNull);
+    expect(cpcControleCompteResultat(per, compte: '139000', libelle: 'Résultat net : perte'), isNull);
   });
 }

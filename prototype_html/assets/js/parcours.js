@@ -3227,6 +3227,18 @@
     }
     return col;
   }
+  /* Contrôle d'une modification de la table : un compte de bénéfice est un 131, un compte de perte un 139 (SYSCOHADA), six chiffres (les comptes 131000 et 139000 d'origine ne figurent pas au plan statique : on ne contrôle donc pas l'appartenance au plan).
+     Retourne le motif du refus, ou null. Le motif NOMME ce qui est attendu. */
+  function controleCompteResultat(fiche, valeurs) {
+    var compte = String(valeurs.compte == null ? '' : valeurs.compte).trim();
+    var libelle = String(valeurs.libelle == null ? '' : valeurs.libelle).trim();
+    var prefixe = fiche.sens === 'benefice' ? '131' : '139';
+    var nom = fiche.sens === 'benefice' ? 'bénéfice' : 'perte';
+    if (!/^\d{6}$/.test(compte)) return 'Le compte de ' + nom + ' doit comporter six chiffres (reçu « ' + compte + ' »).';
+    if (compte.indexOf(prefixe) !== 0) return 'Le compte de ' + nom + ' doit appartenir au compte ' + prefixe + ' du SYSCOHADA (reçu ' + compte + ').';
+    if (libelle.length < 3) return 'Le libellé du compte de ' + nom + ' est obligatoire.';
+    return null;
+  }
   function compteResultat(res) {
     var sens = res >= 0 ? 'benefice' : 'perte';
     var f = comptesResultat().active().filter(function (x) { return x.sens === sens; })[0];
@@ -3692,7 +3704,7 @@
     dateReference: dateReference, voisin: exerciceVoisin, parDefaut: exerciceParDefaut,
     anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
     provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, demarrer: demarrerCloture, reprendre: reprendreSaisie,
-    valider: validerCloture, cloturer: validerCloture, rouvrir: rouvrirExercice, compteResultat: compteResultat,
+    valider: validerCloture, cloturer: validerCloture, comptesResultat: comptesResultat, controleCompteResultat: controleCompteResultat, rouvrir: rouvrirExercice, compteResultat: compteResultat,
     lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice, lireArchive: lireArchive,
     formatEcrituresCsv: formatEcrituresCsv,
   };

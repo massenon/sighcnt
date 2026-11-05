@@ -2541,6 +2541,7 @@
             ] });
         } },
         { id: 'lettrage', label: 'Lettrage des tiers', render: function () { return ecranLettrage(); } },
+        { id: 'comptes-resultat', label: 'Comptes de résultat', render: function () { return ecranComptesResultat(droits, role); } },
       ];
       host.appendChild(U.tabs(onglets));
       return host;
@@ -3712,6 +3713,40 @@
   }
   function colTresorerie() {
     return S.collection('banques', { module: 'M12', entite: 'compte de trésorerie', prefix: 'BQ' });
+  }
+
+  /* LA TABLE DES COMPTES DE RÉSULTAT (131 bénéfice, 139 perte) : celle que la clôture lit pour solder les classes 6, 7 et 8. Deux fiches, une par sens :
+     on les MODIFIE, on ne les crée ni ne les archive (la clôture a besoin des deux). Réservée à ceux qui peuvent démarrer une clôture. */
+  function ecranComptesResultat(droits, role) {
+    var X = global.SIGH.exercice, col = X.comptesResultat();
+    var peut = droits.editer && ['comptable', 'da', 'admin'].indexOf(role) >= 0;
+    var host = el('div.space-y-4');
+    host.appendChild(K.note('<strong>Le compte du résultat net.</strong> La clôture solde les classes 6, 7 et 8 vers le compte de bénéfice (131) ou de perte (139) selon le signe du résultat. Ces comptes se paramètrent ici, jamais dans le code. '
+      + (peut ? 'Une modification vaut pour les prochaines clôtures : les pièces CL déjà écrites ne changent pas.' : 'Réservé au comptable, à la Directrice Administrative et à l’administrateur : vous consultez.'), { tone: 'info', icon: 'scale' }));
+    function champs() {
+      return [
+        { name: 'compte', label: 'Compte (six chiffres)', required: true, help: '131… pour le bénéfice, 139… pour la perte (SYSCOHADA).' },
+        { name: 'libelle', label: 'Libellé de la pièce', required: true, col: 'full' },
+      ];
+    }
+    var table = U.dataTable({
+      title: 'Comptes du résultat net', rows: function () { return col.active(); }, exportName: 'comptes-resultat', pageSize: 10,
+      columns: [
+        { key: 'sens', label: 'Résultat', render: function (f) { return f.sens === 'benefice' ? U.badge('Bénéfice', 'success') : U.badge('Perte', 'danger'); }, text: function (f) { return f.sens === 'benefice' ? 'Bénéfice' : 'Perte'; } },
+        { key: 'compte', label: 'Compte', nowrap: true, render: function (f) { return el('span.font-mono.text-xs', { text: f.compte }); } },
+        { key: 'libelle', label: 'Libellé' },
+      ],
+      rowActions: peut ? K.actionsLigne(col, champs, {
+        entite: 'compte de résultat', archivable: false,
+        avant: function (v, r) {
+          var motif = X.controleCompteResultat(r, v);
+          if (motif) { U.toast('Compte de résultat refusé.', { type: 'error', detail: motif, duration: 9000 }); return false; }
+          return true;
+        },
+      }) : undefined,
+    });
+    host.appendChild(table);
+    return host;
   }
 
   /** Les comptes de charge du plan de la clinique (classe 6 et 671). E715 : la COLLECTION fait foi (un compte créé à l'écran est

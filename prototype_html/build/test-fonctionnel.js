@@ -12412,6 +12412,42 @@ async function viderMessages(page) {
   }
 
   {
+    scenario('Vague 76 — comptes de résultat 131 et 139 : table modifiable à l’écran, contrôles nommés, jamais créée ni archivée');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+    const r = await page.evaluate(async () => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, out = {};
+      S.setSession({ role: 'comptable', nom: 'Comptable Sonde', nomComplet: 'Comptable Sonde', fonction: 'comptable' });
+      const ben = X.comptesResultat().all().filter((f) => f.sens === 'benefice')[0];
+      const per = X.comptesResultat().all().filter((f) => f.sens === 'perte')[0];
+      out.refus = [
+        X.controleCompteResultat(ben, { compte: '13100', libelle: 'Bénéfice' }),
+        X.controleCompteResultat(ben, { compte: '139000', libelle: 'Bénéfice' }),
+        X.controleCompteResultat(per, { compte: '131000', libelle: 'Perte' }),
+        X.controleCompteResultat(ben, { compte: '131000', libelle: ' ' }),
+        X.controleCompteResultat(ben, { compte: '131500', libelle: 'Bénéfice paramétré' }),
+      ];
+      out.ok = X.controleCompteResultat(ben, { compte: '131000', libelle: 'Résultat net : bénéfice' });
+      const onglet = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Comptes de résultat/.test(t.textContent));
+      out.onglet = !!onglet;
+      if (onglet) { onglet.click(); await new Promise((r) => setTimeout(r, 400)); }
+      const page = document.querySelector('#page-content');
+      out.lignes = page.querySelectorAll('tbody tr').length;
+      out.modifier = [...page.querySelectorAll('button[title="Modifier"], button[aria-label="Modifier"]')].length;
+      out.archiver = [...page.querySelectorAll('button[title="Archiver"], button[aria-label="Archiver"]')].length;
+      return out;
+    });
+    verifier('Le contrôle NOMME ce qui est attendu : six chiffres, 131 pour le bénéfice, 139 pour la perte, libellé obligatoire ; un 131 de plus passe',
+      /six chiffres/.test(r.refus[0]) && /131/.test(r.refus[1]) && /139/.test(r.refus[2]) && /libellé/.test(r.refus[3]) && r.refus[4] === null && r.ok === null, JSON.stringify(r.refus));
+    verifier('L’onglet « Comptes de résultat » est dans l’écran des clôtures : deux lignes, modifiables par le comptable, aucune archivable',
+      r.onglet && r.lignes === 2 && r.modifier === 2 && r.archiver === 0, JSON.stringify([r.onglet, r.lignes, r.modifier, r.archiver]));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  {
     scenario('Vague 75 — archive légale d’une clôture : CSV des écritures SYSCOHADA, balance, états, manifeste SHA-256, immuable, vérifiée au téléchargement');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');
