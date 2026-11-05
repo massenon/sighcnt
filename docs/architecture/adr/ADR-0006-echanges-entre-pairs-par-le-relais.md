@@ -1,6 +1,6 @@
 # ADR-0006 : Échanges entre pairs par le relais, la mère n'étant plus un passage obligé
 
-Statut : **proposé le 05/11/2026**, en attente d'acceptation par la Direction. Il **modifie** la règle de topologie de `docs/specs/SPEC-protocole-synchronisation.md` §1 (« Aucune autorité n'existe en dehors de la mère ») et l'ordre de référence `seq` de la mère (EF-SYNC-20) ; il ne remplace pas l'ADR-0001 (local-first) ni le relais opaque.
+Statut : **accepté le 05/11/2026** par la Direction. Il **modifie** la règle de topologie de `docs/specs/SPEC-protocole-synchronisation.md` §1 (« Aucune autorité n'existe en dehors de la mère ») et l'ordre de référence `seq` de la mère (EF-SYNC-20) ; il ne remplace pas l'ADR-0001 (local-first) ni le relais opaque.
 Sources : demande de la Direction du 05/11/2026 (les fileuls envoient et reçoivent automatiquement, indépendants de la mère ; réponses D1 à D3) ; `docs/prd/PRD-RELAIS-copie-consultable.md` ; `packages/sync_dart/lib/src/*.dart` ; `apps/poste/lib/sync/pont_activite.dart`.
 
 ## Contexte

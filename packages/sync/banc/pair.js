@@ -1,0 +1,129 @@
+'use strict';
+/* =============================================================================
+ * SIGH-CNT : LE MODE PAIR (ADR-0006), RÈGLE DE FUSION ENTRE FILEULS
+ * -----------------------------------------------------------------------------
+ * Quand la mère est éteinte, les fileuls échangent leurs opérations par le relais. Pour que deux appareils qui ont reçu LES MÊMES opérations aboutissent
+ * au MÊME état, quel que soit l'ordre d'arrivée, l'état est une FONCTION PURE de l'ensemble des opérations :
+ *
+ *      etat(ops) = plier(trier(sans doublon(ops)))      ordre total : (hlc, appareil, id)
+ *
+ * Rien n'est appliqué « au fil de l'eau » avec un effet de bord : c'est ce qui rend la convergence évidente et testable par permutation.
+ * Ce module est la RÈGLE MÉTIER (portée ensuite en Dart dans packages/domaine) ; le relais n'en contient aucune.
+ *
+ * Familles (spec §8) : A fiche descriptive (fusion par champ) · B journal (ajout seul) · C pièce émise (immuable une fois émise)
+ *                      D stock (agrégat à invariant, sorties dans la PART de l'appareil) · W flux de travail (validations du rôle habilité).
+ * Les droits (RBAC) sont vérifiés à la RÉCEPTION comme à l'émission : `droits(op)` est injecté (la matrice vit dans le domaine).
+ * Ce qui est appliqué sans la mère est PROVISOIRE : une fiche touchée par une opération sans `seq` (attribué par la mère) l'est.
+ * ========================================================================== */
+
+const FAMILLES = { patients: 'A', rendezvous: 'A', constantes: 'B', notes: 'B', factures: 'C', prescriptions: 'C', stock: 'D', besoins: 'W' };
+
+/** Ordre total identique sur tous les appareils. */
+function comparer(a, b) {
+  if (a.hlc !== b.hlc) return a.hlc < b.hlc ? -1 : 1;
+  if (a.appareil !== b.appareil) return a.appareil < b.appareil ? -1 : 1;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/** Horloge logique hybride : toujours strictement supérieure à ce qu'on a vu ET à l'horloge murale ; la dérive est bornée. */
+class Horloge {
+  constructor(maintenant = () => Date.now(), deriveMax = 2 * 60 * 1000) { this.dernier = 0; this.maintenant = maintenant; this.deriveMax = deriveMax; this.derive = false; }
+  emettre() { this.dernier = Math.max(this.dernier + 1, this.maintenant() * 1000); return this.dernier; }
+  recevoir(hlc) {
+    if (hlc / 1000 - this.maintenant() > this.deriveMax) this.derive = true; // dérive signalée (EF-SYNC-20), jamais ignorée en silence
+    this.dernier = Math.max(this.dernier, hlc);
+  }
+}
+
+const sans = (liste) => { const vu = new Set(); return liste.filter((o) => (vu.has(o.id) ? false : (vu.add(o.id), true))); };
+const marque = (etat, op, code, motif) => etat.refusees.push({ id: op.id, appareil: op.appareil, code, motif });
+const cle = (o) => `${o.collection}/${o.fiche}`;
+
+/** L'état de tous les appareils qui ont reçu `ops`. `droits(op) -> true | false` (RBAC) ; `seqMere` n'intervient que pour le drapeau provisoire. */
+function etat(ops, droits = () => true) {
+  const E = { fiches: {}, stock: {}, besoins: {}, conflits: [], refusees: [], provisoire: new Set() };
+  for (const op of sans(ops).sort(comparer)) {
+    const fam = FAMILLES[op.collection];
+    if (!fam) { marque(E, op, 'collection_inconnue', op.collection); continue; }
+    if (op.type === 'supprimer') { marque(E, op, 'suppression_interdite', 'Aucune suppression physique (RG-14).'); continue; }
+    if (!droits(op)) { marque(E, op, 'droit_refuse', `${op.role || '?'} ne peut pas ${op.type} sur ${op.collection}`); continue; }
+    if (op.seq == null) E.provisoire.add(cle(op));
+
+    if (fam === 'D') { stock(E, op); continue; }
+    if (fam === 'W') { flux(E, op); continue; }
+    const k = cle(op);
+    let f = E.fiches[k];
+
+    if (fam === 'B') {
+      if (op.type !== 'creer') { marque(E, op, 'journal_immuable', 'Un journal ne se modifie pas.'); continue; }
+      if (f) { marque(E, op, 'fiche_existe', 'Ligne déjà présente.'); continue; }
+      E.fiches[k] = { data: { ...op.champs }, hlc: Object.fromEntries(Object.keys(op.champs).map((c) => [c, op.hlc])), archive: false };
+      continue;
+    }
+    // A et C
+    if (op.type === 'creer') {
+      if (f) { marque(E, op, 'fiche_existe', 'Fiche déjà présente.'); continue; }
+      E.fiches[k] = { data: { ...op.champs }, hlc: Object.fromEntries(Object.keys(op.champs).map((c) => [c, op.hlc])), archive: false, emise: false };
+      continue;
+    }
+    if (!f) { marque(E, op, 'fiche_inconnue', k); continue; }
+    if (op.type === 'archiver' || op.type === 'restaurer') { f.archive = op.type === 'archiver'; continue; }
+    if (fam === 'C' && op.type === 'emettre') { f.emise = true; continue; }
+    if (op.type === 'modifier') {
+      if (f.archive) { marque(E, op, 'fiche_archivee', 'Restaurer d’abord (RG-14).'); continue; }
+      if (fam === 'C' && f.emise) { marque(E, op, 'piece_emise_immuable', 'Une pièce émise ne se réécrit jamais : établir un avoir.'); continue; }
+      for (const [champ, val] of Object.entries(op.champs)) {
+        const courant = f.hlc[champ] || 0;
+        const vu = (op.vu && op.vu[champ]) || 0;
+        // écriture CONCURRENTE : l'auteur n'avait pas vu la version courante et les valeurs diffèrent -> conflit marqué, la plus récente de l'ordre total l'emporte
+        if (courant > vu && JSON.stringify(f.data[champ]) !== JSON.stringify(val)) E.conflits.push({ fiche: k, champ, a: f.data[champ] === undefined ? null : f.data[champ], b: val, appareils: [f.dernier || null, op.appareil] });
+        f.data[champ] = val; f.hlc[champ] = op.hlc; f.dernier = op.appareil;
+      }
+    }
+  }
+  E.conflits.sort((x, y) => (x.fiche + x.champ).localeCompare(y.fiche + y.champ));
+  return E;
+}
+
+/* D : ouverture et entrées par un rôle habilité ; la PART d'un appareil est un bail accordé ; une sortie hors part n'est JAMAIS appliquée (RG-03). */
+function stock(E, op) {
+  const s = (E.stock[op.fiche] = E.stock[op.fiche] || { qte: 0, ouvert: false, parts: {}, sorties: {} });
+  const q = +(op.champs && op.champs.qte) || 0;
+  if (op.type === 'creer') { if (s.ouvert) return marque(E, op, 'fiche_existe', 'Stock déjà ouvert.'); s.ouvert = true; s.qte += q; return; }
+  if (!s.ouvert) return marque(E, op, 'fiche_inconnue', 'Stock non ouvert : ' + op.fiche);
+  if (op.type === 'entree') { s.qte += q; return; }
+  if (op.type === 'bail') { s.parts[op.champs.appareil] = (s.parts[op.champs.appareil] || 0) + q; return; }
+  if (op.type === 'sortie') {
+    const reste = (s.parts[op.appareil] || 0) - (s.sorties[op.appareil] || 0);
+    if (q > reste || q > s.qte) return marque(E, op, 'hors_part', `Sortie de ${q} hors de la part de ${op.appareil} (reste ${reste}) : RG-03.`);
+    s.sorties[op.appareil] = (s.sorties[op.appareil] || 0) + q; s.qte -= q; return;
+  }
+  marque(E, op, 'type_invalide', op.type);
+}
+
+/* W : soumettre (demandeur), valider ou rejeter (rôle habilité, déjà contrôlé par `droits`) ; une décision sans demande préalable dans l'ordre total est écartée. */
+function flux(E, op) {
+  const b = (E.besoins[op.fiche] = E.besoins[op.fiche] || { etat: null, historique: [] });
+  if (op.type === 'soumettre') { if (b.etat) return marque(E, op, 'deja_soumis', op.fiche); b.etat = 'soumis'; b.historique.push([op.hlc, 'soumis', op.appareil]); return; }
+  if (!b.etat) return marque(E, op, 'demande_inconnue', op.fiche);
+  if (op.type === 'valider' || op.type === 'rejeter') {
+    if (b.etat !== 'soumis') return marque(E, op, 'deja_decide', `${op.fiche} est ${b.etat}`);
+    b.etat = op.type === 'valider' ? 'valide' : 'rejete'; b.historique.push([op.hlc, b.etat, op.appareil]); return;
+  }
+  marque(E, op, 'type_invalide', op.type);
+}
+
+/** Journal d'un appareil au relais : rang contigu, idempotence ; un trou est DÉTECTÉ, jamais comblé en silence. */
+class JournalRelais {
+  constructor() { this.parAppareil = {}; }
+  deposer(appareil, n, enveloppe) {
+    const l = (this.parAppareil[appareil] = this.parAppareil[appareil] || []);
+    if (n <= l.length) return 'deja'; // idempotent
+    if (n !== l.length + 1) throw new Error(`trou de rang pour ${appareil} : attendu ${l.length + 1}, reçu ${n}`);
+    l.push(enveloppe); return 'ok';
+  }
+  releve(appareil, depuisN, limite = 100) { return (this.parAppareil[appareil] || []).slice(depuisN, depuisN + limite).map((e, i) => ({ n: depuisN + i + 1, enveloppe: e })); }
+  appareils() { return Object.keys(this.parAppareil); }
+}
+
+module.exports = { FAMILLES, comparer, Horloge, etat, JournalRelais };

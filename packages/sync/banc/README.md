@@ -79,3 +79,13 @@ Le banc pilote **n'importe quelle combinaison** de processus par variables d'env
 | **Mère sur PostgreSQL** (`npm run banc:pg`, `SIGH_PG_URL=postgres://utilisateur:motdepasse@hôte:port`) | **26 scénarios, 128 vérifications, 85 s** — une base PostgreSQL jetable par scénario, supprimée à la fin |
 
 Ce que cela prouve en plus : le service Dart de la mère, le client Dart du poste et du mobile (SQLite embarqué, enveloppes AES-256-GCM via `package:cryptography`) et le relais Laravel parlent **le même protocole**, octet pour octet — une enveloppe chiffrée par Dart est lue par Node et réciproquement. Ce que cela ne prouve toujours pas : SQLCipher, le service Windows, la charge (aucun volume), la tenue aux pannes de PostgreSQL lui-même (arrêt brutal en pleine transaction), une revue de sécurité.
+
+## Mode pair (ADR-0006, accepté le 05/11/2026)
+
+`banc/pair.js` est la **règle de fusion entre fileuls** quand la mère est éteinte : l'état est une fonction pure de l'ensemble des opérations (`plier(trier(sans doublon(ops)))`, ordre total `(hlc, appareil, id)`), donc deux appareils qui ont reçu les mêmes opérations convergent, quel que soit l'ordre d'arrivée. Familles : A fiche (fusion par champ, conflit marqué), B journal, C pièce émise (immuable), D stock (sorties dans la PART de l'appareil, jamais négatif), W flux de travail (validation par le rôle habilité). Les droits (RBAC) se vérifient à la réception.
+
+```bash
+cd packages/sync && npm run test:pair     # 13 tests : 5040 permutations, doublons, stock, RBAC, flux, relais, scénario « mère éteinte puis de retour »
+```
+
+Vérifié par mutation : sans le tri, sans le contrôle de part de stock, sans le contrôle des droits, sans la déduplication, la suite rougit. Non fait : les processus réels (relais HTTP, fileuls qui s'échangent), le port Dart, le branchement au poste.
