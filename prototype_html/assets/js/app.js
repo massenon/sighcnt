@@ -1189,15 +1189,15 @@
       if (xc && xc.etat === 'clos') {
         head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
           el('span.shrink-0.text-warning-600', null, C.icon('lock', 'h-4 w-4')),
-          el('p.text-xs.text-warning-900', { html: '<strong>Exercice ' + xc.annee + ' clos</strong>'
-            + (xc.valideLe ? ' le ' + C.dateFR(xc.valideLe) : '') + (xc.validePar ? ' — ' + U.texteEnrichi(xc.validePar) : '')
-            + ' — <strong>lecture seule</strong>. Les corrections passent par une écriture de l’exercice en cours, jamais par la réouverture.' }),
+          el('p.text-xs.text-warning-900', { html: '<strong>Exercice ' + xc.annee + ' clôturé</strong>'
+            + (xc.valideLe ? ' le ' + C.dateFR(xc.valideLe) : '') + (xc.validePar ? ' par ' + U.texteEnrichi(xc.validePar) : '')
+            + ' : <strong>lecture seule</strong>. Seule la réouverture par le comptable (motif obligatoire, à l’écran « Exercices & clôtures ») permet de corriger.' }),
         ]));
-      } else if (xc && xc.etat === 'en_attente_cloture') {
+      } else if (xc && xc.etat === 'en_cloture') {
         head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-info-200.bg-info-50.px-3.py-2', null, [
           el('span.shrink-0.text-info-600', null, C.icon('hourglass', 'h-4 w-4')),
-          el('p.text-xs.text-info-900', { html: '<strong>Exercice ' + xc.annee + ' en attente de clôture</strong> — la Direction doit valider la demande de '
-            + U.texteEnrichi(xc.demandePar || 'le comptable') + '.' }),
+          el('p.text-xs.text-info-900', { html: '<strong>Exercice ' + xc.annee + ' en clôture</strong> : les modules n’y écrivent plus, seul le comptable y passe ses écritures d’inventaire. '
+            + 'La clôture définitive revient à la Direction ou à la DAF (démarrée par ' + U.texteEnrichi(xc.demandePar || 'le comptable') + ').' }),
         ]));
       } else if (xc && global.SIGH.exercice.provisoires(xc.annee).length) {
         head.appendChild(el('div.mt-3.flex.items-start.gap-2.rounded-lg.border.border-slate-200.bg-slate-50.px-3.py-2', null, [
@@ -1233,7 +1233,7 @@
     if (!liste.length) return null;
     var sel = el('select.select.w-auto', { id: 'selecteur-exercice', 'aria-label': 'Exercice comptable', title: 'Exercice comptable' });
     liste.forEach(function (x) {
-      var et = { ouvert: 'ouvert', en_attente_cloture: 'en attente de clôture', clos: 'clos' }[x.etat] || x.etat;
+      var et = { ouvert: 'ouvert', en_cloture: 'en clôture', clos: 'clôturé' }[x.etat] || x.etat;
       var o = el('option', { value: String(x.annee) }, 'Exercice ' + x.annee + ' — ' + et);
       if (x.annee === courant) o.selected = true;
       sel.appendChild(o);

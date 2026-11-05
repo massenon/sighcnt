@@ -3032,6 +3032,8 @@
       });
       ajoute = true;
     });
+    /* Le 05/11/2026 l'état « en attente de clôture » devient « en clôture » (la demande verrouille les modules) : les fiches d'avant sont reprises. */
+    col.all().forEach(function (x) { if (x.etat === 'en_attente_cloture') { x.etat = 'en_cloture'; ajoute = true; } });
     if (ajoute) S.save();
     return col.all().filter(function (x) { return x.statut !== 'archive'; })
       .sort(function (a, b) { return b.annee - a.annee; });
@@ -3053,10 +3055,19 @@
   S.garder('ecritures', function (op, rec) {
     var a = anneeDe(rec && rec.date);
     if (!a) return null;
-    if (etatExercice(a) === 'clos') {
+    /* Les pièces de la clôture elle-même (CL, AN, contre-passations) passent : c'est elles qui font l'état. */
+    if (rec && rec.origineCloture && op === 'inserer') return null;
+    var etat = etatExercice(a);
+    if (etat === 'clos') {
       var x = exercice(a);
-      return 'Exercice ' + a + ' clos' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '')
-        + ' — lecture seule. La correction passe par une écriture de l’exercice en cours.';
+      return 'Exercice ' + a + ' clôturé' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '')
+        + ' : lecture seule. La correction passe par la réouverture par le comptable (motif obligatoire), ou par une écriture de l’exercice en cours.';
+    }
+    if (etat === 'en_cloture') {
+      /* En clôture : les modules n'écrivent plus ; seul le comptable passe ses écritures d'inventaire (saisie manuelle). */
+      var role = roleCourant();
+      if ((rec && rec.origine === 'Saisie manuelle') && (role === 'comptable' || role === 'admin')) return null;
+      return 'Exercice ' + a + ' en clôture : les modules n’y écrivent plus. Seul le comptable y passe ses écritures d’inventaire (saisie manuelle) ; sinon dater la pièce de l’exercice ouvert.';
     }
     return null;
   });
@@ -3066,9 +3077,10 @@
   }
 
   /* Écritures VALIDÉES d'un exercice (un brouillon n'est pas un fait comptable). */
-  function ecrituresDe(annee, inclureBrouillons) {
+  function ecrituresDe(annee, inclureBrouillons, avecCL) {
+    /* Le journal CL (clôture) est EXCLU par défaut : les états de N restent ceux d'avant la clôture, le compte de résultat montre le résultat de l'année et non zéro. */
     return S.collection('ecritures').active().filter(function (e) {
-      return anneeDe(e.date) === Number(annee) && (inclureBrouillons || e.statut === 'validee');
+      return anneeDe(e.date) === Number(annee) && (inclureBrouillons || e.statut === 'validee') && (avecCL || e.journal !== 'CL');
     });
   }
 
@@ -3124,7 +3136,8 @@
     var lignes = lignesDeReport(base);
     var res = resultatDe(base);
     if (Math.abs(res) >= 1) {
-      lignes.push({ compte: res >= 0 ? '131000' : '139000', compteLibelle: res >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
+      var cr = compteResultat(res);
+      lignes.push({ compte: cr.compte, compteLibelle: cr.libelle,
         debit: res < 0 ? -res : 0, credit: res > 0 ? res : 0, lettrable: false });
     }
     return lignes.map(function (l) {
@@ -3155,7 +3168,20 @@
     controles.push({ id: 'pieces', bloquant: true, ok: boiteuses.length === 0,
       libelle: 'Chaque pièce validée est équilibrée', ecran: 'm12-ecritures',
       detail: boiteuses.length ? boiteuses.length + ' pièce(s) déséquilibrée(s) : ' + boiteuses.slice(0, 4).join(', ') + '.' : '' });
-    var an = S.collection('ecritures').active().filter(function (e) { return anneeDe(e.date) === annee + 1 && e.journal === 'AN'; });
+    var prec = exercice(annee - 1), suiv = exercice(annee + 1);
+    controles.push({ id: 'precedent-clos', bloquant: true, ok: !prec || prec.etat === 'clos',
+      libelle: 'Exercice ' + (annee - 1) + ' déjà clôturé', ecran: 'm12-cloture',
+      detail: prec && prec.etat !== 'clos' ? 'L’exercice ' + (annee - 1) + ' est ' + (prec.etat === 'en_cloture' ? 'en clôture' : 'ouvert') + ' : le clôturer d’abord.' : '' });
+    controles.push({ id: 'suivant-non-clos', bloquant: true, ok: !suiv || suiv.etat !== 'clos',
+      libelle: 'Exercice ' + (annee + 1) + ' non clôturé', ecran: 'm12-cloture',
+      detail: suiv && suiv.etat === 'clos' ? 'L’exercice ' + (annee + 1) + ' est déjà clôturé : impossible de clôturer ' + annee + ' après lui.' : '' });
+    var enAttente = (S.fileEnAttente && S.fileEnAttente()) || 0;
+    controles.push({ id: 'postes-a-envoyer', bloquant: false, ok: enAttente === 0,
+      libelle: 'Aucune opération en attente d’envoi sur ce poste', ecran: 'm12-cloture',
+      detail: enAttente ? enAttente + ' opération(s) à envoyer : synchroniser d’abord, car une fois ' + annee + ' en clôture la mère refuse les pièces datées de ' + annee + '. Les autres postes sont à vérifier de la même façon.' : '' });
+    var contrePassees = {};
+    S.collection('ecritures').active().forEach(function (e) { if (e.contrePasseDe) contrePassees[e.contrePasseDe] = true; });
+    var an = S.collection('ecritures').active().filter(function (e) { return anneeDe(e.date) === annee + 1 && e.journal === 'AN' && !e.contrePasseDe && !contrePassees[e.numero] && !e.provisoire; });
     controles.push({ id: 'an-existants', bloquant: true, ok: an.length === 0,
       libelle: 'Aucun à-nouveau déjà écrit sur ' + (annee + 1), ecran: 'm12-ouverture',
       detail: an.length ? 'Des à-nouveaux existent (' + an[0].numero + ') : les archiver avant de clôturer, la clôture écrit les définitifs.' : '' });
@@ -3173,19 +3199,58 @@
   function acteur() { var s = S.session && S.session(); return (s && (s.nomComplet || s.nom)) || 'Utilisateur'; }
   function roleCourant() { var s = S.session && S.session(); return (s && s.role) || ''; }
 
-  /* GESTE 1 — la demande (comptable). Les contrôles bloquants refusent EN LES NOMMANT. */
-  function demanderCloture(annee) {
+  /* LA TABLE DES COMPTES DE RÉSULTAT (131 bénéfice, 139 perte) : un référentiel paramétrable, jamais deux constantes du code. */
+  function comptesResultat() {
+    var col = S.collection('comptesResultat', { module: 'M12', entite: 'Compte de résultat' });
+    if (!col.all().length && S.amorcable('comptesResultat')) {
+      col.all().push({ id: 'CR-BEN', statut: 'actif', sens: 'benefice', compte: '131000', libelle: 'Résultat net : bénéfice' });
+      col.all().push({ id: 'CR-PER', statut: 'actif', sens: 'perte', compte: '139000', libelle: 'Résultat net : perte' });
+      S.save();
+    }
+    return col;
+  }
+  function compteResultat(res) {
+    var sens = res >= 0 ? 'benefice' : 'perte';
+    var f = comptesResultat().active().filter(function (x) { return x.sens === sens; })[0];
+    return f ? { compte: String(f.compte), libelle: f.libelle } : { compte: sens === 'benefice' ? '131000' : '139000', libelle: sens === 'benefice' ? 'Résultat net : bénéfice' : 'Résultat net : perte' };
+  }
+
+  /* Prochain numéro d'une pièce de clôture (CL-2026-00001, AN-2027-00001, …-C00001 pour les contre-passations) : lu du journal, jamais d'un compteur de page. */
+  function numeroPiece(prefixe, annee) {
+    var motif = new RegExp('^' + prefixe + '-' + annee + '-?[A-Z]?(\\d+)$'), rang = 0;
+    S.collection('ecritures').all().forEach(function (e) { var m = motif.exec(String(e.numero || '')); if (m) rang = Math.max(rang, Number(m[1])); });
+    return rang + 1;
+  }
+  function pad5(n) { return ('00000' + n).slice(-5); }
+
+  function peutDemarrer() { return ['comptable', 'da', 'admin'].indexOf(roleCourant()) >= 0; }
+
+  /* TRANSITION 1 : démarrer la clôture (ouvert → en clôture). Les modules n'écrivent plus dans N ; le comptable passe ses écritures d'inventaire. */
+  function demarrerCloture(annee) {
     annee = Number(annee);
     var x = exercice(annee);
     if (!x) return { ok: false, motif: 'Exercice ' + annee + ' inconnu.' };
-    if (x.etat === 'clos') return { ok: false, motif: 'Exercice ' + annee + ' déjà clos.' };
-    if (x.etat === 'en_attente_cloture') return { ok: false, motif: 'La clôture de ' + annee + ' attend déjà la validation de la Direction.' };
+    if (x.source === 'liasse') return { ok: false, motif: 'L’exercice ' + annee + ' est celui de la liasse déposée : il est clôturé et ne se rouvre pas ici.' };
+    if (x.etat === 'clos') return { ok: false, motif: 'Exercice ' + annee + ' déjà clôturé : le rouvrir (comptable, motif obligatoire) pour le corriger.' };
+    if (x.etat === 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' est déjà en clôture.' };
+    if (!peutDemarrer()) return { ok: false, motif: 'Démarrer la clôture est réservé au comptable, à la Directrice Administrative et à l’administrateur.' };
     var pre = preCloture(annee);
-    if (pre.bloquants.length) return { ok: false, motif: 'Pré-clôture refusée — ' + pre.bloquants.map(function (b) { return b.libelle + (b.detail ? ' (' + b.detail + ')' : ''); }).join(' ; '), pre: pre };
-    S.collection('exercices').update(x.id, { etat: 'en_attente_cloture', demandeLe: new Date().toISOString(), demandePar: acteur(), resultatPrevu: pre.resultat });
-    S.log('Demande de clôture', 'M12', 'Exercice', String(annee), { etat: 'ouvert' }, { etat: 'en_attente_cloture', resultat: pre.resultat });
-    notifier({ type: 'cloture', poste: 'direction', libelle: 'Clôture ' + annee + ' à valider', detail: 'Le comptable a demandé la clôture de l’exercice ' + annee + '.', priorite: 'haute', reference: String(annee) });
+    S.collection('exercices').update(x.id, { etat: 'en_cloture', demandeLe: new Date().toISOString(), demandePar: acteur(), resultatPrevu: pre.resultat });
+    S.log('Démarrage de la clôture', 'M12', 'Exercice', String(annee), { etat: 'ouvert' }, { etat: 'en_cloture', resultat: pre.resultat });
+    notifier({ type: 'cloture', poste: 'direction', libelle: 'Clôture ' + annee + ' à valider', detail: 'Le comptable a démarré la clôture de l’exercice ' + annee + ' : les modules n’y écrivent plus.', priorite: 'haute', reference: String(annee) });
     return { ok: true, pre: pre };
+  }
+  var demanderCloture = demarrerCloture;   /* ancien nom du geste, conservé pour les appelants et les sondes */
+
+  /* TRANSITION 2 : reprendre la saisie (en clôture → ouvert), tant que rien n'est clôturé. */
+  function reprendreSaisie(annee) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x || x.etat !== 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas en clôture : rien à reprendre.' };
+    if (!peutDemarrer()) return { ok: false, motif: 'Reprendre la saisie est réservé au comptable, à la Directrice Administrative et à l’administrateur.' };
+    S.collection('exercices').update(x.id, { etat: 'ouvert', demandeLe: null, demandePar: null, reprisLe: new Date().toISOString(), reprisPar: acteur() });
+    S.log('Reprise de la saisie', 'M12', 'Exercice', String(annee), { etat: 'en_cloture' }, { etat: 'ouvert' });
+    return { ok: true };
   }
 
   /* Empreinte SHA-256 synchrone (FIPS 180-4) de l'export d'archive. */
@@ -3214,75 +3279,132 @@
     return H.map(function (v) { return ('00000000' + (v >>> 0).toString(16)).slice(-8); }).join('');
   }
 
-  /* GESTE 2 — la validation (Direction / DAF), par une personne DIFFÉRENTE de celle qui a demandé. */
+  /* TRANSITION 3 : clôturer définitivement (en clôture → clôturé). Par la Direction, la DAF ou l'administrateur, une AUTRE personne que celle qui a démarré
+     la clôture (« signer n'est pas saisir »). Dans l'ordre et d'un seul tenant : pièce CL au 31/12/N, pièce AN au 01/01/N+1, verrou, archive. Un échec en
+     cours de route défait tout ce qui a été posé : l'exercice reste en clôture, rien n'est écrit à moitié. */
   function validerCloture(annee, motif) {
     annee = Number(annee);
     var x = exercice(annee);
-    if (!x || x.etat !== 'en_attente_cloture') return { ok: false, motif: 'Aucune demande de clôture en attente pour ' + annee + '.' };
-    if (['da', 'direction', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La clôture est validée par la Direction ou la Directrice Administrative.' };
-    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour valider une clôture.' };
-    if (x.demandePar === acteur()) return { ok: false, motif: 'Signer n’est pas saisir : la validation doit venir d’une autre personne que le demandeur (' + x.demandePar + ').' };
+    if (!x || x.etat !== 'en_cloture') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas en clôture : démarrer la clôture d’abord.' };
+    if (['da', 'direction', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La clôture définitive est prononcée par la Direction ou la Directrice Administrative.' };
+    if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour clôturer un exercice.' };
+    if (x.demandePar === acteur()) return { ok: false, motif: 'Signer n’est pas saisir : la clôture définitive doit venir d’une autre personne que celle qui a démarré la clôture (' + x.demandePar + ').' };
     var pre = preCloture(annee);
-    if (pre.bloquants.length) return { ok: false, motif: 'Contrôles bloquants à nouveau en échec : ' + pre.bloquants.map(function (b) { return b.libelle; }).join(' ; ') };
+    if (pre.bloquants.length) return { ok: false, motif: 'Contrôles bloquants en échec : ' + pre.bloquants.map(function (b) { return b.libelle + (b.detail ? ' (' + b.detail + ')' : ''); }).join(' ; '), pre: pre };
 
     var col = S.collection('ecritures', { module: 'M12', entite: 'Écriture' });
     var base = ecrituresDe(annee);
     var res = resultatDe(base);
+    var posees = [];
+    function defaire() { posees.slice().reverse().forEach(function (u) { try { u.undo(); } catch (e) { /* déjà retirée */ } }); }
+    function poser(l) { var r = col.insert(l); if (!r) throw new Error('Écriture refusée par le journal.'); posees.push(r); return r; }
 
-    /* (1) Détermination du résultat : chaque compte 6/7/8 est soldé vers 131 / 139 — UNE pièce équilibrée. */
-    var numOD = 'OD-' + annee + '-RES';
-    var odBase = { numero: numOD, date: annee + '-12-31', journal: 'OD', journalLibelle: 'Journal des opérations diverses',
-      libelle: 'Détermination du résultat ' + annee, origine: 'Clôture — résultat', statut: 'validee', origineCloture: 'resultat', centreCout: null };
-    var lignesOD = [];
-    soldesParCompte(base.filter(function (e) { return '678'.indexOf(String(e.compte).charAt(0)) >= 0; })).forEach(function (s) {
-      if (Math.abs(s.solde) < 1) return;
-      lignesOD.push(Object.assign({}, odBase, { compte: s.compte, compteLibelle: s.libelle, debit: s.solde < 0 ? -s.solde : 0, credit: s.solde > 0 ? s.solde : 0 }));
-    });
-    if (Math.abs(res) >= 1) {
-      lignesOD.push(Object.assign({}, odBase, { compte: res >= 0 ? '131000' : '139000', compteLibelle: res >= 0 ? 'Résultat net : bénéfice' : 'Résultat net : perte',
-        debit: res < 0 ? -res : 0, credit: res > 0 ? res : 0 }));
+    try {
+      /* (1) PIÈCE DE CLÔTURE, journal CL, au 31/12/N : chaque compte des classes 6, 7 et 8 est soldé CENTRE DE COÛTS par centre de coûts ; la contrepartie de
+         chaque centre va en 131 (bénéfice) ou 139 (perte), lus de la table des comptes de résultat. */
+      var numCL = 'CL-' + annee + '-' + pad5(numeroPiece('CL', annee));
+      var clBase = { numero: numCL, date: annee + '-12-31', journal: 'CL', journalLibelle: 'Journal de clôture',
+        libelle: 'Clôture de l’exercice ' + annee + ' : détermination du résultat', origine: 'Clôture : résultat', statut: 'validee', origineCloture: 'cl' };
+      var parCentre = {};
+      base.filter(function (e) { return '678'.indexOf(String(e.compte).charAt(0)) >= 0; }).forEach(function (e) {
+        var k = e.centreCout || ''; (parCentre[k] = parCentre[k] || []).push(e);
+      });
+      var lignesCL = [];
+      Object.keys(parCentre).sort().forEach(function (centre) {
+        var resCentre = 0;
+        soldesParCompte(parCentre[centre]).forEach(function (sd) {
+          if (Math.abs(sd.solde) < 1) return;
+          resCentre += -sd.solde;
+          lignesCL.push(Object.assign({}, clBase, { compte: sd.compte, compteLibelle: sd.libelle, centreCout: centre || null,
+            debit: sd.solde < 0 ? -sd.solde : 0, credit: sd.solde > 0 ? sd.solde : 0 }));
+        });
+        if (Math.abs(resCentre) >= 1) {
+          var cr = compteResultat(resCentre);
+          lignesCL.push(Object.assign({}, clBase, { compte: cr.compte, compteLibelle: cr.libelle, centreCout: centre || null,
+            debit: resCentre < 0 ? -resCentre : 0, credit: resCentre > 0 ? resCentre : 0 }));
+        }
+      });
+      var dCL = C.sum(lignesCL, 'debit'), cCL = C.sum(lignesCL, 'credit');
+      if (Math.abs(dCL - cCL) >= 1) throw new Error('Pièce de clôture déséquilibrée (' + C.money(Math.abs(dCL - cCL)) + ') : clôture refusée (RG-10).');
+      lignesCL.forEach(poser);
+
+      /* (2) PIÈCE D'À-NOUVEAUX, journal AN, au 01/01/N+1 : soldes des classes 1 à 5, résultat compris (calculés APRÈS la pièce CL). */
+      var report = lignesDeReport(ecrituresDe(annee, false, true));
+      var numAN = 'AN-' + (annee + 1) + '-' + pad5(numeroPiece('AN', annee + 1));
+      var anBase = { numero: numAN, date: (annee + 1) + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux',
+        libelle: 'À-nouveaux au 1er janvier ' + (annee + 1), origine: 'Clôture : à-nouveaux', statut: 'validee', origineCloture: 'an', centreCout: null };
+      var dAN = C.sum(report, 'debit'), cAN = C.sum(report, 'credit');
+      if (Math.abs(dAN - cAN) >= 1) throw new Error('À-nouveaux déséquilibrés (' + C.money(Math.abs(dAN - cAN)) + ') : vérifier les lettrages.');
+      report.forEach(function (l) {
+        poser(Object.assign({}, anBase, { compte: l.compte, compteLibelle: l.compteLibelle, debit: l.debit, credit: l.credit,
+          libelle: l.libelle || anBase.libelle, pieceOrigine: l.pieceOrigine || null }));
+      });
+
+      /* (3) VERROU puis (4) ARCHIVE : l'empreinte du journal ARRÊTÉ, puis l'état « clôturé » en dernier. */
+      var arret = ecrituresDe(annee, false, true);
+      var texte = arret.map(function (e) { return [e.numero, e.date, e.journal, e.compte, e.debit, e.credit].join('|'); }).sort().join('\n');
+      var empreinte = sha256(texte);
+      S.collection('exercices').update(x.id, { etat: 'clos', valideLe: new Date().toISOString(), validePar: acteur(), motif: String(motif).trim(),
+        resultat: res, empreinte: empreinte, nbEcrituresArchivees: arret.length, clNumero: numCL, anNumero: numAN });
+      S.collection('clotures', { module: 'M12', entite: 'Clôture' }).insert({ annee: annee, type: 'cloture', clNumero: numCL, anNumero: numAN, resultat: res,
+        par: acteur(), le: new Date().toISOString(), motif: String(motif).trim(), empreinte: empreinte });
+    } catch (e) {
+      defaire();
+      return { ok: false, motif: String((e && e.message) || e) + ' L’exercice reste en clôture, rien n’a été écrit.' };
     }
-    var dOD = C.sum(lignesOD, 'debit'), cOD = C.sum(lignesOD, 'credit');
-    if (Math.abs(dOD - cOD) >= 1) return { ok: false, motif: 'Pièce de résultat déséquilibrée (' + C.money(Math.abs(dOD - cOD)) + ') — clôture refusée (RG-10).' };
-    lignesOD.forEach(function (l) { col.insert(l); });
-
-    /* (2) À-nouveaux DÉFINITIFS au 1er janvier N+1, calculés APRÈS la pièce de résultat. */
-    var apres = ecrituresDe(annee);
-    var report = lignesDeReport(apres);
-    var anBase = { numero: 'AN-' + (annee + 1) + '-00001', date: (annee + 1) + '-01-01', journal: 'AN', journalLibelle: 'Journal des à-nouveaux',
-      libelle: 'À-nouveaux au 1er janvier ' + (annee + 1), origine: 'Clôture — à-nouveaux', statut: 'validee', origineCloture: 'an', centreCout: null };
-    var dAN = 0, cAN = 0;
-    report.forEach(function (l) {
-      dAN += l.debit; cAN += l.credit;
-    });
-    if (Math.abs(dAN - cAN) >= 1) {
-      /* Les lignes lettrées exclues ne peuvent pas déséquilibrer un report si le lettrage est équilibré :
-         un écart dit un lettrage faux, on refuse plutôt que de propager. */
-      return { ok: false, motif: 'À-nouveaux déséquilibrés (' + C.money(Math.abs(dAN - cAN)) + ') : vérifier les lettrages. L’exercice reste ouvert.', resteOD: numOD };
-    }
-    report.forEach(function (l) {
-      col.insert(Object.assign({}, anBase, { compte: l.compte, compteLibelle: l.compteLibelle, debit: l.debit, credit: l.credit,
-        libelle: l.libelle || anBase.libelle, pieceOrigine: l.pieceOrigine || null }));
-    });
-
-    /* (3) Archive : empreinte du journal ARRÊTÉ, puis état « clos » — en dernier. */
-    var arret = ecrituresDe(annee);
-    var texte = arret.map(function (e) { return [e.numero, e.date, e.journal, e.compte, e.debit, e.credit].join('|'); }).sort().join('\n');
-    var empreinte = sha256(texte);
-    S.collection('exercices').update(x.id, { etat: 'clos', valideLe: new Date().toISOString(), validePar: acteur(), motif: String(motif).trim(),
-      resultat: res, empreinte: empreinte, nbEcrituresArchivees: arret.length, anNumero: anBase.numero });
     if (!exercice(annee + 1)) {
       S.collection('exercices').all().unshift({ id: 'EXO-' + (annee + 1), annee: annee + 1, debut: (annee + 1) + '-01-01', fin: (annee + 1) + '-12-31',
         statut: 'actif', etat: 'ouvert', source: 'journal' });
     }
-    S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_attente_cloture' }, { etat: 'clos', resultat: res, empreinte: empreinte });
-    notifier({ type: 'cloture', poste: 'comptable', libelle: 'Exercice ' + annee + ' clos', detail: 'Résultat ' + C.money(res) + ' ; à-nouveaux ' + (annee + 1) + ' écrits.', reference: String(annee) });
+    S.log('Clôture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'en_cloture' }, { etat: 'clos', resultat: res, cl: numCL, an: numAN });
+    notifier({ type: 'cloture', poste: 'comptable', libelle: 'Exercice ' + annee + ' clôturé', detail: 'Résultat ' + C.money(res) + ' ; pièces ' + numCL + ' et ' + numAN + ' écrites.', reference: String(annee) });
     S.save();
-    /* L'archive de conservation naît AVEC la clôture, par quelque porte qu'elle soit validée : un exercice
-       clos sans archive serait un exercice dont la conservation dépend d'un geste qu'on peut oublier. */
+    /* L'archive de conservation naît AVEC la clôture, par quelque porte qu'elle soit prononcée. */
     var archive = null;
-    try { archive = archiverExercice(annee); } catch (e) { if (global.console) global.console.error('[SIGH] archive de clôture', e); }
-    return { ok: true, resultat: res, empreinte: empreinte, lignesAN: report.length, archive: archive ? archive.reference : null };
+    try { archive = archiverExercice(annee); } catch (e2) { if (global.console) global.console.error('[SIGH] archive de clôture', e2); }
+    return { ok: true, resultat: res, empreinte: empreinte, lignesAN: report.length, lignesCL: lignesCL.length, clNumero: numCL, anNumero: numAN, archive: archive ? archive.reference : null };
+  }
+  var cloturerDefinitivement = validerCloture;
+
+  /* TRANSITION 4 : rouvrir (clôturé → en clôture). Le COMPTABLE seul, avec un motif d'au moins dix caractères. Rien ne s'efface : la pièce CL et la pièce AN
+     sont CONTRE-PASSÉES (mêmes lignes, sens inversé, marquées `contrePasseDe`). Refusée si N+1 n'est plus ouvert (il a déjà consommé l'à-nouveau). */
+  function rouvrirExercice(annee, motif) {
+    annee = Number(annee);
+    var x = exercice(annee);
+    if (!x || x.etat !== 'clos') return { ok: false, motif: 'L’exercice ' + annee + ' n’est pas clôturé : rien à rouvrir.' };
+    if (x.source === 'liasse') return { ok: false, motif: 'L’exercice ' + annee + ' est celui de la liasse déposée à la DGI : il ne se rouvre pas dans le logiciel.' };
+    if (['comptable', 'admin'].indexOf(roleCourant()) < 0) return { ok: false, motif: 'La réouverture est réservée au comptable.' };
+    if (!motif || String(motif).trim().length < 10) return { ok: false, motif: 'Le motif de réouverture doit compter au moins dix caractères.' };
+    var suiv = exercice(annee + 1);
+    if (suiv && suiv.etat !== 'ouvert') return { ok: false, motif: 'L’exercice ' + (annee + 1) + ' est ' + (suiv.etat === 'clos' ? 'clôturé' : 'en clôture') + ' : il a consommé les à-nouveaux de ' + annee + '. Le rouvrir ou le reprendre d’abord.' };
+    var col = S.collection('ecritures', { module: 'M12', entite: 'Écriture' });
+    var origines = col.active().filter(function (e) { return (e.numero === x.clNumero || e.numero === x.anNumero) && !e.contrePasseDe; });
+    if (!origines.length) return { ok: false, motif: 'Les pièces de clôture de ' + annee + ' sont introuvables : réouverture refusée.' };
+    var posees = [];
+    function defaire() { posees.slice().reverse().forEach(function (u) { try { u.undo(); } catch (e) { /* déjà retirée */ } }); }
+    try {
+      var nCL = 'CL-' + annee + '-C' + pad5(numeroPiece('CL', annee)), nAN = 'AN-' + (annee + 1) + '-C' + pad5(numeroPiece('AN', annee + 1));
+      origines.forEach(function (o) {
+        var estCL = o.numero === x.clNumero;
+        var r = col.insert({ numero: estCL ? nCL : nAN, date: o.date, journal: o.journal, journalLibelle: o.journalLibelle, compte: o.compte, compteLibelle: o.compteLibelle,
+          centreCout: o.centreCout || null, debit: Number(o.credit) || 0, credit: Number(o.debit) || 0, statut: 'validee',
+          libelle: 'Contre-passation de ' + o.numero + ' : réouverture de ' + annee, origine: 'Clôture : contre-passation', origineCloture: estCL ? 'cl-contre' : 'an-contre',
+          contrePasseDe: o.numero, pieceOrigine: o.pieceOrigine || null });
+        if (!r) throw new Error('Contre-passation refusée par le journal.');
+        posees.push(r);
+      });
+      S.collection('exercices').update(x.id, { etat: 'en_cloture', rouvertLe: new Date().toISOString(), rouvertPar: acteur(), motifReouverture: String(motif).trim(),
+        valideLe: null, validePar: null, resultat: null });
+      S.collection('clotures', { module: 'M12', entite: 'Clôture' }).insert({ annee: annee, type: 'reouverture', clNumero: nCL, anNumero: nAN, contrePasse: [x.clNumero, x.anNumero],
+        par: acteur(), le: new Date().toISOString(), motif: String(motif).trim() });
+    } catch (e) {
+      defaire();
+      return { ok: false, motif: String((e && e.message) || e) + ' L’exercice reste clôturé, rien n’a été écrit.' };
+    }
+    S.log('Réouverture d’exercice', 'M12', 'Exercice', String(annee), { etat: 'clos' }, { etat: 'en_cloture', motif: String(motif).trim(), contrePasse: [x.clNumero, x.anNumero] });
+    notifier({ type: 'cloture', poste: 'direction', libelle: 'Exercice ' + annee + ' rouvert', detail: acteur() + ' a rouvert l’exercice ' + annee + ' : ' + String(motif).trim(), priorite: 'haute', reference: String(annee) });
+    S.save();
+    return { ok: true, pieces: [nCL, nAN], lignes: posees.length };
   }
 
   /**
@@ -3455,7 +3577,8 @@
     dansExercice: dansExerciceChoisi, fenetre: fenetreExercice,
     liste: exercices, de: exercice, etat: etatExercice, choisi: exerciceChoisi, choisir: choisirExercice,
     anneeDe: anneeDe, ecrituresDe: ecrituresDe, soldes: soldesParCompte, resultat: resultatDe,
-    provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, valider: validerCloture,
+    provisoires: aNouveauxProvisoires, preCloture: preCloture, demander: demanderCloture, demarrer: demarrerCloture, reprendre: reprendreSaisie,
+    valider: validerCloture, cloturer: validerCloture, rouvrir: rouvrirExercice, compteResultat: compteResultat,
     lettrer: lettrer, delettrer: delettrer, lettrable: sensLettrable, sha256: sha256, archiver: archiverExercice,
   };
 

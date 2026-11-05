@@ -11131,7 +11131,7 @@ async function viderMessages(page) {
       return { present: !!s, options: s ? [...s.options].map((o) => o.textContent) : [] };
     });
     verifier('Le sélecteur d’exercice est dans l’en-tête de l’écran comptable, avec l’état de chaque exercice',
-      sel.present && sel.options.some((t) => /2025.*clos/.test(t)) && sel.options.some((t) => /2026.*ouvert/.test(t)), JSON.stringify(sel.options));
+      sel.present && sel.options.some((t) => /2025.*clôturé/.test(t)) && sel.options.some((t) => /2026.*ouvert/.test(t)), JSON.stringify(sel.options));
 
     const e1 = await page.evaluate(() => {
       const X = window.SIGH.exercice, S = window.SIGH.store;
@@ -11170,31 +11170,33 @@ async function viderMessages(page) {
     const e2 = await page.evaluate(() => {
       const X = window.SIGH.exercice, S = window.SIGH.store;
       const ecr = S.collection('ecritures');
-      const refus = X.demander(2026);
+      /* Démarrer la clôture n'est pas la prononcer : elle démarre, et c'est la clôture DÉFINITIVE qui refuse en nommant le contrôle bloquant. */
+      const demarre = X.demander(2026);
+      const admin = S.session();
+      S.setSession({ role: 'da', nom: 'Directrice Administrative', nomComplet: 'TAKI Alimatou', fonction: 'direction' });
+      const refus = X.valider(2026, 'tentative avec brouillons');
+      S.setSession(admin);
       /* le comptable valide ses brouillons ; on corrige les pièces déséquilibrées du jeu en les validant par pièce */
       ecr.all().forEach((e) => { if (e.statut === 'brouillon' && String(e.date).slice(0, 4) === '2026') e.statut = 'validee'; });
-      const an27 = ecr.all().filter((e) => e.journal === 'AN' && String(e.date).slice(0, 4) === '2027');
-      return { refusOk: refus.ok, refusMotif: refus.motif || '', nbAn27: an27.length, bloquants: X.preCloture(2026).bloquants.map((b) => b.id + ':' + b.detail) };
+      return { demarreOk: demarre.ok, etat: X.etat(2026), refusOk: refus.ok, refusMotif: refus.motif || '', bloquants: X.preCloture(2026).bloquants.map((b) => b.id + ':' + b.detail) };
     });
-    verifier('La demande de clôture est refusée tant qu’un contrôle bloquant échoue', e2.refusOk === false && /Pré-clôture refusée/.test(e2.refusMotif), e2.refusMotif.slice(0, 160));
+    verifier('La clôture démarre (état « en clôture »), mais la clôture DÉFINITIVE est refusée tant qu’un contrôle bloquant échoue, en le nommant',
+      e2.demarreOk === true && e2.etat === 'en_cloture' && e2.refusOk === false && /Contrôles bloquants en échec/.test(e2.refusMotif), e2.refusMotif.slice(0, 160));
 
     const e3 = await page.evaluate(() => {
-      const X = window.SIGH.exercice, S = window.SIGH.store;
-      const ecr = S.collection('ecritures');
-      /* Rend le journal équilibré par pièce pour le cas de bout en bout (le jeu de démonstration l’est déjà — RG-10 construit). */
+      const X = window.SIGH.exercice;
       const pre = X.preCloture(2026);
-      const demande = pre.bloquants.length ? { ok: false, motif: pre.bloquants.map((b) => b.id + ' ' + b.detail).join(' ; ') } : X.demander(2026);
-      return { pre: pre.bloquants.map((b) => b.id + ':' + b.detail), demande: demande.ok, motif: demande.motif || '' };
+      return { pre: pre.bloquants.map((b) => b.id + ':' + b.detail), etat: X.etat(2026) };
     });
-    verifier('Une fois les brouillons validés et le journal équilibré, la demande de clôture est ACCEPTÉE (état « en attente »)',
-      e3.demande === true, JSON.stringify(e3));
+    verifier('Une fois les brouillons validés et le journal équilibré, plus aucun contrôle bloquant : l’exercice est prêt pour la clôture définitive',
+      e3.pre.length === 0 && e3.etat === 'en_cloture', JSON.stringify(e3));
 
     const e4 = await page.evaluate(() => {
       const X = window.SIGH.exercice;
       const memeAuteur = X.valider(2026, 'Validation sonde');
       return { ok: memeAuteur.ok, motif: memeAuteur.motif || '', etat: X.etat(2026) };
     });
-    verifier('Signer n’est pas saisir : le demandeur ne valide pas sa propre clôture', e4.ok === false && /autre personne/.test(e4.motif) && e4.etat === 'en_attente_cloture', e4.motif);
+    verifier('Signer n’est pas saisir : le demandeur ne valide pas sa propre clôture', e4.ok === false && /autre personne/.test(e4.motif) && e4.etat === 'en_cloture', e4.motif);
 
     const e5 = await page.evaluate(() => {
       const X = window.SIGH.exercice, S = window.SIGH.store;
@@ -11207,7 +11209,7 @@ async function viderMessages(page) {
       const res = X.valider(2026, 'Clôture validée — jeu de recette');
       const apres = ecr.active().filter((e) => String(e.date).slice(0, 4) === '2026' && e.statut === 'validee');
       const solde = (cl) => apres.filter((e) => String(e.compte).charAt(0) === cl).reduce((n, e) => n + e.debit - e.credit, 0);
-      const od = ecr.active().filter((e) => e.numero === 'OD-2026-RES');
+      const od = ecr.active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2026');
       const an = ecr.active().filter((e) => e.journal === 'AN' && String(e.date).slice(0, 4) === '2027');
       const x = X.de(2026);
       /* La balance de N+1 au 1er janvier = les soldes de clôture de N (classes 1 à 5), au franc. */
@@ -11264,7 +11266,7 @@ async function viderMessages(page) {
 
     await ouvrir('m12-cloture.html');
     const bandeau = await page.evaluate(() => ({
-      clos: /Exercice 2026 clos/.test(document.getElementById('page-header') ? document.getElementById('page-header').textContent : document.body.textContent),
+      clos: /Exercice 2026 clôturé/.test(document.getElementById('page-header') ? document.getElementById('page-header').textContent : document.body.textContent),
       sel: document.getElementById('selecteur-exercice') ? document.getElementById('selecteur-exercice').value : null,
     }));
     verifier('L’écran DIT que l’exercice affiché est clos et en lecture seule', bandeau.clos && bandeau.sel === '2026', JSON.stringify(bandeau));
@@ -12190,6 +12192,115 @@ async function viderMessages(page) {
     verifier('Un net positif n’est pas refusé', r.aucun === null, String(r.aucun));
     verifier('La validation écrit les retenues : échéance au prêt, mensualité à l’avance (soldée à 60 000), participation réglée', r.n === 3 && r.apres.pret.length === 1 && r.apres.rembourse === 60000 && r.apres.statutAv === 'solde' && r.apres.statutPart === 'paye', JSON.stringify(r.apres));
     verifier('L’annulation restitue tout : prêt, avance et participation reviennent à leur état', r.retour.pret.length === 0 && r.retour.rembourse === 30000 && r.retour.statutAv === 'en_cours' && r.retour.statutPart === 'du', JSON.stringify(r.retour));
+  }
+
+  {
+    scenario('Vague 73 — exercice : trois états, journaux CL et AN, atomicité, réouverture par contre-passation, comptes de résultat paramétrables');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m12-cloture.html');
+    erreursJS = [];
+    const r = await page.evaluate(() => {
+      const X = window.SIGH.exercice, S = window.SIGH.store, ecr = S.collection('ecritures');
+      const qui = (role, n) => S.setSession({ role: role, nom: n, nomComplet: n, fonction: role });
+      const mk = (num, date, compte, d, c, centre, extra) => ecr.insert(Object.assign({ numero: num, date: date, journal: 'VTE', journalLibelle: 'sonde', compte: compte, compteLibelle: compte,
+        debit: d, credit: c, statut: 'validee', origine: 'Saisie manuelle', centreCout: centre || null }, extra || {}));
+      const out = {};
+      qui('comptable', 'Comptable Sonde');
+      /* Un exercice de la sonde, 2030, à lui : deux pièces équilibrées, deux centres de coûts. */
+      mk('S30-1', '2030-03-01', '571000', 8000, 0, null); mk('S30-1', '2030-03-01', '706000', 0, 8000, 'laboratoire');
+      mk('S30-2', '2030-04-01', '604100', 3000, 0, 'pharmacie'); mk('S30-2', '2030-04-01', '571000', 0, 3000, null);
+      out.etatInitial = X.etat(2030);
+
+      /* TROIS ÉTATS : en clôture, les modules n'écrivent plus ; le comptable passe ses écritures d'inventaire. */
+      out.demarre = X.demarrer(2030).ok;
+      const module = ecr.insert({ numero: 'S30-MOD', date: '2030-05-01', journal: 'VTE', compte: '706000', debit: 0, credit: 10, statut: 'brouillon', origine: 'Automatique : Caisse' });
+      out.moduleRefuse = module === null;
+      const inv = mk('S30-INV', '2030-12-30', '681100', 500, 0, 'pharmacie'); mk('S30-INV', '2030-12-30', '281000', 0, 500, null);
+      out.inventaireComptable = inv !== null;
+      qui('da', 'Direction Sonde');
+      out.manuelAutreRole = ecr.insert({ numero: 'S30-X', date: '2030-05-02', journal: 'OD', compte: '706000', debit: 0, credit: 5, statut: 'brouillon', origine: 'Saisie manuelle' }) === null;
+      qui('comptable', 'Comptable Sonde');
+      out.reprend = X.reprendre(2030).ok;
+      out.etatApresReprise = X.etat(2030);
+      out.moduleApresReprise = ecr.insert({ numero: 'S30-MOD2', date: '2030-05-03', journal: 'VTE', compte: '571000', debit: 7, credit: 0, statut: 'validee', origine: 'Automatique : Caisse' }) !== null;
+      mk('S30-MOD2', '2030-05-03', '706000', 0, 7, 'laboratoire');
+      out.redemarre = X.demarrer(2030).ok;
+
+      /* ATOMICITÉ : une ligne lettrée seule déséquilibre les à-nouveaux APRÈS la pièce CL : tout doit être défait. */
+      const orphelin = mk('S30-ORPH', '2030-06-01', '411000', 100, 0, null, { lettrage: 'Z' }).record; mk('S30-ORPH', '2030-06-01', '706000', 0, 100, 'laboratoire');
+      qui('da', 'Direction Sonde');
+      const refus = X.cloturer(2030, 'Clôture de la sonde');
+      out.atomRefus = refus.ok; out.atomMotif = refus.motif || '';
+      out.atomCL = ecr.all().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2030').length;
+      out.atomEtat = X.etat(2030);
+      qui('comptable', 'Comptable Sonde');
+      ecr.update(orphelin.id, { lettrage: null });
+
+      /* CLÔTURE : CL au 31/12/N centre par centre, AN au 01/01/N+1, verrou. */
+      const resAvant = X.resultat(X.ecrituresDe(2030));
+      qui('da', 'Direction Sonde');
+      const cl = X.cloturer(2030, 'Clôture de la sonde');
+      out.cloOk = cl.ok; out.cloMotif = cl.motif || ''; out.clNumero = cl.clNumero; out.anNumero = cl.anNumero;
+      const lCL = ecr.active().filter((e) => e.numero === cl.clNumero), lAN = ecr.active().filter((e) => e.numero === cl.anNumero);
+      const parCentre = {}; lCL.forEach((e) => { const k = e.centreCout || ''; parCentre[k] = (parCentre[k] || 0) + e.debit - e.credit; });
+      out.clJournal = lCL.length > 0 && lCL.every((e) => e.journal === 'CL' && e.date === '2030-12-31');
+      out.clCentresEquilibres = Object.keys(parCentre).length >= 2 && Object.keys(parCentre).every((k) => Math.abs(parCentre[k]) < 1);
+      out.clContrepartie = lCL.some((e) => e.compte === '131000' && e.credit > 0) && lCL.every((e) => '678131139'.indexOf(String(e.compte).slice(0, 1)) >= 0 || String(e.compte).indexOf('13') === 0);
+      out.anJournal = lAN.length > 0 && lAN.every((e) => e.journal === 'AN' && e.date === '2031-01-01') && Math.abs(lAN.reduce((n, e) => n + e.debit - e.credit, 0)) < 1;
+      out.anSansGestion = lAN.every((e) => '12345'.indexOf(String(e.compte).charAt(0)) >= 0);
+      out.etatClos = X.etat(2030);
+      out.resApres = X.resultat(X.ecrituresDe(2030));
+      out.resEgal = resAvant === out.resApres && resAvant !== 0;
+      out.modulesRefuses = ecr.insert({ numero: 'S30-TARD', date: '2030-12-31', journal: 'VTE', compte: '706000', debit: 0, credit: 9, statut: 'brouillon', origine: 'Saisie manuelle' }) === null;
+      out.provVide = X.provisoires(2031).length === 0;
+
+      /* RÉOUVERTURE : comptable seul, motif de dix caractères, N+1 ouvert, contre-passation, rien d'effacé. */
+      qui('da', 'Direction Sonde');
+      out.rouvreDa = X.rouvrir(2030, 'Erreur découverte après coup').ok;
+      qui('comptable', 'Comptable Sonde');
+      out.rouvreCourt = X.rouvrir(2030, 'trop bref').ok;
+      out.rouvreLiasse = X.rouvrir(2025, 'Motif suffisamment long').motif || '';
+      const x31 = X.de(2031), etat31 = x31.etat;
+      S.collection('exercices').update(x31.id, { etat: 'en_cloture' });
+      out.rouvreSuivant = X.rouvrir(2030, 'Motif suffisamment long').motif || '';
+      S.collection('exercices').update(x31.id, { etat: etat31 });
+      const avantReouv = ecr.all().length, nCLavant = ecr.all().filter((e) => e.numero === cl.clNumero).length;
+      const ro = X.rouvrir(2030, 'Erreur de caisse découverte');
+      out.rouvre = ro.ok; out.rouvreMotif = ro.motif || ''; out.piecesContre = ro.pieces || [];
+      out.etatRouvert = X.etat(2030);
+      out.rienEfface = ecr.all().filter((e) => e.numero === cl.clNumero).length === nCLavant && ecr.all().length > avantReouv;
+      const net = {}; ecr.active().filter((e) => e.journal === 'CL' && String(e.date).slice(0, 4) === '2030').forEach((e) => { const k = e.compte + '|' + (e.centreCout || ''); net[k] = (net[k] || 0) + e.debit - e.credit; });
+      out.contrePasseNet = Object.keys(net).length > 0 && Object.keys(net).every((k) => Math.abs(net[k]) < 1);
+      qui('da', 'Direction Sonde');
+      const cl2 = X.cloturer(2030, 'Seconde clôture de la sonde');
+      out.cl2 = cl2.ok; out.cl2Numero = cl2.clNumero; out.cl2An = cl2.anNumero; out.cl2Motif = cl2.motif || '';
+
+      /* COMPTES DE RÉSULTAT PARAMÉTRABLES : la table commande, pas le code. */
+      const defaut = X.compteResultat(100).compte;
+      const fiche = S.collection('comptesResultat').all().filter((f) => f.sens === 'benefice')[0];
+      S.collection('comptesResultat').update(fiche.id, { compte: '131500' });
+      out.param = [defaut, X.compteResultat(100).compte];
+      S.collection('comptesResultat').update(fiche.id, { compte: defaut });
+      return out;
+    });
+    verifier('Trois états : en clôture, un module n’écrit plus dans l’exercice, le comptable y passe ses écritures d’inventaire, un autre rôle non',
+      r.etatInitial === 'ouvert' && r.demarre && r.moduleRefuse && r.inventaireComptable && r.manuelAutreRole, JSON.stringify(r));
+    verifier('Reprendre la saisie rend l’exercice à « ouvert » et les modules y réécrivent', r.reprend && r.etatApresReprise === 'ouvert' && r.moduleApresReprise && r.redemarre, JSON.stringify([r.reprend, r.etatApresReprise, r.moduleApresReprise]));
+    verifier('Atomicité : des à-nouveaux déséquilibrés refusent la clôture APRÈS la pièce CL, qui est défaite ; l’exercice reste en clôture',
+      r.atomRefus === false && /déséquilibrés/.test(r.atomMotif) && r.atomCL === 0 && r.atomEtat === 'en_cloture', JSON.stringify([r.atomRefus, r.atomMotif, r.atomCL, r.atomEtat]));
+    verifier('La clôture pose la pièce CL au 31/12 (journal CL), équilibrée CENTRE de coûts par centre, la contrepartie en 131', r.cloOk && /^CL-2030-\d{5}$/.test(r.clNumero || '') && r.clJournal && r.clCentresEquilibres && r.clContrepartie, JSON.stringify([r.cloOk, r.cloMotif, r.clNumero, r.clJournal, r.clCentresEquilibres, r.clContrepartie]));
+    verifier('… puis la pièce AN au 01/01/N+1 : classes 1 à 5 seulement, équilibrée, et le verrou « clôturé »', /^AN-2031-\d{5}$/.test(r.anNumero || '') && r.anJournal && r.anSansGestion && r.etatClos === 'clos' && r.provVide, JSON.stringify([r.anNumero, r.anJournal, r.anSansGestion, r.etatClos, r.provVide]));
+    verifier('Les états de N restent ceux d’avant la clôture (le journal CL en est exclu) : le résultat n’est pas zéro', r.resEgal, JSON.stringify([r.resApres]));
+    verifier('Exercice clôturé : même le comptable ne peut plus y écrire', r.modulesRefuses === true, '');
+    verifier('Réouverture : refusée à un autre rôle, à un motif de moins de dix caractères, à l’exercice de la liasse déposée, et si N+1 n’est plus ouvert',
+      r.rouvreDa === false && r.rouvreCourt === false && /liasse/.test(r.rouvreLiasse) && /2031/.test(r.rouvreSuivant), JSON.stringify([r.rouvreDa, r.rouvreCourt, r.rouvreLiasse, r.rouvreSuivant]));
+    verifier('Le comptable rouvre : l’exercice repasse « en clôture », CL et AN sont CONTRE-PASSÉES, aucune pièce n’est effacée',
+      r.rouvre && r.etatRouvert === 'en_cloture' && r.piecesContre.length === 2 && /-C\d{5}$/.test(r.piecesContre[0]) && r.rienEfface && r.contrePasseNet, JSON.stringify([r.rouvre, r.rouvreMotif, r.piecesContre, r.etatRouvert, r.rienEfface, r.contrePasseNet]));
+    verifier('Une seconde clôture est possible après la réouverture, sous de NOUVEAUX numéros', r.cl2 && r.cl2Numero !== r.clNumero && r.cl2An !== r.anNumero, JSON.stringify([r.cl2, r.cl2Motif, r.cl2Numero, r.cl2An]));
+    verifier('Les comptes de résultat 131 et 139 viennent d’une table paramétrable, pas du code', r.param[0] === '131000' && r.param[1] === '131500', JSON.stringify(r.param));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   }
 
   await browser.close();

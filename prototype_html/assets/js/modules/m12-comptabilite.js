@@ -30,7 +30,8 @@
      (bilan d'ouverture, états à bornes) ; `ecritures()` porte l'exercice du sélecteur
      et, tant que le précédent n'est pas clos, ses à-nouveaux PROVISOIRES (calculés, jamais stockés). */
   function exo() { return global.SIGH.exercice.choisi(); }
-  function ecrituresToutes() { return S.collection('ecritures').active(); }
+  /* Le journal CL (clôture) n'entre pas dans les états : ceux de N restent ceux d'AVANT la clôture. Il reste visible au registre des écritures. */
+  function ecrituresToutes() { return S.collection('ecritures').active().filter(function (e) { return e.journal !== 'CL'; }); }
   function ecritures() {
     var X = global.SIGH.exercice, a = X.choisi();
     return ecrituresToutes().filter(function (e) { return X.anneeDe(e.date) === a; }).concat(X.provisoires(a));
@@ -2378,29 +2379,54 @@
         c.ok ? '—' : (c.detail || '') + ' → ' + (global.SIGH.nav.get(c.ecran) ? global.SIGH.nav.get(c.ecran).label : c.ecran)];
     })));
     var pied = [K.btn('Fermer', { variant: 'secondary', onclick: function () { m.close(); } })];
-    if (apresDemande && !pre.bloquants.length) pied.push(K.btn('Demander la clôture', { icon: 'lock', onclick: function () { m.close(); demander(x); } }));
+    if (apresDemande) pied.push(K.btn('Démarrer la clôture', { icon: 'lock', onclick: function () { m.close(); demander(x); } }));
     var m = U.modal({ title: 'Pré-clôture — exercice ' + x.annee, size: 'lg', body: corps, footer: pied });
   }
 
   function demander(x) {
-    U.confirm({ title: 'Demander la clôture de l’exercice ' + x.annee + ' ?',
-      message: 'Les contrôles bloquants sont rejoués. Si tout est conforme, la demande part à la <strong>Direction</strong> pour validation : '
-        + 'tant qu’elle n’est pas validée, rien n’est figé.', confirmLabel: 'Demander la clôture' }).then(function (ok) {
+    U.confirm({ title: 'Démarrer la clôture de l’exercice ' + x.annee + ' ?',
+      message: 'Dès maintenant, <strong>les modules n’écrivent plus dans ' + x.annee + '</strong> : seul le comptable y passe ses écritures d’inventaire. '
+        + 'Rien n’est figé : la saisie peut reprendre tant que la Direction n’a pas clôturé définitivement.', confirmLabel: 'Démarrer la clôture' }).then(function (ok) {
       if (!ok) return;
-      var r = global.SIGH.exercice.demander(x.annee);
-      if (!r.ok) { U.toast('Demande refusée.', { type: 'error', detail: r.motif }); return; }
-      U.toast('Clôture ' + x.annee + ' demandée.', { type: 'success', detail: 'La Direction doit la valider.' });
+      var r = global.SIGH.exercice.demarrer(x.annee);
+      if (!r.ok) { U.toast('Démarrage refusé.', { type: 'error', detail: r.motif }); return; }
+      U.toast('Clôture ' + x.annee + ' démarrée.', { type: 'success', detail: 'Les modules n’écrivent plus dans cet exercice.' });
       global.location.reload();
     });
+  }
+
+  function reprendre(x) {
+    U.confirm({ title: 'Reprendre la saisie de l’exercice ' + x.annee + ' ?', message: 'Les modules écrivent de nouveau dans ' + x.annee + '. Possible tant que rien n’est clôturé.', confirmLabel: 'Reprendre la saisie' }).then(function (ok) {
+      if (!ok) return;
+      var r = global.SIGH.exercice.reprendre(x.annee);
+      if (!r.ok) { U.toast('Reprise refusée.', { type: 'error', detail: r.motif }); return; }
+      U.toast('Saisie de ' + x.annee + ' reprise.', { type: 'success' });
+      global.location.reload();
+    });
+  }
+
+  function rouvrir(x) {
+    var champ = el('textarea.input', { rows: 3, placeholder: 'Motif de la réouverture (dix caractères au moins)', id: 'motif-reouverture' });
+    var m = U.modal({ title: 'Rouvrir l’exercice ' + x.annee, body: el('div.space-y-3', null, [
+      el('p.text-sm.text-slate-700', { html: 'La pièce de clôture et la pièce d’à-nouveaux sont <strong>contre-passées</strong> : rien ne s’efface, la piste d’audit reste entière. '
+        + 'L’exercice repasse « en clôture ». La Direction en est informée.' }), champ ]),
+      footer: [K.btn('Annuler', { variant: 'secondary', onclick: function () { m.close(); } }),
+        K.btn('Rouvrir', { icon: 'unlock', variant: 'danger', onclick: function () {
+          var r = global.SIGH.exercice.rouvrir(x.annee, champ.value);
+          if (!r.ok) { U.toast('Réouverture refusée.', { type: 'error', detail: r.motif }); return; }
+          m.close();
+          U.toast('Exercice ' + x.annee + ' rouvert.', { type: 'success', detail: r.pieces.join(' et ') + ' contre-passent la clôture.' });
+          global.location.reload();
+        } })] });
   }
 
   function valider(x) {
     var champ = el('textarea.input', { rows: 3, placeholder: 'Motif de la validation (obligatoire)', id: 'motif-cloture' });
     var m = U.modal({ title: 'Valider la clôture de l’exercice ' + x.annee, body: el('div.space-y-3', null, [
-      el('p.text-sm.text-slate-700', { html: 'Demandée par <strong>' + U.texteEnrichi(x.demandePar || '—') + '</strong>. Cette validation est <strong>définitive</strong> : '
-        + 'les classes 6, 7 et 8 seront soldées, les à-nouveaux de ' + (x.annee + 1) + ' écrits, l’exercice figé. Il ne se rouvre pas.' }), champ ]),
+      el('p.text-sm.text-slate-700', { html: 'Clôture démarrée par <strong>' + U.texteEnrichi(x.demandePar || '—') + '</strong>. Les contrôles sont rejoués, puis, d’un seul tenant : '
+        + 'pièce de clôture (journal CL) qui solde les classes 6, 7 et 8 centre par centre, pièce d’à-nouveaux (journal AN) de ' + (x.annee + 1) + ', verrou, archive. Seul le comptable peut ensuite rouvrir l’exercice.' }), champ ]),
       footer: [K.btn('Annuler', { variant: 'secondary', onclick: function () { m.close(); } }),
-        K.btn('Valider et clôturer', { icon: 'lock', variant: 'danger', onclick: function () {
+        K.btn('Clôturer définitivement', { icon: 'lock', variant: 'danger', onclick: function () {
           var r = global.SIGH.exercice.valider(x.annee, champ.value);
           if (!r.ok) { U.toast('Clôture refusée.', { type: 'error', detail: r.motif }); return; }
           m.close();
@@ -2412,19 +2438,20 @@
   global.SIGH.screen('m12-cloture', {
     title: 'Exercices & clôtures',
     description: 'Sélecteur d’exercice, pré-clôture, clôture en deux gestes, à-nouveaux et lettrage des tiers.',
-    regle: 'La clôture est <strong>définitive</strong> (obligation légale) : un exercice clos ne se rouvre pas, il se corrige par une écriture de '
-      + 'l’exercice suivant. Le <strong>comptable demande</strong>, la <strong>Direction ou la DAF valide</strong> — une autre personne que le demandeur. '
-      + 'La caisse continue d’encaisser : le logiciel ne s’arrête pas à la fin de l’année.',
+    regle: 'Trois états : <strong>ouvert</strong>, <strong>en clôture</strong> (les modules n’écrivent plus), <strong>clôturé</strong> (lecture seule). Le <strong>comptable démarre</strong> la clôture, '
+      + 'la <strong>Direction ou la DAF clôture définitivement</strong> (une autre personne), et seul le <strong>comptable rouvre</strong>, avec un motif, par contre-passation. '
+      + 'La caisse continue d’encaisser : une pièce s’enregistre toujours dans l’exercice de sa date.',
     render: function () {
       var X = global.SIGH.exercice, host = el('div.space-y-4');
       var droits = K.droits('M12'), role = (S.session() || {}).role;
       var peutDemander = droits.editer && ['comptable', 'da', 'admin'].indexOf(role) >= 0;
       var peutValider = ['da', 'direction', 'admin'].indexOf(role) >= 0;
+      var peutRouvrir = droits.editer && ['comptable', 'admin'].indexOf(role) >= 0;
       var cur = X.de(X.choisi()), pre = X.preCloture(X.choisi());
 
       host.appendChild(U.kpiGrid([
         { label: 'Exercice affiché', value: String(X.choisi()), icon: 'calendar', tone: 'navy' },
-        { label: 'État', value: ({ ouvert: 'Ouvert', en_attente_cloture: 'En attente', clos: 'Clos' })[cur ? cur.etat : 'ouvert'], icon: 'lock', tone: cur && cur.etat === 'clos' ? 'success' : 'info' },
+        { label: 'État', value: ({ ouvert: 'Ouvert', en_cloture: 'En clôture', clos: 'Clôturé' })[cur ? cur.etat : 'ouvert'], icon: 'lock', tone: cur && cur.etat === 'clos' ? 'success' : 'info' },
         { label: cur && cur.etat === 'clos' ? 'Résultat net' : 'Résultat provisoire', value: C.money(cur && cur.etat === 'clos' ? cur.resultat : pre.resultat), icon: 'scale', tone: 'neutral' },
         { label: 'Contrôles bloquants en échec', value: C.num(pre.bloquants.length), icon: 'shield-alert', tone: pre.bloquants.length ? 'warning' : 'success' },
       ]));
@@ -2437,7 +2464,7 @@
               { key: 'annee', label: 'Exercice', nowrap: true, text: function (x) { return 'Exercice ' + x.annee; }, render: function (x) { return 'Exercice ' + x.annee; } },
               { key: 'debut', label: 'Période', text: function (x) { return C.dateFR(x.debut) + ' → ' + C.dateFR(x.fin); }, render: function (x) { return C.dateFR(x.debut) + ' → ' + C.dateFR(x.fin); } },
               { key: 'etat', label: 'État', text: function (x) { return x.etat; }, render: function (x) {
-                var t = { ouvert: ['Ouvert', 'success'], en_attente_cloture: ['En attente de clôture', 'warning'], clos: ['Clos', 'neutral'] }[x.etat] || [x.etat, 'neutral'];
+                var t = { ouvert: ['Ouvert', 'success'], en_cloture: ['En clôture', 'warning'], clos: ['Clôturé', 'neutral'] }[x.etat] || [x.etat, 'neutral'];
                 return U.badge(t[0], t[1]); } },
               { key: 'resultat', label: 'Résultat net', align: 'right', text: function (x) { return x.resultat == null ? '' : C.money(x.resultat, false); },
                 render: function (x) { return x.resultat == null ? el('span.text-slate-400', { text: '—' }) : C.money(x.resultat); } },
@@ -2450,10 +2477,13 @@
               if (x.etat === 'ouvert') {
                 a.push(K.btn('Pré-clôture', { size: 'sm', variant: 'secondary', icon: 'list-checks', onclick: function () { ouvrirPreCloture(x, peutDemander); } }));
               }
-              if (x.etat === 'en_attente_cloture' && peutValider) {
-                a.push(K.btn('Valider la clôture', { size: 'sm', variant: 'primary', icon: 'lock', onclick: function () { valider(x); } }));
+              if (x.etat === 'en_cloture') {
+                a.push(K.btn('Contrôles', { size: 'sm', variant: 'secondary', icon: 'list-checks', onclick: function () { ouvrirPreCloture(x, false); } }));
+                if (peutDemander) a.push(K.commande('Reprendre la saisie', { size: 'sm', variant: 'secondary', icon: 'rotate-ccw', onclick: function () { reprendre(x); } }));
+                if (peutValider) a.push(K.commande('Clôturer définitivement', { size: 'sm', variant: 'primary', icon: 'lock', onclick: function () { valider(x); } }));
               }
               if (x.etat === 'clos') {
+                if (peutRouvrir) a.push(K.commande('Rouvrir', { size: 'sm', variant: 'danger', icon: 'unlock', onclick: function () { rouvrir(x); } }));
                 a.push(K.btn('Procès-verbal', { size: 'sm', variant: 'secondary', icon: 'printer', onclick: function () { procesVerbalCloture(x); } }));
                 a.push(K.commande('Archiver dans la GED', { size: 'sm', variant: 'secondary', icon: 'archive', onclick: function () { archiverDansGED(x); } }));
                 a.push(K.btn('Exporter CSV', { size: 'sm', variant: 'secondary', icon: 'download', onclick: function () {
