@@ -110,9 +110,38 @@ La copie lisible côté serveur (modèle TATACORA, option A) a été écartée :
 | Q3b | Les dossiers de patients sont consultables sur le web : **oui**. | Aucun. |
 | Q4 | Non répondue (volume de l'hébergement). | Mesure à faire en phase A. |
 
+### Décisions de la Direction du 05/11/2026 (deuxième tour)
+
+| # | Décision | Conséquence |
+|---|---|---|
+| Q1b | **Oui et non, paramétrable dans les paramètres système** : l'envoi de la clé par courriel est un réglage que l'administrateur active ou non. | Réglage `cleParCourriel` (désactivé par défaut, recommandé) ; activé, la clé part **chiffrée par une phrase secrète** choisie par le demandeur, avec lien à usage unique et expiration ; chaque envoi est journalisé (RG-12) sans la clé ni la phrase. Le réglage vit à l'écran `cfg-systeme` de la maquette puis du poste. |
+| Q2b | **Une seule clé.** | Q3 (clé médicale séparée) est donc **retirée** : une clé unique ouvre toute la copie, patients compris. Limite assumée : qui détient la clé voit tout (RG-13 ne se règle plus par la clé mais par qui la reçoit). |
+| Q3b | Les dossiers de patients sont consultables au web. | Inclus dans la copie. |
+| R-pairs | **Ce n'est pas la mère seule qui dépose.** Les postes fileuls envoient et reçoivent automatiquement par le relais, **indépendamment de la mère**. Si la mère est éteinte, les fileuls échangent entre eux et se synchronisent seuls. | Voir la section « Fileuls indépendants » ci-dessous. Cela change la règle de topologie de la spec de synchronisation (§1 : « Aucune autorité n'existe en dehors de la mère »). |
+| R-règles | **Aucune règle métier au relais, mais il faut créer la règle métier.** | La règle de fusion entre pairs est créée **dans le domaine Dart** (`packages/domaine`), exécutée par chaque poste, avec vecteurs et tests ; le relais n'en contient toujours aucune. |
+
+## Fileuls indépendants (échanges entre pairs par le relais)
+
+**Principe.** Chaque appareil (mère, fileul, mobile) publie ses opérations au relais comme enveloppes chiffrées dans **son propre journal** (rang contigu par appareil), et relève les journaux des autres. La mère n'est plus un passage obligé : si elle est éteinte, les fileuls continuent de s'échanger l'activité. Le relais ne voit toujours que des enveloppes chiffrées.
+
+**Règle de fusion entre pairs (à créer dans le domaine).** Un poste qui applique l'opération d'un pair sans la mère applique la règle de la **famille** de l'opération. Les familles et leurs règles existent déjà pour le pont d'activité (E2140 à E2148) : compteurs par variations, numéros jamais réécrits mais marqués en doublon, lits en conflit marqués, stock par PART (E2149), codes `CNT/n/AA` pris dans des plages allouées par la mère. Le travail est de les **extraire en règles pures du domaine**, indépendantes de la présence de la mère, avec un résultat qui dépend seulement des opérations reçues et pas de leur ordre d'arrivée, pour que deux fileuls qui ont reçu les mêmes opérations aboutissent au même état.
+
+**Provisoire jusqu'au retour de la mère.** Ce que les pairs appliquent sans la mère est **provisoire**. Au retour de la mère : elle relève tous les journaux, rejoue, tranche les conflits qui restaient marqués (liste « À traiter » consolidée existante) et publie le résultat faisant foi. Les pièces comptables et les numéros de pièces certifiés (MECeF) ne sont jamais décidés par les pairs.
+
+**Copie consultable.** Le dépôt des lots de copie n'est pas réservé à la mère : tout appareil peut y publier les enregistrements qu'il a produits ou reçus. Le web reconstitue chaque enregistrement par identifiant et version ; la version de la mère l'emporte à son retour.
+
+### Décisions à valider avant la phase A (troisième tour)
+
+| # | Question | Ma recommandation | Bloquante |
+|---|---|---|---|
+| D1 | Que peuvent finaliser les fileuls seuls quand la mère est éteinte ? | Tout ce qui est sûr aujourd'hui (saisie, factures avec numéros de leur plage, mouvements de stock dans leur part). Rien de comptable définitif, aucune pièce certifiée. | oui |
+| D2 | Qui tranche un conflit entre deux fileuls quand la mère est absente ? | **Personne** : le conflit est marqué et reste visible ; la mère tranche à son retour (pas de vote entre pairs). | oui |
+| D3 | Quelles familles circulent entre pairs ? | Celles du pont d'activité actuel (factures, avoirs, écritures, stock, lots, mouvements, admissions), pas la configuration de la mère (RG-13, E2100 à E2121). | oui |
+| D4 | Un fileul peut-il déposer la copie consultable ? | oui, la mère reste prioritaire | non |
+
 ## 10. Plan en phases
 
-1. **Phase A (relais et mère, sans interface)** : sens `copie` au relais, dépôt par la mère, rang contigu, opacité mesurée, tests de bout en bout dans le banc (`npm run banc:sync`).
+1. **Phase A (relais, mère et fileuls, sans interface)** : sens `copie` au relais, dépôt par la mère, rang contigu, opacité mesurée, tests de bout en bout dans le banc (`npm run banc:sync`).
 2. **Phase B (page web)** : saisie de la clé, déchiffrement WebCrypto, liste et détail en lecture seule, bandeau d'état, tests navigateur.
 3. **Phase C** : compaction, cache local, clés par domaine (P1).
 
