@@ -81,6 +81,7 @@ export 'src/comptabilite/cpb_seuil.dart';
 export 'src/comptabilite/cpb_gestion.dart';
 export 'src/rh/rhb_regles.dart';
 export 'src/comptabilite/cpc_exercice.dart';
+export 'src/comptabilite/cpc_archive.dart';
 export 'src/comptabilite/cpc_baseline.dart';
 export 'src/comptabilite/cpc_echeances.dart';
 export 'src/comptabilite/cpc_bfr.dart';

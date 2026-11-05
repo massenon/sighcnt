@@ -70,18 +70,17 @@ void main() {
 
   group('la garde de lecture seule, posée sur la collection', () {
     test('les refus ont le motif de la maquette ; 2026 et une date absente passent', () {
-      final g = carte(v['garde']);
       String? motif(String d) => cpcGardeEcritures(exo, d);
-      expect(motif('2025-03-01'), (carte(g['inserer-2025'])['toast'] as List).first);
-      expect(motif('2024-12-31'), (carte(g['inserer-2024'])['toast'] as List).first);
-      expect(motif('2025-06-01'), (carte(g['modifier-date-vers-2025'])['toast'] as List).first);
+      expect(motif('2025-03-01'), allOf(contains('Exercice 2025 clôturé le 15/05/2026'), contains('lecture seule'), contains('réouverture par le comptable')));
+      expect(motif('2024-12-31'), contains('Exercice 2024 clôturé'));
+      expect(motif('2025-06-01'), contains('Exercice 2025 clôturé'));
       expect(motif('2026-03-01'), isNull);
       expect(cpcGardeEcritures(exo, null), isNull);
       expect(cpcGardeEcritures(exo, ''), isNull);
     });
     test('un exercice clos AU POSTE (deux gestes) refuse à son tour, avec la date de la validation', () {
       final clos = [for (final x in exo) if (x['annee'] == 2026) {...x, 'etat': 'clos', 'valideLe': '2026-10-30T10:00:00.407Z'} else x];
-      expect(cpcGardeEcritures(clos, '2026-07-01'), (carte(carte(v['cloture'])['ecritureApresCloture'])['toast'] as List).first);
+      expect(cpcGardeEcritures(clos, '2026-07-01'), allOf(contains('Exercice 2026 clôturé le 30/10/2026'), contains('lecture seule')));
     });
   });
 
@@ -89,10 +88,13 @@ void main() {
     void verifie(String nom, List<F> lignes, int annee) {
       final att = carte(carte(v['preCloture'])[nom]);
       final p = cpcPreCloture(lignes, annee);
-      expect([for (final c in p.controles) [c.id, c.bloquant, c.ok, c.libelle, c.ecran, c.detail]],
+      const nouveaux = ['precedent-clos', 'suivant-non-clos', 'postes-a-envoyer'];
+      // Le contrôle « precedent-clos » est postérieur aux vecteurs enregistrés (arbitrage du 05/11/2026) : on compare les six historiques.
+      expect([for (final c in p.controles) if (!nouveaux.contains(c.id)) [c.id, c.bloquant, c.ok, c.libelle, c.ecran, c.detail]],
           [for (final c in liste(att['controles'])) [c['id'], c['bloquant'], c['ok'], c['libelle'], c['ecran'], c['detail']]],
           reason: nom);
-      expect(p.bloquants.length, att['nbBloquants'], reason: nom);
+      expect(p.controles.firstWhere((c) => c.id == 'precedent-clos').bloquant, true, reason: nom);
+      expect(p.bloquants.where((c) => !nouveaux.contains(c.id)).length, att['nbBloquants'], reason: nom);
       expect(p.resultat, closeTo(att['resultat'] as num, 0.001), reason: nom);
       expect(p.nbEcritures, att['nbEcritures'], reason: nom);
     }
@@ -208,64 +210,228 @@ void main() {
     });
   });
 
-  group('la clôture en DEUX gestes', () {
-    final c = carte(v['cloture']);
-    final base = valides(actives(ecr));
-    String motif(F x) => '${x['motif']}';
-    test('geste 1 — refus nommés : exercice inconnu, déjà clos, contrôles bloquants (le brouillon est nommé)', () {
-      expect(cpcDemanderCloture(exo, base, 2031, acteur: 'KASSA Augustin', maintenant: auj).motif, motif(carte(c['inconnue'])));
-      expect(cpcDemanderCloture(exo, base, 2025, acteur: 'KASSA Augustin', maintenant: auj).motif, motif(carte(c['dejaClos'])));
-      final br = [
-        {'id': 'X-BR', 'numero': 'BR1', 'date': '2026-04-04', 'journal': 'OD', 'compte': '661100', 'debit': 10, 'credit': 0, 'statut': 'brouillon'},
-        ...base
-      ];
-      expect(cpcDemanderCloture(exo, br, 2026, acteur: 'KASSA Augustin', maintenant: auj).motif, motif(carte(c['refusBrouillon'])));
-    });
-    test('geste 1 — la demande porte le patch de la maquette ; une seconde demande est refusée', () {
-      final d = cpcDemanderCloture(exo, base, 2026, acteur: 'KASSA Augustin', maintenant: auj);
-      expect(d.ok, true);
-      final patch = carte(liste(carte(carte(c['ecartDemande'])['modifs'])['exercices']).first['patch']);
-      expect({...d.patch!}..remove('demandeLe'), {...patch}..remove('demandeLe'));
-      final attente = [for (final x in exo) if (x['annee'] == 2026) {...x, ...d.patch!} else x];
-      expect(cpcDemanderCloture(attente, base, 2026, acteur: 'KASSA Augustin', maintenant: auj).motif, motif(carte(c['secondeDemande'])));
-    });
-    final attente = [
-      for (final x in exo)
-        if (x['annee'] == 2026) {...x, 'etat': 'en_attente_cloture', 'demandePar': 'KASSA Augustin', 'demandeLe': '2026-10-30T10:00:00.319Z'} else x
+  group('les TROIS ÉTATS et la clôture par pièces CL et AN (arbitrage du 05/11/2026, scénarios 73 et 75 de la maquette)', () {
+    F l(String num, String date, String compte, num d, num c, {String? centre, String statut = 'validee', String origine = 'Saisie manuelle'}) => {
+          'id': '$num-$compte-$d-$c',
+          'numero': num,
+          'date': date,
+          'journal': 'VTE',
+          'compte': compte,
+          'compteLibelle': 'Compte $compte',
+          'libelle': 'Écriture; "test"',
+          'debit': d,
+          'credit': c,
+          'statut': statut,
+          'origine': origine,
+          'centreCout': centre,
+        };
+    final journal = <F>[
+      l('S30-1', '2030-03-01', '571000', 8000, 0),
+      l('S30-1', '2030-03-01', '706000', 0, 8000, centre: 'laboratoire'),
+      l('S30-2', '2030-04-01', '604100', 3000, 0, centre: 'pharmacie'),
+      l('S30-2', '2030-04-01', '571000', 0, 3000),
     ];
-    test('geste 2 — refus : la Direction ou la DAF seules valident, avec un motif, et JAMAIS le demandeur', () {
-      CpcValidation val(String role, String acteur, String m, {int annee = 2026}) =>
-          cpcValiderCloture(attente, base, annee, motif: m, acteur: acteur, role: role, maintenant: auj);
-      expect(val('comptable', 'KASSA Augustin', 'Conforme').motif, motif(carte(c['validerMemePersonne'])));
-      expect(val('direction', 'KASSA Augustin', 'Conforme').motif, motif(carte(c['validerDemandeur'])));
-      expect(val('direction', 'BASSONGUI Chabi Séko', '').motif, motif(carte(c['validerSansMotif'])));
-      expect(val('direction', 'BASSONGUI Chabi Séko', 'ok').motif, motif(carte(c['validerMotifCourt'])));
-      expect(val('direction', 'BASSONGUI Chabi Séko', 'Conforme', annee: 2030).motif, motif(carte(c['validerInconnue'])));
-      expect(cpcValiderCloture(exo, base, 2026, motif: 'Conforme', acteur: 'X Y', role: 'direction', maintenant: auj).ok, false, reason: 'rien en attente');
+    final ouvert = <F>[
+      {'id': 'EXO-2030', 'annee': 2030, 'debut': '2030-01-01', 'fin': '2030-12-31', 'statut': 'actif', 'etat': 'ouvert', 'source': 'journal'}
+    ];
+    final maintenant = DateTime(2030, 12, 31, 9);
+    List<F> enCloture({String par = 'Comptable Sonde'}) => [
+          {...ouvert.first, 'etat': 'en_cloture', 'demandePar': par}
+        ];
+
+    test('démarrer : le comptable, la DAF et l\'administrateur ; un autre rôle, un exercice déjà en clôture ou de la liasse sont refusés en le nommant', () {
+      final ok = cpcDemarrerCloture(ouvert, journal, 2030, acteur: 'Comptable Sonde', role: 'comptable', maintenant: maintenant);
+      expect(ok.ok, true);
+      expect(ok.patch!['etat'], 'en_cloture');
+      expect(ok.patch!['demandePar'], 'Comptable Sonde');
+      expect(cpcDemarrerCloture(ouvert, journal, 2030, acteur: 'Caissier', role: 'caissier', maintenant: maintenant).motif, contains('réservé au comptable'));
+      expect(cpcDemarrerCloture(enCloture(), journal, 2030, acteur: 'X', role: 'comptable', maintenant: maintenant).motif, contains('déjà en clôture'));
+      expect(cpcDemarrerCloture([{...ouvert.first, 'source': 'liasse', 'etat': 'clos'}], journal, 2030, acteur: 'X', role: 'comptable', maintenant: maintenant).motif, contains('liasse'));
     });
-    test('geste 2 — la validation solde 6/7/8 vers 131/139, écrit les à-nouveaux définitifs et rend l\'EMPREINTE de la maquette', () {
-      final r = cpcValiderCloture(attente, base, 2026, motif: '  Exercice 2026 conforme  ', acteur: 'BASSONGUI Chabi Séko', role: 'direction', maintenant: auj);
-      expect(r.ok, true);
-      final att = carte(c['valider']);
-      expect(r.resultat, att['resultat']);
-      expect(r.empreinte, att['empreinte'], reason: 'l\'empreinte du journal arrêté se rejoue à l\'identique');
-      expect(r.lignesAN.length, att['lignesAN']);
-      expect(r.nbArchivees, carte(c['fiche'])['nbEcrituresArchivees']);
-      final ins = liste(carte(carte(c['ecartValidation'])['inserts'])['ecritures']);
-      final attendues = ins.map(cle).toList()..sort();
-      expect([...r.lignesOD, ...r.lignesAN].map(cle).toList()..sort(), attendues);
-      // pièce de résultat équilibrée (RG-10) et à-nouveaux équilibrés
-      double somme(List<F> l, String k) => l.fold(0.0, (a, x) => a + (x[k] as num));
-      expect(somme(r.lignesOD, 'debit'), somme(r.lignesOD, 'credit'));
-      expect(somme(r.lignesAN, 'debit'), somme(r.lignesAN, 'credit'));
-      expect(r.lignesOD.every((l) => '${l['compte']}'.startsWith('6') || '${l['compte']}'.startsWith('7') || '${l['compte']}'.startsWith('8') || l['compte'] == '131000' || l['compte'] == '139000'), true);
-      expect(r.lignesAN.every((l) => '12345'.contains('${l['compte']}'[0])), true, reason: 'seules les classes 1 à 5 se reportent');
-      final fiche = carte(c['fiche']);
-      expect(r.patch!['motif'], fiche['motif']);
-      expect(r.patch!['validePar'], fiche['validePar']);
-      expect(r.patch!['anNumero'], fiche['anNumero']);
-      expect(r.exerciceSuivant!['id'], carte(c['fiche2027'])['id']);
-      expect(r.exerciceSuivant!['etat'], 'ouvert');
+
+    test('reprendre la saisie : seulement depuis « en clôture », par ceux qui peuvent démarrer', () {
+      expect(cpcReprendreSaisie(enCloture(), 2030, acteur: 'X', role: 'comptable', maintenant: maintenant).patch!['etat'], 'ouvert');
+      expect(cpcReprendreSaisie(ouvert, 2030, acteur: 'X', role: 'comptable', maintenant: maintenant).motif, contains('rien à reprendre'));
+      expect(cpcReprendreSaisie(enCloture(), 2030, acteur: 'X', role: 'caissier', maintenant: maintenant).motif, contains('réservé'));
+    });
+
+    test('la GARDE : en clôture, un module est refusé et le comptable passe son inventaire ; clôturé, même le comptable est refusé ; les pièces de clôture passent', () {
+      final cl = enCloture();
+      String? g(List<F> e, {String op = 'inserer', Object? origine, Object? cloture, String role = ''}) =>
+          cpcGardeEcritures(e, '2030-05-01', op: op, origine: origine, origineCloture: cloture, role: role);
+      expect(g(ouvert, origine: 'Automatique : Caisse'), isNull);
+      expect(g(cl, origine: 'Automatique : Caisse', role: 'comptable'), contains('en clôture'));
+      expect(g(cl, origine: 'Saisie manuelle', role: 'comptable'), isNull);
+      expect(g(cl, origine: 'Saisie manuelle', role: 'da'), contains('en clôture'));
+      final clos = [{...ouvert.first, 'etat': 'clos', 'valideLe': '2030-12-31T09:00:00Z'}];
+      expect(g(clos, origine: 'Saisie manuelle', role: 'comptable'), contains('clôturé'));
+      expect(g(clos, cloture: 'cl', role: ''), isNull, reason: 'une pièce de clôture s\'insère');
+      expect(g(clos, op: 'modifier', cloture: 'cl'), contains('clôturé'), reason: 'mais ne se modifie jamais');
+      expect(g(clos, op: 'archiver', cloture: 'an'), contains('clôturé'));
+    });
+
+    CpcValidation cloturer(List<F> exo, List<F> ecr, {String role = 'da', String acteur = 'Direction Sonde', String motif = 'Clôture de la sonde'}) =>
+        cpcValiderCloture(exo, ecr, 2030, motif: motif, acteur: acteur, role: role, maintenant: maintenant, toutesEcritures: ecr);
+
+    test('clôturer : refus nommés (rôle, motif, même personne, exercice pas en clôture, contrôles bloquants)', () {
+      expect(cloturer(enCloture(), journal, role: 'comptable').motif, contains('Direction ou la Directrice'));
+      expect(cloturer(enCloture(), journal, motif: '').motif, contains('motif'));
+      expect(cloturer(enCloture(), journal, acteur: 'Comptable Sonde').motif, contains('autre personne'));
+      expect(cloturer(ouvert, journal).motif, contains('n’est pas en clôture'));
+      final brouillon = [...journal, l('S30-B', '2030-06-01', '706000', 0, 5, statut: 'brouillon')];
+      expect(cloturer(enCloture(), brouillon).motif, contains('Contrôles bloquants en échec'));
+    });
+
+    test('clôturer : la pièce CL (31/12, journal CL) est équilibrée CENTRE par centre, contrepartie en 131 ; la pièce AN (01/01) ne reporte que les classes 1 à 5', () {
+      final r = cloturer(enCloture(), journal);
+      expect(r.ok, true, reason: r.motif);
+      expect(r.clNumero, 'CL-2030-00001');
+      expect(r.anNumero, 'AN-2031-00001');
+      expect(r.lignesCL.every((x) => x['journal'] == 'CL' && x['date'] == '2030-12-31' && x['origineCloture'] == 'cl'), true);
+      final parCentre = <String, double>{};
+      for (final x in r.lignesCL) {
+        parCentre['${x['centreCout'] ?? ''}'] = (parCentre['${x['centreCout'] ?? ''}'] ?? 0) + (x['debit'] as num) - (x['credit'] as num);
+      }
+      expect(parCentre.keys.length, greaterThanOrEqualTo(2));
+      expect(parCentre.values.every((v) => v.abs() < 1), true, reason: 'chaque centre de coûts est équilibré');
+      expect(r.lignesCL.any((x) => x['compte'] == '131000' && (x['credit'] as num) > 0), true, reason: 'bénéfice au 131');
+      expect(r.lignesAN.isNotEmpty && r.lignesAN.every((x) => x['journal'] == 'AN' && x['date'] == '2031-01-01' && '12345'.contains('${x['compte']}'[0])), true);
+      expect(r.lignesAN.fold<num>(0, (a, x) => a + (x['debit'] as num) - (x['credit'] as num)).abs() < 1, true);
+      expect(r.patch!['etat'], 'clos');
+      expect(r.patch!['clNumero'], 'CL-2030-00001');
+      expect(r.exerciceSuivant!['annee'], 2031);
+      expect(r.cloture!['type'], 'cloture');
+    });
+
+    test('le compte de résultat vient de la TABLE paramétrable, pas du code', () {
+      final table = [
+        {'sens': 'benefice', 'compte': '131500', 'libelle': 'Bénéfice paramétré', 'statut': 'actif'},
+        {'sens': 'perte', 'compte': '139500', 'libelle': 'Perte paramétrée', 'statut': 'actif'}
+      ];
+      expect(cpcCompteResultatDe(100, table).compte, '131500');
+      expect(cpcCompteResultatDe(-1, table).compte, '139500');
+      expect(cpcCompteResultatDe(100).compte, '131000');
+      final r = cpcValiderCloture(enCloture(), journal, 2030,
+          motif: 'ok ok', acteur: 'Direction Sonde', role: 'da', maintenant: maintenant, toutesEcritures: journal, comptesResultat: table);
+      expect(r.lignesCL.any((x) => x['compte'] == '131500'), true);
+    });
+
+    test('ATOMICITÉ : des à-nouveaux déséquilibrés (une ligne lettrée seule) refusent la clôture et ne laissent rien derrière eux', () {
+      final orphelin = [...journal, {...l('S30-O', '2030-06-01', '411000', 100, 0), 'lettrage': 'Z'}, l('S30-O', '2030-06-01', '706000', 0, 100, centre: 'laboratoire')];
+      final r = cloturer(enCloture(), orphelin);
+      expect(r.ok, false);
+      expect(r.motif, contains('déséquilibrés'));
+      expect(r.motif, contains('rien n’a été écrit'));
+      expect(r.lignesCL, isEmpty);
+      expect(r.patch, isNull);
+    });
+
+    test('le journal CL est EXCLU des états de N : le résultat de l\'année n\'est pas zéro après la clôture', () {
+      final r = cloturer(enCloture(), journal);
+      final apres = [...journal, ...r.lignesCL];
+      expect(cpcResultatDe(cpcEcrituresDe(apres, 2030)), cpcResultatDe(cpcEcrituresDe(journal, 2030)));
+      expect(cpcResultatDe(cpcEcrituresDe(journal, 2030)), 5000);
+      expect(cpcResultatDe(cpcEcrituresDe(apres, 2030, avecCL: true)).abs() < 1, true, reason: 'avec CL, les classes 6 à 8 sont soldées');
+    });
+
+    test('rouvrir : le comptable seul, motif de dix caractères, jamais la liasse, jamais si N+1 n\'est plus ouvert ; CL et AN sont CONTRE-PASSÉES', () {
+      final r = cloturer(enCloture(), journal);
+      final apres = [...journal, ...r.lignesCL, ...r.lignesAN];
+      final clos = [
+        {...ouvert.first, ...r.patch!},
+        r.exerciceSuivant!
+      ];
+      CpcReouverture rouvrir({String role = 'comptable', String motif = 'Erreur de caisse découverte', List<F>? exo}) =>
+          cpcRouvrirExercice(exo ?? clos, apres, 2030, motif: motif, acteur: 'Comptable Sonde', role: role, maintenant: maintenant, toutesEcritures: apres);
+      expect(rouvrir(role: 'da').motif, contains('réservée au comptable'));
+      expect(rouvrir(motif: 'trop bref').motif, contains('dix caractères'));
+      expect(rouvrir(motif: 'dix carac.').ok, true, reason: 'dix caractères exactement passent');
+      expect(rouvrir(exo: [{...clos.first, 'source': 'liasse'}, clos.last]).motif, contains('liasse'));
+      expect(rouvrir(exo: [clos.first, {...clos.last, 'etat': 'en_cloture'}]).motif, contains('2031'));
+      expect(cpcRouvrirExercice(ouvert, journal, 2030, motif: 'Erreur de caisse découverte', acteur: 'X', role: 'comptable', maintenant: maintenant).motif, contains('n’est pas clôturé'));
+      final ok = rouvrir();
+      expect(ok.ok, true, reason: ok.motif);
+      expect(ok.pieces, ['CL-2030-C00002', 'AN-2031-C00002']);
+      expect(ok.patch!['etat'], 'en_cloture');
+      expect(ok.cloture!['type'], 'reouverture');
+      // contre-passation : somme (pièce d'origine + contre-passation) nulle, compte par compte et centre par centre ; rien n'est effacé
+      final net = <String, double>{};
+      for (final x in [...r.lignesCL, ...ok.lignes.where((z) => z['journal'] == 'CL')]) {
+        final k = '${x['compte']}|${x['centreCout'] ?? ''}';
+        net[k] = (net[k] ?? 0) + (x['debit'] as num) - (x['credit'] as num);
+      }
+      expect(net.isNotEmpty && net.values.every((v) => v.abs() < 1), true);
+      expect(ok.lignes.every((x) => x['contrePasseDe'] != null), true);
+      // une seconde clôture est possible sous de NOUVEAUX numéros (les à-nouveaux contre-passés ne comptent plus comme « déjà écrits »)
+      final reOuvert = [...apres, ...ok.lignes];
+      final enC = [
+        {...clos.first, ...ok.patch!, 'demandePar': 'Comptable Sonde'},
+        clos.last
+      ];
+      final second = cpcValiderCloture(enC, reOuvert, 2030,
+          motif: 'Seconde clôture', acteur: 'Direction Sonde', role: 'da', maintenant: maintenant, toutesEcritures: reOuvert);
+      expect(second.ok, true, reason: second.motif);
+      expect(second.clNumero, 'CL-2030-00003');
+      expect(second.anNumero, 'AN-2031-00003');
+    });
+
+    test('l\'ARCHIVE : quatre fichiers, CSV SYSCOHADA (BOM, onze colonnes, JJ/MM/AAAA), manifeste, empreintes ; un fichier altéré est refusé au téléchargement', () {
+      final r = cloturer(enCloture(), journal);
+      final apres = [...journal, ...r.lignesCL];
+      final fichiers = cpcFichiersArchive(2030, {...ouvert.first, ...r.patch!}, apres);
+      expect(fichiers.map((f) => f['nom']), ['ecritures-2030.csv', 'balance-2030.csv', 'etats-2030.html', 'manifeste-2030.txt']);
+      final csv = '${fichiers.first['contenu']}';
+      expect(csv.codeUnitAt(0), 0xFEFF);
+      expect(csv.substring(1).split('\r\n').first, cpcEnteteEcritures.join(';'));
+      expect(cpcEnteteEcritures.length, 11);
+      expect(csv.split('\r\n')[1].split(';')[1], matches(RegExp(r'^\d{2}/\d{2}/2030$')));
+      expect(csv, contains('"Écriture; ""test"""'), reason: 'séparateur et guillemets échappés');
+      expect(fichiers.every((f) => f['empreinte'] == cpcSha256('${f['contenu']}')), true);
+      final man = '${fichiers.last['contenu']}';
+      expect(fichiers.take(3).every((f) => man.contains('${f['empreinte']}  ${f['nom']}')), true);
+      final archive = {'reference': 'ARC-2030-01', 'annee': 2030, 'fichiers': fichiers};
+      expect(cpcLireArchive([archive], 'ARC-2030-01', 'ecritures-2030.csv').ok, true);
+      expect(cpcLireArchive([archive], 'ARC-2030-01', 'absent.csv').motif, contains('ne figure pas'));
+      expect(cpcLireArchive([], 'ARC-2030-01', 'x').motif, contains('introuvable'));
+      final alteree = {
+        ...archive,
+        'fichiers': [
+          {...fichiers.first, 'contenu': '${fichiers.first['contenu']}x'},
+          ...fichiers.skip(1)
+        ]
+      };
+      final refus = cpcLireArchive([alteree], 'ARC-2030-01', 'ecritures-2030.csv');
+      expect([refus.ok, refus.altere], [false, true]);
+      expect(refus.motif, contains('altéré'));
+    });
+
+    test('l\'archive et le registre des clôtures sont IMMUABLES : modifier, archiver, redéposer sont refusés', () {
+      expect(cpcGardeArchives([{'reference': 'ARC-2030-01'}], 'inserer', 'ARC-2030-01'), contains('jamais régénérée'));
+      expect(cpcGardeArchives([{'reference': 'ARC-2030-01'}], 'inserer', 'ARC-2030-02'), isNull);
+      expect(cpcGardeArchives([], 'modifier', 'x'), contains('immuable'));
+      expect(cpcGardeArchives([], 'archiver', 'x'), contains('immuable'));
+      expect(cpcGardeClotures('inserer'), isNull);
+      expect(cpcGardeClotures('modifier'), contains('piste d’audit'));
+      expect(cpcVersionCloture([{'annee': 2030, 'type': 'cloture'}, {'annee': 2030, 'type': 'reouverture'}, {'annee': 2030, 'type': 'cloture'}], 2030), 2);
+      expect(cpcReferenceArchive(2030, 2), 'ARC-2030-02');
+    });
+
+    test('le choix d\'exercice : défaut = ouvert le plus récent ; voisins absents aux bornes ; dates relatives depuis le dernier jour de l\'exercice consulté', () {
+      final exos = [
+        {'annee': 2025, 'etat': 'clos', 'statut': 'actif', 'source': 'liasse'},
+        {'annee': 2026, 'etat': 'ouvert', 'statut': 'actif'},
+        {'annee': 2027, 'etat': 'ouvert', 'statut': 'actif'}
+      ];
+      final auj = DateTime(2026, 8, 16);
+      expect(cpcExerciceParDefaut(exos, auj), 2027);
+      expect(cpcExerciceParDefaut([exos.first], auj), 2025, reason: 'aucun ouvert : le plus récent tout court');
+      expect(cpcExerciceChoisi(exos, 2025, auj), 2025);
+      expect(cpcExerciceChoisi(exos, 1999, auj), 2027, reason: 'un choix inconnu retombe sur le défaut');
+      expect(cpcExerciceVoisin(exos, 2025, -1), isNull);
+      expect(cpcExerciceVoisin(exos, 2025, 1), 2026);
+      expect(cpcExerciceVoisin(exos, 2027, 1), isNull);
+      expect(cpcDateReference(2025, auj), DateTime(2025, 12, 31));
+      expect(cpcDateReference(2026, auj), auj);
     });
   });
 
