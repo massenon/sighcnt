@@ -133,15 +133,16 @@ class RelaisController extends Controller
         $dir = is_string($e['dir'] ?? null) ? $e['dir'] : '';
         $appareilCible = is_string($e['appareil'] ?? null) ? $e['appareil'] : '';
         if ($this->estMere($r)) {
-            /* ADR-0006 : la mère de retour publie dans SON journal pair (appareil « mere »), jamais dans celui d'un autre. */
-            if (! (in_array($dir, ['vers_mobile', 'journal'], true) || ($dir === 'pair' && $appareilCible === 'mere'))) {
+            /* ADR-0006 : la mère de retour publie dans SON journal pair (appareil « mere »), jamais dans celui d'un autre ; PRD relais consultable : elle publie aussi la copie consolidée (appareil « mere », sens « copie »). */
+            if (! (in_array($dir, ['vers_mobile', 'journal'], true) || (in_array($dir, ['pair', 'copie'], true) && $appareilCible === 'mere'))) {
                 $this->refus(403, 'depot_interdit', 'Sens inconnu.');
             }
         } else {
             $a = $this->appareil($r);
             /* ADR-0006 : un appareil dépose dans sa propre boîte vers la mère OU dans son PROPRE journal « pair » (lu par les autres appareils, jamais écrit par eux). */
-            if (! in_array($dir, ['vers_mere', 'pair'], true) || $appareilCible !== $a->uuid) {
-                $this->refus(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère ou dans son propre journal pair.');
+            /* PRD relais consultable : la COPIE chiffrée de ses fiches (sens « copie »), lue par le seul superadmin du panneau, dans le navigateur. */
+            if (! in_array($dir, ['vers_mere', 'pair', 'copie'], true) || $appareilCible !== $a->uuid) {
+                $this->refus(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère, dans son propre journal pair ou dans sa propre copie.');
             }
         }
         foreach (['id', 'appareil', 'dir', 'nonce', 'ct'] as $champ) {

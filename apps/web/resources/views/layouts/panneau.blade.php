@@ -23,6 +23,7 @@
         'panneau.hebergement' => 'Hébergement',
         'panneau.sauvegarde' => 'Sauvegarde du relais',
         'panneau.opacite' => 'Preuve d’opacité',
+        'panneau.consultation' => 'Consultation des copies',
     ];
 @endphp
 <header class="entete">

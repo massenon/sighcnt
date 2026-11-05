@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\PanneauAuthController;
 use App\Livewire\Panneau\Alertes;
 use App\Livewire\Panneau\Appareils;
 use App\Livewire\Panneau\Boites;
 use App\Livewire\Panneau\Codes;
+use App\Livewire\Panneau\Consultation;
 use App\Livewire\Panneau\Hebergement;
 use App\Livewire\Panneau\Indicateurs;
 use App\Livewire\Panneau\Journal;
@@ -36,6 +38,12 @@ Route::prefix('panneau')->group(function () {
         Route::get('/hebergement', Hebergement::class)->name('panneau.hebergement');
         Route::get('/sauvegarde', Sauvegarde::class)->name('panneau.sauvegarde');
         Route::get('/opacite', Opacite::class)->name('panneau.opacite');
+        Route::get('/consultation', Consultation::class)->name('panneau.consultation');
+        Route::get('/consultation/appareils', [ConsultationController::class, 'appareils'])->name('panneau.consultation.appareils');
+        Route::get('/consultation/enveloppes', [ConsultationController::class, 'enveloppes'])->name('panneau.consultation.enveloppes');
+        Route::get('/consultation/reglage', [ConsultationController::class, 'reglage'])->name('panneau.consultation.reglage');
+        Route::post('/consultation/reglage', [ConsultationController::class, 'enregistrerReglage'])->name('panneau.consultation.reglage.envoi');
+        Route::post('/consultation/coffre/envoyer', [ConsultationController::class, 'envoyerCoffre'])->name('panneau.consultation.coffre.envoi');
         Route::post('/deconnexion', [PanneauAuthController::class, 'deconnecter'])->name('panneau.deconnexion');
     });
 });
