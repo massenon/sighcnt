@@ -139,6 +139,14 @@ La copie lisible côté serveur (modèle TATACORA, option A) a été écartée :
 | D3 | Quelles familles circulent entre pairs ? | Celles du pont d'activité actuel (factures, avoirs, écritures, stock, lots, mouvements, admissions), pas la configuration de la mère (RG-13, E2100 à E2121). | oui |
 | D4 | Un fileul peut-il déposer la copie consultable ? | oui, la mère reste prioritaire | non |
 
+### Réponses de la Direction du 05/11/2026 (troisième tour)
+
+| # | Réponse | Lecture retenue (à corriger si fausse) |
+|---|---|---|
+| D1 | Les fileuls finalisent **tout ce que leur RBAC permet**. Les validations reviennent au rôle qui les détient : par exemple, pour un approvisionnement, le gestionnaire de stock fait la demande, la synchronisation la porte au poste de la Directrice Administrative, dont l'interface se met à jour seule ; elle valide ; le gestionnaire de stock reçoit la validation par la synchronisation automatique. | La validation est un **état de flux de travail** (ex. bon d'expression de besoins : soumis, validé, rejeté) porté par une opération du rôle autorisé, **sur n'importe quel poste** où ce rôle est connecté (mère ou fileul), jamais par « la mère » en tant que machine. Chaque poste applique le **RBAC de la matrice** à l'émission ET à la réception d'une opération d'un pair. |
+| D2 | Un conflit entre fileuls reste marqué et visible. À la connexion de la personne habilitée à trancher : **notification sonore** et **fenêtre modale des choses à faire**. | Réutilise le moteur de notifications (source `sync_a_arbitrer`) et le centre « À traiter » existants. La personne habilitée est le rôle qui porte l'arbitrage (DA, administrateur, ou la mère à son retour), lu dans le RBAC. |
+| D3 | Les familles du pont d'activité circulent entre pairs ; **tout écran ne nécessite pas la validation de la DA**. | Toutes les familles circulent. Seules les opérations dont le flux de travail exige une validation restent **« soumises »** tant que le rôle validateur ne les a pas validées ; les autres sont finales à l'émission. Aucune pièce certifiée (MECeF) ni écriture comptable définitive n'est décidée par un pair non habilité. |
+
 ## 10. Plan en phases
 
 1. **Phase A (relais, mère et fileuls, sans interface)** : sens `copie` au relais, dépôt par la mère, rang contigu, opacité mesurée, tests de bout en bout dans le banc (`npm run banc:sync`).
