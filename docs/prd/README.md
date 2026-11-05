@@ -13,6 +13,7 @@ Chaque exigence cite sa source dans `docs/cadrage/` ; ce qui n'a pas de source e
 | [PRD-SOCLE-synchronisation-bidirectionnelle](PRD-SOCLE-synchronisation-bidirectionnelle.md) | Synchronisation dans les deux sens entre postes, hub, client web et mobile : opérations, familles de fusion, conflits nommés, archivage au lieu de suppression, numéros provisoires, hors ligne | brouillon 26/10/2026 |
 | [PRD-FLUTTER-poste-fidelite-maquette](PRD-FLUTTER-poste-fidelite-maquette.md) | Poste Flutter desktop 100 % fidèle à la maquette : définition mesurable de la fidélité (écrans, règles, droits, visuel, impression), tranches verticales, banc de validation | brouillon 26/10/2026 |
 | [PRD-POSTE-premiere-installation](PRD-POSTE-premiere-installation.md) | Première installation du poste (premier compte, modale de configurations, activation de la mère, appairage du relais, des fileuls et des mobiles), rejoindre une clinique, barre des tâches et logo | arrêté 02/11/2026 |
+| [PRD-RELAIS-copie-consultable](PRD-RELAIS-copie-consultable.md) | Relais opaque mais consultable : la mère dépose une copie chiffrée de la base, le navigateur la déchiffre avec la clé de clinique (option B) | proposé 05/11/2026 |
 | [PRD-POSTE-installateur-windows](PRD-POSTE-installateur-windows.md) | Installateur Windows du poste : `build_windows.bat` + Inno Setup, identifiant fixe, données hors du dossier d'installation, désinstallation avec sauvegarde et avertissement Non par défaut | proposé 05/11/2026 |
 
 Ordre de livraison recommandé : SOCLE (P0) → M6 → M12, le socle rendant les deux autres plus
