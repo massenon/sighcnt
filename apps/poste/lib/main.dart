@@ -28,6 +28,9 @@ import 'sync/etat_sync.dart';
 import 'sync/configuration_sync.dart';
 import 'core/plages_codes.dart';
 import 'sync/pont_activite.dart';
+import 'sync/config_pair.dart';
+import 'sync/moteur_pair.dart';
+import 'sync/modale_trancher.dart';
 import 'sync/reservation_stock.dart';
 import 'sync/moteur_fileul.dart';
 import 'sync/transcription_mobile.dart';
@@ -246,11 +249,35 @@ Future<void> main() async {
     }
   }
   ServiceTranscriptionMobile(magasin: magasin, source: moteur.pieces).demarrer();
+  final session = sessionDemarrage();
+  // MODE PAIR (ADR-0006) : seulement si `pair.json` l'active. Les écritures du poste passent par le moteur pair, le relais ne voit que des enveloppes chiffrées.
+  MoteurPair? moteurPair;
+  try {
+    final cp = ConfigPairPoste.lire(dossierDonnees);
+    if (cp != null) {
+      moteurPair = MoteurPair.creer(magasin: magasin, dbChemin: '$dossierDonnees/pair.db', relais: cp.relais, cleHex: cp.cleHex, nom: cp.nom);
+      if (!moteurPair.appaire && cp.code != null) {
+        try {
+          await moteurPair.appairer(cp.code!);
+        } catch (e) {
+          debugPrint('mode pair : $e');
+        }
+      }
+      moteurPair
+        ..demarrer()
+        ..pont(role: () => session?.role ?? roleDev).demarrer();
+    }
+  } on FormatException catch (e) {
+    debugPrint('mode pair non démarré : ${e.message}');
+  }
   runApp(SighPoste(
       controleur: controleur,
       donnees: await DonneesNavigation.chargerAssets(),
       magasin: magasin,
-      session: sessionDemarrage(),
+      session: session,
+      ouvrirTrancher: moteurPair == null
+          ? null
+          : (context) => ouvrirModaleTrancher(context, magasin: magasin, moteur: moteurPair!, role: session?.role ?? roleDev),
       fenetre: fenetre,
       etatSync: moteur.source()));
 }
@@ -263,6 +290,7 @@ class SighPoste extends StatelessWidget {
       this.controleur,
       this.client,
       this.etatSync,
+      this.ouvrirTrancher,
       this.magasin,
       this.horloge,
       this.ecranInitial,
@@ -287,6 +315,9 @@ class SighPoste extends StatelessWidget {
   final ControleurPoste? controleur;
   final ClientMere? client;
   final SourceEtatSync? etatSync;
+
+  /// Ouvre la modale « Conflits à trancher » (présente seulement si le mode pair est actif).
+  final Future<void> Function(BuildContext)? ouvrirTrancher;
   final String? ecranInitial;
 
   /// Données des écrans portés (jeu de démonstration ; la base locale viendra derrière la même interface).
@@ -327,6 +358,7 @@ class SighPoste extends StatelessWidget {
       session: session,
       fenetre: fenetre,
       parametres: parametres,
+      ouvrirTrancher: ouvrirTrancher,
       ecrans: ecransPortes(controleur: ctl, client: cl),
       magasin: magasin,
       horloge: horloge,

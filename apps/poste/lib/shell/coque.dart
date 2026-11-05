@@ -51,6 +51,7 @@ class CoquePoste extends StatefulWidget {
       this.ecranInitial,
       this.session,
       this.fenetre,
+      this.ouvrirTrancher,
       this.parametres = const {}});
   final ConfigPoste config;
   final DonneesNavigation donnees;
@@ -70,6 +71,9 @@ class CoquePoste extends StatefulWidget {
   /// verrouille. Présente : la coque sert l'écran de connexion tant que personne n'est connecté (si `exigeConnexion`), arme le verrou de quinze minutes
   /// et pose l'écran verrouillé PAR-DESSUS le travail en cours (monté, intact, caché : l'agent retrouve son écran à l'onglet près).
   final SessionPoste? session;
+
+  /// La modale « Conflits à trancher » du mode pair (ADR-0006) ; absente hors mode pair.
+  final Future<void> Function(BuildContext)? ouvrirTrancher;
 
   /// Les paramètres de l'adresse d'un écran autonome (`jeton` de la page publique d'enquête).
   final Map<String, String> parametres;
@@ -245,6 +249,10 @@ class _CoquePosteState extends State<CoquePoste> {
   /// Une destination atteinte depuis la barre (résultat de recherche, action rapide, alerte, lien du profil) : l'écran s'ouvre si le profil le voit (RG-13),
   /// sinon rien ne s'ouvre en silence : la tentative est dite.
   void _allerDepuisBarre(String id, {String? onglet}) {
+    if (id == 'pair-trancher') {
+      widget.ouvrirTrancher?.call(context);
+      return;
+    }
     if (_estAutonome(id)) {
       _ouvrir(id);
       return;

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:sigh_sync/sigh_sync.dart';
 
 import '../donnees/magasin.dart';
-import 'pont_activite.dart' show TransportPont;
+import 'pont_activite.dart' show PontActivite, TransportPont;
 import 'transport_pair.dart';
 
 /// Le moteur d'échange ENTRE PAIRS (ADR-0006) embarqué dans le poste : même code que le banc (`packages/sync_dart`). Le relais ne voit que des enveloppes chiffrées ;
@@ -25,6 +25,18 @@ class MoteurPair {
     unawaited(_pair.boucle());
     _miroir = Timer.periodic(miroir, (_) => recopierConflits());
   }
+
+  /// Consomme le code d'appairage délivré par le relais (à usage unique). Refus nommé (`StateError`) si le relais refuse ou ne répond pas.
+  Future<void> appairer(String code) async {
+    final (statut, corps) = await _pair.commande('POST /appairer', {'code': code});
+    if (statut >= 400) throw StateError('appairage refusé (${(corps as Map?)?['code'] ?? statut})');
+  }
+
+  bool get appaire => _pair.etat()['uuid'] != null;
+
+  /// Le moteur du poste parle au relais ; le pont d'activité écrit et lit par lui. [role] : le rôle de l'agent connecté.
+  PontActivite pont({required String Function() role}) =>
+      PontActivite(_magasin, transport(role: role), etiquette: '${_pair.etat()['uuid'] ?? 'pair'}'.replaceAll('-', '').padRight(6, '0').substring(0, 6));
 
   void arreter() => _miroir?.cancel();
 

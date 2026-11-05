@@ -35,8 +35,16 @@ void main() {
     m.collection('conflitsPair').inserer({'statut': 'actif', 'collection': 'patients', 'fiche': 'p1', 'champ': 'telephone', 'libelle': 'téléphone du patient CNT/12/26', 'valeurs': '90 / 91', 'ecran': 'm1-patients'});
     List<AlerteNotif> de(String r) => CentreNotifications(magasin: m, donnees: () => donnees, role: () => r, horloge: () => horloge).collecter().where((n) => n.source == 'pair_conflits').toList();
     expect(de('da').single.titre, 'Conflit à trancher : téléphone du patient CNT/12/26');
+    expect(de('da').single.lien, 'm1-patients');
     expect(de('direction'), hasLength(1));
     expect(de('caissier'), isEmpty);
     expect(de('medecin'), isEmpty);
+  });
+
+  test('sans écran désigné, la ligne ouvre la modale « Conflits à trancher »', () {
+    final m = Magasin({}, 'POSTE', {});
+    m.collection('conflitsPair').inserer({'statut': 'actif', 'collection': 'rendezvous', 'fiche': 'r1', 'champ': 'heure', 'valeurs': '9 h / 10 h'});
+    final a = CentreNotifications(magasin: m, donnees: () => donnees, role: () => 'direction', horloge: () => horloge).collecter().where((n) => n.source == 'pair_conflits').single;
+    expect(a.lien, 'pair-trancher');
   });
 }

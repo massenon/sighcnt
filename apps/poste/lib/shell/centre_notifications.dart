@@ -249,7 +249,7 @@ final List<_Source> _sources = [
           _Ligne('pair:${c['collection']}:${c['fiche']}:${c['champ']}', 'important',
               'Conflit à trancher : ${_ou(c['libelle'], '${c['collection']} / ${c['champ']}')}',
               'Valeurs en présence : ${_ou(c['valeurs'], '')}. Le conflit reste marqué tant que la Direction ou la DAF ne tranche pas.',
-              _v(c['ecran']) ? '${c['ecran']}' : null, const ['direction', 'da', 'admin']),
+              _v(c['ecran']) ? '${c['ecran']}' : 'pair-trancher', const ['direction', 'da', 'admin']),
       ]),
   _Source('poste', 'metier', 'Poste', (m, auj) => [
         // Notifications de POSTE, écrites par le moteur transactionnel : elles s'adressent à un poste, pas à une personne.
