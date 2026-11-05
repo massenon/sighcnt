@@ -7,6 +7,7 @@ Chaque exigence cite sa source dans `docs/cadrage/` ; ce qui n'a pas de source e
 | PRD | Objet | Statut |
 |---|---|---|
 | [PRD-M12-cloture-exercice](PRD-M12-cloture-exercice.md) | Clôture d'exercice (résultat, à-nouveaux au solde et ligne à ligne), sélecteur d'exercice, lecture seule des exercices clos, exercices ouverts simultanés, N / N-1, archive | brouillon 20/10/2026 |
+| [PRD-M12-selecteur-exercice-barre-superieure](PRD-M12-selecteur-exercice-barre-superieure.md) | Sélecteur d'exercice dans la barre supérieure (session, écrans à année, dates relatives), trois états, clôture par pièces CL et AN, réouverture par contre-passation, archive immuable ; complète le PRD de clôture du 20/10 | brouillon 05/11/2026 |
 | [PRD-M6-suivi-ventes-secteurs](PRD-M6-suivi-ventes-secteurs.md) | Point des ventes détaillé par patient et par secteur ; « Imagerie médicale » remplace « Échographie » comme secteur de recette | brouillon 20/10/2026 |
 | [PRD-SOCLE-application-sans-rechargement](PRD-SOCLE-application-sans-rechargement.md) | Document unique (routeur, modules paresseux, hydratation unique + deltas), flux d'événements entre postes, notifications consommatrices, planificateur de tâches serveur | brouillon 20/10/2026 |
 | [PRD-SOCLE-synchronisation-bidirectionnelle](PRD-SOCLE-synchronisation-bidirectionnelle.md) | Synchronisation dans les deux sens entre postes, hub, client web et mobile : opérations, familles de fusion, conflits nommés, archivage au lieu de suppression, numéros provisoires, hors ligne | brouillon 26/10/2026 |
