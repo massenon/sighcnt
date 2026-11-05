@@ -29,7 +29,8 @@ class BarreSuperieure extends StatelessWidget {
       this.surNotifications,
       this.surProfil,
       this.installation,
-      this.surInstallation});
+      this.surInstallation,
+      this.selecteurExercice});
   final ConfigPoste config;
   final SourceEtatSync etatSync;
   final String nomRole;
@@ -48,6 +49,9 @@ class BarreSuperieure extends StatelessWidget {
   /// L'assistant de première installation : tant qu'il est en cours, une pastille « Configurations à faire » rouvre sa modale (administrateur seulement).
   final ValueListenable<bool>? installation;
   final VoidCallback? surInstallation;
+
+  /// Le sélecteur d'exercice, posé SEULEMENT sur les écrans qui ont une notion d'année (règle `cpcAExercice`).
+  final Widget? selecteurExercice;
 
   /// L'état réel du plein écran (suit F11 et la sortie par le système) ; absent = fenêtre.
   final ValueListenable<bool>? pleinEcran;
@@ -126,6 +130,7 @@ class BarreSuperieure extends StatelessWidget {
           ),
         ),
         const Spacer(),
+        if (selecteurExercice != null) selecteurExercice!,
         _Outil(cle: 'barre-actions', icone: LucideIcons.zap, libelle: 'Actions', info: 'Actions rapides', surTap: surActions),
         if (pleinEcran != null)
           ValueListenableBuilder<bool>(

@@ -22,6 +22,13 @@ class ImpressionPoste {
     return f.path;
   };
 
+  /// Écriture d'un fichier TEXTE (archive de clôture : CSV, états, manifeste) sous son nom : injectable. Par défaut : le dossier temporaire du système.
+  static Future<String> Function(String contenu, String nom) enregistrerTexte = (contenu, nom) async {
+    final f = File('${Directory.systemTemp.path}/$nom');
+    await f.writeAsString(contenu);
+    return f.path;
+  };
+
   /// Exécuteur de commande (injectable : les tests n'envoient rien à une imprimante).
   static Future<ProcessResult> Function(String exe, List<String> args) lancer =
       (exe, args) => Process.run(exe, args);

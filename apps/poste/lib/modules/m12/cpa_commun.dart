@@ -7,6 +7,7 @@ import '../../donnees/magasin.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../shell/choix_exercice.dart';
 import '../m9/commun.dart' show n, m, dateDe, mono;
 
 export '../m9/commun.dart'
@@ -15,9 +16,8 @@ export '../m9/commun.dart'
 /// Briques communes à la comptabilité de base de M12 (tableau de bord, plan comptable, journaux, écritures, grand livre, balance, dépenses).
 /// Les règles chiffrées vivent dans `packages/domaine/lib/src/comptabilite/` ; ce fichier ne porte que de la mise en page et de la lecture du magasin.
 
-/// `exo()` : l'exercice choisi. Le sélecteur d'exercice de la coque n'est pas porté (écart E717) : c'est l'année de l'horloge du poste, ce que la
-/// maquette choisit tant que personne n'a rien mémorisé.
-int exerciceChoisi(ContexteEcran c) => c.aujourdhui.year;
+/// `exo()` : l'exercice choisi au sélecteur de la barre supérieure (en mémoire pour la session) ; à défaut, le plus récent encore ouvert.
+int exerciceChoisi(ContexteEcran c) => ChoixExercice.courant(c.magasin, c.aujourdhui);
 
 /// `ecritures()` : les écritures ACTIVES de l'exercice choisi.
 List<Fiche> ecrituresExercice(ContexteEcran c) =>

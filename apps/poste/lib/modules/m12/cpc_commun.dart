@@ -18,6 +18,13 @@ void amorcerExercices(Magasin m, DateTime auj) {
   for (final f in fiches) {
     col.inserer(f);
   }
+  // La table PARAMÉTRABLE des comptes de résultat (131 bénéfice, 139 perte) : amorcée une fois, modifiable ensuite.
+  final cr = m.collection('comptesResultat');
+  if (cr.toutes.isEmpty) {
+    for (final f in cpcComptesResultatDefaut) {
+      cr.inserer({...f});
+    }
+  }
 }
 
 List<Fiche> exercicesActifs(Magasin m) => cpcListeExercices(m.collection('exercices').toutes);

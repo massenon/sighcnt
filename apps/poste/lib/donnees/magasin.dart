@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:sigh_domaine/sigh_domaine.dart' show Agent, cpaDoublonsDuPlan, cpcGardeEcritures;
+import 'package:sigh_domaine/sigh_domaine.dart' show Agent, cpaDoublonsDuPlan, cpcGardeArchives, cpcGardeClotures, cpcGardeEcritures;
 
 import 'persistance.dart';
 
@@ -528,8 +528,12 @@ class Magasin {
         // `S.garder('ecritures', …)` de la maquette : la lecture seule d'un exercice clos est tenue AU MOTEUR, sur la collection — masquer un bouton ne
         // protège rien. La garde relit les exercices À CHAQUE écriture (une clôture validée ferme aussitôt).
         if (nom == 'ecritures') {
-          c.garder((op, f) => cpcGardeEcritures(collection('exercices').toutes, f['date']));
+          c.garder((op, f) => cpcGardeEcritures(collection('exercices').toutes, f['date'],
+              op: op, origineCloture: f['origineCloture'], origine: f['origine'], role: acteur?.role ?? ''));
         }
+        // L'archive d'une clôture est IMMUABLE et le registre des clôtures est une piste d'audit (arbitrage du 05/11/2026).
+        if (nom == 'archivesExercice') c.garder((op, f) => cpcGardeArchives(collection('archivesExercice').toutes, op, f['reference']));
+        if (nom == 'clotures') c.garder((op, f) => cpcGardeClotures(op));
         return c;
       });
 

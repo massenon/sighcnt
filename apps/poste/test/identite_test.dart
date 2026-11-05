@@ -189,17 +189,17 @@ void main() {
       final x = m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026, orElse: () => <String, Object?>{});
       if (x.isEmpty) m.collection('exercices').inserer({'annee': 2026, 'etat': 'ouvert', 'statut': 'actif'});
       final id = m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026)['id'];
-      m.collection('exercices').mettreAJour(id, {'etat': 'en_attente_cloture', 'demandePar': 'KASSA Augustin', 'demandeParId': demandeParId, 'demandeLe': '2026-10-30T09:00:00.000Z'});
+      m.collection('exercices').mettreAJour(id, {'etat': 'en_cloture', 'demandePar': 'KASSA Augustin', 'demandeParId': demandeParId, 'demandeLe': '2026-10-30T09:00:00.000Z'});
       return m;
     }
 
     Future<void> validerCloture(WidgetTester t) async {
-      await t.ensureVisible(find.widgetWithText(BoutonSigh, 'Valider la clôture'));
-      await t.tap(find.widgetWithText(BoutonSigh, 'Valider la clôture'));
+      await t.ensureVisible(find.widgetWithText(BoutonSigh, 'Clôturer définitivement'));
+      await t.tap(find.widgetWithText(BoutonSigh, 'Clôturer définitivement'));
       await t.pump(const Duration(milliseconds: 400));
       await t.enterText(find.byType(TextField).last, 'Exercice 2026 conforme');
       await t.pump();
-      await t.tap(find.widgetWithText(BoutonSigh, 'Valider et clôturer'));
+      await t.tap(find.widgetWithText(BoutonSigh, 'Clôturer définitivement').last);
       await t.pump(const Duration(milliseconds: 400));
     }
 
@@ -210,7 +210,7 @@ void main() {
       await validerCloture(t);
       expect(find.text('Clôture refusée.'), findsOneWidget);
       expect(find.textContaining('Signer n’est pas saisir'), findsOneWidget);
-      expect(m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026)['etat'], 'en_attente_cloture');
+      expect(m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026)['etat'], 'en_cloture');
       await t.pump(const Duration(seconds: 10));
       await t.pumpWidget(const SizedBox());
       await t.pump(const Duration(seconds: 10));

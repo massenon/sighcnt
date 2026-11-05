@@ -13,9 +13,10 @@ import 'cpc_commun.dart';
 
 /// `m12-cloture` — « Exercices & clôtures » : sélecteur d'exercice, pré-clôture, clôture EN DEUX GESTES, à-nouveaux et lettrage des tiers.
 ///
-/// La clôture est DÉFINITIVE (obligation légale) : un exercice clos ne se rouvre pas, il se corrige par une écriture de l'exercice suivant. Le comptable
-/// DEMANDE, la Direction ou la DAF VALIDE — une autre personne que le demandeur. Le moteur est dans `cpc_exercice.dart` (rejoué sur les vecteurs de la
-/// maquette) ; la garde de lecture seule est posée sur la collection `ecritures` du magasin.
+/// TROIS ÉTATS (arbitrage du 05/11/2026) : ouvert, en clôture (les modules n'écrivent plus), clôturé (lecture seule). QUATRE TRANSITIONS : le comptable
+/// DÉMARRE la clôture, peut REPRENDRE la saisie tant que rien n'est clôturé, la Direction ou la DAF CLÔTURE DÉFINITIVEMENT (une autre personne), et seul le
+/// comptable ROUVRE (motif de dix caractères), par contre-passation. La clôture pose la pièce CL puis la pièce AN dans un seul tenant : un échec défait tout.
+/// Le moteur est dans `cpc_exercice.dart` et `cpc_archive.dart` ; la garde de lecture seule est posée sur la collection `ecritures` du magasin.
 ///
 /// Écarts : E800 (l'acteur d'un geste est le libellé du rôle de la session, le poste ne porte pas d'identité nominative) ; E801 (le sélecteur
 /// d'exercice de la coque n'est pas porté : l'exercice choisi est celui de l'horloge, E717) ; E802 (hors du poste : l'archive de clôture dans la GED et
@@ -32,7 +33,7 @@ class EcranCloture extends StatefulWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'La clôture est définitive (obligation légale) : un exercice clos ne se rouvre pas, il se corrige par une écriture de l’exercice suivant. Le comptable demande, la Direction ou la DAF valide — une autre personne que le demandeur. La caisse continue d’encaisser : le logiciel ne s’arrête pas à la fin de l’année.';
+      'Trois états : ouvert, en clôture (les modules n’écrivent plus), clôturé (lecture seule). Le comptable démarre la clôture, la Direction ou la DAF clôture définitivement (une autre personne), et seul le comptable rouvre, avec un motif, par contre-passation. La caisse continue d’encaisser : une pièce s’enregistre toujours dans l’exercice de sa date.';
 
   @override
   State<EcranCloture> createState() => _EtatCloture();
@@ -58,11 +59,11 @@ class _EtatCloture extends State<EcranCloture> {
   List<Fiche> _ecritures(ContexteEcran c) => c.magasin.collection('ecritures').actives;
 
   // ----------------------------------------------------------------------------------------------------------------------------------------------
-  // GESTE 1 — la pré-clôture et la demande
+  // TRANSITIONS 1 ET 2 — démarrer la clôture, reprendre la saisie
   // ----------------------------------------------------------------------------------------------------------------------------------------------
-  void _preCloture(BuildContext ctx, ContexteEcran c, Fiche x, bool peutDemander) {
+  void _preCloture(BuildContext ctx, ContexteEcran c, Fiche x, bool peutDemarrer) {
     final annee = x['annee'] as int;
-    final pre = cpcPreCloture(_ecritures(c), annee);
+    final pre = cpcPreCloture(_ecritures(c), annee, exercices: c.magasin.collection('exercices').toutes);
     afficherModale<void>(ctx,
         titre: 'Pré-clôture — exercice $annee',
         taille: TailleModale.lg,
@@ -85,60 +86,77 @@ class _EtatCloture extends State<EcranCloture> {
         ]),
         pied: (fermer) => [
               BoutonSigh(libelle: 'Fermer', variante: VarianteBouton.secondaire, onPressed: fermer),
-              if (peutDemander && pre.bloquants.isEmpty)
+              if (peutDemarrer && cpcEtatExercice(c.magasin.collection('exercices').toutes, annee) == 'ouvert')
                 BoutonSigh(
-                    libelle: 'Demander la clôture',
+                    libelle: 'Démarrer la clôture',
                     icone: LucideIcons.lock,
                     onPressed: () {
                       fermer();
-                      _demander(ctx, c, x);
+                      _demarrer(ctx, c, x);
                     }),
             ]);
   }
 
-  Future<void> _demander(BuildContext ctx, ContexteEcran c, Fiche x) async {
+  Future<void> _demarrer(BuildContext ctx, ContexteEcran c, Fiche x) async {
     final annee = x['annee'] as int;
     final ok = await confirmerSigh(ctx,
-        titre: 'Demander la clôture de l’exercice $annee ?',
+        titre: 'Démarrer la clôture de l’exercice $annee ?',
         message:
-            'Les contrôles bloquants sont rejoués. Si tout est conforme, la demande part à la Direction pour validation : tant qu’elle n’est pas validée, rien n’est figé.',
-        libelleOk: 'Demander la clôture');
+            'Dès maintenant, les modules n’écrivent plus dans $annee : seul le comptable y passe ses écritures d’inventaire. Rien n’est figé : la saisie peut reprendre tant que la Direction n’a pas clôturé définitivement.',
+        libelleOk: 'Démarrer la clôture');
     if (!ok || !ctx.mounted) return;
-    final r = cpcDemanderCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee,
-        acteur: acteurDe(c), acteurId: acteurIdDe(c), maintenant: c.aujourdhui);
+    final r = cpcDemarrerCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee,
+        acteur: acteurDe(c), acteurId: acteurIdDe(c), role: c.role, maintenant: c.aujourdhui);
     if (!r.ok) {
-      ToastsSigh.afficher(ctx, 'Demande refusée.', type: TypeToast.erreur, detail: r.motif);
+      ToastsSigh.afficher(ctx, 'Démarrage refusé.', type: TypeToast.erreur, detail: r.motif);
       return;
     }
     c.magasin.collection('exercices').mettreAJour(x['id'], r.patch!);
-    c.magasin.journaliser('Demande de clôture', 'M12', 'Exercice', '$annee', {'etat': 'ouvert'}, {'etat': 'en_attente_cloture', 'resultat': r.pre!.resultat});
+    c.magasin.journaliser('Démarrage de la clôture', 'M12', 'Exercice', '$annee', {'etat': 'ouvert'}, {'etat': 'en_cloture', 'resultat': r.pre!.resultat});
     notifier(c,
         type: 'cloture',
         poste: 'direction',
         libelle: 'Clôture $annee à valider',
-        detail: 'Le comptable a demandé la clôture de l’exercice $annee.',
+        detail: 'Le comptable a démarré la clôture de l’exercice $annee : les modules n’y écrivent plus.',
         priorite: 'haute',
         reference: '$annee');
-    ToastsSigh.afficher(ctx, 'Clôture $annee demandée.', type: TypeToast.succes, detail: 'La Direction doit la valider.');
+    ToastsSigh.afficher(ctx, 'Clôture $annee démarrée.', type: TypeToast.succes, detail: 'Les modules n’écrivent plus dans cet exercice.');
+  }
+
+  Future<void> _reprendre(BuildContext ctx, ContexteEcran c, Fiche x) async {
+    final annee = x['annee'] as int;
+    final ok = await confirmerSigh(ctx,
+        titre: 'Reprendre la saisie de l’exercice $annee ?',
+        message: 'Les modules écrivent de nouveau dans $annee. Possible tant que rien n’est clôturé.',
+        libelleOk: 'Reprendre la saisie');
+    if (!ok || !ctx.mounted) return;
+    final r = cpcReprendreSaisie(c.magasin.collection('exercices').toutes, annee, acteur: acteurDe(c), role: c.role, maintenant: c.aujourdhui);
+    if (!r.ok) {
+      ToastsSigh.afficher(ctx, 'Reprise refusée.', type: TypeToast.erreur, detail: r.motif);
+      return;
+    }
+    c.magasin.collection('exercices').mettreAJour(x['id'], r.patch!);
+    c.magasin.journaliser('Reprise de la saisie', 'M12', 'Exercice', '$annee', {'etat': 'en_cloture'}, {'etat': 'ouvert'});
+    ToastsSigh.afficher(ctx, 'Saisie de $annee reprise.', type: TypeToast.succes);
   }
 
   // ----------------------------------------------------------------------------------------------------------------------------------------------
-  // GESTE 2 — la validation
+  // TRANSITION 3 — clôturer définitivement : CL, AN, verrou, archive, d'un seul tenant
   // ----------------------------------------------------------------------------------------------------------------------------------------------
-  void _valider(BuildContext ctx, ContexteEcran c, Fiche x) {
+  void _cloturer(BuildContext ctx, ContexteEcran c, Fiche x) {
     final annee = x['annee'] as int;
     final motif = ControleurFormulaire(const [
-      ChampDef(nom: 'motif', libelle: 'Motif de la validation (obligatoire)', type: TypeChamp.textarea, col: ColChamp.plein, lignes: 3)
+      ChampDef(nom: 'motif', libelle: 'Motif de la clôture (obligatoire)', type: TypeChamp.textarea, col: ColChamp.plein, lignes: 3)
     ]);
     afficherModale<void>(ctx,
-        titre: 'Valider la clôture de l’exercice $annee',
+        titre: 'Clôturer définitivement l’exercice $annee',
         corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Text.rich(TextSpan(children: [
-            const TextSpan(text: 'Demandée par '),
+            const TextSpan(text: 'Clôture démarrée par '),
             TextSpan(text: '${x['demandePar'] ?? '—'}', style: const TextStyle(fontWeight: FontWeight.w700)),
-            const TextSpan(text: '. Cette validation est '),
-            const TextSpan(text: 'définitive', style: TextStyle(fontWeight: FontWeight.w700)),
-            TextSpan(text: ' : les classes 6, 7 et 8 seront soldées, les à-nouveaux de ${annee + 1} écrits, l’exercice figé. Il ne se rouvre pas.'),
+            TextSpan(
+                text:
+                    '. Les contrôles sont rejoués, puis, d’un seul tenant : pièce de clôture (journal CL) qui solde les classes 6, 7 et 8 centre par centre, pièce d’à-nouveaux (journal AN) de ${annee + 1}, verrou, archive. Seul le comptable peut ensuite rouvrir l’exercice.'),
           ]), style: const TextStyle(color: JetonsShell.slate700, fontSize: 14, height: 20 / 14)),
           const SizedBox(height: 12),
           FormulaireSigh(controleur: motif),
@@ -146,39 +164,185 @@ class _EtatCloture extends State<EcranCloture> {
         pied: (fermer) => [
               BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
               BoutonSigh(
-                  libelle: 'Valider et clôturer',
+                  libelle: 'Clôturer définitivement',
                   icone: LucideIcons.lock,
                   variante: VarianteBouton.danger,
                   onPressed: () {
+                    final ecr = c.magasin.collection('ecritures');
                     final r = cpcValiderCloture(c.magasin.collection('exercices').toutes, _ecritures(c), annee,
-                        motif: '${motif['motif'] ?? ''}', acteur: acteurDe(c), acteurId: acteurIdDe(c), role: c.role, maintenant: c.aujourdhui);
+                        motif: '${motif['motif'] ?? ''}',
+                        acteur: acteurDe(c),
+                        acteurId: acteurIdDe(c),
+                        role: c.role,
+                        maintenant: c.aujourdhui,
+                        toutesEcritures: ecr.toutes,
+                        comptesResultat: c.magasin.collection('comptesResultat').actives);
                     if (!r.ok) {
                       ToastsSigh.afficher(ctx, 'Clôture refusée.', type: TypeToast.erreur, detail: r.motif);
                       return;
                     }
-                    final ecr = c.magasin.collection('ecritures');
-                    // (1) la pièce de résultat, (2) les à-nouveaux définitifs — dans l'ordre des insertions de la maquette ; (3) l'exercice « clos », en DERNIER
-                    for (final l in r.lignesOD) {
-                      ecr.inserer(l, prefixe: 'ECR');
+                    // ATOMICITÉ : une insertion refusée par le journal défait tout ce qui a été posé, l'exercice reste en clôture.
+                    final annulations = <VoidCallback>[];
+                    try {
+                      for (final l in [...r.lignesCL, ...r.lignesAN]) {
+                        annulations.add(ecr.inserer(l, prefixe: 'ECR').annuler);
+                      }
+                    } on EcritureRefusee catch (e) {
+                      for (final u in annulations.reversed) {
+                        u();
+                      }
+                      ToastsSigh.afficher(ctx, 'Clôture refusée.', type: TypeToast.erreur, detail: '${e.motif} L’exercice reste en clôture, rien n’a été écrit.');
+                      return;
                     }
-                    for (final l in r.lignesAN) {
-                      ecr.inserer(l, prefixe: 'ECR');
-                    }
+                    final apres = {...x, ...r.patch!};
                     c.magasin.collection('exercices').mettreAJour(x['id'], r.patch!);
                     if (r.exerciceSuivant != null) c.magasin.collection('exercices').inserer(r.exerciceSuivant!);
-                    c.magasin.journaliser('Clôture d’exercice', 'M12', 'Exercice', '$annee', {'etat': 'en_attente_cloture'},
-                        {'etat': 'clos', 'resultat': r.resultat, 'empreinte': r.empreinte});
+                    c.magasin.collection('clotures').inserer(r.cloture!, prefixe: 'CLO');
+                    final version = cpcVersionCloture(c.magasin.collection('clotures').toutes, annee);
+                    final reference = cpcReferenceArchive(annee, version);
+                    final archives = c.magasin.collection('archivesExercice');
+                    if (!archives.toutes.any((a) => a['reference'] == reference)) {
+                      final fichiers = cpcFichiersArchive(annee, apres, ecr.actives);
+                      archives.inserer({
+                        'reference': reference,
+                        'annee': annee,
+                        'version': version,
+                        'creeLe': c.aujourdhui.toUtc().toIso8601String(),
+                        'par': acteurDe(c),
+                        'clNumero': r.clNumero,
+                        'anNumero': r.anNumero,
+                        'fichiers': fichiers,
+                        'manifesteEmpreinte': fichiers.last['empreinte'],
+                      }, prefixe: 'ARC');
+                    }
+                    c.magasin.journaliser('Clôture d’exercice', 'M12', 'Exercice', '$annee', {'etat': 'en_cloture'},
+                        {'etat': 'clos', 'resultat': r.resultat, 'cl': r.clNumero, 'an': r.anNumero});
                     notifier(c,
                         type: 'cloture',
                         poste: 'comptable',
-                        libelle: 'Exercice $annee clos',
-                        detail: 'Résultat ${money(r.resultat)} ; à-nouveaux ${annee + 1} écrits.',
+                        libelle: 'Exercice $annee clôturé',
+                        detail: 'Résultat ${money(r.resultat)} ; pièces ${r.clNumero} et ${r.anNumero} écrites.',
                         reference: '$annee');
                     fermer();
-                    ToastsSigh.afficher(ctx, 'Exercice $annee clos.',
-                        type: TypeToast.succes, detail: 'Résultat ${money(r.resultat)} — ${r.lignesAN.length} ligne(s) d’à-nouveau écrite(s).');
+                    ToastsSigh.afficher(ctx, 'Exercice $annee clôturé.',
+                        type: TypeToast.succes, detail: 'Résultat ${money(r.resultat)} · ${r.lignesCL.length} ligne(s) de clôture, ${r.lignesAN.length} d’à-nouveau · archive $reference.');
                   }),
             ]);
+  }
+
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
+  // TRANSITION 4 — rouvrir : le comptable seul, par contre-passation
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
+  void _rouvrir(BuildContext ctx, ContexteEcran c, Fiche x) {
+    final annee = x['annee'] as int;
+    final motif = ControleurFormulaire(const [
+      ChampDef(nom: 'motif', libelle: 'Motif de la réouverture (dix caractères au moins)', type: TypeChamp.textarea, col: ColChamp.plein, lignes: 3)
+    ]);
+    afficherModale<void>(ctx,
+        titre: 'Rouvrir l’exercice $annee',
+        corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const Text(
+              'La pièce de clôture et la pièce d’à-nouveaux sont contre-passées : rien ne s’efface, la piste d’audit reste entière. L’exercice repasse « en clôture ». La Direction en est informée.',
+              style: TextStyle(color: JetonsShell.slate700, fontSize: 14, height: 20 / 14)),
+          const SizedBox(height: 12),
+          FormulaireSigh(controleur: motif),
+        ]),
+        pied: (fermer) => [
+              BoutonSigh(libelle: 'Annuler', variante: VarianteBouton.secondaire, onPressed: fermer),
+              BoutonSigh(
+                  libelle: 'Rouvrir',
+                  icone: LucideIcons.lockOpen,
+                  variante: VarianteBouton.danger,
+                  onPressed: () {
+                    final ecr = c.magasin.collection('ecritures');
+                    final r = cpcRouvrirExercice(c.magasin.collection('exercices').toutes, _ecritures(c), annee,
+                        motif: '${motif['motif'] ?? ''}',
+                        acteur: acteurDe(c),
+                        acteurId: acteurIdDe(c),
+                        role: c.role,
+                        maintenant: c.aujourdhui,
+                        toutesEcritures: ecr.toutes);
+                    if (!r.ok) {
+                      ToastsSigh.afficher(ctx, 'Réouverture refusée.', type: TypeToast.erreur, detail: r.motif);
+                      return;
+                    }
+                    final annulations = <VoidCallback>[];
+                    try {
+                      for (final l in r.lignes) {
+                        annulations.add(ecr.inserer(l, prefixe: 'ECR').annuler);
+                      }
+                    } on EcritureRefusee catch (e) {
+                      for (final u in annulations.reversed) {
+                        u();
+                      }
+                      ToastsSigh.afficher(ctx, 'Réouverture refusée.', type: TypeToast.erreur, detail: '${e.motif} L’exercice reste clôturé, rien n’a été écrit.');
+                      return;
+                    }
+                    c.magasin.collection('exercices').mettreAJour(x['id'], r.patch!);
+                    c.magasin.collection('clotures').inserer(r.cloture!, prefixe: 'CLO');
+                    c.magasin.journaliser('Réouverture d’exercice', 'M12', 'Exercice', '$annee', {'etat': 'clos'},
+                        {'etat': 'en_cloture', 'motif': '${motif['motif']}'.trim(), 'contrePasse': r.cloture!['contrePasse']});
+                    notifier(c,
+                        type: 'cloture',
+                        poste: 'direction',
+                        libelle: 'Exercice $annee rouvert',
+                        detail: '${acteurDe(c)} a rouvert l’exercice $annee : ${'${motif['motif']}'.trim()}',
+                        priorite: 'haute',
+                        reference: '$annee');
+                    fermer();
+                    ToastsSigh.afficher(ctx, 'Exercice $annee rouvert.', type: TypeToast.succes, detail: '${r.pieces.join(' et ')} contre-passent la clôture.');
+                  }),
+            ]);
+  }
+
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
+  // L'ARCHIVE LÉGALE : fichiers, empreintes, téléchargement qui VÉRIFIE l'empreinte avant de livrer
+  // ----------------------------------------------------------------------------------------------------------------------------------------------
+  void _archive(BuildContext ctx, ContexteEcran c, Fiche x) {
+    final annee = x['annee'] as int;
+    final archives = [for (final a in c.magasin.collection('archivesExercice').actives) if (a['annee'] == annee) a]
+      ..sort((a, b) => (n(b['version']) - n(a['version'])).sign.toInt());
+    if (archives.isEmpty) {
+      ToastsSigh.afficher(ctx, 'Aucune archive pour l’exercice $annee.', type: TypeToast.info, detail: 'Elle naît avec la clôture définitive.');
+      return;
+    }
+    afficherModale<void>(ctx,
+        titre: 'Archive légale de l’exercice $annee',
+        taille: TailleModale.lg,
+        corps: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          for (final a in archives) ...[
+            Text('${a['reference']} : clôture ${a['clNumero']}, déposée le ${dateDe(a['creeLe'])} par ${a['par'] ?? '—'}',
+                style: const TextStyle(color: JetonsShell.slate800, fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            MiniTableauSigh(colonnes: [
+              ColonneMini('Fichier', (f) => '${f['nom']}'),
+              ColonneMini('Taille', (f) => '${nombre(f['taille'])} c.', droite: true),
+              ColonneMini('Empreinte SHA-256', (f) => '${'${f['empreinte']}'.substring(0, 20)}…'),
+              ColonneMini('', (f) => '',
+                  rendu: (f) => BoutonSigh(
+                      libelle: 'Télécharger',
+                      taille: TailleBouton.sm,
+                      variante: VarianteBouton.secondaire,
+                      icone: LucideIcons.download,
+                      onPressed: () => _telecharger(ctx, c, '${a['reference']}', '${f['nom']}'))),
+            ], lignes: [for (final f in (a['fichiers'] as List)) (f as Map).cast<String, Object?>()]),
+            const SizedBox(height: 16),
+          ],
+          const NoteSigh(
+              'L’archive est immuable et jamais régénérée. Avant chaque téléchargement, l’empreinte du fichier est recalculée et comparée à celle du manifeste : un fichier altéré est refusé.',
+              icone: LucideIcons.shieldCheck),
+        ]),
+        pied: (fermer) => [BoutonSigh(libelle: 'Fermer', variante: VarianteBouton.secondaire, onPressed: fermer)]);
+  }
+
+  Future<void> _telecharger(BuildContext ctx, ContexteEcran c, String reference, String nom) async {
+    final r = cpcLireArchive(c.magasin.collection('archivesExercice').actives, reference, nom);
+    if (!r.ok) {
+      ToastsSigh.afficher(ctx, 'Téléchargement refusé.', type: TypeToast.erreur, detail: r.motif);
+      return;
+    }
+    final chemin = await ImpressionPoste.enregistrerTexte('${r.fichier!['contenu']}', nom);
+    if (ctx.mounted) ToastsSigh.afficher(ctx, 'Fichier vérifié et enregistré.', type: TypeToast.succes, detail: '$nom : empreinte conforme · $chemin');
   }
 
   void _procesVerbal(BuildContext ctx, ContexteEcran c, Fiche x) {
@@ -211,7 +375,7 @@ class _EtatCloture extends State<EcranCloture> {
   // ----------------------------------------------------------------------------------------------------------------------------------------------
   // LES TROIS ONGLETS
   // ----------------------------------------------------------------------------------------------------------------------------------------------
-  Widget _exercices(BuildContext ctx, ContexteEcran c, bool peutDemander, bool peutValider) {
+  Widget _exercices(BuildContext ctx, ContexteEcran c, bool peutDemander, bool peutValider, bool peutRouvrir) {
     final lignes = exercicesActifs(c.magasin);
     return TableauSigh(
       titre: 'Exercices comptables',
@@ -231,8 +395,8 @@ class _EtatCloture extends State<EcranCloture> {
             texte: (x) => '${x['etat']}',
             rendu: (_, x) => switch (x['etat']) {
                   'ouvert' => const BadgeSigh('Ouvert', ton: TonSigh.succes),
-                  'en_attente_cloture' => const BadgeSigh('En attente de clôture', ton: TonSigh.attention),
-                  'clos' => const BadgeSigh('Clos'),
+                  'en_cloture' || 'en_attente_cloture' => const BadgeSigh('En clôture', ton: TonSigh.attention),
+                  'clos' => const BadgeSigh('Clôturé'),
                   _ => BadgeSigh('${x['etat']}')
                 }),
         ColonneTableau(
@@ -262,15 +426,44 @@ class _EtatCloture extends State<EcranCloture> {
                 variante: VarianteBouton.secondaire,
                 icone: LucideIcons.listChecks,
                 onPressed: () => _preCloture(ctx, c, x, peutDemander)),
-          if (x['etat'] == 'en_attente_cloture' && peutValider)
-            BoutonSigh(libelle: 'Valider la clôture', taille: TailleBouton.sm, icone: LucideIcons.lock, onPressed: () => _valider(ctx, c, x)),
-          if (x['etat'] == 'clos')
+          if (x['etat'] == 'en_cloture' || x['etat'] == 'en_attente_cloture') ...[
+            BoutonSigh(
+                libelle: 'Contrôles',
+                taille: TailleBouton.sm,
+                variante: VarianteBouton.secondaire,
+                icone: LucideIcons.listChecks,
+                onPressed: () => _preCloture(ctx, c, x, false)),
+            if (peutDemander)
+              BoutonSigh(
+                  libelle: 'Reprendre la saisie',
+                  taille: TailleBouton.sm,
+                  variante: VarianteBouton.secondaire,
+                  icone: LucideIcons.rotateCcw,
+                  onPressed: () => _reprendre(ctx, c, x)),
+            if (peutValider)
+              BoutonSigh(libelle: 'Clôturer définitivement', taille: TailleBouton.sm, icone: LucideIcons.lock, onPressed: () => _cloturer(ctx, c, x)),
+          ],
+          if (x['etat'] == 'clos') ...[
+            if (peutRouvrir)
+              BoutonSigh(
+                  libelle: 'Rouvrir',
+                  taille: TailleBouton.sm,
+                  variante: VarianteBouton.danger,
+                  icone: LucideIcons.lockOpen,
+                  onPressed: () => _rouvrir(ctx, c, x)),
+            BoutonSigh(
+                libelle: 'Archive légale',
+                taille: TailleBouton.sm,
+                variante: VarianteBouton.secondaire,
+                icone: LucideIcons.archive,
+                onPressed: () => _archive(ctx, c, x)),
             BoutonSigh(
                 libelle: 'Procès-verbal',
                 taille: TailleBouton.sm,
                 variante: VarianteBouton.secondaire,
                 icone: LucideIcons.printer,
                 onPressed: () => _procesVerbal(ctx, c, x)),
+          ],
         ]
       ],
     );
@@ -486,17 +679,18 @@ class _EtatCloture extends State<EcranCloture> {
         final annee = exerciceChoisi(c);
         final exos = c.magasin.collection('exercices').toutes;
         final cur = cpcExercice(exos, annee);
-        final pre = cpcPreCloture(_ecritures(c), annee);
-        final etat = '${cur?['etat'] ?? 'ouvert'}';
+        final pre = cpcPreCloture(_ecritures(c), annee, exercices: exos);
+        final etat = cpcEtatExercice(exos, annee);
         final clos = etat == 'clos';
         final peutDemander = c.droit.editer && cpcRolesDemande.contains(c.role);
         final peutValider = cpcRolesValidation.contains(c.role);
+        final peutRouvrir = c.droit.editer && (c.role == 'comptable' || c.role == 'admin');
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           KpiGrilleSigh(kpis: [
             KpiSigh(libelle: 'Exercice affiché', valeur: '$annee', icone: LucideIcons.calendar),
             KpiSigh(
                 libelle: 'État',
-                valeur: switch (etat) { 'ouvert' => 'Ouvert', 'en_attente_cloture' => 'En attente', _ => 'Clos' },
+                valeur: switch (etat) { 'ouvert' => 'Ouvert', 'en_cloture' => 'En clôture', _ => 'Clôturé' },
                 icone: LucideIcons.lock,
                 ton: clos ? TonSigh.succes : TonSigh.info),
             KpiSigh(
@@ -512,7 +706,7 @@ class _EtatCloture extends State<EcranCloture> {
           ]),
           const SizedBox(height: 16),
           OngletsSigh(onglets: [
-            OngletDef(id: 'exercices', libelle: 'Exercices', construire: (ctx) => _exercices(context, c, peutDemander, peutValider)),
+            OngletDef(id: 'exercices', libelle: 'Exercices', construire: (ctx) => _exercices(context, c, peutDemander, peutValider, peutRouvrir)),
             OngletDef(id: 'periodes', libelle: 'Périodes de l’exercice', construire: (ctx) => _periodes(context, c)),
             OngletDef(id: 'lettrage', libelle: 'Lettrage des tiers', construire: (ctx) => _lettrage(context, c)),
           ]),

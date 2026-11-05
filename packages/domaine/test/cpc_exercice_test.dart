@@ -483,4 +483,18 @@ void main() {
       expect([dbl.message, dbl.detail], [liste(o['secondReport']).first['message'], liste(o['secondReport']).first['detail']]);
     });
   });
+
+  test('les écrans « à année » : M12 et la liste nommée ; jamais les écrans du jour ni les tableaux de bord (miroir de N.aExercice)', () {
+    expect(cpcAExercice('m12-balance', 'M12'), true);
+    expect(cpcAExercice('m12-cloture', 'M12'), true);
+    expect(cpcAExercice('m12-ouverture', 'M12'), false);
+    expect(cpcAExercice('m12-dashboard', 'M12'), false);
+    expect(cpcAExercice('mecef-factures', 'MECEF'), true);
+    expect(cpcAExercice('m8-caisse', 'M8'), false);
+    expect(cpcAExercice('m8-factures', 'M8'), true);
+    expect(cpcAExercice('dash-da', 'DASH'), false);
+    expect(cpcAExercice('hub-m12', 'M12'), false);
+    expect(cpcAExercice('m6-point-ventes', 'M6'), false);
+    expect(cpcAExercice('', 'M12'), false);
+  });
 }

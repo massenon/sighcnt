@@ -59,7 +59,7 @@ void main() {
       expect(find.widgetWithText(BoutonSigh, 'Pré-clôture'), findsOneWidget, reason: 'seul 2026 est ouvert');
     });
 
-    casM14('la pré-clôture NOMME le contrôle en échec et l\'écran où corriger ; sans blocage, elle propose la demande — au comptable seulement', (t) async {
+    casM14('la pré-clôture NOMME le contrôle en échec et l\'écran où corriger ; elle propose le démarrage — au comptable seulement', (t) async {
       final m = magasinComplet();
       await ouvrirM14(t, m, 'm12-cloture', role: 'comptable');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Pré-clôture'));
@@ -67,90 +67,89 @@ void main() {
       expect(find.text('ÉCHEC'), findsOneWidget);
       expect(find.textContaining('92 ligne(s) en brouillon'), findsOneWidget);
       expect(find.textContaining('→ Écritures comptables'), findsOneWidget);
-      expect(find.widgetWithText(BoutonSigh, 'Demander la clôture'), findsNothing, reason: 'un contrôle bloquant en échec : la commande est ABSENTE');
+      expect(find.widgetWithText(BoutonSigh, 'Démarrer la clôture'), findsOneWidget, reason: 'démarrer ne dépend pas des contrôles : ils bloquent la clôture définitive, et le comptable passe ses inventaires entre-temps');
     });
 
-    casM14('un rôle qui ne demande pas (la Direction valide, elle ne demande pas) ne voit jamais « Demander la clôture », même sans blocage', (t) async {
+    casM14('un rôle qui ne demande pas (la Direction valide, elle ne demande pas) ne voit jamais « Démarrer la clôture », même sans blocage', (t) async {
       final m = magasinComplet();
       validerBrouillons(m);
       await ouvrirM14(t, m, 'm12-cloture', role: 'direction');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Pré-clôture'));
-      expect(find.text('Conforme'), findsNWidgets(6));
-      expect(find.widgetWithText(BoutonSigh, 'Demander la clôture'), findsNothing);
+      expect(find.text('Conforme'), findsNWidgets(9));
+      expect(find.widgetWithText(BoutonSigh, 'Démarrer la clôture'), findsNothing);
     });
 
-    casM14('LES DEUX GESTES : le comptable demande (notification à la Direction, journal), la Direction valide, l\'exercice se FIGE', (t) async {
+    casM14('LES GESTES : le comptable DÉMARRE (notification à la Direction, journal), une AUTRE personne clôture, l\'exercice se FIGE, CL et AN sont écrites', (t) async {
       final m = magasinComplet();
       validerBrouillons(m);
       await ouvrirM14(t, m, 'm12-cloture', role: 'comptable');
-      expect(find.widgetWithText(BoutonSigh, 'Valider la clôture'), findsNothing, reason: 'signer n\'est pas saisir');
+      expect(find.widgetWithText(BoutonSigh, 'Clôturer définitivement'), findsNothing, reason: 'signer n\'est pas saisir');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Pré-clôture'));
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Demander la clôture'));
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Demander la clôture').last);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Démarrer la clôture'));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Démarrer la clôture').last);
       var x = m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026);
-      expect(x['etat'], 'en_attente_cloture');
+      expect(x['etat'], 'en_cloture');
       expect(x['demandePar'], isNotEmpty);
       expect(m.collection('notifications').actives.first['poste'], 'direction');
       expect(m.collection('notifications').actives.first['libelle'], 'Clôture 2026 à valider');
-      expect(m.collection('audit').actives.any((a) => a['action'] == 'Demande de clôture'), true);
-      expect(find.text('Clôture 2026 demandée.'), findsOneWidget);
+      expect(m.collection('audit').actives.any((a) => a['action'] == 'Démarrage de la clôture'), true);
+      expect(find.text('Clôture 2026 démarrée.'), findsOneWidget);
       await t.pump(const Duration(seconds: 10));
 
-      // la Direction rouvre l'écran : l'exercice attend
+      // la Direction rouvre l'écran : l'exercice est en clôture
       await ouvrirM14(t, m, 'm12-cloture', role: 'direction');
-      expect(find.text('En attente de clôture'), findsOneWidget);
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider la clôture'));
-      expect(find.text('Valider la clôture de l’exercice 2026'), findsOneWidget);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Clôturer définitivement'));
       // sans motif : refusé, nommé, rien n'est écrit
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider et clôturer'));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Clôturer définitivement').last);
       expect(find.text('Clôture refusée.'), findsOneWidget);
-      expect(find.text('Un motif est obligatoire pour valider une clôture.'), findsOneWidget);
-      expect(m.collection('ecritures').actives.where((e) => e['numero'] == 'OD-2026-RES'), isEmpty);
+      expect(find.text('Un motif est obligatoire pour clôturer un exercice.'), findsOneWidget);
+      expect(m.collection('ecritures').actives.where((e) => e['journal'] == 'CL'), isEmpty);
       await t.pump(const Duration(seconds: 10));
       await saisir(t, 'motif', 'Exercice 2026 conforme');
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider et clôturer'));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Clôturer définitivement').last);
       x = m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026);
       expect(x['etat'], 'clos');
       expect(x['validePar'], isNot(x['demandePar']));
       expect(x['empreinte'], hasLength(64));
-      expect(x['motif'], 'Exercice 2026 conforme');
+      expect(x['clNumero'], 'CL-2026-00001');
       expect(m.collection('exercices').actives.any((e) => e['annee'] == 2027 && e['etat'] == 'ouvert'), true);
-      final od = m.collection('ecritures').actives.where((e) => e['numero'] == 'OD-2026-RES').toList();
+      final cl = m.collection('ecritures').actives.where((e) => e['journal'] == 'CL').toList();
       final an = m.collection('ecritures').actives.where((e) => e['journal'] == 'AN' && e['date'] == '2027-01-01').toList();
-      expect(od, isNotEmpty);
-      expect(an, hasLength(102));
+      expect(cl, isNotEmpty);
+      expect(an, isNotEmpty);
+      expect(an.every((e) => '12345'.contains('${e['compte']}'[0])), true, reason: 'seules les classes 1 à 5 se reportent');
       double s(List<Fiche> l, String k) => l.fold(0.0, (a, e) => a + (e[k] as num));
-      expect(s(od, 'debit'), s(od, 'credit'), reason: 'RG-10 : la pièce de résultat est équilibrée');
+      expect(s(cl, 'debit'), s(cl, 'credit'), reason: 'RG-10 : la pièce de clôture est équilibrée');
       expect(s(an, 'debit'), s(an, 'credit'), reason: 'RG-10 : les à-nouveaux sont équilibrés');
-      expect(m.collection('notifications').actives.first['libelle'], 'Exercice 2026 clos');
+      expect(m.collection('archivesExercice').actives.any((a) => a['reference'] == 'ARC-2026-01'), true, reason: 'l\'archive naît avec la clôture');
+      expect(m.collection('clotures').actives.any((c) => c['type'] == 'cloture' && c['annee'] == 2026), true);
       expect(m.collection('audit').actives.any((a) => a['action'] == 'Clôture d’exercice'), true);
-      expect(find.text('Exercice 2026 clos.'), findsOneWidget);
+      expect(find.text('Exercice 2026 clôturé.'), findsOneWidget);
 
-      // LA GARDE : l'exercice clos refuse toute écriture, d'où qu'elle vienne — au moteur, pas au bouton
+      // LA GARDE : l'exercice clôturé refuse toute écriture ordinaire, d'où qu'elle vienne, au moteur et non au bouton
       expect(
           () => m.collection('ecritures').inserer({'numero': 'T-9', 'date': '2026-07-01', 'journal': 'OD', 'compte': '411100', 'debit': 10, 'credit': 0, 'statut': 'brouillon'}),
-          throwsA(isA<EcritureRefusee>().having((e) => e.motif, 'motif', startsWith('Exercice 2026 clos le 30/10/2026 — lecture seule.'))));
+          throwsA(isA<EcritureRefusee>().having((e) => e.motif, 'motif', startsWith('Exercice 2026 clôturé le '))));
       expect(m.collection('audit').toutes.first['action'], 'Écriture refusée', reason: 'le refus est journalisé (RG-12), en tête du journal');
-      expect(m.collection('audit').toutes.first['module'], '—');
-      expect(() => m.collection('ecritures').mettreAJour(od.first['id'], {'libelle': 'Retouche'}), throwsA(isA<EcritureRefusee>()));
-      expect(() => m.collection('ecritures').archiver(od.first['id']), throwsA(isA<EcritureRefusee>()));
+      expect(() => m.collection('ecritures').mettreAJour(cl.first['id'], {'libelle': 'Retouche'}), throwsA(isA<EcritureRefusee>()));
+      expect(() => m.collection('ecritures').archiver(cl.first['id']), throwsA(isA<EcritureRefusee>()));
       await t.pump(const Duration(seconds: 10));
     });
 
-    casM14('JAMAIS le demandeur : « Signer n\'est pas saisir » — la même personne ne valide pas sa propre demande', (t) async {
+    casM14('JAMAIS la même personne : « Signer n\'est pas saisir » — celle qui a démarré la clôture ne la clôture pas', (t) async {
       final m = magasinComplet();
       validerBrouillons(m);
       await ouvrirM14(t, m, 'm12-cloture', role: 'da');
       await toucherM14(t, find.widgetWithText(BoutonSigh, 'Pré-clôture'));
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Demander la clôture'));
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Demander la clôture').last);
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Démarrer la clôture'));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Démarrer la clôture').last);
       await t.pump(const Duration(seconds: 10));
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider la clôture'));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Clôturer définitivement'));
       await saisir(t, 'motif', 'Conforme');
-      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Valider et clôturer'));
+      await toucherM14(t, find.widgetWithText(BoutonSigh, 'Clôturer définitivement').last);
       expect(find.text('Clôture refusée.'), findsOneWidget);
       expect(find.textContaining('Signer n’est pas saisir'), findsOneWidget);
-      expect(m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026)['etat'], 'en_attente_cloture');
+      expect(m.collection('exercices').actives.firstWhere((e) => e['annee'] == 2026)['etat'], 'en_cloture');
     });
 
     casM14('un exercice clos par le poste imprime son procès-verbal ; l\'empreinte est tronquée à 32 caractères', (t) async {

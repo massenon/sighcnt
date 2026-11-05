@@ -23,6 +23,7 @@ import '../donnees/magasin.dart';
 import '../kit/toast.dart';
 import '../modules/cfg/cfb_notifications.dart' show CfbAudio;
 import 'centre_notifications.dart';
+import 'choix_exercice.dart';
 import 'fenetre_poste.dart';
 import 'menus_barre.dart';
 import 'modal_notifications.dart';
@@ -158,6 +159,8 @@ class _CoquePosteState extends State<CoquePoste> {
   @override
   void initState() {
     super.initState();
+    ChoixExercice.reinitialiser();
+    ChoixExercice.valeur.addListener(_surChoixExercice);
     _brancherDroits();
     _suivreInstallation();
     final demande = widget.ecranInitial;
@@ -185,6 +188,7 @@ class _CoquePosteState extends State<CoquePoste> {
 
   @override
   void dispose() {
+    ChoixExercice.valeur.removeListener(_surChoixExercice);
     _ecouteDroits?.removeListener(_surDroits);
     _minuteur?.cancel();
     _session?.removeListener(_surSession);
@@ -194,6 +198,16 @@ class _CoquePosteState extends State<CoquePoste> {
     _son?.arreter();
     _centreNotif?.dispose();
     super.dispose();
+  }
+
+  /// Le choix d'exercice a changé : l'écran à année se repeint (sa clé en porte la valeur).
+  void _surChoixExercice() {
+    if (mounted) setState(() {});
+  }
+
+  bool _aExercice(String id) {
+    final e = _nav.manifeste.ecran(id);
+    return e != null && cpcAExercice(id, e.module);
   }
 
   bool _surClavier(KeyEvent e) {
@@ -621,7 +635,7 @@ class _CoquePosteState extends State<CoquePoste> {
         ),
         Expanded(
             child: KeyedSubtree(
-                key: ValueKey('$courant|${widget.config.mode.name}'),
+                key: ValueKey('$courant|${widget.config.mode.name}${_aExercice(courant) ? '|exo${ChoixExercice.valeur.value}' : ''}'),
                 child: _page(courant, ruban, libelleMode))),
         const PiedLegal(),
       ]),
@@ -651,7 +665,10 @@ class _CoquePosteState extends State<CoquePoste> {
       surNotifications: _ouvrirNotifications,
       surProfil: _ouvrirProfil,
       installation: _installationEnCours,
-      surInstallation: _ouvrirInstallation);
+      surInstallation: _ouvrirInstallation,
+      selecteurExercice: _aExercice(_courantAffiche)
+          ? SelecteurExercice(magasin: widget.magasin ?? _magasinVide, aujourdhui: _maintenant())
+          : null);
 
   /// Les maillons cliquables du fil (comme la maquette) : « Accueil » ramène à la page d'accueil du rôle ; l'intitulé du module ouvre la page d'accueil du module
   /// (sauf sur cette page elle-même), s'il est ouvert au profil.
