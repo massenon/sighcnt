@@ -22,7 +22,7 @@ const SORTIE = path.join(REPO, 'docs', 'architecture', 'ecrans');
   const m = await ouvrirMaquette();
   const manifeste = JSON.parse(fs.readFileSync(path.join(REPO, 'packages/referentiels/data/manifeste.json'), 'utf8'));
   fs.mkdirSync(SORTIE, { recursive: true });
-  const ecrans = manifeste.ecrans.filter((e) => !e.standalone || /^(hub|m|rls|mere|cfg|dash|adm|auth|error|enquete|support|aide)/.test(e.id)).filter((e) => !filtre.length || filtre.some((f) => e.id.startsWith(f)));
+  const ecrans = manifeste.ecrans.filter((e) => !e.standalone || /^(hub|m|rls|mere|cfg|dash|adm|auth|error|enquete|support|aide|parametres)/.test(e.id)).filter((e) => !filtre.length || filtre.some((f) => e.id.startsWith(f)));
   const page = m.page;
   await page.setViewportSize({ width: 1440, height: 900 });
   const index = [];

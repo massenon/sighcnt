@@ -215,9 +215,12 @@ class GroupesCartes extends StatelessWidget {
           child: Row(children: [
             Icon(icone(r.icone), size: 16, color: JetonsShell.navy700),
             const SizedBox(width: 8),
-            Text(r.label, style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate700)),
-            const SizedBox(width: 8),
-            Text('${r.ecrans.length} écran(s)', style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate400)),
+            // Un seul Text : la maquette concatène le titre et le compte dans le MÊME titre (la parité N1 compare le texte entier).
+            Text.rich(TextSpan(children: [
+              TextSpan(text: r.label, style: const TextStyle(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600, color: JetonsShell.slate700)),
+              const TextSpan(text: ' '),
+              TextSpan(text: '${r.ecrans.length} écran(s)', style: const TextStyle(fontSize: 12, height: 16 / 12, color: JetonsShell.slate400)),
+            ])),
           ]),
         ),
         LayoutBuilder(builder: (_, w) {
@@ -244,7 +247,7 @@ class GroupesCartes extends StatelessWidget {
 }
 
 /// `parametres-hub` : « Paramètres système » pour tout profil qui n'a pas l'onglet « Système » du ruban. Les écrans du système que SES droits ouvrent, en cartes,
-/// et rien d'autre. Sur un poste fileul : ni le poste mère ni le relais.
+/// et rien d'autre. Le poste mère et le relais ont leur propre place (ruban de l'administrateur, onglet « Relais en ligne » de cfg-systeme).
 class EcranParametresHub extends StatelessWidget with EcranMaquette {
   const EcranParametresHub({super.key, this.estMere = false});
   final bool estMere;
@@ -258,7 +261,7 @@ class EcranParametresHub extends StatelessWidget with EcranMaquette {
     final c = ContexteEcran.of(context);
     final nav = c.donnees;
     if (nav == null) return const NoteSigh('Le manifeste de navigation est indisponible.', ton: TonSigh.attention, icone: LucideIcons.triangleAlert);
-    final domaines = nav.manifeste.cartesParametres(nav.matrice, c.role, estMere: estMere, domaines: const {'Système', 'Poste mère', 'Relais en ligne'});
+    final domaines = nav.manifeste.cartesParametres(nav.matrice, c.role, estMere: estMere, domaines: const {'Système'});
     return GroupesCartes(domaines: domaines, nav: nav, aller: c.aller);
   }
 }

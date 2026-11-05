@@ -144,10 +144,6 @@
    "Politique de mot de passe de la clinique (CDCT §12.2).",
    "Nouveau mot de passe",
    "Confirmer le mot de passe",
-   "8 caractères minimum",
-   "Au moins une majuscule et une minuscule",
-   "Au moins un chiffre et un caractère spécial",
-   "Renouvellement obligatoire tous les 90 jours",
    "Définir le mot de passe",
    "← Retour à la connexion",
    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
@@ -177,12 +173,7 @@
   "navigation": [
    "index.php"
   ],
-  "regles": [
-   "8 caractères minimum",
-   "Au moins une majuscule et une minuscule",
-   "Au moins un chiffre et un caractère spécial",
-   "Renouvellement obligatoire tous les 90 jours"
-  ]
+  "regles": []
  },
  "doubleFacteur": {
   "textes": [
@@ -1980,6 +1971,10 @@
       "href": "pages/aide-apropos.php"
      },
      {
+      "label": "Paramètres système",
+      "href": "pages/parametres-hub.php"
+     },
+     {
       "label": "Contactez l’éditeur",
       "href": "pages/contact-editeur.php"
      },
@@ -2030,7 +2025,7 @@
     ]
    }
   ],
-  "pied": "319 écrans métier recensés au manifeste, plus 21 pages d’accès et système.",
+  "pied": "319 écrans métier recensés au manifeste, plus 22 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },

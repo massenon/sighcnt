@@ -1230,7 +1230,7 @@
       d.modules.forEach(function (m) {
         var groupe = el('section.hub-group');
         groupe.appendChild(el('h3.mb-2.flex.items-center.gap-2.text-sm.font-semibold.text-slate-700', null,
-          [C.icon(m.icon, 'h-4 w-4 text-navy-700'), el('span', { text: m.label }), el('span.text-xs.font-normal.text-slate-400', { text: String(m.items.length) + ' écran(s)' })]));
+          [C.icon(m.icon, 'h-4 w-4 text-navy-700'), el('span', null, [el('span', { text: m.label }), ' ', el('span.text-xs.font-normal.text-slate-400', { text: String(m.items.length) + ' écran(s)' })])]));
         var flex = el('div.hub-flex.flex.flex-wrap.gap-3');
         m.items.forEach(function (it) {
           var carte = carteHub(it, m);

@@ -100,6 +100,16 @@ La copie lisible côté serveur (modèle TATACORA, option A) a été écartée :
 | Q6 | Fréquence de dépôt de la copie | toutes les 30 secondes au plus, uniquement s'il y a du nouveau | non |
 | Q7 | Durée de verrouillage automatique de la page | 10 minutes d'inactivité | non |
 
+### Réponses de la Direction du 05/11/2026 (et points à lever avant le code)
+
+| # | Réponse | À lever |
+|---|---|---|
+| Q1 | Recommandation retenue (clé affichée sur la mère en texte et QR, collée dans la page, en mémoire de l'onglet, copie papier au coffre). **Si elle est perdue, le poste propose l'envoi par courriel** : l'utilisateur saisit une adresse et reçoit la clé. | **Risque de sécurité** : une clé envoyée en clair par courriel traverse des serveurs de messagerie. Avec la copie chiffrée du relais, elle donne accès à tout. Alternative proposée : envoyer la clé **chiffrée par une phrase secrète** que la personne choisit au moment de la demande et transmet par un autre canal, avec un lien à usage unique et une expiration. À valider (Q1b). |
+| Q2 | **Clé unique.** | Contradiction avec Q3 (clé médicale séparée). À trancher (Q2b). |
+| Q3 | Inclure les dossiers de patients, chiffrés, **avec une clé médicale séparée**. | Voir Q2b. |
+| Q3b | Les dossiers de patients sont consultables sur le web : **oui**. | Aucun. |
+| Q4 | Non répondue (volume de l'hébergement). | Mesure à faire en phase A. |
+
 ## 10. Plan en phases
 
 1. **Phase A (relais et mère, sans interface)** : sens `copie` au relais, dépôt par la mère, rang contigu, opacité mesurée, tests de bout en bout dans le banc (`npm run banc:sync`).

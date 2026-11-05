@@ -316,7 +316,7 @@
       var role = (global.SIGH.store.session() || {}).role;
       var N = global.SIGH.nav, K = global.SIGH.kit;
       var host = el('div.space-y-4');
-      host.appendChild(K.groupesCartes(N.treeParametres(role, ['Système', 'Poste mère', 'Relais en ligne'])));
+      host.appendChild(K.groupesCartes(N.treeParametres(role, ['Système'])));
       return host;
     },
   });
