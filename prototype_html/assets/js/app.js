@@ -400,7 +400,7 @@
     var header = el('header#app-menubar.no-print.sticky.top-0.z-40.bg-navy-950.shadow-lg');
     header.appendChild(buildTopbar(session, currentId));
 
-    var arbre = N.tree(session.role);
+    var arbre = N.treeRuban(session.role);
     if (!arbre.length) return header;
 
     var entry = N.get(currentId);
@@ -1003,7 +1003,8 @@
     body.appendChild(head);
 
     var links = el('div.grid.grid-cols-2.gap-2');
-    [['Mon compte', 'cfg-compte', 'user-cog'], ['Notifications', 'cfg-notifications', 'bell'],
+    [['Paramètres système', N.RUBAN_SYSTEME_ROLES.indexOf(s.role) >= 0 ? 'cfg-systeme' : 'parametres-hub', 'settings'],
+     ['Mon compte', 'cfg-compte', 'user-cog'], ['Notifications', 'cfg-notifications', 'bell'],
      ['Aide & À propos', 'aide-apropos', 'life-buoy'], ['Contactez l’éditeur', 'contact-editeur', 'mail'],
      ['Journal d’audit', 'm14-audit', 'scroll-text'], ['Écran verrouillé', 'auth-lock', 'lock']].forEach(function (l) {
       links.appendChild(el('a.flex.items-center.gap-2.rounded-lg.border.border-slate-200.px-3.py-2.text-sm.text-slate-700.hover\\:bg-slate-50', { href: href(l[1]) },

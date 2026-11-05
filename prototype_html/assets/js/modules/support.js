@@ -302,6 +302,26 @@
   });
 
   /* ==========================================================================
+   * PARAMÈTRES SYSTÈME, VERSION « CARTES » (arbitrage du 05/11/2026)
+   * --------------------------------------------------------------------------
+   * Pour tout profil qui n'a pas l'onglet « Système » du ruban : les écrans du
+   * domaine Système que SES droits ouvrent, en cartes de hub, et rien d'autre.
+   * Aucun réglage ne se saisit ici ; une carte n'apparaît jamais pour un écran
+   * interdit (RG-13).
+   * ======================================================================== */
+  global.SIGH.screen('parametres-hub', {
+    title: 'Paramètres système',
+    description: 'Les écrans du système que votre profil peut ouvrir, en cartes.',
+    render: function () {
+      var role = (global.SIGH.store.session() || {}).role;
+      var N = global.SIGH.nav, K = global.SIGH.kit;
+      var host = el('div.space-y-4');
+      host.appendChild(K.groupesCartes(N.treeParametres(role, ['Système', 'Poste mère', 'Relais en ligne'])));
+      return host;
+    },
+  });
+
+  /* ==========================================================================
    * AIDE & À PROPOS
    * ======================================================================== */
   global.SIGH.screen('aide-apropos', {

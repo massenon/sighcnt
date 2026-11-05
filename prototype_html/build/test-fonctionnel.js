@@ -12448,6 +12448,56 @@ async function viderMessages(page) {
   }
 
   {
+    scenario('Vague 77 — « Relais en ligne » quitte le ruban pour des cartes dans Paramètres système ; l’onglet Système n’est affiché qu’à l’admin et à la DA');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const lire = async (role, page) => {
+      await ouvrir('m1-patients.html');
+      await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role));
+      return null;
+    };
+    const ruban = () => page.evaluate(() => [...document.querySelectorAll('#app-menubar .ribbon-tab')].map((t) => t.textContent.trim()));
+    await lire('admin', page);
+    await ouvrir('cfg-systeme.html');
+    erreursJS = [];
+    const adm = { ruban: await ruban() };
+    adm.cartes = await page.evaluate(async () => {
+      const onglet = [...document.querySelectorAll('#page-content [role="tab"], #page-content .tab')].find((t) => /Relais en ligne/.test(t.textContent));
+      if (onglet) { onglet.click(); await new Promise((r) => setTimeout(r, 300)); }
+      const cartes = [...document.querySelectorAll('#page-content .hub-flex a.hub-card')].map((a) => a.getAttribute('href'));
+      return { onglet: !!onglet, n: cartes.length, rls: cartes.every((h) => /rls-/.test(h)), attendu: window.SIGH.nav.treeParametres('admin', ['Relais en ligne'])[0].modules[0].items.length };
+    });
+    verifier('Admin : le ruban garde « Système », « Poste mère » et les domaines de travail, mais plus « Relais en ligne »',
+      adm.ruban.includes('Système') && adm.ruban.includes('Poste mère') && !adm.ruban.includes('Relais en ligne') && adm.ruban.includes('Soins'), JSON.stringify(adm.ruban));
+    verifier('Admin : Paramètres système porte un onglet « Relais en ligne » avec UNE carte par écran du relais, chacune menant à son écran',
+      adm.cartes.onglet && adm.cartes.n === adm.cartes.attendu && adm.cartes.n >= 10 && adm.cartes.rls, JSON.stringify(adm.cartes));
+    await lire('da', page);
+    await ouvrir('m1-patients.html');
+    const da = await ruban();
+    verifier('DA : l’onglet « Système » est affiché, « Relais en ligne » non (le relais est réservé à l’administrateur)', da.includes('Système') && !da.includes('Relais en ligne'), JSON.stringify(da));
+    const autres = {};
+    for (const role of ['direction', 'comptable', 'reception']) {
+      await lire(role, page);
+      await ouvrir('m1-patients.html');
+      autres[role] = { ruban: await ruban() };
+      await page.evaluate(() => window.SIGH.app.openProfile());
+      await new Promise((r) => setTimeout(r, 300));
+      autres[role].bouton = await page.evaluate(() => { const a = [...document.querySelectorAll('.modal a, [role="dialog"] a')].find((x) => /Paramètres système/.test(x.textContent)); return a ? a.getAttribute('href') : null; });
+      await ouvrir('parametres-hub.html');
+      autres[role].cartes = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].map((a) => a.getAttribute('href')));
+      autres[role].interdites = await page.evaluate((r) => [...document.querySelectorAll('#page-content a.hub-card')].map((a) => (a.getAttribute('href') || '').replace(/^.*\//, '').replace(/\.(php|html).*$/, ''))
+        .filter((id) => { const e = window.SIGH.nav.get(id); return e && !window.SIGH.nav.can(r, { id: id, roles: e.roles, module: e.module }); }), role);
+    }
+    verifier('Direction, comptable, réception : pas d’onglet « Système » au ruban, et jamais « Relais en ligne »',
+      Object.keys(autres).every((r) => !autres[r].ruban.includes('Système') && !autres[r].ruban.includes('Relais en ligne')), JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].ruban])));
+    verifier('Le profil offre le bouton « Paramètres système » vers la page de cartes pour ces profils',
+      Object.keys(autres).every((r) => /parametres-hub/.test(autres[r].bouton || '')), JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].bouton])));
+    verifier('La page de cartes ne montre JAMAIS un écran interdit au profil (RG-13), et la direction y retrouve ses écrans de sécurité',
+      Object.keys(autres).every((r) => autres[r].interdites.length === 0) && autres.direction.cartes.length > 5 && !autres.comptable.cartes.some((h) => /m14-utilisateurs/.test(h)),
+      JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].cartes.length, autres[r].interdites])));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  {
     scenario('Vague 75 — archive légale d’une clôture : CSV des écritures SYSCOHADA, balance, états, manifeste SHA-256, immuable, vérifiée au téléchargement');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');

@@ -933,6 +933,10 @@
       module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: true,
     },
     {
+      id: 'parametres-hub', label: 'Paramètres système', icon: 'settings',
+      module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: false,
+    },
+    {
       id: 'contact-editeur', label: 'Contactez l’éditeur', icon: 'mail',
       module: 'SUP', moduleLabel: 'Aide & assistance', domain: 'Système', dansRecherche: true,
     },
@@ -1537,6 +1541,26 @@
     }).filter(Boolean);
   }
 
+  /* LE RUBAN ET « PARAMÈTRES SYSTÈME » (arbitrage du 05/11/2026).
+     - « Relais en ligne » QUITTE le ruban : ses écrans deviennent des cartes de hub dans « Paramètres système » (onglet Relais en ligne). Ses pages, ses droits et
+       ses adresses ne bougent pas : on le retire de l'AFFICHAGE du ruban, jamais du manifeste.
+     - L'onglet « Système » du ruban (menu et méga-menu) n'est affiché qu'à l'administrateur système et à la Directrice Administrative. Les autres profils
+       atteignent ce qu'ils ont le droit d'ouvrir par la page « Paramètres système » (cartes de hub, filtrées par droits). Masquer n'est pas fermer : les droits
+       d'un écran restent ceux de la matrice. */
+  var RUBAN_HORS = ['Relais en ligne'];
+  var RUBAN_SYSTEME_ROLES = ['admin', 'da'];
+  function treeRuban(roleId) {
+    return tree(roleId).filter(function (d) {
+      if (RUBAN_HORS.indexOf(d.domain) >= 0) return false;
+      if (d.domain === 'Système') return RUBAN_SYSTEME_ROLES.indexOf(roleId) >= 0;
+      return true;
+    });
+  }
+  /** Les domaines nommés, déjà filtrés par les droits du rôle : la matière des cartes de « Paramètres système ». */
+  function treeParametres(roleId, domaines) {
+    return tree(roleId).filter(function (d) { return domaines.indexOf(d.domain) >= 0; });
+  }
+
   /** Module par son code (M6, MECEF…), enrichi de son domaine et de son hub. */
   function module(code) {
     var canonique = null, domaine = null, tous = [];
@@ -1704,6 +1728,7 @@
     RUBRIQUES: RUBRIQUES,
     ACTIONS_RAPIDES: ACTIONS_RAPIDES,
     can: can,
+    treeRuban: treeRuban, treeParametres: treeParametres, RUBAN_HORS: RUBAN_HORS, RUBAN_SYSTEME_ROLES: RUBAN_SYSTEME_ROLES,
     droits: droits,
     droitsEcran: droitsEcran,
     droitsOrigine: droitsOrigine,

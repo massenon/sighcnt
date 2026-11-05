@@ -2346,6 +2346,7 @@
       + 'tout ce qui a été archivé dans n’importe quel module s’y retrouve et s’y restaure.',
     render: function (root) {
       root.appendChild(U.tabs([
+        { id: 'relais', label: 'Relais en ligne', render: ongletRelais },
         { id: 'installation', label: 'Installation et données', render: ongletInstallation },
         { id: 'corbeille', label: 'Corbeille', badge: S.corbeille().length, render: ongletCorbeille },
         { id: 'bareme', label: 'Barème NS 131', render: ongletBaremeNS131 },
@@ -2354,6 +2355,15 @@
       return null;
     },
   });
+
+  /* --- Onglet « Relais en ligne » : les écrans du relais, en cartes de hub (ils ont quitté le ruban, arbitrage du 05/11/2026) --------------- */
+  function ongletRelais() {
+    var role = (S.session() || {}).role;
+    var hote = el('div.space-y-4');
+    hote.appendChild(K.note('Le <strong>relais en ligne</strong> (apps/web) est opaque : il transporte les opérations chiffrées entre la mère, les fileuls et les mobiles, sans jamais les lire. Ses écrans ne sont plus au ruban : ils sont ici.', { tone: 'info', icon: 'cloud' }));
+    hote.appendChild(K.groupesCartes(N.treeParametres(role, ['Relais en ligne'])));
+    return hote;
+  }
 
   /* --- Onglet « Installation et données » --------------------------------- */
   /* ==========================================================================
