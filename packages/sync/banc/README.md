@@ -89,3 +89,13 @@ cd packages/sync && npm run test:pair     # 13 tests : 5040 permutations, doublo
 ```
 
 Vérifié par mutation : sans le tri, sans le contrôle de part de stock, sans le contrôle des droits, sans la déduplication, la suite rougit. Non fait : les processus réels (relais HTTP, fileuls qui s'échangent), le port Dart, le branchement au poste.
+
+### Fileuls réels en mode pair (scénarios P1 à P3)
+
+`banc/pair-fileul.js` est un fileul qui n'a pas besoin de la mère : processus réel, base SQLite persistée (opérations, file de publication à rang contigu, curseurs), enveloppes AES-256-GCM, relève des journaux des autres par le relais. Le relais de référence accepte désormais le sens `pair` : un appareil dépose dans SON journal et lit celui des autres appareils appairés (`GET /pair/appareils` pour les découvrir), sans jamais voir un clair.
+
+- **P1** mère éteinte, trois fileuls : la demande du gestionnaire de stock est validée par la DA sur un autre poste et revient au demandeur ; un rôle sans droit est refusé à l'émission ; une sortie hors de la part de stock est écartée partout ; état identique sur les trois ; le relais ne voit aucun clair.
+- **P2** un poste hors réseau puis tué (SIGKILL) : sa file persistée repart, rien ne se perd, rien ne se duplique, rangs contigus au relais.
+- **P3** deux postes isolés modifient le même champ : le conflit est marqué avec les deux valeurs, la valeur est la même partout, la fiche reste provisoire.
+
+Vérifié par mutation (sans relève, sans droits à l'émission, sans persistance de la file, sans ordre total : le banc rougit). `SIGH_RELAIS=laravel` ignore P1 à P3 tant que `apps/web` ne porte pas le sens `pair`. Non fait : le retour de la mère (relève des journaux pair, rejeu, attribution du `seq`), le port Dart.

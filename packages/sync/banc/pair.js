@@ -126,4 +126,20 @@ class JournalRelais {
   appareils() { return Object.keys(this.parAppareil); }
 }
 
-module.exports = { FAMILLES, comparer, Horloge, etat, JournalRelais };
+/** Les droits du BANC (la matrice réelle vit dans le domaine : rbac.json). Une opération hors de ces droits est écartée à l'émission ET à la réception. */
+const DROITS_BANC = {
+  stock: { creer: ['stock', 'da'], entree: ['stock', 'da'], bail: ['stock', 'da'], sortie: ['stock', 'da', 'infirmier', 'pharmacien'] },
+  besoins: { soumettre: ['stock', 'infirmier', 'medecin', 'da', 'caissier'], valider: ['da'], rejeter: ['da'] },
+  patients: { '*': ['reception', 'infirmier', 'medecin', 'da', 'x'] },
+  rendezvous: { '*': ['reception', 'infirmier', 'medecin', 'da', 'x'] },
+  constantes: { '*': ['infirmier', 'medecin', 'x'] },
+  notes: { '*': ['infirmier', 'medecin', 'x'] },
+  factures: { '*': ['caissier', 'da', 'x'] },
+  prescriptions: { '*': ['medecin', 'x'] },
+};
+function droitsBanc(op) {
+  const c = DROITS_BANC[op.collection]; if (!c) return false;
+  const roles = c[op.type] || c['*']; return !!roles && roles.includes(op.role);
+}
+
+module.exports = { FAMILLES, comparer, Horloge, etat, JournalRelais, droitsBanc, DROITS_BANC };

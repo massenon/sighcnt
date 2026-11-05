@@ -169,9 +169,34 @@ async function monde(opts = {}) {
     m.mobiles[nom] = mob;
     return mob;
   };
+  /* ADR-0006 : un fileul en MODE PAIR (pair-fileul.js) : il ne parle QU'au relais (par son propre commutateur, pour couper son réseau seul). */
+  m.pairs = {};
+  m.clePair = require('node:crypto').randomBytes(32).toString('hex');
+  m.pair = async (nom, o = {}) => {
+    const port = await portLibre();
+    const reseau = new Commutateur(m.relais.port); const portReseau = await reseau.demarrer();
+    const p = {
+      nom, port, proc: null, reseau, base: `http://127.0.0.1:${port}`,
+      async demarrer() { p.proc = await lancer('pair-fileul.js', [`--port=${port}`, `--relais=http://127.0.0.1:${portReseau}`, `--db=${path.join(dir, nom + '.sqlite')}`, `--nom=${nom}`, `--cle=${m.clePair}`, '--intervalle-ms=100']); },
+      tuer() { if (p.proc) { p.proc.kill('SIGKILL'); p.proc = null; } return dormir(80); },
+      get: (chemin) => appel(p.base, 'GET', chemin).then((r) => r.json),
+      post: (chemin, corps) => appel(p.base, 'POST', chemin, corps),
+      etat: () => p.get('/etat'), fiches: () => p.get('/fiches'),
+      emettre: (cmd) => p.post('/emettre', cmd),
+      coupe: () => reseau.regler('ferme'), rouvre: () => reseau.regler('ouvert'),
+    };
+    await p.demarrer();
+    const code = 'code-' + nom + '-' + Math.random().toString(36).slice(2);
+    await m.relais.direct('POST', '/mere/code', { hash: require('node:crypto').createHash('sha256').update(code).digest('hex') });
+    const r = await p.post('/appairer', { code });
+    if (r.status !== 200) throw new Error('appairage pair refusé : ' + JSON.stringify(r.json));
+    p.uuid = r.json.uuid; m.pairs[nom] = p;
+    return p;
+  };
   m.fermer = async () => {
     for (const f of Object.values(m.fileuls)) if (f.proc) f.proc.kill('SIGKILL');
     for (const x of Object.values(m.mobiles)) if (x.proc) x.proc.kill('SIGKILL');
+    for (const x of Object.values(m.pairs)) { if (x.proc) x.proc.kill('SIGKILL'); x.reseau.arreter(); }
     if (m.mere.proc) m.mere.proc.kill('SIGKILL');
     if (m.relais && m.relais.proc) m.relais.proc.kill('SIGKILL');
     if (m.relais && process.env.SIGH_RELAIS === 'laravel') require('node:child_process').spawnSync('pkill', ['-f', `php -S 127.0.0.1:${m.relais.port}`]);
@@ -882,6 +907,84 @@ const scenarios = {
     verifier('la console de la mère, elle, le modifie : tous les postes le reçoivent', await attendre(async () => (await f1.vue('tarifs', 'T1')).data.prix === 7000 && (await f2.vue('tarifs', 'T1')).data.prix === 7000));
     await m.fermer();
   },
+  /* ===== ADR-0006 : les fileuls s'échangent par le relais, la mère étant ÉTEINTE ===================================== */
+  async P1() {
+    courant = 'PAIR-P1 · mère éteinte : trois fileuls s\'échangent par le relais, la DA valide sur un autre poste, tous convergent';
+    const m = await monde({ relais: true });
+    await m.mere.tuer();
+    const f1 = await m.pair('F1'); const f2 = await m.pair('F2'); const f3 = await m.pair('F3');
+    await f1.emettre({ collection: 'stock', fiche: 'gants', type: 'creer', champs: { qte: 100 }, role: 'stock' });
+    await f1.emettre({ collection: 'stock', fiche: 'gants', type: 'bail', champs: { appareil: f2.uuid, qte: 20 }, role: 'stock' });
+    await f2.emettre({ collection: 'patients', fiche: 'p1', type: 'creer', champs: { nom: 'AKPO Séraphin', tel: '97000000' }, role: 'reception' });
+    const b = await f3.emettre({ collection: 'besoins', fiche: 'b1', type: 'soumettre', champs: { article: 'gants', qte: 50 }, role: 'stock' });
+    verifier('la demande du gestionnaire de stock est vue par les deux autres postes SANS la mère', await attendre(async () => (await f2.fiches()).besoins.b1 && (await f1.fiches()).besoins.b1, 10000));
+    const v = await f2.emettre({ collection: 'besoins', fiche: 'b1', type: 'valider', champs: {}, role: 'da' });
+    verifier('la DA valide sur un AUTRE poste : la validation revient au demandeur par la synchronisation', await attendre(async () => ((await f3.fiches()).besoins.b1 || {}).etat === 'valide', 10000));
+    const refus = await f1.emettre({ collection: 'besoins', fiche: 'b1', type: 'rejeter', champs: {}, role: 'stock' });
+    verifier('un rôle sans droit de validation est refusé À L\'ÉMISSION', refus.status === 403, refus.json);
+    await f2.emettre({ collection: 'stock', fiche: 'gants', type: 'sortie', champs: { qte: 15 }, role: 'infirmier' });
+    await f2.emettre({ collection: 'stock', fiche: 'gants', type: 'sortie', champs: { qte: 10 }, role: 'infirmier' });
+    const converge = async () => { const a = JSON.stringify(await f1.fiches()); return a === JSON.stringify(await f2.fiches()) && a === JSON.stringify(await f3.fiches()); };
+    verifier('les trois fileuls ont EXACTEMENT le même état', await attendre(converge, 10000));
+    const E = await f1.fiches();
+    verifier('la sortie qui dépasse la PART de F2 est écartée partout (RG-03), le stock vaut 85', E.stock.gants.qte === 85 && E.refusees.some((r) => r.code === 'hors_part'), [E.stock.gants.qte, E.refusees]);
+    verifier('ce qui s\'est fait sans la mère est PROVISOIRE', E.provisoire.includes('patients/p1'));
+    const tout = (await m.relais.direct('GET', '/banc/tout')).json;
+    const brut = JSON.stringify(tout.lignes);
+    verifier('le relais ne voit AUCUN clair : ni nom de patient, ni nom de collection', !/AKPO|97000000|patients|besoins|gants/.test(brut) && tout.lignes.filter((l) => l.dir === 'pair').length >= 7, tout.lignes.length);
+    verifier('rangs contigus par appareil au relais', ['pair'].every(() => { const par = {}; for (const l of tout.lignes.filter((x) => x.dir === 'pair')) (par[l.appareil] = par[l.appareil] || []).push(l.n); return Object.values(par).every((ns) => ns.sort((a, c) => a - c).every((n, i) => n === i + 1)); }));
+    verifier('aucune anomalie (trou, enveloppe altérée) sur les postes', (await f1.etat()).anomalies.length === 0 && (await f2.etat()).anomalies.length === 0 && (await f3.etat()).anomalies.length === 0);
+    await m.fermer();
+  },
+  async P2() {
+    courant = 'PAIR-P2 · un poste hors réseau puis tué (SIGKILL) : rien ne se perd, rien ne se duplique, tous reconvergent';
+    const m = await monde({ relais: true });
+    await m.mere.tuer();
+    const f1 = await m.pair('F1'); const f2 = await m.pair('F2'); const f3 = await m.pair('F3');
+    await f1.emettre({ collection: 'stock', fiche: 'sparadrap', type: 'creer', champs: { qte: 40 }, role: 'stock' });
+    await attendre(async () => (await f3.fiches()).stock.sparadrap, 10000);
+    await f3.coupe();
+    await f3.emettre({ collection: 'patients', fiche: 'p9', type: 'creer', champs: { nom: 'DOSSOU' }, role: 'reception' });
+    await f3.emettre({ collection: 'constantes', fiche: 'c9', type: 'creer', champs: { pouls: 80 }, role: 'infirmier' });
+    verifier('hors réseau, le poste voit tout de suite ses saisies', (await f3.fiches()).fiches['patients/p9'] !== undefined && (await f3.etat()).en_attente === 2);
+    await f1.emettre({ collection: 'patients', fiche: 'p2', type: 'creer', champs: { nom: 'HOUNKPATIN' }, role: 'reception' });
+    verifier('les autres postes continuent entre eux', await attendre(async () => (await f2.fiches()).fiches['patients/p2'] !== undefined, 10000));
+    verifier('ils ne voient pas encore ce que F3 a saisi hors réseau', (await f2.fiches()).fiches['patients/p9'] === undefined);
+    await f3.tuer(); await f3.demarrer();
+    verifier('après SIGKILL, le poste retrouve ses saisies non publiées (file persistée)', (await f3.etat()).en_attente === 2 && (await f3.fiches()).fiches['patients/p9'] !== undefined);
+    await f3.rouvre();
+    const converge = async () => { const a = JSON.stringify(await f1.fiches()); return a === JSON.stringify(await f2.fiches()) && a === JSON.stringify(await f3.fiches()); };
+    verifier('le réseau revient : les trois reconvergent', await attendre(converge, 15000));
+    const E = await f2.fiches();
+    verifier('les deux saisies de F3 sont chez les autres, UNE fois chacune', E.fiches['patients/p9'] && E.fiches['constantes/c9'] && Object.keys(E.fiches).length === 3, Object.keys(E.fiches));
+    const tout = (await m.relais.direct('GET', '/banc/tout')).json;
+    const f3Rangs = tout.lignes.filter((l) => l.dir === 'pair' && l.appareil === f3.uuid).map((l) => l.n).sort((a, c) => a - c);
+    verifier('au relais, le journal de F3 a des rangs contigus sans doublon', JSON.stringify(f3Rangs) === JSON.stringify([1, 2]), f3Rangs);
+    verifier('aucune anomalie', (await f1.etat()).anomalies.length === 0 && (await f2.etat()).anomalies.length === 0 && (await f3.etat()).anomalies.length === 0);
+    await m.fermer();
+  },
+  async P3() {
+    courant = 'PAIR-P3 · deux postes isolés modifient le même champ : le conflit est MARQUÉ, la valeur est la même partout';
+    const m = await monde({ relais: true });
+    await m.mere.tuer();
+    const f1 = await m.pair('F1'); const f2 = await m.pair('F2'); const f3 = await m.pair('F3');
+    await f1.emettre({ collection: 'patients', fiche: 'p1', type: 'creer', champs: { nom: 'AKPO', tel: '1' }, role: 'reception' });
+    await attendre(async () => (await f2.fiches()).fiches['patients/p1'] && (await f3.fiches()).fiches['patients/p1'], 10000);
+    const vu = (await f2.fiches()).fiches['patients/p1'].hlc.tel;
+    await f1.coupe(); await f2.coupe();
+    await f1.emettre({ collection: 'patients', fiche: 'p1', type: 'modifier', champs: { tel: '91' }, vu: { tel: vu }, role: 'reception' });
+    await f2.emettre({ collection: 'patients', fiche: 'p1', type: 'modifier', champs: { tel: '92' }, vu: { tel: vu }, role: 'reception' });
+    await dormir(300);
+    await f1.rouvre(); await f2.rouvre();
+    const converge = async () => { const a = JSON.stringify(await f1.fiches()); return a === JSON.stringify(await f2.fiches()) && a === JSON.stringify(await f3.fiches()); };
+    verifier('les trois reconvergent', await attendre(async () => (await f3.fiches()).conflits.length === 1 && (await converge()), 15000));
+    const E = await f3.fiches();
+    verifier('UN conflit sur le téléphone est marqué, visible, avec les deux valeurs', E.conflits.length === 1 && E.conflits[0].champ === 'tel' && [E.conflits[0].a, E.conflits[0].b].sort().join() === '91,92', E.conflits);
+    verifier('la valeur retenue est la même sur tous les postes (la plus récente de l\'ordre total)', E.fiches['patients/p1'].data.tel === (await f1.fiches()).fiches['patients/p1'].data.tel);
+    verifier('la fiche reste PROVISOIRE : la mère tranchera à son retour', E.provisoire.includes('patients/p1'));
+    await m.fermer();
+  },
+
 };
 
 /* --- exécution ------------------------------------------------------------------------------ */
@@ -890,6 +993,7 @@ const scenarios = {
   const noms = Object.keys(scenarios).filter((n) => !voulus.length || voulus.includes(n));
   const t0 = Date.now();
   for (const n of noms) {
+    if (/^P\d/.test(n) && process.env.SIGH_RELAIS === 'laravel') { console.log(`\n▶ ${n} · ignoré : le relais Laravel ne porte pas encore le sens « pair » (ADR-0006, étape relais)`); continue; }
     console.log(`\n▶ ${n}`);
     /* Garde-fou : un scénario qui se bloque ou qui lève une exception ne laisse ni processus
        orphelin ni banc suspendu — il échoue, nommé, et les processus sont tués. */
