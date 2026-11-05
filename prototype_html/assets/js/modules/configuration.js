@@ -2346,11 +2346,11 @@
       + 'tout ce qui a été archivé dans n’importe quel module s’y retrouve et s’y restaure.',
     render: function (root) {
       root.appendChild(U.tabs([
-        { id: 'relais', label: 'Relais en ligne', render: ongletRelais },
         { id: 'installation', label: 'Installation et données', render: ongletInstallation },
         { id: 'corbeille', label: 'Corbeille', badge: S.corbeille().length, render: ongletCorbeille },
         { id: 'bareme', label: 'Barème NS 131', render: ongletBaremeNS131 },
         { id: 'reinitialisation', label: 'Jeux de test', render: ongletReinitialisation },
+        { id: 'relais', label: 'Relais en ligne', render: ongletRelais },
       ]));
       return null;
     },
