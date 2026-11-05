@@ -25,7 +25,7 @@ Copy-Item .env.example .env
 # éditer .env : DB_PASSWORD=... et RELAIS_SECRET_MERE=<texte long aléatoire>
 php artisan key:generate
 php artisan migrate
-php artisan relais:superadmin votre@courriel.bj --mot-de-passe='un-mot-de-passe-de-12-caracteres-au-moins'
+php artisan relais:superadmin votre@courriel.bj --mot-de-passe='un-mot-de-passe-de-8-caracteres-au-moins'
 php artisan serve --host=127.0.0.1 --port=8000
 ```
 

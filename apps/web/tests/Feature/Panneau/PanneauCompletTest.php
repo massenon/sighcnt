@@ -108,13 +108,13 @@ class PanneauCompletTest extends TestCase
         @unlink(Exporteur::dossier().'/'.$e->fichier);
     }
 
-    public function test_changer_le_mot_de_passe_exige_l_ancien_douze_caracteres_et_ne_journalise_pas_le_secret(): void
+    public function test_changer_le_mot_de_passe_exige_l_ancien_huit_caracteres_et_ne_journalise_pas_le_secret(): void
     {
         $u = $this->admin();
         Livewire::actingAs($u)->test(Superadmin::class)
             ->set('actuel', 'faux')->set('nouveau', 'nouveau-mot-de-passe-13')->set('confirmation', 'nouveau-mot-de-passe-13')->call('changerMotDePasse')->assertSee('actuel est incorrect');
         Livewire::actingAs($u)->test(Superadmin::class)
-            ->set('actuel', 'ancien-mot-de-passe-12')->set('nouveau', 'court')->set('confirmation', 'court')->call('changerMotDePasse')->assertSee('au moins 12');
+            ->set('actuel', 'ancien-mot-de-passe-12')->set('nouveau', 'court')->set('confirmation', 'court')->call('changerMotDePasse')->assertSee('au moins 8');
         Livewire::actingAs($u)->test(Superadmin::class)
             ->set('actuel', 'ancien-mot-de-passe-12')->set('nouveau', 'nouveau-mot-de-passe-13')->set('confirmation', 'autre-chose-de-long')->call('changerMotDePasse')->assertSee('ne correspond pas');
         $this->assertTrue(Hash::check('ancien-mot-de-passe-12', $u->fresh()->password));

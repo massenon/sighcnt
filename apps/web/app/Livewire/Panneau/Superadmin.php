@@ -29,8 +29,8 @@ class Superadmin extends Component
         $u = auth()->user();
         if (! Hash::check($this->actuel, (string) $u->password)) {
             $this->erreur = 'Le mot de passe actuel est incorrect.';
-        } elseif (mb_strlen($this->nouveau) < 12) {
-            $this->erreur = 'Le nouveau mot de passe doit compter au moins 12 caractères.';
+        } elseif (mb_strlen($this->nouveau) < 8) {
+            $this->erreur = 'Le nouveau mot de passe doit compter au moins 8 caractères.';
         } elseif ($this->nouveau !== $this->confirmation) {
             $this->erreur = 'La confirmation ne correspond pas.';
         }

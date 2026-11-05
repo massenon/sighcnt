@@ -36,7 +36,7 @@
     <form class="formulaire" style="margin:16px 0" wire:submit="changerMotDePasse">
         <label for="actuel">Mot de passe actuel</label>
         <input id="actuel" type="password" wire:model="actuel" autocomplete="current-password" required>
-        <label for="nouveau">Nouveau mot de passe (12 caractères au moins)</label>
+        <label for="nouveau">Nouveau mot de passe (8 caractères au moins)</label>
         <input id="nouveau" type="password" wire:model="nouveau" autocomplete="new-password" required>
         <label for="confirmation">Confirmation</label>
         <input id="confirmation" type="password" wire:model="confirmation" autocomplete="new-password" required>

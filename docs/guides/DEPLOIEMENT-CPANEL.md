@@ -28,7 +28,7 @@ Sans SSH, une commande Artisan se lance par une **tâche cron à usage unique** 
 | Besoin | Commande (chemin PHP : `/usr/local/bin/php`, ou `ea-php82`) |
 |---|---|
 | Créer les tables | `cd ~/sigh-relais && /usr/local/bin/php artisan migrate --force` |
-| Créer le compte superadmin | `cd ~/sigh-relais && /usr/local/bin/php artisan relais:superadmin dg@exemple.bj --mot-de-passe='…12 caractères au moins…'` |
+| Créer le compte superadmin | `cd ~/sigh-relais && /usr/local/bin/php artisan relais:superadmin dg@exemple.bj --mot-de-passe='…8 caractères au moins…'` |
 | Vider les caches après mise à jour | `cd ~/sigh-relais && /usr/local/bin/php artisan optimize:clear` |
 
 **Sauvegarde automatique avant chaque migration** : exporter la base (*phpPgAdmin* ou `pg_dump` via cron) avant de lancer `migrate`. Après la création du compte, effacer la ligne de cron qui contient le mot de passe.
