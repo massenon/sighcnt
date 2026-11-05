@@ -12303,6 +12303,39 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   }
 
+  {
+    scenario('Vague 73 — le dossier patient imprimé est le dossier ENTIER : identité, dossier de consultation et toutes les rubriques');
+    const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
+    await ouvrir('m1-patients.html');
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
+    await ouvrir('m1-patients.html');
+    erreursJS = [];
+    const cible = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const p = S.collection('patients').active().filter((x) => x.code === 'CNT/13/26')[0] || S.collection('patients').active()[0];
+      return { code: p.code, nom: p.nom };
+    });
+    await page.evaluate((nom) => { const i = document.querySelector('input[type="search"], .search input, input[placeholder*="echerch"]'); if (i) { i.value = nom; i.dispatchEvent(new Event('input', { bubbles: true })); } }, cible.nom);
+    await new Promise((r) => setTimeout(r, 600));
+    const clic = await page.evaluate((code) => {
+      const tr = [...document.querySelectorAll('tbody tr')].find((r) => r.textContent.indexOf(code) >= 0);
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => /Imprimer/.test(x.title || x.getAttribute('aria-label') || ''));
+      if (b) b.click();
+      return !!b;
+    }, cible.code);
+    await page.waitForFunction(() => !!document.querySelector('.print-sheet'), { timeout: 15000 }).catch(() => {});
+    const feuille = await page.evaluate(() => {
+      const s = document.querySelector('.print-sheet');
+      return s ? s.textContent.replace(/\s+/g, ' ') : '';
+    });
+    verifier('Le bouton d’impression du dossier ouvre un état', clic && feuille.length > 0, JSON.stringify({ clic, n: feuille.length }));
+    const attendues = ['Dossier de consultation', 'Antécédents & allergies', 'Soins', 'Hospitalisations', 'Maternité', 'Analyses & résultats', 'Imagerie médicale', 'Ordonnances', 'À domicile', 'Financier', 'Assurance', 'Traçabilité'];
+    const manquantes = attendues.filter((m) => feuille.toUpperCase().indexOf(m.toUpperCase()) < 0);
+    verifier('Toutes les rubriques du dossier figurent sur le papier (aucune ne manque)', manquantes.length === 0, 'manquantes : ' + manquantes.join(', '));
+    verifier('Aucun bouton ne se retrouve imprimé', await page.evaluate(() => !document.querySelector('.print-sheet button')), '');
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

@@ -711,6 +711,23 @@
     peindreMenu();
     peindreZone();
 
+    /* LE DOSSIER IMPRIMÉ EST LE DOSSIER ENTIER (05/11/2026). L'état imprimé ne portait que l'identité et quinze consultations : tout le reste
+       (dossier de consultation, antécédents, soins, hospitalisations, maternité, analyses, imagerie, ordonnances, domicile, finances, assurance,
+       traçabilité) ne sortait pas. Les sections viennent des MÊMES rubriques que l'écran, donc des mêmes droits : une rubrique restreinte à l'écran
+       l'est sur le papier (résultats d'analyses, comptes rendus d'imagerie). */
+    wrap.sectionsImprimables = function () {
+      var out = [
+        { titre: 'Identité et couverture', noeud: head.cloneNode(true) },
+        { titre: 'Dossier de consultation', noeud: carteDossierConsultation(p) },
+      ];
+      rubriques.forEach(function (r) {
+        var n;
+        try { n = r.render(); } catch (e) { n = U.empty('Rubrique indisponible.', { icon: 'alert-triangle' }); }
+        out.push({ titre: r.label, noeud: n });
+      });
+      return out;
+    };
+
     wrap.appendChild(droite);
     wrap.appendChild(gauche);
     return wrap;
@@ -975,40 +992,24 @@
     return box;
   }
 
-  /* --- État imprimable : fiche patient ------------------------------------- */
+  /* --- État imprimable : DOSSIER PATIENT COMPLET --------------------------- */
   function etatFiche(p) {
-    var consultations = C.sortBy(S.collection('consultations').active().filter(function (c) { return c.patientId === p.id; }), 'date', 'desc');
-    var contenu = el('div.space-y-4');
-    contenu.appendChild(P.tableau([
-      { label: 'Rubrique', key: 'k' }, { label: 'Information', key: 'v' },
-    ], [
-      { k: 'Code dossier', v: p.code },
-      { k: 'Nom et prénoms', v: p.nom + ' ' + p.prenom },
-      { k: 'Sexe', v: p.sexe === 'F' ? 'Féminin' : 'Masculin' },
-      { k: 'Âge', v: C.ageTexte(p) },
-      { k: 'Groupe sanguin', v: p.groupeSanguin || '—' },
-      { k: 'Antécédents', v: texteListe(p.antecedents, 'Aucun antécédent notable') },
-      { k: 'Allergies connues', v: texteListe(p.allergies, 'Aucune allergie connue') },
-      { k: 'Traitement en cours', v: p.traitementEnCours || '—' },
-      { k: 'Téléphone', v: p.telephone },
-      { k: 'Adresse', v: p.adresse || p.quartier },
-      { k: 'Personne à prévenir', v: p.personneAPrevenir || '—' },
-      { k: 'Assurance', v: p.assureurNom ? p.assureurNom + ' — ' + p.tauxPriseEnCharge + ' % (carte au ' + C.dateFR(p.carteExpiration) + ')' : 'Aucune' },
-    ]));
-
-    if (consultations.length) {
-      contenu.appendChild(el('p.mt-4.mb-1.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: 'Historique des consultations' }));
-      contenu.appendChild(P.tableau([
-        { label: 'Date', value: function (c) { return C.dateFR(c.date); } },
-        { label: 'Motif', key: 'motif' },
-        { label: 'Diagnostic', key: 'diagnostic' },
-        { label: 'Médecin', key: 'medecin' },
-      ], consultations.slice(0, 20)));
-    }
-
+    var sections;
+    try { sections = fiche(p).sectionsImprimables(); } catch (e) { if (global.console) global.console.error('[SIGH] dossier imprimé', e); sections = []; }
+    var contenu = el('div.space-y-3');
+    sections.forEach(function (sec) {
+      var n = sec.noeud;
+      if (!n) return;
+      /* Rien d'interactif sur le papier : les boutons (Lire, Imprimer…) n'ont pas de sens imprimés. */
+      [].slice.call(n.querySelectorAll('button, [role="tablist"]')).forEach(function (b) { b.remove(); });
+      contenu.appendChild(el('p.mt-4.mb-1.text-\\[11px\\].font-bold.uppercase.text-navy-900', { text: sec.titre }));
+      contenu.appendChild(n);
+    });
+    var vide = [].slice.call(contenu.querySelectorAll('p')).length === 0;
+    if (vide) contenu.appendChild(el('p.text-sm', { text: 'Dossier indisponible.' }));
     P.etat({
       titre: 'Fiche patient',
-      sousTitre: 'Dossier ' + p.code,
+      sousTitre: 'Dossier complet ' + p.code,
       cartouche: [
         ['Patient', p.nom + ' ' + p.prenom],
         ['Code dossier', p.code],

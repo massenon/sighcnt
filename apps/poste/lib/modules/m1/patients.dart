@@ -5,11 +5,11 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../core/plages_codes.dart';
 import '../../donnees/magasin.dart';
-import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun_m1.dart';
 import 'fiche.dart';
+import 'fiche_impression.dart';
 
 /// Les champs du dossier patient (`champs(record)` de `m1-patients.js`) : UNE déclaration pour la modale de modification ET la page d'ouverture.
 /// Le code (RG-01) n'est PAS un champ : il est attribué et ne se modifie plus — il s'affiche en tête (`enteteCode`).
@@ -315,58 +315,8 @@ class EcranPatients extends StatelessWidget with EcranMaquette {
   }
 }
 
-/// L'état imprimable de la fiche patient (`etatFiche`).
-void imprimerFichePatient(BuildContext ctx, Fiche p) {
-  final c = ContexteEcran.of(ctx);
-  final consultations = trierPar([
-    for (final x in c.magasin.collection('consultations').actives)
-      if (x['patientId'] == p['id']) x
-  ], (x) => x['date'], descendant: true);
-  final age = ageTexte(p, c.aujourdhui);
-  imprimerM1(ctx,
-      titre: 'Fiche patient',
-      sousTitre: 'Dossier ${p['code']}',
-      cartouche: [
-        ('Patient', '${p['nom']} ${p['prenom']}'),
-        ('Code dossier', '${p['code']}'),
-        ('Âge', age),
-        ('Groupe sanguin', patVrai(p['groupeSanguin']) ? '${p['groupeSanguin']}' : '—'),
-      ],
-      blocs: [
-        BlocTableau(TableauEtat(colonnes: [
-          ColonneEtat(libelle: 'Rubrique', valeur: (l) => l['k']),
-          ColonneEtat(libelle: 'Information', valeur: (l) => l['v']),
-        ], lignes: [
-          {'k': 'Code dossier', 'v': p['code']},
-          {'k': 'Nom et prénoms', 'v': '${p['nom']} ${p['prenom']}'},
-          {'k': 'Sexe', 'v': p['sexe'] == 'F' ? 'Féminin' : 'Masculin'},
-          {'k': 'Âge', 'v': age},
-          {'k': 'Groupe sanguin', 'v': patVrai(p['groupeSanguin']) ? p['groupeSanguin'] : '—'},
-          {'k': 'Antécédents', 'v': patTexteListe(p['antecedents'], 'Aucun antécédent notable')},
-          {'k': 'Allergies connues', 'v': patTexteListe(p['allergies'], 'Aucune allergie connue')},
-          {'k': 'Traitement en cours', 'v': patVrai(p['traitementEnCours']) ? p['traitementEnCours'] : '—'},
-          {'k': 'Téléphone', 'v': p['telephone']},
-          {'k': 'Adresse', 'v': patVrai(p['adresse']) ? p['adresse'] : p['quartier']},
-          {'k': 'Personne à prévenir', 'v': patVrai(p['personneAPrevenir']) ? p['personneAPrevenir'] : '—'},
-          {
-            'k': 'Assurance',
-            'v': patVrai(p['assureurNom'])
-                ? '${p['assureurNom']} — ${p['tauxPriseEnCharge']} % (carte au ${dateFrM1(p['carteExpiration'])})'
-                : 'Aucune'
-          },
-        ])),
-        if (consultations.isNotEmpty)
-          BlocTableau(
-              TableauEtat(colonnes: [
-                ColonneEtat(libelle: 'Date', valeur: (l) => dateFrM1(l['date'])),
-                ColonneEtat(libelle: 'Motif', valeur: (l) => l['motif']),
-                ColonneEtat(libelle: 'Diagnostic', valeur: (l) => l['diagnostic']),
-                ColonneEtat(libelle: 'Médecin', valeur: (l) => l['medecin']),
-              ], lignes: consultations.take(20).toList()),
-              titre: 'Historique des consultations'),
-      ],
-      signatures: const [Signature('Le Secrétaire Médical'), Signature('Le Directeur Médical', nom: 'BASSONGUI Chabi Séko')]);
-}
+/// L'état imprimable de la fiche patient (`etatFiche`) : le dossier ENTIER, voir `fiche_impression.dart`.
+void imprimerFichePatient(BuildContext ctx, Fiche p) => imprimerDossierComplet(ctx, p);
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------
 // m1-patient-nouveau — la page d'ouverture d'un dossier

@@ -7,6 +7,7 @@ import 'package:sigh_poste/core/config_poste.dart';
 import 'package:sigh_poste/core/donnees_navigation.dart';
 import 'package:sigh_poste/donnees/magasin.dart';
 import 'package:sigh_poste/impression/apercu.dart';
+import 'package:sigh_poste/impression/feuilles.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/main.dart';
 
@@ -218,6 +219,38 @@ void main() {
       expect(find.textContaining('Sibilants bilatéraux'), findsOneWidget);
       await toucher(t, find.byKey(const Key('m1:rubrique:medical')));
       expect(find.text('Asthme'), findsWidgets);
+    });
+
+    cas('le dossier imprimé est le dossier ENTIER : toutes les rubriques figurent sur le papier (05/11/2026)', (t) async {
+      final m = petit({
+        'patients': [p('P1', 'CNT/1/26', {'nom': 'TCHANE', 'prenom': 'Bertine', 'allergies': ['Sulfamides'], 'assureur': 'NSIA', 'assureurNom': 'NSIA ASSURANCE', 'carteExpiration': '2027-12-31'})],
+        'consultations': [
+          {'id': 'C1', 'statut': 'actif', 'patientId': 'P1', 'type': 'Consultation', 'date': '2026-08-10', 'motif': 'Toux', 'diagnostic': 'Asthme', 'medecin': 'Dr A'},
+          {'id': 'C2', 'statut': 'actif', 'patientId': 'P1', 'type': 'Domicile', 'date': '2026-08-12', 'motif': 'Fièvre', 'medecin': 'Dr B'}
+        ],
+        'dossiersConsultation': [
+          {'id': 'DS1', 'statut': 'actif', 'patientId': 'P1', 'reference': 'DOS-1', 'dateArrivee': '2026-08-10', 'motifVenue': 'Toux persistante', 'examensPhysiques': {'pleuro_pulmonaire': {'auscultation': 'Sibilants bilatéraux'}}}
+        ],
+        'soins': [{'id': 'S1', 'statut': 'actif', 'patientId': 'P1', 'date': '2026-08-11', 'heure': '10h', 'acte': 'Pansement', 'soignant': 'Inf A', 'etat': 'realise'}],
+        'admissions': [{'id': 'A1', 'statut': 'en_cours', 'patientId': 'P1', 'dateEntree': '2026-08-13', 'chambre': '3', 'lit': '2', 'diagnosticEntree': 'Pneumonie'}],
+        'ordonnances': [{'id': 'O1', 'statut': 'actif', 'patientId': 'P1', 'numero': 'ORD-1', 'date': '2026-08-10', 'medecin': 'Dr A', 'montant': 5000}],
+        'factures': [{'id': 'F1', 'statut': 'actif', 'patientId': 'P1', 'numero': 'FAC-77', 'date': '2026-08-10', 'type': 'Consultation', 'montantTTC': 8000, 'reliquat': 3000, 'statutPaiement': 'partielle'}],
+      });
+      await ouvrir(t, m, 'm1-patient-profil');
+      await toucher(t, find.text('Imprimer la fiche'));
+      await t.pumpAndSettle();
+      // Le texte de la FEUILLE imprimée seule : l'écran sous l'aperçu porte les mêmes mots et masquerait un défaut.
+      final texte = norm(t.widgetList<Text>(find.descendant(of: find.byType(FeuilleA4), matching: find.byType(Text))).map((w) => w.data ?? w.textSpan?.toPlainText() ?? '').join(' ')).toUpperCase();
+      const attendues = [
+        'Identité et couverture', 'Dossier de consultation', 'Examen physique par appareil', 'Médical', 'Antécédents & allergies', 'Soins',
+        'Hospitalisations', 'Feuilles de température', 'Maternité', 'Analyses & résultats', 'Imagerie médicale', 'Ordonnances', 'À domicile',
+        'Financier', 'Assurance', 'Traçabilité'
+      ];
+      final manquantes = [for (final a in attendues) if (!texte.contains(a.toUpperCase())) a];
+      expect(manquantes, isEmpty, reason: 'rubriques absentes du papier');
+      expect(texte, contains('FAC-77'));
+      expect(texte, contains('SIBILANTS BILATÉRAUX'));
+      expect(texte, contains('PNEUMONIE'));
     });
 
     cas('un profil sans le droit d\'écrire ne voit ni « Modifier le dossier » ni « Nouveau »', (t) async {
