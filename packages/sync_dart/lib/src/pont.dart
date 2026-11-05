@@ -358,6 +358,7 @@ class Pont {
       await expedier();
     }, 250);
     tour(repliquer, 250);
+    tour(() => mere.pair.tour(), 250);
     tour(() async {
       await mere.verrou.executer(() => base.poserMeta('relais_dernier_ok', _dernierOk));
       await rel('POST', '/mere/battement', {});

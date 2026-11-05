@@ -15,6 +15,7 @@ import 'package:sigh_domaine/sigh_domaine.dart'
 import 'commun.dart';
 import 'depot.dart';
 import 'pont.dart';
+import 'pont_pair.dart';
 import 'supervision.dart';
 
 /// Une famille par collection (PRD §8) : A fiche descriptive · B journal · C pièce émise · D agrégat à invariant ·
@@ -97,6 +98,9 @@ const _ddl = '''
   CREATE TABLE IF NOT EXISTS conflits (id {AUTO}, collection TEXT, fiche TEXT, champ TEXT, a TEXT, b TEXT, appareil TEXT, etat TEXT DEFAULT 'ouvert', decision TEXT);
   CREATE TABLE IF NOT EXISTS plages (appareil TEXT, nom TEXT, debut BIGINT, fin BIGINT);
   CREATE TABLE IF NOT EXISTS baux (appareil TEXT, article TEXT, reste BIGINT, PRIMARY KEY (appareil, article));
+  CREATE TABLE IF NOT EXISTS pair_ops (id TEXT PRIMARY KEY, json TEXT, seq BIGINT);
+  CREATE TABLE IF NOT EXISTS pair_curseurs (appareil TEXT PRIMARY KEY, n BIGINT);
+  CREATE TABLE IF NOT EXISTS pair_sortie (n BIGINT PRIMARY KEY, enveloppe TEXT, depose INTEGER DEFAULT 0);
   CREATE TABLE IF NOT EXISTS acks (marque TEXT, appareil TEXT, PRIMARY KEY (marque, appareil));
   CREATE TABLE IF NOT EXISTS portee (appareil TEXT, collection TEXT, fiche TEXT, PRIMARY KEY (appareil, collection, fiche));
   CREATE TABLE IF NOT EXISTS sortie (appareil TEXT, n BIGINT, charge TEXT, depose INTEGER DEFAULT 0, PRIMARY KEY (appareil, n));
@@ -168,6 +172,7 @@ class Mere {
   final Depot base;
   final Verrou verrou = Verrou();
   late final Pont pont = Pont(this);
+  late final PontPair pair = PontPair(this);
   HttpServer? _serveur;
   Timer? _sauvegardeur;
 
@@ -186,6 +191,7 @@ class Mere {
     if (await base.meta('reinit_ouverte') == null) await base.poserMeta('reinit_ouverte', 0);
     final m = Mere._(cfg, base);
     await m.pont.initialiser();
+    await m.pair.initialiser();
     return m;
   }
 
@@ -580,6 +586,12 @@ class Mere {
         final m2 = '${maintenantMs()}';
         await base.poserMeta('resync', m2);
         return {'marque': m2};
+      case 'GET /admin/pair/etat':
+        adminOk(req);
+        return pair.etat();
+      case 'POST /admin/pair/trancher':
+        adminOk(req);
+        return pair.trancher(b);
       case 'GET /admin/etat':
         adminOk(req);
         final marque = await base.meta('resync');
