@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:sigh_domaine/sigh_domaine.dart' show famillesPair;
 import 'package:sigh_sync/sigh_sync.dart';
 
 import '../donnees/magasin.dart';
@@ -35,8 +36,12 @@ class MoteurPair {
   bool get appaire => _pair.etat()['uuid'] != null;
 
   /// Le moteur du poste parle au relais ; le pont d'activité écrit et lit par lui. [role] : le rôle de l'agent connecté.
+  /// Il ne porte QUE les collections de famille A (fiches à fusion par champ) : les autres familles (pièces émises, stock, flux de travail) ont leurs règles
+  /// propres, et celles que la règle de fusion ne connaît pas seraient refusées une à une. Les écrire champ à champ les corromprait.
+  static Set<String> get collectionsDuPont => {for (final e in famillesPair.entries) if (e.value == 'A') e.key};
+
   PontActivite pont({required String Function() role}) =>
-      PontActivite(_magasin, transport(role: role), etiquette: '${_pair.etat()['uuid'] ?? 'pair'}'.replaceAll('-', '').padRight(6, '0').substring(0, 6));
+      PontActivite(_magasin, transport(role: role), collections: collectionsDuPont, etiquette: '${_pair.etat()['uuid'] ?? 'pair'}'.replaceAll('-', '').padRight(6, '0').substring(0, 6));
 
   void arreter() => _miroir?.cancel();
 

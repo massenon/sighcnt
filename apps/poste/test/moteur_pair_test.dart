@@ -34,6 +34,16 @@ void main() {
     expect(m.collection('conflitsPair').actives, isEmpty, reason: 'la décision lève le conflit : la fiche est archivée, jamais supprimée');
     expect(moteur.etat()['ops'], 0);
   });
+  test('le pont pair ne porte que les familles A : ni factures, ni stock, ni lots', () {
+    expect(MoteurPair.collectionsDuPont, {'patients', 'rendezvous'});
+    final m = Magasin({}, 'POSTE', {});
+    final pair = FileulPair(ConfigPair(port: 0, relais: 'http://127.0.0.1:1', dbChemin: ':memory:', cleHex: '00' * 32));
+    final pont = MoteurPair.pour(pair, m).pont(role: () => 'da');
+    expect(pont.collections, {'patients', 'rendezvous'});
+    for (final interdite in ['factures', 'produits', 'lots', 'mouvements', 'ecritures', 'avoirs', 'admissions']) {
+      expect(pont.collections.contains(interdite), isFalse, reason: interdite);
+    }
+  });
   suitePont();
 }
 
