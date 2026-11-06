@@ -1791,10 +1791,15 @@ async function viderMessages(page) {
       const sheet = document.querySelector('.print-sheet');
       return {
         tableau: tableau,
-        pieces: nouvelles.map((f) => ({
-          numero: f.numero, volet: f.volet, total: f.montantTTC, ass: f.partAssurance,
-          pat: f.partPatient, remises: f.montantRemises, base: f.baseMecef,
-        })),
+        pieces: nouvelles.map((f) => {
+          const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === f.id);
+          const som = (c, k) => ecr.filter((e) => String(e.compte).startsWith(c)).reduce((n, e) => n + (e[k] || 0), 0);
+          return {
+            numero: f.numero, volet: f.volet, total: f.montantTTC, ass: f.partAssurance,
+            pat: f.partPatient, remises: f.montantRemises, base: f.baseMecef, regle: f.montantPaye,
+            nbEcr: ecr.length, d411: som('411', 'debit'), d571: som('571', 'debit'), c706: som('706', 'credit'),
+          };
+        }),
         texte: sheet ? sheet.textContent.replace(/\s+/g, ' ') : '',
       };
     }, prep);
@@ -1816,6 +1821,10 @@ async function viderMessages(page) {
     verifier('La remise est appliquée et tracée sur sa pièce',
       nonCouverte.remises === 30, 'remise ' + nonCouverte.remises + ' FCFA');
 
+    /* E2260 : « Enregistrer et encaisser » écrit au journal, équilibré (RG-10), et constate la créance de l'assureur. */
+    verifier('« Enregistrer et encaisser » pose l’écriture : 571 de ce qui est réglé, 411 de la part assureur, 706 du total, équilibrée',
+      emission.pieces.every((p) => p.d571 === p.regle && p.d411 === p.ass && p.c706 === p.d571 + p.d411 && (p.total === 0 || p.nbEcr >= 2)),
+      JSON.stringify(emission.pieces.map((p) => [p.numero, p.regle, p.ass, p.total, p.d571, p.d411, p.c706, p.nbEcr])));
     verifier('La base MECeF n’excède jamais la part patient',
       emission.pieces.every((p) => p.base <= p.pat),
       emission.pieces.map((p) => p.base + '≤' + p.pat).join(' · '));
@@ -12816,6 +12825,71 @@ async function viderMessages(page) {
     verifier('L’archive est IMMUABLE : modification, archivage et second dépôt de la même clôture refusés', r.modifie === false && r.archive === false && r.redepose === false, JSON.stringify([r.modifie, r.archive, r.redepose]));
     verifier('Chaque téléchargement vérifie l’empreinte : intact, livré ; altéré, REFUSÉ en le disant', r.lectureOk && r.altere && r.restaure, JSON.stringify([r.lectureOk, r.altere, r.restaure]));
     verifier('Après réouverture et seconde clôture, une SECONDE archive est déposée et la première reste intacte', r.rouvre && r.cl2 && r.nb2 === 2 && r.premiereIntacte && r.refs.join() === 'ARC-2040-01,ARC-2040-02', JSON.stringify([r.rouvre, r.cl2, r.cl2Motif, r.nb2, r.refs, r.premiereIntacte]));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  /* =========================================================================
+   * Vague 80 : la créance de l'ASSUREUR (411) est-elle écrite au journal ?
+   * -------------------------------------------------------------------------
+   * `ecrireEncaissement` lisait `facture.partAssureur` ; l'en-tête d'une facture porte `partAssurance`
+   * (`partAssureur` n'existe que sur les LIGNES). La sonde part d'une facture RÉELLE (PR.prescrire sur un
+   * assuré à la grille posée), l'encaisse et lit le journal : débit 411 = part assureur, crédit 706 = total.
+   * ======================================================================= */
+  {
+    scenario('Vague 80 — l’encaissement d’une facture assurée constate la créance de l’assureur (411) au journal');
+    await ouvrir('m8-facturation.html');
+    const r = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data, PR = window.SIGH.parcours;
+      const p = S.collection('patients').active().filter((x) => x.assureur && x.souscripteurId)[0];
+      const sous = S.collection('souscripteurs').get(p.souscripteurId);
+      D.BAREME_REFERENCE.garanties.forEach((g) => S.collection('garanties').insert({
+        souscripteurId: sous.id, assureur: sous.assureur, code: g.code, libelle: g.libelle,
+        categorie: g.categorie, taux: g.taux, plafond: g.plafond, unitePlafond: g.unitePlafond,
+      }));
+      S.collection('patients').update(p.id, { carteExpiration: '2099-12-31' });
+      const presc = PR.prescrire({ patientCode: p.code, medecin: 'Sonde', diagnostic: 'Sonde', medicaments: [], analyses: [D.ANALYSES[0].code], actes: [] });
+      const fac = presc.facture;
+      const tete = S.collection('factures').get(fac.id);
+      const entete = { partAssurance: tete.partAssurance, partAssureur: tete.partAssureur, partPatient: tete.partPatient, total: tete.montantTTC || tete.total };
+      const lignesAss = (tete.lignes || []).reduce((n, l) => n + (l.partAssureur || 0), 0);
+      const enc = PR.encaisser(fac.id, { montant: tete.partPatient });
+      const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === fac.id);
+      const somme = (cpt, sens) => ecr.filter((e) => String(e.compte).startsWith(cpt)).reduce((n, e) => n + (e[sens] || 0), 0);
+      return { entete, lignesAss, nb: ecr.length, d411: somme('411', 'debit'), c706: somme('706', 'credit'), d571: somme('571', 'debit'), refus: enc && enc.refus };
+    });
+    verifier('Sonde réelle : la facture assurée porte une part assureur sur ses lignes et sur l’en-tête (partAssurance)',
+      r.lignesAss > 0 && r.entete.partAssurance === r.lignesAss, JSON.stringify([r.entete, r.lignesAss]));
+    verifier('Le débit 411 de la part assureur est écrit au journal (et le crédit 706 vaut le total facturé)',
+      r.d411 === r.entete.partAssurance && r.d411 > 0 && r.c706 === r.d411 + r.d571, JSON.stringify(r));
+    /* L'écran Paiements : « Valider l'encaissement » passe par le moteur (écriture, lignes réglées, analyses libérées). */
+    const pai = await page.evaluate(() => {
+      const S = window.SIGH.store, D = window.SIGH.data, PR = window.SIGH.parcours;
+      const p = S.collection('patients').active().filter((x) => x.assureur && x.souscripteurId)[0];
+      const presc = PR.prescrire({ patientCode: p.code, medecin: 'Sonde', diagnostic: 'Sonde', medicaments: [], analyses: [D.ANALYSES[1].code], actes: [] });
+      return { id: presc.facture.id, numero: presc.facture.numero };
+    });
+    await ouvrir('m8-paiements.html');
+    const vue = await page.evaluate(async (pai) => {
+      const S = window.SIGH.store;
+      const champ = [...document.querySelectorAll('#page-content input')].find((i) => /echerch/i.test(i.placeholder || '') || i.type === 'search');
+      if (champ) { champ.value = pai.numero; champ.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 400)); }
+      const ligne = [...document.querySelectorAll('#page-content tbody tr')].find((tr) => tr.textContent.includes(pai.numero));
+      const bouton = ligne && [...ligne.querySelectorAll('button')].find((b) => /Encaisser/.test(b.textContent + (b.title || '') + (b.getAttribute('aria-label') || '')));
+      if (!bouton) return { trouve: false };
+      bouton.click();
+      await new Promise((r) => setTimeout(r, 400));
+      const valider = [...document.querySelectorAll('button')].find((b) => /Valider l.encaissement/.test(b.textContent));
+      if (!valider) return { trouve: true, modale: false };
+      valider.click();
+      await new Promise((r) => setTimeout(r, 600));
+      const f = S.collection('factures').get(pai.id);
+      const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === pai.id);
+      const som = (c, k) => ecr.filter((e) => String(e.compte).startsWith(c)).reduce((n, e) => n + (e[k] || 0), 0);
+      return { trouve: true, modale: true, statut: f.statutPaiement, ass: f.partAssurance, pat: f.partPatient, d411: som('411', 'debit'), d571: som('571', 'debit'), c706: som('706', 'credit'), nb: ecr.length,
+        lignesPayees: (f.lignes || []).filter((l) => l.statutPaiement === 'paye').length };
+    }, pai);
+    verifier('L’écran Paiements : « Valider l’encaissement » solde la pièce, règle ses lignes et pose l’écriture (571, 411 de l’assureur, 706)',
+      vue.trouve && vue.modale && vue.statut === 'soldee' && vue.lignesPayees > 0 && vue.d571 === vue.pat && vue.d411 === vue.ass && vue.c706 === vue.d571 + vue.d411 && vue.nb >= 2, JSON.stringify(vue));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   }
 

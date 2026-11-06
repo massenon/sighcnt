@@ -909,6 +909,13 @@
           var res = S.collection('factures', { module: 'M8', entite: 'Facture' }).insert(f);
           creees.push(res.record);
           annulations.push(res.undo);
+          /* LE COMPTABLE EST INFORMÉ DÈS L'ÉMISSION (E2260) : « Enregistrer et encaisser » n'écrivait RIEN au journal. L'écriture est celle du moteur
+             d'encaissement (débit 571 de ce que le patient verse, débit 411 de la part assureur, crédit 706 du total), équilibrée (RG-10) et en
+             brouillon. Une pro-forma n'est pas une pièce comptable. Annuler l'émission archive ses écritures (RG-14). */
+          if (!proforma) {
+            var posees = PR.ecrireEncaissement(res.record, reglePiece);
+            annulations.push(function () { posees.forEach(function (e) { S.collection('ecritures').archive(e.id); }); });
+          }
         });
 
         /* Sortie automatique du stock pour les médicaments facturés (CDCT §10.7) */
@@ -1550,20 +1557,20 @@
                 var v = form.collect();
                 if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
                 if (v.montant > f.reliquat) { U.toast('Le montant dépasse le reste dû (' + C.money(f.reliquat) + ').', { type: 'error' }); return; }
-                var nouveau = f.montantPaye + v.montant;
-                var res = col.update(f.id, {
-                  montantPaye: nouveau, reliquat: f.partPatient - nouveau,
-                  modePaiement: v.modePaiement,
-                  statutPaiement: (f.partPatient - nouveau) <= 0 ? 'soldee' : 'partielle',
-                });
+                /* L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval ouvertes, base MECeF et
+                   ÉCRITURE comptable. Il écrivait la facture seule : ni journal, ni déblocage, ni créance de l'assureur. Un versement refusé
+                   (au-delà du dû) l'est en le disant. Un encaissement ne s'annule pas : la correction passe par un remboursement ou un avoir. */
+                var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement });
+                if (r.refus) { U.toast(r.refus, { type: 'error' }); return; }
+                if (!(r.montantRegle > 0)) { U.toast('Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.', { type: 'error' }); return; }
                 m.close();
                 if (table) table.refresh();
-                U.toast('Encaissement de ' + C.money(v.montant) + ' enregistré.', {
+                U.toast('Encaissement de ' + C.money(r.montantRegle) + ' enregistré.', {
                   type: 'success',
-                  detail: res.record.reliquat > 0 ? 'Reliquat de ' + C.money(res.record.reliquat) + '.' : 'Facture soldée.',
-                  undo: function () { res.undo(); if (table) table.refresh(); },
+                  detail: (r.restantDu > 0 ? 'Reliquat de ' + C.money(r.restantDu) + '.' : 'Facture soldée.')
+                    + (r.ecritures.length ? ' Écriture comptable posée en brouillon.' : ''),
                 });
-                recu(res.record, v);
+                recu(r.facture, v);
               },
             }),
           ],

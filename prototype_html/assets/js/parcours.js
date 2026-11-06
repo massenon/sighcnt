@@ -1341,7 +1341,9 @@
   function ecrireEncaissement(facture, montantRegle) {
     var lignes = [];
     var constatee = creanceAssureurDejaConstatee(facture);
-    var partAssureur = constatee ? 0 : (Number(facture.partAssureur) || 0);
+    /* L'EN-TÊTE d'une facture porte `partAssurance` ; `partAssureur` n'existe que sur les LIGNES (correction du 06/11/2026, E2260) :
+       lire ce dernier champ sur l'en-tête donnait toujours zéro, et la créance de l'assureur (débit 411, crédit 706) n'entrait jamais au journal. */
+    var partAssureur = constatee ? 0 : (Number(facture.partAssurance != null ? facture.partAssurance : facture.partAssureur) || 0);
     var total = montantRegle + partAssureur;
     if (total <= 0) return [];
 
