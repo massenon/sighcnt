@@ -41,6 +41,8 @@ class SmtpController extends Controller
             'effacer_mdp' => ['nullable', 'boolean'],
             'expediteur' => ['required', 'email'],
             'expediteur_nom' => ['nullable', 'string', 'max:120'],
+            'repondre' => ['nullable', 'email'],
+            'repondre_nom' => ['nullable', 'string', 'max:120'],
             'verifier_certificat' => ['nullable', 'boolean'],
         ]);
         ReglagesSmtp::enregistrer($v, $v['mdp'] ?? null, (bool) ($v['effacer_mdp'] ?? false));

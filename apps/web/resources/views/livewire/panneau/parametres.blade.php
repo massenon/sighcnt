@@ -31,6 +31,8 @@
         <label x-show="mdpDefini"><input type="checkbox" x-model="f.effacer_mdp"> Effacer le mot de passe enregistré</label>
         <label>Adresse d'expéditeur <input type="email" x-model="f.expediteur" placeholder="relais@clinique.bj" aria-label="Adresse d'expéditeur"></label>
         <label>Nom d'expéditeur <input type="text" x-model="f.expediteur_nom" aria-label="Nom d'expéditeur"></label>
+        <label>Répondre à (adresse) <input type="email" x-model="f.repondre" placeholder="secretariat@clinique.bj" aria-label="Adresse de réponse"></label>
+        <label>Répondre à (nom) <input type="text" x-model="f.repondre_nom" aria-label="Nom de réponse"></label>
         <button type="button" @click="enregistrer()">Enregistrer</button>
         <hr>
         <label>Envoyer un message de test à <input type="email" x-model="test" placeholder="vous@exemple.bj" aria-label="Destinataire du test"></label>
@@ -56,9 +58,9 @@
             window.Alpine.data('messagerieSmtp', function (urlReglage, urlEnvoi, urlTest, jeton) {
                 var entetes = { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': jeton };
                 return {
-                    f: { hote: '', port: 587, chiffrement: 'starttls', utilisateur: '', mdp: '', effacer_mdp: false, expediteur: '', expediteur_nom: '', verifier_certificat: true },
+                    f: { hote: '', port: 587, chiffrement: 'starttls', utilisateur: '', mdp: '', effacer_mdp: false, expediteur: '', expediteur_nom: '', repondre: '', repondre_nom: '', verifier_certificat: true },
                     mdpDefini: false, configure: false, test: '', message: '',
-                    appliquer(r) { this.f.hote = r.hote; this.f.port = r.port; this.f.chiffrement = r.chiffrement; this.f.utilisateur = r.utilisateur; this.f.expediteur = r.expediteur; this.f.expediteur_nom = r.expediteur_nom; this.f.verifier_certificat = r.verifier_certificat; this.f.mdp = ''; this.f.effacer_mdp = false; this.mdpDefini = r.mdp_defini; this.configure = r.configure; },
+                    appliquer(r) { this.f.hote = r.hote; this.f.port = r.port; this.f.chiffrement = r.chiffrement; this.f.utilisateur = r.utilisateur; this.f.expediteur = r.expediteur; this.f.expediteur_nom = r.expediteur_nom; this.f.repondre = r.repondre; this.f.repondre_nom = r.repondre_nom; this.f.verifier_certificat = r.verifier_certificat; this.f.mdp = ''; this.f.effacer_mdp = false; this.mdpDefini = r.mdp_defini; this.configure = r.configure; },
                     async init() { this.appliquer(await (await fetch(urlReglage, { headers: { Accept: 'application/json' } })).json()); },
                     async enregistrer() {
                         var r = await fetch(urlEnvoi, { method: 'POST', headers: entetes, body: JSON.stringify(this.f) });

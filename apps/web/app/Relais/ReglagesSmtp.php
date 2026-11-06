@@ -23,7 +23,7 @@ class ReglagesSmtp
 {
     public const CHIFFREMENTS = ['aucun', 'starttls', 'ssl'];
 
-    private const CLES = ['hote', 'port', 'chiffrement', 'utilisateur', 'mdp', 'expediteur', 'expediteur_nom', 'verifier'];
+    private const CLES = ['hote', 'port', 'chiffrement', 'utilisateur', 'mdp', 'expediteur', 'expediteur_nom', 'repondre', 'repondre_nom', 'verifier'];
 
     private static function meta(string $k): ?string
     {
@@ -46,6 +46,8 @@ class ReglagesSmtp
             'mdp_defini' => (string) self::meta('mdp') !== '',
             'expediteur' => (string) self::meta('expediteur'),
             'expediteur_nom' => (string) self::meta('expediteur_nom'),
+            'repondre' => (string) self::meta('repondre'),
+            'repondre_nom' => (string) self::meta('repondre_nom'),
             'verifier_certificat' => self::meta('verifier') !== '0',
         ];
     }
@@ -68,6 +70,8 @@ class ReglagesSmtp
         self::poser('utilisateur', trim((string) ($v['utilisateur'] ?? '')));
         self::poser('expediteur', trim((string) $v['expediteur']));
         self::poser('expediteur_nom', trim((string) ($v['expediteur_nom'] ?? '')));
+        self::poser('repondre', trim((string) ($v['repondre'] ?? '')));
+        self::poser('repondre_nom', trim((string) ($v['repondre_nom'] ?? '')));
         self::poser('verifier', ! empty($v['verifier_certificat']) ? '1' : '0');
         if ($effacerMdp) {
             self::poser('mdp', null);
@@ -122,6 +126,11 @@ class ReglagesSmtp
         $nom = (string) self::meta('expediteur_nom');
         if (method_exists($mail, 'from')) {
             $mail->from($expediteur, $nom !== '' ? $nom : null);
+        }
+        $repondre = (string) self::meta('repondre');
+        if ($repondre !== '' && method_exists($mail, 'replyTo')) {
+            $nomRepondre = (string) self::meta('repondre_nom');
+            $mail->replyTo($repondre, $nomRepondre !== '' ? $nomRepondre : null);
         }
         try {
             self::mailer()->to($a)->sendNow($mail);

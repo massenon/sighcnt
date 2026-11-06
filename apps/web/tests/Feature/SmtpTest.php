@@ -58,6 +58,18 @@ class SmtpTest extends TestCase
         $this->assertStringContainsString('Relais SIGH-CNT', $lu['entetes']);
     }
 
+    public function test_repondre_a_est_un_en_tete_du_message_recu_et_reste_absent_quand_il_n_est_pas_regle(): void
+    {
+        $this->demarrerPuits();
+        $this->postJson('/panneau/smtp', $this->formulaire(['repondre' => 'cliniquenassiera@gmail.com', 'repondre_nom' => 'Clinique Nassièra Too']))->assertOk()->assertJsonPath('repondre', 'cliniquenassiera@gmail.com');
+        $this->postJson('/panneau/smtp/test', ['destinataire' => 'direction@clinique.bj'])->assertOk();
+        $this->assertMatchesRegularExpression('/^Reply-To:[^\\r\\n]*(\\r?\\n[ \\t][^\\r\\n]*)*cliniquenassiera@gmail\.com/mi', $this->lire($this->messagesRecus()[0])['entetes']);
+        $this->postJson('/panneau/smtp', $this->formulaire(['repondre' => '', 'repondre_nom' => '']))->assertOk();
+        $this->postJson('/panneau/smtp/test', ['destinataire' => 'direction@clinique.bj'])->assertOk();
+        $this->assertDoesNotMatchRegularExpression('/^Reply-To:/mi', $this->lire($this->messagesRecus()[1])['entetes']);
+        $this->postJson('/panneau/smtp', $this->formulaire(['repondre' => 'pas-une-adresse']))->assertStatus(422);
+    }
+
     public function test_starttls_le_message_arrive_chiffre_et_un_certificat_non_verifiable_est_refuse_a_l_etape_chiffrement(): void
     {
         $this->demarrerPuits(['tls' => 'starttls']);
