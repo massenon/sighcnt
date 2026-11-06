@@ -102,7 +102,7 @@ class ConfigurationFiscalePoste {
   /// La validation pose le MÊME patch sur toutes les fiches visées, puis UNE ligne de journal nommée (pas vingt « Modification »).
   void _validerFiches(CollectionMagasin col, CfbValidation r, String action) {
     for (final id in r.ids) {
-      col.mettreAJour(id, r.patch);
+      col.mettreAJour(id, r.patch, journaliser: false);
     }
     m.journaliser(action, 'CFG', col.nom, r.ids.join(','), null, {'valideLe': r.valideLe, 'validePar': r.validePar, 'fiches': r.nombre});
   }

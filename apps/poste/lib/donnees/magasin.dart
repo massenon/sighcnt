@@ -139,15 +139,16 @@ class CollectionMagasin extends ChangeNotifier {
 
   /// Met à jour des champs de la fiche (`col.update`) et rend la fonction qui RESTITUE l'état d'avant. Rien n'est supprimé : un champ ajouté
   /// par la mise à jour est retiré à l'annulation.
-  VoidCallback mettreAJour(Object? id, Fiche patch) {
+  VoidCallback mettreAJour(Object? id, Fiche patch, {bool journaliser = true}) {
     final f = parId(id);
     if (f == null) return () {};
     if (_gardes.isNotEmpty) _controler('modifier', {...f, ...patch});
     final avant = <String, Object?>{for (final k in patch.keys) k: f[k]};
     final existait = {for (final k in patch.keys) k: f.containsKey(k)};
     f.addAll(patch);
-    journal?.call('Modification', module, entite ?? nom, _ref(f), avant,
-        {for (final k in patch.keys) k: patch[k]});
+    if (journaliser) {
+      journal?.call('Modification', module, entite ?? nom, _ref(f), avant, {for (final k in patch.keys) k: patch[k]});
+    }
     notifyListeners();
     return () {
       for (final k in patch.keys) {

@@ -279,8 +279,16 @@ void mainModale() {
       // Les étapes se DÉTECTENT : configurations (écrites ou vérifiées), appairages (un appareil connu de la mère) ; les comptes, quand le second administrateur existe.
       service.compterAppareils = () async => 2;
       for (final (id, _) in ecransConfigurationsInstallation) {
+        if (id == 'cfg-fiscalite' || id == 'cfg-comptabilite') continue; // ces deux lignes ne se « vérifient » pas : elles se VALIDENT
         await toucher(t, find.byKey(Key('ins:verifier-$id')));
       }
+      for (final nom in ['identiteLegale', 'obligationsFiscales']) {
+        if (m.collection(nom).actives.isEmpty) m.collection(nom).inserer({'valideLe': '2026-11-06', 'validePar': 'test'}, prefixe: nom == 'identiteLegale' ? 'IDL' : 'OBF');
+        for (final f in m.collection(nom).actives) {
+          m.collection(nom).mettreAJour(f['id'], {'valideLe': '2026-11-06', 'validePar': 'test'}, journaliser: false);
+        }
+      }
+      await t.runAsync(() => service.detecter());
       await t.pump(const Duration(milliseconds: 300));
       expect(service.etat.etat('configurations'), EtapeEtat.faite, reason: 'sept écrans vérifiés : l’étape se termine toute seule');
       expect(service.etat.etat('appairages'), EtapeEtat.faite, reason: 'deux appareils appairés détectés');

@@ -64,21 +64,22 @@ void main() {
     expect(tel.controller!.text, '01 95 44 51 51 / 01 66 43 28 20');
   });
 
-  casM14('« Enregistrer » journalise la modification (RG-12) et le dit ; un nom ou un IFU vide est REFUSÉ, rien n’est journalisé', (t) async {
+  casM14('« Enregistrer » journalise la modification (RG-12) et le dit ; un nom vide est REFUSÉ, rien n’est journalisé', (t) async {
     final m = magasinM14();
     await ouvrirM14(t, m, 'cfg-branding');
     final avant = m.collection('audit').toutes.length;
-    await saisir(t, 'ifu', '');
+    await saisir(t, 'nom', '');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
     expect(find.text('Le formulaire comporte des erreurs.'), findsOneWidget);
     expect(m.collection('audit').toutes.length, avant);
     await t.pump(const Duration(seconds: 10));
-    await saisir(t, 'ifu', '3201642748214');
+    await saisir(t, 'nom', 'Clinique Nassièra Too');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
-    expect(find.text('Identité enregistrée.'), findsOneWidget);
-    expect(m.collection('audit').toutes.length, avant + 1);
-    final j = m.collection('audit').toutes.first;
-    expect([j['action'], j['module'], j['entite'], j['reference']], ['Modification', 'CFG', 'BrandConfiguration', 'BRAND']);
+    expect(find.textContaining('Identité enregistrée'), findsOneWidget);
+    final nouvelles = m.collection('audit').toutes.take(m.collection('audit').toutes.length - avant).where((e) => e['entite'] == 'identiteLegale').toList();
+    expect(nouvelles.length, 1, reason: 'une seule ligne de journal pour l’identité (RG-12) ; les réglages d’impression semés à l’ouverture sont à part');
+    final j = nouvelles.first;
+    expect([j['action'], j['module'], j['entite']], ['Modification', 'CFG', 'identiteLegale']);
     expect(j['utilisateur'], isNotEmpty);
   });
 

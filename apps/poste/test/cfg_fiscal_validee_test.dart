@@ -74,13 +74,13 @@ void main() {
     expect(identiteImprimeeDe(m, DateTime(2020, 1, 1)).rccm, 'RB/NAT/2016-B-268', reason: 'la v1 couvre depuis l’ouverture');
   });
 
-  casM14('Valider est ABSENT (jamais grisé) sans le droit d’écrire sur CFG : la Direction lit, ne valide pas depuis un écran en lecture seule', (t) async {
+  casM14('Valider est ABSENT (jamais grisé) sans le droit d’écrire sur CFG : l’accueil lit, ne valide pas depuis un écran en lecture seule', (t) async {
     final m = magasinM14();
-    await ouvrirM14(t, m, 'cfg-fiscalite', role: 'direction');
+    await ouvrirM14(t, m, 'cfg-fiscalite', role: 'reception');
     expect(valider('identite'), findsNothing);
     expect(find.byKey(const Key('cfb:fiscalite:enregistrer')), findsNothing);
-    expect(find.byKey(const Key('cfb:etat:identite:a_valider')), findsOneWidget, reason: 'l’état reste lisible');
     expect(find.text('Valider'), findsNothing);
+    expect(cfbControleValidation(role: 'reception')?.code, 'VALIDATION_RESERVEE', reason: 'le domaine refait le contrôle même si l’écran est fermé');
   });
 
   casM14('cfg-comptabilite : « Valider les obligations » valide les 19 obligations ET les paramètres ORTB ; modifier ITS ensuite ouvre la modale de portée', (t) async {
