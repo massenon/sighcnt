@@ -139,7 +139,15 @@ class ConfigMere {
     this.heureSauvegarde = 2,
     this.conservation = 7,
     this.cleStockage = '',
+    this.droits = 'matrice',
+    this.matriceChemin = '',
   });
+
+  /// Les droits de l'échange entre pairs : `matrice` (production : la matrice RBAC engendrée `rbac.json`) ou `banc` (la table des rôles du banc d'essai).
+  final String droits;
+
+  /// Chemin de `rbac.json` ; vide : cherché en remontant depuis le dossier courant (`packages/rbac/data/rbac.json`).
+  final String matriceChemin;
 
   /// La clé (hexadécimale, 256 bits) qui chiffre la base SQLite de la mère au repos ; `''` : base en clair (bancs, développement).
   final String cleStockage;

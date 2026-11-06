@@ -7,6 +7,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:sigh_domaine/sigh_domaine.dart';
 
@@ -14,11 +15,36 @@ import 'commun.dart';
 import 'depot.dart';
 import 'mere.dart';
 
+/// Les droits de l'échange : la MATRICE RBAC engendrée (production) ou la table du banc. Refus nommé (`StateError`) si la matrice est introuvable ou illisible :
+/// une mère qui démarrerait sans droits les accorderait à tous, ou à personne, sans le dire.
+DroitsOperation chargerDroitsPair(String mode, String chemin) {
+  if (mode == 'banc') return droitsDepuisTable(droitsBancPair);
+  if (mode != 'matrice') throw StateError('droits pair inconnus : « $mode » (matrice ou banc)');
+  var f = chemin.isEmpty ? null : File(chemin);
+  if (f == null) {
+    var d = Directory.current.absolute;
+    for (var i = 0; i < 8 && f == null; i++) {
+      final c = File('${d.path}/packages/rbac/data/rbac.json');
+      if (c.existsSync()) f = c;
+      d = d.parent;
+    }
+  }
+  if (f == null || !f.existsSync()) throw StateError('matrice RBAC introuvable (rbac.json) : indiquer --matrice=chemin ou lancer depuis le dépôt');
+  try {
+    final m = MatriceDroits.depuisJson((jsonDecode(f.readAsStringSync()) as Map).cast<String, Object?>());
+    return droitsDepuisMatrice(peutEditer: m.peutEditer, peutAnnuler: m.peutAnnuler);
+  } catch (e) {
+    throw StateError('matrice RBAC illisible (${f.path}) : $e');
+  }
+}
+
 class PontPair {
-  PontPair(this.mere) : horloge = HorlogePair(maintenantMs: maintenantMs);
+  PontPair(this.mere)
+      : horloge = HorlogePair(maintenantMs: maintenantMs),
+        droits = chargerDroitsPair(mere.cfg.droits, mere.cfg.matriceChemin);
   final Mere mere;
   final HorlogePair horloge;
-  final DroitsOperation droits = droitsDepuisTable(droitsBancPair);
+  final DroitsOperation droits;
 
   Depot get base => mere.base;
 

@@ -1,6 +1,6 @@
 import 'package:sigh_sync/sigh_sync.dart';
 
-/// Lancement : `mere --port=9000 --db=mere.sqlite --admin=secret [--relais=URL --cle=BASE64 --restaurer=1]`.
+/// Lancement : `mere --port=9000 --db=mere.sqlite --admin=secret [--droits=matrice|banc --matrice=chemin/rbac.json --relais=URL --cle=BASE64 --restaurer=1]`.
 /// Écrit `PRET <port>` sur la sortie standard dès que le service écoute.
 Future<void> main(List<String> args) async {
   final m = await Mere.creer(ConfigMere(
@@ -16,6 +16,8 @@ Future<void> main(List<String> args) async {
     dossierSauvegardes: arg(args, 'sauvegardes', 'sauvegardes'),
     heureSauvegarde: int.tryParse(arg(args, 'sauvegarde-heure', '2')) ?? 2,
     conservation: int.tryParse(arg(args, 'conservation', '7')) ?? 7,
+    droits: arg(args, 'droits', 'matrice'),
+    matriceChemin: arg(args, 'matrice', ''),
   ));
   await m.demarrer();
 }

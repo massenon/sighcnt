@@ -91,6 +91,7 @@ async function monde(opts = {}) {
       if (opts.relais) a.push(`--relais=http://127.0.0.1:${m.portInternet}`, '--secret-relais=secret-mere');
       if (m.mere.opts.cle) a.push(`--cle=${m.mere.opts.cle}`);
       if (m.mere.opts.restaurer) a.push('--restaurer=1');
+      a.push('--droits=' + (m.mere.opts.droits || process.env.SIGH_DROITS || 'banc')); // la mère Dart : droits du banc par défaut ici, la matrice RBAC en production
       m.mere.proc = await lancer('mere.js', a);
     },
     tuer() { if (m.mere.proc) { m.mere.proc.kill('SIGKILL'); m.mere.proc = null; } return dormir(80); },
@@ -1038,6 +1039,7 @@ const scenarios = {
   },
 
 };
+Object.assign(scenarios, require('./scenarios-droits-mere.js')({ monde, verifier: (...a) => verifier(...a), attendre, dormir, titre: (t) => { courant = t; } }));
 
 /* --- exécution ------------------------------------------------------------------------------ */
 (async () => {
