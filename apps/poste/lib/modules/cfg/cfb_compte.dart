@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import '../../core/identifiants.dart';
+import '../../donnees/magasin.dart' show Fiche;
 import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -35,18 +36,25 @@ class _EtatCompte extends State<EcranCompte> {
     if (_pret) return;
     _pret = true;
     final c = ContexteEcran.of(context);
-    _nom = acteur(c).nom;
+    // Les valeurs se RELISENT sur la fiche du compte (utilisateurs), pas seulement sur le nom de la session.
+    final fiche = _ficheCompte(c);
+    final nomFiche = fiche == null ? '' : '${fiche['nomComplet'] ?? ''}'.trim();
+    _nom = nomFiche.isNotEmpty ? nomFiche : acteur(c).nom;
     _identite = ControleurFormulaire(const [ChampDef(nom: 'nom', libelle: 'Nom et prénoms', requis: true, col: ColChamp.plein)], {'nom': _nom});
     _contact = ControleurFormulaire(const [
       ChampDef(nom: 'telephone', libelle: 'Téléphone', type: TypeChamp.tel),
       ChampDef(nom: 'email', libelle: 'Adresse électronique', type: TypeChamp.email),
-    ]);
+      ChampDef(nom: 'mfa', libelle: 'Activer l’authentification à deux facteurs', type: TypeChamp.case_, col: ColChamp.plein),
+    ], {
+      'telephone': fiche?['telephone'] ?? '',
+      'email': fiche?['email'] ?? '',
+      'mfa': fiche != null && fiche.containsKey('mfa') ? cfaVrai(fiche['mfa']) : cfbMfaParDefaut(c.role),
+    });
     _securite = ControleurFormulaire(const [
       ChampDef(nom: 'actuel', libelle: 'Mot de passe actuel', type: TypeChamp.motDePasse, requis: true),
       ChampDef(nom: 'nouveau', libelle: 'Nouveau mot de passe', type: TypeChamp.motDePasse, requis: true),
       ChampDef(nom: 'confirmation', libelle: 'Confirmer le nouveau mot de passe', type: TypeChamp.motDePasse, requis: true),
-      ChampDef(nom: 'mfa', libelle: 'Activer l’authentification à deux facteurs', type: TypeChamp.case_, col: ColChamp.plein),
-    ], {'mfa': cfbMfaParDefaut(c.role)});
+    ]);
   }
 
   @override
@@ -76,13 +84,38 @@ class _EtatCompte extends State<EcranCompte> {
             child: Text(valeur, style: const TextStyle(fontSize: 14, height: 20 / 14, color: JetonsShell.slate500))),
       ]);
 
+  /// La fiche du compte de l'agent de la session (collection `utilisateurs`), nulle pour l'agent de démonstration ou sans compte.
+  Fiche? _ficheCompte(ContexteEcran c) {
+    final id = acteur(c).utilisateurId;
+    if (id.isEmpty) return null;
+    return c.magasin.collection('utilisateurs').parId(id);
+  }
+
   void _enregistrer(BuildContext ctx, ContexteEcran c) {
     final v = _identite!.valider();
     if (v == null) return; // le formulaire dit lui-même quel champ manque (la maquette ne parle pas non plus)
-    final avant = _nom;
+    final w = _contact!.valider();
+    if (w == null) return;
     final nom = '${v['nom']}'.trim();
+    final fiche = _ficheCompte(c);
+    if (fiche == null) {
+      // Compte sans fiche (démonstration, développement) : seul le nom de la SESSION change, et l'écran le DIT (jamais « enregistrées »).
+      final avant = _nom;
+      c.magasin.utilisateur = nom;
+      c.magasin.journaliser('Modification', 'CFG', 'Compte', _identifiant(c), {'nom': avant}, {'nom': nom});
+      setState(() => _nom = nom);
+      ToastsSigh.afficher(ctx, 'Nom changé pour cette session seulement.',
+          type: TypeToast.attention, detail: 'Compte sans fiche utilisateur : le téléphone, le courriel et le second facteur ne sont pas conservés.');
+      return;
+    }
+    // ÉCRITURE RÉELLE dans la fiche du compte (le journal RG-12 est tenu par la collection), relue au prochain affichage.
+    c.magasin.collection('utilisateurs').mettreAJour(fiche['id'], {
+      'nomComplet': nom,
+      'telephone': '${w['telephone'] ?? ''}'.trim(),
+      'email': '${w['email'] ?? ''}'.trim(),
+      'mfa': cfaVrai(w['mfa']),
+    });
     c.magasin.utilisateur = nom;
-    c.magasin.journaliser('Modification', 'CFG', 'Compte', _identifiant(c), {'nom': avant}, {'nom': nom});
     setState(() => _nom = nom);
     ToastsSigh.afficher(ctx, 'Informations enregistrées.', type: TypeToast.succes);
   }
@@ -121,12 +154,12 @@ class _EtatCompte extends State<EcranCompte> {
       ToastsSigh.afficher(ctx, refus, type: TypeToast.erreur);
       return;
     }
-    // Le secret n'entre jamais au magasin ni au journal : seule la MODIFICATION est tracée (RG-12).
-    c.magasin.journaliser('Modification', 'M14', 'Utilisateur', _identifiant(c), null, {'motDePasse': 'modifié'});
+    // Compte sans haché (démonstration, développement) : rien n'est conservé, et l'écran le DIT au lieu d'annoncer « modifié ».
+    c.magasin.journaliser('Tentative de changement de mot de passe', 'M14', 'Utilisateur', _identifiant(c), null, {'motif': 'compte sans mot de passe défini : rien conservé'});
     for (final k in const ['actuel', 'nouveau', 'confirmation']) {
       _securite!.poser(k, '');
     }
-    ToastsSigh.afficher(ctx, 'Mot de passe modifié.', type: TypeToast.succes);
+    ToastsSigh.afficher(ctx, 'Compte de démonstration : aucun mot de passe n’est conservé.', type: TypeToast.attention);
   }
 
   Widget _perimetre(ContexteEcran c) {

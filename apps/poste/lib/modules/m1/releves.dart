@@ -539,9 +539,15 @@ class EcranReference extends StatelessWidget with EcranMaquette {
                 messageVide: 'Aucune fiche de référence enregistrée.',
                 champs: champs,
                 valeursInitiales: (_) => const {},
-                transformer: (cc, s, e) => e != null
-                    ? s
-                    : patDeduitReference(s, cc.magasin.collection('patients').actives, col.toutes, cc.aujourdhui),
+                // En édition, un patient changé redérive identité, âge, sexe et adresse ; le numéro attribué ne se réécrit jamais.
+                transformer: (cc, s, e) => e == null
+                    ? patDeduitReference(s, cc.magasin.collection('patients').actives, col.toutes, cc.aujourdhui)
+                    : '${s['patientCode']}' == '${e['patientCode']}'
+                        ? s
+                        : {
+                            ...patDeduitReference(s, cc.magasin.collection('patients').actives, col.toutes, cc.aujourdhui),
+                            'numero': e['numero'],
+                          },
                 titreDetail: (r) => '${r['numero']}',
                 detail: _detail,
                 etat: _imprimer,
@@ -723,9 +729,15 @@ class EcranContreReference extends StatelessWidget with EcranMaquette {
               messageVide: 'Aucune contre-référence reçue.',
               champs: champs,
               valeursInitiales: (_) => const {},
-              transformer: (cc, s, e) => e != null
-                  ? s
-                  : patDeduitContreReference(s, cc.magasin.collection('fichesReference').toutes, col.toutes),
+              // En édition, une fiche de référence changée redérive le patient ; la référence CRF attribuée ne se réécrit jamais.
+              transformer: (cc, s, e) => e == null
+                  ? patDeduitContreReference(s, cc.magasin.collection('fichesReference').toutes, col.toutes)
+                  : '${s['numeroReference']}' == '${e['numeroReference']}'
+                      ? s
+                      : {
+                          ...patDeduitContreReference(s, cc.magasin.collection('fichesReference').toutes, col.toutes),
+                          'reference': e['reference'],
+                        },
               titreDetail: (r) => '${r['reference']}',
               detail: (ctx, r) => Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 DescListeSigh([

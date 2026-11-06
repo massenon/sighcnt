@@ -133,12 +133,23 @@ class _VueSauvegardesState extends State<_VueSauvegardes> {
     }
   }
 
-  void _generer(BuildContext ctx, ContexteEcran c) {
+  Future<void> _generer(BuildContext ctx, ContexteEcran c) async {
     final contenu = _contenu(c.magasin);
     final nom = secNomFichierSauvegarde(c.aujourdhui, _col!.toutes.length);
     final tables = Magasin.collectionsDuJeu.length;
+    // Le fichier est écrit D'ABORD : la fiche du registre ne doit pas annoncer un fichier qui n'existe pas.
+    final String chemin;
+    try {
+      chemin = await enregistrerSauvegarde(nom, contenu);
+    } catch (e) {
+      if (!ctx.mounted) return;
+      ToastsSigh.afficher(ctx, 'Sauvegarde non générée : fichier non écrit.',
+          type: TypeToast.erreur, detail: 'Code FICHIER_NON_ECRIT. $nom : $e');
+      return;
+    }
     final r = _col!.inserer({
       'fichier': nom,
+      'chemin': chemin,
       'date': iso(c.aujourdhui),
       'heure': heure(c.aujourdhui),
       'portee': 'Base complète',
@@ -147,9 +158,10 @@ class _VueSauvegardesState extends State<_VueSauvegardes> {
       'genereePar': acteur(c).nom,
       'statut': 'actif',
     }, prefixe: 'BKP');
+    if (!ctx.mounted) return;
     ToastsSigh.afficher(ctx, 'Sauvegarde $nom générée.',
         type: TypeToast.succes,
-        detail: '$tables tables — ${secPoidsFichier(contenu.length)}',
+        detail: '$tables tables — ${secPoidsFichier(contenu.length)} — $chemin',
         annuler: r.annuler);
   }
 

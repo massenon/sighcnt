@@ -158,13 +158,14 @@
               ['Consultations', String(d.consultations)],
               ['Durée de conservation', d.conservation + ' ans'],
               ['Signature électronique', d.signe ? U.badge('Signé', 'success') : U.badge('Non signé', 'neutral')],
+              d.etatValidation === 'rejete' ? ['Motif du rejet', d.motifRejet || 'Non consigné'] : null,
               ['Archivage', d.archive ? U.badge('Archivé', 'neutral') : U.badge('Actif', 'success')],
             ]),
             U.card('Traçabilité', U.timeline([
               { title: 'Document déposé', detail: 'Par ' + d.deposePar, date: C.dateFR(d.date), tone: 'success' },
               { title: 'Indexation automatique', detail: 'Rattaché au dossier ' + d.codeRattachement, date: C.dateFR(d.date), tone: 'info' },
               d.etatValidation === 'valide' ? { title: 'Document validé', detail: 'Workflow de validation clôturé', date: C.dateFR(C.addDays(d.date, 2)), tone: 'success' } : null,
-              d.etatValidation === 'rejete' ? { title: 'Document rejeté', detail: 'À corriger et redéposer', date: C.dateFR(C.addDays(d.date, 2)), tone: 'danger' } : null,
+              d.etatValidation === 'rejete' ? { title: 'Document rejeté', detail: d.motifRejet ? 'Motif : ' + d.motifRejet : 'À corriger et redéposer (aucun motif consigné)', date: C.dateFR(C.addDays(d.date, 2)), tone: 'danger' } : null,
               d.archive ? { title: 'Archivage', detail: 'Conservation ' + d.conservation + ' ans', date: C.dateFR(C.addDays(d.date, 30)), tone: 'neutral' } : null,
             ].filter(Boolean))),
           ]),
@@ -186,10 +187,11 @@
             { k: 'Déposé par', v: d.deposePar },
             { k: 'État de validation', v: { valide: 'Validé', en_attente: 'En attente', rejete: 'Rejeté' }[d.etatValidation] },
             { k: 'Signature électronique', v: d.signe ? 'Oui' : 'Non' },
+            d.etatValidation === 'rejete' ? { k: 'Motif du rejet', v: d.motifRejet || 'Non consigné' } : null,
             { k: 'Archivage', v: d.archive ? 'Archivé' : 'Actif' },
             { k: 'Durée de conservation', v: d.conservation + ' ans' },
             { k: 'Consultations', v: String(d.consultations) },
-          ]),
+          ].filter(Boolean)),
           signatures: [{ role: 'L’Agent administratif' }, { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
         });
       }
@@ -276,9 +278,13 @@
             size: 'sm', variant: 'success', icon: 'badge-check',
             onclick: function () {
               var sel = getSelected();
-              var majs = sel.map(function (d) { return col.update(d.id, { etatValidation: 'valide' }); });
+              /* Même geste que la validation d'une ligne : l'état ET la signature (note de l'écran). */
+              var majs = sel.map(function (d) { return col.update(d.id, { etatValidation: 'valide', signe: true }); }).filter(Boolean);
               clear(); table.refresh(); peindreKpis();
-              U.toast(sel.length + ' document(s) validé(s).', {
+              if (majs.length < sel.length) {
+                U.toast((sel.length - majs.length) + ' document(s) n’ont pas été validés : écriture refusée par le magasin.', { type: 'warning', detail: majs.length + ' validé(s) et signé(s) sur ' + sel.length + '.' });
+              }
+              if (majs.length) U.toast(majs.length + ' document(s) validé(s) et signé(s).', {
                 type: 'success', undo: function () { majs.forEach(function (m) { m.undo(); }); table.refresh(); peindreKpis(); },
               });
             },
@@ -301,7 +307,14 @@
                 confirmLabel: 'Rejeter', danger: true, requireMotif: true,
               }).then(function (r) {
                 if (!r) return;
-                var res = col.update(d.id, { etatValidation: 'rejete', motifRejet: r.motif });
+                var motif = String(r.motif || '').trim();
+                if (!motif) { U.toast('Le motif de rejet est obligatoire.', { type: 'error', detail: 'Rouvrir « Rejeter » et écrire la raison : le déposant la lira sur la fiche.' }); return; }
+                var res = col.update(d.id, { etatValidation: 'rejete', motifRejet: motif });
+                if (!res) { U.toast('Rejet non enregistré : écriture refusée par le magasin.', { type: 'error' }); return; }
+                global.SIGH.parcours.notifier({
+                  type: 'ged_rejet', poste: 'tous', libelle: 'Document rejeté : ' + d.reference,
+                  detail: motif, reference: d.reference, priorite: 'haute',
+                });
                 table.refresh(); peindreKpis();
                 U.toast('Document rejeté.', { type: 'warning', undo: function () { res.undo(); table.refresh(); peindreKpis(); } });
               });
@@ -375,11 +388,9 @@
       host.appendChild(U.dataTable({
         title: 'Cycle de vie des documents', rows: rows, exportName: 'ged-archives', pageSize: 20,
         rowActions: K.actionsLigne(col, [
-          { name: 'titre', label: 'Titre du document', required: true, col: 'full' },
-          { name: 'categorie', label: 'Catégorie' },
-          { name: 'dureeConservation', label: 'Durée de conservation (années)', type: 'number', min: 0 },
-          { name: 'emplacement', label: 'Emplacement physique' },
-          { name: 'observations', label: 'Observations', type: 'textarea', rows: 2, col: 'full' },
+          { name: 'libelle', label: 'Libellé du document', required: true, col: 'full' },
+          { name: 'categorie', label: 'Catégorie', type: 'select', options: CATEGORIES.map(function (c) { return { value: c.id, label: c.label }; }) },
+          { name: 'conservation', label: 'Durée de conservation (années)', type: 'number', min: 1 },
         ]),
         defaultSort: 'date',
         filters: [

@@ -546,7 +546,8 @@ Future<void> passageSansRendezVousAg(BuildContext ecran) {
                   final r = agPassage(v,
                       patients: patientsAg(c),
                       existantes: m.collection('consultations').toutes);
-                  final ins = m.collection('consultations').inserer(r, prefixe: 'CON');
+                  // Comme la maquette : la priorité cochée est CONSERVÉE sur la venue (`prioritaire`), agPassage retire la case de la saisie.
+                  final ins = m.collection('consultations').inserer(prioritaire ? {...r, 'prioritaire': true} : r, prefixe: 'CON');
                   fermer();
                   final msg = agMessagePassage(r, prioritaire);
                   ToastsSigh.afficher(ecran, msg.message,

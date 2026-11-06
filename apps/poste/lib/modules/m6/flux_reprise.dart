@@ -34,8 +34,9 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
     final col = c.magasin.collection('valorisationsSage');
+    final reglages = c.magasin.collection('reglages');
     return ListenableBuilder(
-      listenable: col,
+      listenable: Listenable.merge([col, reglages]),
       builder: (context, _) {
         final ref = ReferentielSage.instance;
         final articles = ref.articles;
@@ -44,6 +45,9 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
         final lot = ref.lot;
         final concordant = ref.totalUnites == lot['totalUnites'];
         final tirage = DateTime.tryParse('${lot['dateTirage']}');
+        // La validation est ÉCRITE au magasin (fiche `repriseStock` de `reglages`) et relue ici : le lot du référentiel est une constante qui ne porte jamais l'état.
+        final validation = reglages.parId('repriseStock');
+        final validee = validation != null && validation['lotReference'] == '${lot['reference']}';
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           KpiGrilleSigh(kpis: [
             KpiSigh(
@@ -111,8 +115,8 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
               ),
               (
                 'Validation Gestionnaire de Stock',
-                lot['valideePar'] != null
-                    ? BadgeSigh('${lot['valideePar']}', ton: TonSigh.succes)
+                validee
+                    ? BadgeSigh('${validation['valideePar']}, le ${dateDe(validation['valideeLe'])}', ton: TonSigh.succes)
                     : const BadgeSigh('En attente', ton: TonSigh.attention)
               ),
             ]),
@@ -416,7 +420,28 @@ class EcranReprise extends StatelessWidget with EcranMaquette {
             'Cette validation atteste que le contrôle physique contradictoire a été réalisé et que les ${nombre(articles)} articles repris correspondent au stock effectivement détenu. Elle engage le Gestionnaire de Stock et est journalisée.',
         libelleOk: 'Valider la reprise');
     if (!ok || !ctx.mounted) return;
-    c.magasin.journaliser('Validation', 'M6', 'LotImportStock', reference, null, {'valideePar': acteur(c).nom});
+    final reglages = c.magasin.collection('reglages');
+    final deja = reglages.parId('repriseStock');
+    if (deja != null && deja['lotReference'] == reference) {
+      // Refus nommé (REPRISE_DEJA_VALIDEE) : une validation ne se rejoue pas.
+      ToastsSigh.afficher(ctx, 'Reprise déjà validée.',
+          type: TypeToast.erreur,
+          detail:
+              'REPRISE_DEJA_VALIDEE : le lot $reference a été validé par ${deja['valideePar']} le ${dateDe(deja['valideeLe'])}. Une validation ne se rejoue pas.');
+      return;
+    }
+    final fiche = {
+      'id': 'repriseStock',
+      'lotReference': reference,
+      'valideePar': acteur(c).nom,
+      'valideeLe': iso(c.aujourdhui),
+    };
+    if (deja == null) {
+      reglages.inserer(fiche);
+    } else {
+      reglages.mettreAJour('repriseStock', fiche);
+    }
+    c.magasin.journaliser('Validation', 'M6', 'LotImportStock', reference, null, {'valideePar': acteur(c).nom, 'valideeLe': fiche['valideeLe']});
     ToastsSigh.afficher(ctx, 'Reprise validée.',
         type: TypeToast.succes, detail: 'Le stock initial devient la situation de référence.');
   }

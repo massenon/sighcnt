@@ -173,13 +173,7 @@
       ]));
 
 
-      form.appendChild(el('div.flex.items-center.justify-between', null, [
-        el('label.flex.cursor-pointer.items-center.gap-2', null, [
-          el('input.checkbox', { type: 'checkbox' }),
-          el('span.text-sm.text-slate-600', { text: 'Se souvenir de ce poste' }),
-        ]),
-      ]));
-
+      /* La case « Se souvenir de ce poste » est retirée : elle ne persistait rien (constat fausses sauvegardes). */
       var erreur = el('div.hidden.items-start.gap-2.rounded-lg.border.border-danger-200.bg-danger-50.px-3.py-2');
       erreur.appendChild(el('span.shrink-0.text-danger-600', null, C.icon('alert-circle', 'h-4 w-4')));
       var erreurTexte = el('p.text-xs.text-danger-900');
@@ -334,14 +328,14 @@
       f.appendChild(el('button.btn.btn-primary.btn-lg.w-full', { type: 'submit' }, 'Envoyer les instructions'));
       f.addEventListener('submit', function (e) {
         e.preventDefault();
-        U.toast('Demande transmise à l’administrateur système.', {
-          type: 'success', detail: 'La réinitialisation est effectuée par l’Administrateur (CDCT §12.2).',
+        /* Refus nommé : aucune demande n'est écrite depuis cette page, qui n'a pas de session. */
+        U.toast('Demande non transmise : cette maquette ne l’enregistre pas.', {
+          type: 'warning', detail: 'Adressez-vous à l’Administrateur système, qui réinitialise le mot de passe depuis « Utilisateurs » (CDCT §12.2).',
         });
-        setTimeout(function () { global.location.href = url('auth-reset'); }, 1200);
       });
       root.appendChild(shell({
         icon: 'key-round', titre: 'Mot de passe oublié',
-        sousTitre: 'La réinitialisation est prise en charge par l’Administrateur système et journalisée.',
+        sousTitre: 'La réinitialisation est faite par l’Administrateur système. Cette page n’enregistre aucune demande : contactez-le directement.',
         body: f,
         pied: el('a.font-medium.text-navy-700.hover\\:underline', { href: url('index'), text: '← Retour à la connexion' }),
       }));
@@ -365,12 +359,14 @@
       f.addEventListener('submit', function (e) {
         e.preventDefault();
         if (pw.value !== pw2.value) { U.toast('Les deux mots de passe ne correspondent pas.', { type: 'error' }); return; }
-        U.toast('Mot de passe mis à jour.', { type: 'success' });
-        setTimeout(function () { global.location.href = url('index'); }, 1000);
+        /* Refus nommé : aucune action serveur ne change un mot de passe depuis cette page. */
+        U.toast('Mot de passe non modifié : cette page n’enregistre rien.', {
+          type: 'warning', detail: 'Le mot de passe se change par l’Administrateur système (écran « Utilisateurs »).',
+        });
       });
       root.appendChild(shell({
         icon: 'lock-keyhole', titre: 'Réinitialiser le mot de passe',
-        sousTitre: 'Politique de mot de passe de la clinique (CDCT §12.2).',
+        sousTitre: 'Politique de mot de passe de la clinique (CDCT §12.2). Maquette : cette page ne modifie aucun mot de passe.',
         body: f,
         pied: el('a.font-medium.text-navy-700.hover\\:underline', { href: url('index'), text: '← Retour à la connexion' }),
       }));
@@ -407,15 +403,14 @@
       f.appendChild(el('p.text-center.text-xs.text-slate-500', { text: 'Code non reçu ? Un nouvel envoi est possible dans 30 secondes.' }));
       f.addEventListener('submit', function (e) {
         e.preventDefault();
-        var s = S.session();
-        U.toast('Vérification réussie.', { type: 'success' });
-        setTimeout(function () {
-          global.location.href = url(s && s.role ? N.ROLES[s.role].home : 'dash-admin');
-        }, 900);
+        /* Refus nommé : aucun code n'est vérifié, aucune marque n'est posée sur la session. */
+        U.toast('Code non vérifié : la double authentification n’est pas branchée.', {
+          type: 'warning', detail: 'Cette page est une maquette ; elle ne valide aucun code.',
+        });
       });
       root.appendChild(shell({
         icon: 'smartphone', titre: 'Vérification en 2 étapes',
-        sousTitre: 'Exigée pour les profils à privilèges élevés : Administrateur et Direction (CDCT §12.2).',
+        sousTitre: 'Prévue pour les profils à privilèges élevés : Administrateur et Direction (CDCT §12.2). Maquette non branchée : aucun code n’est vérifié.',
         body: f,
         pied: el('a.font-medium.text-navy-700.hover\\:underline', { href: url('index'), text: '← Utiliser un autre compte' }),
       }));

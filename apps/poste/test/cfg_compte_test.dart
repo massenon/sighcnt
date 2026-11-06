@@ -59,7 +59,8 @@ void main() {
     expect(find.text('Ce champ est obligatoire.'), findsOneWidget);
     await saisir(t, 'nom', 'NOUVEAU Nom');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
-    expect(find.text('Informations enregistrées.'), findsOneWidget);
+    // Compte sans fiche utilisateur : l'écran dit que seule la session change (aucune fausse sauvegarde).
+    expect(find.text('Nom changé pour cette session seulement.'), findsOneWidget);
     expect(m.utilisateur, 'NOUVEAU Nom');
     final j = m.collection('audit').toutes.firstWhere((a) => a['entite'] == 'Compte');
     expect([j['action'], j['module'], j['reference']], ['Modification', 'CFG', 'admin.systeme']);
@@ -93,10 +94,9 @@ void main() {
     await saisir(t, 'nouveau', 'MotDePasse#2026X');
     await saisir(t, 'confirmation', 'MotDePasse#2026X');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Modifier le mot de passe'));
-    expect(find.text('Mot de passe modifié.'), findsOneWidget);
+    expect(find.text('Compte de démonstration : aucun mot de passe n’est conservé.'), findsOneWidget);
     final j = m.collection('audit').toutes.firstWhere((a) => a['entite'] == 'Utilisateur');
-    expect([j['action'], j['module'], j['reference']], ['Modification', 'M14', 'admin.systeme']);
-    expect(j['apres'], {'motDePasse': 'modifié'});
+    expect([j['action'], j['module'], j['reference']], ['Tentative de changement de mot de passe', 'M14', 'admin.systeme']);
     expect(jsonEncode(m.collection('audit').toutes).contains('MotDePasse#2026X'), isFalse);
     expect(jsonEncode(m.collection('audit').toutes).contains('ancien'), isFalse);
     final champ = t.widget<TextField>(find.descendant(of: find.byKey(const Key('kit:champ:nouveau')), matching: find.byType(TextField)));

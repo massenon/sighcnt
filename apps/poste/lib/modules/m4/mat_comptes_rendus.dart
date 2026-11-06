@@ -178,7 +178,14 @@ class _Tableau extends StatelessWidget {
                       final r = col.inserer(fiche, prefixe: 'CRM');
                       ToastsSigh.afficher(ctx, 'Compte rendu créé.', type: TypeToast.succes, detail: '${r.fiche['reference']}', annuler: r.annuler);
                     } else {
-                      final annuler = col.mettreAJour(existante['id'], v);
+                      // Les champs dérivés suivent le formulaire : patiente et sage-femme changées, noms recalculés comme à la création.
+                      final pt = matPatientDe(m, v['patientCode']);
+                      final annuler = col.mettreAJour(existante['id'], {
+                        ...v,
+                        'patientId': pt?['id'],
+                        'patient': pt != null ? '${pt['nom']} ${pt['prenom']}' : v['patientCode'],
+                        'sageFemme': _nomSoignant(m, v['sageFemmeId']),
+                      });
                       ToastsSigh.afficher(ctx, 'Modifications enregistrées.', type: TypeToast.succes, detail: '${existante['reference']}', annuler: annuler);
                     }
                   }),

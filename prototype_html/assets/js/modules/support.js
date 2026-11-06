@@ -248,16 +248,32 @@
               var v = fBug.collect();
               if (!v) { U.toast('Indiquer le module et décrire le problème.', { type: 'error' }); return; }
               var f = capture.files && capture.files[0];
-              enregistrer({
-                type: 'anomalie',
-                objet: 'Anomalie — ' + v.module,
-                module: v.module, description: v.description, etapes: v.etapes,
-                capture: f ? f.name : null,
-              });
-              fBug.controls.description.value = '';
-              fBug.controls.etapes.value = '';
-              capture.value = '';
-              nomCapture.textContent = 'Aucune capture jointe.';
+              var PLAFOND_CAPTURE = 1024 * 1024;   /* 1 Mo : le quota du magasin est la contrainte (mesure avant de semer) */
+              if (f && f.size > PLAFOND_CAPTURE) {
+                U.toast('Capture trop lourde, anomalie non enregistrée.', { type: 'error',
+                  detail: 'CAPTURE_TROP_LOURDE : ' + f.name + ' dépasse 1 Mo. Réduire l’image puis la joindre de nouveau.' });
+                return;
+              }
+              function terminer(donneesImage) {
+                enregistrer({
+                  type: 'anomalie',
+                  objet: 'Anomalie — ' + v.module,
+                  module: v.module, description: v.description, etapes: v.etapes,
+                  capture: f ? f.name : null,
+                  captureDonnees: donneesImage || null,   /* l'image elle-même, relue avec la fiche ; non transmise par courriel */
+                });
+                fBug.controls.description.value = '';
+                fBug.controls.etapes.value = '';
+                capture.value = '';
+                nomCapture.textContent = 'Aucune capture jointe.';
+              }
+              if (!f) { terminer(null); return; }
+              var lecteur = new FileReader();
+              lecteur.onload = function () { terminer(String(lecteur.result)); };
+              lecteur.onerror = function () {
+                U.toast('Capture illisible, anomalie non enregistrée.', { type: 'error', detail: 'Rejoindre de nouveau le fichier.' });
+              };
+              lecteur.readAsDataURL(f);
             },
           })),
       ])));
@@ -309,7 +325,8 @@
       function enregistrer(donnees) {
         var courriel = veutCourriel();
         var res = col.insert(Object.assign({
-          reference: C.nextRef('SUP-2026-', 4),
+          /* Série annuelle relue sur la collection (archivées comprises), jamais un compteur de page. */
+          reference: C.referenceSuivante('SUP-' + AUJ.getFullYear() + '-', 4, col.all()),
           date: C.iso(AUJ),
           auteur: S.currentUser(),
           etat: 'envoyee',
@@ -320,7 +337,8 @@
         if (!courriel) {
           U.toast(nature + ' enregistré' + (donnees.type === 'anomalie' ? 'e' : '') + ' dans le logiciel.', {
             type: 'success',
-            detail: 'Référence ' + res.record.reference + '. Aucun courriel n’a été envoyé à l’éditeur.',
+            detail: 'Référence ' + res.record.reference + '. Aucun courriel n’a été envoyé à l’éditeur.'
+              + (donnees.captureDonnees ? ' La capture est conservée avec la fiche.' : ''),
             undo: function () { res.undo(); majListe(); },
           });
           return;
@@ -331,7 +349,8 @@
           col.update(res.record.id, { courriel: r.ok ? 'envoye' : 'echec' });
           majListe();
           if (r.ok) {
-            U.toast(nature + ' envoyé' + (donnees.type === 'anomalie' ? 'e' : '') + ' par courriel à l’éditeur.', { type: 'success', detail: 'Référence ' + res.record.reference + '.' });
+            U.toast(nature + ' envoyé' + (donnees.type === 'anomalie' ? 'e' : '') + ' par courriel à l’éditeur.', { type: 'success', detail: 'Référence ' + res.record.reference + '.'
+              + (donnees.captureDonnees ? ' La capture reste au logiciel : elle n’est pas jointe au courriel.' : '') });
           } else {
             var e = (r.etapes || []).filter(function (x) { return !x.ok; })[0];
             U.toast('Demande enregistrée, mais le courriel n’est pas parti.', { type: 'warning', detail: (e ? e.detail : (r.detail || r.erreur || 'Erreur inconnue')) + ' Référence ' + res.record.reference + '.' });

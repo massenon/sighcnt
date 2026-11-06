@@ -30,11 +30,17 @@
       return { value: p.code, label: p.code + ' — ' + p.nom + ' ' + p.prenom };
     });
   }
+  /* Le catalogue des analyses vit au MAGASIN (administrable depuis m5-catalogue) ;
+     D.ANALYSES n'en est que la semence. Lire la constante, c'était ignorer un tarif corrigé. */
+  function analysesCatalogue() {
+    var c = S.collection('analyses').active();
+    return c.length ? c : D.ANALYSES;
+  }
   function optionsAnalyses() {
-    return D.ANALYSES.map(function (a) { return { value: a.code, label: a.code + ' — ' + a.designation }; });
+    return analysesCatalogue().map(function (a) { return { value: a.code, label: a.code + ' — ' + a.designation }; });
   }
   function analyseParCode(code) {
-    return D.ANALYSES.filter(function (a) { return a.code === code; })[0] || null;
+    return analysesCatalogue().filter(function (a) { return a.code === code; })[0] || null;
   }
 
   /* --- Amorçage ------------------------------------------------------------ */
@@ -316,16 +322,27 @@
         vide: 'Aucun prélèvement en attente.',
         icon: 'flask-conical', action: 'Prendre en charge',
         onAction: function (tache, refresh) {
-          var dem = S.collection('demandesAnalyses').all().filter(function (d) {
-            return d.ordonnanceId === tache.ordonnanceId;
-          });
-          dem.forEach(function (d) {
-            if (d.etatAnalyse === 'en_attente') S.collection('demandesAnalyses').update(d.id, { etatAnalyse: 'en_cours' });
-          });
+          /* Les demandes de la tâche se lisent par la FACTURE (lignes payables
+             portant demandeId), jamais par un ordonnanceId : celui d'un patient
+             externe est absent et `undefined === undefined` aurait pris toutes
+             les demandes sans ordonnance. */
+          var fac = tache.factureId ? S.collection('factures').get(tache.factureId) : null;
+          var ids = {};
+          ((fac && fac.lignes) || []).forEach(function (l) { if (l.demandeId) ids[l.demandeId] = true; });
+          var dem = S.collection('demandesAnalyses').all().filter(function (d) { return ids[d.id]; });
+          if (!dem.length) {
+            U.toast('Prise en charge refusée : aucune demande d’analyse liée à cette tâche.', {
+              type: 'error', detail: 'Code SANS_DEMANDE. Vérifier la pièce de caisse ' + (tache.factureNumero || tache.reference || '') + '.',
+            });
+            return;
+          }
+          /* Prendre en charge n'avance AUCUNE demande : le prélèvement puis la réception
+             se constatent depuis « Salle de prélèvement » (m5-prelevement). */
           PR.terminer(tache.id);
           refresh();
-          U.toast(dem.length + ' analyse(s) prise(s) en charge.', {
-            type: 'success', detail: 'Saisir les résultats depuis l’écran « Saisie des résultats ».',
+          U.toast(dem.length + ' analyse(s) prise(s) en charge, à prélever.', {
+            type: 'success',
+            detail: 'Constater le prélèvement puis la réception depuis « Salle de prélèvement » avant la saisie des résultats.',
           });
         },
       }));
@@ -350,7 +367,7 @@
             name: 'etatAnalyse', label: 'État',
             options: [{ value: 'en_attente', label: 'En attente' }, { value: 'en_cours', label: 'En cours' }, { value: 'valide', label: 'Validé' }],
           },
-          { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(D.ANALYSES, 'categorie')).sort() },
+          { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
           { name: 'urgent', label: 'Priorité', options: [{ value: 'true', label: 'Urgentes' }], match: function (r) { return !!r.urgent; } },
         ],
         kpis: function (rows) {
@@ -808,7 +825,7 @@
        * prescripteur averti. Écraser en silence laisserait le médecin avec
        * une valeur qui n'existe plus nulle part.
        * ================================================================== */
-      function demanderRectification(r, valeurs, commentaire) {
+      function demanderRectification(r, valeurs, commentaire, derives) {
         var f = U.form([
           {
             name: 'motif', label: 'Motif de la rectification', type: 'textarea', rows: 2,
@@ -856,6 +873,10 @@
                     motif: v.motif, commentaireGeneral: commentaire, utilisateur: S.currentUser(),
                   });
                 } catch (e) { U.toast('Rectification impossible : ' + e.message, { type: 'error' }); return; }
+                /* Les champs dérivés lus par les tableaux, le tiroir et l'état imprimé
+                   (résumé, conclusion, nombre de valeurs hors référence, saisisseur)
+                   suivent la nouvelle version : sans eux, la pièce montrait l'ancienne valeur. */
+                if (derives) S.collection('demandesAnalyses').update(r.id, derives);
                 m.close();
                 afficher();
                 U.toast('Version rectificative v' + res.version + ' émise.', {
@@ -1052,7 +1073,12 @@
              biologiquement — jamais un écrasement. */
           if (D.resultatRendu(r.etatAnalyse)) {
             m.close();
-            demanderRectification(r, saisies, txtGeneral.value);
+            demanderRectification(r, saisies, txtGeneral.value, {
+              resultat: resume || null,
+              conclusion: anormales.length ? 'Anormal' : 'Normal',
+              anormales: anormales.length,
+              laborantin: selValideur.value,
+            });
             return;
           }
 
@@ -1195,14 +1221,14 @@
       fields: [
         { name: 'code', label: 'Code', required: true },
         { name: 'designation', label: 'Désignation', required: true, col: 'full' },
-        { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: Object.keys(C.groupBy(D.ANALYSES, 'categorie')).sort() },
-        { name: 'echantillon', label: 'Type d’échantillon', type: 'select', options: Object.keys(C.groupBy(D.ANALYSES, 'echantillon')).sort() },
+        { name: 'categorie', label: 'Catégorie', type: 'select', required: true, options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
+        { name: 'echantillon', label: 'Type d’échantillon', type: 'select', options: Object.keys(C.groupBy(analysesCatalogue(), 'echantillon')).sort() },
         { name: 'delai', label: 'Délai de rendu', type: 'select', options: ['Immédiat', '1 h', '2 h', '4 h', '6 h', '24 h', '48 h', '72 h'] },
         { name: 'prix', label: 'Tarif (FCFA)', type: 'money', required: true, min: 0 },
       ],
       filters: [
-        { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(D.ANALYSES, 'categorie')).sort() },
-        { name: 'echantillon', label: 'Échantillon', options: Object.keys(C.groupBy(D.ANALYSES, 'echantillon')).sort() },
+        { name: 'categorie', label: 'Catégorie', options: Object.keys(C.groupBy(analysesCatalogue(), 'categorie')).sort() },
+        { name: 'echantillon', label: 'Échantillon', options: Object.keys(C.groupBy(analysesCatalogue(), 'echantillon')).sort() },
       ],
       kpis: function (rows) {
         return [
@@ -2184,9 +2210,16 @@
               onclick: function () {
                 var v = f.collect();
                 if (!v) return;
+                /* prelevePar / preleveParId : ce que lit la continuité (PR.continuiteRespectee).
+                   Sans eux, le verrou « celui qui a prélevé valide » restait mort. */
+                var agentPreleveur = S.collection('personnel').all()
+                  .filter(function (e) { return e.nomComplet === v.preleveur; })[0];
                 var res = col.update(r.id, Object.assign({}, v, {
                   preleveLe: new Date().toISOString(),
-                  etatAnalyse: r.etatAnalyse === 'attente' ? 'preleve' : r.etatAnalyse,
+                  prelevePar: v.preleveur,
+                  preleveParId: agentPreleveur ? agentPreleveur.id : null,
+                  /* Les états AMONT du référentiel (D.ETATS_RESULTAT) : 'attente' n'en est pas un. */
+                  etatAnalyse: ['en_attente', 'attente_prelevement'].indexOf(r.etatAnalyse) !== -1 ? 'preleve' : r.etatAnalyse,
                 }));
                 S.log('Prélèvement effectué', 'M5', 'DemandeAnalyse', r.reference, null,
                   { preleveur: v.preleveur });

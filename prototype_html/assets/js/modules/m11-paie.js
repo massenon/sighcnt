@@ -1867,6 +1867,11 @@
           ],
           rowActions: K.actionsLigne(colPrets(), champs(), {
             module: 'M11', refresh: afficher,
+            /* À l'édition : agent et matricule suivent l'employé choisi ; référence et retenues déjà posées restent (elles font l'historique du prêt). */
+            transform: function (v) {
+              var a = agents().filter(function (x) { return x.id === v.employeId; })[0];
+              return Object.assign({}, v, { agent: a ? a.nomComplet : '—', matricule: a ? a.matricule : null });
+            },
             titre: function (r) { return r.reference + ' — ' + r.agent; },
             detail: function (r) {
               return el('div.space-y-4', null,

@@ -162,7 +162,10 @@ class EcranWorkflowGed extends StatelessWidget with EcranMaquette {
                       ];
                       effacer();
                       ToastsSigh.afficher(context, '${sel.length} document(s) validé(s).',
-                          type: TypeToast.succes, annuler: () {
+                          type: TypeToast.succes,
+                          detail:
+                              'Sans signature électronique : signer chaque document (bouton Valider de la ligne) pour le verrouiller.',
+                          annuler: () {
                         for (final u in annulations) {
                           u();
                         }
@@ -194,7 +197,9 @@ class EcranWorkflowGed extends StatelessWidget with EcranMaquette {
                 if (motif == null || !context.mounted) return;
                 final annuler = col.mettreAJour(d['id'], qualGedRejet(motif));
                 ToastsSigh.afficher(context, 'Document rejeté.',
-                    type: TypeToast.attention, annuler: annuler);
+                    type: TypeToast.attention,
+                    detail: 'Motif consigné : $motif',
+                    annuler: annuler);
               }),
         ],
       ],

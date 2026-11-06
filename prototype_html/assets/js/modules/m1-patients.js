@@ -1540,7 +1540,14 @@
             return [
               K.iconBtn('eye', 'Prévisualiser', function () { previsualiser(r); }),
               K.commandeIcone('pencil', 'Modifier', function () {
-                K.modifier(colDocs(), champsDocument(), r, dessiner);
+                /* Le dossier choisi à l'édition recalcule `code` et `patient` : sans cela
+                   les colonnes, le KPI et l'état imprimé gardaient l'ancien patient. */
+                K.modifier(colDocs(), champsDocument(), r, dessiner, null, function (v) {
+                  var p = S.collection('patients').get(v.patientId);
+                  v.code = p ? p.code : null;
+                  v.patient = p ? p.nom + ' ' + p.prenom : '—';
+                  return v;
+                });
               }),
               K.commandeIcone('trash-2', 'Retirer du dossier', function () { retirer(r); }, { droit: 'annuler' }),
             ];
@@ -2155,6 +2162,12 @@
             options: (L ? L.NIVEAUX_URGENCE : [{ id: 'aucune', label: 'Courant' }])
               .map(function (x) { return { value: x.id, label: x.label }; }),
           },
+          {
+            name: 'examenUrgent', label: 'Examen urgent (si « un examen urgent », analyses)', type: 'select',
+            options: [{ value: '', label: '—' }].concat(S.collection('analyses').active().map(function (a) {
+              return { value: a.code, label: a.designation };
+            })),
+          },
 
           { type: 'section', label: 'Examens demandés — au catalogue' },
           /* DEUX NATURES DE DEMANDE. L'accueil ne transcrivait que des
@@ -2222,6 +2235,13 @@
                     detail: imagerie ? 'Catalogue d’imagerie médicale.' : 'Catalogue des analyses.' });
                   return;
                 }
+                /* Refus nommé : « un examen urgent » doit nommer l'examen, sinon
+                   aucune analyse ne serait marquée urgente. */
+                if (!imagerie && v.urgence === 'examen' && !v.examenUrgent) {
+                  U.toast('Nommer L’EXAMEN urgent.', { type: 'error',
+                    detail: '« Un examen urgent » sans le nommer laisserait le laboratoire deviner.' });
+                  return;
+                }
                 var res;
                 try {
                   /* CHAQUE NATURE PASSE PAR SA FABRIQUE — celle-là même qui
@@ -2231,6 +2251,7 @@
                   res = imagerie
                     ? PR.ouvrirDemandeImagerie(Object.assign({}, v, {
                       examens: v.examens, origine: 'externe',
+                      urgent: v.urgence !== 'aucune',
                       secteurDemandeur: v.serviceDemandeur || null,
                     }))
                     : PR.ouvrirDemandeExterne(v);
@@ -2416,7 +2437,17 @@
             hint: 'Le corps du certificat, tel qu’il sera imprimé.' },
           { name: 'remisA', label: 'Remis à', type: 'text',
             hint: 'L’intéressé lui-même, ou la personne nommément désignée.' },
-        ].filter(function (c) {
+        ].map(function (c) {
+          /* À l'édition, le type et le patient sont ARRÊTÉS : la pièce est
+             numérotée, tarifée et facturée. Changer l'un laissait « Pièce »,
+             « Patient » et l'impression sur l'ancienne valeur. Pour corriger :
+             archiver, puis réémettre. */
+          if (edition && (c.name === 'typeId' || c.name === 'patientCode')) {
+            c = Object.assign({}, c, { readonly: true,
+              hint: 'Arrêté : la pièce est numérotée et facturée. Pour corriger, l’archiver puis la réémettre.' });
+          }
+          return c;
+        }).filter(function (c) {
           if (!edition) return true;
           /* À l'édition, le patient est arrêté : la pièce est numérotée et
              remise. Laisser le bloc « patient extérieur » inviterait à ouvrir
@@ -2602,6 +2633,8 @@
                 : [])
               .concat(K.actionsLigne(colPieces(), champs(true), {
                 module: 'M1', refresh: afficher,
+                /* Type et patient arrêtés à l'édition : jamais réécrits. */
+                transform: function (v) { delete v.typeId; delete v.patientCode; return v; },
                 titre: function (x) { return x.libelle; },
                 detail: function (x) {
                   return el('div.space-y-4', null,
@@ -3007,6 +3040,18 @@
             return [K.iconBtn('printer', 'Imprimer la fiche', function () { imprimer(r); })]
               .concat(K.actionsLigne(colReference(), champs(), {
                 module: 'M1', refresh: afficher, detail: detail,
+                /* LE CALCULÉ SUIT LA CORRECTION : changer de patient recalcule
+                   patientId, nom, âge, sexe et adresse comme à la création. */
+                transform: function (v) {
+                  var pt = S.collection('patients').active().filter(function (x) { return x.code === v.patientCode; })[0];
+                  return Object.assign({}, v, {
+                    patientId: pt ? pt.id : null,
+                    patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
+                    age: pt ? C.ageDe(pt) : null,
+                    sexe: pt ? pt.sexe : null,
+                    adresse: pt ? pt.quartier : null,
+                  });
+                },
                 titre: function (x) { return x.numero; },
               })(r));
           },
@@ -3212,6 +3257,15 @@
           ],
           rowActions: K.actionsLigne(colContreRef(), champs(), {
             module: 'M1', refresh: afficher,
+            /* Changer de fiche de référence recalcule le patient rattaché. */
+            transform: function (v) {
+              var ref = colReference().active().filter(function (r) { return r.numero === v.numeroReference; })[0];
+              return Object.assign({}, v, {
+                patientId: ref ? ref.patientId : null,
+                patient: ref ? ref.patient : '—',
+                patientCode: ref ? ref.patientCode : null,
+              });
+            },
             titre: function (r) { return r.reference; },
             detail: function (r) {
               return el('div.space-y-4', null,

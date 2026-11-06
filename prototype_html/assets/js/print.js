@@ -391,10 +391,13 @@
       bar.appendChild(el('button.btn.btn-sm.btn-secondary', {
         type: 'button',
         onclick: function () {
+          /* Ce geste ne dépose RIEN dans la GED (aucune catégorie documentaire ne reçoit les états imprimés) :
+             il journalise l'édition (RG-12), et le dit. log() ne sauve pas : save() explicite, sinon l'entrée se perd. */
           global.SIGH.store.log('Impression', 'RAP', 'Document', ref, null, { titre: titre });
-          U.toast('Document archivé dans la GED.', { type: 'success', detail: 'Réf. ' + ref });
+          global.SIGH.store.save();
+          U.toast('Édition journalisée.', { type: 'success', detail: 'Réf. ' + ref + '. La pièce n’est pas déposée dans la GED : imprimez ou enregistrez-la en PDF.' });
         },
-      }, [C.icon('archive', 'h-4 w-4'), 'Archiver']));
+      }, [C.icon('clipboard-list', 'h-4 w-4'), 'Journaliser l’édition']));
     }
     bar.appendChild(el('button.btn.btn-sm.btn-primary', { type: 'button', onclick: fermer }, [C.icon('x', 'h-4 w-4'), 'Fermer']));
     overlay.appendChild(bar);

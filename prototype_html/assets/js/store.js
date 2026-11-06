@@ -4032,7 +4032,7 @@
     objectifsPilotage: 'M12|Objectifs et seuils du pilotage',
     banques: 'M12|Comptes de trésorerie', depenses: 'M12|Dépenses de trésorerie', souscripteurs: 'M9|Souscripteurs', garanties: 'M9|Garanties de prise en charge',
     couverturesAssurance: 'M9|Couvertures d’assurance (historique)',
-    avoirs: 'M8|Factures d’avoir', pvReceptions: 'M7|PV de réception',
+    avoirs: 'M8|Factures d’avoir', inventairesCaisse: 'M8|Inventaires de caisse', pvReceptions: 'M7|PV de réception',
     secteurs: 'CFG|Secteurs de la clinique', postes: 'CFG|Postes de l’organigramme',
     ressources: 'CFG|Ressources graphiques',
     poches: 'M5|Banque de sang', donneurs: 'M5|Donneurs',

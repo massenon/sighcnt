@@ -814,7 +814,8 @@
         f,
         el('div', null, [el('label.label', { text: 'Fichier image *' }), input, apercu]),
         K.note('Le fichier est conservé <strong>dans le poste</strong>, avec le reste des données : '
-          + 'aucune requête réseau, conformément à la contrainte hors ligne de la clinique.', { tone: 'info' }),
+          + 'aucune requête réseau, conformément à la contrainte hors ligne de la clinique. '
+          + '<strong>Les états imprimés ne le reprennent pas encore</strong> : ils gardent l’en-tête officiel.', { tone: 'info' }),
       ]);
 
       var m = U.modal({
@@ -834,7 +835,7 @@
               m.close();
               dessinerRessources(hote);
               U.toast('Ressource « ' + v.libelle + ' » enregistrée.', {
-                type: 'success', detail: 'Elle alimentera les états imprimables.',
+                type: 'success', detail: 'Elle est conservée au poste. L’impression ne la reprend pas encore : les états gardent le logo de l’en-tête officiel.',
               });
             },
           }),
@@ -2091,6 +2092,15 @@
         { id: 'sauvegarde', libelle: 'Échec de sauvegarde', detail: 'Alerte technique', dest: 'Administrateur système', app: true, sms: true, mail: true },
       ];
 
+      /* La matrice enregistrée l'emporte sur les valeurs d'origine : sans cette relecture,
+         tout décochage revenait à la constante au rechargement (fausse sauvegarde). */
+      var CLE_MATRICE = 'notifications.matrice';
+      var matriceEnregistree = S.reglage(CLE_MATRICE, null) || {};
+      NOTIFS.forEach(function (n) {
+        var m = matriceEnregistree[n.id];
+        if (m) ['app', 'sms', 'mail'].forEach(function (c) { if (typeof m[c] === 'boolean') n[c] = m[c]; });
+      });
+
       var etats = {};
       var liste = el('div.overflow-x-auto');
       var t = el('table.tbl');
@@ -2133,11 +2143,23 @@
           size: 'sm', variant: 'primary', icon: 'save',
           onclick: function () {
             var actifs = 0;
+            var apres = {};
             Object.keys(etats).forEach(function (id) {
-              ['app', 'sms', 'mail'].forEach(function (c) { if (etats[id][c].checked) actifs++; });
+              apres[id] = {};
+              ['app', 'sms', 'mail'].forEach(function (c) {
+                apres[id][c] = !!etats[id][c].checked;
+                if (apres[id][c]) actifs++;
+              });
             });
-            S.log('Modification', 'CFG', 'ParametrageNotifications', 'NOTIF', null, { canauxActifs: actifs });
-            U.toast('Paramétrage enregistré.', { type: 'success', detail: actifs + ' canal(aux) actif(s).' });
+            var avant = S.reglage(CLE_MATRICE, null);
+            S.setReglage(CLE_MATRICE, apres);
+            S.log('Modification', 'CFG', 'ParametrageNotifications', 'NOTIF',
+              avant ? { canauxActifs: null, matrice: avant } : null,
+              { canauxActifs: actifs, matrice: apres });
+            U.toast('Paramétrage enregistré.', {
+              type: 'success',
+              detail: actifs + ' canal(aux) actif(s). La grille est conservée ; le moteur d’alertes route encore par rôle et droits, et les envois SMS et courriel ne sont pas pilotés par la maquette.',
+            });
           },
         }),
       ]));
@@ -2162,45 +2184,25 @@
       var principal = el('div.space-y-4.lg\\:col-span-2');
 
       var profil = U.form([
-        { name: 'nom', label: 'Nom et prénoms', required: true, col: 'full', value: s.nom },
+        { name: 'nom', label: 'Nom et prénoms', readonly: true, col: 'full', value: s.nom },
         { name: 'identifiant', label: 'Identifiant de connexion', readonly: true, value: s.identifiant || 'admin.systeme' },
         { name: 'poste', label: 'Poste', readonly: true, value: N.ROLES[s.role] ? N.ROLES[s.role].label : '' },
-        { name: 'telephone', label: 'Téléphone', type: 'tel' },
-        { name: 'email', label: 'Adresse électronique', type: 'email' },
       ], {});
+      /* Aucune commande d'enregistrement : le nom, le téléphone et le courriel ne
+         s'écrivaient nulle part (la session est reconstruite depuis le serveur à la
+         connexion suivante). Une commande absente vaut mieux qu'un faux succès. */
       principal.appendChild(U.card('Informations personnelles', el('div', null, [
         profil,
-        el('div.mt-4', null, K.btn('Enregistrer', {
-          variant: 'primary', icon: 'save',
-          onclick: function () {
-            var v = profil.collect();
-            if (!v) return;
-            S.setSession(Object.assign({}, s, { nom: v.nom }));
-            U.toast('Informations enregistrées.', { type: 'success' });
-          },
-        })),
+        el('div.mt-3', null, K.note('Ces informations viennent du compte tenu par l’administrateur (écran « Utilisateurs »). Elles ne se modifient pas depuis cet écran dans la maquette.', { tone: 'info' })),
       ])));
 
-      var securite = U.form([
-        { name: 'actuel', label: 'Mot de passe actuel', type: 'password', required: true },
-        { name: 'nouveau', label: 'Nouveau mot de passe', type: 'password', required: true },
-        { name: 'confirmation', label: 'Confirmer le nouveau mot de passe', type: 'password', required: true },
-        { name: 'mfa', label: 'Activer l’authentification à deux facteurs', type: 'checkbox', col: 'full', value: ['admin', 'direction', 'dm', 'da'].indexOf(s.role) !== -1 },
-      ], {});
+      /* Pas de formulaire ni de bouton : aucune action serveur ne change un mot de passe
+         (api/auth.php : comptes, moi, deconnexion, connexion) et le double facteur n'est
+         pas persisté. Le geste existant vit à l'écran « Utilisateurs » (réinitialisation
+         par l'administrateur, haché côté serveur). */
       principal.appendChild(U.card('Sécurité du compte', el('div', null, [
-        securite,
+        K.note('Le changement du mot de passe personnel et l’authentification à deux facteurs ne sont <strong>pas disponibles dans la maquette</strong> : rien ne serait enregistré. L’administrateur définit ou réinitialise le mot de passe depuis « Utilisateurs ».', { tone: 'warning' }),
         el('div.mt-3', null, K.note('Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses.', { tone: 'info' })),
-        el('div.mt-4', null, K.btn('Modifier le mot de passe', {
-          variant: 'primary', icon: 'key-round',
-          onclick: function () {
-            var v = securite.collect();
-            if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-            if (v.nouveau !== v.confirmation) { U.toast('Les deux mots de passe ne correspondent pas.', { type: 'error' }); return; }
-            if (String(v.nouveau).length < 8) { U.toast('Le mot de passe doit comporter au moins 8 caractères.', { type: 'error' }); return; }
-            S.log('Modification', 'M14', 'Utilisateur', s.identifiant || s.nom, null, { motDePasse: 'modifié' });
-            U.toast('Mot de passe modifié.', { type: 'success' });
-          },
-        })),
       ])));
 
       host.appendChild(principal);
@@ -4582,7 +4584,8 @@
         if (!mere) {
           hote.appendChild(K.note('À faire sur le <strong>serveur local</strong> uniquement. Exige l’adresse du relais, le <strong>secret de la mère</strong> et la <strong>clé de clinique</strong>.', { tone: 'info', icon: 'info' }));
           var b = el('button.btn.btn-primary.btn-sm', { type: 'button', text: 'Activer le mode mère' });
-          b.addEventListener('click', function () { U.toast('Simulation — déclaration au relais, démarrage du service, mode mère enregistré.', { type: 'info' }); mere = true; peindre(); });
+          hote.appendChild(K.note('<strong>Prototype : simulation.</strong> Aucune déclaration au relais ni démarrage de service n’a lieu, et rien n’est enregistré : le poste redevient fileul au rechargement de l’écran.', { tone: 'warning', icon: 'triangle-alert' }));
+          b.addEventListener('click', function () { U.toast('Simulation : aucun mode enregistré, l’état n’est tenu que le temps de cet écran.', { type: 'info' }); mere = true; peindre(); });
           hote.appendChild(b);
         } else {
           hote.appendChild(K.note('Les modules du groupe <strong>Poste mère</strong> sont maintenant disponibles pour l’administrateur et la DAF.', { tone: 'success', icon: 'check' }));

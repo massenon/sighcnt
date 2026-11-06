@@ -2109,6 +2109,11 @@
               { value: 'peremption', label: 'Péremption' },
               { value: 'perte', label: 'Perte ou disparition' }],
           },
+          {
+            name: 'magasin', label: 'Magasin concerné', type: 'select', required: true,
+            options: [{ value: 'detail', label: 'Pharmacie (détail)' }, { value: 'gros', label: 'Magasin central (gros)' }],
+            hint: 'La perte décroît le stock de CE magasin, et le total qui en découle.',
+          },
           { name: 'quantite', label: 'Quantité perdue', type: 'number', required: true, min: 1 },
           { name: 'date', label: 'Date du constat', type: 'date', required: true },
           {
@@ -2117,7 +2122,7 @@
           },
           { name: 'constatePar', label: 'Constaté par', type: 'text', required: true },
           { name: 'observation', label: 'Circonstances', type: 'textarea', rows: 2, col: 'full' },
-        ], { date: C.iso(AUJ), type: 'casse', quantite: 1, constatePar: S.currentUser() });
+        ], { date: C.iso(AUJ), type: 'casse', magasin: 'detail', quantite: 1, constatePar: S.currentUser() });
 
         var m = U.modal({
           title: 'Déclarer une perte', size: 'lg',
@@ -2138,14 +2143,16 @@
                 var prod = prods.filter(function (x) { return x.id === v.produitId; })[0];
                 if (!prod) return;
                 var q = Number(v.quantite) || 0;
-                var dispo = prod.stock != null ? prod.stock : 0;
+                var champMag = v.magasin === 'gros' ? 'stockGros' : 'stockDetail';
+                var dispo = prod[champMag] != null ? prod[champMag] : 0;
+                var totalAvant = prod.stock != null ? prod.stock : 0;
                 /* RG-03 : le stock ne peut jamais devenir négatif. Refuser en
                    NOMMANT la ligne, plutôt que de laisser passer un stock
                    impossible qu'un inventaire découvrirait des mois plus tard. */
                 if (q > dispo) {
                   U.toast('Perte supérieure au stock.', {
                     type: 'error',
-                    detail: prod.designation + ' — ' + C.num(dispo) + ' en stock, ' + C.num(q) + ' déclaré(s). '
+                    detail: prod.designation + ' — ' + C.num(dispo) + ' en stock (' + (v.magasin === 'gros' ? 'magasin central' : 'pharmacie') + '), ' + C.num(q) + ' déclaré(s). '
                       + 'RG-03 : le stock ne peut pas devenir négatif.',
                   });
                   return;
@@ -2156,24 +2163,28 @@
                   date: v.date, type: v.type,
                   typeLabel: (D.TYPES_MOUVEMENT.filter(function (x) { return x.id === v.type; })[0] || {}).label, /* sans lui, la colonne « Nature » du registre restait vide (E18) */
                   produitId: prod.id, produit: prod.designation, unite: prod.unite,
-                  quantite: q, sens: 'sortie',
+                  quantite: q, sens: 'sortie', stockType: v.magasin,
                   valeur: valeurPerte, cump: prod.cump || 0,
                   justificatif: v.justificatif, constatePar: v.constatePar,
                   observation: v.observation || null,
                   utilisateur: S.currentUser(),
                 });
-                S.collection('produits').update(prod.id, { stock: dispo - q });
+                var majPerte = { stock: Math.max(0, totalAvant - q) };
+                majPerte[champMag] = dispo - q;
+                var avantPerte = { stock: totalAvant };
+                avantPerte[champMag] = dispo;
+                S.collection('produits').update(prod.id, majPerte);
                 S.log('Déclaration de perte', 'M6', 'MouvementStock', res.record.reference,
-                  { stock: dispo }, { stock: dispo - q, type: v.type, valeur: valeurPerte });
+                  avantPerte, Object.assign({ type: v.type, valeur: valeurPerte, magasin: v.magasin }, majPerte));
                 m.close();
                 afficherPertes();
                 U.toast('Perte déclarée.', {
                   type: 'success', duration: 8000,
                   detail: prod.designation + ' — ' + C.num(q) + ' ' + (prod.unite || '')
-                    + ', ' + C.money(valeurPerte) + ' au CUMP. Stock ramené à ' + C.num(dispo - q) + '.',
+                    + ', ' + C.money(valeurPerte) + ' au CUMP. Stock du magasin ramené à ' + C.num(dispo - q) + '.',
                   undo: function () {
                     res.undo();
-                    S.collection('produits').update(prod.id, { stock: dispo });
+                    S.collection('produits').update(prod.id, avantPerte);
                     afficherPertes();
                   },
                   undoMessage: 'Déclaration annulée — le stock est rétabli.',
@@ -2764,6 +2775,10 @@
       var articles = SG.INVENTAIRE_SAGE;
       var prods = produits();
       var host = el('div.space-y-4');
+      /* La validation est ÉCRITE au magasin (réglage) et relue ici : la constante du
+         lot (data-sage) ne porte jamais l'état de validation. */
+      var validationLot = S.reglage('repriseStock', null);
+      if (validationLot && validationLot.lotReference !== lot.reference) validationLot = null;
 
       var valorises = articles.filter(function (a) { return a.valorise; });
       /* « Non valorisé » veut dire : ni par le document, ni par la clinique.
@@ -2800,7 +2815,7 @@
         ['Contrôle de cohérence', C.sum(articles, 'quantite') === lot.totalUnites
           ? U.badge('Quantités concordantes', 'success')
           : U.badge('Écart de ' + C.num(Math.abs(C.sum(articles, 'quantite') - lot.totalUnites)) + ' unités', 'danger')],
-        ['Validation Gestionnaire de Stock', lot.valideePar ? U.badge(lot.valideePar, 'success') : U.badge('En attente', 'warning')],
+        ['Validation Gestionnaire de Stock', validationLot ? U.badge(validationLot.valideePar + ', le ' + C.dateFR(validationLot.valideeLe), 'success') : U.badge('En attente', 'warning')],
       ], 'grid-cols-1 sm:grid-cols-2'), [
         /* La validation de la reprise ENGAGE le Gestionnaire de Stock et
            est journalisée : elle n'est pas offerte à qui ne fait que lire. */
@@ -2815,7 +2830,20 @@
               confirmLabel: 'Valider la reprise',
             }).then(function (ok) {
               if (!ok) return;
-              S.log('Validation', 'M6', 'LotImportStock', lot.reference, null, { valideePar: S.currentUser() });
+              var deja = S.reglage('repriseStock', null);
+              if (deja && deja.lotReference === lot.reference) {
+                U.toast('Reprise déjà validée.', {
+                  type: 'error',
+                  detail: 'REPRISE_DEJA_VALIDEE : le lot ' + lot.reference + ' a été validé par ' + deja.valideePar
+                    + ' le ' + C.dateFR(deja.valideeLe) + '. Une validation ne se rejoue pas.',
+                });
+                dessiner();
+                return;
+              }
+              var fiche = { lotReference: lot.reference, valideePar: S.currentUser(), valideeLe: new Date().toISOString().slice(0, 10) };
+              S.setReglage('repriseStock', fiche);
+              S.log('Validation', 'M6', 'LotImportStock', lot.reference, null, { valideePar: fiche.valideePar, valideeLe: fiche.valideeLe });
+              dessiner();
               U.toast('Reprise validée.', { type: 'success', detail: 'Le stock initial devient la situation de référence.' });
             });
           },
@@ -3104,9 +3132,11 @@
                 /* Les états que le parcours ÉCRIT sont « soldee » (PR.encaisser) et « servie » (PR.delivrer) : comparer à « payee » /
                    « delivree » laissait toute ordonnance réglée « Non réglée » à jamais (écart E40, corrigé le 30/10/2026). */
                 paye: o.statutPaiement === 'soldee',
-                delivre: o.statutDispensation === 'servie',
-                stock: pr ? pr.stock : null,
-                couvert: pr ? pr.stock >= l.quantite : false,
+                /* Servie : toute l'ordonnance (PR.delivrer) OU cette ligne (délivrance ligne à ligne ci-dessous). */
+                delivre: o.statutDispensation === 'servie' || (o.lignesServies || []).indexOf(i) !== -1,
+                /* La pharmacie sert sur le stock du DÉTAIL, comme PR.verifierStock. */
+                stock: pr ? (pr.stockDetail != null ? pr.stockDetail : pr.stock) : null,
+                couvert: pr ? (pr.stockDetail != null ? pr.stockDetail : pr.stock) >= l.quantite : false,
               });
             });
           });
@@ -3187,24 +3217,44 @@
             confirmLabel: 'Délivrer',
           }).then(function (ok) {
             if (!ok) return;
-            var avant = r.produit.stock;
-            S.collection('produits').update(r.produit.id, { stock: avant - r.quantite });
+            var avant = r.stock;
+            var prodMaj = { stock: Math.max(0, (r.produit.stock || 0) - r.quantite) };
+            if (r.produit.stockDetail != null) prodMaj.stockDetail = r.produit.stockDetail - r.quantite;
+            S.collection('produits').update(r.produit.id, prodMaj);
+            var valSortie = PR.valoriserSortie ? PR.valoriserSortie(r.produit, r.quantite) : null;
             S.collection('mouvements', { module: 'M6', entite: 'MouvementStock', prefix: 'MVT' }).insert({
               reference: C.referenceSuivante('MVT-', 5, S.collection('mouvements').all()), date: C.iso(new Date()),
               type: voie === 'parenterale' ? 'delivrance_interne' : 'delivrance_externe',
               produitId: r.produit.id, produit: r.designation,
-              quantite: r.quantite, sens: 'sortie',
-              valeur: r.quantite * (r.produit.prixAchat || 0),
+              quantite: r.quantite, sens: 'sortie', stockType: 'detail',
+              valeur: valSortie ? valSortie.valeur : r.quantite * (r.produit.prixAchat || 0),
+              ordonnanceId: r.ordonnance.id,
+              utilisateur: S.currentUser(),
               /* RG-03 : le justificatif est le numéro d'ordonnance. */
               justificatif: 'Ordonnance ' + r.numero,
               destination: voie === 'parenterale' ? 'Salle de soins' : 'Patient',
             });
-            colOrdonnances6().update(r.ordonnance.id, { statutDispensation: 'servie' });
+            /* Un statut PAR LIGNE : l'ordonnance n'est « servie » que lorsque TOUTES ses lignes le sont
+               (les lignes de l'autre pharmacie restent à délivrer, sinon elles disparaissaient sans sortie de stock). */
+            var ordCourante = colOrdonnances6().get(r.ordonnance.id) || r.ordonnance;
+            var servies = (ordCourante.lignesServies || []).filter(function (n) { return n !== r.index; }).concat([r.index]);
+            var toutes = (ordCourante.medicaments || []).every(function (_l, n) { return servies.indexOf(n) !== -1; });
+            var majOrd = { lignesServies: servies };
+            if (toutes) {
+              majOrd.statutDispensation = 'servie';
+              majOrd.dispenseLe = new Date().toISOString();
+              majOrd.dispensePar = S.currentUser();
+              PR.taches().filter(function (t) { return t.ordonnanceId === r.ordonnance.id && t.type === 'dispensation'; })
+                .forEach(function (t) { PR.terminer(t.id); });
+            }
+            colOrdonnances6().update(r.ordonnance.id, majOrd);
+            S.log('Dispensation', 'M6', 'ordonnance', r.numero, { ligne: r.index, servies: servies.length - 1 },
+              { ligne: r.index, produit: r.designation, quantite: r.quantite, servies: servies.length, ordonnanceServie: toutes });
             /* `alerterStock` attend une LISTE d'identifiants : passer l'identifiant nu levait « forEach is not a function » APRÈS l'écriture du
                mouvement — la vue ne se rafraîchissait pas et le message de succès ne paraissait jamais (écart E44, corrigé le 30/10/2026). */
             if (PR.alerterStock) PR.alerterStock([r.produit.id], r.numero);
             afficher();
-            U.toast('Délivré — stock ramené à ' + C.num(avant - r.quantite) + '.', {
+            U.toast('Délivré — stock de la pharmacie ramené à ' + C.num(avant - r.quantite) + '.', {
               type: 'success', detail: r.designation + ' — ' + r.patient,
             });
           });

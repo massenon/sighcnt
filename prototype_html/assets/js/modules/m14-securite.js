@@ -129,9 +129,12 @@
    * ======================================================================== */
   global.SIGH.screen('m14-utilisateurs', {
     title: 'Utilisateurs',
-    description: 'Comptes individuels, rôles attribués, état d’activation et double facteur.',
+    description: 'Registre des comptes individuels : rôles attribués, état d’activation et double facteur (fiches de gestion).',
     regle: '<strong>Aucun compte partagé</strong> : chaque agent dispose d’un identifiant individuel. '
-      + 'Le double facteur est exigé pour les profils à privilèges élevés (Administrateur et Direction).',
+      + 'Le double facteur est marqué pour les profils à privilèges élevés (Administrateur et Direction). '
+      + '<strong>Non appliqué par la maquette</strong> : la connexion lit la table des comptes du serveur, pas ces fiches. '
+      + 'Le rôle, l’état actif, l’archivage, l’identifiant et le double facteur modifiés ici ne changent pas la connexion, '
+      + 'et un compte créé ici n’ouvre pas de session (le mot de passe saisi n’est conservé nulle part).',
     render: function (root) {
       utilisateurs();
       return K.crud({
@@ -212,8 +215,8 @@
             record ? null : { type: 'section', label: 'Mot de passe' },
             record ? null : {
               name: 'motDePasse', label: 'Mot de passe', type: 'password', required: true,
-              help: 'Huit caractères au minimum. Il n’est pas conservé en clair : '
-                + 'l’agent devra le changer à sa première connexion.',
+              help: 'Huit caractères au minimum (contrôlé à la saisie). Maquette : il n’est conservé nulle part, '
+                + 'ni en clair ni haché ; seule la date de définition est écrite. Le compte ne permet pas encore de se connecter.',
             },
             record ? null : {
               name: 'motDePasseConfirmation', label: 'Confirmer le mot de passe',
@@ -1578,8 +1581,8 @@
     title: 'Sécurité des utilisateurs',
     description: 'Politique de mot de passe, verrouillage, double facteur, comptes bloqués et tentatives de connexion.',
     regle: 'Écran réservé à l’<strong>administrateur système</strong>. La politique est une fiche unique ; chaque paramètre dit sa <strong>source</strong> '
-      + 'et s’il est <strong>appliqué</strong> par la maquette. Un mot de passe ne s’affiche ni ne se conserve ici : on <strong>impose</strong> '
-      + 'sa réinitialisation. Bloquer, débloquer et clôturer sont journalisés (RG-12) ; rien n’est supprimé (RG-14).',
+      + 'et s’il est <strong>appliqué</strong> par la maquette. Un mot de passe ne s’affiche ni ne se conserve ici : on <strong>marque</strong> '
+      + 'la réinitialisation comme imposée (marquage non lu par la connexion de la maquette). Bloquer, débloquer et clôturer sont journalisés (RG-12) ; rien n’est supprimé (RG-14).',
     render: function (root) {
       utilisateurs();
       amorcerSessions();
@@ -1735,7 +1738,7 @@
                   agir('Débloquer', debloquerCompte, r, 'Le compte retrouve l’accès et son compteur d’échecs repart de zéro. L’opération est journalisée.'); } })
                 : (r.actif ? K.commande('Bloquer', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'lock', onclick: function () { demanderBlocage(r); } }) : null),
               r.imposee ? null : K.commande('Imposer la réinitialisation', { moduleCode: 'M14', size: 'sm', icon: 'key-round', onclick: function () {
-                agir('Imposer la réinitialisation', imposerReinitialisation, r, 'L’agent devra choisir un nouveau mot de passe à sa prochaine connexion. Aucun mot de passe n’est affiché ni conservé ici.'); } }),
+                agir('Imposer la réinitialisation', imposerReinitialisation, r, 'Le compte est marqué « réinitialisation imposée » et l’opération est journalisée. Non appliqué par la maquette : la connexion ne lit pas ce marquage, l’agent se connecte comme avant. Aucun mot de passe n’est affiché ni conservé ici.'); } }),
               r.sessions ? K.commande('Clôturer les sessions', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'log-out', onclick: function () {
                 agir('Clôturer les sessions', cloturerSessionsDe, r, 'Les ' + r.sessions + ' session(s) ouverte(s) de ce compte seront clôturées ; le poste retombe sur la connexion à son prochain geste.'); } }) : null,
             ].filter(Boolean);
@@ -2079,10 +2082,13 @@
         ],
         rowActions: function (r) {
           return [K.iconBtn('download', 'Télécharger', function () {
+            /* La maquette ne conserve pas le contenu d'une sauvegarde datée (5 Mo par fiche dépasseraient le quota) :
+               sans contenu porté par la fiche, le fichier servi est l'ÉTAT COURANT, et le toast le dit. */
             var contenu = r.contenu || JSON.stringify(S.raw(), null, 2);
             var ok = telecharger(r.fichier, contenu);
-            U.toast(ok ? 'Sauvegarde téléchargée.' : 'Téléchargement impossible depuis ce poste.', {
-              type: ok ? 'success' : 'error', detail: r.fichier,
+            U.toast(ok ? (r.contenu ? 'Sauvegarde téléchargée.' : 'État courant du magasin téléchargé.') : 'Téléchargement impossible depuis ce poste.', {
+              type: ok ? (r.contenu ? 'success' : 'warning') : 'error',
+              detail: ok && !r.contenu ? 'La maquette ne conserve pas le contenu de la sauvegarde datée ' + r.fichier + ' : le fichier remis est l’état d’aujourd’hui.' : r.fichier,
             });
           })];
         },
@@ -2093,15 +2099,18 @@
               var cols = collectionsBase();
               var nom = 'sigh-cnt-' + C.iso(AUJ).replace(/-/g, '') + '-' + C.pad(colFichiers.all().length + 1, 2) + '.json';
               var contenu = JSON.stringify(S.raw(), null, 2);
+              /* Le fichier est remis AU MOMENT de la génération : c'est le seul exemplaire, la fiche n'en garde que les métadonnées. */
+              var remis = telecharger(nom, contenu);
+              if (!remis) { U.toast('Téléchargement impossible depuis ce poste : aucune sauvegarde n’a été générée.', { type: 'error' }); return; }
               var res = colFichiers.insert({
                 fichier: nom, date: C.iso(AUJ), heure: C.heure(new Date().toISOString()),
                 portee: 'Base complète', tables: cols.length,
                 taille: contenu.length, genereePar: S.currentUser(),
               });
               tableFichiers.refresh();
-              U.toast('Sauvegarde ' + nom + ' générée.', {
+              U.toast('Sauvegarde ' + nom + ' générée et téléchargée.', {
                 type: 'success',
-                detail: cols.length + ' tables — ' + poidsFichier(contenu.length),
+                detail: cols.length + ' tables, ' + poidsFichier(contenu.length) + '. Conservez ce fichier : la maquette n’en garde pas le contenu.',
                 undo: function () { res.undo(); tableFichiers.refresh(); },
               });
             },
@@ -2116,36 +2125,10 @@
 
       host.appendChild(K.note('La sauvegarde <strong>hebdomadaire est automatique</strong> ; l’utilisateur est '
         + 'invité à en télécharger une copie sur un support externe. Une sauvegarde qui reste sur le poste '
-        + 'ne protège de rien.', { tone: 'info', icon: 'database-backup' }));
+        + 'ne protège de rien. La sauvegarde serveur se lance depuis « Tâches planifiées » ; '
+        + 'le test de restauration relève de api/restaurer.php (simulation par défaut), hors de cet écran.', { tone: 'info', icon: 'database-backup' }));
 
       host.appendChild(el('div.flex.flex-wrap.gap-2', null, [
-        K.btn('Lancer une sauvegarde manuelle', {
-          variant: 'primary', icon: 'database-backup',
-          onclick: function () {
-            U.confirm({
-              title: 'Lancer une sauvegarde immédiate ?',
-              message: 'Une sauvegarde complète de la base de données sera effectuée sur le disque local dédié. L’opération est journalisée.',
-              confirmLabel: 'Lancer la sauvegarde',
-            }).then(function (ok) {
-              if (!ok) return;
-              S.log('Création', 'M14', 'Sauvegarde', 'BK-MANUELLE', null, { type: 'manuelle' });
-              U.toast('Sauvegarde effectuée avec succès.', { type: 'success', detail: 'Volume : 412 Mo — durée : 9 s' });
-            });
-          },
-        }),
-        K.btn('Tester une restauration', {
-          icon: 'rotate-ccw',
-          onclick: function () {
-            U.confirm({
-              title: 'Tester la procédure de restauration ?',
-              message: 'La restauration sera effectuée sur l’environnement de test, sans incidence sur les données de production.',
-              confirmLabel: 'Lancer le test',
-            }).then(function (ok) {
-              if (!ok) return;
-              U.toast('Test de restauration réussi.', { type: 'success', detail: 'Intégrité des données vérifiée sur l’environnement de test.' });
-            });
-          },
-        }),
         K.btn('Exporter le journal des sauvegardes', {
           icon: 'printer',
           onclick: function () {

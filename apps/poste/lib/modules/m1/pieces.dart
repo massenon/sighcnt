@@ -44,18 +44,22 @@ class EcranPieces extends StatelessWidget with EcranMaquette {
     ];
     const vide = (controle: 'patientCode', quand: ['']);
     return [
-      ChampDef(
-          nom: 'typeId',
-          libelle: 'Type de pièce',
-          type: TypeChamp.select,
-          requis: true,
-          options: [for (final t in typesPiece(c.magasin)) OptionChamp(t.id, t.libelle)]),
-      ChampDef(
-          nom: 'patientCode',
-          libelle: 'Patient (dossier du répertoire)',
-          type: TypeChamp.select,
-          options: [const OptionChamp('', '— Aucun : patient adressé de l’extérieur —'), ...optionsPatientsM1(c.magasin)],
-          aide: 'Laisser vide pour un patient qui n’a pas de dossier à la clinique.'),
+      // En édition, le type et le patient ne se changent pas : une pièce numérotée et facturée ne se renumérote pas, et les champs dérivés
+      // (libellé, sigle, patient affiché, facture) ne seraient pas recalculés. Pour changer l'un des deux : archiver puis délivrer une nouvelle pièce.
+      if (!edition) ...[
+        ChampDef(
+            nom: 'typeId',
+            libelle: 'Type de pièce',
+            type: TypeChamp.select,
+            requis: true,
+            options: [for (final t in typesPiece(c.magasin)) OptionChamp(t.id, t.libelle)]),
+        ChampDef(
+            nom: 'patientCode',
+            libelle: 'Patient (dossier du répertoire)',
+            type: TypeChamp.select,
+            options: [const OptionChamp('', '— Aucun : patient adressé de l’extérieur —'), ...optionsPatientsM1(c.magasin)],
+            aide: 'Laisser vide pour un patient qui n’a pas de dossier à la clinique.'),
+      ],
       if (!edition) ...const [
         ChampDef.section('Ou patient adressé de l’extérieur (dossier créé ici)'),
         ChampDef(nom: 'extNom', libelle: 'Nom', col: ColChamp.tiers, condition: vide),

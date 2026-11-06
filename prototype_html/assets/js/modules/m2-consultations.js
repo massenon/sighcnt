@@ -613,7 +613,14 @@
                     K.btn('Imprimer', { icon: 'printer', onclick: function () { etatConsultation(c); } }),
                     K.commande('Éditer le rendez-vous', {
                       variant: 'primary', icon: 'pencil',
-                      onclick: function () { t.close(); K.modifier(colC, champsRendezVous, c, redessiner); },
+                      onclick: function () {
+                        t.close();
+                        /* Le même contrôle et la même fabrique que le registre des rendez-vous. */
+                        K.modifier(colC, champsRendezVous, c, redessiner, function (v) {
+                          var refus = validerVenue(v);
+                          if (refus) { U.toast(refus, { type: 'error' }); return false; }
+                        }, completerVenue);
+                      },
                     }),
                     /* Les trois suites, au même endroit que l’édition : c’est
                        le geste que l’accueil fait vingt fois par jour. */
@@ -847,6 +854,7 @@
             if (refus) { U.toast(refus, { type: 'error' }); return; }
             var prioritaire = v.priorite;
             delete v.priorite;
+            v.prioritaire = !!prioritaire;   /* conservé sur la venue : la case n'est plus un simple signal sonore */
             v.statut = 'en_cours';
             v.date = new Date(v.date).toISOString();
             v.sansRendezVous = true;

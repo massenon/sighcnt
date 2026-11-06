@@ -112,6 +112,10 @@ class _EtatDepenses extends State<EcranDepenses> {
       ToastsSigh.afficher(ctx, e.message, type: TypeToast.erreur, detail: e.detail);
       c.magasin.journaliser('Écriture de dépense refusée — déséquilibre', 'M12', 'Ecriture', '${dep['reference']}', null, {'motif': e.detail}, succes: false);
       return const [];
+    } on EcritureRefusee catch (e) {
+      // La garde de la collection (exercice en clôture ou clos, relu au magasin) peut refuser APRÈS le pré-contrôle de la liasse : refus nommé, jamais une exception muette.
+      ToastsSigh.afficher(ctx, 'Écriture refusée.', type: TypeToast.erreur, detail: e.motif);
+      return const [];
     }
   }
 
@@ -314,6 +318,12 @@ class _EtatDepenses extends State<EcranDepenses> {
                       ToastsSigh.afficher(ctx, 'Écriture refusée.', type: TypeToast.erreur, detail: clos);
                       return;
                     }
+                    // Même garde que celle de la collection (exercices du MAGASIN : en clôture ou clos par validation), contrôlée AVANT toute écriture.
+                    final gardeMagasin = cpcGardeEcritures(c.magasin.collection('exercices').toutes, v['date'], role: acteur(c).role);
+                    if (gardeMagasin != null) {
+                      ToastsSigh.afficher(ctx, 'Écriture refusée.', type: TypeToast.erreur, detail: gardeMagasin);
+                      return;
+                    }
                     if (!edition) {
                       final rec = depenses.inserer({
                         'reference': cpaReferenceDepense('${v['date']}', depenses.toutes),
@@ -330,7 +340,13 @@ class _EtatDepenses extends State<EcranDepenses> {
                         'statut': 'actif',
                       }, prefixe: 'DEP').fiche;
                       final ids = _poser(ctx, c, rec);
-                      if (ids.isNotEmpty) depenses.mettreAJour(rec['id'], {'ecritureId': ids.first, 'ecritureIds': ids});
+                      if (ids.isEmpty) {
+                        // Une dépense sans contrepartie comptable ne reste pas au registre : archivée (RG-14), le refus est déjà annoncé.
+                        depenses.archiver(rec['id']);
+                        c.magasin.journaliser('Dépense annulée, écriture non posée', 'M12', 'Depense', '${rec['reference']}', null, {'motif': 'écriture refusée'}, succes: false);
+                        return;
+                      }
+                      depenses.mettreAJour(rec['id'], {'ecritureId': ids.first, 'ecritureIds': ids});
                       fermer();
                       ToastsSigh.afficher(ctx, 'Dépense enregistrée.',
                           type: TypeToast.succes,
@@ -345,7 +361,7 @@ class _EtatDepenses extends State<EcranDepenses> {
                           },
                           messageAnnulation: 'Dépense annulée.');
                     } else {
-                      depenses.mettreAJour(r['id'], {
+                      final annulerMaj = depenses.mettreAJour(r['id'], {
                         'date': '${v['date']}',
                         'lignes': t.lignes,
                         'montant': t.montant,
@@ -355,12 +371,19 @@ class _EtatDepenses extends State<EcranDepenses> {
                         'categorie': '${v['categorie']}',
                         'justificatif': _justificatif('${fichier['justificatif']}', r['justificatif'] as Fiche?),
                       });
-                      // L'écriture suit la dépense, et on archive TOUTES les lignes de l'ancienne : en laisser une seule déséquilibrerait le journal.
+                      // La NOUVELLE écriture se pose d'abord : refusée, rien ne change (la dépense est rétablie, l'ancienne écriture reste).
+                      final ids = _poser(ctx, c, depenses.parId(r['id'])!);
+                      if (ids.isEmpty) {
+                        annulerMaj();
+                        ToastsSigh.afficher(ctx, 'Dépense non modifiée.',
+                            type: TypeToast.attention, detail: 'La nouvelle écriture n’a pas pu être posée : la dépense et son écriture restent comme avant.');
+                        return;
+                      }
+                      // On archive TOUTES les lignes de l'ancienne : en laisser une seule déséquilibrerait le journal.
                       for (final id in _idsEcritures(r)) {
                         c.magasin.collection('ecritures').archiver(id);
                       }
-                      final ids = _poser(ctx, c, depenses.parId(r['id'])!);
-                      if (ids.isNotEmpty) depenses.mettreAJour(r['id'], {'ecritureId': ids.first, 'ecritureIds': ids});
+                      depenses.mettreAJour(r['id'], {'ecritureId': ids.first, 'ecritureIds': ids});
                       fermer();
                       ToastsSigh.afficher(ctx, 'Dépense modifiée.',
                           type: TypeToast.succes, detail: 'L’écriture a été refaite et repart en brouillon.');

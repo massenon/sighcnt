@@ -108,7 +108,6 @@ class _EtatConnexion extends State<EcranConnexion> {
   final _id = TextEditingController();
   final _mdp = TextEditingController();
   bool _visible = false;
-  bool _souvenir = false;
   int _tentatives = 0;
   String? _erreur;
   bool _occupe = false;
@@ -328,19 +327,6 @@ class _EtatConnexion extends State<EcranConnexion> {
                 icon: Icon(_visible ? LucideIcons.eyeOff : LucideIcons.eye, size: 16, color: JetonsShell.slate400),
                 onPressed: () => setState(() => _visible = !_visible))),
         const SizedBox(height: 16),
-        InkWell(
-            onTap: () => setState(() => _souvenir = !_souvenir),
-            child: Row(children: [
-              SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: Checkbox(
-                      value: _souvenir,
-                      visualDensity: VisualDensity.compact,
-                      onChanged: (v) => setState(() => _souvenir = v ?? false))),
-              const SizedBox(width: 8),
-              const Text('Se souvenir de ce poste', style: TextStyle(color: JetonsShell.slate600, fontSize: 14, height: 20 / 14)),
-            ])),
         if (_erreur != null) Padding(padding: const EdgeInsets.only(top: 16), child: MessageErreurAcces(_erreur!)),
         const SizedBox(height: 16),
         BoutonSigh(libelle: 'Se connecter', taille: TailleBouton.lg, icone: LucideIcons.logIn, onPressed: _soumettre),
@@ -384,7 +370,7 @@ class _EtatOubli extends State<EcranMotDePasseOublie> {
     }
     setState(() => _erreur = null);
     // Ce que le poste FAIT vraiment : la demande est inscrite au journal (RG-12) ET marquée sur le compte (`reinitialisationDemandeeLe`), que
-    // l'administrateur lit à « Utilisateurs » avant de définir un nouveau mot de passe. Rien n'est envoyé. La réponse est la MÊME que le compte existe ou non :
+    // l'écran « Utilisateurs » ne relit PAS encore (l'administrateur la trouve au journal d'audit) avant de définir un nouveau mot de passe. Rien n'est envoyé. La réponse est la MÊME que le compte existe ou non :
     // dire lequel serait un annuaire offert à qui essaie.
     final m = x.magasin;
     final id = _id.text.trim();
@@ -418,7 +404,7 @@ class _EtatOubli extends State<EcranMotDePasseOublie> {
           BoutonSigh(libelle: 'Envoyer les instructions', taille: TailleBouton.lg, onPressed: _envoyer),
           const SizedBox(height: 16),
           const NoteSimulation(
-              'Aucun message n’est envoyé : la demande est inscrite au journal d’audit de ce poste et marquée sur le compte, que l’administrateur consulte (M14) avant de définir un nouveau mot de passe. L’envoi d’instructions suppose un service de messagerie que le poste n’a pas.'),
+              'Aucun message n’est envoyé : la demande est inscrite au journal d’audit de ce poste et marquée sur le compte ; l’écran des utilisateurs (M14) ne l’affiche pas encore, l’administrateur la retrouve au journal d’audit avant de définir un nouveau mot de passe. L’envoi d’instructions suppose un service de messagerie que le poste n’a pas.'),
         ]),
         pied: _lienRetour(context, '← Retour à la connexion', 'index'),
       );

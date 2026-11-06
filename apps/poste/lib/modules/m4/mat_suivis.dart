@@ -294,8 +294,12 @@ class EcranCpon extends StatelessWidget with EcranMaquette {
     Fiche fiche(BuildContext ctx, Fiche v, Fiche? e) {
       matRattacher(v, matFemmes(c.magasin));
       v['reference'] = e?['reference'] ?? matReferenceSuivante('CPO-', c.magasin.collection('cpon').toutes);
-      if (!matVrai(v['hemorragieAntePartum'])) v['etiologieAnte'] = null;
-      return matSansNuls(v);
+      final effacer = !matVrai(v['hemorragieAntePartum']);
+      if (effacer) v['etiologieAnte'] = null;
+      final r = matSansNuls(v);
+      // À l'édition, le patch est FUSIONNÉ : sans la clé nulle, l'ancienne étiologie resterait au magasin.
+      if (effacer && e != null) r['etiologieAnte'] = null;
+      return r;
     }
 
     return CrudMat(
@@ -801,8 +805,12 @@ class EcranSoinsCuratifs extends StatelessWidget with EcranMaquette {
       matRattacher(v, matFemmes(c.magasin));
       v['reference'] = e?['reference'] ?? matReferenceSuivante('SCM-', c.magasin.collection('soinsCuratifsMaternite').toutes);
       _nombres(v, const ['joursHospitalisation']);
-      if (!matVrai(v['femmeHospitalisee'])) v['joursHospitalisation'] = null;
-      return matSansNuls(v);
+      final effacer = !matVrai(v['femmeHospitalisee']);
+      if (effacer) v['joursHospitalisation'] = null;
+      final r = matSansNuls(v);
+      // À l'édition, le patch est FUSIONNÉ : la clé nulle doit traverser pour effacer l'ancien nombre de jours.
+      if (effacer && e != null) r['joursHospitalisation'] = null;
+      return r;
     }
 
     String urgence(Fiche r) => matUrgenceMaternite(r['urgenceMaternite'])?['label'] as String? ?? '—';

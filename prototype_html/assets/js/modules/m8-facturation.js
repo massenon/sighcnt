@@ -877,6 +877,20 @@
           var reglePiece = proforma ? 0 : Math.min(aRegler, patPiece);
           if (rang > 0) reglePiece = Math.max(0, Math.min(aRegler - C.sum(creees, 'montantPaye'), patPiece));
 
+          /* LES LIGNES PORTENT L'ÉTAT DE RÈGLEMENT (écart corrigé le 06/11/2026) : id et statutPaiement, comme PR.prescrire.
+             Le versement saisi couvre les lignes dans l'ordre de la pièce, une ligne n'étant réglée que si elle l'est ENTIÈREMENT
+             (la règle du moteur d'encaissement). Sans cela le reçu, le registre et « Encaisser le reste » lisaient des lignes
+             sans identifiant ni état. */
+          var resteAAllouer = reglePiece;
+          piece.lignes = piece.lignes.map(function (l, i) {
+            var due = l.partPatient || 0;
+            var payee = !proforma && due > 0 && due <= resteAAllouer;
+            if (payee) resteAAllouer -= due;
+            var r = Object.assign({}, l, { id: 'L' + C.pad(i + 1, 3), statutPaiement: payee ? 'paye' : 'du' });
+            if (payee) { r.montantRegle = due; r.payeLe = new Date().toISOString(); r.payePar = S.currentUser(); }
+            return r;
+          });
+
           var suffixe = piece.volet === 'couvert' ? '-A' : (piece.volet === 'non_couvert' ? '-B' : '');
           var f = {
             numero: prefixePiece + C.pad(rangDebut + 1 + rang, 5) + suffixe,
@@ -1135,6 +1149,14 @@
                 if (!v) return;
                 var ecart = v.compte - theorique;
                 m.close();
+                /* L'ARRÊTÉ EST CONSERVÉ avant d'être imprimé (RG-12) : sans fiche on ne pouvait ni relire un inventaire passé
+                   ni retrouver un écart expliqué. L'insertion journalise ; la fiche ne se supprime pas (RG-14). */
+                S.collection('inventairesCaisse', { module: 'M8', entite: 'InventaireCaisse' }).insert({
+                  periodicite: selPeriode.value, debut: C.iso(b.debut), fin: C.iso(b.fin),
+                  operations: ops.length, theorique: theorique, compte: v.compte, ecart: ecart,
+                  agent: v.agent, observation: v.observation || null,
+                  arreteLe: new Date().toISOString(), arretePar: S.currentUser(),
+                });
                 P.etat({
                   titre: 'Inventaire de caisse — ' + b.label.toLowerCase(),
                   sousTitre: C.dateFR(b.debut) + ' au ' + C.dateFR(b.fin),
@@ -1153,8 +1175,6 @@
                   signatures: [{ role: 'L’agent de caisse', nom: v.agent },
                     { role: 'La Directrice Administrative', nom: 'TAKI Alimatou' }],
                 });
-                S.log('Inventaire de caisse', 'M8', 'Caisse', C.iso(b.fin), null,
-                  { theorique: theorique, compte: v.compte, ecart: ecart });
               },
             }),
           ],
@@ -1565,6 +1585,12 @@
                 var r = PR.encaisser(f.id, { montant: v.montant, mode: v.modePaiement });
                 if (r.refus) { U.toast(r.refus, { type: 'error' }); return; }
                 if (!(r.montantRegle > 0)) { U.toast('Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.', { type: 'error' }); return; }
+                /* La référence et l'observation du versement s'ÉCRIVENT sur la facture (même champ que m8-caisse) : sans cela elles
+                   ne vivaient que sur le reçu imprimé une fois, et la réimpression affichait « — ». */
+                var patchReglement = {};
+                if (v.reference) patchReglement.referenceTransaction = v.reference;
+                if (v.observation) patchReglement.observationReglement = v.observation;
+                if (Object.keys(patchReglement).length) S.collection('factures').update(f.id, patchReglement);
                 m.close();
                 if (table) table.refresh();
                 U.toast('Encaissement de ' + C.money(r.montantRegle) + ' enregistré.', {
@@ -1617,7 +1643,7 @@
           cartouche: [['Facture', f.numero], ['Patient', f.patient], ['Dossier', f.patientCode],
             ['Date', C.dateFR(AUJ)], ['Mode de règlement', modeLabel(v ? v.modePaiement : f.modePaiement)],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
-            ['Référence transaction', (v && v.reference) || '—'],
+            ['Référence transaction', (v && v.reference) || f.referenceTransaction || '—'],
             ['RCCM', C.BRAND.rccm]],
           contenu: el('div.space-y-3', null, [
             payees.length ? el('div', null, [

@@ -762,6 +762,9 @@
         secteurDemandeur: v.secteurDemandeur || null,
         indication: v.indication || null,
         hospitalise: !!v.hospitalise,
+        /* La résidence saisie sur la fiche papier est portée par la demande : sans cela elle ne vivait que le temps de l'impression.
+           Le dossier du patient (Zone 1) n'est pas modifié : c'est une donnée de la demande. */
+        residence: v.residence || null,
         bloqueParPaiement: true,
       }).record;
     });
@@ -3072,6 +3075,8 @@
   }
 
   /* La garde de lecture seule : posée sur la collection, refusée AVANT l'écriture. */
+  /* Drapeau posé par lettrer/delettrer : poser un lettrage est le geste attendu d'un exercice en clôture, quelle que soit l'origine. */
+  var lettrageEnCours = false;
   S.garder('ecritures', function (op, rec) {
     var a = anneeDe(rec && rec.date);
     if (!a) return null;
@@ -3084,6 +3089,7 @@
         + ' : lecture seule. La correction passe par la réouverture par le comptable (motif obligatoire), ou par une écriture de l’exercice en cours.';
     }
     if (etat === 'en_cloture') {
+      if (lettrageEnCours && op === 'modifier') return null;
       /* En clôture : les modules n'écrivent plus ; seul le comptable passe ses écritures d'inventaire (saisie manuelle). */
       var role = roleCourant();
       if ((rec && rec.origine === 'Saisie manuelle') && (role === 'comptable' || role === 'admin')) return null;
@@ -3575,14 +3581,32 @@
     if (Math.abs(net) >= 1) return { ok: false, motif: 'Lettrage refusé — l’ensemble ne s’annule pas (écart ' + C.money(Math.abs(net)) + ').' };
     var code = String.fromCharCode(65 + (col.all().filter(function (e) { return e.lettrage; }).map(function (e) { return e.lettrage; })
       .filter(function (v, i, a) { return a.indexOf(v) === i; }).length % 26));
-    lignes.forEach(function (l) { col.update(l.id, { lettrage: code, lettreLe: new Date().toISOString(), lettrePar: acteur() }); });
-    return { ok: true, code: code, lignes: lignes.length };
+    /* Le retour de update est lu : un refus de la garde rend null. On défait les lignes déjà posées et on le dit (code, motif, geste). */
+    var res = [];
+    lettrageEnCours = true;
+    try {
+      lignes.forEach(function (l) { res.push(col.update(l.id, { lettrage: code, lettreLe: new Date().toISOString(), lettrePar: acteur() })); });
+    } finally { lettrageEnCours = false; }
+    if (res.some(function (r) { return !r; })) {
+      res.forEach(function (r) { if (r) r.undo(); });
+      return { ok: false, motif: 'LETTRAGE_REFUSE : une ligne est refusée par la garde de l’exercice (clos). Rouvrir l’exercice par le comptable (motif obligatoire) ; aucun lettrage n’a été posé.' };
+    }
+    return { ok: true, code: code, lignes: res.length };
   }
   function delettrer(compte, code, motif) {
     if (!motif || String(motif).trim().length < 3) return { ok: false, motif: 'Un motif est obligatoire pour dé-lettrer.' };
     var col = S.collection('ecritures'), n = 0;
-    col.all().filter(function (e) { return String(e.compte) === String(compte) && e.lettrage === code; })
-      .forEach(function (l) { col.update(l.id, { lettrage: null, delettreLe: new Date().toISOString(), delettreMotif: String(motif).trim() }); n++; });
+    var cibles = col.all().filter(function (e) { return String(e.compte) === String(compte) && e.lettrage === code; });
+    var res = [];
+    lettrageEnCours = true;
+    try {
+      cibles.forEach(function (l) { res.push(col.update(l.id, { lettrage: null, delettreLe: new Date().toISOString(), delettreMotif: String(motif).trim() })); });
+    } finally { lettrageEnCours = false; }
+    if (res.some(function (r) { return !r; })) {
+      res.forEach(function (r) { if (r) r.undo(); });
+      return { ok: false, motif: 'DELETTRAGE_REFUSE : une ligne est refusée par la garde de l’exercice (clos). Rouvrir l’exercice par le comptable (motif obligatoire) ; aucune ligne n’a été dé-lettrée.' };
+    }
+    n = res.length;
     return n ? { ok: true, lignes: n } : { ok: false, motif: 'Aucune ligne lettrée « ' + code + ' » sur ce compte.' };
   }
 

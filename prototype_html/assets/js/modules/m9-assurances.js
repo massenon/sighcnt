@@ -26,7 +26,8 @@
     return PR.carteValide(p, AUJ);
   }
   function assureurNom(code) {
-    var a = D.ASSUREURS.filter(function (x) { return x.code === code; })[0];
+    var a = S.collection('assureurs').all().filter(function (x) { return x.code === code; })[0]
+      || D.ASSUREURS.filter(function (x) { return x.code === code; })[0];
     return a ? a.nom : code;
   }
   function creanceAssureur(code) {
@@ -67,7 +68,7 @@
               {
                 title: 'Créances par compagnie',
                 render: function () {
-                  var data = D.ASSUREURS.map(function (a) { return { label: a.code, value: creanceAssureur(a.code) }; })
+                  var data = assureurs().map(function (a) { return { label: a.code, value: creanceAssureur(a.code) }; })
                     .filter(function (x) { return x.value > 0; })
                     .sort(function (a, b) { return b.value - a.value; });
                   return K.ranking(data, { format: function (v) { return C.money(v, false); }, tone: 'warning' });
@@ -338,7 +339,7 @@
       { name: 'assureur', label: 'Compagnie', type: 'select', col: 'full',
         value: p.assureur || '',
         options: [{ value: '', label: '— Aucune : patient non assuré —' }].concat(
-          D.ASSUREURS.map(function (a) { return { value: a.code, label: a.code + ' — ' + a.nom }; })) },
+          assureurs().map(function (a) { return { value: a.code, label: a.code + ' — ' + a.nom }; })) },
       { name: 'numeroPolice', label: 'Numéro de police', value: p.numeroPolice || '' },
       { name: 'categorieAssurance', label: 'Catégorie', type: 'select',
         value: p.categorieAssurance || 'entreprise',
@@ -367,7 +368,7 @@
         K.btn('Enregistrer le changement', { variant: 'primary', icon: 'save', onclick: function () {
           var v = f.collect();
           if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-          var a = D.ASSUREURS.filter(function (x) { return x.code === v.assureur; })[0];
+          var a = assureurs().filter(function (x) { return x.code === v.assureur; })[0];
           var res = PR.changerCouverture(p, {
             dateEffet: v.dateEffet, motif: v.motif,
             assureur: v.assureur || null, assureurNom: a ? a.nom : null,
@@ -430,7 +431,7 @@
       host.appendChild(U.dataTable({
         title: 'Fiches assurés', rows: rows, exportName: 'assures', pageSize: 15,
         filters: [
-          { name: 'assureur', label: 'Compagnie', options: D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom }; }) },
+          { name: 'assureur', label: 'Compagnie', options: assureurs().map(function (a) { return { value: a.code, label: a.nom }; }) },
           {
             name: 'categorieAssurance', label: 'Catégorie',
             options: [{ value: 'entreprise', label: 'Assurance entreprise' },
@@ -644,7 +645,7 @@
       var avecGrille = sous.filter(function (s) { return garantiesDuSouscripteur(s.id).length > 0; });
 
       host.appendChild(U.kpiGrid([
-        { label: 'Souscripteurs', value: C.num(sous.length), icon: 'file-signature', tone: 'navy', hint: 'Contrats sous ' + D.ASSUREURS.length + ' compagnies' },
+        { label: 'Souscripteurs', value: C.num(sous.length), icon: 'file-signature', tone: 'navy', hint: 'Contrats sous ' + assureurs().length + ' compagnies' },
         { label: 'Conventions saisies', value: C.num(avecGrille.length), icon: 'check-circle-2', tone: avecGrille.length ? 'success' : 'warning' },
         { label: 'Conventions à collecter', value: C.num(sous.length - avecGrille.length), icon: 'help-circle', tone: 'warning' },
         { label: 'Lignes de garantie', value: C.num(colGaranties().active().length), icon: 'percent', tone: 'info' },
@@ -675,7 +676,7 @@
       { name: 'nom', label: 'Souscripteur', required: true, col: 'full', help: 'Employeur, groupe ou particulier signataire du contrat.' },
       {
         name: 'assureur', label: 'Compagnie', type: 'select', required: true,
-        options: D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom }; }),
+        options: assureurs().map(function (a) { return { value: a.code, label: a.nom }; }),
       },
       { name: 'police', label: 'N° de police', required: true },
       {
@@ -752,14 +753,27 @@
         rowActions: function (s) {
           return [
             K.iconBtn('percent', 'Saisir la grille', function () { fiche(s); }),
-            K.iconBtn('pencil', 'Modifier', function () { K.modifier(colSous(), champsSouscripteur, s, dessiner); }),
+            K.iconBtn('pencil', 'Modifier', function () {
+              K.modifier(colSous(), champsSouscripteur, s, dessiner,
+                /* Un contrat qui change de compagnie est un autre contrat : refusé tant que des garanties portent l'ancienne (code SOUSCRIPTEUR_COMPAGNIE). */
+                function (v, rec) {
+                  if (v.assureur !== rec.assureur && garantiesDuSouscripteur(rec.id).length) {
+                    U.toast('Changement de compagnie refusé.', { type: 'error',
+                      detail: 'Ce souscripteur porte ' + garantiesDuSouscripteur(rec.id).length + ' garantie(s) de ' + assureurNom(rec.assureur) + '. Archiver ses garanties puis recréer le contrat sous la nouvelle compagnie.' });
+                    return false;
+                  }
+                  return true;
+                },
+                /* Le champ dérivé suit le code, comme à la création. */
+                function (v) { v.assureurNom = assureurNom(v.assureur); return v; });
+            }),
           ];
         },
         actions: [K.creer(colSous(), champsSouscripteur, {
           titre: 'Nouveau souscripteur', entite: 'Souscripteur',
-          defauts: function () { return { categorie: 'entreprise', assureur: D.ASSUREURS[0].code }; },
+          defauts: function () { return { categorie: 'entreprise', assureur: assureurs()[0].code }; },
           transform: function (v) {
-            var a = D.ASSUREURS.filter(function (x) { return x.code === v.assureur; })[0];
+            var a = assureurs().filter(function (x) { return x.code === v.assureur; })[0];
             v.assureurNom = a ? a.nom : v.assureur;
             v.actesExclus = []; v.produitsExclus = []; v.accordPrealable = [];
             v.source = 'Convention saisie par la clinique';
@@ -1141,7 +1155,7 @@
         rowActions: K.actionsLigne(S.collection('factures', { module: 'M8', entite: 'Facture' }), [
           {
             name: 'assureur', label: 'Compagnie', type: 'select',
-            options: D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom }; }),
+            options: assureurs().map(function (a) { return { value: a.code, label: a.nom }; }),
           },
           { name: 'tauxPriseEnCharge', label: 'Taux de prise en charge (%)', type: 'number', min: 0, max: 100 },
           { name: 'partAssurance', label: 'Part assurance (FCFA)', type: 'number', min: 0 },
@@ -1150,7 +1164,7 @@
         ], { archivable: false }),
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
-          { name: 'assureur', label: 'Compagnie', options: D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom }; }) },
+          { name: 'assureur', label: 'Compagnie', options: assureurs().map(function (a) { return { value: a.code, label: a.nom }; }) },
           {
             name: 'niveau', label: 'Niveau de prise en charge',
             options: [{ value: 'totale', label: 'Totale (100 %)' }, { value: 'partielle', label: 'Partielle' }],
@@ -1216,10 +1230,10 @@
     },
     render: function (root) {
       var host = el('div.space-y-4');
-      var selAssureur = U.combo(D.ASSUREURS.map(function (a) {
+      var selAssureur = U.combo(assureurs().map(function (a) {
         return { value: a.code, label: a.nom, detail: a.code, icon: 'shield-check' };
       }), {
-        value: D.ASSUREURS.length ? D.ASSUREURS[0].code : '',
+        value: assureurs().length ? assureurs()[0].code : '',
         searchPlaceholder: 'Nom de la compagnie…', placeholder: 'Choisir une compagnie',
       });
       var selMois = el('select.select');
@@ -1538,7 +1552,7 @@
     },
     render: function (root) {
       var selAssureur = U.combo([{ value: '', label: 'Toutes les compagnies' }].concat(
-        D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom, detail: a.code }; })
+        assureurs().map(function (a) { return { value: a.code, label: a.nom, detail: a.code }; })
       ), { value: '', placeholder: 'Toutes les compagnies' });
       /* Un exercice AUTRE que l'année en cours ouvre l'historique sur cet exercice entier. */
       var fx = global.SIGH.exercice ? global.SIGH.exercice.fenetre() : null;
@@ -1700,7 +1714,7 @@
       var fAnciennete = el('select.select');
       var fSeuil = el('select.select');
       fCompagnie.appendChild(el('option', { value: '', text: 'Toutes les compagnies' }));
-      D.ASSUREURS.forEach(function (a) {
+      assureurs().forEach(function (a) {
         fCompagnie.appendChild(el('option', { value: a.code, text: a.code + ' — ' + a.nom }));
       });
       [['', 'Toutes anciennetés'], ['moins30', 'Moins de 30 jours'], ['30a90', 'De 30 à 90 jours'],
@@ -1742,7 +1756,7 @@
 
       function peindre() {
       C.clear(host);
-      var rows = D.ASSUREURS.map(function (a) {
+      var rows = assureurs().map(function (a) {
         var f = facturesAssurance().filter(function (x) { return x.assureur === a.code && dansPlage(x); });
         var recent = f.filter(function (x) { return C.daysBetween(x.date, AUJ) <= 30; });
         var moyen = f.filter(function (x) { var j = C.daysBetween(x.date, AUJ); return j > 30 && j <= 90; });
@@ -1874,7 +1888,7 @@
         emptyHint: 'Établir une relance pour une compagnie dont la créance est en souffrance.',
         actions: [K.commande('Nouvelle relance', { variant: 'primary', size: 'sm', icon: 'plus', onclick: function () { ouvrir(); } })].filter(Boolean),
         filters: [
-          { name: 'assureur', label: 'Compagnie', options: D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom }; }) },
+          { name: 'assureur', label: 'Compagnie', options: assureurs().map(function (a) { return { value: a.code, label: a.nom }; }) },
           { name: 'niveau', label: 'Niveau', options: ['1re relance', '2e relance', 'Mise en demeure'] },
         ],
         columns: [
@@ -1906,7 +1920,9 @@
             /* Une relance se corrige : montant réévalué, niveau qui monte,
                suite donnée par la compagnie. */
             K.iconBtn('pencil', 'Modifier la relance', function () {
-              K.modifier(col, champsRelance(), r, function () { table.refresh(); peindreKpis(); });
+              K.modifier(col, champsRelance(), r, function () { table.refresh(); peindreKpis(); }, null,
+                /* Le champ dérivé suit le code, comme à la création (la colonne et la lettre le lisent). */
+                function (v) { v.assureurNom = assureurNom(v.assureur); return v; });
             }),
             K.iconBtn('archive', 'Archiver', function () {
               var res = col.archive(r.id);
@@ -1925,7 +1941,7 @@
         return [
           {
             name: 'assureur', label: 'Compagnie', type: 'select', required: true, col: 'full',
-            options: D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom }; }),
+            options: assureurs().map(function (a) { return { value: a.code, label: a.nom }; }),
           },
           { name: 'date', label: 'Date de la relance', type: 'date', required: true },
           { name: 'periode', label: 'Période concernée', required: true },
@@ -1945,7 +1961,7 @@
         var f = U.form([
           {
             name: 'assureur', label: 'Compagnie', type: 'select', required: true, col: 'full',
-            options: D.ASSUREURS.map(function (a) { return { value: a.code, label: a.nom + ' — créance : ' + C.money(creanceAssureur(a.code)) }; }),
+            options: assureurs().map(function (a) { return { value: a.code, label: a.nom + ' — créance : ' + C.money(creanceAssureur(a.code)) }; }),
           },
           { name: 'date', label: 'Date de la relance', type: 'date', required: true, value: C.iso(AUJ) },
           { name: 'periode', label: 'Période concernée', required: true, placeholder: 'ex. juin – juillet 2026' },
@@ -1984,7 +2000,7 @@
       }
 
       function etat(r) {
-        var a = D.ASSUREURS.filter(function (x) { return x.code === r.assureur; })[0] || {};
+        var a = assureurs().filter(function (x) { return x.code === r.assureur; })[0] || {};
         P.etat({
           titre: r.niveau === 'Mise en demeure' ? 'Mise en demeure de payer' : 'Lettre de relance',
           sousTitre: r.reference + ' — ' + r.assureurNom,
@@ -2159,14 +2175,14 @@
       root.appendChild(vue);
 
       var etat = {
-        compagnie: (D.ASSUREURS[0] || {}).code || '',
+        compagnie: (assureurs()[0] || {}).code || '',
         periode: 'mois',
       };
       afficher();
       return null;
 
       function compagnie() {
-        return D.ASSUREURS.filter(function (a) { return a.code === etat.compagnie; })[0] || D.ASSUREURS[0];
+        return assureurs().filter(function (a) { return a.code === etat.compagnie; })[0] || assureurs()[0];
       }
       function pe() {
         return PERIODES_MERE.filter(function (x) { return x.code === etat.periode; })[0];
@@ -2309,7 +2325,7 @@
       }
 
       function commandes() {
-        var selComp = U.combo(D.ASSUREURS.map(function (a) {
+        var selComp = U.combo(assureurs().map(function (a) {
           return { value: a.code, label: a.nom, detail: a.code, icon: 'shield-check' };
         }), { value: etat.compagnie, placeholder: 'Choisir une compagnie' });
         selComp.addEventListener('change', function () { etat.compagnie = selComp.value; afficher(); });

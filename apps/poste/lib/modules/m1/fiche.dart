@@ -496,13 +496,37 @@ class _FichePatientState extends State<FichePatient> {
         id: 'audit',
         label: 'Traçabilité',
         badge: null,
-        rendu: () => Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              _jalon('Dossier créé', 'Code ${p['code']} attribué automatiquement (RG-01)', dateFrM1(p['dateCreation']), JetonsShell.success600),
-              if (patVrai(p['_modifieLe']))
-                _jalon('Dossier modifié', 'Par ${p['_modifiePar']}', dateHeureM1(p['_modifieLe']), JetonsShell.info600),
-              if (patVrai(p['_archiveLe']))
-                _jalon('Dossier archivé', _t(p['_motifArchivage']), dateHeureM1(p['_archiveLe']), JetonsShell.warning600),
-            ])
+        rendu: () {
+          // Le poste n'écrit pas `_modifieLe` / `_archiveLe` sur la fiche : la maquette les porte, le poste journalise (RG-12).
+          // Les marques de la fiche font foi quand elles existent (jeu importé) ; sinon on lit le journal d'audit du dossier.
+          Fiche? dernier(String action, [String? avant]) {
+            Fiche? r;
+            for (final a in m.collection('audit').toutes) {
+              if (a['action'] != action || a['succes'] == false) continue;
+              if ('${a['reference']}' != '${p['code']}' && '${a['reference']}' != '${p['id']}') continue;
+              if ('${a['entite']}'.toLowerCase().indexOf('patient') != 0) continue;
+              if (avant != null && '${a['dateHeure']}'.compareTo(avant) >= 0) continue;
+              if (r == null || '${a['dateHeure']}'.compareTo('${r['dateHeure']}') > 0) r = a;
+            }
+            return r;
+          }
+
+          final archi = patVrai(p['_archiveLe']) ? null : dernier('Archivage');
+          // Le motif d'archivage s'écrit juste après l'archivage (une Modification) : on ne la compte pas comme une modification du dossier.
+          final modif = patVrai(p['_modifieLe']) ? null : dernier('Modification', archi == null ? null : '${archi['dateHeure']}');
+          final motif = patVrai(p['_motifArchivage']) ? p['_motifArchivage'] : (archi?['apres'] is Map ? (archi!['apres'] as Map)['motif'] : null);
+          return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            _jalon('Dossier créé', 'Code ${p['code']} attribué automatiquement (RG-01)', dateFrM1(p['dateCreation']), JetonsShell.success600),
+            if (patVrai(p['_modifieLe']))
+              _jalon('Dossier modifié', 'Par ${p['_modifiePar']}', dateHeureM1(p['_modifieLe']), JetonsShell.info600)
+            else if (modif != null)
+              _jalon('Dossier modifié', 'Par ${_t(modif['utilisateur'])}', dateHeureM1(modif['dateHeure']), JetonsShell.info600),
+            if (patVrai(p['_archiveLe']))
+              _jalon('Dossier archivé', _t(p['_motifArchivage']), dateHeureM1(p['_archiveLe']), JetonsShell.warning600)
+            else if (archi != null)
+              _jalon('Dossier archivé', _t(motif), dateHeureM1(archi['dateHeure']), JetonsShell.warning600),
+          ]);
+        }
       ),
     ];
 

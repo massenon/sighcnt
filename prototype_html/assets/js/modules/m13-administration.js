@@ -1634,9 +1634,10 @@
           + 'exige une surface publique sur Internet : c’est un <strong>ré-arbitrage d’architecture</strong>, '
           + 'pas une option à cocher — et surtout pas l’ouverture du serveur de la clinique.',
         { tone: 'warning', icon: 'wifi' }));
-        bloc.appendChild(K.note('Dans le prototype, chaque poste a son <strong>propre stockage</strong> : '
-          + 'un lien ouvert sur une autre machine y afficherait bien le formulaire, mais ses réponses '
-          + 'ne reviendraient jamais ici. Le geste se <strong>maquette</strong> — jeton, page publique, '
+        bloc.appendChild(K.note('Dans le prototype, le magasin est <strong>partagé</strong> entre les postes : '
+          + 'un lien ouvert sur une autre machine y affiche bien le formulaire, mais sans '
+          + 'session de poste la réponse n’est conservée nulle part : la page le dit au répondant et refuse '
+          + 'l’envoi. Le geste se <strong>maquette</strong> — jeton, page publique, '
           + 'QR — la <strong>collecte réelle appartient à la version web</strong>.',
         { tone: 'info', icon: 'info' }));
 
@@ -2232,6 +2233,15 @@
         var v = f.collect();
         if (!v) { U.toast('Merci de compléter les réponses attendues.', { type: 'error' }); return; }
         var nom = v._repondant; delete v._repondant;
+        /* Refus nommé (SANS_POSTE) : sans session de poste, le magasin n'écrit rien au serveur.
+           Afficher « enregistrée » serait faux : la réponse mourrait avec la page. */
+        if (!S.session()) {
+          U.toast('Réponse non transmise depuis cet appareil.', {
+            type: 'error', duration: 10000,
+            detail: 'Code SANS_POSTE. Remettez votre réponse à l’accueil : elle n’a pas été conservée.',
+          });
+          return;
+        }
         enregistrerReponse(enq, v, {
           canal: CANAL_PUBLIC, jetonId: jeton.id,
           /* ANONYME VEUT DIRE ANONYME : ni nom, ni adresse réseau, ni lien

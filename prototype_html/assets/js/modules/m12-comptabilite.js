@@ -528,16 +528,29 @@
                 return;
               }
               var res = piece.map(function (x) { return col.update(x.id, { statut: 'validee' }); });
+              /* Un refus de la garde d'exercice rend null : on défait ce qui a passé, le magasin a dit le motif, aucun succès n'est annoncé. */
+              if (res.some(function (r) { return !r; })) {
+                res.forEach(function (r) { if (r) r.undo(); });
+                table.refresh();
+                return;
+              }
               table.refresh();
               U.toast('Écriture validée.', { type: 'success', detail: piece.length + ' ligne(s).',
                 undo: function () { res.forEach(function (r) { if (r) r.undo(); }); table.refresh(); } });
             }, 'ghost'));
           }
-          acts.push(K.iconBtn('archive', 'Archiver', function () {
+          /* Archiver est absent (jamais grisé) quand l'exercice de la pièce n'est pas ouvert : la garde le refuserait. */
+          var exoOuvert = !global.SIGH.exercice || global.SIGH.exercice.etat(global.SIGH.exercice.anneeDe(e.date)) === 'ouvert';
+          if (exoOuvert) acts.push(K.iconBtn('archive', 'Archiver', function () {
             /* On archive la PIÈCE ENTIÈRE (écart E716, même défaut que la validation) : archiver une ligne seule laissait
                l'autre au journal — une demi-écriture serait pire qu'aucune (RG-10, comme l'archivage d'une dépense). */
             var piece = col.active().filter(function (x) { return x.numero === e.numero; });
             var res = piece.map(function (x) { return col.archive(x.id); });
+            if (res.some(function (r) { return !r; })) {
+              res.forEach(function (r) { if (r) r.undo(); });
+              table.refresh();
+              return;
+            }
             table.refresh();
             U.toast('Écriture archivée.', { type: 'success', detail: piece.length + ' ligne(s).',
               undo: function () { res.forEach(function (r) { if (r) r.undo(); }); table.refresh(); } });
@@ -3917,7 +3930,13 @@
           return null;
         }
 
-        var posees = lignes.map(function (l) { return col.insert(l).record; });
+        /* Chaque insert est testé : la garde d'exercice rend null. Une demi-écriture est défaite, l'appelant reçoit null (le magasin a dit le motif). */
+        var resIns = lignes.map(function (l) { return col.insert(l); });
+        if (resIns.some(function (r) { return !r; })) {
+          resIns.forEach(function (r) { if (r) r.undo(); });
+          return null;
+        }
+        var posees = resIns.map(function (r) { return r.record; });
         S.log('Écriture de dépense', 'M12', 'Ecriture', dep.reference, null,
           { debit: debit, credit: credit, lignes: posees.length });
         /* On retient les DEUX identifiants : archiver la dépense doit archiver
@@ -4096,10 +4115,13 @@
          poserEcriture APRÈS avoir écrit la dépense. Le refus est dit AVANT toute écriture, avec le motif du moteur. */
       function exerciceDeLaDateClos(date) {
         var a = global.SIGH.exercice.anneeDe(date);
-        if (!a || global.SIGH.exercice.etat(a) !== 'clos') return false;
+        /* Les DEUX états qui ferment la saisie : clos et en clôture (la garde de parcours.js refuse l'écriture automatique des deux). */
+        var etat = a ? global.SIGH.exercice.etat(a) : 'ouvert';
+        if (etat !== 'clos' && etat !== 'en_cloture') return false;
         var x = global.SIGH.exercice.de(a);
-        U.toast('Écriture refusée.', { type: 'error', detail: 'Exercice ' + a + ' clos' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '')
-          + ' — lecture seule. La correction passe par une écriture de l’exercice en cours.' });
+        U.toast('Écriture refusée.', { type: 'error', detail: etat === 'clos'
+          ? 'Exercice ' + a + ' clos' + (x && x.valideLe ? ' le ' + C.dateFR(x.valideLe) : '') + ' — lecture seule. La correction passe par une écriture de l’exercice en cours.'
+          : 'Exercice ' + a + ' en clôture : les modules n’y écrivent plus. Dater la dépense de l’exercice ouvert.' });
         return true;
       }
 
@@ -4122,7 +4144,7 @@
                 if (!t) return;
                 if (exerciceDeLaDateClos(v.date)) return;
                 var sess = S.session() || {};
-                var rec = colDepenses().insert({
+                var insDep = colDepenses().insert({
                   /* Écart E712 : C.nextRef est un compteur de PAGE (repart à 1 à chaque chargement) — la première dépense de la
                      session redonnait DEP-2026-0001, déjà attribuée. Le rang se lit sur les dépenses existantes (E8). */
                   reference: C.referenceSuivante('DEP-' + String(C.toDate(v.date).getFullYear()) + '-', 4, colDepenses().all()),
@@ -4133,9 +4155,16 @@
                   justificatif: fichier.lire(),
                   saisiPar: sess.nomComplet || sess.nom || 'Utilisateur',
                   saisiLe: C.iso(AUJ),
-                }).record;
+                });
+                var rec = insDep.record;
                 var ec = poserEcriture(rec);
-                if (ec) colDepenses().update(rec.id, { ecritureId: ec.id, ecritureIds: ec.ids });
+                if (!ec) {
+                  /* Jamais de dépense sans son écriture : la saisie est défaite, la modale reste ouverte (le refus a été dit). */
+                  insDep.undo();
+                  afficher();
+                  return;
+                }
+                colDepenses().update(rec.id, { ecritureId: ec.id, ecritureIds: ec.ids });
                 m.close(); afficher();
                 U.toast('Dépense enregistrée.', { type: 'success',
                   detail: C.money(rec.montant) + ' en ' + t.lignes.length + ' ligne(s) — écriture '
@@ -4178,22 +4207,28 @@
                 if (!v) return;
                 var t = totauxDepuisLignes(v, editeur);
                 if (!t) return;
+                /* L'exercice de l'ANCIENNE date compte autant que celui de la nouvelle : l'ancienne écriture y reste, sinon la charge serait comptée deux fois. */
+                if (exerciceDeLaDateClos(r.date)) return;
                 if (exerciceDeLaDateClos(v.date)) return;
-                colDepenses().update(r.id, {
+                var patch = {
                   date: v.date,
                   lignes: t.lignes, montant: t.montant, libelle: t.libelle,
                   compteCharge: t.compteCharge, compteTresorerie: v.compteTresorerie,
                   categorie: v.categorie, justificatif: fichier.lire() || r.justificatif || null,
-                });
+                };
                 /* L'écriture suit la dépense : la laisser telle quelle
-                   ferait diverger la comptabilité de la pièce qui la fonde. */
-                /* TOUTES les lignes de l'ancienne écriture, pas la première :
-                   en laisser une seule mettrait le journal en déséquilibre. */
-                (r.ecritureIds || [r.ecritureId]).filter(Boolean).forEach(function (id) {
-                  S.collection('ecritures').archive(id);
+                   ferait diverger la comptabilité de la pièce qui la fonde.
+                   TOUTES les lignes de l'ancienne écriture, pas la première :
+                   en laisser une seule mettrait le journal en déséquilibre.
+                   Ordre : archiver l'ancienne, poser la nouvelle, et seulement alors écrire la dépense ; tout refus défait ce qui a passé. */
+                var anciennes = (r.ecritureIds || [r.ecritureId]).filter(Boolean).map(function (id) {
+                  return S.collection('ecritures').archive(id);
                 });
-                var ec = poserEcriture(colDepenses().get(r.id));
-                if (ec) colDepenses().update(r.id, { ecritureId: ec.id, ecritureIds: ec.ids });
+                var rendre = function () { anciennes.forEach(function (a) { if (a) a.undo(); }); afficher(); };
+                if (anciennes.some(function (a) { return !a; })) { rendre(); return; }
+                var ec = poserEcriture(Object.assign({}, r, patch));
+                if (!ec) { rendre(); return; }
+                colDepenses().update(r.id, Object.assign({ ecritureId: ec.id, ecritureIds: ec.ids }, patch));
                 m.close(); afficher();
                 U.toast('Dépense modifiée.', { type: 'success',
                   detail: 'L’écriture a été refaite et repart en brouillon.' });
@@ -4211,8 +4246,14 @@
         }).then(function (ok) {
           if (!ok) return;
           var ids = (r.ecritureIds || [r.ecritureId]).filter(Boolean);
+          /* Les écritures d'abord : si la garde d'exercice en refuse une, on remet celles qui ont passé et la dépense reste en place. */
+          var archivees = ids.map(function (id) { return S.collection('ecritures').archive(id); });
+          if (archivees.some(function (a) { return !a; })) {
+            archivees.forEach(function (a) { if (a) a.undo(); });
+            afficher();
+            return;
+          }
           colDepenses().archive(r.id);
-          ids.forEach(function (id) { S.collection('ecritures').archive(id); });
           afficher();
           U.toast('Dépense archivée.', { type: 'success',
             undo: function () {

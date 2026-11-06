@@ -689,6 +689,18 @@
             ],
             rowActions: K.actionsLigne(colCrMaternite(), champsDe(m), {
               module: 'M4', refresh: afficher,
+              /* Les champs affichés (patiente, rédigé par) se recalculent à l'édition,
+                 comme à la création : référence, type et date de création ne bougent pas. */
+              transform: function (v) {
+                var pt = S.collection('patients').active().filter(function (x) {
+                  return x.code === v.patientCode;
+                })[0];
+                return Object.assign({}, v, {
+                  patientId: pt ? pt.id : null,
+                  patient: pt ? pt.nom + ' ' + pt.prenom : v.patientCode,
+                  sageFemme: nomSoignant4(v.sageFemmeId),
+                });
+              },
               titre: function (r) { return r.reference; },
               detail: function (r) { return detail(m, r); },
             }),
