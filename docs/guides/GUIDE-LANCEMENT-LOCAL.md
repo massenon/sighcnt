@@ -73,6 +73,26 @@ flutter run -d <identifiant-émulateur> --dart-define=SIGH_RELAIS=http://10.0.2.
 
 Voir `docs/guides/GUIDE-DEMARRAGE.md` (`npm install`, `npm run prototype:serveur`, port 8080).
 
+## Messagerie SMTP (relais et poste)
+
+Valeurs de la Clinique Nassièra Too (non secrètes, déjà dans `apps/web/.env.example` et proposées par défaut dans l'écran) : serveur `mail.sigh.nassieratoo.com`, port 587 en STARTTLS (465 en SSL), identifiant et expéditeur `contact@sigh.nassieratoo.com`, nom « Clinique Nassièra Too », réponse à `cliniquenassiera@gmail.com`, délai 20 s.
+
+- **Relais** : panneau superadmin, Paramètres, carte « Messagerie ». Saisir le mot de passe (chiffré, jamais relu), enregistrer, puis « Envoyer un message de test » avec votre adresse. L'étape en échec est nommée (connexion, chiffrement, authentification, expéditeur, destinataire, envoi).
+- **Poste** : Paramètres système, carte « Messagerie ». Même formulaire, même bouton de test.
+- Le mot de passe n'est JAMAIS dans le dépôt ni dans un fichier `.env` commité.
+
+## Mode pair (échanges entre postes par le relais, ADR-0006)
+
+Réglage dans le poste : Paramètres système, carte « Échanges entre postes (mode pair) » (adresse du relais, nom du poste, code d'appairage à usage unique, clé unique de la clinique affichée une fois). Le réglage est écrit dans `pair.json` du dossier de données, avec la clé chiffrée au repos ; il prend effet au prochain lancement du poste.
+
+Preuves en ligne de commande (Linux, depuis la racine) :
+
+```bash
+service postgresql start
+cd packages/sync_dart && ./construire.sh mere pair && cd ../sync
+SIGH_MERE=dart SIGH_PAIR=dart node banc/run.js P1 P2 P3 P4 P5 P6
+```
+
 ## Ce qui n'est PAS vérifié ici
 
 `flutter build windows` et la protection DPAPI de la clé n'ont pas été exécutés sur un vrai Windows ; le mobile n'a pas tourné sur un appareil Android ; la synchronisation n'a pas été mesurée sur deux postes physiques. Si une commande échoue, envoyer la sortie complète.
