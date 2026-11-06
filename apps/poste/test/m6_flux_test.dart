@@ -429,4 +429,63 @@ void main() {
       expect(m.collection('produits').actives.any((p) => p['seuilAlerte'] == 9), isTrue);
     });
   });
+
+  // E2158 (06/11/2026) : l'écran « Importation Grand Stock » porte DEUX faces : l'import (module IMP) et, dessous, le stock repris (traçabilité et
+  // valorisation des références que le document ne tarife pas). Le retrait de l'écran de reprise (8800c17) avait fait disparaître cette seconde face.
+  group('Importation Grand Stock : le stock repris, traçabilité et valorisation', () {
+    cas('les deux faces sur le même écran : l\'import au-dessus, le stock repris dessous', (t) async {
+      await ouvrir(t, magasin(), 'm6-import-grand-stock');
+      expect(find.text('1. Télécharger le modèle'), findsOneWidget);
+      expect(find.text('Stock repris : traçabilité et valorisation'), findsOneWidget);
+      expect(find.text('Articles repris'), findsWidgets);
+      expect(find.textContaining('Points à traiter'), findsWidgets);
+    });
+
+    cas('sans surcouche : 32 références restent à valoriser ; la saisie exige une SOURCE', (t) async {
+      final m = magasin();
+      await ouvrir(t, m, 'm6-import-grand-stock');
+      expect(find.text('184'), findsWidgets);
+      await toucher(t, find.textContaining('Points à traiter'));
+      expect(find.textContaining('32 article(s) figurent à l’inventaire SAGE sans prix de revient unitaire'), findsOneWidget);
+      await toucher(t, find.byTooltip('Valoriser').first);
+      expect(find.textContaining('Valoriser — '), findsWidgets);
+      await saisir(t, 'prixRevient', '850');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Valoriser'));
+      expect(m.collection('valorisationsSage').actives, isEmpty, reason: 'sans origine, la valeur ne se vérifie pas : rien n\'est écrit');
+      await saisir(t, 'source', 'Facture UBIPHARM n° 4471');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Valoriser'));
+      final v = m.collection('valorisationsSage').actives.single;
+      expect(v['prixRevient'], 850);
+      expect(v['source'], 'Facture UBIPHARM n° 4471');
+      expect(find.text('Référence valorisée.'), findsOneWidget);
+      // Le compteur suit : la référence vient d'être tarifée.
+      await toucher(t, find.text('Articles repris').last);
+      expect(find.text('31'), findsWidgets);
+    });
+
+    cas('lecture seule (comptable) : « Valider la reprise » et « Valoriser » sont absents ; le bordereau reste imprimable', (t) async {
+      await ouvrir(t, magasin(), 'm6-import-grand-stock', role: 'comptable');
+      expect(find.widgetWithText(BoutonSigh, 'Valider la reprise'), findsNothing);
+      expect(find.widgetWithText(BoutonSigh, 'Éditer le bordereau'), findsOneWidget);
+      await toucher(t, find.textContaining('Points à traiter').first);
+      expect(find.byTooltip('Valoriser'), findsNothing);
+    });
+
+    cas('valider la reprise : confirmée, journalisée (RG-12), le document n\'est pas modifié', (t) async {
+      final m = magasin();
+      await ouvrir(t, m, 'm6-import-grand-stock');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Valider la reprise'));
+      expect(find.text('Valider la reprise du stock initial ?'), findsOneWidget);
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Valider la reprise').last);
+      expect(find.text('Reprise validée.'), findsOneWidget);
+      expect(m.collection('audit').toutes.any((e) => e['action'] == 'Validation' && e['reference'] == 'IMPORT-SAGE-20260715'), isTrue);
+    });
+
+    cas('le bordereau : les totaux sont refaits depuis les lignes (TOTAL GRAND STOCK)', (t) async {
+      await ouvrir(t, magasin(), 'm6-import-grand-stock');
+      await toucher(t, find.widgetWithText(BoutonSigh, 'Éditer le bordereau'));
+      expect(find.text('Bordereau de reprise du stock initial'), findsWidgets);
+      expect(find.textContaining('TOTAL GRAND STOCK'), findsWidgets);
+    });
+  });
 }

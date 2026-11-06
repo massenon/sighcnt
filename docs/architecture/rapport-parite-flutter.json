@@ -2126,8 +2126,8 @@
   {
    "id": "m6-import-grand-stock",
    "mesure": true,
-   "attendus": 19,
-   "presents": 19,
+   "attendus": 38,
+   "presents": 38,
    "taux": 1.0,
    "manquants": []
   },

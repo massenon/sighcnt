@@ -1129,6 +1129,21 @@
       host.appendChild(histo);
       dessinerHistorique();
 
+      /* LE GRAND STOCK A DEUX FACES SUR LE MÊME ÉCRAN (E2158, corrigé le 06/11/2026) : l'IMPORT l'écrit (ci-dessus), la REPRISE le
+         suit et le valorise (ci-dessous : lot de migration, articles repris, points à traiter, rapprochement au catalogue). Les deux
+         lots du 01/11 avaient enregistré le même identifiant d'écran, le dernier chargé effaçant l'autre : la valorisation des
+         références sans prix (vague 33, 34 fiches arrêtées par la Direction en vague 49) n'était plus atteignable. */
+      if (j.id === 'grand-stock' && typeof global.SIGH.rendreRepriseGrandStock === 'function') {
+        host.appendChild(el('h2.text-base.font-semibold.text-navy-900', { text: 'Stock repris : traçabilité et valorisation' }));
+        host.appendChild(K.note('Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire « Grand Stock ». '
+          + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des '
+          + 'mouvements opérationnels ultérieurs. Les références que le document ne tarife pas se valorisent ici, à part, datées et signées.',
+          { tone: 'info', icon: 'history' }));
+        var reprise = el('div.space-y-4');
+        host.appendChild(reprise);
+        global.SIGH.rendreRepriseGrandStock(reprise);
+      }
+
       function analyser(octets, nom) {
         var a = analyserOctets(j.id, octets, nom);
         etat.analyse = a;

@@ -18,7 +18,7 @@ const SEUL = (process.argv.find((a) => a.startsWith('--seul=')) || '').slice(7).
 const SAUF = (process.argv.find((a) => a.startsWith('--sauf=')) || '').slice(7).replace(/_/g, ' ');
 if ((SEUL || SAUF) && !process.env.SIGH_REDUIT) {
   const lignes = fs.readFileSync(__filename, 'utf8').split('\n');
-  const debuts = []; lignes.forEach((l, i) => { if (l === '  {' && /^    scenario\(/.test(lignes[i + 1] || '')) debuts.push(i); });
+  const debuts = []; lignes.forEach((l, i) => { if (l === '  await etape(async () => {' && /^    scenario\(/.test(lignes[i + 1] || '')) debuts.push(i); });
   const fin = lignes.findIndex((l) => l === '  await browser.close();');
   const gardes = [];
   debuts.forEach((d, k) => { if (SAUF ? lignes[d + 1].indexOf(SAUF) < 0 : lignes[d + 1].indexOf(SEUL) >= 0) gardes.push(lignes.slice(d, k + 1 < debuts.length ? debuts[k + 1] : fin)); });
@@ -73,6 +73,18 @@ function verifier(libelle, condition, detail) {
   if (!ok) {
     process.stdout.write('\n  ✗ [' + (courant ? courant.nom : '?') + '] ' + libelle
       + (detail ? '\n     → ' + String(detail).slice(0, 400) : '') + '\n');
+  }
+}
+/* UN SCÉNARIO QUI LÈVE NE TUE PAS LA SUITE (E2158, corrigé le 06/11/2026). Une exception non attrapée dans un bloc (un `.click()`
+   sur un nœud absent, une promesse rejetée) faisait mourir le processus : ni récapitulatif, ni `rapport-tests.json`, et les
+   scénarios suivants n'étaient jamais joués ; on sautait le fautif avec `--sauf=` depuis des semaines. Chaque bloc est désormais une
+   ÉTAPE : l'erreur devient un échec NOMMÉ du scénario courant (scénario et message), et la suite continue au bloc suivant. */
+async function etape(bloc) {
+  try { await bloc(); }
+  catch (e) {
+    const message = String((e && e.message) || e).split('\n')[0];
+    if (!courant) scenario('(exception avant tout scenario())');
+    verifier('Le scénario s’exécute sans erreur', false, message);
   }
 }
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -308,7 +320,7 @@ async function viderMessages(page) {
   /* =========================================================================
    * 1. Création, édition, archivage annulable — Répertoire des patients (M1)
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('M1 — Cycle de vie complet d’un dossier patient');
     await ouvrir('m1-patients.html');
     verifier('La page se charge sans erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
@@ -449,12 +461,12 @@ async function viderMessages(page) {
       totalApresCreation + ' attendu, ' + totalFinal + ' obtenu');
 
     verifier('Aucune erreur JavaScript sur tout le parcours', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 2. Sous-onglets et onglet « Archivés »
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Navigation par sous-onglets');
     await ouvrir('m5-catalogue.html');
     const nbOnglets = await page.evaluate(() => document.querySelectorAll('#page-content .tab').length);
@@ -473,12 +485,12 @@ async function viderMessages(page) {
         return c.textContent.includes('archivé') || c.querySelectorAll('tbody tr').length >= 0;
       }));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 3. Tri, filtres et pagination
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Tri, filtres et pagination');
     await ouvrir('m6-produits.html');
     const total = totalDepuisCompteur(await texteCompteur());
@@ -522,12 +534,12 @@ async function viderMessages(page) {
       verifier('Pagination non requise sur ce jeu filtré', true);
     }
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 4. Règle métier RG-03 — stock jamais négatif
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RG-03 — le stock ne peut pas devenir négatif');
     await ouvrir('m6-transferts.html');
     verifier('L’écran des transferts se charge', erreursJS.length === 0, erreursJS.join(' | '));
@@ -591,12 +603,12 @@ async function viderMessages(page) {
       multi.erreur || (multi.lignes + ' ligne(s) sur le bon'));
     verifier('La modale reste ouverte pour correction',
       await page.evaluate(() => !!document.querySelector('[role="dialog"]')));
-  }
+  });
 
   /* =========================================================================
    * 5. Règle métier RG-07 — triple signature à la sortie
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RG-07 — signatures obligatoires à la sortie d’hospitalisation');
     await ouvrir('m3-sorties.html');
     const ouvert = await page.evaluate(() => {
@@ -615,12 +627,12 @@ async function viderMessages(page) {
       return t ? t.textContent.includes('RG-07') : false;
     });
     verifier('La finalisation est refusée sans les trois signatures (RG-07)', refus);
-  }
+  });
 
   /* =========================================================================
    * 6. Règle métier RG-10 — équilibre des écritures comptables
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RG-10 — équilibre débit/crédit avant validation');
     await ouvrir('m12-ecritures.html');
     verifier('Le bouton « Nouvelle écriture » est présent', await cliquer('Nouvelle écriture', '#page-content button'));
@@ -687,12 +699,12 @@ async function viderMessages(page) {
       journal.chargesAuCredit + ' charge(s) au crédit, ' + journal.produitsAuDebit + ' produit(s) au débit');
     verifier('Une pièce est validée ENTIÈRE, jamais à moitié',
       journal.mixtes === 0, journal.mixtes + ' pièce(s) à statut mixte');
-  }
+  });
 
   /* =========================================================================
    * 7. Impression d’un état officiel avec entête
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Édition d’un état officiel');
     await ouvrir('m10-primes.html');
     verifier('Le bouton d’impression est présent', await cliquer('Imprimer la note', '#page-content button'));
@@ -734,12 +746,12 @@ async function viderMessages(page) {
     verifier('La feuille est retirée après fermeture',
       await page.evaluate(() => !document.querySelector('.print-sheet')));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 8. Export CSV
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Export des données');
     await ouvrir('m9-compagnies.html');
     verifier('Le bouton « Exporter » est présent', await cliquer('Exporter', '#page-content button'));
@@ -764,12 +776,12 @@ async function viderMessages(page) {
     const fichier = await page.evaluate(() => window.__telechargement);
     verifier('Le fichier CSV est généré', /assureurs-\d{4}-\d{2}-\d{2}\.csv/.test(fichier || ''), 'fichier : ' + fichier);
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 9. Recherche globale et changement de profil (RBAC)
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Recherche globale et périmètre RBAC');
     await ouvrir('dash-direction.html');
     await page.evaluate(() => window.SIGH.app.openSearch());
@@ -867,12 +879,12 @@ async function viderMessages(page) {
     await page.evaluate(() => {
       window.SIGH.store.setSession({ role: 'admin', nom: 'BASSONGUI Chabi Séko', poste: 'Directeur Médical' });
     });
-  }
+  });
 
   /* =========================================================================
    * 10. Facturation de bout en bout avec sortie de stock
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('M8 — Facturation et sortie de stock automatique');
     await ouvrir('m8-facturation.html');
     verifier('L’écran de facturation se charge', erreursJS.length === 0, erreursJS.join(' | '));
@@ -913,13 +925,13 @@ async function viderMessages(page) {
         return s && /MECEF\d+/.test(s.textContent);
       }));
     verifier('Aucune erreur JavaScript sur le parcours de facturation', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 11. Méga-menu horizontal : ouverture par défaut, bascule de domaine,
    *     repli mémorisé, accès rapides en tête des tableaux de bord.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Méga-menu horizontal et accès rapides');
     await page.evaluate(() => window.SIGH.store.storage.remove('sigh-cnt:ruban'));
     await ouvrir('m6-produits.html');
@@ -1076,12 +1088,12 @@ async function viderMessages(page) {
     });
     verifier('Le fil d’Ariane renvoie à l’accueil du module', fil === 'Pharmacie & Stocks', 'lien : ' + fil);
     verifier('Aucune erreur JavaScript sur les pages hub', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 12. Listes déroulantes avec recherche
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Listes déroulantes avec recherche');
     await ouvrir('m8-facturation.html');
 
@@ -1131,12 +1143,12 @@ async function viderMessages(page) {
     await page.keyboard.press('Escape');
     await pause(200);
     verifier('Aucune erreur JavaScript sur les listes', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 13. Les fiches consultées sont modifiables
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Fiches consultables et modifiables');
 
     /* Registre tenu au fil de l'eau : modification d'une ligne */
@@ -1216,12 +1228,12 @@ async function viderMessages(page) {
       evaluation.drawer && evaluation.boutons.some((b) => /Modifier l’évaluation/.test(b)),
       (evaluation.boutons || []).join(' · '));
     verifier('Aucune erreur JavaScript sur les fiches', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 14. Aide, contact éditeur et affichage sur petit écran
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Aide, contact éditeur et affichage responsive');
 
     /* Les deux pages sont proposées dans le menu profil */
@@ -1351,7 +1363,7 @@ async function viderMessages(page) {
     await page.setViewport({ width: 1600, height: 1000 });
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 15. Parcours de prescription — de la consultation à la délivrance
@@ -1360,7 +1372,7 @@ async function viderMessages(page) {
    * traverse M2, M5, M6 et M8 sans ressaisie, et les règles de gestion tiennent
    * à chaque étape.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Parcours de prescription — M2 → M5 / M6 / M8');
 
     await ouvrir('m2-ordonnances.html');
@@ -1476,7 +1488,7 @@ async function viderMessages(page) {
     verifier('RG-03 — le stock reste intact après le refus', rg03.stock === rg03.attendu);
 
     verifier('Aucune erreur JavaScript sur le parcours', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 16. Référentiels administrables — plus rien d'écrit en dur
@@ -1485,7 +1497,7 @@ async function viderMessages(page) {
    * la Direction administre elle-même. Ce scénario vérifie que les listes
    * autrefois figées dans le code sont bien devenues des collections.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Référentiels administrables — actes, secteurs, natures, centres');
 
     /* --- Catalogue des actes --- */
@@ -1615,7 +1627,7 @@ async function viderMessages(page) {
       cc.codesReconnus + ' / ' + cc.imputees + ' écritures rattachées');
 
     verifier('Aucune erreur JavaScript sur les référentiels', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 17. Prise en charge : taux par prestation, plafonds, exclusions
@@ -1625,7 +1637,7 @@ async function viderMessages(page) {
    * même assuré, selon la nature de l'article. Un taux unique par patient ne
    * peut pas exprimer cela.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Prise en charge — grille par convention, plafonds et exclusions');
 
     await ouvrir('m9-conventions.html');
@@ -1721,7 +1733,7 @@ async function viderMessages(page) {
         && /Catégorie/.test(document.body.textContent)));
 
     verifier('Aucune erreur JavaScript sur la prise en charge', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 18. Facturation : parts par ligne, remises, double facture, MECeF partielle
@@ -1730,7 +1742,7 @@ async function viderMessages(page) {
    * contractuelles se vérifient ici : part par ligne, colonnes de remise,
    * deux pièces pour l'assuré, et une base MECeF limitée à la part patient.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Facturation — parts par ligne, remises, double facture, MECeF');
 
     await ouvrir('m8-facturation.html');
@@ -1869,7 +1881,7 @@ async function viderMessages(page) {
       /PART ASSUREUR/.test(ticket.texte) && /PART ASSURÉ/.test(ticket.texte));
 
     verifier('Aucune erreur JavaScript sur la facturation', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 19. Relevé, facture mensuelle, opérations de caisse et recettes
@@ -1878,7 +1890,7 @@ async function viderMessages(page) {
    * doivent se recouper. Côté caisse, la Direction veut les recettes par
    * périodicité et un inventaire arrêté sur une période.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('États de caisse et pièces assureur — relevé, facture, recettes');
 
     /* Une convention pour que la répartition existe */
@@ -1999,7 +2011,7 @@ async function viderMessages(page) {
     verifier('La créance reste due après la déclaration d’insolvabilité', impayes.creanceIntacte);
 
     verifier('Aucune erreur JavaScript sur les états de caisse', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 20. RBAC métier — ce que chacun VOIT, pas seulement ce qu'il ouvre
@@ -2008,7 +2020,7 @@ async function viderMessages(page) {
    * les résultats, la sage-femme ceux de son secteur, l'infirmier aucun,
    * l'aide-soignant n'exécute pas les soins prescrits.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RBAC métier — habilitations par fonction et par secteur');
 
     const profils = [
@@ -2279,7 +2291,7 @@ async function viderMessages(page) {
 
     await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', nom: 'BASSONGUI Chabi Séko', poste: 'Directeur Médical' }));
     verifier('Aucune erreur JavaScript sur le RBAC métier', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 21. Mise en observation — surveillance courte et décision d'orientation
@@ -2288,7 +2300,7 @@ async function viderMessages(page) {
    * de constantes horodatée, prescriptions ciblées, et une décision de sortie
    * qui peut ouvrir une hospitalisation complète.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Mise en observation — surveillance, constantes et orientation');
 
     await ouvrir('m3-observation.html');
@@ -2378,7 +2390,7 @@ async function viderMessages(page) {
       await page.evaluate(() => /au-delà de la durée de référence|depuis plus de/.test(document.body.textContent)));
 
     verifier('Aucune erreur JavaScript sur la mise en observation', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 22. Dossier patient et accueil
@@ -2387,7 +2399,7 @@ async function viderMessages(page) {
    * observations, températures, maternité, analyses, ordonnances, domicile,
    * factures. Et l'accueil doit pouvoir enregistrer un passage sans rendez-vous.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Dossier patient — statut d’assurance, parcours agrégé et accueil');
 
     /* Statut d'assurance : trois états distincts */
@@ -2514,7 +2526,7 @@ async function viderMessages(page) {
         .some((b) => b.textContent.trim() === 'Nouveau')));
 
     verifier('Aucune erreur JavaScript sur le dossier patient', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 23. RH, fiscalité, certificats et exploitation
@@ -2523,7 +2535,7 @@ async function viderMessages(page) {
    * calendrier fiscal, certificats médicaux, sauvegardes exportables et
    * réinitialisation protégée.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RH, fiscalité, certificats et exploitation');
 
     /* Ordres de mission — validation DA */
@@ -2790,7 +2802,7 @@ async function viderMessages(page) {
     verifier('L’écran distingue ce qui serait effacé de ce qui serait conservé', reinit.conserve);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 24. Valorisation des sorties et états de la Direction
@@ -2799,7 +2811,7 @@ async function viderMessages(page) {
    * de stock, devenue un paramètre, et les états par groupe et famille, dont
    * les familles viennent du document et les groupes d'une proposition.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Valorisation des sorties et états de la Direction');
 
     await ouvrir('cfg-regles.html');
@@ -2878,7 +2890,7 @@ async function viderMessages(page) {
       etats.cumul && etats.quantite);
 
     verifier('Aucune erreur JavaScript sur ces états', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 25. Obligations fiscales — documentation, échéancier et validation
@@ -2886,7 +2898,7 @@ async function viderMessages(page) {
    * Arbitrages de la Direction du 20/08/2026 : le calendrier du comptable est
    * documenté, déroulé sur l'exercice, et chaque paiement se valide.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Obligations fiscales — documentation, échéancier et validation');
 
     /* La page de référence documente tout ce que le comptable a précisé */
@@ -3009,7 +3021,7 @@ async function viderMessages(page) {
       tarifs.montreAssure, 'colonne « Tarif assuré »');
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 26. RH ÉTENDUE — régimes, primes datées, événements, verrouillage
@@ -3018,7 +3030,7 @@ async function viderMessages(page) {
    * qui réécrirait le passé, une participation prélevée douze fois au lieu
    * d'une, et un verrouillage qui ferait perdre l'écran en cours.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RH étendue — régimes, primes datées, événements et verrouillage');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3232,7 +3244,7 @@ async function viderMessages(page) {
       S.storage.remove(A.VERROU_RETOUR);
     });
     verifier('Aucune erreur JavaScript sur la RH étendue', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 27. LABORATOIRE — modèle de résultat, circuit du prélèvement, modules
@@ -3241,7 +3253,7 @@ async function viderMessages(page) {
    * 2026080411 ? Les deux valeurs qu'elle met en gras — lymphocytes 0,70 G/l
    * et hémoglobine 14,3 g/dl — doivent ressortir hors bornes, et aucune autre.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Laboratoire — modèle de résultat, prélèvement et activité des modules');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3443,7 +3455,7 @@ async function viderMessages(page) {
       reouverture.ouvert && reouverture.refermee);
 
     verifier('Aucune erreur JavaScript sur le laboratoire', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 28. LA CHAÎNE COMPLÈTE — consultation → caisse → comptable, labo, stock
@@ -3453,7 +3465,7 @@ async function viderMessages(page) {
    * demande d'analyse débloquée mais indistinguable des impayées, et une
    * sortie de stock qui passe sous le seuil sans que personne le sache.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Chaîne complète — consultation, pathologie, caisse, comptable, labo, stock');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3599,7 +3611,7 @@ async function viderMessages(page) {
     verifier('Réalerter sur le même article ne crée pas de doublon', doublon === 1, doublon + ' tâche(s)');
 
     verifier('Aucune erreur JavaScript sur la chaîne complète', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 29. CAISSE LIGNE PAR LIGNE ET PATIENT EXTERNE
@@ -3608,7 +3620,7 @@ async function viderMessages(page) {
    * paiement partiel qui libère TOUS les examens, ou aucun ; un reçu qui ne
    * nomme pas ce qui est payé ; et une caisse qui créerait la demande.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Caisse ligne par ligne, reçu détaillé et patient externe');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -3766,7 +3778,7 @@ async function viderMessages(page) {
       !gardeFou.caisse, gardeFou.roles.join(', '));
 
     verifier('Aucune erreur JavaScript sur la caisse', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 30. LES DEUX VERROUS DU LABORATOIRE
@@ -3775,7 +3787,7 @@ async function viderMessages(page) {
    * relecture, une correction qui écraserait en silence ce qu'il a déjà lu,
    * et un intérim de validation qui ne se verrait pas sur la pièce.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Laboratoire — validation technique, validation biologique, rectification');
 
     await ouvrir('m5-resultats.html');
@@ -3890,7 +3902,7 @@ async function viderMessages(page) {
       role: 'admin', nom: 'BASSONGUI Chabi Séko', fonction: 'direction', secteur: 'ADM',
     }));
     verifier('Aucune erreur JavaScript sur les deux verrous', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 31. RBAC PAR ÉCRAN, RÔLE CRÉÉ, RACCOURCIS
@@ -3899,7 +3911,7 @@ async function viderMessages(page) {
    * patient, un rôle inventé qui hériterait des modules ouverts « à tous », et
    * un raccourci qui mènerait à une porte fermée.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('RBAC par écran, création de rôle et raccourcis filtrés');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -4037,7 +4049,7 @@ async function viderMessages(page) {
       'admin ' + filtres.admin + ' · laborantin ' + filtres.laborantin + ' · infirmier ' + filtres.infirmier);
 
     verifier('Aucune erreur JavaScript sur le RBAC par écran', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 32. LES AJOUTS — emplacements, pertes, barème NS 131, participations
@@ -4046,7 +4058,7 @@ async function viderMessages(page) {
    * un barème modifiable sans autorisation, et une participation engendrée
    * pour un seul agent au lieu de tout le personnel.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Ajouts — emplacements, pertes, barème NS 131 et participations');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -4220,7 +4232,7 @@ async function viderMessages(page) {
       journal.total, journal.erreur || (journal.ouvert ? 'état lu' : 'aucun état'));
 
     verifier('Aucune erreur JavaScript sur les ajouts', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 33. LA GRILLE À DEUX PRIX ET LE CIRCUIT CLINIQUE
@@ -4230,7 +4242,7 @@ async function viderMessages(page) {
    * prescriptions, quatre origines, et fait passer le relais de la salle de
    * soins à l'hospitalisation au deuxième passage.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Deux prix, prescription de soins et relais d’administration');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -4848,7 +4860,7 @@ async function viderMessages(page) {
     }
 
     verifier('Aucune erreur JavaScript sur le circuit clinique', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 34. LA CAISSE — DÉTAIL DU REÇU ET RÈGLEMENT PARTIEL
@@ -4860,7 +4872,7 @@ async function viderMessages(page) {
    * ces pièces — c'est-à-dire sur presque toutes celles que la caisse voit — le
    * reçu n'avait rien à détailler.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Caisse — détail du reçu, règlement partiel et libération au laboratoire');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -5005,12 +5017,12 @@ async function viderMessages(page) {
       partiel.baseMecef === partiel.paye, 'base ' + partiel.baseMecef + ' · réglé ' + partiel.paye);
 
     verifier('Aucune erreur JavaScript sur la caisse', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 35. FACTURE MÈRE, AMBULANCES ET DOSSIER ÉTENDU
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Facture mère, répertoire des ambulances et dossier de consultation étendu');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -5196,12 +5208,12 @@ async function viderMessages(page) {
       accueil.infructueuseJournalisee === true);
 
     verifier('Aucune erreur JavaScript sur ce lot', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 36. LES TABLEAUX DE BORD PAR PROFIL
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Tableaux de bord par profil et premier regard');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -5340,7 +5352,7 @@ async function viderMessages(page) {
       montes === tousLesDash.length, montes + ' / ' + tousLesDash.length);
 
     verifier('Aucune erreur JavaScript sur les tableaux de bord', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 37. PARCOURS MÉTIER, PARC TECHNIQUE ET CORRECTIONS DU CLASSEUR 2025
@@ -5350,7 +5362,7 @@ async function viderMessages(page) {
    * donnent pour relevées, une anomalie de classeur signalée sans être
    * expliquée, et une référence sans prix qu'on ne peut pas valoriser.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Parcours métier, parc technique et corrections du classeur 2025');
 
     /* --- Les parcours, profil par profil --------------------------------- */
@@ -5553,7 +5565,7 @@ async function viderMessages(page) {
     });
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 38. LES POINTS DU GESTIONNAIRE DE STOCK
@@ -5562,7 +5574,7 @@ async function viderMessages(page) {
    * dans un état signé. Ce scénario ne vérifie donc pas que l'écran s'affiche,
    * il vérifie qu'il SE RECOUPE avec les pièces.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Points de vente et de stock, trois parts et accès à la caisse');
 
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -5770,12 +5782,12 @@ async function viderMessages(page) {
       dash.role === 'echographiste' && dash.parcours > 0 && dash.annonce);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 39. DÉPENSES, RÉSULTAT, SEUIL, STATISTIQUES RH ET DROITS DES COMMANDES
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Dépenses, compte de résultat, seuil, statistiques RH et droits des commandes');
 
     /* --- L'état « validé » porte le code du référentiel ------------------ */
@@ -6008,12 +6020,12 @@ async function viderMessages(page) {
       bandeau.boutonModifier === false);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 40. RÔLES, RBAC FIN, CIRCUIT DU PRÉLÈVEMENT ET MOTEUR DE NOTIFICATION
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Rôles, RBAC par écran, circuit du prélèvement et moteur de notification');
 
     /* --- Le renommage, jusqu'à l'ANNUAIRE des comptes ------------------- */
@@ -6294,7 +6306,7 @@ async function viderMessages(page) {
     verifier('…et ne se rouvre pas au passage suivant', bis === false);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 41. SOCLE — MINITABLE, VÉRITÉ TARIFAIRE, KPI COMPTÉS, EN-TÊTE UNIQUE
@@ -6305,7 +6317,7 @@ async function viderMessages(page) {
    * depuis la constante, des indicateurs écrits en dur, deux seeds aux formes
    * divergentes. La sonde lit les cellules et compare au magasin.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Socle — miniTable, vérité tarifaire, KPI comptés et en-tête unique');
 
     await page.evaluate(() => {
@@ -6471,7 +6483,7 @@ async function viderMessages(page) {
       socle.surServeur && !socle.enPanne);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 42. PHASE 2 — SEIZE RÔLES : CHIRURGIEN, ANESTHÉSISTE, ASSISTANT COMPTABLE
@@ -6481,7 +6493,7 @@ async function viderMessages(page) {
    * consultations générales, l'assistant comptable saisit sans annuler et la
    * clôture lui est fermée, le caissier perd transferts/mouvements/lots.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 2 — rôles chirurgien, anesthésiste, assistant comptable et fermetures caissier');
 
     await ouvrir('dash-admin.html');
@@ -6584,7 +6596,7 @@ async function viderMessages(page) {
     verifier('Les trois nouveaux rôles ont un compte à l’annuaire', selecteur.troisComptes);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 43. PHASE 3a — DOMAINE ACCUEIL, ALIAS, TARIFS PUBLICS ET SIX BOUTONS
@@ -6593,7 +6605,7 @@ async function viderMessages(page) {
    * un alias n'engendre ni page ni droit — la sonde vérifie les deux sens
    * (l'alias apparaît pour qui a le droit, disparaît pour qui ne l'a pas).
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 3a — domaine Accueil, alias de manifeste, tarifs publics et six boutons');
 
     await page.evaluate(() => {
@@ -6699,7 +6711,7 @@ async function viderMessages(page) {
     verifier('…et dit qu’il LIT sans dupliquer — une seule vérité tarifaire', ongletCert.uneSeuleVerite);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 44. PHASE 3b — FUSION RENDEZ-VOUS & VISITES
@@ -6709,7 +6721,7 @@ async function viderMessages(page) {
    * déclarée dans la fermeture de l'écran agenda, ReferenceError au clic que
    * ni check.js ni la lecture ne voyaient.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 3b — fusion Rendez-vous & visites, individu non enregistré, plage de dates');
 
     await page.evaluate(() => {
@@ -6906,7 +6918,7 @@ async function viderMessages(page) {
     await pause(300);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 45. PHASE 3c — RÉPERTOIRE PATIENT FUSIONNÉ À ZONES, CONSTANTES REPRISES
@@ -6915,7 +6927,7 @@ async function viderMessages(page) {
    * de l'accueil pré-remplissent la fiche de consultation). La fusion ne doit
    * RIEN rouvrir : l'onglet des dossiers reste absent pour le biologiste.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 3c — répertoire fusionné à deux zones et constantes reprises de l’accueil');
 
     /* --- Le médecin voit l'onglet fusionné, et il S'OUVRE ------------------ */
@@ -7031,7 +7043,7 @@ async function viderMessages(page) {
       bug14.note && !bug14.champsSaisie);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 46. PHASE 4 — MATERNITÉ : RAPPORT DU 27/08/2026 DE BOUT EN BOUT
@@ -7040,7 +7052,7 @@ async function viderMessages(page) {
    * grossir. La sonde vérifie les référentiels (SONU, PF, CPoN, bornes), le
    * semis AU SOCLE, les écrans nouveaux et les indicateurs calculés.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 4 — maternité : SONU, CPN, partogramme, PF, PTME et indicateurs calculés');
 
     await page.evaluate(() => {
@@ -7238,7 +7250,7 @@ async function viderMessages(page) {
     verifier('La couverture SP3 affichée est CELLE du registre — recalculée, jamais fournie', stats.exact);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 47. PHASE 5 — FINANCIER : DÉPENSES MULTI-LIGNES, AVOIR, PV DE RÉCEPTION
@@ -7248,7 +7260,7 @@ async function viderMessages(page) {
    * sur une fille consolidée, cumul plafonné) et la fermeture de l'annulation
    * au caissier — la matrice cible, sondée.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 5 — dépenses multi-lignes, facture d’avoir et PV de réception');
 
     await page.evaluate(() => {
@@ -7435,7 +7447,7 @@ async function viderMessages(page) {
       pv.assistant === true);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 48. PHASE 6 — LABORATOIRE : CODE UNIQUE, IMPRESSION FILTRÉE, PLAGES PAR LOT
@@ -7445,7 +7457,7 @@ async function viderMessages(page) {
    * comparatif des antériorités et le versionnement des bornes par lot de
    * réactif — sans toucher aux deux verrous.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 6 — laboratoire : code unique, impression filtrée, plages par lot');
 
     await page.evaluate(() => {
@@ -7602,7 +7614,7 @@ async function viderMessages(page) {
       stats.caissierFerme && stats.sageFemmeVoit);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 49. PHASE 7 — ANESTHÉSIE, DEMANDE D'EXAMEN DU SERVICE, BONS DE PANSEMENT
@@ -7612,7 +7624,7 @@ async function viderMessages(page) {
    * séance est une LIGNE PAYABLE — un règlement partiel libère des séances
    * nommées.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 7 — CPA, demande d’examen du service et bons de pansement');
 
     await page.evaluate(() => {
@@ -7741,7 +7753,7 @@ async function viderMessages(page) {
       acces.anesthesiste && acces.caissier);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 50. PHASE 8 — L'IMAGERIE ÉCLATÉE : ÉTATS DU LABO, GALERIE, CATALOGUE
@@ -7751,7 +7763,7 @@ async function viderMessages(page) {
    * exécute sans prescrire, la galerie conserve les clichés et le catalogue
    * vit au magasin.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 8 — imagerie éclatée : états du labo, galerie et catalogue');
 
     await page.evaluate(() => {
@@ -7977,7 +7989,7 @@ async function viderMessages(page) {
       stats.caissierFerme && stats.echographisteStats && stats.echographisteCfgFerme);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 51. PHASE 9 — PILOTAGE & STATISTIQUES TRANSVERSES
@@ -7987,7 +7999,7 @@ async function viderMessages(page) {
    * CALCULÉES —, et les deux vues de terrain (agenda médecin, file par
    * cabinet aux deux listes jamais fondues).
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 9 — pilotage : stats multi-axes, coût de l’agent, files et agendas');
 
     await page.evaluate(() => {
@@ -8180,7 +8192,7 @@ async function viderMessages(page) {
       certes.caissierCout && certes.laborantinExamens && certes.echographisteExamens);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 52. PHASE 10 — ENQUÊTES (LE FORMULAIRE NAÎT DU MODÈLE), M7, M13 ET GED
@@ -8189,7 +8201,7 @@ async function viderMessages(page) {
    * paraît à la saisie suivante sans une ligne de code. Puis les sondes que
    * la dette D6 réclamait : achats, courriers, GED.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Phase 10 — enquêtes générées du modèle, sondes M7 / M13 / GED');
 
     await page.evaluate(() => {
@@ -8350,7 +8362,7 @@ async function viderMessages(page) {
       d5.comptable);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 53. VAGUE 49 — LES VALIDATIONS : LA DIRECTION TRANCHE, LE PROFESSIONNEL GARDE
@@ -8360,7 +8372,7 @@ async function viderMessages(page) {
    * marquages qui attendent un professionnel nommé RESTENT. Le centre des
    * validations oriente sans jamais valider en masse.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 49 — validations de la Direction levées, marquages professionnels gardés');
 
     await page.evaluate(() => {
@@ -8424,7 +8436,7 @@ async function viderMessages(page) {
     verifier('Le questionnaire de satisfaction est annoncé VALIDÉ — plus une proposition', satisfaction);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 54. VAGUE 50 — L'ACTIVATION PAR MODULE, ET L'INDÉPENDANCE PROUVÉE
@@ -8433,7 +8445,7 @@ async function viderMessages(page) {
    * ACCUEIL (M1) et SOINS (M2) fermés, les stocks, la paie et les RH
    * continuent de travailler — et le noyau (CFG, DASH) ne se ferme pas.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 50 — activation par module : Accueil et Soins fermés, le reste travaille');
 
     await page.evaluate(() => {
@@ -8536,7 +8548,7 @@ async function viderMessages(page) {
       rouvert.donnees + ' consultation(s) intactes');
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 55 — BADGES DU PERSONNEL
@@ -8547,7 +8559,7 @@ async function viderMessages(page) {
    * la dernière assertion qui compte : un badge perdu est précisément la
    * fiche qu'on ressort le jour où quelqu'un se présente avec.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Badges du personnel — émission, QR, impression, retrait et réédition');
     await ouvrir('m10-badges.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -8906,7 +8918,7 @@ async function viderMessages(page) {
       JSON.stringify(apercu));
 
     verifier('Aucune erreur JavaScript sur les écrans de badges', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 56 — PARTAGER UNE FICHE D'ENQUÊTE À UN TIERS
@@ -8917,7 +8929,7 @@ async function viderMessages(page) {
    * une question ajoutée au modèle paraît sur la page publique sans qu'une
    * ligne de code ait été écrite pour elle.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Enquête partagée — jeton daté, page publique isolée et générateur unique');
     await ouvrir('adm-enquetes.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9079,7 +9091,7 @@ async function viderMessages(page) {
 
     verifier('Aucune erreur JavaScript sur le partage et la page publique',
       erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 57 — CORRECTIONS DU 06/09/2026
@@ -9090,7 +9102,7 @@ async function viderMessages(page) {
    * dossier sous les yeux du laboratoire, et LES SIX SECTEURS comme
    * vocabulaire unique — groupes de prestation ET centres de coûts.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Corrections du 06/09 — ruban resserré, imagerie à part, six secteurs');
     await ouvrir('m2-rendezvous.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9366,7 +9378,7 @@ async function viderMessages(page) {
     verifier('L’axe croisé porte le libellé « Secteur d’origine »', croise.axe === true);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 58 — LA COMPTABILITÉ AU FORMAT DE LA LIASSE DÉPOSÉE
@@ -9375,7 +9387,7 @@ async function viderMessages(page) {
    * document conservés et non arbitrés, l'amortissement au SEMESTRE, le
    * report des à-nouveaux et son refus quand il ne s'équilibre pas.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Comptabilité — liasse DGI, amortissement au semestre et bilan d’ouverture');
     await ouvrir('m12-etats-financiers.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9588,7 +9600,7 @@ async function viderMessages(page) {
       /existent déjà|double report/i.test(refus), refus.slice(0, 90));
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 59 — LE PATIENT ADRESSÉ DE L'EXTÉRIEUR, DE BOUT EN BOUT
@@ -9598,7 +9610,7 @@ async function viderMessages(page) {
    * réglée. L'écran montre les demandes par service et l'état de chaque
    * résultat, sans ouvrir une seconde voie d'écriture.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Patient externe — analyses, imagerie, services et verrou de caisse');
     await ouvrir('m1-externe.html');
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -9763,7 +9775,7 @@ async function viderMessages(page) {
 
     verifier('Aucune erreur JavaScript sur l’écran du patient externe',
       erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
 
   /* =========================================================================
@@ -9776,7 +9788,7 @@ async function viderMessages(page) {
    * la DDR, et que le tableau de bord de la maternité compte ce que les
    * registres portent — jamais un nombre fourni.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Maternité — dossier obstétrical, CPN en colonnes, GAR déduit, tableau de bord');
     /* Le scénario précédent a basculé sur le rôle 'reception', à qui M4 et le
        tableau de bord de la maternité sont fermés : sans restauration, les
@@ -9874,7 +9886,7 @@ async function viderMessages(page) {
 
     verifier('Aucune erreur JavaScript sur les écrans de maternité',
       erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * 61 — CE QUI CHANGE, ET CE QU'ON GARDE
@@ -9885,7 +9897,7 @@ async function viderMessages(page) {
    *   — le rendez-vous honoré quitte l'agenda sans quitter le dossier ;
    *   — la période analysée SE NOMME au lieu de « les 30 derniers jours ».
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Couverture datée, agenda apuré, périodes nommées, filtres avancés');
 
     /* --- LA COUVERTURE EST DATÉE ---------------------------------------- */
@@ -10018,7 +10030,7 @@ async function viderMessages(page) {
 
     verifier('Aucune erreur JavaScript sur ces écrans',
       erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * SCÉNARIO 62 — VAGUE 61 : LES FEUILLETS 7/51 ET 8/51, ET L'IMAGERIE À
@@ -10029,7 +10041,7 @@ async function viderMessages(page) {
    *   — radiographie, mammographie, scanner et IRM se branchent sur le socle
    *     de l'échographie : même demande, même caisse, droits de M2.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Feuillets 7/51 et 8/51, imagerie à cinq modalités');
     const erreurs62 = [];
     await page.evaluate(() => window.SIGH.store.setSession({
@@ -10183,7 +10195,7 @@ async function viderMessages(page) {
       !droits.caissier && !droits.accueil && droits.medecin, JSON.stringify(droits));
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs62.length === 0, erreurs62.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 63. REFONTE ZONE 2 — LE DOSSIER, PUIS LA FICHE, PUIS UNE SEULE FACTURE
@@ -10195,7 +10207,7 @@ async function viderMessages(page) {
    * jusqu'au règlement. Le répertoire perd son onglet, la fiche patient gagne
    * l'imagerie, et l'accueil reste dehors (RG-13).
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Refonte Zone 2 — dossier IPPOA, fiche récapitulative, prescription unique et imagerie au dossier');
     const erreurs63 = [];
     const sessionMedecin = {
@@ -10412,7 +10424,7 @@ async function viderMessages(page) {
     /* On rend la session du médecin : un scénario qui change de rôle le RESTAURE. */
     await page.evaluate((s) => localStorage.setItem('sigh-cnt:session', JSON.stringify(s)), sessionMedecin);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs63.length === 0, erreurs63.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 64. CORRECTIONS DE L'ÉCHOGRAPHISTE (14/09/2026) — LE COMPTE RENDU PAR VARIABLES
@@ -10422,7 +10434,7 @@ async function viderMessages(page) {
    * saisissent en texte, « Annexes » disparaît des échographies, la
    * provenance est demandée, et l'examen « 1er trimestre évolué » existe.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Corrections de l’échographiste — champs conditionnels, sacs dupliqués, mesures en texte, sans Annexes');
     const erreurs64 = [];
     await ouvrir('m2-imagerie.html');
@@ -10563,7 +10575,7 @@ async function viderMessages(page) {
       !!tiroir && tiroir.sac2 && tiroir.precision && tiroir.provenance, JSON.stringify(tiroir));
     erreurs64.push(...erreursJS);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs64.length === 0, erreurs64.join(' | '));
-  }
+  });
 
   /* ======================================================================
    * SCÉNARIO 65 — BFR, TABLEAU DÉCISIONNEL ET FEUILLE D'INVENTAIRE
@@ -10579,7 +10591,7 @@ async function viderMessages(page) {
    *   3. le seuil vit dans la COLLECTION : le corriger déplace l'alerte, et
    *      le moteur de notification n'a rien à changer.
    * ==================================================================== */
-  {
+  await etape(async () => {
     scenario('BFR, tableau décisionnel et feuille d’inventaire');
     const erreurs65 = [];
 
@@ -10783,7 +10795,7 @@ async function viderMessages(page) {
 
     erreurs65.push(...erreursJS);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs65.length === 0, erreurs65.join(' | '));
-  }
+  });
 
   /* ======================================================================
    * SCÉNARIO 66 — LES RÈGLES DE L'ÉCHOGRAPHIE, ÉTENDUES AUX CINQ MODALITÉS
@@ -10796,7 +10808,7 @@ async function viderMessages(page) {
    * doit porter des champs texte, une précision « Autre » et aucune
    * rubrique « Annexes ».
    * ==================================================================== */
-  {
+  await etape(async () => {
     scenario('Règles transversales d’imagerie — cinq modalités, pas seulement l’échographie');
     const erreurs66 = [];
 
@@ -10928,7 +10940,7 @@ async function viderMessages(page) {
 
     erreurs66.push(...erreursJS);
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs66.length === 0, erreurs66.join(' | '));
-  }
+  });
 
   /* ==========================================================================
    * 67. VAGUE 68 (20/10/2026) — L'HORLOGE RÉELLE, LA CONNEXION ÉPURÉE ET LE
@@ -10948,7 +10960,7 @@ async function viderMessages(page) {
    * et non la date du jeu. CE SCÉNARIO VIDE LE MAGASIN : il est le dernier, et
    * il régénère le jeu en sortant.
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 68 — agenda sur l’horloge réelle, vidage des jeux de test qui tient');
     erreursJS = [];
     await page.evaluate(() => localStorage.setItem('sigh-cnt:session', JSON.stringify({
@@ -11133,12 +11145,12 @@ async function viderMessages(page) {
       rendu.badges === 0 && rendu.evaluations === 0, 'badges ' + rendu.badges + ', évaluations ' + rendu.evaluations);
 
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 69 — clôture d'exercice : sélecteur, deux gestes, résultat, à-nouveaux, lettrage
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 69 — exercice : pré-clôture, deux gestes, résultat, à-nouveaux et lecture seule');
     await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', nom: 'Administrateur', nomComplet: 'KASSA Augustin', fonction: 'admin', secteur: 'ADM' }));
     await ouvrir('m12-cloture.html');
@@ -11292,12 +11304,12 @@ async function viderMessages(page) {
     /* On remet le poste sur l’exercice courant et on restaure le jeu : la sonde ne laisse pas de clôture derrière elle. */
     await page.evaluate(() => { window.SIGH.exercice.choisir(new Date().getFullYear()); window.SIGH.store.reset(); });
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 69 — suivi des ventes par patient et par secteur, « Imagerie médicale »
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 69 — Suivi des ventes : détail par patient et par secteur, Imagerie médicale');
     await page.evaluate(() => window.SIGH.store.setSession({ role: 'stock', fonction: 'stock', nom: 'MAMAN Zoukanéri', nomComplet: 'MAMAN Zoukanéri', identifiant: 'z.maman' }));
     await ouvrir('m6-point-ventes.html');
@@ -11382,12 +11394,12 @@ async function viderMessages(page) {
     });
     verifier('Sans client retenu, le point global reste ce qu’il était (aucune page patient)', sans.pages === 0, JSON.stringify(sans));
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 69 — l'application sans rechargement
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 69 — navigation sans rechargement du document');
     await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' }));
     await ouvrir('m8-caisse.html');
@@ -11432,12 +11444,12 @@ async function viderMessages(page) {
     verifier('Un écran autonome (verrou) recharge le document, comme avant', await page.evaluate(() => window.__marqueur === undefined), '');
     await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' }));
     verifier('Aucune erreur JavaScript durant la navigation', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 69 — le planificateur du serveur et les notifications
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 69 — planificateur serveur : tâches, alertes routées par poste, alerte résolue quand sa cause cesse');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
@@ -11513,12 +11525,12 @@ async function viderMessages(page) {
     verifier('Sans session, le registre des tâches est refusé (401)', interdit === 401, String(interdit));
     erreursJS = [];   /* le 401 est l'objet même de la sonde */
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 70 — la copie relationnelle PostgreSQL suit le magasin
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
@@ -11584,12 +11596,12 @@ async function viderMessages(page) {
     const sansSession = await page.evaluate(async () => (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/parite.php')).status);
     verifier('Sans session, le contrôle est refusé (401)', sansSession === 401, String(sansSession));
     erreursJS = [];
-  }
+  });
 
   /* ========================================================================
    * Vague 70 — deux postes : l'écriture de l'un apparaît chez l'autre
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
     await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
@@ -11687,12 +11699,12 @@ async function viderMessages(page) {
     await ctxB.close();
     erreursJS = erreursJS.filter((m) => !/hors ligne simulé/.test(m));
     verifier('Aucune erreur JavaScript côté poste A', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 70 — l'exercice suit : N-1 tiré du journal, archive GED, MECeF et M9
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 70 — exercice : colonne N-1 du journal, archive de clôture dans la GED, MECeF et M9 qui suivent l’exercice');
     await page.evaluate(() => window.SIGH.store.setSession({ role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' }));
     await page.evaluate(() => { try { localStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
@@ -11759,12 +11771,12 @@ async function viderMessages(page) {
     verifier('Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due', cre, '');
     await page.evaluate(() => window.SIGH.exercice.choisir(String(new Date().getFullYear())));
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 71 (01/11/2026) — le vidage des jeux de test retire AUSSI la paie et les RH de démonstration
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 71 — le vidage retire masse salariale, fiches de poste et calculs de paie : écrans vides, « non calculable » dit');
     const texte = () => page.evaluate(() => (document.querySelector('#page-content') || document.body).innerText.replace(/\s+/g, ' '));
 
@@ -11898,13 +11910,13 @@ async function viderMessages(page) {
     verifier('« Régénérer » rend les salaires de démonstration et les fiches de poste, et lève le drapeau',
       rendu.salaires === avant.effectif && rendu.fiches > 0 && !rendu.jeuVide, JSON.stringify(rendu));
     verifier('Aucune erreur JavaScript sur ces écrans', erreurs.length === 0, erreurs.join(' | '));
-  }
+  });
 
   /* ========================================================================
    * Vague 71 (01/11/2026) — Clôturer une session change son statut ; l'écran
    * « Sécurité des utilisateurs » existe, gouverné, journalisé, réservé à l'admin
    * ======================================================================== */
-  {
+  await etape(async () => {
     scenario('Vague 71 — sessions : « Clôturer » change le statut (journal, KPI, filtre, refus nommés, poste visé renvoyé à la connexion) et écran Sécurité des utilisateurs');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'c.bassongui' };
     await ouvrir('m14-sessions.html');
@@ -12179,9 +12191,9 @@ async function viderMessages(page) {
     verifier('Ouvrir l’écran sous la Direction renvoie à la page 403', refuse403, '');
     await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
     verifier('Aucune erreur JavaScript sur ces écrans', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 72 — validation de la paie : un net négatif est refusé en nommant l’agent, et la validation écrit les retenues (prêt, avance, participation), annulables');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');
@@ -12210,9 +12222,9 @@ async function viderMessages(page) {
     verifier('Un net positif n’est pas refusé', r.aucun === null, String(r.aucun));
     verifier('La validation écrit les retenues : échéance au prêt, mensualité à l’avance (soldée à 60 000), participation réglée', r.n === 3 && r.apres.pret.length === 1 && r.apres.rembourse === 60000 && r.apres.statutAv === 'solde' && r.apres.statutPart === 'paye', JSON.stringify(r.apres));
     verifier('L’annulation restitue tout : prêt, avance et participation reviennent à leur état', r.retour.pret.length === 0 && r.retour.rembourse === 30000 && r.retour.statutAv === 'en_cours' && r.retour.statutPart === 'du', JSON.stringify(r.retour));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 73 — exercice : trois états, journaux CL et AN, atomicité, réouverture par contre-passation, comptes de résultat paramétrables');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');
@@ -12319,9 +12331,9 @@ async function viderMessages(page) {
     verifier('Une seconde clôture est possible après la réouverture, sous de NOUVEAUX numéros', r.cl2 && r.cl2Numero !== r.clNumero && r.cl2An !== r.anNumero, JSON.stringify([r.cl2, r.cl2Motif, r.cl2Numero, r.cl2An]));
     verifier('Les comptes de résultat 131 et 139 viennent d’une table paramétrable, pas du code', r.param[0] === '131000' && r.param[1] === '131500', JSON.stringify(r.param));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 73 — le dossier patient imprimé est le dossier ENTIER : identité, dossier de consultation et toutes les rubriques');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');
@@ -12352,9 +12364,9 @@ async function viderMessages(page) {
     verifier('Toutes les rubriques du dossier figurent sur le papier (aucune ne manque)', manquantes.length === 0, 'manquantes : ' + manquantes.join(', '));
     verifier('Aucun bouton ne se retrouve imprimé', await page.evaluate(() => !document.querySelector('.print-sheet button')), '');
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 74 — le sélecteur d’exercice est dans la barre supérieure : en session, seulement sur les écrans à année, il lit sans jamais écrire');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');
@@ -12427,9 +12439,9 @@ async function viderMessages(page) {
     verifier('Les dates relatives partent du dernier jour de l’exercice consulté (2025), et d’aujourd’hui pour l’exercice en cours', rel.r25 === '2025-12-31' && rel.fin25 === '2025-12-31' && rel.rN === rel.auj, JSON.stringify(rel));
     await page.evaluate(() => { try { sessionStorage.removeItem('sigh-cnt:exercice'); } catch (e) { /* sans effet */ } });
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 76 — comptes de résultat 131 et 139 : table modifiable à l’écran, contrôles nommés, jamais créée ni archivée');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');
@@ -12463,9 +12475,9 @@ async function viderMessages(page) {
     verifier('L’onglet « Comptes de résultat » est dans l’écran des clôtures : deux lignes, modifiables par le comptable, aucune archivable',
       r.onglet && r.lignes === 2 && r.modifier === 2 && r.archiver === 0, JSON.stringify([r.onglet, r.lignes, r.modifier, r.archiver]));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 77 — « Relais en ligne » quitte le ruban pour des cartes dans Paramètres système ; l’onglet Système n’est affiché qu’à l’admin et à la DA');
     const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
     const lire = async (role, page) => {
@@ -12513,9 +12525,9 @@ async function viderMessages(page) {
       Object.keys(autres).every((r) => autres[r].interdites.length === 0) && autres.direction.cartes.length > 5 && !autres.comptable.cartes.some((h) => /m14-utilisateurs/.test(h)),
       JSON.stringify(Object.keys(autres).map((r) => [r, autres[r].cartes.length, autres[r].interdites])));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 78 — échanges entre postes (mode pair) : clé affichée une seule fois, refus nommés, récupération par courriel fermée par défaut, admin et DA seulement');
     const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
     const poser = async (role) => { await ouvrir('m1-patients.html'); await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role)); };
@@ -12595,9 +12607,9 @@ async function viderMessages(page) {
     const carteDir = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-pair/.test(a.getAttribute('href') || '')));
     verifier('La carte figure dans les Paramètres système de la DAF et jamais dans ceux de la direction (RG-13)', carteDa === true && carteDir === false, JSON.stringify([carteDa, carteDir]));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 79 — messagerie SMTP : un vrai message part par le protocole (puits de test), refus nommés par étape, mot de passe jamais relu ni écrit en clair, « Contactez l’éditeur » honnête');
     const { demarrerPuits } = require('./_smtp_sink');
     const net = require('net');
@@ -12768,9 +12780,9 @@ async function viderMessages(page) {
     await poser('admin'); await apiAdmin('effacer', {});
     await puits.fermer();
     verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
-  }
+  });
 
-  {
+  await etape(async () => {
     scenario('Vague 75 — archive légale d’une clôture : CSV des écritures SYSCOHADA, balance, états, manifeste SHA-256, immuable, vérifiée au téléchargement');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');
@@ -12835,7 +12847,7 @@ async function viderMessages(page) {
     verifier('Chaque téléchargement vérifie l’empreinte : intact, livré ; altéré, REFUSÉ en le disant', r.lectureOk && r.altere && r.restaure, JSON.stringify([r.lectureOk, r.altere, r.restaure]));
     verifier('Après réouverture et seconde clôture, une SECONDE archive est déposée et la première reste intacte', r.rouvre && r.cl2 && r.nb2 === 2 && r.premiereIntacte && r.refs.join() === 'ARC-2040-01,ARC-2040-02', JSON.stringify([r.rouvre, r.cl2, r.cl2Motif, r.nb2, r.refs, r.premiereIntacte]));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   /* =========================================================================
    * Vague 80 : la créance de l'ASSUREUR (411) est-elle écrite au journal ?
@@ -12844,7 +12856,7 @@ async function viderMessages(page) {
    * (`partAssureur` n'existe que sur les LIGNES). La sonde part d'une facture RÉELLE (PR.prescrire sur un
    * assuré à la grille posée), l'encaisse et lit le journal : débit 411 = part assureur, crédit 706 = total.
    * ======================================================================= */
-  {
+  await etape(async () => {
     scenario('Vague 80 — l’encaissement d’une facture assurée constate la créance de l’assureur (411) au journal');
     await ouvrir('m8-facturation.html');
     const r = await page.evaluate(() => {
@@ -12900,7 +12912,7 @@ async function viderMessages(page) {
     verifier('L’écran Paiements : « Valider l’encaissement » solde la pièce, règle ses lignes et pose l’écriture (571, 411 de l’assureur, 706)',
       vue.trouve && vue.modale && vue.statut === 'soldee' && vue.lignesPayees > 0 && vue.d571 === vue.pat && vue.d411 === vue.ass && vue.c706 === vue.d571 + vue.d411 && vue.nb >= 2, JSON.stringify(vue));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
-  }
+  });
 
   await browser.close();
   server.close();

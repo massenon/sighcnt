@@ -2744,13 +2744,13 @@
   /* ==========================================================================
    * REPRISE SAGE 100 — traçabilité du stock initial
    * ======================================================================== */
-  global.SIGH.screen('m6-import-grand-stock', {
-    title: 'Importation Grand Stock',
-    description: 'Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.',
-    regle: 'Le stock initial n’a pas été saisi manuellement : il provient de l’<strong>import de l’inventaire SAGE 100</strong>. '
-      + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises '
-      + 'des mouvements opérationnels ultérieurs.',
-    render: function (root) {
+  /* LE STOCK REPRIS : TRAÇABILITÉ ET VALORISATION (E2158, corrigé le 06/11/2026). Deux lots du 01/11 avaient enregistré le MÊME
+     identifiant d'écran `m6-import-grand-stock` : celui-ci (la reprise renommée « Importation Grand Stock », E1956) et le jeu
+     d'import du module IMP (E2000). Le dernier script chargé effaçait l'autre : la valorisation du stock repris n'était plus
+     atteignable nulle part, et le scénario qui l'éprouvait tombait sur un onglet absent. Le rendu est désormais une FONCTION,
+     exposée au module IMP qui la pose SOUS le téléversement : un seul écran, deux faces (l'import écrit le Grand Stock, la
+     reprise le suit et le valorise). L'enregistrement d'écran plus bas reste le repli d'une page où `import.js` ne serait pas chargé. */
+  function rendreRepriseGrandStock(conteneur) {
       /* L'écran se redessine après une valorisation : sans cela le compteur
          resterait à 32 alors que la référence vient d'être tarifée, et l'agent
          croirait sa saisie perdue. */
@@ -2758,7 +2758,7 @@
       return null;
 
       function dessiner() {
-      C.clear(root);
+      C.clear(conteneur);
       var SG = global.SIGH.sage;
       var lot = SG.LOT_IMPORT;
       var articles = SG.INVENTAIRE_SAGE;
@@ -3022,9 +3022,18 @@
       ]));
 
       host.appendChild(K.source('Inventaire « Grand Stock » — SAGE 100 Gestion commerciale 15.01, arrêté au 15/07/2026.'));
-      root.appendChild(host);
+      conteneur.appendChild(host);
       }
-    },
+  }
+  global.SIGH.rendreRepriseGrandStock = rendreRepriseGrandStock;
+
+  global.SIGH.screen('m6-import-grand-stock', {
+    title: 'Importation Grand Stock',
+    description: 'Traçabilité du lot de migration : inventaire « Grand Stock » repris comme situation initiale du stock.',
+    regle: 'Le stock initial n’a pas été saisi manuellement : il provient de l’<strong>import de l’inventaire SAGE 100</strong>. '
+      + 'Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises '
+      + 'des mouvements opérationnels ultérieurs.',
+    render: rendreRepriseGrandStock,
   });
 
   /* ==========================================================================

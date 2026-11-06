@@ -12,6 +12,7 @@ import '../../import/port_magasin.dart';
 import '../../import/selecteurs_import.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../m6/flux_reprise.dart';
 
 /// MODULE D'IMPORTATION (IMP), port de `prototype_html/assets/js/modules/import.js` : UN écran par jeu d'import (`EcranImportJeu`), plus l'accueil du module
 /// (`EcranImportAccueil`). Le moteur et les dix jeux sont dans `packages/domaine` (`src/import/`) : cet écran ne connaît AUCUNE règle, il enchaîne les
@@ -468,6 +469,19 @@ class _EtatEcranImportJeu extends State<EcranImportJeu> {
               titre: 'Historique des lots de ce jeu',
               sansRemplissage: true,
               child: tableauLots(context, c, siens, () => setState(() {}))),
+          // LE GRAND STOCK A DEUX FACES SUR LE MÊME ÉCRAN (E2158, corrigé le 06/11/2026) : l'import l'écrit (ci-dessus), la reprise le suit et le
+          // valorise (ci-dessous). Le retrait de l'écran de reprise (8800c17) avait fait disparaître du poste la valorisation des références sans prix.
+          if (j.id == 'grand-stock') ...[
+            const SizedBox(height: 24),
+            const Text('Stock repris : traçabilité et valorisation',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: JetonsShell.navy900)),
+            const SizedBox(height: 12),
+            const NoteSigh(
+                'Le stock initial n’a pas été saisi manuellement : il provient de l’import de l’inventaire « Grand Stock ». Chaque article conserve sa source, son lot d’import et sa quantité d’origine, afin de distinguer les données reprises des mouvements opérationnels ultérieurs. Les références que le document ne tarife pas se valorisent ici, à part, datées et signées.',
+                icone: LucideIcons.history),
+            const SizedBox(height: 16),
+            const EcranReprise(),
+          ],
         ]);
       },
     );
