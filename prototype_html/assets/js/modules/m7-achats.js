@@ -1486,10 +1486,13 @@
       host.appendChild(U.dataTable({
         title: 'Factures fournisseurs', rows: rows, exportName: 'factures-fournisseurs', pageSize: 12,
         rowActions: K.actionsLigne(col, [
-          { name: 'numero', label: 'N° de facture', required: true },
+          /* LES CHAMPS SONT CEUX DE LA FICHE (corrigé le 06/11/2026) : `numero` et `montant` n'existaient pas, l'édition les
+             écrivait sur des champs morts que rien ne relisait. Le fournisseur est un CODE (liste), son nom se déduit, et
+             changer le montant facturé recalcule l'écart et le rapprochement (transform ci-dessous). */
+          { name: 'numeroFournisseur', label: 'N° fournisseur', required: true },
           { name: 'date', label: 'Date de facture', type: 'date', required: true },
-          { name: 'fournisseur', label: 'Fournisseur', required: true },
-          { name: 'montant', label: 'Montant (FCFA)', type: 'number', min: 0 },
+          { name: 'fournisseur', label: 'Fournisseur', type: 'select', required: true, options: optionsFournisseurs() },
+          { name: 'montantFacture', label: 'Montant facturé (FCFA)', type: 'number', min: 0 },
           { name: 'echeance', label: 'Échéance', type: 'date' },
           {
             /* « payée » et non « soldée » : le registre, son filtre et son
@@ -1499,7 +1502,18 @@
             name: 'statutPaiement', label: 'Règlement', type: 'select',
             options: [{ value: 'impayee', label: 'Impayée' }, { value: 'partielle', label: 'Partielle' }, { value: 'payee', label: 'Payée' }],
           },
-        ]),
+        ], {
+          transform: function (v, r) {
+            var four = fournisseurs().filter(function (f) { return f.code === v.fournisseur; })[0];
+            if (four) v.fournisseurNom = four.nom;
+            if (v.montantFacture != null && v.montantFacture !== '') {
+              v.montantFacture = Number(v.montantFacture);
+              v.ecart = v.montantFacture - (r.montantLivraison || 0);
+              v.statutRappro = v.ecart === 0 ? 'rapproche' : 'anomalie';
+            }
+            return v;
+          },
+        }),
         defaultSort: 'date', defaultDir: 'desc',
         filters: [
           { name: 'statutRappro', label: 'Rapprochement', options: [{ value: 'rapproche', label: 'Rapprochée' }, { value: 'anomalie', label: 'Anomalie' }] },

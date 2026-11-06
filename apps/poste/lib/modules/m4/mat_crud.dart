@@ -298,8 +298,16 @@ class _CrudMatState extends State<CrudMat> {
                           detail: widget.referenceToast?.call(r.fiche),
                           annuler: r.annuler);
                     } else {
+                      // VIDER un champ optionnel EFFACE la valeur : `matSansNuls` retire la clé du patch, et `mettreAJour` ne touche pas
+                      // une clé absente (la maquette efface, par `sansNuls` à la sérialisation). Une clé saisie vide et absente du patch
+                      // est donc posée à null ici, à l'édition seulement.
+                      final patch = {...fiche};
+                      for (final e in saisie.entries) {
+                        final vide = e.value == null || (e.value is String && '${e.value}'.trim().isEmpty);
+                        if (vide && !patch.containsKey(e.key) && existante[e.key] != null) patch[e.key] = null;
+                      }
                       final annuler =
-                          widget.collection.mettreAJour(existante['id'], fiche);
+                          widget.collection.mettreAJour(existante['id'], patch);
                       ToastsSigh.afficher(ctx, 'Modifications enregistrées.',
                           type: TypeToast.succes,
                           detail: widget.referenceToast?.call(existante),

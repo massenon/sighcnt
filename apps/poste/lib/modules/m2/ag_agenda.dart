@@ -303,9 +303,29 @@ class _EtatAgenda extends State<EcranAgenda> {
                     fermer();
                     _etendreJusquA('${r['date']}');
                     if (notifier) {
+                      // « Transmis » n'est dit que si une notification de poste est ÉCRITE (collection `notifications`, poste de
+                      // consultation, praticien destinataire) : la case ne produisait aucun geste. L'annulation retire aussi la notification.
+                      final nt = c.magasin.collection('notifications').inserer({
+                        'type': 'rendez_vous',
+                        'poste': 'consultation',
+                        'destinataire': r['medecin'],
+                        'libelle': 'Nouveau rendez-vous : ${r['patient']}',
+                        'detail': '${r['date']} · ${r['motif']}',
+                        'priorite': 'normale',
+                        'patientId': r['patientId'],
+                        'reference': ins.fiche['reference'] ?? ins.fiche['id'],
+                        'lue': false,
+                        'creeLe': c.aujourdhui.toUtc().toIso8601String(),
+                        'statut': 'actif',
+                      }, prefixe: 'NOT');
                       final t = agMessageTransmis(r);
                       ToastsSigh.afficher(ecran, t.message,
-                          type: TypeToast.succes, detail: t.detail, annuler: ins.annuler);
+                          type: TypeToast.succes,
+                          detail: t.detail,
+                          annuler: () {
+                            nt.annuler();
+                            ins.annuler();
+                          });
                     } else {
                       final t = agMessageEnregistre(r);
                       ToastsSigh.afficher(ecran, t.message,

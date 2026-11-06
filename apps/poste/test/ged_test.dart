@@ -266,25 +266,20 @@ void main() {
       expect(find.textContaining('ont atteint leur durée légale'), findsNothing);
     });
 
-    cas('modifier écrit les cinq champs du formulaire, que le tableau ne lit pas (E566)', (t) async {
+    cas('modifier écrit les champs que le tableau lit : libellé et durée de conservation (E566 corrigé)', (t) async {
       final m = magasinGed(docsDe(c0['entrees']));
       await ouvrir(t, m, 'ged-archives');
       final mod = m_(m_(ar.firstWhere((x) => x['nom'] == 'modifier un document'))['modif']);
       final ref = '${mod['reference']}';
       await toucher(t, find.byTooltip('Modifier').first);
-      expect(find.textContaining('Titre du document'), findsWidgets);
-      await saisir(t, 'titre', 'Titre de test');
-      await saisir(t, 'categorie', 'contrat');
-      await saisir(t, 'dureeConservation', '12');
-      await saisir(t, 'emplacement', 'Armoire B2');
-      await saisir(t, 'observations', 'À revoir');
+      expect(find.textContaining('Libellé du document'), findsWidgets);
+      await saisir(t, 'libelle', 'Libellé de test');
+      await saisir(t, 'conservation', '12');
       await toucher(t, find.widgetWithText(BoutonSigh, 'Enregistrer'));
       final d = m.collection('documents').toutes.firstWhere((x) => x['reference'] == ref);
-      expect(d['titre'], 'Titre de test');
-      expect(d['dureeConservation'], 12);
-      expect(d['emplacement'], 'Armoire B2');
-      expect(d['libelle'], m_(mod['avant'])['libelle'], reason: 'le libellé affiché ne bouge pas');
-      expect(d['conservation'], m_(mod['avant'])['conservation'], reason: 'la durée affichée ne bouge pas');
+      expect(d['libelle'], 'Libellé de test');
+      expect(d['conservation'], 12);
+      expect(d.containsKey('titre'), isFalse, reason: 'aucun champ mort écrit');
       expect(find.text('Modifications enregistrées.'), findsOneWidget);
     });
 
