@@ -69,3 +69,17 @@ Source : mémoire de la session et historique git. Les transcripts n'ont pas ét
 ## 7. Proposition de séquence
 
 L1 (inspection, sans agent) puis L3 (un agent Sonnet par groupe de 20 constats, argent et droits relus), puis L2, puis L6 en une seule fois. L4 peut démarrer en parallèle dès que la question 4 est tranchée. L5 après les décisions du PRD. L9 hors environnement.
+
+## 8. Décisions de la Direction (06/11/2026, reçues)
+
+| Sujet | Décision |
+|---|---|
+| Coffre de récupération | Adresse unique : le courriel de la DA ou du superadmin, rien d'autre, pour tout appareil appairé |
+| Installateur | Les cinq recommandations validées (nom `SIGH_Poste_Setup_<version>.exe`, avertissement renforcé pour la mère, signature de code différée, sauvegardes `Documents\SIGH-CNT-Sauvegarde-<date>` jamais supprimées, `build_runner` conditionnel) |
+| MECeF | Boîtier branché à la caisse ; 1 boîtier |
+| SMTP | Mot de passe saisi dans le panneau lors du test en ligne ET en production, jamais dans le dépôt |
+| Fausses sauvegardes | Corriger d'abord les 85 constats non « doute », trier les 111 « doute » ensuite |
+| Mise en page | Toute la grille (pas seulement les anomalies importantes) |
+| Fond des modales | Pas encore testé (branche non clonée) ; à reprendre au retour de test |
+| Courriel du poste | Envoi direct, file avec reprise seulement en cas d'échec : figé |
+| Planning individuel Q1 à Q8 | En attente de validation (voir PRD) |
