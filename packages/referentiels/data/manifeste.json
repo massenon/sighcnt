@@ -669,7 +669,8 @@
     "cfg-modules",
     "cfg-systeme",
     "cfg-poste",
-    "cfg-pair"
+    "cfg-pair",
+    "cfg-smtp"
    ]
   },
   {
@@ -5610,6 +5611,22 @@
    "id": "cfg-pair",
    "label": "Échanges entre postes (mode pair)",
    "icone": "git-compare-arrows",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "cfg-smtp",
+   "label": "Messagerie (SMTP)",
+   "icone": "mail",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",

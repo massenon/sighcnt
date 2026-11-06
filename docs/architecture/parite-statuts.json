@@ -270,6 +270,7 @@
  "cfg-modules": "porté",
  "cfg-systeme": "porté",
  "cfg-pair": "porté",
+  "cfg-smtp": "porté",
  "cfg-poste": "porté",
  "rapports-bibliotheque": "porté",
  "rapports-direction": "porté",

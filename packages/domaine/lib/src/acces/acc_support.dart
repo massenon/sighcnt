@@ -151,7 +151,8 @@ String accReferenceSupport(int annee, Iterable<Object?> existantes) {
 }
 
 /// La demande « message » : les champs que la maquette écrit (hors référence, date, auteur et état, posés par l'appelant).
-Map<String, Object?> accDemandeMessage(String objet, String message) => {
+Map<String, Object?> accDemandeMessage(String objet, String message, {bool courriel = false}) => {
+      'courriel': courriel ? 'demande' : 'non',
       'type': 'message',
       'objet': objet,
       'description': message,
@@ -161,7 +162,8 @@ Map<String, Object?> accDemandeMessage(String objet, String message) => {
     };
 
 /// La demande « anomalie ».
-Map<String, Object?> accDemandeAnomalie(String module, String description, String? etapes, String? capture) => {
+Map<String, Object?> accDemandeAnomalie(String module, String description, String? etapes, String? capture, {bool courriel = false}) => {
+      'courriel': courriel ? 'demande' : 'non',
       'type': 'anomalie',
       'objet': 'Anomalie — $module',
       'module': module,
@@ -170,8 +172,20 @@ Map<String, Object?> accDemandeAnomalie(String module, String description, Strin
       'capture': capture,
     };
 
-String accToastDemande(String type) => type == 'anomalie' ? 'Anomalie signalée à l’éditeur.' : 'Message envoyé à l’éditeur.';
-String accDetailDemande(String reference) => 'Référence $reference — réponse sous 48 h ouvrées.';
+/// Le toast d'une demande ENREGISTRÉE sans courriel : il ne promet jamais un envoi qui n'a pas eu lieu (la messagerie peut ne pas être configurée).
+String accToastDemande(String type) => type == 'anomalie' ? 'Anomalie enregistrée dans le logiciel.' : 'Message enregistré dans le logiciel.';
+String accDetailDemande(String reference) => 'Référence $reference. Aucun courriel n’a été envoyé à l’éditeur.';
+
+/// Les toasts quand un courriel a été demandé : parti, ou non parti (la demande reste enregistrée dans tous les cas).
+String accToastCourrielParti(String type) => type == 'anomalie' ? 'Anomalie envoyée par courriel à l’éditeur.' : 'Message envoyé par courriel à l’éditeur.';
+String accDetailCourrielParti(String reference) => 'Référence $reference.';
+const String accToastCourrielNonParti = 'Demande enregistrée, mais le courriel n’est pas parti.';
+
+/// Ce que dit l'écran quand la messagerie n'est pas configurée : une phrase, et où la régler.
+const String accNoteSansMessagerie =
+    'Cette demande sera seulement enregistrée dans le logiciel : aucun courriel n’est envoyé, la messagerie n’étant pas configurée (Paramètres système, Messagerie).';
+const String accNoteMessagerieNonTestee =
+    'La messagerie n’a pas été testée avec succès : faire un test d’envoi dans Paramètres système, Messagerie, avant de compter sur le courriel.';
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------
 // Plan du site

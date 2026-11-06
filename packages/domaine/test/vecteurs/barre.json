@@ -2044,6 +2044,13 @@
        "onglet": null
       },
       {
+       "label": "Messagerie (SMTP)",
+       "detail": "Configuration Clinique",
+       "icone": "mail",
+       "ecran": "cfg-smtp",
+       "onglet": null
+      },
+      {
        "label": "Infirmier / Sage-femme",
        "detail": "Tableaux de bord par poste",
        "icone": "heart-pulse",

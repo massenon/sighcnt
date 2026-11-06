@@ -780,7 +780,7 @@ void main() {
       expect(audit(m, 'Création'), isNotEmpty);
       // Le formulaire est vidé, la demande figure au tableau des demandes envoyées.
       expect(t.widget<TextField>(find.descendant(of: find.byKey(const Key('kit:champ:objet')), matching: find.byType(TextField))).controller!.text, isEmpty);
-      expect(find.text('Demandes envoyées'), findsOneWidget);
+      expect(find.text('Demandes enregistrées'), findsOneWidget);
       expect(find.text('SUP-2026-0001'), findsWidgets);
       // Annuler = archiver (RG-14), jamais supprimer.
       await toucher(t, find.text('Annuler').first);

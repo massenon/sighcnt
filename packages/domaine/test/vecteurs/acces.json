@@ -1534,6 +1534,10 @@
        {
         "label": "Échanges entre postes (mode pair)",
         "href": "pages/cfg-pair.php"
+       },
+       {
+        "label": "Messagerie (SMTP)",
+        "href": "pages/cfg-smtp.php"
        }
       ]
      },
@@ -2029,7 +2033,7 @@
     ]
    }
   ],
-  "pied": "320 écrans métier recensés au manifeste, plus 22 pages d’accès et système.",
+  "pied": "321 écrans métier recensés au manifeste, plus 22 pages d’accès et système.",
   "retour": "Retour à l’application",
   "homeAdmin": "dash-admin"
  },
@@ -2041,7 +2045,7 @@
    },
    {
     "label": "Écrans disponibles",
-    "valeur": "320"
+    "valeur": "321"
    },
    {
     "label": "Règles de gestion appliquées",
@@ -2362,7 +2366,7 @@
    "Modules fonctionnels",
    "33",
    "Écrans disponibles",
-   "320",
+   "321",
    "Règles de gestion appliquées",
    "14",
    "Profils d’utilisateur",
@@ -2438,14 +2442,14 @@
   ],
   "toastMessage": [
    {
-    "titre": "Message envoyé à l’éditeur.",
-    "detail": "Référence SUP-2026-0001 — réponse sous 48 h ouvrées."
+    "titre": "Message enregistré dans le logiciel.",
+    "detail": "Référence SUP-2026-0001. Aucun courriel n’a été envoyé à l’éditeur."
    }
   ],
   "toastAnomalie": [
    {
-    "titre": "Anomalie signalée à l’éditeur.",
-    "detail": "Référence SUP-2026-0002 — réponse sous 48 h ouvrées."
+    "titre": "Anomalie enregistrée dans le logiciel.",
+    "detail": "Référence SUP-2026-0002. Aucun courriel n’a été envoyé à l’éditeur."
    }
   ],
   "apresMessage": {
@@ -2459,6 +2463,7 @@
     "date": "2026-10-30",
     "auteur": "Admin",
     "etat": "envoyee",
+    "courriel": "non",
     "type": "anomalie",
     "objet": "Anomalie — M8",
     "module": "M8",
@@ -2472,6 +2477,7 @@
     "date": "2026-10-30",
     "auteur": "Admin",
     "etat": "envoyee",
+    "courriel": "non",
     "type": "message",
     "objet": "Question sur la comptabilité",
     "description": "Comment lire la balance ?",
@@ -2487,7 +2493,7 @@
     "Anomalie",
     "Anomalie — M8",
     "M8",
-    "Envoyée"
+    "Enregistrée seulement"
    ],
    [
     "SUP-2026-0001",
@@ -2495,7 +2501,7 @@
     "Message",
     "Question sur la comptabilité",
     "—",
-    "Envoyée"
+    "Enregistrée seulement"
    ]
   ],
   "entetes": [
@@ -2504,7 +2510,7 @@
    "Nature",
    "Objet",
    "Module",
-   "État"
+   "Courriel"
   ],
   "optionsModule": [
    {
@@ -2689,14 +2695,14 @@
    "Envoyer un message",
    "Objet *",
    "Message *",
+   "Cette demande sera seulement enregistrée dans le logiciel : aucun courriel n’est envoyé, la messagerie n’étant pas configurée (Paramètres système, Messagerie).",
    "Envoyer le message",
    "Signaler une anomalie",
    "Module concerné *",
    "M8 — Facturation & Caisse",
    "Description du problème *",
-   "Étapes pour reproduire",
-   "Capture d’écran (facultative)"
+   "Étapes pour reproduire"
   ],
-  "note": "Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires."
+  "note": "Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires. Un courriel n’est envoyé que si la messagerie du poste est configurée."
  }
 }

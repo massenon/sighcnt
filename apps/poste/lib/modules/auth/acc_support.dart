@@ -7,6 +7,8 @@ import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
 import '../../shell/contexte_ecran.dart';
+import '../../sync/config_smtp.dart';
+import '../../sync/service_smtp.dart';
 import 'acc_gabarit.dart';
 
 /// Écrans de support (module SUP, hors ruban : atteints par le menu profil et la recherche globale) — `support.js` — et `plan-du-site` (autonome).
@@ -260,6 +262,37 @@ class _EtatContact extends State<EcranContactEditeur> {
   ControleurFormulaire? _bug;
   String? _capture;
 
+  // « Envoyer aussi par courriel à l'éditeur » : un choix PAR formulaire, coché d'emblée SEULEMENT si la messagerie est configurée ET testée avec succès.
+  bool? _courrielMessage, _courrielBug;
+  String? get _dossierSmtp => EtatSmtpPoste.dossier;
+  bool get _messagerieConfiguree => _dossierSmtp != null && ServiceSmtp.configure(_dossierSmtp!);
+  bool get _messagerieTestee => _dossierSmtp != null && ServiceSmtp.testeOk(_dossierSmtp!) == true;
+  bool _veutCourriel(bool? choix) => _messagerieConfiguree && (choix ?? _messagerieTestee);
+
+  Widget _choixCourriel(bool? choix, void Function(bool) change, String cle) {
+    if (!_messagerieConfiguree) {
+      return Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(accNoteSansMessagerie, key: Key('support:sans-messagerie:$cle'), style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)));
+    }
+    final coche = _veutCourriel(choix);
+    return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          InkWell(
+              key: Key('support:courriel:$cle'),
+              onTap: () => change(!coche),
+              child: Row(mainAxisSize: MainAxisSize.min, children: [
+                Icon(coche ? LucideIcons.squareCheck : LucideIcons.square, size: 18, color: JetonsShell.slate700),
+                const SizedBox(width: 8),
+                const Text('Envoyer aussi par courriel à l’éditeur', style: TextStyle(color: JetonsShell.slate700, fontSize: 14, height: 20 / 14)),
+              ])),
+          if (!_messagerieTestee)
+            const Padding(
+                padding: EdgeInsets.only(top: 4), child: Text(accNoteMessagerieNonTestee, style: TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12))),
+        ]));
+  }
+
   @override
   void dispose() {
     _message?.dispose();
@@ -267,7 +300,7 @@ class _EtatContact extends State<EcranContactEditeur> {
     super.dispose();
   }
 
-  void _enregistrer(ContexteEcran c, Map<String, Object?> donnees) {
+  Future<void> _enregistrer(ContexteEcran c, Map<String, Object?> donnees, {required bool courriel}) async {
     final col = c.magasin.collection('support');
     final reference = accReferenceSupport(c.aujourdhui.year, col.toutes.map((f) => f['reference']));
     final r = col.inserer({
@@ -277,10 +310,28 @@ class _EtatContact extends State<EcranContactEditeur> {
       'etat': 'envoyee',
       ...donnees,
     });
-    ToastsSigh.afficher(context, accToastDemande('${donnees['type']}'),
-        type: TypeToast.succes,
-        detail: accDetailDemande(reference),
-        annuler: r.annuler);
+    final type = '${donnees['type']}';
+    if (!courriel) {
+      ToastsSigh.afficher(context, accToastDemande(type), type: TypeToast.succes, detail: accDetailDemande(reference), annuler: r.annuler);
+      return;
+    }
+    final texte = '${donnees['description'] ?? ''}${donnees['etapes'] != null ? '\n\nÉtapes pour reproduire :\n${donnees['etapes']}' : ''}'
+        '\n\nRéférence : $reference${donnees['module'] != null ? '\nModule : ${donnees['module']}' : ''}';
+    ResultatSmtp? res;
+    try {
+      res = await ServiceSmtp.ecrireALEditeur(_dossierSmtp!,
+          destinataire: '${(accEditeur['emails'] as List).first}', sujet: '[SIGH-CNT] ${donnees['objet']}', corps: texte);
+    } on FormatException catch (e) {
+      res = ResultatSmtp([EtapeSmtp('connexion', false, e.message)], 'connexion');
+    }
+    col.mettreAJour(r.fiche['id'], {'courriel': res != null && res.ok ? 'envoye' : 'echec'});
+    if (!mounted) return;
+    if (res != null && res.ok) {
+      ToastsSigh.afficher(context, accToastCourrielParti(type), type: TypeToast.succes, detail: accDetailCourrielParti(reference));
+    } else {
+      final e = res?.etapes.where((x) => !x.ok).firstOrNull;
+      ToastsSigh.afficher(context, accToastCourrielNonParti, type: TypeToast.attention, detail: '${e?.detail ?? 'Messagerie non configurée.'} Référence $reference.');
+    }
   }
 
   @override
@@ -331,6 +382,7 @@ class _EtatContact extends State<EcranContactEditeur> {
           titre: 'Envoyer un message',
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             FormulaireSigh(controleur: _message!),
+            _choixCourriel(_courrielMessage, (v) => setState(() => _courrielMessage = v), 'message'),
             const SizedBox(height: 12),
             Align(
                 alignment: Alignment.centerRight,
@@ -344,7 +396,8 @@ class _EtatContact extends State<EcranContactEditeur> {
                         ToastsSigh.afficher(context, refus, type: TypeToast.erreur);
                         return;
                       }
-                      _enregistrer(c, accDemandeMessage('${v['objet']}', '${v['message']}'));
+                      final courriel = _veutCourriel(_courrielMessage);
+                      _enregistrer(c, accDemandeMessage('${v['objet']}', '${v['message']}', courriel: courriel), courriel: courriel);
                       v.poser('objet', '');
                       v.poser('message', '');
                     })),
@@ -376,6 +429,7 @@ class _EtatContact extends State<EcranContactEditeur> {
                         style: const TextStyle(color: JetonsShell.slate500, fontSize: 12, height: 16 / 12)),
                   ]),
                 ])),
+            _choixCourriel(_courrielBug, (v) => setState(() => _courrielBug = v), 'anomalie'),
             const SizedBox(height: 12),
             Align(
                 alignment: Alignment.centerRight,
@@ -392,7 +446,8 @@ class _EtatContact extends State<EcranContactEditeur> {
                         return;
                       }
                       final etapes = '${v['etapes']}'.trim().isEmpty ? null : '${v['etapes']}';
-                      _enregistrer(c, accDemandeAnomalie(code, '${v['description']}', etapes, _capture));
+                      final courriel = _veutCourriel(_courrielBug);
+                      _enregistrer(c, accDemandeAnomalie(code, '${v['description']}', etapes, _capture, courriel: courriel), courriel: courriel);
                       v.poser('description', '');
                       v.poser('etapes', '');
                       setState(() => _capture = null);
@@ -405,7 +460,7 @@ class _EtatContact extends State<EcranContactEditeur> {
             final lignes = [...col.actives]..sort((a, b) => '${b['reference']}'.compareTo('${a['reference']}'));
             if (lignes.isEmpty) return const SizedBox.shrink();
             return CarteSigh(
-                titre: 'Demandes envoyées',
+                titre: 'Demandes enregistrées',
                 sansRemplissage: true,
                 child: MiniTableauSigh(colonnes: [
                   ColonneMini('Référence', (r) => '${r['reference']}', rendu: (r) => mono('${r['reference']}')),
@@ -414,7 +469,10 @@ class _EtatContact extends State<EcranContactEditeur> {
                       rendu: (r) => r['type'] == 'anomalie' ? const BadgeSigh('Anomalie', ton: TonSigh.danger) : const BadgeSigh('Message', ton: TonSigh.info)),
                   ColonneMini('Objet', (r) => '${r['objet']}'),
                   ColonneMini('Module', (r) => r['module'] == null ? '—' : '${r['module']}'),
-                  ColonneMini('État', (r) => 'Envoyée', rendu: (r) => const BadgeSigh('Envoyée', ton: TonSigh.succes)),
+                  ColonneMini('Courriel', (r) => r['courriel'] == 'envoye' ? 'Envoyé' : (r['courriel'] == 'echec' ? 'Non parti' : 'Enregistrée seulement'),
+                      rendu: (r) => r['courriel'] == 'envoye'
+                          ? const BadgeSigh('Envoyé', ton: TonSigh.succes)
+                          : (r['courriel'] == 'echec' ? const BadgeSigh('Non parti', ton: TonSigh.attention) : const BadgeSigh('Enregistrée seulement', ton: TonSigh.neutre))),
                 ], lignes: lignes.take(10).toList()));
           }),
     ]);
@@ -469,7 +527,7 @@ class _EtatContact extends State<EcranContactEditeur> {
           ])),
       const SizedBox(height: 16),
       const NoteSigh(
-          'Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires.'),
+          'Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires. Un courriel n’est envoyé que si la messagerie du poste est configurée.'),
     ]);
     return LayoutBuilder(builder: (context, k) {
       if (k.maxWidth < 1024) return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [principal, const SizedBox(height: 16), lateral]);

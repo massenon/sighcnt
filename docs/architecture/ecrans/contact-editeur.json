@@ -15,7 +15,7 @@
  "actions": [],
  "regle": [
   "Capture d’écran (facultative)Joindre une capture d’écranAucune capture jointe.",
-  "Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires."
+  "Les demandes envoyées depuis cet écran sont enregistrées et journalisées comme toute autre opération : elles restent consultables sous les formulaires. Un courriel n’est envoyé que si la messagerie du poste est configurée."
  ],
  "onglets": [],
  "kpis": [],

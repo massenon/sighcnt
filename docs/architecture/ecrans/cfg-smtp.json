@@ -1,0 +1,53 @@
+{
+ "id": "cfg-smtp",
+ "module": "CFG",
+ "domaine": "Système",
+ "libelleManifeste": "Messagerie (SMTP)",
+ "acces": "ouvert",
+ "titre": "Messagerie (SMTP)",
+ "description": "Serveur de courriel de la clinique et test d’envoi : sert à écrire à l’éditeur et, plus tard, à tout envoi de la clinique.",
+ "fil": [
+  "Accueil",
+  "Système",
+  "Configuration Clinique",
+  "Messagerie (SMTP)"
+ ],
+ "actions": [
+  "Organisation & organigramme",
+  "Identité & papier à en-tête",
+  "Configuration Clinique"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Messagerie",
+  "Dernier test",
+  "Chiffrement",
+  "Mot de passe"
+ ],
+ "cartes": [
+  "Serveur de courriel",
+  "Test d’envoi"
+ ],
+ "tableaux": [],
+ "commandes": [
+  "Enregistrer la messagerie",
+  "Envoyer un message de test"
+ ],
+ "champs": [
+  "Serveur SMTP *",
+  "Port *",
+  "Chiffrement *",
+  "Délai (secondes)",
+  "Identifiant",
+  "Mot de passe",
+  "Adresse d’expéditeur *",
+  "Nom affiché de l’expéditeur",
+  "Répondre à (adresse)",
+  "Répondre à (nom)",
+  "Vérifier le certificat du serveur",
+  "Adresse de test *"
+ ],
+ "nbTableaux": 0,
+ "nbKpis": 4
+}

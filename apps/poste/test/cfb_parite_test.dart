@@ -31,6 +31,7 @@ const ecransMesures = [
   'cfg-systeme',
   'cfg-poste',
   'cfg-pair',
+  'cfg-smtp',
 ];
 
 void main() {

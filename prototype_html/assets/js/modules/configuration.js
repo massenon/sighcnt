@@ -4231,4 +4231,127 @@
     },
   });
 
+  /* ==========================================================================
+   * MESSAGERIE (SMTP) ET TEST D'ENVOI
+   * --------------------------------------------------------------------------
+   * Le logiciel n'avait AUCUNE messagerie : « Contactez l'éditeur » rangeait la demande dans une collection locale, sans rien envoyer. Cet écran règle le
+   * serveur SMTP de la clinique, et son bouton de test envoie VRAIMENT un message (api/smtp.php), en montrant la suite d'étapes : connecté, chiffré,
+   * authentifié, envoyé, ou l'étape où cela échoue. Le mot de passe est saisi, JAMAIS relu : il part au serveur, qui le garde chiffré dans un fichier à part ;
+   * il n'entre pas dans le magasin que l'on exporte. Sans serveur (navigateur seul), l'écran le dit au lieu de simuler un envoi.
+   * ========================================================================== */
+  global.SIGH.screen('cfg-smtp', {
+    title: 'Messagerie (SMTP)',
+    description: 'Serveur de courriel de la clinique et test d’envoi : sert à écrire à l’éditeur et, plus tard, à tout envoi de la clinique.',
+    regle: 'Le <strong>mot de passe n’est jamais relu</strong> : l’écran ne l’affiche pas, le magasin exporté ne le contient pas. Le test envoie un <strong>vrai message</strong> et dit à quelle étape il échoue.',
+    render: function (root) {
+      var hote = el('div.space-y-4');
+      root.appendChild(hote);
+      function jeton() { return S.jetonServeur ? S.jetonServeur() : null; }
+      function racine() { return (document.documentElement.getAttribute('data-root')) || ''; }
+      function appeler(action, corps) {
+        var get = !corps;
+        return global.fetch(racine() + 'api/smtp.php' + (get ? '?action=' + action : ''), {
+          method: get ? 'GET' : 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton() || '' },
+          body: get ? undefined : JSON.stringify(Object.assign({ action: action }, corps)),
+        }).then(function (r) { return r.json().then(function (o) { if (!r.ok && !o.etapes) throw new Error(o.detail || o.erreur || String(r.status)); return o; }); });
+      }
+      /* LA CONFIGURATION FOURNIE PAR LA CLINIQUE (valeurs NON secrètes) : proposée dans le formulaire tant que rien n'est enregistré. Le mot de passe n'a AUCUNE valeur
+         par défaut : il se saisit, il n'est jamais écrit ici ni dans le dépôt. */
+      var DEFAUTS = {
+        serveur: 'mail.sigh.nassieratoo.com', port: 587, chiffrement: 'starttls', delai: 20,
+        identifiant: 'contact@sigh.nassieratoo.com', expediteur: 'contact@sigh.nassieratoo.com', nom: 'Clinique Nassièra Too',
+        repondreA: 'cliniquenassiera@gmail.com', repondreNom: 'Clinique Nassièra Too',
+      };
+      var ETAPES = { connexion: 'Connexion au serveur', salutation: 'Salutation', 'chiffrement': 'Chiffrement', authentification: 'Authentification', 'expéditeur': 'Expéditeur', destinataire: 'Destinataire', envoi: 'Envoi du message' };
+      var dernier = null, adresseTest = '';
+
+      function rendreEtapes(r) {
+        var liste = el('ol.space-y-1.text-sm', { 'data-testid': 'etapes-smtp' });
+        (r.etapes || []).forEach(function (e) {
+          liste.appendChild(el('li.flex.items-start.gap-2', null, [
+            el('span.mt-0\\.5.shrink-0.' + (e.ok ? 'text-success-600' : 'text-danger-600'), null, C.icon(e.ok ? 'check-circle-2' : 'x-circle', 'h-4 w-4')),
+            el('span', null, [el('strong', { text: (ETAPES[e.etape] || e.etape) + ' : ' }), el('span', { text: e.detail })]),
+          ]));
+        });
+        return el('div.space-y-2', null, [
+          K.note(r.ok ? '<strong>Message de test envoyé.</strong> Vérifier sa réception dans la boîte du destinataire.' : '<strong>Échec à l’étape « ' + (ETAPES[r.echec] || r.echec) + ' ».</strong> Corriger ce réglage puis refaire le test.', { tone: r.ok ? 'success' : 'danger', icon: r.ok ? 'mail-check' : 'mail-x' }),
+          liste,
+        ]);
+      }
+
+      function peindre(c) {
+        C.clear(hote);
+        if (!c) { hote.appendChild(K.note('Messagerie indisponible : aucun serveur n’est joint (navigateur seul). L’envoi réel exige le serveur du poste.', { tone: 'warning', icon: 'plug-zap' })); return; }
+        hote.appendChild(U.kpiGrid([
+          { label: 'Messagerie', value: c.configure ? 'Configurée' : 'Non configurée', icon: 'mail', tone: c.configure ? 'success' : 'warning' },
+          { label: 'Dernier test', value: c.testeOk === true ? 'Réussi' : (c.testeOk === false ? 'Échoué' : 'Jamais fait'), icon: 'send', tone: c.testeOk === true ? 'success' : (c.testeOk === false ? 'danger' : 'neutral') },
+          { label: 'Chiffrement', value: ({ aucun: 'Aucun', starttls: 'STARTTLS', ssl: 'SSL' })[c.chiffrement] || '', icon: 'lock', tone: c.chiffrement === 'aucun' ? 'warning' : 'navy' },
+          { label: 'Mot de passe', value: c.motDePasseDefini ? 'Défini' : 'Non défini', icon: 'key-round', tone: c.motDePasseDefini ? 'success' : 'neutral' },
+        ]));
+
+        /* tant que rien n'est enregistré, le formulaire propose la configuration de la clinique ; une fois enregistrée, c'est elle qui fait foi (un identifiant vidé
+           exprès ne se remplit pas de nouveau) */
+        var v0 = c.configure ? c : Object.assign({}, c, DEFAUTS);
+        var f = U.form([
+          { name: 'serveur', label: 'Serveur SMTP', required: true, value: v0.serveur || '', help: 'Exemple : smtp.exemple.bj' },
+          { name: 'port', label: 'Port', type: 'number', min: 1, required: true, col: 'third', value: v0.port || 587, help: '587 (STARTTLS), 465 (SSL), 25 (aucun)' },
+          { name: 'chiffrement', label: 'Chiffrement', type: 'select', required: true, col: 'third', value: v0.chiffrement || 'starttls', search: false,
+            options: [{ value: 'starttls', label: 'STARTTLS' }, { value: 'ssl', label: 'SSL' }, { value: 'aucun', label: 'Aucun (déconseillé)' }] },
+          { name: 'delai', label: 'Délai (secondes)', type: 'number', min: 3, col: 'third', value: v0.delai || 15 },
+          { name: 'identifiant', label: 'Identifiant', value: v0.identifiant || '', help: 'Laisser vide si le serveur n’exige aucune authentification.' },
+          { name: 'motDePasse', label: 'Mot de passe', type: 'password', value: '', help: c.motDePasseDefini ? 'Un mot de passe est enregistré. Laisser vide pour le conserver.' : 'Jamais relu après enregistrement.' },
+          { name: 'expediteur', label: 'Adresse d’expéditeur', type: 'email', required: true, value: v0.expediteur || '' },
+          { name: 'nom', label: 'Nom affiché de l’expéditeur', value: v0.nom || '' },
+          { name: 'repondreA', label: 'Répondre à (adresse)', type: 'email', value: v0.repondreA || '', help: 'Les réponses des destinataires iront à cette adresse (en-tête Reply-To).' },
+          { name: 'repondreNom', label: 'Répondre à (nom)', value: v0.repondreNom || '' },
+          { name: 'verifierCertificat', label: 'Vérifier le certificat du serveur', type: 'checkbox', col: 'full', value: c.verifierCertificat !== false },
+        ], {});
+        hote.appendChild(U.card('Serveur de courriel', el('div', null, [
+          f,
+          el('div.mt-4', null, K.commande('Enregistrer la messagerie', {
+            variant: 'primary', icon: 'save',
+            onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              appeler('enregistrer', v).then(function (n) {
+                S.log('Modification', 'CFG', 'Messagerie (SMTP)', v.serveur, null, { serveur: v.serveur, port: v.port, chiffrement: v.chiffrement, motDePasse: v.motDePasse ? 'changé' : 'inchangé' });
+                U.toast('Messagerie enregistrée. Le dernier test n’est plus valable : refaire un test d’envoi.', { type: 'success' });
+                dernier = null; peindre(n);
+              }).catch(function (e) { U.toast(e.message, { type: 'error' }); });
+            },
+          })),
+        ])));
+
+        var ft = U.form([{ name: 'destinataire', label: 'Adresse de test', type: 'email', required: true, col: 'full', value: adresseTest, help: 'Un message de test y sera envoyé avec les réglages ci-dessus, enregistrés ou non.' }], {});
+        var resultat = el('div', { 'data-testid': 'resultat-test-smtp' });
+        if (dernier) resultat.appendChild(rendreEtapes(dernier));
+        else if (c.testeOk !== null && c.testeOk !== undefined) resultat.appendChild(el('p.text-sm.text-slate-600', { text: 'Dernier test (' + C.dateFR(String(c.testeLe).slice(0, 10)) + ') : ' + (c.testeOk ? 'réussi.' : 'échoué à l’étape « ' + (ETAPES[c.testeEchec] || c.testeEchec) + ' ».') }));
+        hote.appendChild(U.card('Test d’envoi', el('div.space-y-3', null, [
+          ft,
+          K.commande('Envoyer un message de test', {
+            variant: 'primary', icon: 'send',
+            onclick: function () {
+              var v = f.collect(), t = ft.collect();
+              if (!v || !t) { U.toast('Renseigner les réglages du serveur et l’adresse de test.', { type: 'error' }); return; }
+              adresseTest = t.destinataire;
+              C.clear(resultat); resultat.appendChild(el('p.text-sm.text-slate-500', { text: 'Envoi en cours…' }));
+              appeler('tester', Object.assign({}, v, { destinataire: t.destinataire })).then(function (r) {
+                dernier = r;
+                S.log('Test d’envoi', 'CFG', 'Messagerie (SMTP)', v.serveur, null, { ok: r.ok, echec: r.echec });
+                appeler('etat').then(function (n) { peindre(n); }).catch(function () { C.clear(resultat); resultat.appendChild(rendreEtapes(r)); });
+              }).catch(function (e) { C.clear(resultat); resultat.appendChild(K.note(e.message, { tone: 'danger' })); });
+            },
+          }),
+          resultat,
+        ])));
+      }
+
+      if (!jeton()) { peindre(null); return null; }
+      hote.appendChild(el('p.text-sm.text-slate-500', { text: 'Lecture de la configuration…' }));
+      appeler('etat').then(peindre).catch(function (e) { C.clear(hote); hote.appendChild(K.note(e.message, { tone: 'danger' })); });
+      return null;
+    },
+  });
+
 })(window);

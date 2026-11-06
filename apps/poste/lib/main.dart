@@ -29,6 +29,7 @@ import 'sync/configuration_sync.dart';
 import 'core/plages_codes.dart';
 import 'sync/pont_activite.dart';
 import 'sync/config_pair.dart';
+import 'sync/config_smtp.dart';
 import 'sync/etat_pair.dart';
 import 'sync/moteur_pair.dart';
 import 'sync/modale_trancher.dart';
@@ -258,6 +259,7 @@ Future<void> main() async {
   // MODE PAIR (ADR-0006) : seulement si `pair.json` l'active. Les écritures du poste passent par le moteur pair, le relais ne voit que des enveloppes chiffrées.
   MoteurPair? moteurPair;
   EtatPairPoste.dossier = dossierDonnees;
+  EtatSmtpPoste.dossier = dossierDonnees;
   try {
     final cp = ConfigPairPoste.lire(dossierDonnees);
     if (cp != null) {

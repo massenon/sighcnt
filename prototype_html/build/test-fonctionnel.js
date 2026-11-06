@@ -12580,6 +12580,179 @@ async function viderMessages(page) {
   }
 
   {
+    scenario('Vague 79 — messagerie SMTP : un vrai message part par le protocole (puits de test), refus nommés par étape, mot de passe jamais relu ni écrit en clair, « Contactez l’éditeur » honnête');
+    const { demarrerPuits } = require('./_smtp_sink');
+    const net = require('net');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const poser = async (role) => { await ouvrir('m1-patients.html'); await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role)); };
+    const MDP = 'Zx9-secret-ç€-7Qp';
+    const puits = await demarrerPuits({ user: 'clinique', pass: MDP, mode: 'starttls', refuser: ['interdit@clinique.bj'] });
+    erreursJS = [];
+    const api = (action, corps, jeton) => page.evaluate(async (a, c, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const tok = j || window.SIGH.store.jetonServeur();
+      const r = await fetch(racine + 'api/smtp.php' + (c ? '' : '?action=' + a), { method: c ? 'POST' : 'GET', headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': tok || '' }, body: c ? JSON.stringify(Object.assign({ action: a }, c)) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, action, corps || null, jeton || null);
+    /* Changer de rôle rouvre une session serveur : la requête partie trop tôt porte le jeton de l'ANCIEN rôle et reçoit 401/403. Les gestes de l'administrateur
+       réessaient donc jusqu'à ce que la session soit celle du rôle posé : sans cela, un « effacer » refusé en silence laissait la messagerie configurée. */
+    const apiAdmin = async (action, corps) => {
+      let r = null;
+      for (let i = 0; i < 30; i++) { r = await api(action, corps); if (r.statut !== 401 && r.statut !== 403) return r; await pause(300); }
+      return r;
+    };
+    await poser('admin');
+    await apiAdmin('effacer', {});
+    await ouvrir('cfg-smtp.html');
+    const lire = () => page.evaluate(() => ({
+      texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' '),
+      champs: [...document.querySelectorAll('#page-content label')].map((l) => l.textContent.trim()),
+      mdp: (document.getElementById('f_motDePasse') || {}).value,
+      valeurs: ['serveur', 'port', 'chiffrement', 'delai', 'identifiant', 'expediteur', 'nom', 'repondreA', 'repondreNom'].reduce((o, k) => { const e = document.getElementById('f_' + k); o[k] = e ? e.value : null; return o; }, {}),
+      mdpType: (document.getElementById('f_motDePasse') || {}).type,
+    }));
+    const saisir = (id, v) => page.evaluate((a) => { const e = document.getElementById(a[0]); e.value = a[1]; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+    const cocher = (id, v) => page.evaluate((a) => { const c = document.getElementById(a[0]); c.checked = a[1]; c.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+    const cliquer = (libelle) => page.evaluate(async (l) => {
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === l);
+      if (b) b.click();
+      await new Promise((r) => setTimeout(r, 600));
+      return !!b;
+    }, libelle);
+    const attendreTexte = (re) => page.waitForFunction((src) => new RegExp(src).test(document.querySelector('#page-content').innerText), { timeout: 30000 }, re.source).catch(() => null);
+
+    const e0 = await lire();
+    verifier('L’écran porte ses champs nommés ; non configurée au départ', /Messagerie Non configurée/.test(e0.texte) && e0.champs.includes('Serveur SMTP *') && e0.champs.some((c) => /Adresse d’expéditeur/.test(c)) && e0.champs.some((c) => /Vérifier le certificat/.test(c)) && e0.mdpType === 'password', JSON.stringify([e0.texte.slice(0, 160), e0.champs]));
+
+    verifier('Rien n’étant enregistré, le formulaire PROPOSE la configuration de la clinique (non secrète) : serveur, port 587, STARTTLS, identifiant, expéditeur, nom, délai 20, « Répondre à »',
+      JSON.stringify(e0.valeurs) === JSON.stringify({ serveur: 'mail.sigh.nassieratoo.com', port: '587', chiffrement: 'starttls', delai: '20', identifiant: 'contact@sigh.nassieratoo.com', expediteur: 'contact@sigh.nassieratoo.com', nom: 'Clinique Nassièra Too', repondreA: 'cliniquenassiera@gmail.com', repondreNom: 'Clinique Nassièra Too' }), JSON.stringify(e0.valeurs));
+    verifier('Le mot de passe n’a AUCUNE valeur par défaut, et les valeurs proposées ne rendent pas la messagerie « configurée » tant qu’on n’enregistre pas', e0.mdp === '' && /Messagerie Non configurée/.test(e0.texte) && !(await api('etat')).o.configure, JSON.stringify([e0.mdp, (await api('etat')).o]));
+    await saisir('f_serveur', '127.0.0.1'); await saisir('f_port', String(puits.port)); await saisir('f_chiffrement', 'starttls');
+    await saisir('f_identifiant', 'clinique'); await saisir('f_motDePasse', MDP);
+    await saisir('f_expediteur', 'cnt@clinique.bj'); await cocher('f_verifierCertificat', false);
+    await cliquer('Enregistrer la messagerie');
+    await attendreTexte(/Messagerie Configurée/);
+    const e1 = await lire();
+    verifier('Enregistrée : configurée, mot de passe « Défini » ET le champ est vidé (jamais relu)', /Messagerie Configurée/.test(e1.texte) && /Mot de passe Défini/.test(e1.texte) && e1.mdp === '' && !e1.texte.includes(MDP), JSON.stringify([e1.texte.slice(0, 200), e1.mdp]));
+
+    await saisir('f_destinataire', 'dg@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Message de test envoyé/);
+    const e2 = await lire();
+    const m = puits.dernier();
+    verifier('Le test montre les étapes : connexion, chiffrement, authentification, envoi', /Message de test envoyé/.test(e2.texte) && /Connexion au serveur/.test(e2.texte) && /Chiffrement : Connexion chiffrée \(STARTTLS\)/.test(e2.texte) && /Authentification : Authentifié comme clinique/.test(e2.texte) && /Envoi du message/.test(e2.texte), e2.texte.slice(0, 600));
+    verifier('Le puits a REÇU le message par le protocole : expéditeur, destinataire, objet', !!m && m.de === 'cnt@clinique.bj' && m.a.join() === 'dg@clinique.bj' && m.entetes.subject === 'SIGH-CNT : test de la messagerie', JSON.stringify(m && { de: m.de, a: m.a, s: m.entetes.subject }));
+    verifier('Le corps arrive intact, accents et symbole € compris ; le nom affiché est décodé', !!m && /é è à ç ô, symbole €/.test(m.corps) && /Clinique Nassièra Too/.test(m.entetes.from), JSON.stringify(m && [m.corps, m.entetes.from]));
+    verifier('L’en-tête Reply-To est REÇU (adresse et nom décodés) : les réponses iront à la boîte de la clinique', !!m && /cliniquenassiera@gmail\.com/.test(m.entetes['reply-to'] || '') && /Clinique Nassièra Too/.test(m.entetes['reply-to'] || ''), JSON.stringify(m && m.entetes['reply-to']));
+    verifier('Le puits a vu STARTTLS puis une authentification réussie (le mot de passe n’a pas circulé avant le chiffrement)', puits.commandes.indexOf('STARTTLS') > -1 && puits.commandes.indexOf('AUTH PLAIN ok') > puits.commandes.indexOf('STARTTLS'), JSON.stringify(puits.commandes));
+    const etat1 = (await api('etat')).o;
+    verifier('Le dernier test réussi est retenu côté serveur', etat1.testeOk === true && !!etat1.testeLe, JSON.stringify(etat1));
+
+    /* --- refus nommés par étape --- */
+    const avant = puits.messages.length;
+    await saisir('f_motDePasse', 'mauvais-mot-de-passe');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e3 = await lire();
+    verifier('Un mauvais mot de passe est refusé à l’étape « Authentification », sans envoi', /Échec à l’étape « Authentification »/.test(e3.texte) && /refusé par le serveur/.test(e3.texte) && puits.messages.length === avant && !e3.texte.includes('mauvais-mot-de-passe'), e3.texte.slice(-700));
+
+    const libre = await new Promise((ok) => { const t = net.createServer(); t.listen(0, '127.0.0.1', () => { const p = t.address().port; t.close(() => ok(p)); }); });
+    await ouvrir('cfg-smtp.html');
+    await saisir('f_port', String(libre)); await saisir('f_destinataire', 'dg@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e4 = await lire();
+    verifier('Un port fermé est refusé à l’étape « Connexion au serveur »', /Échec à l’étape « Connexion au serveur »/.test(e4.texte) && /injoignable/.test(e4.texte), e4.texte.slice(0, 500));
+
+    await ouvrir('cfg-smtp.html');
+    await saisir('f_port', String(puits.port)); await saisir('f_destinataire', 'interdit@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e5 = await lire();
+    verifier('Un destinataire refusé par le serveur est refusé à l’étape « Destinataire »', /Échec à l’étape « Destinataire »/.test(e5.texte) && /interdit@clinique\.bj/.test(e5.texte), e5.texte.slice(0, 500));
+
+    await ouvrir('cfg-smtp.html');
+    await saisir('f_port', String(puits.port)); await cocher('f_verifierCertificat', true); await saisir('f_destinataire', 'dg@clinique.bj');
+    await cliquer('Envoyer un message de test');
+    await attendreTexte(/Échec à l’étape/);
+    const e6 = await lire();
+    verifier('Avec le contrôle du certificat actif, le certificat auto-signé du puits est refusé à l’étape « Chiffrement »', /Échec à l’étape « Chiffrement »/.test(e6.texte) && /certificat/i.test(e6.texte), e6.texte.slice(0, 500));
+
+    /* --- le mot de passe ne fuit nulle part --- */
+    const fuites = await page.evaluate((mdp, faux) => {
+      const S = window.SIGH.store;
+      const tout = JSON.stringify(S.raw());
+      let ls = ''; try { for (let i = 0; i < localStorage.length; i++) ls += localStorage.getItem(localStorage.key(i)); } catch (e) { /* stockage */ }
+      return { magasin: tout.includes(mdp) || tout.includes(faux), stockage: ls.includes(mdp) || ls.includes(faux), journal: JSON.stringify(S.raw().audit || []).includes(mdp) };
+    }, MDP, 'mauvais-mot-de-passe');
+    verifier('Le mot de passe n’apparaît ni dans le magasin exporté, ni dans le stockage du navigateur, ni dans le journal', !fuites.magasin && !fuites.stockage && !fuites.journal, JSON.stringify(fuites));
+    const etat2 = await api('etat');
+    verifier('L’API ne renvoie jamais le mot de passe ni son chiffré', !etat2.brut.includes(MDP) && !/"mdp"/.test(etat2.brut) && !/motDePasse"\s*:\s*"[^"]/.test(etat2.brut), etat2.brut.slice(0, 300));
+    const disque = fs.readFileSync(path.join(ROOT, 'api', 'smtp.local.php'), 'utf8');
+    verifier('Sur le disque, le mot de passe est CHIFFRÉ (aucun clair dans le fichier de configuration)', !disque.includes(MDP) && /"mdp":"/.test(disque) && /^<\?php http_response_code\(403\); exit; \?>/.test(disque), disque.slice(0, 300));
+    const audit = await page.evaluate(async () => { const r = await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/magasin.php?collections=audit', { headers: { 'X-Sigh-Jeton': window.SIGH.store.jetonServeur() } }); return r.text(); });
+    verifier('Le journal côté serveur garde les essais (test d’envoi) sans le mot de passe', /Test d’envoi/.test(audit) && !audit.includes(MDP) && !audit.includes('mauvais-mot-de-passe'), audit.slice(0, 200));
+
+    /* --- « Contactez l'éditeur » --- */
+    await saisir('f_motDePasse', MDP);
+    await apiAdmin('enregistrer', { serveur: '127.0.0.1', port: puits.port, chiffrement: 'starttls', identifiant: 'clinique', motDePasse: MDP, expediteur: 'cnt@clinique.bj', nom: 'Clinique Nassiera Too', verifierCertificat: false });
+    await apiAdmin('tester', { destinataire: 'dg@clinique.bj' });
+    await poser('medecin');
+    await ouvrir('contact-editeur.html');
+    await page.waitForSelector('[data-testid="envoyer-courriel"]', { timeout: 20000 }).catch(() => null);
+    const c1 = await page.evaluate(() => ({ coche: [...document.querySelectorAll('[data-testid="envoyer-courriel"]')].map((c) => c.checked), note: !!document.querySelector('[data-testid="courriel-non-configure"]') }));
+    verifier('Messagerie configurée ET testée : « Envoyer aussi par courriel » est coché d’emblée, sans mention « seulement enregistrée »', c1.coche.length === 2 && c1.coche.every(Boolean) && !c1.note, JSON.stringify(c1));
+    const avantEd = puits.messages.length;
+    await saisir('f_objet', 'Question sur la comptabilité'); await saisir('f_message', 'Bonjour, où règle-t-on le plan ? Merci é à ç.');
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Envoyer le message'); b.click(); });
+    for (let i = 0; i < 60 && puits.messages.length === avantEd; i++) await pause(250);
+    const mEd = puits.dernier();
+    verifier('Le courriel part vraiment à l’éditeur : destinataire, objet préfixé, corps et référence', puits.messages.length === avantEd + 1 && mEd.a.join() === 'rarhodes06@gmail.com' && mEd.entetes.subject === '[SIGH-CNT] Question sur la comptabilité' && /où règle-t-on le plan \? Merci é à ç\./.test(mEd.corps) && /Référence : SUP-/.test(mEd.corps), JSON.stringify(mEd && [mEd.a, mEd.entetes.subject, mEd.corps]));
+    const refusEd = await api('envoyer', { sujet: 'x', corps: 'y', destinataires: ['quelquun@exemple.bj'] });
+    verifier('Le point d’envoi ne sert QU’à l’éditeur : une autre adresse est refusée (pas de relais ouvert)', refusEd.statut === 403, JSON.stringify([refusEd.statut, refusEd.brut.slice(0, 120)]));
+
+    /* sans messagerie, l'écran le DIT et n'envoie rien */
+    await poser('admin');
+    const eff = await apiAdmin('effacer', {});
+    verifier('L’administrateur retire la configuration : la messagerie redevient non configurée', eff.statut === 200 && eff.o.configure === false, JSON.stringify([eff.statut, eff.brut.slice(0, 120)]));
+    await poser('medecin');
+    await ouvrir('contact-editeur.html');
+    await pause(1500);
+    const c2 = await page.evaluate(() => ({ cases: document.querySelectorAll('[data-testid="envoyer-courriel"]').length, notes: [...document.querySelectorAll('[data-testid="courriel-non-configure"]')].map((n) => n.textContent) }));
+    verifier('Messagerie non configurée : aucune case, et l’écran dit que la demande est seulement enregistrée et où configurer', c2.cases === 0 && c2.notes.length === 2 && c2.notes.every((t) => /seulement enregistrée/.test(t) && /Paramètres système, Messagerie/.test(t)), JSON.stringify(c2));
+    const avantSans = puits.messages.length;
+    await saisir('f_objet', 'Sans messagerie'); await saisir('f_message', 'Texte');
+    await page.evaluate(() => { const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === 'Envoyer le message'); b.click(); });
+    await pause(1500);
+    const toast = await page.evaluate(() => [...document.querySelectorAll('#toast-host *')].map((t) => t.textContent).join(' '));
+    verifier('Le toast dit « Aucun courriel n’a été envoyé » et rien n’arrive au puits', /Aucun courriel n’a été envoyé/.test(toast) && puits.messages.length === avantSans, toast.slice(0, 200));
+
+    /* --- droits --- */
+    const comptes = await page.evaluate(async () => (await (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/auth.php?action=comptes')).json()).comptes || []);
+    const caissier = comptes.find((c) => c.role === 'caissier');
+    const rc = caissier ? await BANC.connecter(caissier.identifiant) : null;
+    const refusRole = rc && rc.jeton ? await api('etat', null, rc.jeton) : { statut: -1 };
+    verifier('Le serveur refuse la lecture de la configuration à un rôle qui ne la règle pas (caissier)', refusRole.statut === 403, JSON.stringify([caissier && caissier.identifiant, refusRole.statut]));
+    const dispo = rc && rc.jeton ? await api('disponible', null, rc.jeton) : { statut: -1, o: {} };
+    verifier('Mais « disponible » répond à tout agent connecté, sans le moindre réglage', dispo.statut === 200 && Object.keys(dispo.o).sort().join() === 'configure,testeOk', JSON.stringify(dispo));
+    const droits = {};
+    for (const role of ['admin', 'da', 'direction', 'comptable', 'reception', 'medecin', 'caissier']) {
+      await poser(role);
+      droits[role] = await page.evaluate((r) => { const e = window.SIGH.nav.get('cfg-smtp'); return window.SIGH.nav.can(r, { id: 'cfg-smtp', roles: e.roles, module: e.module }); }, role);
+    }
+    verifier('Seuls l’administrateur et la DAF ouvrent l’écran', droits.admin && droits.da && !droits.direction && !droits.comptable && !droits.reception && !droits.medecin && !droits.caissier, JSON.stringify(droits));
+    await poser('da'); await ouvrir('parametres-hub.html');
+    const carteDa = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-smtp/.test(a.getAttribute('href') || '')));
+    await poser('direction'); await ouvrir('parametres-hub.html');
+    const carteDir = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-smtp/.test(a.getAttribute('href') || '')));
+    verifier('La carte « Messagerie » figure aux Paramètres système de la DAF et jamais à ceux de la direction (RG-13)', carteDa === true && carteDir === false, JSON.stringify([carteDa, carteDir]));
+    await poser('admin'); await apiAdmin('effacer', {});
+    await puits.fermer();
+    verifier('Aucune erreur JavaScript', erreursJS.filter((x) => !/Failed to load resource/.test(x)).length === 0, erreursJS.join(' | '));
+  }
+
+  {
     scenario('Vague 75 — archive légale d’une clôture : CSV des écritures SYSCOHADA, balance, états, manifeste SHA-256, immuable, vérifiée au téléchargement');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');

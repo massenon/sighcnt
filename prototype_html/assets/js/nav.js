@@ -671,6 +671,7 @@
             { id: 'cfg-systeme', label: 'Paramètres système', icon: 'settings' },
             { id: 'cfg-poste', label: 'Ce poste (mode fileul / mère)', icon: 'server-cog', roles: ['admin', 'da'] },
             { id: 'cfg-pair', label: 'Échanges entre postes (mode pair)', icon: 'git-compare-arrows', roles: ['admin', 'da'] },
+            { id: 'cfg-smtp', label: 'Messagerie (SMTP)', icon: 'mail', roles: ['admin', 'da'] },
           ],
         },
         /* IMPORTATION DE DONNÉES (01/11/2026) : un moteur, dix jeux. Chaque jeu a son écran et ses rôles ;

@@ -1,59 +1,134 @@
 [
   {
-    "nom": "Vague 78 — échanges entre postes (mode pair) : clé affichée une seule fois, refus nommés, récupération par courriel fermée par défaut, admin et DA seulement",
+    "nom": "Vague 79 — messagerie SMTP : un vrai message part par le protocole (puits de test), refus nommés par étape, mot de passe jamais relu ni écrit en clair, « Contactez l’éditeur » honnête",
     "etapes": [
       {
-        "libelle": "L’écran porte ses quatre cartes et ses champs nommés ; désactivé et non appairé au départ",
+        "libelle": "L’écran porte ses champs nommés ; non configurée au départ",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La récupération par courriel est FERMÉE par défaut : ni courriel ni phrase secrète n’apparaissent",
+        "libelle": "Rien n’étant enregistré, le formulaire PROPOSE la configuration de la clinique (non secrète) : serveur, port 587, STARTTLS, identifiant, expéditeur, nom, délai 20, « Répondre à »",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Une adresse sans http(s):// est refusée en le disant, rien n’est écrit",
+        "libelle": "Le mot de passe n’a AUCUNE valeur par défaut, et les valeurs proposées ne rendent pas la messagerie « configurée » tant qu’on n’enregistre pas",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Activer sans clé générée est refusé en nommant la cause",
+        "libelle": "Enregistrée : configurée, mot de passe « Défini » ET le champ est vidé (jamais relu)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "La clé est affichée UNE fois : 64 caractères hexadécimaux (256 bits), avec ses deux commandes",
+        "libelle": "Le test montre les étapes : connexion, chiffrement, authentification, envoi",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le stockage du poste ne contient AUCUN bit de la clé, seulement le fait qu’elle existe",
+        "libelle": "Le puits a REÇU le message par le protocole : expéditeur, destinataire, objet",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Après « J’ai noté la clé », elle ne s’affiche PLUS jamais (ni champ, ni texte), et l’écran dit où elle en est",
+        "libelle": "Le corps arrive intact, accents et symbole € compris ; le nom affiché est décodé",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Rouvrir l’écran ne la montre pas davantage",
+        "libelle": "L’en-tête Reply-To est REÇU (adresse et nom décodés) : les réponses iront à la boîte de la clinique",
+        "ok": false,
+        "detail": ""
+      },
+      {
+        "libelle": "Le puits a vu STARTTLS puis une authentification réussie (le mot de passe n’a pas circulé avant le chiffrement)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Avec relais, nom et clé, le mode pair s’active ; l’adresse est normalisée (sans barre finale) et le code n’est pas conservé",
+        "libelle": "Le dernier test réussi est retenu côté serveur",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Ouvrir la récupération par courriel fait apparaître le courriel et la phrase secrète, qui ne sont jamais stockés",
+        "libelle": "Un mauvais mot de passe est refusé à l’étape « Authentification », sans envoi",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Une phrase secrète de moins de huit caractères est refusée en le disant",
+        "libelle": "Un port fermé est refusé à l’étape « Connexion au serveur »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un destinataire refusé par le serveur est refusé à l’étape « Destinataire »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Avec le contrôle du certificat actif, le certificat auto-signé du puits est refusé à l’étape « Chiffrement »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le mot de passe n’apparaît ni dans le magasin exporté, ni dans le stockage du navigateur, ni dans le journal",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’API ne renvoie jamais le mot de passe ni son chiffré",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Sur le disque, le mot de passe est CHIFFRÉ (aucun clair dans le fichier de configuration)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le journal côté serveur garde les essais (test d’envoi) sans le mot de passe",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Messagerie configurée ET testée : « Envoyer aussi par courriel » est coché d’emblée, sans mention « seulement enregistrée »",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le courriel part vraiment à l’éditeur : destinataire, objet préfixé, corps et référence",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le point d’envoi ne sert QU’à l’éditeur : une autre adresse est refusée (pas de relais ouvert)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’administrateur retire la configuration : la messagerie redevient non configurée",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Messagerie non configurée : aucune case, et l’écran dit que la demande est seulement enregistrée et où configurer",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le toast dit « Aucun courriel n’a été envoyé » et rien n’arrive au puits",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le serveur refuse la lecture de la configuration à un rôle qui ne la règle pas (caissier)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Mais « disponible » répond à tout agent connecté, sans le moindre réglage",
         "ok": true,
         "detail": null
       },
@@ -63,7 +138,7 @@
         "detail": null
       },
       {
-        "libelle": "La carte figure dans les Paramètres système de la DAF et jamais dans ceux de la direction (RG-13)",
+        "libelle": "La carte « Messagerie » figure aux Paramètres système de la DAF et jamais à ceux de la direction (RG-13)",
         "ok": true,
         "detail": null
       },
@@ -73,6 +148,6 @@
         "detail": null
       }
     ],
-    "ok": true
+    "ok": false
   }
 ]

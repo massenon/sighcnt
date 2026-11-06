@@ -133,6 +133,45 @@
       var lateral = el('div.space-y-4');
       var listeHost = el('div');
 
+      /* --- La messagerie : un courriel ne part que si le poste sait en envoyer ------ */
+      var messagerie = { configure: false, testeOk: null };
+      var caseCourriel = [];
+      function jeton() { return S.jetonServeur ? S.jetonServeur() : null; }
+      function racine() { return (document.documentElement.getAttribute('data-root')) || ''; }
+      function appelerSmtp(action, corps) {
+        return global.fetch(racine() + 'api/smtp.php' + (corps ? '' : '?action=' + action), {
+          method: corps ? 'POST' : 'GET',
+          headers: { 'Content-Type': 'application/json', 'X-Sigh-Jeton': jeton() || '' },
+          body: corps ? JSON.stringify(Object.assign({ action: action }, corps)) : undefined,
+        }).then(function (r) { return r.json().then(function (o) { o.statutHttp = r.status; return o; }); });
+      }
+      /* Le choix « envoyer aussi par courriel » : coché d'emblée SEULEMENT si la messagerie est configurée ET testée avec succès ; sinon l'écran DIT que
+         la demande est seulement enregistrée, et où régler la messagerie. Il ne promet jamais un envoi qui n'aura pas lieu. */
+      function choixCourriel() {
+        var hoteChoix = el('div.mt-2');
+        caseCourriel.push(hoteChoix);
+        return hoteChoix;
+      }
+      function peindreChoix() {
+        caseCourriel.forEach(function (h) {
+          C.clear(h);
+          if (messagerie.configure) {
+            var cb = el('input', { type: 'checkbox', 'data-testid': 'envoyer-courriel' });
+            cb.checked = messagerie.testeOk === true;
+            h.appendChild(el('label.flex.items-center.gap-2.text-sm.text-slate-700', null, [cb, el('span', { text: 'Envoyer aussi par courriel à l’éditeur' })]));
+            if (messagerie.testeOk !== true) h.appendChild(el('p.mt-1.text-xs.text-slate-500', { text: 'La messagerie n’a pas été testée avec succès : faire un test d’envoi dans Paramètres système, Messagerie, avant de compter sur le courriel.' }));
+            h.cb = cb;
+          } else {
+            h.cb = null;
+            h.appendChild(el('p.text-xs.text-slate-500', { 'data-testid': 'courriel-non-configure', text: 'Cette demande sera seulement enregistrée dans le logiciel : aucun courriel n’est envoyé, la messagerie n’étant pas configurée (Paramètres système, Messagerie).' }));
+          }
+        });
+      }
+      function veutCourriel() { return caseCourriel.some(function (h) { return h.cb && h.cb.checked; }); }
+      if (jeton()) {
+        appelerSmtp('disponible').then(function (o) { messagerie = { configure: !!o.configure, testeOk: o.testeOk === undefined ? null : o.testeOk }; peindreChoix(); }).catch(function () { peindreChoix(); });
+      }
+
       /* --- Envoyer un message ---------------------------------------------- */
       var fMessage = U.form([
         {
@@ -147,6 +186,7 @@
 
       principal.appendChild(U.card('Envoyer un message', el('div.space-y-3', null, [
         fMessage,
+        choixCourriel(),
         el('div.flex.justify-end', null,
           K.btn('Envoyer le message', {
             variant: 'primary', icon: 'send',
@@ -200,6 +240,7 @@
           ]),
           capture,
         ]),
+        choixCourriel(),
         el('div.flex.justify-end', null,
           K.btn('Signaler l’anomalie', {
             variant: 'danger', icon: 'bug',
@@ -255,35 +296,54 @@
       ])));
 
       lateral.appendChild(K.note('Les demandes envoyées depuis cet écran sont <strong>enregistrées et journalisées</strong> '
-        + 'comme toute autre opération : elles restent consultables sous les formulaires.', { tone: 'info' }));
+        + 'comme toute autre opération : elles restent consultables sous les formulaires. Un <strong>courriel</strong> n’est envoyé que si la messagerie du poste est configurée.', { tone: 'info' }));
 
       host.appendChild(principal);
       host.appendChild(lateral);
       root.appendChild(host);
+      peindreChoix();
       majListe();
       return null;
 
       /* --- Enregistrement d'une demande ------------------------------------ */
       function enregistrer(donnees) {
+        var courriel = veutCourriel();
         var res = col.insert(Object.assign({
           reference: C.nextRef('SUP-2026-', 4),
           date: C.iso(AUJ),
           auteur: S.currentUser(),
           etat: 'envoyee',
+          courriel: courriel ? 'demande' : 'non',
         }, donnees));
         majListe();
-        U.toast(donnees.type === 'anomalie' ? 'Anomalie signalée à l’éditeur.' : 'Message envoyé à l’éditeur.', {
-          type: 'success',
-          detail: 'Référence ' + res.record.reference + ' — réponse sous 48 h ouvrées.',
-          undo: function () { res.undo(); majListe(); },
-        });
+        var nature = donnees.type === 'anomalie' ? 'Anomalie' : 'Message';
+        if (!courriel) {
+          U.toast(nature + ' enregistré' + (donnees.type === 'anomalie' ? 'e' : '') + ' dans le logiciel.', {
+            type: 'success',
+            detail: 'Référence ' + res.record.reference + '. Aucun courriel n’a été envoyé à l’éditeur.',
+            undo: function () { res.undo(); majListe(); },
+          });
+          return;
+        }
+        var texte = (donnees.description || '') + (donnees.etapes ? '\n\nÉtapes pour reproduire :\n' + donnees.etapes : '')
+          + '\n\nRéférence : ' + res.record.reference + (donnees.module ? '\nModule : ' + donnees.module : '');
+        appelerSmtp('envoyer', { sujet: '[SIGH-CNT] ' + donnees.objet, corps: texte, destinataires: EDITEUR.emails.slice(0, 1) }).then(function (r) {
+          col.update(res.record.id, { courriel: r.ok ? 'envoye' : 'echec' });
+          majListe();
+          if (r.ok) {
+            U.toast(nature + ' envoyé' + (donnees.type === 'anomalie' ? 'e' : '') + ' par courriel à l’éditeur.', { type: 'success', detail: 'Référence ' + res.record.reference + '.' });
+          } else {
+            var e = (r.etapes || []).filter(function (x) { return !x.ok; })[0];
+            U.toast('Demande enregistrée, mais le courriel n’est pas parti.', { type: 'warning', detail: (e ? e.detail : (r.detail || r.erreur || 'Erreur inconnue')) + ' Référence ' + res.record.reference + '.' });
+          }
+        }).catch(function (e) { U.toast('Demande enregistrée, mais le courriel n’est pas parti : ' + e.message, { type: 'warning' }); });
       }
 
       function majListe() {
         C.clear(listeHost);
         var rows = C.sortBy(col.active(), 'reference', 'desc');
         if (!rows.length) return;
-        listeHost.appendChild(U.card('Demandes envoyées', K.miniTable([
+        listeHost.appendChild(U.card('Demandes enregistrées', K.miniTable([
           { label: 'Référence', render: function (r) { return el('span.font-mono.text-xs', { text: r.reference }); } },
           { label: 'Date', render: function (r) { return C.dateFR(r.date); } },
           {
@@ -294,7 +354,7 @@
           },
           { label: 'Objet', key: 'objet' },
           { label: 'Module', render: function (r) { return r.module || '—'; } },
-          { label: 'État', render: function () { return U.badge('Envoyée', 'success'); } },
+          { label: 'Courriel', render: function (r) { return r.courriel === 'envoye' ? U.badge('Envoyé', 'success') : (r.courriel === 'echec' ? U.badge('Non parti', 'warning') : U.badge('Enregistrée seulement', 'neutral')); } },
         ], rows.slice(0, 10))));
         U.icons(listeHost);
       }

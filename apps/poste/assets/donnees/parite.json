@@ -260,7 +260,8 @@
     81,
     82,
     83,
-    84
+    84,
+    85
    ],
    "statut": "porté"
   },
@@ -3400,7 +3401,7 @@
     74,
     78,
     81,
-    84
+    85
    ],
    "statut": "porté"
   },
@@ -4924,7 +4925,24 @@
    "scenarios": [
     83
    ],
-   "statut": "non commencé"
+   "statut": "porté"
+  },
+  {
+   "id": "cfg-smtp",
+   "label": "Messagerie (SMTP)",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [
+    84
+   ],
+   "statut": "porté"
   },
   {
    "id": "imp-accueil",
@@ -6615,7 +6633,8 @@
    ],
    "scenarios": [
     82,
-    83
+    83,
+    84
    ],
    "statut": "porté"
   },
@@ -6650,7 +6669,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    14
+    14,
+    84
    ],
    "statut": "porté"
   },

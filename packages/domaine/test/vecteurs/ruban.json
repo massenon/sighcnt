@@ -435,7 +435,8 @@
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
-        "cfg-pair"
+        "cfg-pair",
+        "cfg-smtp"
        ]
       },
       {
@@ -624,7 +625,8 @@
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
-        "cfg-pair"
+        "cfg-pair",
+        "cfg-smtp"
        ]
       },
       {
@@ -1819,7 +1821,8 @@
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
-        "cfg-pair"
+        "cfg-pair",
+        "cfg-smtp"
        ]
       },
       {
@@ -1993,7 +1996,8 @@
         "cfg-modules",
         "cfg-systeme",
         "cfg-poste",
-        "cfg-pair"
+        "cfg-pair",
+        "cfg-smtp"
        ]
       },
       {

@@ -85,6 +85,10 @@
    "titre": "Règles métier versionnées",
    "description": "Matrice de traçabilité : chaque règle du système est rattachée au document de cadrage qui la fonde."
   },
+  "cfg-smtp": {
+   "titre": "Messagerie (SMTP)",
+   "description": "Serveur de courriel de la clinique et test d’envoi : sert à écrire à l’éditeur et, plus tard, à tout envoi de la clinique."
+  },
   "cfg-systeme": {
    "titre": "Paramètres système",
    "description": "Configuration technique, environnement d’exécution et outils de maintenance du prototype."
