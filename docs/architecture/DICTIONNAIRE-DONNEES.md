@@ -4,8 +4,9 @@ Engendré par `prototype_html/build/gen-schema-pg.js` à partir du magasin du pr
 
 | Schéma (module) | Tables | Tables filles | Colonnes typées | Fiches observées |
 |---|---:|---:|---:|---:|
-| `cfg` — Configuration | 15 | 4 | 206 | 593 |
+| `cfg` — Configuration | 16 | 4 | 216 | 594 |
 | `ged` — GED | 1 | 0 | 26 | 224 |
+| `imp` — Importation de données (IMP) | 1 | 2 | 17 | 1 |
 | `m1` — M1 Patients & DMI | 6 | 0 | 156 | 427 |
 | `m10` — M10 Ressources humaines | 20 | 1 | 226 | 2986 |
 | `m11` — M11 Paie & primes | 4 | 0 | 66 | 15 |
@@ -266,6 +267,21 @@ Table fille `cfg.obligations_fiscales_redevances` — 2 lignes : id text, code t
 | Colonne | Champ | Type | Référence |
 |---|---|---|---|
 
+### `cfg.ressources` (collection « ressources », 1 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `libelle` | libelle | text |  |
+| `type` | type | text |  |
+| `usage` | usage | text |  |
+| `donnees` | donnees | text |  |
+| `fichier` | fichier | text |  |
+| `taille` | taille | integer |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
+
 ### `cfg.secteurs` (collection « secteurs », 14 fiches)
 
 | Colonne | Champ | Type | Référence |
@@ -344,6 +360,32 @@ Table fille `cfg.variables_imagerie_conditionnels` — 97 lignes : code text, qu
 | `code_rattachement` | codeRattachement | text |  |
 | `empreinte_balance` | empreinteBalance | text |  |
 | `manifeste_empreinte` | manifesteEmpreinte | text |  |
+
+### `imp.lots_importation` (collection « lotsImportation », 1 fiches)
+
+| Colonne | Champ | Type | Référence |
+|---|---|---|---|
+| `id` | id | text |  |
+| `statut` | statut | text |  |
+| `reference` | reference | text |  |
+| `jeu` | jeu | text |  |
+| `jeu_libelle` | jeuLibelle | text |  |
+| `fichier` | fichier | text |  |
+| `empreinte` | empreinte | text |  |
+| `date` | date | date |  |
+| `par` | par | text |  |
+| `valide_par` | validePar | text |  |
+| `etat` | etat | text |  |
+| `nb_lignes` | nbLignes | integer |  |
+| `nb_avertissements` | nbAvertissements | integer |  |
+| `nb_refus` | nbRefus | integer |  |
+| `erreurs_total` | erreursTotal | integer |  |
+| `cree_le` | _creeLe | timestamptz |  |
+| `cree_par` | _creePar | text |  |
+
+Table fille `imp.lots_importation_ecrits` — 1 lignes : collection text, id text
+
+Table fille `imp.lots_importation_erreurs` — 1 lignes : n integer, colonne text, valeur text, code text, niveau text, motif text, geste text
 
 ### `m10.assurances_personnel` (collection « assurancesPersonnel », 0 fiches)
 

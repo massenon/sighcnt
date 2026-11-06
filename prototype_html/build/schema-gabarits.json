@@ -1,0 +1,11 @@
+{
+  "_doc": "Gabarits de fiche des collections NOUVELLES qui n'ont encore aucune donnée dans le magasin d'entrée de build/gen-schema-pg.js (le générateur déduit les colonnes des données ; sans fiche, pas de table, et la projection nomme l'absence). Un gabarit est UNE fiche type, lue des écrans qui écrivent la collection (cité en `source`) ; il ne sert qu'à poser les colonnes, jamais de donnée. Dès qu'un magasin réel contient la collection, il fait foi et le gabarit est ignoré.",
+  "ressources": {
+    "source": "modules/configuration.js colRessources().insert (cfg-entetes, ressources graphiques)",
+    "fiche": { "id": "RES00001", "statut": "actif", "libelle": "Logo de la clinique", "type": "logo", "usage": "En-tête des états", "donnees": "data:image/png;base64,AAAA", "fichier": "logo.png", "taille": 1024, "_creeLe": "2026-11-06T09:00:00.000Z", "_creePar": "admin" }
+  },
+  "lotsImportation": {
+    "source": "modules/import.js consigner() et appliquer() (module IMP, lots d'importation)",
+    "fiche": { "id": "LIM00001", "statut": "actif", "reference": "IMP-2026-00001", "jeu": "grand-stock", "jeuLibelle": "Importation Grand Stock", "fichier": "stock.xlsx", "empreinte": "0000", "date": "2026-11-06", "par": "admin", "validePar": "admin", "etat": "applique", "nbLignes": 1, "nbAvertissements": 0, "nbRefus": 0, "ecrits": [{ "collection": "produits", "id": "P0001" }], "erreurs": [{ "n": 1, "colonne": "x", "valeur": "y", "code": "C", "niveau": "avertissement", "motif": "m", "geste": "g" }], "erreursTotal": 1, "_creeLe": "2026-11-06T09:00:00.000Z", "_creePar": "admin" }
+  }
+}

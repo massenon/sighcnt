@@ -11,7 +11,7 @@
 'use strict';
 const fs = require('fs');
 
-/* --seul=<fragment> (un _ vaut une espace) : ne joue que les scénarios dont le titre contient le fragment (un scénario seul, ou ceux d'un module),
+/* --seul=<fragment>[|<autre>…] (un _ vaut une espace) : ne joue que les scénarios dont le titre contient l'un des fragments, DANS L'ORDRE DU FICHIER (pour reproduire l'ordre d'une suite : --seul=Vague_79|Vague_80|Vague_81) (un scénario seul, ou ceux d'un module),
    sans les quatre-vingts autres. Le fichier est recomposé en mémoire : préambule + blocs retenus + restitution. */
 const SEUL = (process.argv.find((a) => a.startsWith('--seul=')) || '').slice(7).replace(/_/g, ' ');
 /* --sauf=Motif : tous les scénarios SAUF ceux dont le titre contient le motif (traits bas = espaces). Sert à mesurer le reste d'une suite dont un scénario est connu en échec. */
@@ -21,7 +21,7 @@ if ((SEUL || SAUF) && !process.env.SIGH_REDUIT) {
   const debuts = []; lignes.forEach((l, i) => { if (l === '  await etape(async () => {' && /^    scenario\(/.test(lignes[i + 1] || '')) debuts.push(i); });
   const fin = lignes.findIndex((l) => l === '  await browser.close();');
   const gardes = [];
-  debuts.forEach((d, k) => { if (SAUF ? lignes[d + 1].indexOf(SAUF) < 0 : lignes[d + 1].indexOf(SEUL) >= 0) gardes.push(lignes.slice(d, k + 1 < debuts.length ? debuts[k + 1] : fin)); });
+  debuts.forEach((d, k) => { if (SAUF ? lignes[d + 1].indexOf(SAUF) < 0 : SEUL.split('|').some((f) => lignes[d + 1].indexOf(f) >= 0)) gardes.push(lignes.slice(d, k + 1 < debuts.length ? debuts[k + 1] : fin)); });
   if (!gardes.length) { console.log('Aucun scénario ne contient « ' + (SEUL || SAUF) + ' ».'); process.exit(2); }
   // Un scénario isolé commence sur un document vide : une page est ouverte d'abord (les scénarios suivants héritent de la page du précédent).
   const ouverture = ["  await ouvrir('m14-roles.html');"];
@@ -11636,8 +11636,18 @@ async function viderMessages(page) {
     await pageB.goto(`http://127.0.0.1:${PORT}/pages/m1-patients.php`, { waitUntil: 'domcontentloaded' });
     await pageB.waitForFunction(() => window.SIGH && window.SIGH.app && window.SIGH.app.entry() && document.querySelector('#page-content') && document.querySelector('#page-content').children.length > 0, { timeout: 150000 });
 
-    const pastille = await page.evaluate(() => { const p = document.getElementById('pastille-sync'); return p ? p.textContent : null; });
-    verifier('La pastille d’état de la synchronisation est présente et dit « Synchronisé » sur un poste relié', /Synchronis/.test(pastille || ''), String(pastille));
+    /* ATTENTE BORNÉE DE LA CONDITION (E2266) : la pastille dit « Envoi en cours… » tant qu'un geste local part, et sous charge (quatre cœurs saturés)
+       l'envoi de la page ouverte à l'instant dure plus que l'instant. On interroge jusqu'à 15 s ; si elle ne se pose pas sur « Synchronisé », on DIT ce
+       qui a été lu à chaque relevé (une pastille qui ne revient jamais à « Synchronisé » reste un défaut). */
+    const lus = [];
+    let pastille = null;
+    for (let i = 0; i < 30; i++) {
+      pastille = await page.evaluate(() => { const p = document.getElementById('pastille-sync'); return p ? p.textContent : null; });
+      if (lus[lus.length - 1] !== String(pastille)) lus.push(String(pastille));
+      if (/Synchronis/.test(pastille || '')) break;
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    verifier('La pastille d’état de la synchronisation est présente et dit « Synchronisé » sur un poste relié (attente bornée à 15 s)', /Synchronis/.test(pastille || ''), 'relevés : ' + lus.join(' → '));
 
     const nom = 'SONDE-POSTE-' + Date.now().toString(36).toUpperCase();
     const t0 = Date.now();
@@ -12861,6 +12871,8 @@ async function viderMessages(page) {
     verifier('L’archive est IMMUABLE : modification, archivage et second dépôt de la même clôture refusés', r.modifie === false && r.archive === false && r.redepose === false, JSON.stringify([r.modifie, r.archive, r.redepose]));
     verifier('Chaque téléchargement vérifie l’empreinte : intact, livré ; altéré, REFUSÉ en le disant', r.lectureOk && r.altere && r.restaure, JSON.stringify([r.lectureOk, r.altere, r.restaure]));
     verifier('Après réouverture et seconde clôture, une SECONDE archive est déposée et la première reste intacte', r.rouvre && r.cl2 && r.nb2 === 2 && r.premiereIntacte && r.refs.join() === 'ARC-2040-01,ARC-2040-02', JSON.stringify([r.rouvre, r.cl2, r.cl2Motif, r.nb2, r.refs, r.premiereIntacte]));
+    /* Doctrine : un scénario qui change de RÔLE le RESTAURE. Celui-ci s'achevait sous « da » et le suivant héritait d'une session qu'il n'avait pas choisie (E2265). */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), ADMIN);
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
@@ -13232,7 +13244,7 @@ async function viderMessages(page) {
     await attendreEcritures();
     verifier('Le scénario restaure l’état : identité v1 d’origine non validée, obligations et ORTB d’origine (CCIB-2 le 10, seuil 60 000), historique vide, CCIB-2 payée, session rendue',
       fin.slogan === 'Votre santé, notre raison de vivre' && fin.rccm === 'RB/NAT/2016-B-268' && fin.tel === 2 && fin.etatI === 'a_valider' && fin.etatO === 'a_valider'
-      && fin.versions === 1 && fin.ccib2 && fin.ccib2Actives === 1 && fin.itsActives === 12 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === 'admin',
+      && fin.versions === 1 && fin.ccib2 && fin.ccib2Actives === 1 && fin.itsActives === 12 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === sauve.etat.session.role,
       JSON.stringify(fin));
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   });

@@ -10,6 +10,8 @@ CREATE SCHEMA IF NOT EXISTS "cfg";
 COMMENT ON SCHEMA "cfg" IS 'Configuration';
 CREATE SCHEMA IF NOT EXISTS "ged";
 COMMENT ON SCHEMA "ged" IS 'GED';
+CREATE SCHEMA IF NOT EXISTS "imp";
+COMMENT ON SCHEMA "imp" IS 'Importation de données (IMP)';
 CREATE SCHEMA IF NOT EXISTS "m1";
 COMMENT ON SCHEMA "m1" IS 'M1 Patients & DMI';
 CREATE SCHEMA IF NOT EXISTS "m10";
@@ -348,6 +350,22 @@ CREATE TABLE IF NOT EXISTS "cfg"."rappels" (
   "extra" jsonb
 );
 COMMENT ON TABLE "cfg"."rappels" IS 'Collection « rappels » — Configuration';
+CREATE TABLE IF NOT EXISTS "cfg"."ressources" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "libelle" text,
+  "type" text,
+  "usage" text,
+  "donnees" text,
+  "fichier" text,
+  "taille" integer,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."ressources" IS 'Collection « ressources » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_ressources_statut" ON "cfg"."ressources" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_ressources_type" ON "cfg"."ressources" ("type");
 CREATE TABLE IF NOT EXISTS "cfg"."secteurs" (
   "id" text PRIMARY KEY,
   "code" text,
@@ -441,6 +459,56 @@ COMMENT ON TABLE "ged"."documents" IS 'Collection « documents » — GED';
 CREATE INDEX IF NOT EXISTS "ix_documents_date" ON "ged"."documents" ("date");
 CREATE INDEX IF NOT EXISTS "ix_documents_statut" ON "ged"."documents" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_documents_reference" ON "ged"."documents" ("reference");
+CREATE TABLE IF NOT EXISTS "imp"."lots_importation" (
+  "id" text PRIMARY KEY,
+  "statut" text,
+  "reference" text,
+  "jeu" text,
+  "jeu_libelle" text,
+  "fichier" text,
+  "empreinte" text,
+  "date" date,
+  "par" text,
+  "valide_par" text,
+  "etat" text,
+  "nb_lignes" integer,
+  "nb_avertissements" integer,
+  "nb_refus" integer,
+  "erreurs_total" integer,
+  "cree_le" timestamptz,
+  "cree_par" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "imp"."lots_importation" IS 'Collection « lotsImportation » — Importation de données (IMP)';
+CREATE INDEX IF NOT EXISTS "ix_lots_importation_statut" ON "imp"."lots_importation" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_lots_importation_reference" ON "imp"."lots_importation" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_lots_importation_date" ON "imp"."lots_importation" ("date");
+CREATE INDEX IF NOT EXISTS "ix_lots_importation_etat" ON "imp"."lots_importation" ("etat");
+CREATE TABLE IF NOT EXISTS "imp"."lots_importation_ecrits" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "collection" text,
+  "id" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "imp"."lots_importation" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "imp"."lots_importation_ecrits" IS 'Lignes « ecrits » de « lotsImportation »';
+CREATE TABLE IF NOT EXISTS "imp"."lots_importation_erreurs" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "n" integer,
+  "colonne" text,
+  "valeur" text,
+  "code" text,
+  "niveau" text,
+  "motif" text,
+  "geste" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "imp"."lots_importation" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "imp"."lots_importation_erreurs" IS 'Lignes « erreurs » de « lotsImportation »';
 CREATE TABLE IF NOT EXISTS "m10"."assurances_personnel" (
   "_rang" integer PRIMARY KEY,
   "extra" jsonb

@@ -53,12 +53,12 @@ const MODULE_PAR_DEFAUT = { ambulance: 'M13', assureurs: 'M9', audit: 'M14', com
   lots: 'M6', planificationFamiliale: 'M4', ptme: 'M4', registreSONU: 'M4', reunions: 'M13', soins: 'M2', soinsCuratifsMaternite: 'M4' };
 Object.keys(MODULE_PAR_DEFAUT).forEach((n) => { if (!MODULE_DE[n]) MODULE_DE[n] = MODULE_PAR_DEFAUT[n]; });
 const SCHEMAS = { M1: 'm1', M2: 'm2', M3: 'm3', M4: 'm4', M5: 'm5', M6: 'm6', M7: 'm7', M8: 'm8', M9: 'm9', M10: 'm10', M11: 'm11',
-  M12: 'm12', M13: 'm13', M14: 'm14', MECEF: 'mecef', GED: 'ged', RAP: 'rap', PIL: 'pil', CFG: 'cfg', DASH: 'dash', AUTH: 'auth', SUP: 'sup' };
+  M12: 'm12', M13: 'm13', M14: 'm14', MECEF: 'mecef', GED: 'ged', RAP: 'rap', PIL: 'pil', CFG: 'cfg', DASH: 'dash', AUTH: 'auth', SUP: 'sup', IMP: 'imp' };
 const LIBELLE_MODULE = { m1: 'M1 Patients & DMI', m2: 'M2 RDV, visites, consultations, imagerie', m3: 'M3 Hospitalisation & bloc', m4: 'M4 Maternité, naissances, décès',
   m5: 'M5 Laboratoire', m6: 'M6 Pharmacie & stocks', m7: 'M7 Achats & fournisseurs', m8: 'M8 Facturation & caisse', m9: 'M9 Assurances & créances',
   m10: 'M10 Ressources humaines', m11: 'M11 Paie & primes', m12: 'M12 Comptabilité SYSCOHADA', m13: 'M13 Administration & ambulance',
   m14: 'M14 Sécurité & audit', mecef: 'MECeF', ged: 'GED', rap: 'Rapports', pil: 'Pilotage', cfg: 'Configuration', dash: 'Tableaux de bord',
-  auth: 'Authentification', sup: 'Support', socle: 'Socle commun (référentiels lus par plusieurs modules)' };
+  auth: 'Authentification', sup: 'Support', imp: 'Importation de données (IMP)', socle: 'Socle commun (référentiels lus par plusieurs modules)' };
 function schemaDe(nom) { return SCHEMAS[MODULE_DE[nom]] || 'socle'; }
 
 /* --- Noms ------------------------------------------------------------------ */
@@ -126,6 +126,17 @@ function analyser(lignes) {
 /* --- Construction ----------------------------------------------------------- */
 /* Une collection dont aucune entrée n'est un objet (liste de codes, de chaînes) n'a rien à mettre en colonnes. */
 const estFiche = (r) => r && typeof r === 'object' && !Array.isArray(r);
+/* GABARITS (build/schema-gabarits.json) : pour une collection NOUVELLE sans aucune fiche dans le magasin d'entrée, une fiche type déclarée pose les colonnes.
+   Un magasin qui contient la collection fait foi, et le gabarit est alors ignoré. */
+(function () {
+  let g = {};
+  try { g = JSON.parse(fs.readFileSync(path.join(__dirname, 'schema-gabarits.json'), 'utf8')); } catch (e) { g = {}; }
+  Object.keys(g).forEach((n) => {
+    if (n.charAt(0) === '_' || !g[n] || !g[n].fiche) return;
+    const vide = !Array.isArray(magasin[n]) || !magasin[n].some((r) => r && typeof r === 'object' && !Array.isArray(r));
+    if (vide && !PREC[n]) magasin[n] = [g[n].fiche];
+  });
+})();
 const IGNOREES = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && magasin[n].length && !magasin[n].some(estFiche)).sort();
 const aDesFiches = (n) => Array.isArray(magasin[n]) && magasin[n].some(estFiche);
 const noms = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && IGNOREES.indexOf(n) < 0).sort();
