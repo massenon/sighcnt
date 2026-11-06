@@ -50,15 +50,18 @@ class RecuperationCleTest extends TestCase
         return ['v' => 1, 'kdf' => 'PBKDF2-SHA256', 'iter' => 200000, 'sel' => base64_encode($sel), 'nonce' => base64_encode($nonce), 'ct' => base64_encode($ct.$tag)];
     }
 
-    private function activer(): void
+    private function activer(string $adresse = 'aide@clinique.bj'): void
     {
         DB::table('relais_meta')->updateOrInsert(['k' => 'cle_recup_actif'], ['v' => '1']);
+        if ($adresse !== '') {
+            DB::table('relais_meta')->updateOrInsert(['k' => 'cle_recup_courriel'], ['v' => $adresse]);
+        }
     }
 
     public function test_reglage_desactive_refus_nomme_et_rien_n_est_envoye(): void
     {
         $h = $this->appareil();
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre()], $h)
             ->assertStatus(409)->assertJsonPath('code', 'recuperation_desactivee');
         $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
     }
@@ -66,8 +69,8 @@ class RecuperationCleTest extends TestCase
     public function test_appareil_inconnu_refuse(): void
     {
         $this->activer();
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()])->assertStatus(401);
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], ['Authorization' => 'Bearer x.y'])->assertStatus(401);
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre()])->assertStatus(401);
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre()], ['Authorization' => 'Bearer x.y'])->assertStatus(401);
     }
 
     public function test_cle_nue_refusee_comme_coffre(): void
@@ -75,8 +78,8 @@ class RecuperationCleTest extends TestCase
         $this->activer();
         $h = $this->appareil();
         $cle = bin2hex(random_bytes(32));
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $cle], $h)->assertStatus(422)->assertJsonPath('code', 'coffre_invalide');
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => ['v' => 1, 'cle' => $cle]], $h)->assertStatus(422)->assertJsonPath('code', 'coffre_invalide');
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $cle], $h)->assertStatus(422)->assertJsonPath('code', 'coffre_invalide');
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => ['v' => 1, 'cle' => $cle]], $h)->assertStatus(422)->assertJsonPath('code', 'coffre_invalide');
         $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
     }
 
@@ -84,16 +87,40 @@ class RecuperationCleTest extends TestCase
     {
         $this->activer();
         $h = $this->appareil();
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre(), 'phrase' => 'une phrase assez longue'], $h)->assertStatus(422)->assertJsonPath('code', 'secret_en_clair');
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre(), 'cle' => bin2hex(random_bytes(32))], $h)->assertStatus(422)->assertJsonPath('code', 'secret_en_clair');
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre(), 'phrase' => 'une phrase assez longue'], $h)->assertStatus(422)->assertJsonPath('code', 'secret_en_clair');
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre(), 'cle' => bin2hex(random_bytes(32))], $h)->assertStatus(422)->assertJsonPath('code', 'secret_en_clair');
         $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
     }
 
-    public function test_courriel_invalide_refuse(): void
+    public function test_un_destinataire_choisi_par_l_appareil_est_refuse_et_rien_ne_part(): void
     {
-        $this->activer();
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'pas-un-courriel', 'coffre' => $this->coffre()], $this->appareil())->assertStatus(422)->assertJsonPath('code', 'courriel_invalide');
-        $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
+        $this->activer('aide@clinique.bj');
+        $h = $this->appareil();
+        foreach (['pirate@exemple.org', 'pas-un-courriel'] as $autre) {
+            $this->postJson('/recuperation/envoyer', ['courriel' => $autre, 'coffre' => $this->coffre()], $h)
+                ->assertStatus(422)->assertJsonPath('code', 'destinataire_non_autorise');
+        }
+        $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir vers une adresse non enregistrée');
+    }
+
+    public function test_sans_adresse_enregistree_refus_nomme_409_et_rien_ne_part(): void
+    {
+        $this->activer('');
+        $h = $this->appareil();
+        $this->postJson('/recuperation/envoyer', ['coffre' => $this->coffre()], $h)
+            ->assertStatus(409)->assertJsonPath('code', 'adresse_non_enregistree');
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'pirate@exemple.org', 'coffre' => $this->coffre()], $h)
+            ->assertStatus(409)->assertJsonPath('code', 'adresse_non_enregistree');
+        $this->assertCount(0, $this->messagesRecus());
+    }
+
+    public function test_le_destinataire_est_l_adresse_enregistree_meme_sans_courriel_dans_la_demande(): void
+    {
+        $this->activer('aide@clinique.bj');
+        $this->postJson('/recuperation/envoyer', ['coffre' => $this->coffre()], $this->appareil())->assertOk()->assertJsonPath('envoye', true);
+        $messages = $this->messagesRecus();
+        $this->assertCount(1, $messages);
+        $this->assertSame(['RCPT TO:<aide@clinique.bj>'], $messages[0]['a']);
     }
 
     public function test_le_courriel_ne_contient_que_le_coffre(): void
@@ -129,9 +156,9 @@ class RecuperationCleTest extends TestCase
         $this->activer();
         $h = $this->appareil();
         for ($i = 0; $i < 3; $i++) {
-            $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)->assertOk();
+            $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre()], $h)->assertOk();
         }
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)->assertStatus(429)->assertJsonPath('code', 'trop_de_demandes');
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre()], $h)->assertStatus(429)->assertJsonPath('code', 'trop_de_demandes');
         $this->assertCount(3, $this->messagesRecus());
     }
 
@@ -140,7 +167,7 @@ class RecuperationCleTest extends TestCase
         DB::table('relais_meta')->where('k', 'like', 'smtp_%')->delete();
         $this->activer();
         $h = $this->appareil();
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre()], $h)
             ->assertStatus(409)->assertJsonPath('code', 'smtp_non_configure');
         $this->assertCount(0, $this->messagesRecus());
         $this->assertSame(0, DB::table('relais_audit')->where('action', 'cle_coffre_envoye_par_poste')->count(), 'aucun « envoyé » ne doit être journalisé');
@@ -151,7 +178,7 @@ class RecuperationCleTest extends TestCase
         $this->arreterPuits();
         $this->activer();
         $h = $this->appareil();
-        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'aide@clinique.bj', 'coffre' => $this->coffre()], $h)
             ->assertStatus(502)->assertJsonPath('code', 'envoi_echoue')->assertJsonPath('etape', 'connexion');
         $this->assertSame(0, DB::table('relais_audit')->where('action', 'cle_coffre_envoye_par_poste')->count());
         $this->assertSame(1, DB::table('relais_audit')->where('action', 'cle_coffre_envoi_echoue')->count());

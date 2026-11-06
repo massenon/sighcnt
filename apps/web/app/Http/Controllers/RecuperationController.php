@@ -59,9 +59,15 @@ class RecuperationController extends Controller
         if ($r->has('phrase') || $r->has('cle')) {
             return $this->refus(422, 'secret_en_clair', 'La clé et la phrase secrète ne doivent jamais être envoyées au relais : seul le coffre l\'est.');
         }
-        $courriel = mb_strtolower(trim((string) $r->input('courriel')));
+        // Le DESTINATAIRE n'est jamais choisi par l'appareil : c'est l'adresse de récupération enregistrée par le superadmin avec le réglage. Un appareil appairé
+        // ne peut donc pas faire partir un coffre vers une adresse de son choix. Sans adresse enregistrée, rien ne part.
+        $courriel = mb_strtolower(trim((string) DB::table('relais_meta')->where('k', 'cle_recup_courriel')->value('v')));
         if (! filter_var($courriel, FILTER_VALIDATE_EMAIL)) {
-            return $this->refus(422, 'courriel_invalide', 'Un courriel valide est nécessaire.');
+            return $this->refus(409, 'adresse_non_enregistree', 'Aucune adresse de récupération n\'est enregistrée sur ce relais : le superadmin doit l\'enregistrer dans ses paramètres.');
+        }
+        $demande = mb_strtolower(trim((string) $r->input('courriel')));
+        if ($demande !== '' && $demande !== $courriel) {
+            return $this->refus(422, 'destinataire_non_autorise', 'Le coffre ne part qu\'à l\'adresse de récupération enregistrée par le superadmin.');
         }
         if (! ConsultationController::coffreValide($r->input('coffre'))) {
             return $this->refus(422, 'coffre_invalide', 'Seul un coffre (la clé chiffrée par une phrase secrète d\'au moins 12 caractères) est accepté, jamais la clé elle-même.');
