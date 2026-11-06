@@ -1237,10 +1237,11 @@ class _EtatConfig extends State<EcranMecefConfig> {
                     }
                     mag.journaliser('Modification', 'MECEF',
                         'ConfigurationFiscale', 'CONFIG', null, v);
-                    ToastsSigh.afficher(context, 'Paramètres fiscaux enregistrés.',
-                        type: TypeToast.succes,
+                    // Aucune collection n'est écrite (écart E13) : le toast ne promet donc pas d'effet sur les factures à venir.
+                    ToastsSigh.afficher(context, 'Saisie journalisée, non appliquée.',
+                        type: TypeToast.attention,
                         detail:
-                            'Ces valeurs alimenteront toutes les prochaines factures normalisées.');
+                            'Simulation (E13) : les paramètres fiscaux ne sont pas conservés et les factures normalisées continuent d’utiliser les valeurs de référence.');
                   }),
             BoutonSigh(
                 libelle: 'Tester la connexion au dispositif',

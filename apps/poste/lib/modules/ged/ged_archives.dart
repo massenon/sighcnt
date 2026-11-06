@@ -169,27 +169,26 @@ class EcranArchivesGed extends StatelessWidget with EcranMaquette {
                         ? const BadgeSigh('Archive définitive')
                         : const BadgeSigh('Archive active', ton: TonSigh.succes)),
               ],
+              // E566 corrigé : les champs du formulaire sont ceux que l'écran LIT (libelle, categorie en liste fermée, conservation),
+              // comme la maquette. Les anciens champs (titre, dureeConservation, emplacement, observations) n'étaient relus nulle part.
               actionsLigne: (ctx, d) => actionsFiche(context,
                   collection: col,
                   fiche: d,
-                  champs: (_) => const [
-                        ChampDef(
-                            nom: 'titre',
-                            libelle: 'Titre du document',
+                  champs: (_) => [
+                        const ChampDef(
+                            nom: 'libelle',
+                            libelle: 'Libellé du document',
                             requis: true,
                             col: ColChamp.plein),
-                        ChampDef(nom: 'categorie', libelle: 'Catégorie'),
                         ChampDef(
-                            nom: 'dureeConservation',
+                            nom: 'categorie',
+                            libelle: 'Catégorie',
+                            type: TypeChamp.select,
+                            options: [for (final c in qualGedCategories) OptionChamp(c.$1, c.$2)]),
+                        const ChampDef(
+                            nom: 'conservation',
                             libelle: 'Durée de conservation (années)',
                             type: TypeChamp.nombre),
-                        ChampDef(nom: 'emplacement', libelle: 'Emplacement physique'),
-                        ChampDef(
-                            nom: 'observations',
-                            libelle: 'Observations',
-                            type: TypeChamp.textarea,
-                            lignes: 2,
-                            col: ColChamp.plein),
                       ]),
               actions: [
                 BoutonSigh(

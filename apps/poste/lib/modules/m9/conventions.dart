@@ -375,7 +375,11 @@ class _OngletSouscripteurs extends StatelessWidget {
                   entite: 'Souscripteur',
                   record: s,
                   identifiant: (x) => '${x['nom'] ?? ''}',
-                  versFiche: _souscripteurSaisi,
+                  // La compagnie dérivée (`assureurNom`) suit la compagnie choisie : le tiroir, l'onglet Grilles et la convention imprimée la lisent.
+                  versFiche: (s) => {
+                        ..._souscripteurSaisi(s),
+                        'assureurNom': assNomAssureur('${s['assureur']}', assureurs),
+                      },
                   detailMessage: false)),
       ],
     );

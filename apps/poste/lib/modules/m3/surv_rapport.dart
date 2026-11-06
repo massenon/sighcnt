@@ -91,14 +91,12 @@ class EcranRapport extends StatelessWidget with EcranMaquette {
             k: r[k] ?? ''
         };
 
-  /// Création : la fiche complète (identité recopiée du patient) ; modification : le correctif — exactement les valeurs du formulaire (E381).
+  /// Création : la fiche complète (identité recopiée du patient) ; modification : les dérivés (patient, âge, sexe, adresse, téléphone, médecin) sont
+  /// RECALCULÉS depuis les valeurs saisies, sinon un changement de patient ou de médecin laissait l'ancien nom au registre et sur la pièce imprimée (E381 soldé ici ;
+  /// la maquette porte encore le défaut).
   static Fiche construire(Magasin m, CollectionMagasin col, Map<String, Object?> v, Fiche? r, DateTime maintenant) {
-    if (r != null) return {...v};
     final pt = patientParCode(m, v['patientCode']);
-    return {
-      'statut': 'actif',
-      ...v,
-      'reference': referenceSuivante('RAP-', 4, col.toutes),
+    final derives = {
       'patientId': pt?['id'],
       'patient': pt != null ? '${pt['nom']} ${pt['prenom']}' : v['patientCode'],
       'age': pt != null ? ageAnnees(pt['dateNaissance'], maintenant) : null,
@@ -106,6 +104,13 @@ class EcranRapport extends StatelessWidget with EcranMaquette {
       'adresse': pt?['quartier'],
       'telephone': pt?['telephone'],
       'medecin': nomSoignant(m, v['medecinId']),
+    };
+    if (r != null) return {...v, ...derives};
+    return {
+      'statut': 'actif',
+      ...v,
+      'reference': referenceSuivante('RAP-', 4, col.toutes),
+      ...derives,
     };
   }
 

@@ -270,6 +270,16 @@ class EcranDocuments extends StatelessWidget with EcranMaquette {
                   taillePage: 15,
                   messageVide: 'Aucun enregistrement.',
                   champs: champs,
+                  // Le dossier peut changer à l'édition : `code` et `patient` (posés à la création) suivent `patientId`, sinon les colonnes gardent l'ancien patient.
+                  transformer: (cc, saisie, existante) {
+                    if (existante == null) return saisie;
+                    final p = cc.magasin.collection('patients').parId(saisie['patientId']);
+                    return {
+                      ...saisie,
+                      'code': p?['code'],
+                      'patient': p != null ? '${p['nom']} ${p['prenom']}' : '—',
+                    };
+                  },
                   libelleArchiver: 'Retirer du dossier',
                   messageArchive: 'Document retiré du dossier.',
                   titreArchivage: (f) => 'Retirer « ${f['type']} » du dossier ?',
