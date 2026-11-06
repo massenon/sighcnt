@@ -16,7 +16,7 @@
  * Ce qui est appliqué sans la mère est PROVISOIRE : une fiche touchée par une opération sans `seq` (attribué par la mère) l'est.
  * ========================================================================== */
 
-const FAMILLES = { patients: 'A', rendezvous: 'A', constantes: 'B', notes: 'B', factures: 'C', prescriptions: 'C', stock: 'D', besoins: 'W',
+const FAMILLES = { patients: 'A', rendezvous: 'A', constantes: 'B', notes: 'B', factures: 'C', avoirs: 'C', ecritures: 'C', prescriptions: 'C', stock: 'D', besoins: 'W',
   consultations: 'A', dossiersConsultation: 'A', antecedents: 'A', appels: 'A', observations: 'A', releves: 'B' };
 
 /** Ordre total identique sur tous les appareils. */
@@ -64,12 +64,14 @@ function etat(ops, droits = () => true) {
     // A et C
     if (op.type === 'creer') {
       if (f) { marque(E, op, 'fiche_existe', 'Fiche déjà présente.'); continue; }
+      // un AVOIR est le seul canal de correction d'une pièce émise : il vise une facture ÉMISE, et le cumul des avoirs ne dépasse jamais la facture
+      if (op.collection === 'avoirs' && !avoirValide(E, op)) continue;
       E.fiches[k] = { data: { ...op.champs }, hlc: Object.fromEntries(Object.keys(op.champs).map((c) => [c, op.hlc])), archive: false, emise: false };
       continue;
     }
     if (!f) { marque(E, op, 'fiche_inconnue', k); continue; }
     if (op.type === 'archiver' || op.type === 'restaurer') { f.archive = op.type === 'archiver'; continue; }
-    if (fam === 'C' && op.type === 'emettre') { f.emise = true; continue; }
+    if (fam === 'C' && op.type === 'emettre') { emettre(E, op, f, k); continue; }
     /* TRANCHER (la personne habilitée, ou la mère à son retour) : la valeur choisie remplace celle retenue par l'ordre total et le conflit marqué est levé.
        Un conflit qui naît APRÈS cette décision dans l'ordre total reste marqué : on ne tranche que ce qui a été vu. */
     if (op.type === 'trancher') {
@@ -96,6 +98,41 @@ function etat(ops, droits = () => true) {
   }
   E.conflits.sort((x, y) => (x.fiche + x.champ).localeCompare(y.fiche + y.champ));
   return E;
+}
+
+/* C : l'ÉMISSION d'une pièce certifiante. Le numéro, une fois posé, ne se réécrit jamais ; un numéro porté par deux pièces émises est MARQUÉ (`doublon`) sur les deux et
+   n'est jamais renuméroté (RG-01, pièce émise intouchable) : la Direction ou le comptable tranche. Une écriture ne s'émet que ÉQUILIBRÉE (RG-10). */
+function emettre(E, op, f, k) {
+  const numero = op.champs && op.champs.numero !== undefined ? op.champs.numero : null;
+  if (f.archive) return marque(E, op, 'fiche_archivee', 'Restaurer d’abord (RG-14).');
+  if (f.emise) {
+    if (numero !== null && numero !== f.numero) return marque(E, op, 'numero_immuable', 'Le numéro d’une pièce émise ne se réécrit jamais.');
+    return;
+  }
+  if (op.collection === 'ecritures' && !equilibree(f.data.lignes)) return marque(E, op, 'ecriture_desequilibree', 'Débit et crédit doivent s’égaler (RG-10) avant l’émission.');
+  f.emise = true;
+  if (numero !== null) {
+    f.numero = numero;
+    for (const [autre, g] of Object.entries(E.fiches)) {
+      if (autre !== k && autre.startsWith(op.collection + '/') && g.emise && g.numero === numero) { f.doublon = true; g.doublon = true; }
+    }
+  }
+}
+function equilibree(lignes) {
+  if (!Array.isArray(lignes) || lignes.length < 2) return false;
+  let d = 0, c = 0;
+  for (const l of lignes) { d += +l.debit || 0; c += +l.credit || 0; }
+  return d > 0 && Math.round(d * 100) === Math.round(c * 100);
+}
+function avoirValide(E, op) {
+  const cibleK = 'factures/' + op.champs.facture;
+  const facture = E.fiches[cibleK];
+  if (!facture || !facture.emise) { marque(E, op, 'avoir_sans_facture_emise', 'Un avoir vise une facture émise : ' + cibleK); return false; }
+  const montant = +op.champs.montant || 0;
+  const deja = facture.avoirs || 0;
+  if (montant <= 0 || deja + montant > (+facture.data.total || 0)) { marque(E, op, 'avoir_depasse', `Avoirs cumulés ${deja + montant} au-delà de la facture (${facture.data.total}).`); return false; }
+  facture.avoirs = deja + montant;
+  return true;
 }
 
 /* D : ouverture et entrées par un rôle habilité ; la PART d'un appareil est un bail accordé ; une sortie hors part n'est JAMAIS appliquée (RG-03). */
@@ -148,6 +185,8 @@ const DROITS_BANC = {
   constantes: { '*': ['infirmier', 'medecin', 'x'] },
   notes: { '*': ['infirmier', 'medecin', 'x'] },
   factures: { '*': ['caissier', 'da', 'x'], trancher: ['da', 'mere'] },
+  avoirs: { '*': ['comptable', 'da', 'x'], trancher: ['da', 'mere'] },
+  ecritures: { '*': ['comptable', 'da', 'x'], trancher: ['da', 'mere'] },
   prescriptions: { '*': ['medecin', 'x'] },
   consultations: { '*': ['medecin', 'da', 'x'], trancher: ['da', 'mere'] },
   dossiersConsultation: { '*': ['medecin', 'x'], trancher: ['da', 'mere'] },

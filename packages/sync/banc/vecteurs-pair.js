@@ -67,6 +67,25 @@ ajouter('collection releves (journal) : ajout seul, deux postes, rôle sans droi
   op('F3', 2, 'releves', 'r3', 'creer', { t: 39 }, { role: 'caissier' }), op('F1', 3, 'releves', 'r1', 'modifier', { t: 40 }, { role: 'infirmier' }),
 ]);
 
+/* pièces certifiantes (famille C) : numérotation, doublon marqué, avoir, écriture équilibrée */
+const lg = [{ compte: '571', debit: 100, credit: 0 }, { compte: '706', debit: 0, credit: 100 }];
+ajouter('numéros en double : marqués sur les deux pièces, jamais renumérotés', [
+  op('F1', 1, 'factures', 'f1', 'creer', { total: 10 }, { role: 'caissier' }), op('F1', 2, 'factures', 'f1', 'emettre', { numero: 'FAC-1' }, { role: 'caissier' }),
+  op('F2', 1, 'factures', 'f2', 'creer', { total: 20 }, { role: 'caissier' }), op('F2', 3, 'factures', 'f2', 'emettre', { numero: 'FAC-1' }, { role: 'caissier' }),
+  op('F2', 4, 'factures', 'f2', 'emettre', { numero: 'FAC-9' }, { role: 'caissier' }),
+]);
+ajouter('écriture : émission refusée si déséquilibrée, acceptée équilibrée ; une seule ligne refusée', [
+  op('F1', 1, 'ecritures', 'e1', 'creer', { lignes: [{ compte: '571', debit: 100, credit: 0 }, { compte: '706', debit: 0, credit: 90 }] }, { role: 'comptable' }), op('F1', 2, 'ecritures', 'e1', 'emettre', { numero: 'OD-1' }, { role: 'comptable' }),
+  op('F1', 3, 'ecritures', 'e2', 'creer', { lignes: lg }, { role: 'comptable' }), op('F1', 4, 'ecritures', 'e2', 'emettre', { numero: 'OD-2' }, { role: 'comptable' }),
+  op('F2', 5, 'ecritures', 'e3', 'creer', { lignes: [{ compte: '571', debit: 5, credit: 5 }] }, { role: 'comptable' }), op('F2', 6, 'ecritures', 'e3', 'emettre', {}, { role: 'comptable' }),
+]);
+ajouter('avoir : facture non émise refusée, cumul plafonné, canal de correction d\'une pièce émise', [
+  op('F1', 1, 'factures', 'f1', 'creer', { total: 100 }, { role: 'caissier' }), op('F2', 2, 'avoirs', 'a0', 'creer', { facture: 'f1', montant: 5 }, { role: 'comptable' }),
+  op('F1', 3, 'factures', 'f1', 'emettre', { numero: 'FAC-1' }, { role: 'caissier' }),
+  op('F2', 4, 'avoirs', 'a1', 'creer', { facture: 'f1', montant: 60 }, { role: 'comptable' }), op('F3', 5, 'avoirs', 'a2', 'creer', { facture: 'f1', montant: 50 }, { role: 'comptable' }),
+  op('F1', 6, 'factures', 'f1', 'modifier', { total: 1 }, { role: 'caissier', vu: { total: 1 } }),
+]);
+
 /* cas engendrés (graine fixe) : mélange de familles, rôles valides ou non, hlc égaux entre appareils, doublons */
 let s = 20261105;
 const alea = (m) => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s % m; };

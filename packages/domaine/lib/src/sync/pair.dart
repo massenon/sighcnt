@@ -20,6 +20,8 @@ const Map<String, String> famillesPair = {
   'constantes': 'B',
   'notes': 'B',
   'factures': 'C',
+  'avoirs': 'C',
+  'ecritures': 'C',
   'prescriptions': 'C',
   'stock': 'D',
   'besoins': 'W',
@@ -136,6 +138,68 @@ class EtatPair {
       };
 }
 
+num _nombre(Object? v) => v is num ? v : (v is String ? (num.tryParse(v) ?? 0) : 0);
+
+/// C : l'ÉMISSION d'une pièce certifiante. Le numéro, une fois posé, ne se réécrit jamais ; un numéro porté par deux pièces émises est MARQUÉ (`doublon`) sur les
+/// deux et n'est jamais renuméroté (RG-01, pièce émise intouchable). Une écriture ne s'émet que ÉQUILIBRÉE (RG-10).
+void _emettre(EtatPair e, OperationPair op, Map<String, Object?> f, String k) {
+  final numero = op.champs.containsKey('numero') ? op.champs['numero'] : null;
+  if (f['archive'] == true) {
+    e.refusees.add(RefusPair(op.id, op.appareil, 'fiche_archivee', 'Restaurer d’abord (RG-14).'));
+    return;
+  }
+  if (f['emise'] == true) {
+    if (numero != null && jsonEncode(numero) != jsonEncode(f['numero'])) {
+      e.refusees.add(RefusPair(op.id, op.appareil, 'numero_immuable', 'Le numéro d’une pièce émise ne se réécrit jamais.'));
+    }
+    return;
+  }
+  if (op.collection == 'ecritures' && !_equilibree((f['data']! as Map<String, Object?>)['lignes'])) {
+    e.refusees.add(RefusPair(op.id, op.appareil, 'ecriture_desequilibree', 'Débit et crédit doivent s’égaler (RG-10) avant l’émission.'));
+    return;
+  }
+  f['emise'] = true;
+  if (numero != null) {
+    f['numero'] = numero;
+    for (final en in e.fiches.entries) {
+      final g = en.value;
+      if (en.key != k && en.key.startsWith('${op.collection}/') && g['emise'] == true && jsonEncode(g['numero']) == jsonEncode(numero)) {
+        f['doublon'] = true;
+        g['doublon'] = true;
+      }
+    }
+  }
+}
+
+bool _equilibree(Object? lignes) {
+  if (lignes is! List || lignes.length < 2) return false;
+  num d = 0, c = 0;
+  for (final l in lignes) {
+    final m = l as Map;
+    d += _nombre(m['debit']);
+    c += _nombre(m['credit']);
+  }
+  return d > 0 && (d * 100).round() == (c * 100).round();
+}
+
+bool _avoirValide(EtatPair e, OperationPair op) {
+  final cibleK = 'factures/${op.champs['facture']}';
+  final facture = e.fiches[cibleK];
+  if (facture == null || facture['emise'] != true) {
+    e.refusees.add(RefusPair(op.id, op.appareil, 'avoir_sans_facture_emise', 'Un avoir vise une facture émise : $cibleK'));
+    return false;
+  }
+  final montant = _nombre(op.champs['montant']);
+  final deja = _nombre(facture['avoirs']);
+  final total = _nombre((facture['data']! as Map<String, Object?>)['total']);
+  if (montant <= 0 || deja + montant > total) {
+    e.refusees.add(RefusPair(op.id, op.appareil, 'avoir_depasse', 'Avoirs cumulés ${deja + montant} au-delà de la facture ($total).'));
+    return false;
+  }
+  facture['avoirs'] = deja + montant;
+  return true;
+}
+
 String _cle(OperationPair o) => '${o.collection}/${o.fiche}';
 
 num _quantite(OperationPair o) {
@@ -203,6 +267,8 @@ EtatPair etatPair(Iterable<OperationPair> ops, {DroitsOperation? droits}) {
         e.refusees.add(RefusPair(op.id, op.appareil, 'fiche_existe', 'Fiche déjà présente.'));
         continue;
       }
+      // un AVOIR est le seul canal de correction d'une pièce émise : il vise une facture ÉMISE, et le cumul des avoirs ne dépasse jamais la facture
+      if (op.collection == 'avoirs' && !_avoirValide(e, op)) continue;
       e.fiches[k] = {
         'data': {...op.champs},
         'hlc': {for (final c in op.champs.keys) c: op.hlc},
@@ -220,7 +286,7 @@ EtatPair etatPair(Iterable<OperationPair> ops, {DroitsOperation? droits}) {
       continue;
     }
     if (fam == 'C' && op.type == 'emettre') {
-      f['emise'] = true;
+      _emettre(e, op, f, k);
       continue;
     }
     // TRANCHER (la personne habilitée, ou la mère à son retour) : la valeur choisie remplace celle de l'ordre total et le conflit marqué est levé.
@@ -374,6 +440,8 @@ const Map<String, Map<String, List<String>>> droitsBancPair = {
   'constantes': {'*': ['infirmier', 'medecin', 'x']},
   'notes': {'*': ['infirmier', 'medecin', 'x']},
   'factures': {'*': ['caissier', 'da', 'x'], 'trancher': ['da', 'mere']},
+  'avoirs': {'*': ['comptable', 'da', 'x'], 'trancher': ['da', 'mere']},
+  'ecritures': {'*': ['comptable', 'da', 'x'], 'trancher': ['da', 'mere']},
   'prescriptions': {'*': ['medecin', 'x']},
   'consultations': {'*': ['medecin', 'da', 'x'], 'trancher': ['da', 'mere']},
   'dossiersConsultation': {'*': ['medecin', 'x'], 'trancher': ['da', 'mere']},
@@ -421,6 +489,8 @@ const Map<String, String> ecranParCollectionPair = {
   'constantes': 'm1-constantes',
   'notes': 'm13-notes-service',
   'factures': 'm8-factures',
+  'avoirs': 'm8-facture-avoir',
+  'ecritures': 'm12-ecritures',
   'prescriptions': 'm2-prescriptions',
   'stock': 'm6-stock-detail',
   'besoins': 'm7-besoins',

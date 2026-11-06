@@ -181,3 +181,54 @@ test('SCÉNARIO : mère éteinte, trois fileuls s\'échangent par le relais et c
   assert.equal(JSON.stringify(M.stock), JSON.stringify(E.stock));
   assert.equal(M.provisoire.size, 0);
 });
+
+/* --- pièces certifiantes (famille C) : numérotation, avoir, écriture équilibrée --------------------------------------------------------------------------- */
+const codes = (e) => e.refusees.map((r) => r.code).sort();
+const lignesOk = [{ compte: '571', debit: 100, credit: 0 }, { compte: '706', debit: 0, credit: 100 }];
+
+test('numérotation : un numéro porté par deux pièces émises est MARQUÉ sur les deux, jamais renuméroté, quel que soit l\'ordre d\'arrivée', () => {
+  const ops = [
+    op('F1', 1, 'factures', 'f1', 'creer', { total: 10 }), op('F1', 2, 'factures', 'f1', 'emettre', { numero: 'FAC-0042' }),
+    op('F2', 1, 'factures', 'f2', 'creer', { total: 20 }), op('F2', 3, 'factures', 'f2', 'emettre', { numero: 'FAC-0042' }),
+    op('F2', 4, 'factures', 'f3', 'creer', { total: 5 }), op('F2', 5, 'factures', 'f3', 'emettre', { numero: 'FAC-0043' }),
+  ];
+  const e = etat(ops);
+  assert.equal(e.fiches['factures/f1'].doublon, true);
+  assert.equal(e.fiches['factures/f2'].doublon, true);
+  assert.equal(e.fiches['factures/f3'].doublon, undefined);
+  assert.equal(e.fiches['factures/f2'].numero, 'FAC-0042', 'jamais renuméroté');
+  for (const p of permutations(ops).slice(0, 200)) assert.equal(ser(etat(p)), ser(e));
+});
+
+test('numérotation : le numéro d\'une pièce émise ne se réécrit jamais, la ré-émission identique est inoffensive', () => {
+  const e = etat([op('F1', 1, 'factures', 'f1', 'creer', { total: 10 }), op('F1', 2, 'factures', 'f1', 'emettre', { numero: 'A' }), op('F2', 3, 'factures', 'f1', 'emettre', { numero: 'B' }), op('F2', 4, 'factures', 'f1', 'emettre', { numero: 'A' })]);
+  assert.equal(e.fiches['factures/f1'].numero, 'A');
+  assert.deepEqual(codes(e), ['numero_immuable']);
+});
+
+test('écriture : RG-10, elle ne s\'émet que ÉQUILIBRÉE ; brouillon déséquilibré toléré, émission refusée', () => {
+  const desequilibre = etat([op('F1', 1, 'ecritures', 'e1', 'creer', { lignes: [{ compte: '571', debit: 100, credit: 0 }, { compte: '706', debit: 0, credit: 90 }] }), op('F1', 2, 'ecritures', 'e1', 'emettre', { numero: 'OD-1' })]);
+  assert.deepEqual(codes(desequilibre), ['ecriture_desequilibree']);
+  assert.equal(desequilibre.fiches['ecritures/e1'].emise, false);
+  const seule = etat([op('F1', 1, 'ecritures', 'e2', 'creer', { lignes: [{ compte: '571', debit: 100, credit: 100 }] }), op('F1', 2, 'ecritures', 'e2', 'emettre')]);
+  assert.deepEqual(codes(seule), ['ecriture_desequilibree'], 'une seule ligne n\'est pas une pièce');
+  const bonne = etat([op('F1', 1, 'ecritures', 'e3', 'creer', { lignes: lignesOk }), op('F1', 2, 'ecritures', 'e3', 'emettre', { numero: 'OD-2' })]);
+  assert.equal(bonne.fiches['ecritures/e3'].emise, true);
+  assert.equal(codes(bonne).length, 0);
+});
+
+test('avoir : seul canal de correction ; il vise une facture ÉMISE et le cumul ne dépasse jamais la facture', () => {
+  const base = [op('F1', 1, 'factures', 'f1', 'creer', { total: 100 })];
+  assert.deepEqual(codes(etat([...base, op('F2', 3, 'avoirs', 'a1', 'creer', { facture: 'f1', montant: 10 })])), ['avoir_sans_facture_emise'], 'facture non émise');
+  const emise = [...base, op('F1', 2, 'factures', 'f1', 'emettre', { numero: 'FAC-1' })];
+  const ok = etat([...emise, op('F2', 3, 'avoirs', 'a1', 'creer', { facture: 'f1', montant: 60 }), op('F3', 4, 'avoirs', 'a2', 'creer', { facture: 'f1', montant: 40 })]);
+  assert.equal(codes(ok).length, 0);
+  assert.equal(ok.fiches['factures/f1'].avoirs, 100);
+  const trop = etat([...emise, op('F2', 3, 'avoirs', 'a1', 'creer', { facture: 'f1', montant: 60 }), op('F3', 4, 'avoirs', 'a2', 'creer', { facture: 'f1', montant: 50 })]);
+  assert.deepEqual(codes(trop), ['avoir_depasse']);
+  assert.equal(trop.fiches['avoirs/a2'], undefined, 'l\'avoir refusé n\'existe pas');
+  assert.equal(trop.fiches['factures/f1'].data.total, 100, 'la pièce émise n\'est jamais réécrite');
+  const ops = [...emise, op('F2', 3, 'avoirs', 'a1', 'creer', { facture: 'f1', montant: 60 }), op('F3', 4, 'avoirs', 'a2', 'creer', { facture: 'f1', montant: 50 })];
+  const ref = etat(ops);
+  for (const p of permutations(ops)) assert.equal(ser(etat(p)), ser(ref));
+});
