@@ -24,4 +24,7 @@ class EtatPairPoste {
   const EtatPairPoste._();
   static String? dossier;
   static ValueListenable<InstantanePair>? source;
+
+  /// Le jeton d'appareil du poste auprès du relais (posé par `main` quand le mode pair tourne et que le poste est appairé) : l'envoi du coffre par courriel s'en sert.
+  static String? Function()? jeton;
 }

@@ -157,7 +157,11 @@ Future<void> main() async {
   // Le magasin se range sur disque : comptes, mots de passe (hachés), saisies et journal survivent à la fermeture du poste. Sans cela, tout repartait du
   // jeu d'origine à chaque lancement. Les fichiers sont en clair (le chiffrement SQLCipher est l'étape suivante du plan).
   // Les fichiers sont CHIFFRÉS (AES-256-GCM, clé liée à la session Windows par DPAPI) ; `SIGH_CHIFFREMENT=non` les garde en clair (développement).
-  if (chiffrementActif != 'non') CleLocale.courante = CleLocale('$dossierDonnees/cle-poste.bin');
+  if (chiffrementActif != 'non') {
+    CleLocale.courante = CleLocale('$dossierDonnees/cle-poste.bin');
+    // La même clé locale protège la clé de la clinique dans `pair.json` (jamais en clair sur le disque).
+    ConfigPairPoste.cleLocale = await CleLocale.courante!.obtenir();
+  }
   final persistance = PersistanceFichiers('$dossierDonnees/magasin', cle: cle);
   if (repartirAZero == 'oui') await persistance.mettreDeCote();
   // Un jeu d'origine qui change (nouvelle version) n'écrase rien : ses fiches de référentiel manquantes sont ajoutées au magasin enregistré.
@@ -280,6 +284,7 @@ Future<void> main() async {
         ..pont(role: () => session?.role ?? roleDev).demarrer();
       final etatPair = ValueNotifier<InstantanePair>(InstantanePair.depuis(moteurPair.etat()));
       EtatPairPoste.source = etatPair;
+      EtatPairPoste.jeton = () => moteurPair?.jeton;
       final suivi = moteurPair;
       Timer.periodic(const Duration(seconds: 2), (_) => etatPair.value = InstantanePair.depuis(suivi.etat()));
     }

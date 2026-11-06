@@ -3,6 +3,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:sigh_poste/sync/recuperation_cle.dart';
 import 'package:sigh_poste/kit/kit.dart';
 import 'package:sigh_poste/sync/config_pair.dart';
 import 'package:sigh_poste/sync/etat_pair.dart';
@@ -13,7 +16,12 @@ import 'm14_aide.dart';
 /// cfg-pair : le réglage du mode pair d'un poste (ADR-0006). Ce que l'écran écrit dans `pair.json`, la clé qui ne s'affiche qu'UNE fois, les refus nommés
 /// (adresse sans schéma, activation sans clé, phrase secrète trop courte), le droit (admin et DAF seulement), et la récupération par courriel fermée par défaut.
 void main() {
-  setUpAll(chargerPolices);
+  late Map<String, Object?> coffreFixe;
+  setUpAll(() async {
+    await chargerPolices();
+    // un VRAI coffre, fabriqué hors de l'horloge simulée des tests de widgets (la dérivation PBKDF2 y resterait suspendue)
+    coffreFixe = await RecuperationCle.fabriquerCoffre('ab' * 32, 'phrase assez longue');
+  });
   tearDown(() {
     ToastsSigh.viderPourTests();
     EtatPairPoste.dossier = null;
@@ -95,14 +103,47 @@ void main() {
     await saisir(t, 'courriel', 'dg@clinique.bj');
     await saisir(t, 'phrase', 'court');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Envoyer la clé par courriel'));
-    expect(find.text('La phrase secrète doit comporter au moins 8 caractères.'), findsOneWidget);
+    expect(find.text('La phrase secrète doit comporter au moins 12 caractères.'), findsOneWidget);
     expect(fichier()['courriel'], isNull);
     ToastsSigh.viderPourTests();
     await saisir(t, 'phrase', 'phrase assez longue');
     await toucherM14(t, find.widgetWithText(BoutonSigh, 'Envoyer la clé par courriel'));
-    expect(find.text('Adresse de récupération enregistrée.'), findsOneWidget);
+    expect(find.text('Adresse de récupération enregistrée, mais rien n’a été envoyé.'), findsOneWidget, reason: 'poste non appairé : le relais n\'est pas joignable, et l\'écran le dit');
     expect(fichier()['courriel'], 'dg@clinique.bj');
     expect(jsonEncode(fichier()).contains('phrase'), isFalse);
+  });
+
+  casM14('appairé : « Envoyer la clé par courriel » envoie le COFFRE au relais, jamais la clé ni la phrase', (t) async {
+    final cle = 'ab' * 32;
+    ConfigPairPoste.ecrire(d.path, relais: 'https://relais.exemple.bj', cleHex: cle);
+    RecuperationCle.fabriquePourTests = (_, __) async => coffreFixe;
+    EtatPairPoste.jeton = () => 'uuid.secret';
+    String? corps, auth;
+    RecuperationCle.clientParDefaut = MockClient((r) async {
+      corps = r.body;
+      auth = r.headers['authorization'];
+      return http.Response('{"envoye":true}', 200);
+    });
+    addTearDown(() {
+      RecuperationCle.clientParDefaut = null;
+      RecuperationCle.fabriquePourTests = null;
+      EtatPairPoste.jeton = null;
+    });
+    await ouvrirM14(t, magasinM14(), 'cfg-pair');
+    await toucherM14(t, find.text('Permettre la récupération de la clé par courriel'));
+    await saisir(t, 'courriel', 'dg@clinique.bj');
+    await saisir(t, 'phrase', 'phrase assez longue');
+    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Envoyer la clé par courriel'));
+    await t.pump(const Duration(milliseconds: 100));
+    await t.pump(const Duration(milliseconds: 100));
+    expect(auth, 'Bearer uuid.secret');
+    expect(corps, isNotNull, reason: 'le relais a reçu la demande');
+    expect(corps!, isNot(contains(cle)));
+    expect(corps!, isNot(contains('phrase assez longue')));
+    final envoye = jsonDecode(corps!) as Map;
+    expect(envoye['courriel'], 'dg@clinique.bj');
+    expect(envoye['coffre'], coffreFixe, reason: 'le relais reçoit le coffre fabriqué, rien d\'autre');
+    expect(find.text('Coffre envoyé par courriel.'), findsOneWidget);
   });
 
   test('ConfigPairPoste.ecrire : conserve la clé, refuse un mode activé sans clé, retire le code', () {

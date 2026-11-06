@@ -6,6 +6,7 @@ import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../sync/config_pair.dart';
 import '../../sync/etat_pair.dart';
+import '../../sync/recuperation_cle.dart';
 import 'cfa_commun.dart';
 import 'cfb_commun.dart';
 
@@ -143,25 +144,42 @@ class _EtatPair extends State<EcranPair> {
     });
   }
 
-  void _envoyerCle(BuildContext ctx, ContexteEcran c) {
+  Future<void> _envoyerCle(BuildContext ctx, ContexteEcran c) async {
     final v = _recup!.valider();
     if (v == null) {
       ToastsSigh.afficher(ctx, 'Le formulaire comporte des erreurs.', type: TypeToast.erreur);
       return;
     }
-    if ('${v['phrase']}'.length < 8) {
-      ToastsSigh.afficher(ctx, 'La phrase secrète doit comporter au moins 8 caractères.', type: TypeToast.erreur);
+    final phrase = '${v['phrase']}';
+    if (phrase.length < RecuperationCle.longueurMinimaleDePhrase) {
+      ToastsSigh.afficher(ctx, 'La phrase secrète doit comporter au moins ${RecuperationCle.longueurMinimaleDePhrase} caractères.', type: TypeToast.erreur);
       return;
     }
     if (!_cleGeneree) {
       ToastsSigh.afficher(ctx, 'Aucune clé à envoyer : la générer d’abord.', type: TypeToast.erreur);
       return;
     }
-    if (_dossier != null) ConfigPairPoste.ecrire(_dossier!, courriel: '${v['courriel']}');
-    c.magasin.journaliser('Modification', 'CFG', 'Récupération de la clé', '${v['courriel']}', null, {'envoi': 'non effectué'});
+    final courriel = '${v['courriel']}'.trim();
+    if (_dossier != null) ConfigPairPoste.ecrire(_dossier!, courriel: courriel);
+    final jeton = EtatPairPoste.jeton?.call();
+    final relais = '${_fichier['relais'] ?? ''}';
+    if (jeton == null || relais.isEmpty) {
+      ToastsSigh.afficher(ctx, 'Adresse de récupération enregistrée, mais rien n’a été envoyé.',
+          type: TypeToast.attention, detail: 'L’envoi passe par le relais : activer le mode pair et appairer ce poste d’abord (au prochain lancement).');
+      return;
+    }
+    try {
+      final coffre = await RecuperationCle.fabriquerCoffre('${_fichier['cle']}', phrase);
+      await RecuperationCle.envoyer(relais: relais, jeton: jeton, courriel: courriel, coffre: coffre);
+    } on StateError catch (e) {
+      if (ctx.mounted) ToastsSigh.afficher(ctx, 'Le coffre n’a pas été envoyé.', type: TypeToast.erreur, detail: e.message);
+      return;
+    }
+    c.magasin.journaliser('Modification', 'CFG', 'Récupération de la clé', courriel, null, {'envoi': 'coffre envoyé'});
     _recup!.poser('phrase', '');
-    ToastsSigh.afficher(ctx, 'Adresse de récupération enregistrée.',
-        type: TypeToast.info, detail: 'L’envoi du courriel passe par le relais : il n’est pas encore disponible, aucune clé n’a été envoyée.');
+    if (ctx.mounted) {
+      ToastsSigh.afficher(ctx, 'Coffre envoyé par courriel.', type: TypeToast.succes, detail: 'Il est inutilisable sans votre phrase secrète, que ce poste ne garde pas.');
+    }
   }
 
   Widget _carteCle(BuildContext ctx, ContexteEcran c) {
@@ -186,7 +204,9 @@ class _EtatPair extends State<EcranPair> {
             ]),
           ] else ...[
             Text(
-                _cleGeneree
+                _fichier['cle_illisible'] == true
+                    ? 'La clé de la clinique est ILLISIBLE dans pair.json (fichier altéré, ou chiffré par un autre poste ou une autre session Windows). Restaurer le fichier ou générer une nouvelle clé.'
+                    : _cleGeneree
                     ? 'La clé a été générée${_fichier['cle_le'] != null ? ' le ${_dateFr('${_fichier['cle_le']}')}' : ''}. Elle n’est plus affichée.'
                     : 'Aucune clé n’a encore été générée sur ce poste.',
                 style: const TextStyle(fontSize: 14)),
@@ -250,7 +270,7 @@ class _EtatPair extends State<EcranPair> {
                 child: DescListeSigh([
                   ('Relais', _fichier['relais'] ?? 'Non renseigné'),
                   ('Nom de ce poste', _fichier['nom'] ?? 'Non renseigné'),
-                  ('Clé de la clinique', _cleGeneree ? 'Générée' : 'Absente'),
+                  ('Clé de la clinique', _fichier['cle_illisible'] == true ? 'Illisible' : (_cleGeneree ? 'Générée' : 'Absente')),
                   ('Derniers échanges', echanges),
                 ])),
           ]);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RecuperationController;
 use App\Http\Controllers\RelaisController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ Route::post('/mere/activer', [RelaisController::class, 'activerMere']);
 Route::post('/mere/desactiver', [RelaisController::class, 'desactiverMere']);
 Route::post('/mere/battement', [RelaisController::class, 'battement']);
 Route::post('/mere/indicateurs', [RelaisController::class, 'indicateurs']);
+Route::post('/recuperation/envoyer', [RecuperationController::class, 'envoyer']);
 Route::get('/admin/etat', [RelaisController::class, 'etat']);
 
 Route::post('/banc/alterer', [RelaisController::class, 'bancAlterer']);
