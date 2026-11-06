@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:sigh_domaine/sigh_domaine.dart' show famillesPair, DroitsOperation;
+import 'package:sigh_domaine/sigh_domaine.dart' show famillesPair, DroitsOperation, collectionsPairSansPontPoste;
 import 'package:sigh_sync/sigh_sync.dart';
 
 import '../donnees/magasin.dart';
@@ -17,7 +17,7 @@ class MoteurPair {
   Timer? _miroir;
 
   static MoteurPair creer({required Magasin magasin, required String dbChemin, required String relais, required String cleHex, String nom = 'poste', DroitsOperation? droits}) =>
-      MoteurPair._(FileulPair(ConfigPair(port: 0, relais: relais, dbChemin: dbChemin, cleHex: cleHex, nom: nom, droits: droits)), magasin);
+      MoteurPair._(FileulPair(ConfigPair(port: 0, relais: relais, dbChemin: dbChemin, cleHex: cleHex, nom: nom, droits: droits, collectionsCopie: collectionsDuPont)), magasin);
 
   /// Pour les tests : un moteur sur un [FileulPair] déjà construit.
   factory MoteurPair.pour(FileulPair pair, Magasin magasin) => MoteurPair._(pair, magasin);
@@ -33,12 +33,15 @@ class MoteurPair {
     if (statut >= 400) throw StateError('appairage refusé (${(corps as Map?)?['code'] ?? statut})');
   }
 
+  /// Le jeton d'appareil auprès du relais (`null` tant que le poste n'est pas appairé).
+  String? get jeton => _pair.base.meta('jeton');
+
   bool get appaire => _pair.etat()['uuid'] != null;
 
   /// Le moteur du poste parle au relais ; le pont d'activité écrit et lit par lui. [role] : le rôle de l'agent connecté.
   /// Il ne porte QUE les collections de famille A (fiches à fusion par champ) : les autres familles (pièces émises, stock, flux de travail) ont leurs règles
   /// propres, et celles que la règle de fusion ne connaît pas seraient refusées une à une. Les écrire champ à champ les corromprait.
-  static Set<String> get collectionsDuPont => {for (final e in famillesPair.entries) if (e.value == 'A') e.key};
+  static Set<String> get collectionsDuPont => {for (final e in famillesPair.entries) if (e.value == 'A') e.key}.difference(collectionsPairSansPontPoste);
 
   PontActivite pont({required String Function() role}) =>
       PontActivite(_magasin, transport(role: role), collections: collectionsDuPont, etiquette: '${_pair.etat()['uuid'] ?? 'pair'}'.replaceAll('-', '').padRight(6, '0').substring(0, 6));

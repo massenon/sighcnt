@@ -14,12 +14,15 @@ import 'commun.dart';
 import 'pont.dart' show Enveloppes;
 
 class ConfigPair {
-  ConfigPair({required this.port, required this.relais, required this.dbChemin, required this.cleHex, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 120, this.cleStockage = '', this.droits});
+  ConfigPair({required this.port, required this.relais, required this.dbChemin, required this.cleHex, this.nom = 'poste', this.decalageMs = 0, this.intervalleMs = 120, this.cleStockage = '', this.droits, this.collectionsCopie = const {}});
   final int port, decalageMs, intervalleMs;
   final String relais, dbChemin, cleHex, nom, cleStockage;
 
   /// Les droits de l'échange : la matrice RBAC en production (`droitsDepuisMatrice`), la table du banc par défaut.
   final DroitsOperation? droits;
+
+  /// Les collections dont ce poste dépose la COPIE chiffrée au relais (PRD relais consultable). Vide : aucune copie.
+  final Set<String> collectionsCopie;
 }
 
 List<int> _octets(String hex) => [for (var i = 0; i + 1 < hex.length; i += 2) int.parse(hex.substring(i, i + 2), radix: 16)];
@@ -33,6 +36,8 @@ class FileulPair {
       CREATE TABLE IF NOT EXISTS sortie (n INTEGER PRIMARY KEY, id TEXT, depose INTEGER DEFAULT 0);
       CREATE TABLE IF NOT EXISTS curseurs (appareil TEXT PRIMARY KEY, n INTEGER);
       CREATE TABLE IF NOT EXISTS foi (id TEXT PRIMARY KEY, seq INTEGER);
+      CREATE TABLE IF NOT EXISTS copie_sortie (n INTEGER PRIMARY KEY, id TEXT, charge TEXT, depose INTEGER DEFAULT 0);
+      CREATE TABLE IF NOT EXISTS copie_etat (cle TEXT PRIMARY KEY, empreinte TEXT);
       CREATE TABLE IF NOT EXISTS anomalies (k INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, detail TEXT);''');
     horloge.dernier = base.metaInt('hlc');
     droits = cfg.droits ?? droitsDepuisTable(droitsBancPair);
@@ -143,12 +148,52 @@ class FileulPair {
     }
   }
 
+  /// 3. COPIE (PRD relais consultable) : l'état fusionné des collections choisies, une enveloppe par fiche NOUVELLE ou CHANGÉE, dans le sens `copie` de CE poste.
+  /// Rang contigu, charge persistée avant dépôt (un SIGKILL ne perd rien et ne duplique rien : le dépôt rejoué est idempotent par id). L'archivage voyage
+  /// comme un champ (RG-14) ; aucune suppression.
+  void preparerCopie() {
+    if (cfg.collectionsCopie.isEmpty || base.meta('uuid') == null) return;
+    final fiches = etatActuel().fiches;
+    for (final e in fiches.entries) {
+      final i = e.key.indexOf('/');
+      if (i < 0 || !cfg.collectionsCopie.contains(e.key.substring(0, i))) continue;
+      final charge = {
+        'collection': e.key.substring(0, i),
+        'fiche': e.key.substring(i + 1),
+        'data': e.value['data'],
+        'archive': e.value['archive'] == true,
+      };
+      final texte = enJson(charge);
+      final deja = base.select('SELECT empreinte FROM copie_etat WHERE cle=?', [e.key]).map((r) => r['empreinte'] as String).firstOrNull;
+      if (deja == texte) continue;
+      base.tx(() {
+        final n = (base.select('SELECT COALESCE(MAX(n),0) AS m FROM copie_sortie').first['m'] as int) + 1;
+        base.exec('INSERT INTO copie_sortie(n,id,charge) VALUES(?,?,?)', [n, '${base.meta('uuid')}-copie-$n', texte]);
+        base.exec('INSERT INTO copie_etat(cle,empreinte) VALUES(?,?) ON CONFLICT(cle) DO UPDATE SET empreinte=excluded.empreinte', [e.key, texte]);
+      });
+    }
+  }
+
+  Future<void> deposerCopie() async {
+    final uuid = base.meta('uuid');
+    if (uuid == null) return;
+    for (final l in base.select('SELECT n,id,charge FROM copie_sortie WHERE depose=0 ORDER BY n')) {
+      final charge = (jsonDecode(l['charge'] as String) as Map).cast<String, Object?>();
+      final enveloppe = await env.chiffrer(charge, id: l['id'] as String, appareil: uuid, dir: 'copie', n: l['n'] as int);
+      final (st, _) = await _relais('POST', '/depot', {'enveloppe': enveloppe});
+      if (st != 200) return;
+      base.exec('UPDATE copie_sortie SET depose=1 WHERE n=?', [l['n']]);
+    }
+  }
+
   Future<void> cycle() async {
     if (_enCours) return;
     _enCours = true;
     try {
       await publier();
       await relever();
+      preparerCopie();
+      await deposerCopie();
       horsLigne = false;
     } catch (_) {
       horsLigne = true;
@@ -215,6 +260,8 @@ class FileulPair {
         'nom': cfg.nom,
         'ops': base.select('SELECT COUNT(*) AS n FROM ops').first['n'],
         'en_attente': base.select('SELECT COUNT(*) AS n FROM sortie WHERE depose=0').first['n'],
+        'copie_en_attente': base.select('SELECT COUNT(*) AS n FROM copie_sortie WHERE depose=0').first['n'],
+        'copie_deposee': base.select('SELECT COUNT(*) AS n FROM copie_sortie WHERE depose=1').first['n'],
         'curseurs': {for (final r in base.select('SELECT appareil,n FROM curseurs')) r['appareil'] as String: r['n']},
         'anomalies': [for (final r in base.select('SELECT type,detail FROM anomalies')) {'type': r['type'], 'detail': r['detail']}],
         'derive': horloge.derive,

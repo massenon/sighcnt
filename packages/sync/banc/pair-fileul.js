@@ -14,6 +14,7 @@ const { Horloge, etat, droitsBanc } = require('./pair');
 
 const arg = (n, d) => { const a = process.argv.find((x) => x.startsWith('--' + n + '=')); return a ? a.split('=').slice(1).join('=') : d; };
 const PORT = +arg('port', 0); const RELAIS = arg('relais', ''); const DB = arg('db', ':memory:'); const NOM = arg('nom', 'poste');
+const COPIE = new Set(arg('copie', '').split(',').filter(Boolean));
 const CLE = Buffer.from(arg('cle', ''), 'hex'); const INTERVALLE = +arg('intervalle-ms', 120); const DECALAGE = +arg('horloge-decalage-ms', 0);
 
 const db = new DatabaseSync(DB);
@@ -23,6 +24,8 @@ db.exec(`PRAGMA journal_mode=WAL;
   CREATE TABLE IF NOT EXISTS sortie (n INTEGER PRIMARY KEY, id TEXT, depose INTEGER DEFAULT 0);
   CREATE TABLE IF NOT EXISTS curseurs (appareil TEXT PRIMARY KEY, n INTEGER);
   CREATE TABLE IF NOT EXISTS foi (id TEXT PRIMARY KEY, seq INTEGER);
+  CREATE TABLE IF NOT EXISTS copie_sortie (n INTEGER PRIMARY KEY, id TEXT, charge TEXT, depose INTEGER DEFAULT 0);
+  CREATE TABLE IF NOT EXISTS copie_etat (cle TEXT PRIMARY KEY, empreinte TEXT);
   CREATE TABLE IF NOT EXISTS anomalies (k INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, detail TEXT);`);
 const meta = (k, d = null) => { const r = db.prepare('SELECT v FROM meta WHERE k=?').get(k); return r ? r.v : d; };
 const setMeta = (k, v) => db.prepare('INSERT INTO meta(k,v) VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v').run(k, String(v));
@@ -86,10 +89,37 @@ async function relever() {
   }
 }
 
+/* 3. COPIE (PRD relais consultable) : une enveloppe par fiche nouvelle ou changée, sens « copie » de CE poste, rang contigu, charge persistée avant dépôt. */
+const tx = (f) => { db.exec('BEGIN'); try { f(); db.exec('COMMIT'); } catch (e) { db.exec('ROLLBACK'); throw e; } };
+function preparerCopie() {
+  const uuid = meta('uuid'); if (!uuid || !COPIE.size) return;
+  const fiches = etat(toutesOps(), droitsBanc).fiches;
+  for (const [cle, f] of Object.entries(fiches)) {
+    const i = cle.indexOf('/'); const col = cle.slice(0, i); if (!COPIE.has(col)) continue;
+    const texte = JSON.stringify({ collection: col, fiche: cle.slice(i + 1), data: f.data, archive: f.archive === true });
+    const deja = db.prepare('SELECT empreinte FROM copie_etat WHERE cle=?').get(cle);
+    if (deja && deja.empreinte === texte) continue;
+    tx(() => {
+      const n = db.prepare('SELECT COALESCE(MAX(n),0) AS m FROM copie_sortie').get().m + 1;
+      db.prepare('INSERT INTO copie_sortie(n,id,charge) VALUES(?,?,?)').run(n, `${uuid}-copie-${n}`, texte);
+      db.prepare('INSERT INTO copie_etat(cle,empreinte) VALUES(?,?) ON CONFLICT(cle) DO UPDATE SET empreinte=excluded.empreinte').run(cle, texte);
+    });
+  }
+}
+async function deposerCopie() {
+  const uuid = meta('uuid'); if (!uuid) return;
+  for (const l of db.prepare('SELECT n,id,charge FROM copie_sortie WHERE depose=0 ORDER BY n').all()) {
+    const env = chiffrer(CLE, JSON.parse(l.charge), { id: l.id, appareil: uuid, dir: 'copie', n: l.n });
+    const r = await relais('POST', '/depot', { enveloppe: env });
+    if (r.status !== 200) return;
+    db.prepare('UPDATE copie_sortie SET depose=1 WHERE n=?').run(l.n);
+  }
+}
+
 let enCours = false;
 async function cycle() {
   if (enCours) return; enCours = true;
-  try { await publier(); await relever(); horsLigne = false; } catch (e) { horsLigne = true; } finally { cycles += 1; enCours = false; }
+  try { await publier(); await relever(); preparerCopie(); await deposerCopie(); horsLigne = false; } catch (e) { horsLigne = true; } finally { cycles += 1; enCours = false; }
 }
 setInterval(cycle, INTERVALLE);
 
@@ -117,7 +147,7 @@ const routes = {
   'POST /emettre': (b) => { const op = emettre(b); return [200, { id: op.id, hlc: op.hlc }]; },
   'GET /etat': () => {
     const uuid = meta('uuid');
-    return [200, { uuid, nom: NOM, ops: toutesOps().length, en_attente: db.prepare('SELECT COUNT(*) AS n FROM sortie WHERE depose=0').get().n, curseurs: Object.fromEntries(db.prepare('SELECT appareil,n FROM curseurs').all().map((r) => [r.appareil, r.n])),
+    return [200, { uuid, nom: NOM, ops: toutesOps().length, en_attente: db.prepare('SELECT COUNT(*) AS n FROM sortie WHERE depose=0').get().n, copie_en_attente: db.prepare('SELECT COUNT(*) AS n FROM copie_sortie WHERE depose=0').get().n, copie_deposee: db.prepare('SELECT COUNT(*) AS n FROM copie_sortie WHERE depose=1').get().n, curseurs: Object.fromEntries(db.prepare('SELECT appareil,n FROM curseurs').all().map((r) => [r.appareil, r.n])),
       anomalies: db.prepare('SELECT type,detail FROM anomalies').all(), derive: horloge.derive, hors_ligne: horsLigne, cycles, revoque: meta('revoque') === '1' }];
   },
   'GET /fiches': () => [200, serialiser(etat(toutesOps(), droitsBanc))],

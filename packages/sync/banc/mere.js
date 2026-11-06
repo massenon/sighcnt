@@ -672,6 +672,32 @@ async function pairRelever() {
   }
 }
 
+/* PRD relais consultable : la COPIE consolidée de la mère (état fusionné des fiches de famille A, un lot par tour qui a des changements, sens « copie », appareil « mere »). */
+db.exec(`CREATE TABLE IF NOT EXISTS copie_sortie (n INTEGER PRIMARY KEY, enveloppe TEXT, depose INTEGER DEFAULT 0);
+  CREATE TABLE IF NOT EXISTS copie_etat (cle TEXT PRIMARY KEY, empreinte TEXT);`);
+async function pairCopie() {
+  const fiches = pairMod.etat(pairOps(), pairMod.droitsBanc).fiches; const lot = []; const empreintes = [];
+  for (const [cle, f] of Object.entries(fiches)) {
+    const i = cle.indexOf('/'); const col = cle.slice(0, i);
+    if (pairMod.FAMILLES[col] !== 'A') continue;
+    const texte = JSON.stringify({ collection: col, fiche: cle.slice(i + 1), data: f.data, archive: f.archive === true });
+    const deja = db.prepare('SELECT empreinte FROM copie_etat WHERE cle=?').get(cle);
+    if (deja && deja.empreinte === texte) continue;
+    lot.push(JSON.parse(texte)); empreintes.push([cle, texte]);
+  }
+  if (lot.length) {
+    tx(() => {
+      const n = +meta('copie_n', 0) + 1; setMeta('copie_n', n);
+      db.prepare('INSERT INTO copie_sortie(n,enveloppe) VALUES(?,?)').run(n, JSON.stringify(chiffrer(CLE, { lot }, { id: `copie-mere-${n}`, appareil: 'mere', dir: 'copie', n })));
+      for (const [cle, texte] of empreintes) db.prepare('INSERT INTO copie_etat(cle,empreinte) VALUES(?,?) ON CONFLICT(cle) DO UPDATE SET empreinte=excluded.empreinte').run(cle, texte);
+    });
+  }
+  for (const r of db.prepare('SELECT n,enveloppe FROM copie_sortie WHERE depose=0 ORDER BY n').all()) {
+    await rel('POST', '/depot', { enveloppe: JSON.parse(r.enveloppe) });
+    db.prepare('UPDATE copie_sortie SET depose=1 WHERE n=?').run(r.n);
+  }
+}
+
 function demarrerPont() {
   if (!RELAIS) return;
   const tour = (nom, f, ms) => { let occupe = false; setInterval(async () => { if (occupe) return; occupe = true; try { await f(); } catch (e) { /* relais injoignable : on réessaie */ } occupe = false; }, ms); };
@@ -680,6 +706,7 @@ function demarrerPont() {
   tour('diffuser', () => { diffuser(); return expedier(); }, 250);
   tour('repliquer', repliquer, 250);
   tour('pair', async () => { await pairRelever(); await pairExpedier(); }, 250);
+  tour('copie', pairCopie, 500);
   tour('battement', async () => {
     await rel('POST', '/mere/battement', {});
     await rel('POST', '/mere/indicateurs', { indicateurs: { patients_actifs: db.prepare("SELECT COUNT(*) AS n FROM fiches WHERE collection='patients' AND archive=0").get().n,

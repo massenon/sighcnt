@@ -16,6 +16,7 @@ import 'package:sigh_domaine/sigh_domaine.dart' show mobPeutPrescrire;
 import 'commun.dart';
 import 'depot.dart';
 import 'mere.dart';
+import 'copie_mere.dart';
 
 /// Chiffrement des enveloppes : même format que le banc Node (`crypto.js`) — nonce de 12 octets, `ct = chiffré ‖ tag`,
 /// métadonnées authentifiées (AAD = `id|appareil|dir|n`). Une enveloppe déplacée, rejouée sous un autre rang ou altérée
@@ -359,6 +360,8 @@ class Pont {
     }, 250);
     tour(repliquer, 250);
     tour(() => mere.pair.tour(), 250);
+    final copie = CopieMere(mere);
+    tour(copie.tour, 500);
     tour(() async {
       await mere.verrou.executer(() => base.poserMeta('relais_dernier_ok', _dernierOk));
       await rel('POST', '/mere/battement', {});

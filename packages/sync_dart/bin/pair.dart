@@ -9,6 +9,7 @@ Future<void> main(List<String> args) async {
     nom: arg(args, 'nom', 'poste'),
     cleHex: arg(args, 'cle', ''),
     decalageMs: int.tryParse(arg(args, 'horloge-decalage-ms', '0')) ?? 0,
+    collectionsCopie: arg(args, 'copie', '').split(',').where((c) => c.isNotEmpty).toSet(),
     intervalleMs: int.tryParse(arg(args, 'intervalle-ms', '120')) ?? 120,
   ));
   await p.demarrer();

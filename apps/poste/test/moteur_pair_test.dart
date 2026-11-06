@@ -36,7 +36,9 @@ void main() {
     expect(moteur.etat()['ops'], 0);
   });
   test('le pont pair ne porte que les familles A : ni factures, ni stock, ni lots', () {
-    const a = {'patients', 'rendezvous', 'consultations', 'dossiersConsultation', 'antecedents', 'appels', 'observations'};
+    // dérivé de la règle de fusion : une liste recopiée ici divergerait à chaque collection ajoutée
+    final a = {for (final e in famillesPair.entries) if (e.value == 'A') e.key}.difference(collectionsPairSansPontPoste);
+    expect(a, containsAll(['patients', 'rendezvous']));
     expect(MoteurPair.collectionsDuPont, a);
     final m = Magasin({}, 'POSTE', {});
     final pair = FileulPair(ConfigPair(port: 0, relais: 'http://127.0.0.1:1', dbChemin: ':memory:', cleHex: '00' * 32));
@@ -45,6 +47,17 @@ void main() {
     for (final interdite in ['factures', 'produits', 'lots', 'mouvements', 'ecritures', 'avoirs', 'admissions']) {
       expect(pont.collections.contains(interdite), isFalse, reason: interdite);
     }
+  });
+  test('le moteur du poste dépose la copie des collections de famille A, rien d\'autre', () {
+    final pair = FileulPair(ConfigPair(port: 0, relais: 'http://127.0.0.1:1', dbChemin: ':memory:', cleHex: '00' * 32, collectionsCopie: MoteurPair.collectionsDuPont));
+    pair.base.poserMeta('uuid', 'A');
+    pair.emettre({'collection': 'patients', 'fiche': 'p1', 'type': 'creer', 'champs': {'nom': 'x'}, 'role': 'reception'});
+    pair.emettre({'collection': 'constantes', 'fiche': 'c1', 'type': 'creer', 'champs': {'pouls': 70}, 'role': 'infirmier'});
+    pair.preparerCopie();
+    pair.preparerCopie();
+    final lignes = pair.base.select('SELECT n,charge FROM copie_sortie ORDER BY n');
+    expect(lignes, hasLength(1), reason: 'une seule enveloppe : la fiche de famille A, pas les constantes, et pas deux fois la même version');
+    expect(jsonDecode(lignes.single['charge'] as String)['collection'], 'patients');
   });
   suitePont();
   main2();

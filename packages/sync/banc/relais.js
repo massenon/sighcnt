@@ -55,8 +55,9 @@ const routes = {
     if (!mere) {
       const a = appareil(req);
       /* ADR-0006 : un appareil dépose dans sa propre boîte vers la mère OU dans son PROPRE journal « pair » (lu par les autres appareils, jamais écrit par eux). */
-      if (!['vers_mere', 'pair'].includes(e.dir) || e.appareil !== a.uuid) throw new Err(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère ou dans son propre journal pair.');
-    } else if (!(['vers_mobile', 'journal'].includes(e.dir) || (e.dir === 'pair' && e.appareil === 'mere'))) throw new Err(403, 'depot_interdit', 'Sens inconnu.'); /* ADR-0006 : la mère de retour publie dans SON journal pair (appareil « mere »), jamais dans celui d'un autre */
+      /* PRD relais consultable : la COPIE chiffrée de ses fiches (sens « copie »), jamais lue par un appareil. */
+      if (!['vers_mere', 'pair', 'copie'].includes(e.dir) || e.appareil !== a.uuid) throw new Err(403, 'depot_interdit', 'Un appareil ne dépose que dans sa propre boîte vers la mère, dans son propre journal pair ou dans sa propre copie.');
+    } else if (!(['vers_mobile', 'journal'].includes(e.dir) || (['pair', 'copie'].includes(e.dir) && e.appareil === 'mere'))) throw new Err(403, 'depot_interdit', 'Sens inconnu.'); /* ADR-0006 : la mère de retour publie dans SON journal pair (appareil « mere »), jamais dans celui d'un autre */
     const deja = db.prepare('SELECT rid,appareil,dir,n FROM env WHERE id=?').get(e.id);
     if (deja) return { rid: deja.rid, rejeu: true };
     try {
@@ -72,6 +73,15 @@ const routes = {
     if (dir === 'pair') return lister(dir, app, n, lim);
     if (dir !== 'vers_mobile' || app !== a.uuid) throw new Err(403, 'lecture_interdite', 'Un appareil ne lit que SA boîte.');
     return lister(dir, app, n, lim);
+  },
+  /* PRD relais consultable : la lecture de la copie est celle du SUPERADMIN (panneau), jamais d'un appareil ni de la mère. Le relais de référence la simule par un secret. */
+  'GET /superadmin/copie': (req, b, q) => {
+    if (req.headers['x-superadmin'] !== 'secret-superadmin') throw new Err(403, 'superadmin_requis');
+    return lister('copie', q.appareil, +q.depuis_n || 0, Math.min(+q.limite || 100, 500));
+  },
+  'GET /superadmin/copie/appareils': (req) => {
+    if (req.headers['x-superadmin'] !== 'secret-superadmin') throw new Err(403, 'superadmin_requis');
+    return { appareils: db.prepare("SELECT appareil AS uuid, MAX(n) AS max_n FROM env WHERE dir='copie' GROUP BY appareil").all() };
   },
   'GET /mere/appareils': (req) => {
     if (!mereOk(req)) throw new Err(403, 'mere_requise');
