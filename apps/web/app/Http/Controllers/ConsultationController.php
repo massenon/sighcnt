@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CoffreCleMail;
+use App\Relais\EnvoiEchoue;
+use App\Relais\ReglagesSmtp;
 use App\Relais\VolumeCopie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * CONSULTATION DES COPIES (PRD relais consultable, option B). Le relais sert des enveloppes chiffrées au superadmin connecté ; le déchiffrement se fait dans
@@ -119,11 +121,18 @@ class ConsultationController extends Controller
         if ($this->meta('cle_recup_actif') !== '1') {
             return $this->refus(409, 'recuperation_desactivee', 'La récupération de la clé par courriel est désactivée.');
         }
+        if (! ReglagesSmtp::configure()) {
+            return $this->refus(409, 'smtp_non_configure', 'Aucun serveur SMTP n\'est réglé : renseigner la messagerie SMTP des paramètres du relais.');
+        }
         $courriel = (string) $this->meta('cle_recup_courriel');
-        $coffre = (string) $this->meta('cle_recup_coffre');
-        Mail::raw("Coffre de la clé de la clinique (chiffré par votre phrase secrète, inutilisable sans elle).\n"
-            ."À coller dans la page « Consultation des copies » du relais, rubrique « Ouvrir un coffre », puis saisir la phrase secrète.\n\n".$coffre,
-            fn ($m) => $m->to($courriel)->subject('SIGH-CNT : coffre de la clé de la clinique'));
+        $coffre = json_decode((string) $this->meta('cle_recup_coffre'), true);
+        try {
+            ReglagesSmtp::envoyer($courriel, new CoffreCleMail(is_array($coffre) ? $coffre : []));
+        } catch (EnvoiEchoue $e) {
+            $this->audit('cle_coffre_envoi_echoue', $e->etape);
+
+            return response()->json(['code' => 'envoi_echoue', 'motif' => ReglagesSmtp::ETAPES[$e->etape], 'etape' => $e->etape], 502);
+        }
         $this->audit('cle_coffre_envoye', $courriel);
 
         return response()->json(['envoye' => true]);

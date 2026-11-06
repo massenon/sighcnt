@@ -8,6 +8,7 @@ use App\Relais\Opacite;
 use App\Relais\VolumeCopie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Tests\Concerns\AvecPuitsSmtp;
 use Tests\TestCase;
 
 /**
@@ -17,7 +18,7 @@ use Tests\TestCase;
  */
 class ConsultationTest extends TestCase
 {
-    use RefreshDatabase;
+    use AvecPuitsSmtp, RefreshDatabase;
 
     private const SECRET = 'secret-mere-test';
 
@@ -231,20 +232,22 @@ class ConsultationTest extends TestCase
     public function test_l_envoi_par_courriel_ne_porte_que_le_coffre_et_la_desactivation_l_efface(): void
     {
         $this->exigerNode();
-        config(['mail.default' => 'array']);
+        $this->demarrerPuits();
+        $this->reglerSmtp();
         $this->actingAs($this->superadmin());
         $coffre = $this->node(['action' => 'coffre', 'cle' => self::CLE, 'phrase' => 'une phrase secrete assez longue'])['coffre'];
         $this->postJson('/panneau/consultation/reglage', ['actif' => true, 'courriel' => 'direction@clinique.test', 'coffre' => $coffre])->assertOk();
         $this->postJson('/panneau/consultation/coffre/envoyer')->assertOk()->assertJson(['envoye' => true]);
-        $messages = app('mailer')->getSymfonyTransport()->messages();
+        $messages = $this->messagesRecus();
         $this->assertCount(1, $messages);
-        $corps = $messages[0]->toString();
+        $corps = $messages[0]['de'].implode(' ', $messages[0]['a']).$messages[0]['data'];
         $this->assertStringContainsString('direction@clinique.test', $corps);
         $this->assertStringNotContainsString(self::CLE, $corps);
         $this->assertStringNotContainsString('une phrase secrete', $corps);
         $this->postJson('/panneau/consultation/reglage', ['actif' => false])->assertOk()->assertJson(['actif' => false]);
         $this->assertSame(0, DB::table('relais_meta')->whereIn('k', ['cle_recup_actif', 'cle_recup_courriel', 'cle_recup_coffre'])->count());
         $this->postJson('/panneau/consultation/coffre/envoyer')->assertStatus(409);
+        $this->arreterPuits();
     }
 
     // --- Q4 : le volume copié ---------------------------------------------------------------------------------------------

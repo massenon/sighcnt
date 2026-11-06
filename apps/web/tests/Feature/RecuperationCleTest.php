@@ -2,17 +2,16 @@
 
 namespace Tests\Feature;
 
-use App\Mail\CoffreCleMail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
+use Tests\Concerns\AvecPuitsSmtp;
 use Tests\TestCase;
 
 /** Envoi du coffre de la clé par courriel, à la demande d'un poste appairé : le relais ne manipule qu'un COFFRE. */
 class RecuperationCleTest extends TestCase
 {
-    use RefreshDatabase;
+    use AvecPuitsSmtp, RefreshDatabase;
 
     private const SECRET = 'secret-mere-test';
 
@@ -21,6 +20,15 @@ class RecuperationCleTest extends TestCase
         parent::setUp();
         config(['relais.secret_mere' => self::SECRET, 'relais.banc' => false]);
         RateLimiter::clear('coffre:poste-1');
+        // les courriels traversent le VRAI transport SMTP, vers un puits local
+        $this->demarrerPuits();
+        $this->reglerSmtp();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->arreterPuits();
+        parent::tearDown();
     }
 
     private function appareil(string $uuid = 'poste-1'): array
@@ -49,11 +57,10 @@ class RecuperationCleTest extends TestCase
 
     public function test_reglage_desactive_refus_nomme_et_rien_n_est_envoye(): void
     {
-        Mail::fake();
         $h = $this->appareil();
         $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)
             ->assertStatus(409)->assertJsonPath('code', 'recuperation_desactivee');
-        Mail::assertNothingQueued();
+        $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
     }
 
     public function test_appareil_inconnu_refuse(): void
@@ -65,31 +72,28 @@ class RecuperationCleTest extends TestCase
 
     public function test_cle_nue_refusee_comme_coffre(): void
     {
-        Mail::fake();
         $this->activer();
         $h = $this->appareil();
         $cle = bin2hex(random_bytes(32));
         $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $cle], $h)->assertStatus(422)->assertJsonPath('code', 'coffre_invalide');
         $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => ['v' => 1, 'cle' => $cle]], $h)->assertStatus(422)->assertJsonPath('code', 'coffre_invalide');
-        Mail::assertNothingQueued();
+        $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
     }
 
     public function test_cle_ou_phrase_jointes_a_un_coffre_valide_sont_refusees(): void
     {
-        Mail::fake();
         $this->activer();
         $h = $this->appareil();
         $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre(), 'phrase' => 'une phrase assez longue'], $h)->assertStatus(422)->assertJsonPath('code', 'secret_en_clair');
         $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre(), 'cle' => bin2hex(random_bytes(32))], $h)->assertStatus(422)->assertJsonPath('code', 'secret_en_clair');
-        Mail::assertNothingQueued();
+        $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
     }
 
     public function test_courriel_invalide_refuse(): void
     {
-        Mail::fake();
         $this->activer();
         $this->postJson('/recuperation/envoyer', ['courriel' => 'pas-un-courriel', 'coffre' => $this->coffre()], $this->appareil())->assertStatus(422)->assertJsonPath('code', 'courriel_invalide');
-        Mail::assertNothingQueued();
+        $this->assertCount(0, $this->messagesRecus(), 'rien ne doit partir');
     }
 
     public function test_le_courriel_ne_contient_que_le_coffre(): void
@@ -98,9 +102,10 @@ class RecuperationCleTest extends TestCase
         $h = $this->appareil();
         $coffre = $this->coffre('phrase-tres-secrete-123');
         $this->postJson('/recuperation/envoyer', ['courriel' => 'Aide@Clinique.bj', 'coffre' => $coffre], $h)->assertOk()->assertJsonPath('envoye', true);
-        $messages = app('mailer')->getSymfonyTransport()->messages();
+        $messages = $this->messagesRecus();
         $this->assertCount(1, $messages);
-        $texte = $messages[0]->getOriginalMessage()->toString();
+        $this->assertSame(['RCPT TO:<aide@clinique.bj>'], $messages[0]['a']);
+        $texte = $messages[0]['data'];
         $this->assertStringContainsString('aide@clinique.bj', strtolower($texte));
         $this->assertStringContainsString($coffre['ct'], str_replace(["=\r\n", "\r\n "], '', $texte));
         $this->assertStringNotContainsString('phrase-tres-secrete-123', $texte);
@@ -121,13 +126,34 @@ class RecuperationCleTest extends TestCase
 
     public function test_limitation_de_debit_trois_par_heure_et_par_appareil(): void
     {
-        Mail::fake();
         $this->activer();
         $h = $this->appareil();
         for ($i = 0; $i < 3; $i++) {
             $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)->assertOk();
         }
         $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)->assertStatus(429)->assertJsonPath('code', 'trop_de_demandes');
-        Mail::assertQueued(CoffreCleMail::class, 3);
+        $this->assertCount(3, $this->messagesRecus());
+    }
+
+    public function test_sans_smtp_regle_refus_nomme_et_rien_n_est_envoye(): void
+    {
+        DB::table('relais_meta')->where('k', 'like', 'smtp_%')->delete();
+        $this->activer();
+        $h = $this->appareil();
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)
+            ->assertStatus(409)->assertJsonPath('code', 'smtp_non_configure');
+        $this->assertCount(0, $this->messagesRecus());
+        $this->assertSame(0, DB::table('relais_audit')->where('action', 'cle_coffre_envoye_par_poste')->count(), 'aucun « envoyé » ne doit être journalisé');
+    }
+
+    public function test_serveur_injoignable_refus_nomme_a_l_etape_connexion_et_aucun_envoye_au_journal(): void
+    {
+        $this->arreterPuits();
+        $this->activer();
+        $h = $this->appareil();
+        $this->postJson('/recuperation/envoyer', ['courriel' => 'a@b.bj', 'coffre' => $this->coffre()], $h)
+            ->assertStatus(502)->assertJsonPath('code', 'envoi_echoue')->assertJsonPath('etape', 'connexion');
+        $this->assertSame(0, DB::table('relais_audit')->where('action', 'cle_coffre_envoye_par_poste')->count());
+        $this->assertSame(1, DB::table('relais_audit')->where('action', 'cle_coffre_envoi_echoue')->count());
     }
 }

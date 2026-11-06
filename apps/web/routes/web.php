@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\PanneauAuthController;
+use App\Http\Controllers\SmtpController;
 use App\Livewire\Panneau\Alertes;
 use App\Livewire\Panneau\Appareils;
 use App\Livewire\Panneau\Boites;
@@ -44,6 +45,9 @@ Route::prefix('panneau')->group(function () {
         Route::get('/consultation/reglage', [ConsultationController::class, 'reglage'])->name('panneau.consultation.reglage');
         Route::post('/consultation/reglage', [ConsultationController::class, 'enregistrerReglage'])->name('panneau.consultation.reglage.envoi');
         Route::post('/consultation/coffre/envoyer', [ConsultationController::class, 'envoyerCoffre'])->name('panneau.consultation.coffre.envoi');
+        Route::get('/smtp', [SmtpController::class, 'reglage'])->name('panneau.smtp');
+        Route::post('/smtp', [SmtpController::class, 'enregistrer'])->name('panneau.smtp.envoi');
+        Route::post('/smtp/test', [SmtpController::class, 'tester'])->name('panneau.smtp.test')->middleware('throttle:5,1');
         Route::post('/deconnexion', [PanneauAuthController::class, 'deconnecter'])->name('panneau.deconnexion');
     });
 });

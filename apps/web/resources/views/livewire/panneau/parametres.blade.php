@@ -13,6 +13,30 @@
             </tbody>
         </table>
     </div>
+    <div class="carte" wire:ignore x-data="messagerieSmtp('{{ route('panneau.smtp') }}', '{{ route('panneau.smtp.envoi') }}', '{{ route('panneau.smtp.test') }}', '{{ csrf_token() }}')">
+        <h2>Messagerie SMTP du relais</h2>
+        <p class="note">Sans serveur SMTP réglé, le relais n'envoie aucun courriel (récupération de la clé comprise) et le dit. Le mot de passe est enregistré chiffré, jamais relu ni affiché : laisser le champ vide pour conserver l'actuel.</p>
+        <label>Serveur <input type="text" x-model="f.hote" placeholder="smtp.exemple.bj" aria-label="Serveur SMTP"></label>
+        <label>Port <input type="number" x-model.number="f.port" min="1" max="65535" aria-label="Port"></label>
+        <label>Chiffrement
+            <select x-model="f.chiffrement" aria-label="Chiffrement">
+                <option value="starttls">STARTTLS (port 587)</option>
+                <option value="ssl">SSL/TLS (port 465)</option>
+                <option value="aucun">Aucun (réseau local de confiance)</option>
+            </select>
+        </label>
+        <label><input type="checkbox" x-model="f.verifier_certificat"> Vérifier le certificat du serveur</label>
+        <label>Identifiant <input type="text" autocomplete="off" x-model="f.utilisateur" aria-label="Identifiant SMTP"></label>
+        <label>Mot de passe <input type="password" autocomplete="new-password" x-model="f.mdp" :placeholder="mdpDefini ? 'Défini (laisser vide pour conserver)' : 'Aucun mot de passe'" aria-label="Mot de passe SMTP"></label>
+        <label x-show="mdpDefini"><input type="checkbox" x-model="f.effacer_mdp"> Effacer le mot de passe enregistré</label>
+        <label>Adresse d'expéditeur <input type="email" x-model="f.expediteur" placeholder="relais@clinique.bj" aria-label="Adresse d'expéditeur"></label>
+        <label>Nom d'expéditeur <input type="text" x-model="f.expediteur_nom" aria-label="Nom d'expéditeur"></label>
+        <button type="button" @click="enregistrer()">Enregistrer</button>
+        <hr>
+        <label>Envoyer un message de test à <input type="email" x-model="test" placeholder="vous@exemple.bj" aria-label="Destinataire du test"></label>
+        <button type="button" @click="envoyerTest()" :disabled="!configure">Envoyer un message de test</button>
+        <p class="note" x-text="message" role="status"></p>
+    </div>
     <div class="carte" wire:ignore x-data="recuperationCle('{{ route('panneau.consultation.reglage') }}', '{{ route('panneau.consultation.coffre.envoi') }}', '{{ csrf_token() }}')">
         <h2>Récupération de la clé par courriel</h2>
         <p class="note">Désactivée par défaut. Activée, le relais conserve seulement un coffre : la clé de la clinique chiffrée dans votre navigateur par une phrase secrète. Ni la clé ni la phrase ne quittent le navigateur.</p>
@@ -29,6 +53,27 @@
     <script src="{{ asset('js/consultation.js') }}"></script>
     <script>
         document.addEventListener('alpine:init', function () {
+            window.Alpine.data('messagerieSmtp', function (urlReglage, urlEnvoi, urlTest, jeton) {
+                var entetes = { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': jeton };
+                return {
+                    f: { hote: '', port: 587, chiffrement: 'starttls', utilisateur: '', mdp: '', effacer_mdp: false, expediteur: '', expediteur_nom: '', verifier_certificat: true },
+                    mdpDefini: false, configure: false, test: '', message: '',
+                    appliquer(r) { this.f.hote = r.hote; this.f.port = r.port; this.f.chiffrement = r.chiffrement; this.f.utilisateur = r.utilisateur; this.f.expediteur = r.expediteur; this.f.expediteur_nom = r.expediteur_nom; this.f.verifier_certificat = r.verifier_certificat; this.f.mdp = ''; this.f.effacer_mdp = false; this.mdpDefini = r.mdp_defini; this.configure = r.configure; },
+                    async init() { this.appliquer(await (await fetch(urlReglage, { headers: { Accept: 'application/json' } })).json()); },
+                    async enregistrer() {
+                        var r = await fetch(urlEnvoi, { method: 'POST', headers: entetes, body: JSON.stringify(this.f) });
+                        var j = await r.json();
+                        if (r.ok) { this.appliquer(j); this.message = 'Réglages enregistrés.'; }
+                        else { this.message = j.motif || (j.errors ? Object.values(j.errors).flat().join(' ') : j.code); }
+                    },
+                    async envoyerTest() {
+                        this.message = 'Envoi en cours…';
+                        var r = await fetch(urlTest, { method: 'POST', headers: entetes, body: JSON.stringify({ destinataire: this.test }) });
+                        var j = await r.json();
+                        this.message = r.ok ? 'Message de test envoyé à ' + this.test + '.' : (j.etape ? 'Échec à l\'étape « ' + j.etape + ' » : ' + j.motif + ' (' + j.detail + ')' : (j.motif || (j.errors ? Object.values(j.errors).flat().join(' ') : j.code)));
+                    },
+                };
+            });
             window.Alpine.data('recuperationCle', function (urlReglage, urlEnvoi, jeton) {
                 var entetes = { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': jeton };
                 return {

@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Mail\CoffreCleMail;
+use App\Relais\EnvoiEchoue;
+use App\Relais\ReglagesSmtp;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
 /**
@@ -19,9 +20,9 @@ class RecuperationController extends Controller
 {
     public const PAR_HEURE = 3;
 
-    private function refus(int $statut, string $code, string $motif = ''): JsonResponse
+    private function refus(int $statut, string $code, string $motif = '', array $plus = []): JsonResponse
     {
-        return response()->json(['code' => $code, 'motif' => $motif], $statut);
+        return response()->json(['code' => $code, 'motif' => $motif] + $plus, $statut);
     }
 
     private function appareil(Request $r): ?object
@@ -65,12 +66,22 @@ class RecuperationController extends Controller
         if (! ConsultationController::coffreValide($r->input('coffre'))) {
             return $this->refus(422, 'coffre_invalide', 'Seul un coffre (la clé chiffrée par une phrase secrète d\'au moins 12 caractères) est accepté, jamais la clé elle-même.');
         }
+        // Sans messagerie réglée, rien ne part : le dire, au lieu de laisser croire qu'un courriel a été envoyé.
+        if (! ReglagesSmtp::configure()) {
+            return $this->refus(409, 'smtp_non_configure', 'Aucun serveur SMTP n\'est réglé sur le relais : le superadmin doit le renseigner dans les paramètres du relais.');
+        }
         $cle = 'coffre:'.$a->uuid;
         if (RateLimiter::tooManyAttempts($cle, self::PAR_HEURE)) {
             return $this->refus(429, 'trop_de_demandes', 'Trois envois par heure au plus : réessayer dans '.RateLimiter::availableIn($cle).' s.');
         }
         RateLimiter::hit($cle, 3600);
-        Mail::to($courriel)->queue(new CoffreCleMail($r->input('coffre')));
+        try {
+            ReglagesSmtp::envoyer($courriel, new CoffreCleMail($r->input('coffre')));
+        } catch (EnvoiEchoue $e) {
+            DB::table('relais_audit')->insert(['quand' => (int) (microtime(true) * 1000), 'acteur' => $a->uuid, 'action' => 'cle_coffre_envoi_echoue', 'detail' => $e->etape.' vers '.self::masquer($courriel)]);
+
+            return $this->refus(502, 'envoi_echoue', ReglagesSmtp::ETAPES[$e->etape], ['etape' => $e->etape]);
+        }
         DB::table('relais_audit')->insert(['quand' => (int) (microtime(true) * 1000), 'acteur' => $a->uuid, 'action' => 'cle_coffre_envoye_par_poste', 'detail' => self::masquer($courriel)]);
 
         return response()->json(['envoye' => true]);
