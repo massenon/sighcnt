@@ -232,3 +232,52 @@ test('avoir : seul canal de correction ; il vise une facture ÉMISE et le cumul 
   const ref = etat(ops);
   for (const p of permutations(ops)) assert.equal(ser(etat(p)), ser(ref));
 });
+
+/* --- stock : lots, mouvements, produits (famille D, B, A) ------------------------------------------------------------------------------------------------ */
+test('lots : sorties dans la PART de l\'appareil, jamais de stock négatif (RG-03), indépendants du stock de même nom', () => {
+  const ops = [
+    op('mere', 1, 'lots', 'L1', 'creer', { qte: 50 }), op('mere', 2, 'lots', 'L1', 'bail', { appareil: 'F1', qte: 30 }), op('mere', 3, 'lots', 'L1', 'bail', { appareil: 'F2', qte: 20 }),
+    op('F1', 4, 'lots', 'L1', 'sortie', { qte: 25 }), op('F2', 5, 'lots', 'L1', 'sortie', { qte: 25 }), op('F1', 6, 'lots', 'L1', 'sortie', { qte: 10 }),
+    op('mere', 7, 'stock', 'L1', 'creer', { qte: 7 }),
+  ];
+  const e = etat(ops);
+  assert.equal(e.stock['lots/L1'].qte, 25);
+  assert.equal(e.stock.L1.qte, 7, 'le stock historique de même identifiant reste distinct');
+  assert.deepEqual(codes(e), ['hors_part', 'hors_part']);
+  assert.ok(Object.values(e.stock).every((s) => s.qte >= 0));
+  for (const p of permutations(ops).slice(0, 300)) assert.equal(ser(etat(p)), ser(e));
+});
+
+test('mouvements : un journal ; une SORTIE sans justificatif est refusée (RG-03), une entrée n\'en demande pas', () => {
+  const e = etat([
+    op('F1', 1, 'mouvements', 'm1', 'creer', { sens: 'sortie', produit: 'para', qte: 2, justificatif: 'ORD-12' }),
+    op('F1', 2, 'mouvements', 'm2', 'creer', { sens: 'sortie', produit: 'para', qte: 1 }),
+    op('F2', 3, 'mouvements', 'm3', 'creer', { sens: 'entree', produit: 'para', qte: 5 }),
+    op('F2', 4, 'mouvements', 'm1', 'modifier', { qte: 99 }),
+  ]);
+  assert.deepEqual(codes(e), ['journal_immuable', 'justificatif_manquant']);
+  assert.deepEqual(Object.keys(e.fiches).sort(), ['mouvements/m1', 'mouvements/m3']);
+});
+
+test('produits : fiche à fusion par champ, la concurrence est marquée', () => {
+  const e = etat([op('F1', 1, 'produits', 'p1', 'creer', { prix: 100 }), op('F1', 5, 'produits', 'p1', 'modifier', { prix: 110 }, { vu: { prix: 1 } }), op('F2', 6, 'produits', 'p1', 'modifier', { prix: 120 }, { vu: { prix: 1 } })]);
+  assert.equal(e.conflits.length, 1);
+  assert.equal(e.fiches['produits/p1'].data.prix, 120);
+});
+
+test('admissions : deux admissions actives sur un même lit sont MARQUÉES, aucune refusée ; transférer l\'une lève la marque ; indépendant de l\'ordre', () => {
+  const ops = [
+    op('F1', 1, 'admissions', 'a1', 'creer', { lit: 'Ch2-L1', statut: 'en_cours' }), op('F2', 1, 'admissions', 'a2', 'creer', { lit: 'Ch2-L1', statut: 'en_cours' }),
+    op('F1', 2, 'admissions', 'a3', 'creer', { lit: 'Ch2-L2', statut: 'en_cours' }),
+  ];
+  const e = etat(ops);
+  assert.equal(e.fiches['admissions/a1'].litEnConflit, true);
+  assert.equal(e.fiches['admissions/a2'].litEnConflit, true);
+  assert.equal(e.fiches['admissions/a3'].litEnConflit, undefined);
+  assert.equal(codes(e).length, 0, 'aucune refusée');
+  for (const p of permutations(ops)) assert.equal(ser(etat(p)), ser(e));
+  const apres = etat([...ops, op('F1', 5, 'admissions', 'a2', 'modifier', { lit: 'Ch2-L3' }, { vu: { lit: 1 } })]);
+  assert.equal(apres.fiches['admissions/a1'].litEnConflit, undefined, 'le transfert lève la marque');
+  const sortie = etat([...ops, op('F1', 5, 'admissions', 'a2', 'modifier', { statut: 'terminee' }, { vu: { statut: 1 } })]);
+  assert.equal(sortie.fiches['admissions/a1'].litEnConflit, undefined, 'la sortie lève la marque');
+});

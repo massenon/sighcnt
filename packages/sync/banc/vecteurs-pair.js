@@ -86,6 +86,30 @@ ajouter('avoir : facture non émise refusée, cumul plafonné, canal de correcti
   op('F1', 6, 'factures', 'f1', 'modifier', { total: 1 }, { role: 'caissier', vu: { total: 1 } }),
 ]);
 
+/* stock : lots (famille D, distincts du stock de même nom), mouvements (journal, justificatif RG-03), produits (fiche) */
+ajouter('lots : parts, sorties hors part refusées, indépendants du stock de même identifiant', [
+  op('mere', 1, 'lots', 'L1', 'creer', { qte: 50 }, { role: 'stock' }), op('mere', 2, 'lots', 'L1', 'bail', { appareil: 'F1', qte: 30 }, { role: 'stock' }), op('mere', 3, 'lots', 'L1', 'bail', { appareil: 'F2', qte: 20 }, { role: 'stock' }),
+  op('F1', 4, 'lots', 'L1', 'sortie', { qte: 25 }, { role: 'infirmier' }), op('F2', 5, 'lots', 'L1', 'sortie', { qte: 25 }, { role: 'infirmier' }), op('F1', 6, 'lots', 'L1', 'sortie', { qte: 10 }, { role: 'infirmier' }),
+  op('mere', 7, 'stock', 'L1', 'creer', { qte: 7 }, { role: 'stock' }),
+]);
+ajouter('mouvements : sortie sans justificatif refusée, journal immuable', [
+  op('F1', 1, 'mouvements', 'm1', 'creer', { sens: 'sortie', qte: 2, justificatif: 'ORD-12' }, { role: 'pharmacien' }), op('F1', 2, 'mouvements', 'm2', 'creer', { sens: 'sortie', qte: 1 }, { role: 'pharmacien' }),
+  op('F2', 3, 'mouvements', 'm3', 'creer', { sens: 'entree', qte: 5 }, { role: 'stock' }), op('F2', 4, 'mouvements', 'm1', 'modifier', { qte: 99 }, { role: 'stock' }),
+]);
+ajouter('produits : concurrence marquée, décision de la personne habilitée', [
+  op('F1', 1, 'produits', 'p1', 'creer', { prix: 100 }, { role: 'stock' }), op('F1', 5, 'produits', 'p1', 'modifier', { prix: 110 }, { role: 'stock', vu: { prix: 1 } }),
+  op('F2', 6, 'produits', 'p1', 'modifier', { prix: 120 }, { role: 'stock', vu: { prix: 1 } }), op('mere', 8, 'produits', 'p1', 'trancher', { prix: 110 }, { role: 'mere' }),
+]);
+
+ajouter('admissions : deux admissions actives sur un même lit marquées sur les deux, la sortie de l\'une lève la marque', [
+  op('F1', 1, 'admissions', 'a1', 'creer', { lit: 'Ch2-L1', statut: 'en_cours' }, { role: 'reception' }), op('F2', 1, 'admissions', 'a2', 'creer', { lit: 'Ch2-L1', statut: 'en_cours' }, { role: 'infirmier' }),
+  op('F1', 2, 'admissions', 'a3', 'creer', { lit: 'Ch2-L2', statut: 'en_cours' }, { role: 'reception' }),
+]);
+ajouter('admissions : le transfert de l\'une lève la marque', [
+  op('F1', 1, 'admissions', 'a1', 'creer', { lit: 'Ch2-L1', statut: 'en_cours' }, { role: 'reception' }), op('F2', 1, 'admissions', 'a2', 'creer', { lit: 'Ch2-L1', statut: 'en_cours' }, { role: 'infirmier' }),
+  op('F1', 5, 'admissions', 'a2', 'modifier', { lit: 'Ch2-L3' }, { role: 'reception', vu: { lit: 1 } }),
+]);
+
 /* cas engendrés (graine fixe) : mélange de familles, rôles valides ou non, hlc égaux entre appareils, doublons */
 let s = 20261105;
 const alea = (m) => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s % m; };

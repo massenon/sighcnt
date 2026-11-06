@@ -21,6 +21,10 @@ const Map<String, String> famillesPair = {
   'notes': 'B',
   'factures': 'C',
   'avoirs': 'C',
+  'lots': 'D',
+  'mouvements': 'B',
+  'produits': 'A',
+  'admissions': 'A',
   'ecritures': 'C',
   'prescriptions': 'C',
   'stock': 'D',
@@ -138,7 +142,28 @@ class EtatPair {
       };
 }
 
+bool _vrai(Object? v) => !(v == null || v == false || v == '' || (v is num && v == 0));
+
 num _nombre(Object? v) => v is num ? v : (v is String ? (num.tryParse(v) ?? 0) : 0);
+
+/// A (admissions) : un lit ne porte qu'UNE admission active. Deux admissions `en_cours` sur le même lit, créées chacune hors ligne, sont MARQUÉES `litEnConflit` sur les deux :
+/// aucune n'est refusée ni déplacée (un patient est réellement là), l'établissement transfère l'un d'eux. Calculé sur l'état final, indépendant de l'ordre d'arrivée.
+void _marquerLits(EtatPair e) {
+  final parLit = <String, List<Map<String, Object?>>>{};
+  for (final en in e.fiches.entries) {
+    final f = en.value;
+    final data = f['data']! as Map<String, Object?>;
+    if (!en.key.startsWith('admissions/') || f['archive'] == true || data['statut'] != 'en_cours' || !_vrai(data['lit'])) continue;
+    parLit.putIfAbsent('${data['lit']}', () => []).add(f);
+  }
+  for (final l in parLit.values) {
+    if (l.length > 1) {
+      for (final f in l) {
+        f['litEnConflit'] = true;
+      }
+    }
+  }
+}
 
 /// C : l'ÉMISSION d'une pièce certifiante. Le numéro, une fois posé, ne se réécrit jamais ; un numéro porté par deux pièces émises est MARQUÉ (`doublon`) sur les
 /// deux et n'est jamais renuméroté (RG-01, pièce émise intouchable). Une écriture ne s'émet que ÉQUILIBRÉE (RG-10).
@@ -254,6 +279,11 @@ EtatPair etatPair(Iterable<OperationPair> ops, {DroitsOperation? droits}) {
         e.refusees.add(RefusPair(op.id, op.appareil, 'fiche_existe', 'Ligne déjà présente.'));
         continue;
       }
+      // RG-03 : toute sortie de stock est rattachée à un justificatif
+      if (op.collection == 'mouvements' && op.champs['sens'] == 'sortie' && !_vrai(op.champs['justificatif'])) {
+        e.refusees.add(RefusPair(op.id, op.appareil, 'justificatif_manquant', 'Toute sortie de stock porte son justificatif (RG-03).'));
+        continue;
+      }
       e.fiches[k] = {
         'data': {...op.champs},
         'hlc': {for (final c in op.champs.keys) c: op.hlc},
@@ -342,6 +372,7 @@ EtatPair etatPair(Iterable<OperationPair> ops, {DroitsOperation? droits}) {
       }
     }
   }
+  _marquerLits(e);
   // tri STABLE (Dart ne garantit pas la stabilité de List.sort) : l'ordre de pliage départage les conflits de même clé
   final indexes = {for (var i = 0; i < e.conflits.length; i++) e.conflits[i]: i};
   e.conflits.sort((x, y) {
@@ -353,7 +384,8 @@ EtatPair etatPair(Iterable<OperationPair> ops, {DroitsOperation? droits}) {
 
 /// D : ouverture et entrées par un rôle habilité ; la PART d'un appareil est un bail accordé ; une sortie hors part n'est JAMAIS appliquée (RG-03).
 void _stock(EtatPair e, OperationPair op) {
-  final s = e.stock.putIfAbsent(op.fiche, () => {'qte': 0, 'ouvert': false, 'parts': <String, Object?>{}, 'sorties': <String, Object?>{}});
+  final sk = op.collection == 'stock' ? op.fiche : '${op.collection}/${op.fiche}'; // le stock historique garde sa clé nue : les lots ne la partagent pas
+  final s = e.stock.putIfAbsent(sk, () => {'qte': 0, 'ouvert': false, 'parts': <String, Object?>{}, 'sorties': <String, Object?>{}});
   final parts = s['parts']! as Map<String, Object?>;
   final sorties = s['sorties']! as Map<String, Object?>;
   final q = _quantite(op);
@@ -441,6 +473,10 @@ const Map<String, Map<String, List<String>>> droitsBancPair = {
   'notes': {'*': ['infirmier', 'medecin', 'x']},
   'factures': {'*': ['caissier', 'da', 'x'], 'trancher': ['da', 'mere']},
   'avoirs': {'*': ['comptable', 'da', 'x'], 'trancher': ['da', 'mere']},
+  'lots': {'creer': ['stock', 'da'], 'entree': ['stock', 'da'], 'bail': ['stock', 'da'], 'sortie': ['stock', 'da', 'infirmier', 'pharmacien']},
+  'mouvements': {'*': ['stock', 'da', 'infirmier', 'pharmacien', 'x']},
+  'produits': {'*': ['stock', 'da', 'x'], 'trancher': ['da', 'mere']},
+  'admissions': {'*': ['reception', 'infirmier', 'medecin', 'da', 'x'], 'trancher': ['da', 'mere']},
   'ecritures': {'*': ['comptable', 'da', 'x'], 'trancher': ['da', 'mere']},
   'prescriptions': {'*': ['medecin', 'x']},
   'consultations': {'*': ['medecin', 'da', 'x'], 'trancher': ['da', 'mere']},
@@ -490,6 +526,10 @@ const Map<String, String> ecranParCollectionPair = {
   'notes': 'm13-notes-service',
   'factures': 'm8-factures',
   'avoirs': 'm8-facture-avoir',
+  'lots': 'm6-lots',
+  'mouvements': 'm6-mouvements',
+  'produits': 'm6-stock-detail',
+  'admissions': 'm3-admissions',
   'ecritures': 'm12-ecritures',
   'prescriptions': 'm2-prescriptions',
   'stock': 'm6-stock-detail',
@@ -501,6 +541,11 @@ const Map<String, String> ecranParCollectionPair = {
   'observations': 'm3-observation',
   'releves': 'm3-feuille-temperature',
 };
+
+/// Les collections de famille A que le pont d'activité du POSTE ne doit PAS encore porter : le catalogue des produits est écrit par la mère seule (famille R du pont
+/// existant) et les admissions ont leur propre marquage de lit dans `fusion_activite.dart`. Le poste retranche cet ensemble de ses familles A tant que ces deux
+/// collections ne sont pas branchées volontairement.
+const Set<String> collectionsPairSansPontPoste = {'produits', 'admissions'};
 
 /// Ceux qui TRANCHENT un conflit ou VALIDENT un flux : une décision institutionnelle, pas une saisie. `mere` est l'appareil de la mère (ses décisions à son retour).
 const List<String> rolesQuiTranchentPair = ['da', 'direction', 'admin', 'mere'];

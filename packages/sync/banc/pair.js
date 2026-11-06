@@ -17,6 +17,7 @@
  * ========================================================================== */
 
 const FAMILLES = { patients: 'A', rendezvous: 'A', constantes: 'B', notes: 'B', factures: 'C', avoirs: 'C', ecritures: 'C', prescriptions: 'C', stock: 'D', besoins: 'W',
+  lots: 'D', mouvements: 'B', produits: 'A', admissions: 'A',
   consultations: 'A', dossiersConsultation: 'A', antecedents: 'A', appels: 'A', observations: 'A', releves: 'B' };
 
 /** Ordre total identique sur tous les appareils. */
@@ -58,6 +59,8 @@ function etat(ops, droits = () => true) {
     if (fam === 'B') {
       if (op.type !== 'creer') { marque(E, op, 'journal_immuable', 'Un journal ne se modifie pas.'); continue; }
       if (f) { marque(E, op, 'fiche_existe', 'Ligne déjà présente.'); continue; }
+      // RG-03 : toute sortie de stock est rattachée à un justificatif
+      if (op.collection === 'mouvements' && op.champs.sens === 'sortie' && !op.champs.justificatif) { marque(E, op, 'justificatif_manquant', 'Toute sortie de stock porte son justificatif (RG-03).'); continue; }
       E.fiches[k] = { data: { ...op.champs }, hlc: Object.fromEntries(Object.keys(op.champs).map((c) => [c, op.hlc])), archive: false };
       continue;
     }
@@ -96,8 +99,20 @@ function etat(ops, droits = () => true) {
       }
     }
   }
+  marquerLits(E);
   E.conflits.sort((x, y) => (x.fiche + x.champ).localeCompare(y.fiche + y.champ));
   return E;
+}
+
+/* A (admissions) : un lit ne porte qu'UNE admission active. Deux admissions `en_cours` sur le même lit, créées chacune hors ligne, sont MARQUÉES `litEnConflit` sur les deux :
+   aucune n'est refusée ni déplacée (un patient est réellement là), l'établissement transfère l'un d'eux. Calculé sur l'état final, donc indépendant de l'ordre d'arrivée. */
+function marquerLits(E) {
+  const parLit = {};
+  for (const [k, f] of Object.entries(E.fiches)) {
+    if (!k.startsWith('admissions/') || f.archive || f.data.statut !== 'en_cours' || !f.data.lit) continue;
+    (parLit[f.data.lit] = parLit[f.data.lit] || []).push(f);
+  }
+  for (const l of Object.values(parLit)) if (l.length > 1) for (const f of l) f.litEnConflit = true;
 }
 
 /* C : l'ÉMISSION d'une pièce certifiante. Le numéro, une fois posé, ne se réécrit jamais ; un numéro porté par deux pièces émises est MARQUÉ (`doublon`) sur les deux et
@@ -137,7 +152,8 @@ function avoirValide(E, op) {
 
 /* D : ouverture et entrées par un rôle habilité ; la PART d'un appareil est un bail accordé ; une sortie hors part n'est JAMAIS appliquée (RG-03). */
 function stock(E, op) {
-  const s = (E.stock[op.fiche] = E.stock[op.fiche] || { qte: 0, ouvert: false, parts: {}, sorties: {} });
+  const sk = op.collection === 'stock' ? op.fiche : `${op.collection}/${op.fiche}`; // le stock historique garde sa clé nue : les lots ne la partagent pas
+  const s = (E.stock[sk] = E.stock[sk] || { qte: 0, ouvert: false, parts: {}, sorties: {} });
   const q = +(op.champs && op.champs.qte) || 0;
   if (op.type === 'creer') { if (s.ouvert) return marque(E, op, 'fiche_existe', 'Stock déjà ouvert.'); s.ouvert = true; s.qte += q; return; }
   if (!s.ouvert) return marque(E, op, 'fiche_inconnue', 'Stock non ouvert : ' + op.fiche);
@@ -194,6 +210,10 @@ const DROITS_BANC = {
   appels: { '*': ['reception', 'da', 'x'], trancher: ['da', 'mere'] },
   observations: { '*': ['infirmier', 'medecin', 'x'], trancher: ['da', 'mere'] },
   releves: { '*': ['infirmier', 'medecin', 'x'] },
+  lots: { creer: ['stock', 'da'], entree: ['stock', 'da'], bail: ['stock', 'da'], sortie: ['stock', 'da', 'infirmier', 'pharmacien'] },
+  mouvements: { '*': ['stock', 'da', 'infirmier', 'pharmacien', 'x'] },
+  produits: { '*': ['stock', 'da', 'x'], trancher: ['da', 'mere'] },
+  admissions: { '*': ['reception', 'infirmier', 'medecin', 'da', 'x'], trancher: ['da', 'mere'] },
 };
 function droitsBanc(op) {
   const c = DROITS_BANC[op.collection]; if (!c) return false;
