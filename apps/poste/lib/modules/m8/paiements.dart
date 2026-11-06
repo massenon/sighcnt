@@ -269,6 +269,16 @@ class _EcranPaiementsState extends State<EcranPaiements> {
                           type: TypeToast.erreur);
                       return;
                     }
+                    // La référence de la transaction et l'observation s'ÉCRIVENT sur la facture (même champ que m8-caisse) : elles ne
+                    // vivaient que sur le reçu imprimé une fois, et la réimpression affichait un tiret.
+                    final ref = '${v['reference'] ?? ''}'.trim();
+                    final obs = '${v['observation'] ?? ''}'.trim();
+                    if (ref.isNotEmpty || obs.isNotEmpty) {
+                      c.magasin.collection('factures').mettreAJour('${f['id']}', {
+                        if (ref.isNotEmpty) 'referenceTransaction': ref,
+                        if (obs.isNotEmpty) 'observationReglement': obs,
+                      });
+                    }
                     fermer();
                     ToastsSigh.afficher(ctx,
                         'Encaissement de ${money(res.montantRegle)} enregistré.',

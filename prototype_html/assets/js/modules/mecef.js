@@ -742,11 +742,11 @@
   global.SIGH.screen('mecef-config', {
     title: 'Configuration fiscale',
     description: 'Paramètres d’émission : identifiants légaux, numérotation, taux de TVA et préfixes.',
-    regle: 'Ces paramètres alimentent automatiquement toutes les factures normalisées : ils ne doivent jamais être saisis facture par facture.',
+    regle: 'Cet écran <strong>affiche</strong> la configuration fiscale en vigueur (identité de la clinique, régime de TVA, taux d’AIB, préfixes). Elle est lue des référentiels du logiciel et <strong>ne se modifie pas ici</strong> : l’identité se règle à « Identité & papier à en-tête », le régime de TVA est arrêté par la comptabilité. Rien n’est saisi facture par facture.',
     render: function (root) {
       var host = el('div.grid.gap-4.lg\\:grid-cols-2');
 
-      var f = U.form([
+      var champsConfig = [
         { type: 'section', label: 'Identification légale de l’émetteur' },
         { name: 'raisonSociale', label: 'Raison sociale', required: true, col: 'full', value: C.BRAND.nom },
         { name: 'ifu', label: 'IFU', required: true, value: C.BRAND.ifu },
@@ -774,27 +774,20 @@
         { name: 'modeTransmission', label: 'Mode de transmission', type: 'select', options: ['Automatique à l’émission', 'Manuelle groupée', 'Différée en fin de journée'], value: 'Automatique à l’émission' },
         { name: 'delaiRetransmission', label: 'Délai avant nouvelle tentative (minutes)', type: 'number', value: 15 },
         { name: 'archivageAuto', label: 'Archivage automatique des factures transmises', type: 'checkbox', value: true, col: 'full' },
-      ], {});
+      ];
+      /* LECTURE : aucun champ ne s'écrit nulle part (le bouton « Enregistrer » n'écrivait que le journal et annonçait
+         des valeurs « enregistrées » qui revenaient à la constante au rechargement). Les champs sont verrouillés et la
+         commande est ABSENTE : un geste qui ne conserve rien ne se propose pas. */
+      var f = U.form(champsConfig.map(function (c) {
+        return c.type === 'section' ? c : Object.assign({}, c, { disabled: true });
+      }), {});
 
       var carte = el('div');
       carte.appendChild(U.card('Paramètres fiscaux', el('div', null, [
+        K.note('<strong>Lecture seule.</strong> Ces valeurs sont celles des référentiels du logiciel : les modifier ici ne conserverait rien. '
+          + 'L’identité légale se règle à « Identité & papier à en-tête ».', { tone: 'info', icon: 'info' }),
         f,
         el('div.mt-4.flex.flex-wrap.gap-2', null, [
-          /* La configuration fiscale commande TOUTES les factures
-             normalisées à venir : elle ne se règle pas depuis un profil qui
-             ne fait que consulter la MECeF. */
-          K.commande('Enregistrer les paramètres', {
-            variant: 'primary', icon: 'save',
-            onclick: function () {
-              var v = f.collect();
-              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
-              S.log('Modification', 'MECEF', 'ConfigurationFiscale', 'CONFIG', null, v);
-              U.toast('Paramètres fiscaux enregistrés.', {
-                type: 'success',
-                detail: 'Ces valeurs alimenteront toutes les prochaines factures normalisées.',
-              });
-            },
-          }),
           K.btn('Tester la connexion au dispositif', {
             icon: 'plug-zap',
             onclick: function () {
