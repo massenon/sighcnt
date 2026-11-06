@@ -8,6 +8,7 @@ import '../../kit/kit.dart';
 import '../../shell/contexte_autonome.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../sync/config_smtp.dart';
+import '../../sync/file_courriels.dart';
 import '../../sync/service_smtp.dart';
 import 'acc_gabarit.dart';
 
@@ -317,26 +318,55 @@ class _EtatContact extends State<EcranContactEditeur> {
     }
     final texte = '${donnees['description'] ?? ''}${donnees['etapes'] != null ? '\n\nÉtapes pour reproduire :\n${donnees['etapes']}' : ''}'
         '\n\nRéférence : $reference${donnees['module'] != null ? '\nModule : ${donnees['module']}' : ''}';
-    ResultatSmtp? res;
-    try {
-      res = await ServiceSmtp.ecrireALEditeur(_dossierSmtp!,
-          destinataire: '${(accEditeur['emails'] as List).first}', sujet: '[SIGH-CNT] ${donnees['objet']}', corps: texte);
-    } on FormatException catch (e) {
-      res = ResultatSmtp([EtapeSmtp('connexion', false, e.message)], 'connexion');
+    // Le courriel entre dans la FILE D'ENVOI du poste (écrite sur disque avant tout essai) : un serveur injoignable ne perd rien, l'envoi est repris (1 min, 5 min,
+    // 30 min, 2 h, 12 h). Le premier essai part tout de suite ; son issue décide du message affiché.
+    final file = EtatSmtpPoste.file;
+    if (file == null) {
+      col.mettreAJour(r.fiche['id'], {'courriel': 'echec'});
+      ToastsSigh.afficher(context, accToastCourrielNonParti, type: TypeToast.attention, detail: 'Messagerie non configurée. Référence $reference.');
+      return;
     }
-    col.mettreAJour(r.fiche['id'], {'courriel': res != null && res.ok ? 'envoye' : 'echec'});
+    final m = file.ajouter(destinataire: '${(accEditeur['emails'] as List).first}', sujet: '[SIGH-CNT] ${donnees['objet']}', corps: texte, reference: reference);
+    col.mettreAJour(r.fiche['id'], {'courriel': 'file', 'courrielId': m.id});
+    await file.traiter();
     if (!mounted) return;
-    if (res != null && res.ok) {
+    final etat = file.message(m.id);
+    if (etat?.etat == 'parti') {
       ToastsSigh.afficher(context, accToastCourrielParti(type), type: TypeToast.succes, detail: accDetailCourrielParti(reference));
     } else {
-      final e = res?.etapes.where((x) => !x.ok).firstOrNull;
-      ToastsSigh.afficher(context, accToastCourrielNonParti, type: TypeToast.attention, detail: '${e?.detail ?? 'Messagerie non configurée.'} Référence $reference.');
+      ToastsSigh.afficher(context, accToastCourrielEnFile,
+          type: TypeToast.attention, detail: '${etat?.detailEchec ?? 'Premier essai en échec.'} ${accLibelleProchainEssai(etat)} Référence $reference.');
     }
+  }
+
+  /// La cellule « Courriel » : l'état RÉEL du message dans la file (en file avec l'heure du prochain essai, en cours, parti, échec définitif avec « Renvoyer »).
+  Widget _celluleCourriel(Map<String, Object?> r, FileCourriels? file) {
+    final m = r['courrielId'] == null ? null : file?.message('${r['courrielId']}');
+    if (m != null) {
+      switch (m.etat) {
+        case 'parti':
+          return const BadgeSigh('Parti', ton: TonSigh.succes);
+        case 'en_cours':
+          return const BadgeSigh('Envoi en cours', ton: TonSigh.info);
+        case 'echec_definitif':
+          return Row(mainAxisSize: MainAxisSize.min, children: [
+            Tooltip(message: '${m.etapeEchec ?? ''} : ${m.detailEchec ?? ''}', child: const BadgeSigh('Échec définitif', ton: TonSigh.danger)),
+            const SizedBox(width: 8),
+            BoutonSigh(key: Key('support:renvoyer:${m.id}'), libelle: 'Renvoyer', taille: TailleBouton.sm, variante: VarianteBouton.secondaire, onPressed: () => file!.renvoyer(m.id)),
+          ]);
+        default:
+          return Tooltip(message: '${m.etapeEchec ?? ''} ${m.detailEchec ?? ''}'.trim(), child: BadgeSigh(accLibelleCourriel(r, file), ton: TonSigh.attention));
+      }
+    }
+    return r['courriel'] == 'envoye'
+        ? const BadgeSigh('Envoyé', ton: TonSigh.succes)
+        : (r['courriel'] == 'echec' ? const BadgeSigh('Non parti', ton: TonSigh.attention) : const BadgeSigh('Enregistrée seulement', ton: TonSigh.neutre));
   }
 
   @override
   Widget build(BuildContext context) {
     final c = ContexteEcran.of(context);
+    final file = EtatSmtpPoste.file;
     final manifeste = _manifesteDe(context);
     final options = accOptionsModules(manifeste);
     _message ??= ControleurFormulaire([
@@ -455,7 +485,7 @@ class _EtatContact extends State<EcranContactEditeur> {
           ])),
       const SizedBox(height: 16),
       ListenableBuilder(
-          listenable: col,
+          listenable: file == null ? col : Listenable.merge([col, file]),
           builder: (context, _) {
             final lignes = [...col.actives]..sort((a, b) => '${b['reference']}'.compareTo('${a['reference']}'));
             if (lignes.isEmpty) return const SizedBox.shrink();
@@ -469,10 +499,7 @@ class _EtatContact extends State<EcranContactEditeur> {
                       rendu: (r) => r['type'] == 'anomalie' ? const BadgeSigh('Anomalie', ton: TonSigh.danger) : const BadgeSigh('Message', ton: TonSigh.info)),
                   ColonneMini('Objet', (r) => '${r['objet']}'),
                   ColonneMini('Module', (r) => r['module'] == null ? '—' : '${r['module']}'),
-                  ColonneMini('Courriel', (r) => r['courriel'] == 'envoye' ? 'Envoyé' : (r['courriel'] == 'echec' ? 'Non parti' : 'Enregistrée seulement'),
-                      rendu: (r) => r['courriel'] == 'envoye'
-                          ? const BadgeSigh('Envoyé', ton: TonSigh.succes)
-                          : (r['courriel'] == 'echec' ? const BadgeSigh('Non parti', ton: TonSigh.attention) : const BadgeSigh('Enregistrée seulement', ton: TonSigh.neutre))),
+                  ColonneMini('Courriel', (r) => accLibelleCourriel(r, file), rendu: (r) => FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: _celluleCourriel(r, file))),
                 ], lignes: lignes.take(10).toList()));
           }),
     ]);
@@ -665,4 +692,34 @@ class _CartePlan extends StatelessWidget {
                     Expanded(child: Text(e.label, overflow: TextOverflow.ellipsis, style: const TextStyle(color: JetonsShell.slate600, fontSize: 12, height: 16 / 12))),
                   ]))),
       ]));
+}
+
+
+const String accToastCourrielEnFile = 'Demande enregistrée, le courriel est en file.';
+
+/// « Prochain essai à HH:MM » (heure locale du poste), ou rien si le message n'est plus en file.
+String accLibelleProchainEssai(MessageCourriel? m) {
+  final t = m?.prochainEssaiLe;
+  if (m == null || m.etat != 'en_file' || t == null) return '';
+  final l = t.toLocal();
+  return 'Prochain essai à ${l.hour.toString().padLeft(2, '0')}:${l.minute.toString().padLeft(2, '0')}.';
+}
+
+/// Le libellé texte de l'état du courriel d'une demande (colonne « Courriel »).
+String accLibelleCourriel(Map<String, Object?> r, FileCourriels? file) {
+  final m = r['courrielId'] == null ? null : file?.message('${r['courrielId']}');
+  if (m != null) {
+    switch (m.etat) {
+      case 'parti':
+        return 'Parti';
+      case 'en_cours':
+        return 'Envoi en cours';
+      case 'echec_definitif':
+        return 'Échec définitif';
+      default:
+        final t = m.prochainEssaiLe?.toLocal();
+        return t == null ? 'En file' : 'En file, prochain essai à ${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+    }
+  }
+  return r['courriel'] == 'envoye' ? 'Envoyé' : (r['courriel'] == 'echec' ? 'Non parti' : 'Enregistrée seulement');
 }

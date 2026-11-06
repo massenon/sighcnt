@@ -130,7 +130,7 @@ String _enteteTexte(String s) => RegExp(r'[^\x20-\x7e]').hasMatch(s) ? '=?UTF-8?
 String _nettoyer(String s) => s.replaceAll(RegExp(r'[\r\n]+'), ' ').trim();
 final _adresse = RegExp(r'^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$');
 
-Future<ResultatSmtp> envoyerSmtp(ConfigSmtp cfg, List<String> destinataires, String sujet, String corps) async {
+Future<ResultatSmtp> envoyerSmtp(ConfigSmtp cfg, List<String> destinataires, String sujet, String corps, {String? messageId}) async {
   final etapes = <EtapeSmtp>[];
   ResultatSmtp fin(String? echec) => ResultatSmtp(etapes, echec);
   bool ajouter(String etape, bool ok, String detail) {
@@ -287,7 +287,9 @@ Future<ResultatSmtp> envoyerSmtp(ConfigSmtp cfg, List<String> destinataires, Str
   final nomAffiche = _nettoyer(cfg.nom);
   final domaine = expediteur.contains('@') ? expediteur.split('@').last : 'sigh-cnt.local';
   final alea = Random.secure();
-  final id = [for (var i = 0; i < 12; i++) alea.nextInt(256).toRadixString(16).padLeft(2, '0')].join();
+  // `messageId` : l'identifiant STABLE d'un message de la file d'envoi du poste ; une reprise après interruption le réémet à l'identique, le destinataire peut dédoublonner.
+  final stable = messageId == null ? '' : messageId.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '');
+  final id = stable.isNotEmpty ? stable : [for (var i = 0; i < 12; i++) alea.nextInt(256).toRadixString(16).padLeft(2, '0')].join();
   final b64 = base64.encode(utf8.encode(corps));
   final corpsB64 = [for (var i = 0; i < b64.length; i += 76) b64.substring(i, min(i + 76, b64.length))].join('\r\n');
   // « Répondre à » : une adresse valide, avec son nom si on en donne un ; invalide ou vide, l'en-tête est omis (jamais une adresse devinée).

@@ -260,6 +260,7 @@ Future<void> main() async {
   MoteurPair? moteurPair;
   EtatPairPoste.dossier = dossierDonnees;
   EtatSmtpPoste.dossier = dossierDonnees;
+  EtatSmtpPoste.file?.demarrer(); // file d'envoi des courriels : reprise des messages interrompus, puis un essai toutes les 30 s
   try {
     final cp = ConfigPairPoste.lire(dossierDonnees);
     if (cp != null) {

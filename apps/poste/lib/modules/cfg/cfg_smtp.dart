@@ -5,6 +5,7 @@ import '../../core/jetons_shell.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import '../../sync/config_smtp.dart';
+import '../../sync/file_courriels.dart';
 import '../../sync/service_smtp.dart';
 import 'cfa_commun.dart';
 import 'cfb_commun.dart';
@@ -203,6 +204,52 @@ class _EtatSmtp extends State<EcranSmtp> {
               ])),
       ]);
 
+  /// Les courriels de la file, du plus récent au plus ancien, avec leur état RÉEL et, pour un échec définitif, le bouton « Renvoyer ».
+  Widget _carteFile(FileCourriels file, bool peutAgir) {
+    final lignes = [...file.messages]..sort((a, b) => b.creeLe.compareTo(a.creeLe));
+    String hm(DateTime? t) => t == null ? '' : '${t.toLocal().hour.toString().padLeft(2, '0')}:${t.toLocal().minute.toString().padLeft(2, '0')}';
+    return CarteSigh(
+        titre: 'Courriels en file d’envoi',
+        sansRemplissage: true,
+        child: MiniTableauSigh(colonnes: [
+          ColonneMini('Objet', (m) => '${m['sujet']}'),
+          ColonneMini('Destinataire', (m) => '${m['destinataire']}'),
+          ColonneMini('État', (m) => '${m['libelle']}', rendu: (m) => FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: _celluleEtat(file, peutAgir, m))),
+          ColonneMini('Essais', (m) => '${m['essais']}'),
+        ], lignes: [
+          for (final m in lignes.take(20))
+            {
+              'id': m.id,
+              'sujet': m.sujet,
+              'destinataire': m.destinataire,
+              'etat': m.etat,
+              'etape': m.etapeEchec,
+              'detail': m.detailEchec,
+              'essais': m.essais,
+              'libelle': switch (m.etat) {
+                'parti' => 'Parti',
+                'en_cours' => 'Envoi en cours',
+                'echec_definitif' => 'Échec définitif',
+                _ => m.prochainEssaiLe == null ? 'En file' : 'En file, prochain essai à ${hm(m.prochainEssaiLe)}',
+              },
+            }
+        ]));
+  }
+
+  Widget _celluleEtat(FileCourriels file, bool peutAgir, Map<String, Object?> m) {
+    final id = '${m['id']}';
+    if (m['etat'] == 'echec_definitif') {
+      return Row(mainAxisSize: MainAxisSize.min, children: [
+        Tooltip(message: '${m['etape']} : ${m['detail']}', child: const BadgeSigh('Échec définitif', ton: TonSigh.danger)),
+        if (peutAgir) ...[
+          const SizedBox(width: 8),
+          BoutonSigh(key: Key('smtp:renvoyer:$id'), libelle: 'Renvoyer', taille: TailleBouton.sm, variante: VarianteBouton.secondaire, onPressed: () => file.renvoyer(id)),
+        ],
+      ]);
+    }
+    return BadgeSigh('${m['libelle']}', ton: m['etat'] == 'parti' ? TonSigh.succes : (m['etat'] == 'en_cours' ? TonSigh.info : TonSigh.attention));
+  }
+
   static String _dateFr(String iso) {
     final p = iso.split('T').first.split('-');
     return p.length == 3 ? '${p[2]}/${p[1]}/${p[0]}' : iso;
@@ -216,7 +263,7 @@ class _EtatSmtp extends State<EcranSmtp> {
     final chiffrement = _brut['chiffrement'] ?? 'starttls';
     final defini = _brut['motDePasseDefini'] == true;
     return ListenableBuilder(
-        listenable: Listenable.merge([_config!, _test!]),
+        listenable: Listenable.merge([_config!, _test!, if (EtatSmtpPoste.file != null) EtatSmtpPoste.file!]),
         builder: (ctx, _) => cfaPile([
               KpiGrilleSigh(kpis: [
                 KpiSigh(libelle: 'Messagerie', valeur: configure ? 'Configurée' : 'Non configurée', icone: LucideIcons.mail, ton: configure ? TonSigh.succes : TonSigh.attention),
@@ -258,6 +305,8 @@ class _EtatSmtp extends State<EcranSmtp> {
                           style: const TextStyle(fontSize: 14, color: JetonsShell.slate600)),
                     if (_adresseTest.isEmpty) const SizedBox.shrink(),
                   ])),
+              // La FILE D'ENVOI : visible seulement quand elle porte au moins un message (jamais une carte vide).
+              if (EtatSmtpPoste.file != null && EtatSmtpPoste.file!.messages.isNotEmpty) _carteFile(EtatSmtpPoste.file!, c.droit.editer),
             ]));
   }
 }

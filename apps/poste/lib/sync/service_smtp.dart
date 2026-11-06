@@ -1,6 +1,7 @@
 import 'package:sigh_sync/sigh_sync.dart';
 
 import 'config_smtp.dart';
+import 'file_courriels.dart';
 
 export 'package:sigh_sync/sigh_sync.dart' show EtapeSmtp, ResultatSmtp;
 
@@ -62,5 +63,35 @@ class ServiceSmtp {
       verifierCertificat: b['verifierCertificat'] == true,
     );
     return envoyerSmtp(cfg, [destinataire], sujet, corps);
+  }
+
+  /// Un essai d'envoi d'un message de la FILE (`FileCourriels`) avec la messagerie ENREGISTRÉE, relue à cet instant (le mot de passe ne vit jamais dans la file).
+  /// Le `Message-ID` est celui du message : stable d'un essai à l'autre. Messagerie absente ou illisible : échec nommé, l'essai suivant la retrouvera réglée.
+  static Future<IssueEnvoi> envoyerDepuisFile(String dossier, MessageCourriel m) async {
+    final b = ConfigSmtpPoste.lireBrut(dossier);
+    if (b['configure'] != true) return const IssueEnvoi.echec('configuration', 'La messagerie du poste n’est pas configurée.');
+    final String mdp;
+    try {
+      mdp = ConfigSmtpPoste.motDePasse(dossier);
+    } on FormatException catch (e) {
+      return IssueEnvoi.echec('configuration', e.message);
+    }
+    final cfg = ConfigSmtp(
+      serveur: '${b['serveur']}',
+      port: b['port'] as int,
+      chiffrement: '${b['chiffrement']}',
+      identifiant: '${b['identifiant']}',
+      motDePasse: mdp,
+      expediteur: '${b['expediteur']}',
+      nom: '${b['nom']}',
+      repondreA: '${b['repondreA']}',
+      repondreNom: '${b['repondreNom']}',
+      delai: b['delai'] as int,
+      verifierCertificat: b['verifierCertificat'] == true,
+    );
+    final r = await envoyerSmtp(cfg, [m.destinataire], m.sujet, m.corps, messageId: m.id);
+    if (r.ok) return const IssueEnvoi.parti();
+    final e = r.etapes.where((x) => !x.ok).firstOrNull;
+    return IssueEnvoi.echec(r.echec ?? 'envoi', e?.detail ?? 'Échec sans détail.');
   }
 }

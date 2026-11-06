@@ -49,6 +49,7 @@ void main() {
   });
   tearDown(() {
     ToastsSigh.viderPourTests();
+    EtatSmtpPoste.oublierFilesPourTests();
     EtatSmtpPoste.dossier = null;
     ConfigPairPoste.cleLocale = null;
     d.deleteSync(recursive: true);
@@ -234,10 +235,55 @@ void main() {
     expect(msg['corps'], contains('où règle-t-on le plan ? Merci é à ç.'));
     expect(msg['corps'], contains('Référence : SUP-'));
     expect((msg['entetes']! as Map)['reply-to'], 'Clinique Nassièra Too <cliniquenassiera@gmail.com>');
-    await attendre(t, () => courrielDe(m, 'Question sur la comptabilité') == 'envoye');
+    await attendre(t, () => EtatSmtpPoste.file!.messages.isNotEmpty && EtatSmtpPoste.file!.messages.single.etat == 'parti');
     await t.pump(const Duration(milliseconds: 300));
-    expect(courrielDe(m, 'Question sur la comptabilité'), 'envoye');
+    // le courriel est passé par la FILE D'ENVOI (état « parti », Message-ID stable = identifiant du message) et la demande porte son identifiant
+    expect(courrielDe(m, 'Question sur la comptabilité'), 'file');
+    expect(EtatSmtpPoste.file!.messages.single.etat, 'parti');
+    expect((msg['entetes']! as Map)['message-id'], contains(EtatSmtpPoste.file!.messages.single.id));
     expect(find.text('Message envoyé par courriel à l’éditeur.'), findsOneWidget);
+  });
+
+  casM14('« Contactez l’éditeur » : un serveur absent met le courriel EN FILE (heure du prochain essai dite, rien de perdu) ; un échec définitif propose « Renvoyer »', (t) async {
+    t.view.physicalSize = const Size(1600, 3000);
+    final m = magasinM14();
+    // messagerie configurée sur un port fermé : le premier essai échoue à l'étape « connexion »
+    final libre = await t.runAsync(() => ServerSocket.bind(InternetAddress.loopbackIPv4, 0));
+    final portFerme = libre!.port;
+    await t.runAsync(libre.close);
+    ConfigSmtpPoste.ecrire(d.path, serveur: '127.0.0.1', port: portFerme, chiffrement: 'aucun', expediteur: 'cnt@clinique.bj', delai: 3);
+    ConfigSmtpPoste.noterTest(d.path, ok: true);
+    await ouvrirM14(t, m, 'contact-editeur');
+    t.view.physicalSize = const Size(1600, 3000);
+    await t.pump();
+    await saisir(t, 'objet', 'Serveur absent');
+    await saisir(t, 'message', 'Texte');
+    await toucherM14(t, find.widgetWithText(BoutonSigh, 'Envoyer le message'));
+    await attendre(t, () => EtatSmtpPoste.file!.messages.isNotEmpty && EtatSmtpPoste.file!.messages.single.etat == 'en_file' && EtatSmtpPoste.file!.messages.single.essais == 1);
+    await t.pump(const Duration(milliseconds: 300));
+    final msg = EtatSmtpPoste.file!.messages.single;
+    expect(msg.etat, 'en_file');
+    expect(msg.etapeEchec, 'connexion');
+    expect(find.text('Demande enregistrée, le courriel est en file.'), findsOneWidget);
+    expect(find.textContaining('En file, prochain essai à'), findsWidgets, reason: 'l’heure du prochain essai est DITE à l’écran');
+    expect(find.text('Non parti'), findsNothing);
+    ToastsSigh.viderPourTests();
+    await t.pump(const Duration(seconds: 30));
+
+    // échec définitif : le bouton « Renvoyer » remet en file
+    msg.etat = 'echec_definitif';
+    msg.essais = 8;
+    msg.prochainEssaiLe = null;
+    await ouvrirM14(t, m, 'contact-editeur');
+    t.view.physicalSize = const Size(1600, 3000);
+    await t.pump();
+    expect(find.text('Échec définitif'), findsWidgets);
+    final renvoyer = find.byKey(Key('support:renvoyer:${msg.id}'));
+    expect(renvoyer, findsOneWidget);
+    await toucherM14(t, renvoyer);
+    expect(msg.etat, 'en_file', reason: 'renvoyé : de nouveau en file, essais remis à zéro');
+    expect(msg.essais, 0);
+    expect(msg.renvois, 1);
   });
 
   casM14('lecture seule : ni « Enregistrer la messagerie » ni « Envoyer un message de test » (commande absente)', (t) async {

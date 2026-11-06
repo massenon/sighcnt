@@ -4,11 +4,30 @@ import 'dart:io';
 import 'package:cryptography/cryptography.dart';
 
 import 'config_pair.dart';
+import 'file_courriels.dart';
+import 'service_smtp.dart';
 
 /// Le dossier où vit `smtp.json` : posé par `main.dart` (comme celui de `pair.json`). Absent (tests, poste sans dossier), l'écran le dit.
 class EtatSmtpPoste {
   const EtatSmtpPoste._();
   static String? dossier;
+
+  static final Map<String, FileCourriels> _files = {};
+
+  /// La FILE D'ENVOI du poste pour le dossier courant (une par dossier, créée au premier besoin ; `main.dart` la DÉMARRE, les tests la pilotent à la main).
+  static FileCourriels? get file {
+    final d = dossier;
+    if (d == null) return null;
+    return _files.putIfAbsent(d, () => FileCourriels(d, envoyer: (m) => ServiceSmtp.envoyerDepuisFile(d, m)));
+  }
+
+  /// Pour les tests : oublie les files en mémoire (le fichier du dossier reste).
+  static void oublierFilesPourTests() {
+    for (final f in _files.values) {
+      f.dispose();
+    }
+    _files.clear();
+  }
 }
 
 /// La messagerie de CE poste (serveur SMTP) : `smtp.json` du dossier de données. Le MOT DE PASSE est saisi, chiffré (AES-256-GCM sous la clé locale du poste, celle
