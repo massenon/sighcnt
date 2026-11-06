@@ -12929,6 +12929,314 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
+  /* =========================================================================
+   * Vague 81 : configuration fiscale validée et datée (Direction, 06/11/2026)
+   * -------------------------------------------------------------------------
+   * Ce que ce scénario garde fermé : un « Enregistrer » qui n'écrit rien
+   * (E2270), une validation ouverte à n'importe quel profil, une version de
+   * l'identité qui réécrirait les pièces déjà émises, une échéance payée
+   * régénérée, un bulletin de paie recalculé sur un seuil ORTB postérieur.
+   * Il MUTE la configuration et la RESTAURE en sortant (versions archivées,
+   * validation d'origine rétablie, session rendue), sans la recopier.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 81 : configuration fiscale validée et datée (identité par versions, obligations régénérées, ORTB à la date du bulletin, validation réservée)');
+    const sauve = {};
+    await ouvrir('cfg-branding.html');
+    sauve.etat = await page.evaluate(() => {
+      const S = window.SIGH.store, raw = S.raw();
+      const copie = (x) => JSON.parse(JSON.stringify(x || []));
+      return { identite: copie(raw.identiteLegale), obligations: copie(raw.obligationsFiscales), historique: copie(raw.historiqueObligations),
+        session: S.session(), reglages: { doubleLogo: S.reglage('impression.doubleLogo', true), filigrane: S.reglage('impression.filigrane', '') },
+        essentielles: ['identiteLegale', 'obligationsFiscales', 'historiqueObligations'].every((n) => S.COLLECTIONS_ESSENTIELLES.indexOf(n) >= 0),
+        libelles: S.libelleCollection('identiteLegale').module + '/' + S.libelleCollection('obligationsFiscales').module,
+        version: raw._version };
+    });
+    const e0 = sauve.etat;
+    verifier('Les trois collections sont semées au socle (identité v1 non validée, 20 fiches d’obligations : les 19 du calendrier et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69',
+      e0.identite.length === 1 && e0.identite[0].version === 1 && !e0.identite[0].valideLe && e0.obligations.length === 20
+      && e0.obligations.some((o) => o.code === 'ORTB-PARAMETRES' && o.type === 'parametres') && e0.historique.length === 0
+      && e0.essentielles && e0.libelles === 'CFG/CFG' && e0.version === 69,
+      JSON.stringify({ identite: e0.identite.length, obligations: e0.obligations.length, historique: e0.historique.length, essentielles: e0.essentielles, libelles: e0.libelles, version: e0.version }));
+
+    /* 1. cfg-branding : la saisie est ÉCRITE, relue après rechargement, et l'en-tête imprimé la porte. */
+    const s1 = await page.evaluate(() => {
+      const poser = (id, v) => { const x = document.getElementById(id); if (!x) return false; x.value = v; x.dispatchEvent(new Event('input', { bubbles: true })); x.dispatchEvent(new Event('change', { bubbles: true })); return true; };
+      const ok1 = poser('f_slogan', 'Sonde 81 : votre santé');
+      const ok2 = poser('f_telephones', '01 95 44 51 51 / 01 66 43 28 20 / 61 00 00 81');
+      const h = document.querySelector('#toast-host'); if (h) h.innerHTML = '';
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => /^Enregistrer$/.test(x.textContent.trim()));
+      if (!b) return { champs: ok1 && ok2, bouton: false };
+      b.click();
+      return { champs: ok1 && ok2, bouton: true };
+    });
+    await pause(600);
+    const toast1 = await page.evaluate(() => (document.querySelector('#toast-host') || { textContent: '' }).textContent);
+    verifier('cfg-branding : « Enregistrer » écrit la fiche et le toast nomme la version (1) et la validation à faire',
+      s1.champs && s1.bouton && /version 1/.test(toast1) && /valider/i.test(toast1), toast1.slice(0, 220));
+    await attendreEcritures();
+    await ouvrir('cfg-branding.html');
+    const relu = await page.evaluate(() => ({
+      slogan: (document.getElementById('f_slogan') || {}).value, tel: (document.getElementById('f_telephones') || {}).value,
+      brand: window.SIGH.core.BRAND.slogan, brandTel: window.SIGH.core.BRAND.telephones.length,
+      fiche: window.SIGH.store.collection('identiteLegale').active()[0].slogan,
+    }));
+    verifier('Rechargée, la page relit la saisie ; C.BRAND.slogan vaut la saisie (surcouche en place, 3 téléphones)',
+      relu.slogan === 'Sonde 81 : votre santé' && relu.fiche === 'Sonde 81 : votre santé' && relu.brand === 'Sonde 81 : votre santé'
+      && relu.brandTel === 3 && /61 00 00 81/.test(relu.tel), JSON.stringify(relu));
+    const entete1 = await page.evaluate(() => {
+      const P = window.SIGH.print;
+      /* La feuille vit dans la surcouche de prévisualisation : on la lit sur ce que P.etat rend, puis on ferme. */
+      const r = P.etat({ titre: 'Sonde 81', contenu: document.createElement('div'), filtres: false, archive: false });
+      const h = r.sheet.querySelector('header'); const t = h ? h.textContent : '';
+      r.fermer();
+      return t;
+    });
+    verifier('L’en-tête d’un état imprimé sans date porte le nouveau slogan', /Sonde 81 : votre santé/.test(entete1), entete1.slice(0, 200));
+
+    /* 2. La validation est RÉSERVÉE : refusée à la réception (écran fermé ET moteur), acceptée à la DAF. */
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'reception', fonction: 'accueil', nom: 'OROU YO Edmond', poste: 'Réception', identifiant: 'e.orouyo' }));
+    await ouvrir('cfg-fiscalite.html');
+    const refusRec = await page.evaluate(() => ({
+      url: location.pathname.split('/').pop(),
+      bouton: !![...document.querySelectorAll('button')].find((b) => /Valider l.identit/.test(b.textContent)),
+      moteur: window.SIGH.configurationFiscale ? window.SIGH.configurationFiscale.validerIdentite() : null,
+      parcours: window.SIGH.parcours ? window.SIGH.parcours.validerObligations() : null,
+    }));
+    verifier('La réception n’atteint pas l’écran (403), ne voit aucune commande « Valider », et le moteur refuse VALIDATION_RESERVEE (identité et obligations)',
+      /error-403/.test(refusRec.url) && !refusRec.bouton && refusRec.moteur && refusRec.moteur.code === 'VALIDATION_RESERVEE'
+      && refusRec.parcours && refusRec.parcours.code === 'VALIDATION_RESERVEE' && /Réception|reception/i.test(refusRec.moteur.motif),
+      JSON.stringify(refusRec));
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'da', fonction: 'da', nom: 'TAKI Alimatou', poste: 'Directrice Administrative', identifiant: 't.alimatou' }));
+    await ouvrir('cfg-fiscalite.html');
+    const avantVal = await page.evaluate(() => ({
+      etat: (document.querySelector('[data-etat-configuration]') || { getAttribute: () => null }).getAttribute('data-etat-configuration'),
+      bouton: !![...document.querySelectorAll('#page-content button')].find((b) => /Valider l.identit/.test(b.textContent)),
+    }));
+    verifier('La DAF voit le bandeau « à valider » et la commande « Valider l’identité légale »', avantVal.etat === 'a_valider' && avantVal.bouton, JSON.stringify(avantVal));
+    await cliquer('valider l’identité légale', '#page-content button');
+    await pause(300);
+    await cliquer('valider', '[role="dialog"] button');
+    await pause(700);
+    const apresVal = await page.evaluate(() => {
+      const e = window.SIGH.parcours.etatConfigurationFiscale('identite');
+      const n = document.querySelector('[data-etat-configuration]');
+      return { etat: e.etat, par: e.validePar, bandeau: n ? n.getAttribute('data-etat-configuration') : null, texte: n ? n.textContent : '' };
+    });
+    verifier('Validée par la DAF : l’état est « valide », le bandeau dit « Validée le … par TAKI Alimatou »',
+      apresVal.etat === 'valide' && apresVal.par === 'TAKI Alimatou' && apresVal.bandeau === 'valide' && /validée le .* par TAKI Alimatou/i.test(apresVal.texte), JSON.stringify(apresVal).slice(0, 300));
+    await attendreEcritures();
+    const bandeaux = {};
+    for (const ecran of ['cfg-entetes', 'cfg-branding']) {
+      await ouvrir(ecran + '.html');
+      bandeaux[ecran] = await page.evaluate(() => { const n = document.querySelector('[data-etat-configuration]'); return n ? n.getAttribute('data-etat-configuration') + ':' + /TAKI Alimatou/.test(n.textContent) : null; });
+    }
+    verifier('Le même bandeau « Validée … par TAKI Alimatou » est posé sur cfg-entetes et cfg-branding',
+      bandeaux['cfg-entetes'] === 'valide:true' && bandeaux['cfg-branding'] === 'valide:true', JSON.stringify(bandeaux));
+    await ouvrir('adm-validations.html');
+    const lignes2 = await page.evaluate(() => [...document.querySelectorAll('[data-configuration-fiscale]')].map((x) => x.getAttribute('data-configuration-fiscale')));
+    verifier('adm-validations ne porte plus « Identité légale à valider » et porte encore « Obligations fiscales à valider »',
+      lignes2.indexOf('identite') < 0 && lignes2.indexOf('obligations') >= 0, JSON.stringify(lignes2));
+
+    /* 3. Une nouvelle version à date d'effet FUTURE : les pièces d'hier gardent l'ancien RCCM. */
+    await ouvrir('cfg-fiscalite.html');
+    const v3 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, C = window.SIGH.core, S = window.SIGH.store, P = window.SIGH.print;
+      const auj = C.iso(C.aujourdhui());
+      const futur = C.iso(C.addDays(auj, 10));
+      const sansMotif = CF.nouvelleVersionIdentite({ rccm: 'RB/NAT/2026-B-999' }, { dateEffet: futur });
+      const r = CF.nouvelleVersionIdentite({ rccm: 'RB/NAT/2026-B-999' }, { dateEffet: futur, motif: 'Sonde 81 : nouveau RCCM' });
+      const hier = C.iso(C.addDays(auj, -1)), apres = C.iso(C.addDays(auj, 11));
+      function entete(date) {
+        const r = P.etat({ titre: 'Sonde', contenu: document.createElement('div'), filtres: false, archive: false, date: date });
+        const t = r.sheet.querySelector('header').textContent + ' ' + r.sheet.querySelector('footer').textContent;
+        r.fermer();
+        return t;
+      }
+      const eh = entete(hier), ea = entete(apres);
+      const v1 = S.collection('identiteLegale').active().filter((v) => v.version === 1)[0];
+      return { ok: r.ok, version: r.version, sansMotif: sansMotif.code, brand: C.BRAND.rccm,
+        hier: C.identiteALaDate(hier).rccm, apres: C.identiteALaDate(apres).rccm,
+        enteteHier: /RB\/NAT\/2016-B-268/.test(eh) && !/2026-B-999/.test(eh), enteteApres: /RB\/NAT\/2026-B-999/.test(ea),
+        ifuApres: C.identiteALaDate(apres).ifu, etat: window.SIGH.parcours.etatConfigurationFiscale('identite').etat,
+        v1fin: v1.fin, veille: C.iso(C.addDays(futur, -1)), futur: futur };
+    });
+    verifier('Une version 2 à date d’effet future se crée (le motif est obligatoire : MOTIF_REQUIS sans lui) ; la v1 reçoit fin = veille de la date d’effet',
+      v3.ok && v3.version === 2 && v3.sansMotif === 'MOTIF_REQUIS' && v3.v1fin === v3.veille, JSON.stringify(v3));
+    verifier('C.BRAND.rccm reste l’ancien ; identiteALaDate rend l’ancien RCCM hier et le nouveau après la date d’effet (IFU inchangé)',
+      v3.brand === 'RB/NAT/2016-B-268' && v3.hier === 'RB/NAT/2016-B-268' && v3.apres === 'RB/NAT/2026-B-999' && v3.ifuApres === '3201642748214', JSON.stringify(v3));
+    verifier('Un état daté d’hier imprime l’ancien RCCM, un état daté après la date d’effet imprime le nouveau', v3.enteteHier && v3.enteteApres, JSON.stringify(v3));
+    verifier('L’état repasse à « modifié depuis la validation »', v3.etat === 'modifie_depuis', v3.etat);
+    await attendreEcritures();
+    await ouvrir('cfg-fiscalite.html');
+    const b3 = await page.evaluate(() => { const n = document.querySelector('[data-etat-configuration]'); return { etat: n ? n.getAttribute('data-etat-configuration') : null, texte: n ? n.textContent : '', versions: document.body.textContent.indexOf('version 2 à partir du') >= 0 }; });
+    verifier('cfg-fiscalite dit « modifiée … depuis la validation du … par TAKI Alimatou » et annonce la version à venir',
+      b3.etat === 'modifie_depuis' && /depuis la validation du .* par TAKI Alimatou/.test(b3.texte) && b3.versions, JSON.stringify(b3).slice(0, 300));
+    await ouvrir('adm-validations.html');
+    const lignes3 = await page.evaluate(() => [...document.querySelectorAll('[data-configuration-fiscale]')].map((x) => x.getAttribute('data-configuration-fiscale')));
+    verifier('adm-validations reporte la ligne « Identité légale à valider »', lignes3.indexOf('identite') >= 0, JSON.stringify(lignes3));
+
+    /* 4. Obligations : CCIB-2 passe du 10 au 15 à effet du 1er juin ; la payée reste, la non payée est régénérée ; exercice clos refusé. */
+    await ouvrir('cfg-comptabilite.html');
+    const o4 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, S = window.SIGH.store;
+      const col = S.collection('echeancesFiscales');
+      const ccib1 = col.active().filter((e) => e.code === 'CCIB-1')[0];
+      const ccib2 = col.active().filter((e) => e.code === 'CCIB-2')[0];
+      const snapshot2 = JSON.parse(JSON.stringify(ccib2));
+      /* Le jeu règle CCIB-2 (10 juin, passée de plus de 25 jours) : on la remet due pour la sonde. */
+      col.update(ccib2.id, { paye: false, datePaiement: null, reference: null, valideePar: null });
+      const ref1 = { id: ccib1.id, echeance: ccib1.echeance, reference: ccib1.reference, paye: ccib1.paye };
+      const clos = CF.modifierObligation({ code: 'CCIB-2', valeurs: { jour: 15 }, dateEffet: '2025-06-01', motif: 'Sonde' });
+      const anterieure = CF.modifierObligation({ code: 'CCIB-2', valeurs: { jour: 15 }, dateEffet: '2026-06-01', motif: '' });
+      const r = CF.modifierObligation({ code: 'CCIB-2', valeurs: { jour: 15 }, dateEffet: '2026-06-01', motif: 'Sonde 81 : la DGI reporte au 15' });
+      const apres1 = col.get(ccib1.id);
+      const anc2 = S.raw().echeancesFiscales.filter((e) => e.id === ccib2.id)[0];
+      const nouv2 = col.active().filter((e) => e.code === 'CCIB-2');
+      const hist = S.collection('historiqueObligations').active().filter((h) => h.code === 'CCIB-2');
+      const journal = S.raw().audit.filter((a) => a.action === 'Régénération des échéances' && a.reference === 'CCIB-2')[0];
+      const fiche = S.collection('obligationsFiscales').active().filter((o) => o.code === 'CCIB-2')[0];
+      const enVigueur = CF.obligationsEnVigueur('2026-07-01').filter((o) => o.code === 'CCIB-2')[0];
+      const avantEffet = CF.obligationsEnVigueur('2026-05-15').filter((o) => o.code === 'CCIB-2')[0];
+      const notif = S.collection('notifications').active().filter((n) => n.type === 'echeances_regenerees' && n.poste === 'comptable')[0];
+      /* Une MENSUELLE dont des échéances sont payées : ITS du 10 au 12 à effet du 01/06 : juin et juillet (payées au jeu)
+         doivent rester, août à décembre (non payées) sont régénérées au 12. C'est la sonde qui tombe si les payées bougent. */
+      const itsAvant = col.active().filter((e) => e.code === 'ITS').map((e) => ({ id: e.id, echeance: e.echeance, paye: e.paye, reference: e.reference }));
+      const rIts = CF.modifierObligation({ code: 'ITS', valeurs: { jour: 12 }, dateEffet: '2026-06-01', motif: 'Sonde 81 : ITS au 12' });
+      const itsApres = col.active().filter((e) => e.code === 'ITS').map((e) => ({ id: e.id, echeance: e.echeance, paye: e.paye, reference: e.reference, versionObligation: e.versionObligation || null }));
+      const itsPayeesAvant = itsAvant.filter((e) => e.paye && e.echeance >= '2026-06-01');
+      const itsPayeesIntactes = itsPayeesAvant.every((a) => itsApres.some((b) => b.id === a.id && b.echeance === a.echeance && b.reference === a.reference && b.paye));
+      const itsNouvelles = itsApres.filter((e) => e.versionObligation === '2026-06-01');
+      return { clos: clos.code, anterieure: anterieure.code, ok: r.ok, ech: r.echeances, ref1,
+        its: { ok: rIts.ok, ech: rIts.echeances, payeesAvant: itsPayeesAvant.length, payeesIntactes: itsPayeesIntactes, nouvelles: itsNouvelles.map((e) => e.echeance),
+          toutesAu12: itsNouvelles.every((e) => /-1[2-4]$/.test(e.echeance)), total: itsApres.length },
+        apres1: { echeance: apres1.echeance, reference: apres1.reference, paye: apres1.paye, statut: apres1.statut },
+        anc2: anc2 ? anc2.statut : null, nouv2: nouv2.map((e) => ({ echeance: e.echeance, versionObligation: e.versionObligation, paye: e.paye, regenereePar: e.regenereePar })),
+        hist: hist.map((h) => ({ jour: h.jour, dateFin: h.dateFin, dateEffet: h.dateEffet == null ? null : h.dateEffet, retiree: !!h.retiree })),
+        journal: !!journal, fiche: { jour: fiche.jour, dateEffet: fiche.dateEffet, valideLe: fiche.valideLe == null }, enVigueur: enVigueur && enVigueur.jour, avantEffet: avantEffet && avantEffet.jour,
+        notif: !!notif, snapshot2: snapshot2 };
+    });
+    sauve.ccib2 = o4.snapshot2;
+    verifier('Une date d’effet dans un exercice clos est refusée (EXERCICE_CLOS) et un motif vide aussi (MOTIF_REQUIS)', o4.clos === 'EXERCICE_CLOS' && o4.anterieure === 'MOTIF_REQUIS', JSON.stringify([o4.clos, o4.anterieure]));
+    verifier('CCIB-2 passe du 10 au 15 à effet du 01/06/2026 : l’échéance CCIB-1 PAYÉE garde sa date et sa quittance',
+      o4.ok && o4.apres1.echeance === o4.ref1.echeance && o4.apres1.reference === o4.ref1.reference && o4.apres1.paye && o4.apres1.statut === 'actif', JSON.stringify([o4.ref1, o4.apres1]));
+    verifier('L’échéance CCIB-2 non payée est archivée et recréée au 15/06/2026 avec versionObligation ; comptes annoncés 0 conservée / 1 régénérée / 1 recréée',
+      o4.anc2 === 'archive' && o4.nouv2.length === 1 && o4.nouv2[0].echeance === '2026-06-15' && o4.nouv2[0].versionObligation === '2026-06-01' && !o4.nouv2[0].paye
+      && o4.nouv2[0].regenereePar === 'TAKI Alimatou' && o4.ech.archivees === 1 && o4.ech.creees === 1 && o4.ech.conservees === 0, JSON.stringify([o4.anc2, o4.nouv2, o4.ech]));
+    verifier('Le journal porte « Régénération des échéances », le Comptable reçoit une tâche de poste, et l’historique garde la version d’origine (jour 10, fin 31/05/2026)',
+      o4.journal && o4.notif && o4.hist.length === 1 && o4.hist[0].jour === 10 && o4.hist[0].dateFin === '2026-05-31' && o4.hist[0].dateEffet === null && !o4.hist[0].retiree, JSON.stringify([o4.journal, o4.notif, o4.hist]));
+    verifier('obligationsALaDate rend le 15 après la date d’effet et le 10 avant ; la fiche porte dateEffet et perd sa validation',
+      o4.enVigueur === 15 && o4.avantEffet === 10 && o4.fiche.jour === 15 && o4.fiche.dateEffet === '2026-06-01' && o4.fiche.valideLe === true, JSON.stringify([o4.enVigueur, o4.avantEffet, o4.fiche]));
+    verifier('ITS (mensuelle) du 10 au 12 à effet du 01/06 : les échéances PAYÉES de juin et juillet restent intactes (date, quittance), les non payées sont régénérées au 12 ; douze échéances au total',
+      o4.its.ok && o4.its.payeesAvant >= 1 && o4.its.payeesIntactes && o4.its.ech.conservees === o4.its.payeesAvant && o4.its.ech.archivees === o4.its.ech.creees
+      && o4.its.nouvelles.length === o4.its.ech.creees && o4.its.toutesAu12 && o4.its.total === 12, JSON.stringify(o4.its));
+    await attendreEcritures();
+    await ouvrir('cfg-comptabilite.html');
+    const ui4 = await page.evaluate(async () => {
+      const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+      const boutons = [...document.querySelectorAll('#page-content button[title="Modifier (version datée)"]')];
+      /* La ligne porteuse : une rangée de tableau, ou la ligne d'un bloc (Patente, CCIB, TVM). */
+      const btn = boutons.find((b) => /CCIB-2|2e tranche/.test((b.closest('tr') || b.closest('.items-baseline') || b.parentNode).textContent));
+      if (!btn) return { bouton: false, nb: boutons.length };
+      btn.click(); await attendre(300);
+      const titre = (document.querySelector('[role=dialog] h2') || {}).textContent || '';
+      const jour = (document.getElementById('f_jour') || {}).value;
+      const cont = [...document.querySelectorAll('[role=dialog] button')].find((b) => /Continuer/.test(b.textContent));
+      if (!cont) return { bouton: true, titre, jour, continuer: false };
+      cont.click(); await attendre(300);
+      const portee = (document.querySelector('[role=dialog] h2') || {}).textContent || '';
+      const impact = (document.querySelector('[role=dialog]') || {}).textContent || '';
+      const ann = [...document.querySelectorAll('[role=dialog] button')].find((b) => /Annuler/.test(b.textContent)); if (ann) ann.click();
+      return { bouton: true, nb: boutons.length, titre, jour, continuer: true, portee, impact: /CONSERVÉE/.test(impact) && /RÉGÉNÉRÉE/.test(impact),
+        texte15: /15 juin/.test(document.body.textContent), historique: /Sonde 81 : la DGI reporte au 15/.test(document.body.textContent) };
+    });
+    verifier('À l’écran : le crayon de CCIB-2 ouvre la fiche (jour 15), « Continuer » ouvre « Portée de la modification » qui annonce conservées et régénérées ; la page montre « 15 juin » et l’historique motivé',
+      ui4.bouton && /CCIB-2/.test(ui4.titre) && String(ui4.jour) === '15' && /Portée de la modification/.test(ui4.portee) && ui4.impact && ui4.texte15 && ui4.historique, JSON.stringify(ui4).slice(0, 400));
+
+    /* 5. ORTB : le seuil relevé à effet du 1er août ne touche pas le bulletin de juin. */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), sauve.etat.session);
+    await ouvrir('m11-ortb.html');
+    const o5 = await page.evaluate(() => {
+      const CF = window.SIGH.configurationFiscale, S = window.SIGH.store, PA = window.SIGH.paie;
+      if (!PA || !PA.calculOrtb) return { expose: false };
+      const bul = S.collection('bulletins').insert({ employeId: 'SONDE81', periode: 'Juin 2026', annee: 2026, mois: 5, ortbTele: 3000, ortbRadio: 0, ortb: 3000, sonde: 'Vague 81' }).record;
+      const r = CF.modifierOrtb({ valeurs: { seuilTele: 80000 }, dateEffet: '2026-08-01', motif: 'Sonde 81 : seuil relevé par la Direction' });
+      const ancien = PA.calculOrtb(70000, 5, '2026-06-01'), nouveau = PA.calculOrtb(70000, 5, '2026-09-01');
+      const radioA = PA.calculOrtb(70000, 2, '2026-06-01'), radioN = PA.calculOrtb(70000, 2, '2026-09-01');
+      const sansDate = PA.calculOrtb(70000, 5);
+      const b2 = S.collection('bulletins').get(bul.id);
+      const fiche = CF.ficheOrtb();
+      return { expose: true, ok: r.ok, ancienTele: (ancien.parCategorie.tele || {}).du === true, ancienMontant: ancien.montant,
+        nouveauTele: !!nouveau.parCategorie.tele, nouveauMontant: nouveau.montant, radioA: radioA.montant, radioN: radioN.montant,
+        sansDate: sansDate.montant, bulletin: b2.ortbTele, seuil: fiche.seuilTele, seuilMin: fiche.redevances.filter((x) => x.id === 'tele')[0].seuilMin,
+        cumul: fiche.cumulMaximum, dateEffet: fiche.dateEffet, hist: S.collection('historiqueObligations').active().filter((h) => h.code === 'ORTB-PARAMETRES').length, bulId: bul.id,
+        ecran: /80 000|80 000/.test(document.body.textContent) };
+    });
+    sauve.bulId = o5.bulId;
+    verifier('ORTB : seuil 80 000 à effet du 01/08 ; calculOrtb(70000, juin, date de juin) doit la télé (3 000), la même à une date de septembre ne la doit plus ; la radio reste due en mars dans les deux cas',
+      o5.expose && o5.ok && o5.ancienTele && o5.ancienMontant === 3000 && !o5.nouveauTele && o5.nouveauMontant === 0 && o5.radioA === 1000 && o5.radioN === 1000 && o5.sansDate === 0, JSON.stringify(o5));
+    verifier('Le bulletin de juin déjà émis garde ses 3 000 F ; la fiche ORTB porte seuil 80 000, seuilMin 80 001, cumul 4 000, date d’effet, et l’historique la version d’origine',
+      o5.bulletin === 3000 && o5.seuil === 80000 && o5.seuilMin === 80001 && o5.cumul === 4000 && o5.dateEffet === '2026-08-01' && o5.hist === 1, JSON.stringify(o5));
+
+    /* 6. Droits : la Direction édite et valide, ne retire pas ; le moteur refuse le retrait (RETRAIT_RESERVE). */
+    await page.evaluate(() => window.SIGH.store.setSession({ role: 'direction', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', poste: 'Direction', identifiant: 'c.bassongui' }));
+    await ouvrir('cfg-comptabilite.html');
+    const d6 = await page.evaluate(() => ({
+      modifier: document.querySelectorAll('#page-content button[title="Modifier (version datée)"]').length,
+      retirer: document.querySelectorAll('#page-content button[title="Retirer (version datée)"]').length,
+      valider: !![...document.querySelectorAll('#page-content button')].find((b) => /Valider les obligations/.test(b.textContent)),
+      refus: window.SIGH.configurationFiscale.retirerObligation({ code: 'TVM', dateEffet: '2026-09-01', motif: 'Sonde' }).code,
+    }));
+    verifier('La Direction voit Modifier et Valider mais aucun « Retirer » (CFG annuler: false), et le moteur refuse le retrait (RETRAIT_RESERVE)',
+      d6.modifier > 0 && d6.retirer === 0 && d6.valider && d6.refus === 'RETRAIT_RESERVE', JSON.stringify(d6));
+
+    /* 7. Restauration : versions créées archivées, fiches d'origine rétablies, validation d'origine (aucune), session rendue. */
+    await page.evaluate((s) => window.SIGH.store.setSession(s), sauve.etat.session);
+    await ouvrir('cfg-comptabilite.html');
+    const fin = await page.evaluate((sauve) => {
+      const S = window.SIGH.store, C = window.SIGH.core, CF = window.SIGH.configurationFiscale, PR = window.SIGH.parcours;
+      S.collection('bulletins').archive(sauve.bulId, 'Sonde 81 : restauration');
+      const colI = S.collection('identiteLegale');
+      colI.active().filter((v) => v.version > 1).forEach((v) => colI.archive(v.id, 'Sonde 81 : restauration'));
+      const v1 = sauve.etat.identite.filter((v) => v.version === 1)[0];
+      const patch = {};
+      C.CHAMPS_IDENTITE.forEach((k) => { if (v1[k] !== undefined) patch[k] = v1[k]; });
+      colI.update(v1.id, Object.assign(patch, { fin: null, valideLe: null, validePar: null, modifieLe: null, modifiePar: null }));
+      const colO = S.collection('obligationsFiscales');
+      sauve.etat.obligations.forEach((o) => {
+        const cur = colO.get(o.id); if (!cur) return;
+        if (cur.statut === 'archive') colO.restore(o.id);
+        const p = { dateEffet: null, modifieLe: null, modifiePar: null, motif: null, valideLe: null, validePar: null };
+        ['jour', 'mois', 'part', 'libelle', 'periodicite', 'declaration', 'note', 'seuilTele', 'redevances', 'cumulMaximum'].forEach((k) => { if (o[k] !== undefined) p[k] = o[k]; });
+        colO.update(o.id, p);
+      });
+      const colH = S.collection('historiqueObligations');
+      colH.active().forEach((h) => colH.archive(h.id, 'Sonde 81 : restauration'));
+      /* Les échéances : celles que la sonde a fait régénérer sont archivées, celles qu'elle a fait archiver (motif « Régénérée ») reviennent. */
+      const colE = S.collection('echeancesFiscales');
+      colE.active().filter((e) => e.regenereePar).forEach((e) => colE.archive(e.id, 'Sonde 81 : restauration'));
+      colE.archived().filter((e) => /^Régénérée/.test(e._motifArchivage || '')).forEach((e) => colE.restore(e.id));
+      colE.update(sauve.ccib2.id, { paye: sauve.ccib2.paye, datePaiement: sauve.ccib2.datePaiement || null, reference: sauve.ccib2.reference || null, valideePar: sauve.ccib2.valideePar || null });
+      S.setReglage('impression.doubleLogo', sauve.etat.reglages.doubleLogo);
+      S.setReglage('impression.filigrane', sauve.etat.reglages.filigrane);
+      S.appliquerIdentite();
+      const ortb = CF.ficheOrtb();
+      return { slogan: C.BRAND.slogan, rccm: C.BRAND.rccm, tel: C.BRAND.telephones.length,
+        etatI: PR.etatConfigurationFiscale('identite').etat, etatO: PR.etatConfigurationFiscale('obligations').etat,
+        versions: colI.active().length, ccib2: colE.get(sauve.ccib2.id).paye && colE.get(sauve.ccib2.id).echeance === sauve.ccib2.echeance,
+        ccib2Actives: colE.active().filter((e) => e.code === 'CCIB-2').length, itsActives: colE.active().filter((e) => e.code === 'ITS').length,
+        regenereesActives: colE.active().filter((e) => e.regenereePar).length,
+        hist: colH.active().length, seuil: ortb.seuilTele, seuilMin: ortb.redevances.filter((x) => x.id === 'tele')[0].seuilMin,
+        jourCcib2: CF.obligationsEnVigueur().filter((o) => o.code === 'CCIB-2')[0].jour, role: S.session().role };
+    }, sauve);
+    await attendreEcritures();
+    verifier('Le scénario restaure l’état : identité v1 d’origine non validée, obligations et ORTB d’origine (CCIB-2 le 10, seuil 60 000), historique vide, CCIB-2 payée, session rendue',
+      fin.slogan === 'Votre santé, notre raison de vivre' && fin.rccm === 'RB/NAT/2016-B-268' && fin.tel === 2 && fin.etatI === 'a_valider' && fin.etatO === 'a_valider'
+      && fin.versions === 1 && fin.ccib2 && fin.ccib2Actives === 1 && fin.itsActives === 12 && fin.regenereesActives === 0 && fin.hist === 0 && fin.seuil === 60000 && fin.seuilMin === 60001 && fin.jourCcib2 === 10 && fin.role === 'admin',
+      JSON.stringify(fin));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }

@@ -280,6 +280,8 @@
       titre: o.proforma ? 'Facture pro-forma' : 'Facture normalisée',
       sousTitre: f.numero + (f.numeroMecef && !o.proforma ? ' — ' + f.numeroMecef : ''),
       filigrane: o.proforma ? 'Pro-forma' : null,
+      /* L'en-tête légal est celui de la DATE de la pièce : une facture émise sous l'ancien RCCM le garde. */
+      date: f.date,
       cartouche: [
         ['Facture n°', f.numero],
         ['Date', C.dateFR(f.date)],
@@ -1610,6 +1612,8 @@
         P.etat({
           titre: 'Reçu de paiement',
           sousTitre: f.numero,
+          /* L'identité imprimée est celle de la date du versement. */
+          date: (f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ),
           cartouche: [['Facture', f.numero], ['Patient', f.patient], ['Dossier', f.patientCode],
             ['Date', C.dateFR(AUJ)], ['Mode de règlement', modeLabel(v ? v.modePaiement : f.modePaiement)],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
@@ -2259,6 +2263,7 @@
         }
         P.etat({
           titre: 'Reçu de paiement', sousTitre: f.numero,
+          date: (f.dernierReglement && f.dernierReglement.date) || C.iso(AUJ),
           cartouche: [['Facture', f.numero], ['Patient', f.patient], ['Dossier', f.patientCode],
             ['Date', C.dateFR(AUJ)], ['Mode de règlement', (f.modePaiement || '—')],
             ['Encaissé par', (f.dernierReglement && f.dernierReglement.encaissePar) || S.currentUser()],
@@ -2717,6 +2722,7 @@
           titre: 'FACTURE D\u2019AVOIR',
           sousTitre: a.reference + ' — rectifie ' + a.factureNumero,
           filigrane: 'AVOIR',
+          date: a.date,
           cartouche: [['N° avoir', a.reference], ['Date', C.dateFR(a.date)],
             ['Facture rectifiée', a.factureNumero],
             ['Client', a.patient || '—'], ['Motif', a.motif || '—'],

@@ -2023,7 +2023,31 @@
          la place du biologiste, mais elle est seule \u00e0 pouvoir fixer la dur\u00e9e
          de validit\u00e9 d'un badge. Les ranger ensemble ferait attendre l'un
          pour l'autre. */
-      var arbitrages = [
+      /* LA CONFIGURATION FISCALE \u00c0 VALIDER (Direction, 06/11/2026) : identit\u00e9 l\u00e9gale et obligations
+         fiscales se v\u00e9rifient et se valident \u00e0 la premi\u00e8re configuration, \u00e0 LEUR \u00e9cran. Les deux lignes
+         paraissent tant que l'\u00e9tat n'est pas \u00ab valid\u00e9 \u00bb, et reviennent d\u00e8s qu'une version dat\u00e9e est cr\u00e9\u00e9e
+         (\u00e9tat \u00ab modifi\u00e9 depuis la validation \u00bb). L'\u00e9tat vient du moteur, jamais recopi\u00e9 ici. */
+      var CFX = global.SIGH.configurationFiscale;
+      var etatIdentite = CFX ? CFX.etatConfigurationFiscale('identite') : { etat: 'valide' };
+      var etatObligations = CFX ? CFX.etatConfigurationFiscale('obligations') : { etat: 'valide' };
+      function attenteConfiguration(e) {
+        return e.etat === 'modifie_depuis'
+          ? 'Modifi\u00e9e le ' + (e.modifieLe ? C.dateHeure(e.modifieLe) : '?') + ' depuis la validation du ' + C.dateHeure(e.validationAnterieure.valideLe) + ' : \u00e0 revalider'
+          : '\u00c0 valider (premi\u00e8re configuration)';
+      }
+      var configurationFiscale = [];
+      if (etatIdentite.etat !== 'valide') {
+        configurationFiscale.push({ libelle: 'Identit\u00e9 l\u00e9gale \u00e0 valider (premi\u00e8re configuration)',
+          attente: attenteConfiguration(etatIdentite), ecran: 'cfg-fiscalite', configuration: 'identite',
+          motif: 'IFU, RCCM, forme, autorisation, adresse fiscale, devise et r\u00e9gime de TVA s\u2019impriment sur toutes les pi\u00e8ces : la Direction, la DAF ou l\u2019administrateur les v\u00e9rifie et valide \u00e0 l\u2019\u00e9cran Param\u00e8tres fiscaux.' });
+      }
+      if (etatObligations.etat !== 'valide') {
+        configurationFiscale.push({ libelle: 'Obligations fiscales \u00e0 valider',
+          attente: attenteConfiguration(etatObligations), ecran: 'cfg-comptabilite', configuration: 'obligations',
+          motif: 'Obligations mensuelles, IS, patente, CCIB, TVM et redevances ORTB pr\u00e9lev\u00e9es sur les salaires : \u00e0 v\u00e9rifier et valider \u00e0 l\u2019\u00e9cran Param\u00e8tres comptables & obligations.' });
+      }
+
+      var arbitrages = configurationFiscale.concat([
         { libelle: 'Dur\u00e9e de validit\u00e9 d\u2019un badge du personnel',
           attente: '24 mois (valeur d\u2019attente)', ecran: 'm10-badges',
           motif: 'Aucun document de cadrage ne la fixe. Peut aussi suivre la dur\u00e9e du contrat.' },
@@ -2038,7 +2062,7 @@
           attente: 'Non \u2014 d\u00e9cision non prise', ecran: 'm10-badges',
           motif: 'S\u2019il pointe, il se relie au registre des pr\u00e9sences et la conception change : lecteur \u00e0 '
             + 'l\u2019entr\u00e9e, horodatage, traitement des oublis de badge.' },
-      ];
+      ]);
 
       var validees = [
         { libelle: 'Tarifs des actes (valeurs d\u2019attente du 20/08)', detail: 'ARR\u00caT\u00c9S par la Direction \u2014 plus aucun tarif provisoire au catalogue vivant ; la semence garde le marquage historique.' },
@@ -2101,14 +2125,16 @@
 
       host.appendChild(U.card('En attente d\u2019un ARBITRAGE de la Direction \u2014 elle seule peut trancher',
         el('div.space-y-2', null, arbitrages.map(function (x) {
-          return el('div.flex.items-start.gap-3.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
+          var ligne = el('div.flex.items-start.gap-3.rounded-lg.border.border-warning-200.bg-warning-50.px-3.py-2', null, [
             el('div.min-w-0.flex-1', null, [
               el('p.text-sm.font-medium.text-slate-800', { text: x.libelle }),
-              el('p.text-xs.text-slate-600', { text: 'Valeur d\u2019attente : ' + x.attente + ' \u00b7 ' + x.motif }),
+              el('p.text-xs.text-slate-600', { text: (x.configuration ? '\u00c9tat : ' : 'Valeur d\u2019attente : ') + x.attente + ' \u00b7 ' + x.motif }),
             ]),
             K.btn('Ouvrir', { size: 'sm', icon: 'arrow-right',
               onclick: function () { if (go) go(x.ecran); } }),
           ]);
+          if (x.configuration) ligne.setAttribute('data-configuration-fiscale', x.configuration);
+          return ligne;
         }))));
 
       host.appendChild(U.card('Valid\u00e9es par la DIRECTION le 01/09/2026 (vague 49)',

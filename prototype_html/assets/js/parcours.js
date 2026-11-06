@@ -3717,4 +3717,368 @@
     calculer: bfr, indicateurs: indicateursPilotage,
     alertes: alertesRecouvrement, objectifs: objectifsPilotage,
   };
+
+  /* ==========================================================================
+   * CONFIGURATION FISCALE VALIDÉE ET DATÉE (Direction, 06/11/2026)
+   * --------------------------------------------------------------------------
+   * L'identité légale (cfg-branding, cfg-fiscalite) et les obligations
+   * fiscales (cfg-comptabilite) se VÉRIFIENT et se VALIDENT à la première
+   * configuration, puis se modifient par VERSIONS DATÉES avec historique : une
+   * pièce émise sous l'ancienne version garde son en-tête, une échéance payée
+   * garde sa quittance. Le moteur vit AU SOCLE (lu par CFG, print.js, M8, M11,
+   * M12, M13, l'assistant d'installation) et il est EXPOSÉ pour être SONDÉ,
+   * jamais recopié. Chaque refus se nomme : code, motif, geste.
+   * ======================================================================== */
+  var ROLES_VALIDATION = ['direction', 'da', 'admin'];
+  function colIdentite() { return S.collection('identiteLegale', { module: 'CFG', entite: 'identité légale', prefix: 'IDL' }); }
+  function colObligations() { return S.collection('obligationsFiscales', { module: 'CFG', entite: 'obligation fiscale', prefix: 'OBL' }); }
+  function colHistoriqueObligations() { return S.collection('historiqueObligations', { module: 'CFG', entite: 'version antérieure d’obligation fiscale', prefix: 'HOB' }); }
+
+  function refusCfg(code, motif, geste, extra) {
+    return Object.assign({ ok: false, code: code, motif: motif, geste: geste || null }, extra || {});
+  }
+  function aujIso() { return C.iso(C.aujourdhui()); }
+  function isoJour(d) { return typeof d === 'string' ? d.slice(0, 10) : C.iso(d); }
+  function veille(iso) { return C.iso(C.addDays(isoJour(iso), -1)); }
+  function libelleRole(r) {
+    var N = global.SIGH.nav;
+    return (N && N.ROLES && N.ROLES[r] && N.ROLES[r].label) || r || 'aucun';
+  }
+  /* La maquette n'a pas de vrai mode fileul : le réglage `posteFileul` tient lieu de drapeau, pour que la règle
+     existe et se sonde. Au poste, c'est le mode du poste qui décide (famille R publiée par la mère seule). */
+  function posteFileul() { return S.reglage('posteFileul', false) === true; }
+  function controleEcritureCfg() {
+    if (posteFileul()) {
+      return refusCfg('FILEUL_LECTURE_SEULE', 'Cette configuration est tenue par la mère ; modifiez-la sur le poste mère.',
+        'Ouvrir le même écran sur le poste mère : la modification arrivera ici par la synchronisation.');
+    }
+    return null;
+  }
+  function controleDateEffet(d, minimum) {
+    if (!d) return refusCfg('DATE_EFFET_REQUISE', 'La date d’effet est obligatoire.', 'Choisir la date à partir de laquelle la nouvelle version s’applique.');
+    var annee = Number(String(d).slice(0, 4));
+    var etat = global.SIGH.exercice && global.SIGH.exercice.etat ? global.SIGH.exercice.etat(annee) : 'ouvert';
+    if (etat === 'clos') {
+      return refusCfg('EXERCICE_CLOS', 'La date d’effet tombe dans un exercice clos (' + annee + ') ; choisissez une date de l’exercice ouvert.',
+        'Choisir une date d’effet dans l’exercice ' + C.aujourdhui().getFullYear() + '.');
+    }
+    if (minimum && d < isoJour(minimum)) {
+      return refusCfg('DATE_EFFET_ANTERIEURE', 'La date d’effet (' + C.dateFR(d) + ') est antérieure à la version en vigueur (' + C.dateFR(isoJour(minimum)) + ').',
+        'Choisir une date d’effet au plus tôt le ' + C.dateFR(isoJour(minimum)) + '.');
+    }
+    return null;
+  }
+  function controleValidation() {
+    var r = controleEcritureCfg(); if (r) return r;
+    var role = roleCourant();
+    if (ROLES_VALIDATION.indexOf(role) < 0) {
+      return refusCfg('VALIDATION_RESERVEE', 'La validation de la configuration fiscale est réservée à la Direction, à la DAF et à l’administrateur système. Profil : ' + libelleRole(role) + '.',
+        'Demander à la Direction ou à la DAF de valider depuis son poste.');
+    }
+    return null;
+  }
+  /* Écrit plusieurs fiches d'un coup, UNE ligne de journal : vingt validations ne font pas vingt gestes. */
+  function marquerToutes(nom, fiches, patch) {
+    var brut = S.raw()[nom] || [];
+    fiches.forEach(function (f) {
+      var rec = brut.filter(function (x) { return x.id === f.id; })[0];
+      if (rec) Object.assign(rec, patch);
+    });
+    S.save(); S.emit(nom);
+  }
+
+  /* --- Identité légale ------------------------------------------------------ */
+  function normaliserIdentite(champs) {
+    var c = {};
+    (C.CHAMPS_IDENTITE || []).forEach(function (k) {
+      if (champs[k] === undefined) return;
+      var v = champs[k];
+      if (k === 'telephones') {
+        v = Array.isArray(v) ? v : String(v || '').split(/[\/,;]/);
+        v = v.map(function (t) { return String(t).trim(); }).filter(Boolean);
+      } else if (typeof v === 'string') v = v.trim();
+      c[k] = v;
+    });
+    return c;
+  }
+  function controleIdentite(c) {
+    if (c.nom !== undefined && !c.nom) return refusCfg('NOM_REQUIS', 'La dénomination sociale est obligatoire.', 'Saisir la dénomination telle qu’elle figure au RCCM.');
+    if (c.ifu !== undefined && !/^\d{13}$/.test(String(c.ifu).replace(/\s/g, ''))) return refusCfg('IFU_FORMAT', 'L’IFU compte 13 chiffres.', 'Relever l’IFU sur l’attestation d’immatriculation fiscale.');
+    if (c.rccm !== undefined && !c.rccm) return refusCfg('RCCM_REQUIS', 'Le RCCM est obligatoire.', 'Relever le RCCM sur l’extrait du registre du commerce.');
+    if (c.telephones !== undefined && !c.telephones.length) return refusCfg('TELEPHONE_REQUIS', 'Au moins un téléphone est requis sur l’en-tête.', 'Saisir le ou les numéros, séparés par « / ».');
+    return null;
+  }
+  function identiteEnForce() { return S.identiteALaDate(aujIso()); }
+  function identiteJamaisValidee() { return !colIdentite().all().some(function (v) { return v.valideLe; }); }
+  function identiteExigeVersion() { return !identiteJamaisValidee(); }
+  function versionsIdentiteAValider() {
+    var a = aujIso();
+    return colIdentite().active().filter(function (v) { return !v.fin || isoJour(v.fin) >= a; });
+  }
+  /** AVANT la première validation : « Enregistrer » corrige la version en force (la première configuration est un brouillon). */
+  function enregistrerIdentite(champs, opts) {
+    opts = opts || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var c = normaliserIdentite(champs || {});
+    r = controleIdentite(c); if (r) return r;
+    var enForce = identiteEnForce();
+    if (!enForce) return refusCfg('IDENTITE_ABSENTE', 'Aucune version de l’identité légale au magasin.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    if (identiteExigeVersion()) {
+      return refusCfg('VERSION_REQUISE', 'L’identité légale a déjà été validée : toute modification crée une version datée.',
+        'Indiquer la date d’effet et le motif (modale « Portée de la modification »).', { versionRequise: true });
+    }
+    var res = colIdentite().update(enForce.id, Object.assign({}, c, { modifieLe: new Date().toISOString(), modifiePar: acteur() }));
+    if (!res) return refusCfg('ECRITURE_REFUSEE', 'La fiche n’a pas pu être écrite.', 'Voir le journal.');
+    S.log('Identité légale enregistrée', 'CFG', 'IdentiteLegale', enForce.id, null, { version: enForce.version, champs: Object.keys(c), origine: opts.origine || null });
+    return { ok: true, mode: 'en_place', version: enForce.version, fiche: res.record, aValider: true };
+  }
+  /** APRÈS une validation : une nouvelle version, datée, motivée ; l'ancienne reçoit sa date de fin et reste. */
+  function nouvelleVersionIdentite(champs, opts) {
+    opts = opts || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var c = normaliserIdentite(champs || {});
+    r = controleIdentite(c); if (r) return r;
+    if (!opts.motif || !String(opts.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif est obligatoire dès la version 2.', 'Dire pourquoi l’identité change (changement de RCCM, nouvelle adresse…).');
+    var d = isoJour(opts.dateEffet || aujIso());
+    var col = colIdentite();
+    var toutes = col.active();
+    var couverte = S.identiteALaDate(d);
+    r = controleDateEffet(d, couverte && couverte.debut); if (r) return r;
+    if (toutes.some(function (v) { return v.debut && isoJour(v.debut) === d; })) {
+      return refusCfg('VERSION_EXISTANTE', 'Une version prend déjà effet le ' + C.dateFR(d) + '.', 'Choisir une autre date d’effet.');
+    }
+    var suivante = toutes.filter(function (v) { return v.debut && isoJour(v.debut) > d; })
+      .sort(function (a, b) { return String(a.debut).localeCompare(String(b.debut)); })[0] || null;
+    var numero = Math.max.apply(null, col.all().map(function (v) { return v.version || 0; }).concat([0])) + 1;
+    var fiche = Object.assign({}, C.champsIdentite(couverte || C.BRAND_ORIGINE), c, {
+      version: numero, debut: d, fin: suivante ? veille(suivante.debut) : null,
+      creeLe: new Date().toISOString(), creePar: acteur(), motif: String(opts.motif).trim(),
+      valideLe: null, validePar: null,
+      source: 'Saisie à l’écran (' + (opts.origine || 'cfg-fiscalite') + ')',
+    });
+    if (couverte) col.update(couverte.id, { fin: veille(d) });
+    var res = col.insert(fiche);
+    S.log('Nouvelle version de l’identité légale', 'CFG', 'IdentiteLegale', res.record.id,
+      { version: couverte ? couverte.version : null }, { version: numero, debut: d, motif: fiche.motif });
+    return { ok: true, mode: 'version', version: numero, fiche: res.record, precedente: couverte || null, enForceAujourdhui: d <= aujIso() };
+  }
+  function validerIdentite() {
+    var r = controleValidation(); if (r) return r;
+    var cibles = versionsIdentiteAValider();
+    if (!cibles.length) return refusCfg('IDENTITE_ABSENTE', 'Aucune version de l’identité légale à valider.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    var quand = new Date().toISOString(), qui = acteur();
+    marquerToutes('identiteLegale', cibles, { valideLe: quand, validePar: qui });
+    S.log('Validation', 'CFG', 'IdentiteLegale', cibles.map(function (v) { return v.id; }).join(','), null, { valideLe: quand, validePar: qui });
+    return { ok: true, valideLe: quand, validePar: qui, versions: cibles.map(function (v) { return v.version; }) };
+  }
+
+  /* --- Obligations fiscales et paramètres ORTB ------------------------------ */
+  function obligationActive(ref) {
+    var col = colObligations();
+    var f = ref && ref.id ? col.get(ref.id) : null;
+    if (!f && ref && ref.code) f = col.active().filter(function (x) { return x.code === ref.code && x.type !== 'parametres'; })[0] || null;
+    return f && f.statut !== 'archive' ? f : null;
+  }
+  function ficheOrtb() {
+    return colObligations().active().filter(function (x) { return x.type === 'parametres' && x.code === 'ORTB-PARAMETRES'; })[0] || null;
+  }
+  function controleValeursObligation(v) {
+    if (!v.libelle || !String(v.libelle).trim()) return refusCfg('LIBELLE_REQUIS', 'L’intitulé de l’obligation est obligatoire.', 'Nommer l’obligation comme la déclaration la nomme.');
+    if (['mensuelle', 'annuelle'].indexOf(v.periodicite) < 0) return refusCfg('PERIODICITE_INVALIDE', 'La périodicité est mensuelle ou annuelle.', 'Choisir l’une des deux.');
+    var jour = Number(v.jour);
+    if (!(jour >= 1 && jour <= 31 && jour === Math.floor(jour))) return refusCfg('JOUR_INVALIDE', 'Le jour de l’échéance est compris entre 1 et 31.', 'Saisir le jour du mois.');
+    if (v.periodicite === 'annuelle') {
+      var mois = Number(v.mois);
+      if (v.mois === null || v.mois === undefined || v.mois === '' || !(mois >= 0 && mois <= 11)) return refusCfg('MOIS_INVALIDE', 'Une obligation annuelle porte son mois (janvier à décembre).', 'Choisir le mois de l’échéance.');
+    }
+    if (v.part !== null && v.part !== undefined && v.part !== '') {
+      var part = Number(v.part);
+      if (!(part >= 1 && part <= 100)) return refusCfg('PART_INVALIDE', 'La part est un pourcentage entre 1 et 100, ou vide.', 'Saisir la fraction réglée à cette échéance.');
+    }
+    return null;
+  }
+  function valeursObligation(v) {
+    var annuelle = v.periodicite === 'annuelle';
+    return {
+      libelle: String(v.libelle).trim(), periodicite: v.periodicite, jour: Number(v.jour),
+      mois: annuelle ? Number(v.mois) : null,
+      part: v.part === null || v.part === undefined || v.part === '' ? null : Number(v.part),
+      declaration: v.declaration ? String(v.declaration).trim() : null,
+      note: v.note ? String(v.note).trim() : null,
+    };
+  }
+  function copieHistorique(fiche, d, motif, retiree) {
+    var copie = Object.assign({}, fiche);
+    ['id', 'statut', '_creePar', '_creeLe', '_modifiePar', '_modifieLe', '_archivePar', '_archiveLe', '_motifArchivage'].forEach(function (k) { delete copie[k]; });
+    return colHistoriqueObligations().insert(Object.assign(copie, {
+      obligationId: fiche.id, dateFin: veille(d), remplaceeLe: new Date().toISOString(), remplaceePar: acteur(),
+      motifRemplacement: motif, retiree: !!retiree,
+    })).record;
+  }
+  function echeancesImpactees(code, dateEffet) {
+    var d = isoJour(dateEffet || aujIso());
+    var rows = S.collection('echeancesFiscales').active().filter(function (e) {
+      return e.code === code && e.exercice >= Number(d.slice(0, 4)) && (e.echeanceTheorique || e.echeance) >= d;
+    });
+    return { payees: rows.filter(function (e) { return e.paye; }).length, nonPayees: rows.filter(function (e) { return !e.paye; }).length, exercice: Number(d.slice(0, 4)) };
+  }
+  function annoncerRegeneration(code, reg) {
+    try {
+      notifier({ type: 'echeances_regenerees', poste: 'comptable', priorite: 'normale',
+        libelle: 'Échéances régénérées : ' + code + ', ' + C.num(reg.creees),
+        detail: C.num(reg.conservees) + ' payée(s) conservée(s), ' + C.num(reg.archivees) + ' non payée(s) régénérée(s) à partir du ' + C.dateFR(reg.dateEffet) + '.',
+        reference: code });
+    } catch (e) { /* la notification n'empêche pas le geste */ }
+  }
+  function modifierObligation(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var fiche = obligationActive(o);
+    if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la modification est obligatoire.', 'Dire ce qui change et pourquoi (texte de loi, note de la DGI…).');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    var fusion = Object.assign({}, fiche, o.valeurs || {});
+    r = controleValeursObligation(fusion); if (r) return r;
+    var apres = valeursObligation(fusion);
+    copieHistorique(fiche, d, String(o.motif).trim(), false);
+    var patch = Object.assign(apres, { dateEffet: d, modifieLe: new Date().toISOString(), modifiePar: acteur(), motif: String(o.motif).trim(), valideLe: null, validePar: null });
+    var res = colObligations().update(fiche.id, patch);
+    if (!res) return refusCfg('ECRITURE_REFUSEE', 'La fiche n’a pas pu être écrite.', 'Voir le journal.');
+    var reg = S.regenererEcheances({ code: fiche.code, dateEffet: d, auteur: acteur() });
+    annoncerRegeneration(fiche.code, reg);
+    S.log('Modification d’obligation fiscale', 'CFG', 'ObligationsFiscales', fiche.id,
+      { jour: fiche.jour, mois: fiche.mois, part: fiche.part }, { jour: apres.jour, mois: apres.mois, part: apres.part, dateEffet: d, motif: patch.motif });
+    return { ok: true, fiche: colObligations().get(fiche.id), echeances: reg };
+  }
+  function creerObligation(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var v = o.valeurs || {};
+    var code = String(v.code || '').trim().toUpperCase();
+    if (!/^[A-Z0-9][A-Z0-9-]*$/.test(code)) return refusCfg('CODE_INVALIDE', 'Le code est en majuscules, chiffres et traits d’union (ex. : TPS-1).', 'Choisir un code court et stable : il identifie l’obligation au journal.');
+    var existe = colObligations().all().concat(colHistoriqueObligations().all()).some(function (x) { return x.code === code; });
+    if (existe) return refusCfg('CODE_EXISTANT', 'Le code ' + code + ' existe déjà.', 'Modifier l’obligation existante, ou choisir un autre code.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la création est obligatoire.', 'Citer le texte qui institue l’obligation.');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d); if (r) return r;
+    r = controleValeursObligation(v); if (r) return r;
+    var fiche = Object.assign({ type: 'obligation', code: code, famille: code.split('-')[0] }, valeursObligation(v), {
+      source: 'Saisie à l’écran (cfg-comptabilite)', dateEffet: d,
+      modifieLe: new Date().toISOString(), modifiePar: acteur(), motif: String(o.motif).trim(), valideLe: null, validePar: null,
+    });
+    var res = colObligations().insert(fiche);
+    var reg = S.regenererEcheances({ code: code, dateEffet: d, auteur: acteur() });
+    annoncerRegeneration(code, reg);
+    S.log('Création d’obligation fiscale', 'CFG', 'ObligationsFiscales', res.record.id, null, { code: code, dateEffet: d, motif: fiche.motif });
+    return { ok: true, fiche: res.record, echeances: reg };
+  }
+  function retirerObligation(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var app = global.SIGH.app;
+    if (app && typeof app.droits === 'function' && !app.droits('CFG').annuler) {
+      return refusCfg('RETRAIT_RESERVE', 'Le retrait d’une obligation appartient à la DAF ou à l’administrateur système. Profil : ' + libelleRole(roleCourant()) + '.',
+        'Demander à la DAF de retirer l’obligation.');
+    }
+    var fiche = obligationActive(o);
+    if (!fiche) return refusCfg('OBLIGATION_INCONNUE', 'Aucune obligation en vigueur ne porte cette référence.', 'Choisir une obligation du tableau.');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif du retrait est obligatoire.', 'Citer le texte qui supprime l’obligation.');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    copieHistorique(fiche, d, String(o.motif).trim(), true);
+    colObligations().archive(fiche.id, String(o.motif).trim());
+    var reg = S.regenererEcheances({ code: fiche.code, dateEffet: d, auteur: acteur() });
+    annoncerRegeneration(fiche.code, reg);
+    S.log('Retrait d’obligation fiscale', 'CFG', 'ObligationsFiscales', fiche.id, { code: fiche.code }, { dateFin: veille(d), motif: String(o.motif).trim() });
+    return { ok: true, fiche: colObligations().get(fiche.id), echeances: reg };
+  }
+  function espaceMilliers(n) { return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); }
+  function modifierOrtb(o) {
+    o = o || {};
+    var r = controleEcritureCfg(); if (r) return r;
+    var fiche = ficheOrtb();
+    if (!fiche) return refusCfg('ORTB_ABSENT', 'La fiche des paramètres ORTB est absente du magasin.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    if (!o.motif || !String(o.motif).trim()) return refusCfg('MOTIF_REQUIS', 'Le motif de la modification est obligatoire.', 'Citer la décision ou le texte qui fixe le nouveau seuil.');
+    var d = isoJour(o.dateEffet || aujIso());
+    r = controleDateEffet(d, fiche.dateEffet); if (r) return r;
+    var v = o.valeurs || {};
+    var seuil = v.seuilTele === undefined ? fiche.seuilTele : Number(v.seuilTele);
+    if (!(seuil >= 0)) return refusCfg('SEUIL_INVALIDE', 'Le seuil de la redevance Télé est un montant positif ou nul.', 'Saisir le salaire brut au-delà duquel la télé est due.');
+    var redevances = (fiche.redevances || []).map(function (x) { return Object.assign({}, x); });
+    var invalide = null;
+    ['radio', 'tele'].forEach(function (id) {
+      var saisie = v[id] || {};
+      var red = redevances.filter(function (x) { return x.id === id; })[0];
+      if (!red) return;
+      if (saisie.montant !== undefined && saisie.montant !== null && saisie.montant !== '') red.montant = Number(saisie.montant);
+      if (saisie.mois !== undefined && saisie.mois !== null && saisie.mois !== '') { red.mois = Number(saisie.mois); red.moisLabel = C.MOIS[red.mois]; }
+      if (!(red.montant >= 0)) invalide = refusCfg('MONTANT_INVALIDE', 'Le montant de la redevance ' + red.categorie + ' est un montant positif ou nul.', 'Saisir le montant annuel par agent.');
+      else if (!(red.mois >= 0 && red.mois <= 11)) invalide = refusCfg('MOIS_INVALIDE', 'Le mois de prélèvement de la redevance ' + red.categorie + ' va de janvier à décembre.', 'Choisir le mois du bulletin qui porte la retenue.');
+      if (id === 'tele') { red.seuilMin = seuil + 1; red.assiette = 'Salaire brut supérieur à ' + espaceMilliers(seuil) + ' FCFA'; }
+    });
+    if (invalide) return invalide;
+    var cumul = redevances.reduce(function (n, x) { return n + (x.montant || 0); }, 0);
+    copieHistorique(fiche, d, String(o.motif).trim(), false);
+    var res = colObligations().update(fiche.id, {
+      seuilTele: seuil, redevances: redevances, cumulMaximum: cumul, dateEffet: d,
+      modifieLe: new Date().toISOString(), modifiePar: acteur(), motif: String(o.motif).trim(), valideLe: null, validePar: null,
+    });
+    if (!res) return refusCfg('ECRITURE_REFUSEE', 'La fiche n’a pas pu être écrite.', 'Voir le journal.');
+    S.log('Modification des paramètres ORTB', 'CFG', 'ObligationsFiscales', fiche.id,
+      { seuilTele: fiche.seuilTele, cumul: fiche.cumulMaximum }, { seuilTele: seuil, cumul: cumul, dateEffet: d, motif: String(o.motif).trim() });
+    return { ok: true, fiche: colObligations().get(fiche.id) };
+  }
+  function validerObligations() {
+    var r = controleValidation(); if (r) return r;
+    var cibles = colObligations().active();
+    if (!cibles.length) return refusCfg('OBLIGATIONS_ABSENTES', 'Aucune obligation à valider.', 'Réinitialiser le jeu de démonstration (Paramètres système).');
+    var quand = new Date().toISOString(), qui = acteur();
+    marquerToutes('obligationsFiscales', cibles, { valideLe: quand, validePar: qui });
+    S.log('Validation', 'CFG', 'ObligationsFiscales', 'toutes', null, { valideLe: quand, validePar: qui, nombre: cibles.length });
+    return { ok: true, valideLe: quand, validePar: qui, nombre: cibles.length };
+  }
+  function versionsObligation(code) {
+    return colHistoriqueObligations().active().filter(function (h) { return h.code === code; })
+      .sort(function (a, b) { return String(a.dateEffet || '').localeCompare(String(b.dateEffet || '')); });
+  }
+
+  /* --- L'état affiché, une seule fonction ------------------------------------ */
+  function etatConfigurationFiscale(nom) {
+    var fiches, toutes;
+    if (nom === 'identite') { fiches = versionsIdentiteAValider(); toutes = colIdentite().all(); }
+    else { fiches = colObligations().active(); toutes = colObligations().all().concat(colHistoriqueObligations().all()); }
+    var validees = fiches.filter(function (f) { return f.valideLe; })
+      .sort(function (a, b) { return String(b.valideLe).localeCompare(String(a.valideLe)); });
+    var nonValidees = fiches.filter(function (f) { return !f.valideLe; });
+    var anterieure = toutes.filter(function (f) { return f.valideLe; })
+      .sort(function (a, b) { return String(b.valideLe).localeCompare(String(a.valideLe)); })[0] || null;
+    var dates = nonValidees.map(function (f) { return f._modifieLe || f.modifieLe || f.creeLe || f._creeLe || null; }).filter(Boolean).sort();
+    var derniereModif = nonValidees.filter(function (f) { return (f._modifieLe || f.modifieLe || f.creeLe || f._creeLe) === dates[dates.length - 1]; })[0] || nonValidees[0] || null;
+    var etat = fiches.length && !nonValidees.length ? 'valide' : (anterieure ? 'modifie_depuis' : 'a_valider');
+    return {
+      etat: etat, nombre: fiches.length, nonValidees: nonValidees.length,
+      valideLe: etat === 'valide' ? validees[0].valideLe : null,
+      validePar: etat === 'valide' ? validees[0].validePar : null,
+      modifieLe: dates.length ? dates[dates.length - 1] : null,
+      modifiePar: derniereModif ? (derniereModif._modifiePar || derniereModif.modifiePar || derniereModif.creePar || derniereModif._creePar || null) : null,
+      validationAnterieure: anterieure ? { valideLe: anterieure.valideLe, validePar: anterieure.validePar } : null,
+    };
+  }
+
+  global.SIGH.configurationFiscale = {
+    ROLES_VALIDATION: ROLES_VALIDATION,
+    identiteEnForce: identiteEnForce, identiteExigeVersion: identiteExigeVersion,
+    enregistrerIdentite: enregistrerIdentite, nouvelleVersionIdentite: nouvelleVersionIdentite, validerIdentite: validerIdentite,
+    obligationsEnVigueur: function (date) { return D.obligationsALaDate(date); },
+    ortbEnVigueur: function (date) { return D.ortbALaDate(date); },
+    ficheOrtb: ficheOrtb,
+    modifierObligation: modifierObligation, creerObligation: creerObligation, retirerObligation: retirerObligation,
+    modifierOrtb: modifierOrtb, validerObligations: validerObligations,
+    echeancesImpactees: echeancesImpactees, versionsObligation: versionsObligation,
+    etatConfigurationFiscale: etatConfigurationFiscale, posteFileul: posteFileul,
+  };
+  global.SIGH.parcours.validerIdentite = validerIdentite;
+  global.SIGH.parcours.validerObligations = validerObligations;
+  global.SIGH.parcours.etatConfigurationFiscale = etatConfigurationFiscale;
 })(window);

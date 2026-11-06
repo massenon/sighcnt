@@ -370,6 +370,7 @@
         P.etat({
           titre: 'Facture de vente — normalisée',
           sousTitre: f.numero + (f.numeroMecef ? ' — ' + f.numeroMecef : ''),
+          date: f.date,
           cartouche: [
             ['Facture n°', f.numero], ['Date', C.dateFR(f.date)],
             ['Client', f.patient], ['Dossier client', f.patientCode],
@@ -654,6 +655,7 @@
         P.etat({
           titre: 'Avoir sur facture normalisée',
           sousTitre: a.reference + ' — rectifie la facture ' + a.factureNumero,
+          date: a.date,
           cartouche: [['N° avoir', a.reference], ['Identifiant MECeF', a.numeroMecef || '—'],
             ['Date', C.dateFR(a.date)], ['Facture rectifiée', a.factureNumero],
             ['Client', a.patient], ['Motif', a.motif]],

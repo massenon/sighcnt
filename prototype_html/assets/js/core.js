@@ -47,7 +47,51 @@
     logo: 'assets/img/logo.jpeg',
     devise: 'FCFA',
     codeDevise: 'XOF',
+    /* Régime de TVA tel que l'écran des paramètres fiscaux l'affichait (06/11/2026). Porté tel quel ; il diverge
+       du régime EXONÉRÉ que mecef-config applique (E2272, signalé, non arbitré). */
+    regimeTva: 'Taux normal 18 %',
   };
+
+  /* --------------------------------------------------------------------------
+   * L'IDENTITÉ LÉGALE EST UNE DONNÉE DE RÉFÉRENCE DATÉE (06/11/2026)
+   * --------------------------------------------------------------------------
+   * `BRAND` ci-dessus est la SEMENCE : la version 1 de la collection
+   * `identiteLegale`. Le magasin écrase BRAND EN PLACE (`Object.assign`, jamais
+   * une réaffectation : print.js a capturé la référence) avec la version en
+   * force aujourd'hui. `BRAND_ORIGINE` garde la semence intacte, pour le repli
+   * sans magasin et pour la semence elle-même.
+   *
+   * `identiteALaDate(date)` répond pour une PIÈCE : une facture d'hier
+   * s'imprime avec le RCCM d'hier, même si une nouvelle version prend effet
+   * demain. Elle lit le magasin À L'APPEL (le modèle de D.NS132.montant) et
+   * retombe sur la semence quand il n'est pas chargé.
+   * ----------------------------------------------------------------------- */
+  var CHAMPS_IDENTITE = ['sigle', 'nom', 'slogan', 'forme', 'adresse', 'bp', 'pays', 'telephones', 'telephoneRdv',
+    'email', 'ifu', 'rccm', 'autorisation', 'autorisationExercice', 'autorisationExerciceMotif', 'devise',
+    'codeDevise', 'logo', 'formuleArrete', 'formulePolitesse', 'regimeTva'];
+  var BRAND_ORIGINE = (function () {
+    var o = {};
+    CHAMPS_IDENTITE.forEach(function (k) { o[k] = Array.isArray(BRAND[k]) ? BRAND[k].slice() : BRAND[k]; });
+    return o;
+  })();
+  /** Les seuls champs d'identité d'une fiche (ni id, ni version, ni dates), sur la forme de BRAND. */
+  function champsIdentite(fiche) {
+    var o = {};
+    CHAMPS_IDENTITE.forEach(function (k) {
+      var v = fiche && fiche[k] !== undefined ? fiche[k] : BRAND_ORIGINE[k];
+      o[k] = Array.isArray(v) ? v.slice() : v;
+    });
+    return o;
+  }
+  function identiteALaDate(date) {
+    var st = global.SIGH && global.SIGH.store;
+    if (st && typeof st.identiteALaDate === 'function') {
+      var v = null;
+      try { v = st.identiteALaDate(date); } catch (e) { v = null; }
+      if (v) return champsIdentite(v);
+    }
+    return champsIdentite(BRAND_ORIGINE);
+  }
 
   /* --- Formats ------------------------------------------------------------ */
   var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',
@@ -551,7 +595,9 @@
 
   global.SIGH = global.SIGH || {};
   global.SIGH.core = {
-    BRAND: BRAND, MOIS: MOIS, JOURS: JOURS,
+    BRAND: BRAND, BRAND_ORIGINE: BRAND_ORIGINE, CHAMPS_IDENTITE: CHAMPS_IDENTITE,
+    champsIdentite: champsIdentite, identiteALaDate: identiteALaDate,
+    MOIS: MOIS, JOURS: JOURS,
     money: money, num: num, pct: pct, pad: pad,
     dateFR: dateFR, dateLong: dateLong, dateJour: dateJour, heure: heure, age: age,
     ageDe: ageDe, ageTexte: ageTexte, ageEstDeclare: ageEstDeclare,

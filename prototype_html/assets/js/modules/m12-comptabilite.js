@@ -3275,42 +3275,11 @@
   function amorcerEcheances() {
     var db = S.raw();
     if (db.echeancesFiscales && db.echeancesFiscales.length) return;
-    var annee = AUJ.getFullYear();
-    var out = [], n = 0;
-    D.CALENDRIER_FISCAL.forEach(function (o) {
-      var dates = [];
-      if (o.periodicite === 'mensuelle') {
-        for (var m = 0; m < 12; m++) dates.push(new Date(annee, m, o.jour));
-      } else {
-        dates.push(new Date(annee, o.mois, Math.min(o.jour, 28)));
-      }
-      dates.forEach(function (d) {
-        n++;
-        var echue = jourOuvrableSuivant(d);
-        var passee = echue < AUJ;
-        out.push({
-          id: 'ECH' + C.pad(n, 4), statut: 'actif',
-          code: o.code, libelle: o.libelle, famille: o.famille,
-          periodicite: o.periodicite, part: o.part, declaration: o.declaration, note: o.note,
-          exercice: annee,
-          periode: o.periodicite === 'mensuelle' ? C.MOIS[Math.max(0, d.getMonth() - 1)] + ' ' + annee : String(annee),
-          echeance: C.iso(echue),
-          reportee: C.iso(echue) !== C.iso(d),
-          /* Les échéances passées sont réputées honorées, sauf les deux plus
-             récentes — pour que l'écran ait quelque chose à montrer. */
-          paye: !S.jeuVide() && passee && C.daysBetween(echue, AUJ) > 25,   /* jamais de quittance inventée après un vidage */
-          datePaiement: null, montant: null, reference: null, valideePar: null,
-        });
-      });
-    });
-    out.forEach(function (e) {
-      if (e.paye) {
-        e.datePaiement = e.echeance;
-        e.valideePar = 'KASSA Augustin';
-        e.reference = 'QUIT-' + e.code + '-' + e.exercice;
-      }
-    });
-    db.echeancesFiscales = out;
+    /* UNE SEULE FABRIQUE (06/11/2026) : celle du socle, qui lit les obligations
+       À LEUR DATE (versions datées de cfg-comptabilite) ; la copie qui vivait
+       ici lisait D.CALENDRIER_FISCAL en dur et aurait divergé à la première
+       version. Jamais de quittance inventée après un vidage. */
+    db.echeancesFiscales = S.genEcheances(AUJ.getFullYear(), { aujourdhui: AUJ, sansReglement: S.jeuVide() });
     S.save();
   }
 
@@ -3441,6 +3410,11 @@
                   el('p.truncate.text-xs.text-slate-400', {
                     text: e.periode + (e.part && e.part < 100 ? ' · tranche de ' + e.part + ' %' : ''),
                   }),
+                  /* Une échéance née d'une version datée de l'obligation le dit : c'est ce qui explique un jour qui a changé. */
+                  e.versionObligation ? el('p.truncate.text-\\[10px\\].text-info-700', {
+                    text: 'Version de l’obligation en vigueur au ' + C.dateFR(e.versionObligation)
+                      + (e.regenereeLe ? ' (régénérée le ' + C.dateFR(e.regenereeLe) + ')' : ''),
+                  }) : null,
                 ]);
               },
             },

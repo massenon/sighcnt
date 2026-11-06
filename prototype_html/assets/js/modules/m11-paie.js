@@ -83,9 +83,15 @@
    * dispenserait de la radio les salaires élevés.
    * Le prélèvement est ANNUEL : chacune n'apparaît que sur le bulletin de
    * son mois de prélèvement.
+   *
+   * LES PARAMÈTRES SONT LUS À LA DATE DU BULLETIN (06/11/2026) : `date` est le
+   * premier jour de la période de paie ; sans elle, aujourd'hui (les appelants
+   * anciens ne changent rien). Un seuil relevé en septembre ne touche pas le
+   * bulletin de juin, qui garde ses lignes. Repli : PARAM_PAIE.ortb.
    * ----------------------------------------------------------------------- */
-  function calculOrtb(brut, mois) {
-    var lignes = (PP.ortb.redevances || []).filter(function (r) {
+  function calculOrtb(brut, mois, date) {
+    var parametres = (D.ortbALaDate ? D.ortbALaDate(date || C.aujourdhui()) : null) || PP.ortb;
+    var lignes = (parametres.redevances || []).filter(function (r) {
       return (r.seuilMin == null || brut >= r.seuilMin)
         && (r.seuilMax == null || brut <= r.seuilMax);
     }).map(function (r) {
@@ -226,7 +232,7 @@
        télé en juin au-delà de 60 000 F. Les porter chaque mois majorerait les
        retenues de onze douzièmes. Les deux parts restent distinguées jusqu'au
        bulletin : c'est ainsi que la clinique les déclare. */
-    var detailOrtb = calculOrtb(brut, mois);
+    var detailOrtb = calculOrtb(brut, mois, C.iso(new Date(annee, mois, 1)));
     var ortb = detailOrtb.montant;
     var ortbRadio = (detailOrtb.parCategorie.radio || {}).montant || 0;
     var ortbTele = (detailOrtb.parCategorie.tele || {}).montant || 0;
@@ -1346,6 +1352,8 @@
 
   /* Exposé pour être SONDÉ (scénario 77), comme les autres moteurs. */
   global.SIGH.paieValidation = { controleNetNegatif: controleNetNegatif, imputerRetenues: imputerRetenues };
+  /* Le calcul ORTB est EXPOSÉ pour être SONDÉ (paramètres lus à la date du bulletin), jamais recopié. */
+  global.SIGH.paie = Object.assign(global.SIGH.paie || {}, { calculOrtb: calculOrtb, lignesOrtb: lignesOrtb });
 
   global.SIGH.screen('m11-validation', {
     title: 'Validation de la paie',

@@ -1602,6 +1602,109 @@
     ortbRadio: 1000, ortbTele: 3000, ortbCumul: 4000,
   };
 
+  /* ==========================================================================
+   * LES OBLIGATIONS FISCALES VIVENT AU MAGASIN, DATÉES (Direction, 06/11/2026)
+   * --------------------------------------------------------------------------
+   * `CALENDRIER_FISCAL` et `PARAM_PAIE.ortb` restent les SEMENCES : la
+   * collection `obligationsFiscales` porte la version en vigueur de chaque
+   * obligation (type 'obligation') et une fiche de paramètres ORTB (type
+   * 'parametres', code 'ORTB-PARAMETRES') ; `historiqueObligations` garde les
+   * versions antérieures, retrouvées par leur date d'effet. C'est le modèle de
+   * la grille des primes (grillePrimes / historiquePrimes) : une échéance
+   * engendrée sous l'ancienne version ne bouge pas quand la Direction change
+   * la suivante.
+   *
+   * `obligationsALaDate(date)` et `ortbALaDate(date)` lisent le magasin À
+   * L'APPEL et retombent sur la semence tant qu'il n'est pas chargé (premier
+   * amorçage, page ouverte sans serveur). Elles ne CRÉENT jamais la collection :
+   * un `collection()` posé pendant le semis ferait semer en boucle.
+   * ======================================================================== */
+  var SOURCE_OBLIGATIONS = 'Précisions du comptable (réunion du 19/08/2026) ; calendrier confirmé par la Direction le 25/08/2026';
+
+  function semenceObligations() {
+    var out = CALENDRIER_FISCAL.map(function (o) {
+      return {
+        id: o.id, statut: 'actif', type: 'obligation',
+        code: o.code, libelle: o.libelle, famille: o.famille,
+        periodicite: o.periodicite, jour: o.jour, mois: o.mois, part: o.part,
+        declaration: o.declaration, note: o.note,
+        source: SOURCE_OBLIGATIONS,
+        dateEffet: null, modifieLe: null, modifiePar: null, motif: null,
+        valideLe: null, validePar: null,
+      };
+    });
+    out.push(semenceOrtbParametres());
+    return out;
+  }
+  function semenceOrtbParametres() {
+    var o = PARAM_PAIE.ortb;
+    return {
+      id: 'ORTB-PARAMETRES', statut: 'actif', type: 'parametres',
+      code: 'ORTB-PARAMETRES', libelle: o.libelle, famille: 'ORTB',
+      seuilTele: o.seuilTele,
+      redevances: o.redevances.map(function (r) { return Object.assign({}, r); }),
+      cumulMaximum: o.cumulMaximum,
+      source: o.source,
+      dateEffet: null, modifieLe: null, modifiePar: null, motif: null,
+      valideLe: null, validePar: null,
+    };
+  }
+
+  /** Le magasin est-il chargé et lisible sans déclencher un semis ? */
+  function magasinPret() {
+    var st = global.SIGH && global.SIGH.store;
+    if (!st || typeof st.etatServeur !== 'function') return false;
+    try { return !!st.etatServeur().magasinCharge && (!st.faitAutorite || st.faitAutorite() || !st.surServeur()); } catch (e) { return false; }
+  }
+  function lireCollection(nom) {
+    try { return global.SIGH.store.collection(nom).active(); } catch (e) { return []; }
+  }
+  function dateIso(date) {
+    if (!date) return C.iso(C.aujourdhui());
+    if (typeof date === 'string') return date.slice(0, 10);
+    return C.iso(date);
+  }
+  /** La version d'une fiche (courante ou historique) en vigueur à `d` (ISO). */
+  function versionEnVigueur(courante, historique, d) {
+    if (courante && (!courante.dateEffet || d >= String(courante.dateEffet))) return courante;
+    var couvrante = historique.filter(function (h) {
+      return (!h.dateEffet || d >= String(h.dateEffet)) && (!h.dateFin || d <= String(h.dateFin));
+    }).sort(function (a, b) { return String(b.dateEffet || '').localeCompare(String(a.dateEffet || '')); })[0];
+    return couvrante || null;
+  }
+
+  /**
+   * Les obligations fiscales en vigueur à une date : une fiche par code.
+   * Un code sans version couvrante à cette date est ABSENT (obligation créée
+   * plus tard, ou retirée avant). Sans magasin : la semence.
+   */
+  function obligationsALaDate(date) {
+    var d = dateIso(date);
+    if (!magasinPret()) return semenceObligations().filter(function (o) { return o.type === 'obligation'; });
+    var actives = lireCollection('obligationsFiscales').filter(function (o) { return o.type !== 'parametres'; });
+    var hist = lireCollection('historiqueObligations').filter(function (o) { return o.type !== 'parametres'; });
+    if (!actives.length && !hist.length) return semenceObligations().filter(function (o) { return o.type === 'obligation'; });
+    var codes = [], vus = {};
+    actives.concat(hist).forEach(function (o) { if (o.code && !vus[o.code]) { vus[o.code] = true; codes.push(o.code); } });
+    var out = [];
+    codes.forEach(function (code) {
+      var courante = actives.filter(function (o) { return o.code === code; })[0] || null;
+      var v = versionEnVigueur(courante, hist.filter(function (h) { return h.code === code; }), d);
+      if (v) out.push(v);
+    });
+    return out;
+  }
+
+  /** Les paramètres ORTB (seuil, redevances, cumul) en vigueur à une date ; repli PARAM_PAIE.ortb. */
+  function ortbALaDate(date) {
+    var d = dateIso(date);
+    if (!magasinPret()) return PARAM_PAIE.ortb;
+    var courante = lireCollection('obligationsFiscales').filter(function (o) { return o.type === 'parametres' && o.code === 'ORTB-PARAMETRES'; })[0] || null;
+    var hist = lireCollection('historiqueObligations').filter(function (o) { return o.type === 'parametres' && o.code === 'ORTB-PARAMETRES'; });
+    var v = versionEnVigueur(courante, hist, d);
+    return v || PARAM_PAIE.ortb;
+  }
+
 
   /* ==========================================================================
    * VALORISATION DES SORTIES DE STOCK
@@ -2082,6 +2185,8 @@
     SECTEURS_RECETTE: SECTEURS_RECETTE, secteurNormalise: secteurNormalise,
     groupeDuSecteur: groupeDuSecteur,
     CALENDRIER_FISCAL: CALENDRIER_FISCAL, MONTANTS_FISCAUX: MONTANTS_FISCAUX,
+    semenceObligations: semenceObligations, semenceOrtbParametres: semenceOrtbParametres,
+    obligationsALaDate: obligationsALaDate, ortbALaDate: ortbALaDate,
     CAPACITES: CAPACITES, NATURES_PRESCRIPTION: NATURES_PRESCRIPTION,
     BAREME_REFERENCE: BAREME_REFERENCE, CATEGORIES_GARANTIE: CATEGORIES_GARANTIE, UNITES_PLAFOND: UNITES_PLAFOND,
   };

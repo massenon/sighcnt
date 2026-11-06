@@ -85,8 +85,11 @@
      tant qu'elle était recopiée dans chacun, elle finissait par diverger :
      la vague 67 a bougé les deux premiers et laissé le troisième à 61, si
      bien qu'un poste hydraté depuis la base ne se ré-amorçait jamais.
-     Incrémenter ce nombre, et lui seul, à toute modification de forme. */
-  var VERSION = 68;
+     Incrémenter ce nombre, et lui seul, à toute modification de forme.
+     69 (06/11/2026) : la configuration fiscale VALIDÉE et DATÉE, trois
+     collections semées au socle (identiteLegale, obligationsFiscales,
+     historiqueObligations), posées d'un coup pour tout le chantier. */
+  var VERSION = 69;
   var db = null;
   var listeners = {};
 
@@ -836,25 +839,46 @@
    * REPORTÉE au jour ouvrable suivant, jamais avancée — l'administration
    * n'ouvre pas le week-end, et anticiper ferait payer avant d'y être tenu.
    * ======================================================================== */
-  function genEcheances() {
-    var AUJ2 = new Date(2026, 7, 16);
-    function jourOuvrableSuivant(d) {
-      var x = new Date(d.getTime());
-      while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
-      return x;
+  /* LES OBLIGATIONS SONT LUES À LEUR DATE (06/11/2026). Pour chaque mois de
+     l'exercice, c'est la version de l'obligation EN VIGUEUR AU PREMIER DU MOIS
+     qui fixe l'échéance du mois : une version qui change en cours d'exercice
+     ne touche que les échéances postérieures à sa date d'effet. `opts.obligations`
+     impose la liste (le semis la passe : pendant le semis, le magasin n'est pas
+     encore là) ; sinon `D.obligationsALaDate` lit le magasin. `opts.aujourdhui`
+     décide ce qui est réputé réglé (défaut : la date du jeu, 16/08/2026) ;
+     `opts.sansReglement` n'invente aucune quittance (vidage des jeux de test). */
+  function jourOuvrableSuivantGen(d) {
+    var x = new Date(d.getTime());
+    while (x.getDay() === 0 || x.getDay() === 6) x = C.addDays(x, 1);
+    return x;
+  }
+  function obligationsPour(dateRef, opts) {
+    if (opts && Array.isArray(opts.obligations)) {
+      return opts.obligations.filter(function (o) { return o.type !== 'parametres' && o.statut !== 'archive'; });
     }
-    var annee = AUJ2.getFullYear();
+    return D.obligationsALaDate ? D.obligationsALaDate(dateRef) : (D.CALENDRIER_FISCAL || []);
+  }
+  function genEcheances(exercice, opts) {
+    opts = opts || {};
+    var AUJ2 = opts.aujourdhui ? C.toDate(opts.aujourdhui) : new Date(2026, 7, 16);
+    var annee = Number(exercice) || AUJ2.getFullYear();
+    var parCode = {}, ordre = [];
+    for (var m = 0; m < 12; m++) {
+      obligationsPour(new Date(annee, m, 1), opts).forEach(function (o) {
+        var d = null;
+        if (o.periodicite === 'mensuelle') d = new Date(annee, m, o.jour);
+        else if (o.mois === m) d = new Date(annee, m, Math.min(o.jour, 28));
+        if (!d) return;
+        if (!parCode[o.code]) { parCode[o.code] = []; ordre.push(o.code); }
+        parCode[o.code].push({ o: o, d: d });
+      });
+    }
     var out = [], n = 0;
-    (D.CALENDRIER_FISCAL || []).forEach(function (o) {
-      var dates = [];
-      if (o.periodicite === 'mensuelle') {
-        for (var m = 0; m < 12; m++) dates.push(new Date(annee, m, o.jour));
-      } else {
-        dates.push(new Date(annee, o.mois, Math.min(o.jour, 28)));
-      }
-      dates.forEach(function (d) {
+    ordre.forEach(function (code) {
+      parCode[code].forEach(function (x) {
+        var o = x.o, d = x.d;
         n++;
-        var echue = jourOuvrableSuivant(d);
+        var echue = jourOuvrableSuivantGen(d);
         var passee = echue < AUJ2;
         out.push({
           id: 'ECH' + C.pad(n, 4), statut: 'actif',
@@ -864,11 +888,14 @@
           periode: o.periodicite === 'mensuelle'
             ? C.MOIS[Math.max(0, d.getMonth() - 1)] + ' ' + annee : String(annee),
           echeance: C.iso(echue),
+          echeanceTheorique: C.iso(d),
           reportee: C.iso(echue) !== C.iso(d),
+          /* La version de l'obligation qui a engendré l'échéance : sa date d'effet (null pour la version d'origine). */
+          versionObligation: o.dateEffet || null,
           /* Les échéances passées sont réputées honorées, SAUF les plus
              récentes — sans quoi l'écran de suivi et le tableau de bord du
              comptable n'auraient jamais rien à montrer. */
-          paye: passee && C.daysBetween(echue, AUJ2) > 25,
+          paye: !opts.sansReglement && passee && C.daysBetween(echue, AUJ2) > 25,
           datePaiement: null, montant: null, reference: null, valideePar: null,
         });
       });
@@ -881,6 +908,62 @@
       }
     });
     return out;
+  }
+
+  /**
+   * RÉGÉNÈRE LES ÉCHÉANCES D'UNE OBLIGATION après une version datée : les
+   * échéances NON PAYÉES dont la date théorique est >= dateEffet sont archivées
+   * (RG-14) et recréées depuis la version en vigueur ; les PAYÉES ne bougent
+   * pas (une quittance ne se réécrit jamais), ni les non payées antérieures à
+   * la date d'effet. Un seul geste au journal, qui porte les deux listes.
+   * Rend les comptes ; c'est l'appelant (parcours) qui les annonce.
+   */
+  function regenererEcheances(o) {
+    load();
+    var d = String(o.dateEffet).slice(0, 10);
+    var auteur = o.auteur || currentUser();
+    var maintenant = new Date().toISOString();
+    if (!db.echeancesFiscales) db.echeancesFiscales = [];
+    var existantes = db.echeancesFiscales.filter(function (e) { return e.code === o.code && e.statut !== 'archive'; });
+    var exercices = {};
+    existantes.forEach(function (e) { exercices[e.exercice] = true; });
+    var anneeEffet = Number(d.slice(0, 4));
+    exercices[anneeEffet] = true;
+    var conservees = 0, anterieures = 0, archivees = 0, creees = 0, avant = [], apres = [];
+    Object.keys(exercices).map(Number).filter(function (a) { return a >= anneeEffet; }).sort().forEach(function (annee) {
+      /* Les mois (AAAA-MM) qu'une échéance PAYÉE couvre déjà : la nouvelle version n'y recrée rien, sans quoi
+         le mois serait dû deux fois (une quittance et une échéance ouverte pour la même période). */
+      var moisConserves = {};
+      existantes.filter(function (e) { return e.exercice === annee; }).forEach(function (e) {
+        /* Avant la date d'effet, rien ne bouge (payée ou non) ; à partir d'elle, une PAYÉE est conservée, une non payée régénérée. */
+        var theorique = e.echeanceTheorique || e.echeance;
+        if (theorique < d) { anterieures++; return; }
+        if (e.paye) { conservees++; moisConserves[String(theorique).slice(0, 7)] = true; return; }
+        e.statut = 'archive';
+        e._archivePar = auteur;
+        e._archiveLe = maintenant;
+        e._motifArchivage = 'Régénérée : version de ' + o.code + ' en vigueur au ' + C.dateFR(d);
+        avant.push(e.echeance);
+        archivees++;
+      });
+      genEcheances(annee, { sansReglement: true }).filter(function (n) {
+        return n.code === o.code && n.echeanceTheorique >= d && !moisConserves[String(n.echeanceTheorique).slice(0, 7)];
+      }).forEach(function (n) {
+        n.id = 'ECH' + C.uid();
+        n.versionObligation = d;
+        n.regenereeLe = maintenant;
+        n.regenereePar = auteur;
+        n._creePar = auteur;
+        n._creeLe = maintenant;
+        db.echeancesFiscales.unshift(n);
+        apres.push(n.echeance);
+        creees++;
+      });
+    });
+    log('Régénération des échéances', 'M12', 'EcheancesFiscales', o.code,
+      { avant: avant }, { apres: apres, dateEffet: d, payeesConservees: conservees });
+    save(); emit('echeancesFiscales');
+    return { code: o.code, dateEffet: d, conservees: conservees, anterieures: anterieures, archivees: archivees, creees: creees };
   }
 
   /* Une remise se JUSTIFIE. Un rabais sans motif au dossier est exactement ce
@@ -1379,6 +1462,17 @@
     var produits = genProduits(rnd);
     var consultations = genConsultations(rnd, patients, personnel);
     var admissions = genAdmissions(rnd, patients, personnel);
+    /* La configuration fiscale SEMÉE (06/11/2026) : la version 1 de l'identité
+       légale (copie de C.BRAND d'origine, depuis l'ouverture du dossier) et les
+       obligations du calendrier confirmé. Aucune n'est validée : la Direction
+       valide À L'ÉCRAN, à la première configuration. */
+    var identiteSemee = Object.assign({
+      id: 'IDL001', statut: 'actif', version: 1, debut: null, fin: null,
+      creeLe: '2026-08-31', creePar: 'core.js (semence)', motif: null,
+      valideLe: null, validePar: null,
+      source: 'core.js, arbitrage du 31/08/2026',
+    }, C.champsIdentite(C.BRAND_ORIGINE));
+    var obligationsSemees = D.semenceObligations();
 
     return {
       /* 39 — phase 1 : catalogue des actes au socle, réunions et GED semées
@@ -1481,8 +1575,20 @@
          données de santé nominatives qu'aucune de ses activités ne demande)
          et passe de TOUT à VOIR sur M12 — écrire et annuler des écritures
          comptables appartient au Comptable. Les fiches RBAC étant SEMÉES,
-         sans incrément un poste garderait l'ancienne matrice. */
+         sans incrément un poste garderait l'ancienne matrice.
+         69 (06/11/2026) : la configuration fiscale VALIDÉE et DATÉE
+         (identiteLegale, obligationsFiscales, historiqueObligations). */
       _version: VERSION,
+      /* L'IDENTITÉ LÉGALE, par versions datées : C.BRAND n'est plus qu'un
+         MIROIR de la version en force (S.appliquerIdentite). Lue par CFG,
+         print.js (toutes les pièces), M8, MECeF : au socle. */
+      identiteLegale: [identiteSemee],
+      /* Les OBLIGATIONS FISCALES et les paramètres ORTB, version en vigueur ;
+         les versions antérieures vont dans historiqueObligations (le modèle
+         grillePrimes / historiquePrimes). Lues par CFG, M11 (ORTB), M12
+         (échéances), M13 et les tableaux de bord : au socle. */
+      obligationsFiscales: obligationsSemees,
+      historiqueObligations: [],
       _seededAt: new Date().toISOString(),
       personnel: personnel,
       patients: patients,
@@ -1800,7 +1906,7 @@
        * dit à la Direction qu'il n'y a rien à payer. C'est plus dangereux qu'un
        * tableau de bord absent.
        * ==================================================================== */
-      echeancesFiscales: genEcheances(),
+      echeancesFiscales: genEcheances(2026, { obligations: obligationsSemees }),
 
       /* Comptes rendus de maternité : accouchement, planning familial, AMIU.
          Trois pièces aux rubriques propres — un gabarit unique aurait fait
@@ -3072,7 +3178,40 @@
     db = seed();
     invaliderManifeste();
     ecrire();
+    appliquerIdentite();
     return db;
+  }
+
+  /* ==========================================================================
+   * L'IDENTITÉ LÉGALE EN FORCE (06/11/2026)
+   * --------------------------------------------------------------------------
+   * `identiteALaDate(date)` : la version dont `debut <= date` (ou `debut` null,
+   * « depuis l'ouverture du dossier ») et (`fin` null ou `date <= fin`) ; une
+   * date antérieure à toute version rend la version 1. Elle ne lit QUE le
+   * magasin chargé : appeler `load()` ici sèmerait en boucle pendant le semis.
+   *
+   * `appliquerIdentite()` écrase C.BRAND EN PLACE avec la version en force
+   * AUJOURD'HUI : print.js et core.js ont capturé la référence, une
+   * réaffectation les laisserait sur l'ancienne identité. Appelée au
+   * chargement, après toute écriture dans `identiteLegale` (abonnement) et à
+   * chaque relecture par le sondage inter-postes (qui émet la collection).
+   * ======================================================================== */
+  function identiteALaDate(date) {
+    if (!db || !Array.isArray(db.identiteLegale)) return null;
+    var liste = db.identiteLegale.filter(function (v) { return v && v.statut !== 'archive'; });
+    if (!liste.length) return null;
+    var d = date ? (typeof date === 'string' ? date.slice(0, 10) : C.iso(date)) : C.iso(C.aujourdhui());
+    var couvrantes = liste.filter(function (v) {
+      return (!v.debut || d >= String(v.debut).slice(0, 10)) && (!v.fin || d <= String(v.fin).slice(0, 10));
+    }).sort(function (a, b) { return (b.version || 0) - (a.version || 0); });
+    if (couvrantes[0]) return couvrantes[0];
+    return liste.slice().sort(function (a, b) { return (a.version || 0) - (b.version || 0); })[0];
+  }
+  function appliquerIdentite() {
+    var v = identiteALaDate();
+    if (!v) return false;
+    Object.assign(C.BRAND, C.champsIdentite(v));
+    return true;
   }
 
   /**
@@ -3245,6 +3384,7 @@
         invaliderManifeste();
         fusionnerServiceDirection(db);
         normaliserEtatsResultat(db);
+        appliquerIdentite();
         return true;
       })
       .catch(function () { SRV.repondu = true; return false; });
@@ -3591,8 +3731,9 @@
     'catalogueTarifs', 'objectifsPilotage', 'valorisationsSage', 'ambulances', 'materiel', 'comptesResultat',
     /* Comptes, droits et activation des modules */
     'utilisateurs', 'rbac', 'modulesActifs', 'politiqueSecurite',
-    /* Règles datées — régimes, primes, barème */
+    /* Règles datées : régimes, primes, barème, identité légale et obligations fiscales (versions datées) */
     'regimesTravail', 'grillePrimes', 'historiquePrimes', 'baremeNS131', 'historiqueBareme', 'beneficiairesPrimes',
+    'identiteLegale', 'obligationsFiscales', 'historiqueObligations',
     /* Catalogues du laboratoire et de l'imagerie, bornes par lot, pathologies */
     'examensLabo', 'unitesLabo', 'variablesLabo', 'plagesReactif',
     'examensImagerie', 'variablesImagerie', 'pathologies',
@@ -3688,6 +3829,7 @@
     db._parcoursAmorcesLe = null;
     SRV.envoye = {}; SRV.meta = {};   /* tout est à repousser */
     ecrire();
+    appliquerIdentite();
     return db;
   }
 
@@ -3718,6 +3860,8 @@
   /* --- Abonnements -------------------------------------------------------- */
   function on(name, fn) { (listeners[name] = listeners[name] || []).push(fn); }
   function emit(name) { (listeners[name] || []).forEach(function (fn) { try { fn(); } catch (e) { console.error(e); } }); }
+  /* Toute écriture dans l'identité légale, locale ou relue d'un autre poste, remet C.BRAND au pas. */
+  on('identiteLegale', appliquerIdentite);
 
   /* ==========================================================================
    * API COLLECTION
@@ -3905,6 +4049,9 @@
     comptes: 'M12|Plan comptable', ecritures: 'M12|Écritures', budgets: 'M12|Budgets',
     immobilisations: 'M12|Immobilisations', rapprochements: 'M12|Rapprochements bancaires',
     echeancesFiscales: 'M12|Échéances fiscales',
+    identiteLegale: 'CFG|Identité légale (versions datées)',
+    obligationsFiscales: 'CFG|Obligations fiscales et paramètres ORTB',
+    historiqueObligations: 'CFG|Versions antérieures des obligations fiscales',
     regimesTravail: 'M10|Régimes de travail par catégorie',
     modulesActifs: 'CFG|Activité des modules', notifications: 'M14|Notifications',
     emplacements: 'M6|Emplacements de rangement',
@@ -4089,6 +4236,8 @@
     valorisationSortie: valorisationSortie, setValorisationSortie: setValorisationSortie,
     reglage: reglage, setReglage: setReglage,
     valeurUnitaire: valeurUnitaire,
+    identiteALaDate: identiteALaDate, appliquerIdentite: appliquerIdentite,
+    genEcheances: genEcheances, regenererEcheances: regenererEcheances,
     storage: storage,
     corbeille: corbeille, libelleCollection: libelleCollection,
     raw: function () { return load(); },
