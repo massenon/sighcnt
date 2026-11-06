@@ -18,3 +18,4 @@ Chaque exigence cite sa source dans `docs/cadrage/` ; ce qui n'a pas de source e
 
 Ordre de livraison recommandé : SOCLE (P0) → M6 → M12, le socle rendant les deux autres plus
 simples à sonder (pas de rechargement entre les étapes d'un parcours).
+| `PRD-M10-planning-individuel-et-libre-service-agent.md` | Planning et gardes individuels (régime propre à un agent, historique daté), filtres avancés, CRUD du planning, espace « Mes » de l'agent (17 rubriques, mobile et poste, validation DAF) et revue d'écarts des écrans | proposé le 06/11/2026 |
