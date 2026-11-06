@@ -11,6 +11,7 @@ import 'dart:io';
 import 'package:sigh_domaine/sigh_domaine.dart';
 
 import 'commun.dart';
+import 'ordre_copie.dart';
 import 'pont.dart' show Enveloppes;
 
 class ConfigPair {
@@ -38,6 +39,9 @@ class FileulPair {
       CREATE TABLE IF NOT EXISTS foi (id TEXT PRIMARY KEY, seq INTEGER);
       CREATE TABLE IF NOT EXISTS copie_sortie (n INTEGER PRIMARY KEY, id TEXT, charge TEXT, depose INTEGER DEFAULT 0);
       CREATE TABLE IF NOT EXISTS copie_etat (cle TEXT PRIMARY KEY, empreinte TEXT);
+      CREATE TABLE IF NOT EXISTS copie_ops (id TEXT PRIMARY KEY, cle TEXT);
+      CREATE TABLE IF NOT EXISTS copie_a_faire (cle TEXT PRIMARY KEY);
+      CREATE INDEX IF NOT EXISTS copie_ops_cle ON copie_ops(cle);
       CREATE TABLE IF NOT EXISTS anomalies (k INTEGER PRIMARY KEY AUTOINCREMENT, type TEXT, detail TEXT);''');
     horloge.dernier = base.metaInt('hlc');
     droits = cfg.droits ?? droitsDepuisTable(droitsBancPair);
@@ -151,33 +155,60 @@ class FileulPair {
   /// 3. COPIE (PRD relais consultable) : l'état fusionné des collections choisies, une enveloppe par fiche NOUVELLE ou CHANGÉE, dans le sens `copie` de CE poste.
   /// Rang contigu, charge persistée avant dépôt (un SIGKILL ne perd rien et ne duplique rien : le dépôt rejoué est idempotent par id). L'archivage voyage
   /// comme un champ (RG-14) ; aucune suppression.
+  /// Bornes d'UN tour : le poste calcule sur le fil de l'interface, un premier tour sur 200 000 opérations (migration, premier démarrage) ne doit pas la figer. Le travail se
+  /// répartit sur plusieurs tours : indexation de [opsParTour] opérations au plus, puis recalcul de [fichesParTour] fiches au plus, dans cet ordre.
+  static const int opsParTour = 20000, fichesParTour = 1500;
+
+  /// Vrai tant qu'il reste des opérations à indexer ou des fiches à recalculer : le cycle repart aussitôt au lieu d'attendre le prochain battement.
+  bool get copieEnRetard => base.select('SELECT 1 AS x FROM copie_a_faire LIMIT 1').isNotEmpty || base.select('SELECT 1 AS x FROM ops o LEFT JOIN copie_ops c ON c.id=o.id WHERE c.id IS NULL LIMIT 1').isNotEmpty;
+
   void preparerCopie() {
     if (cfg.collectionsCopie.isEmpty || base.meta('uuid') == null) return;
-    final fiches = etatActuel().fiches;
-    for (final e in fiches.entries) {
-      final i = e.key.indexOf('/');
-      if (i < 0 || !cfg.collectionsCopie.contains(e.key.substring(0, i))) continue;
-      final charge = {
-        'collection': e.key.substring(0, i),
-        'fiche': e.key.substring(i + 1),
-        'data': e.value['data'],
-        'archive': e.value['archive'] == true,
-      };
-      final texte = enJson(charge);
-      final deja = base.select('SELECT empreinte FROM copie_etat WHERE cle=?', [e.key]).map((r) => r['empreinte'] as String).firstOrNull;
-      if (deja == texte) continue;
+    // INCRÉMENTAL : seules les opérations NOUVELLES depuis le dernier tour (anti-jointure sur l'index `copie_ops`) désignent les fiches à recalculer ; chaque fiche
+    // se refait depuis SES opérations seules (famille A : indépendantes). Le coût d'un tour suit ce qui a changé, plus l'historique entier. Une fiche n'est recalculée
+    // qu'une fois TOUTES les opérations connues indexées (sinon on déposerait des versions intermédiaires). Chaque étape est une transaction : un SIGKILL ne laisse
+    // jamais une opération « vue » sans que sa fiche soit en attente de recalcul, ni une fiche recalculée sans sa mise en file.
+    final neuves = base.select('SELECT o.id AS id, o.json AS json FROM ops o LEFT JOIN copie_ops c ON c.id=o.id WHERE c.id IS NULL LIMIT $opsParTour');
+    if (neuves.isNotEmpty) {
       base.tx(() {
-        final n = (base.select('SELECT COALESCE(MAX(n),0) AS m FROM copie_sortie').first['m'] as int) + 1;
-        base.exec('INSERT INTO copie_sortie(n,id,charge) VALUES(?,?,?)', [n, '${base.meta('uuid')}-copie-$n', texte]);
-        base.exec('INSERT INTO copie_etat(cle,empreinte) VALUES(?,?) ON CONFLICT(cle) DO UPDATE SET empreinte=excluded.empreinte', [e.key, texte]);
+        for (final r in neuves) {
+          final j = (jsonDecode(r['json'] as String) as Map).cast<String, Object?>();
+          final cle = '${j['collection']}/${j['fiche']}';
+          base.exec('INSERT INTO copie_ops(id,cle) VALUES(?,?)', [r['id'], cle]);
+          if (cfg.collectionsCopie.contains('${j['collection']}')) base.exec('INSERT OR IGNORE INTO copie_a_faire(cle) VALUES(?)', [cle]);
+        }
       });
+      if (neuves.length >= opsParTour) return; // il en reste : le tour suivant continue l'indexation
     }
+    final aFaire = [for (final r in base.select('SELECT cle FROM copie_a_faire LIMIT $fichesParTour')) r['cle'] as String];
+    if (aFaire.isEmpty) return;
+    base.tx(() {
+      for (final cle in aFaire) {
+        base.exec('DELETE FROM copie_a_faire WHERE cle=?', [cle]);
+        final i = cle.indexOf('/');
+        final ops = [
+          for (final r in base.select('SELECT o.json AS json, f.seq AS seq FROM ops o JOIN copie_ops c ON c.id=o.id LEFT JOIN foi f ON f.id=o.id WHERE c.cle=?', [cle]))
+            OperationPair.depuisJson({
+              ...(jsonDecode(r['json'] as String) as Map).cast<String, Object?>(),
+              if (r['seq'] != null) 'seq': (r['seq'] as num).toInt(),
+            })
+        ];
+        final charge = chargeCopieDeFiche(cle.substring(0, i), cle.substring(i + 1), ops, droits: droits);
+        if (charge == null) continue;
+        final texte = enJson(contenuCopie(charge));
+        final deja = base.select('SELECT empreinte FROM copie_etat WHERE cle=?', [cle]).map((r) => r['empreinte'] as String).firstOrNull;
+        if (deja == texte) continue;
+        final n = (base.select('SELECT COALESCE(MAX(n),0) AS m FROM copie_sortie').first['m'] as int) + 1;
+        base.exec('INSERT INTO copie_sortie(n,id,charge) VALUES(?,?,?)', [n, '${base.meta('uuid')}-copie-$n', enJson(charge)]);
+        base.exec('INSERT INTO copie_etat(cle,empreinte) VALUES(?,?) ON CONFLICT(cle) DO UPDATE SET empreinte=excluded.empreinte', [cle, texte]);
+      }
+    });
   }
 
   Future<void> deposerCopie() async {
     final uuid = base.meta('uuid');
     if (uuid == null) return;
-    for (final l in base.select('SELECT n,id,charge FROM copie_sortie WHERE depose=0 ORDER BY n')) {
+    for (final l in base.select('SELECT n,id,charge FROM copie_sortie WHERE depose=0 ORDER BY n LIMIT 500')) {
       final charge = (jsonDecode(l['charge'] as String) as Map).cast<String, Object?>();
       final enveloppe = await env.chiffrer(charge, id: l['id'] as String, appareil: uuid, dir: 'copie', n: l['n'] as int);
       final (st, _) = await _relais('POST', '/depot', {'enveloppe': enveloppe});

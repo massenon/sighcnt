@@ -117,11 +117,45 @@ class ConsultationTest extends TestCase
     {
         $this->exigerNode();
         $charges = [
-            ['collection' => 'patients', 'fiche' => 'p1', 'data' => ['tel' => '90']],
-            ['lot' => [['collection' => 'patients', 'fiche' => 'p1', 'data' => ['tel' => '91']], ['collection' => 'patients', 'fiche' => 'p2', 'data' => ['tel' => '92']], ['collection' => 'factures', 'fiche' => 'f1', 'data' => []]]],
+            ['collection' => 'patients', 'fiche' => 'p1', 'data' => ['tel' => '90'], 'ordre' => [1, 100, 'A', 'o1']],
+            ['lot' => [['collection' => 'patients', 'fiche' => 'p1', 'data' => ['tel' => '91'], 'ordre' => [2, 200, 'A', 'o2']], ['collection' => 'patients', 'fiche' => 'p2', 'data' => ['tel' => '92'], 'ordre' => [1, 150, 'B', 'o3']], ['collection' => 'factures', 'fiche' => 'f1', 'data' => []]]],
         ];
         $fiches = $this->node(['action' => 'fiches', 'charges' => $charges, 'collection' => 'patients'])['fiches'];
         $this->assertSame(['p1' => '91', 'p2' => '92'], array_column(array_map(fn ($f) => ['f' => $f['fiche'], 't' => $f['data']['tel']], $fiches), 't', 'f'));
+    }
+
+    public function test_toutes_les_ordres_de_lecture_donnent_la_meme_liste_et_une_version_obsolete_tardive_ne_remplace_rien(): void
+    {
+        $this->exigerNode();
+        $v = fn (string $fiche, string $tel, array $ordre, bool $archive = false) => ['collection' => 'patients', 'fiche' => $fiche, 'data' => ['tel' => $tel], 'archive' => $archive, 'ordre' => $ordre];
+        $charges = [
+            $v('p1', '90', [1, 100, 'A', 'o1']),
+            $v('p1', '91', [2, 200, 'A', 'o2']),
+            $v('p1', '95', [3, 300, 'B', 'o3']),               // la plus informée : trois opérations connues
+            ['lot' => [$v('p2', '10', [1, 120, 'B', 'o4']), $v('p2', '10', [2, 220, 'B', 'o5'], true), $v('p1', '89', [1, 99, 'C', 'o0'])]], // une obsolète dans un lot
+            $v('p2', '11', [2, 220, 'A', 'o6']),               // même nombre d'opérations, autre appareil : départage déterministe
+            $v('p3', '7', [1, 50, 'A', 'o7']),
+        ];
+        $r = $this->node(['action' => 'convergence', 'charges' => $charges, 'collection' => 'patients']);
+        $this->assertSame(720, $r['permutations']);
+        $this->assertSame(1, $r['distincts'], 'tous les ordres de lecture doivent donner la même liste');
+        $tels = array_column(array_map(fn ($f) => ['f' => $f['fiche'], 't' => $f['data']['tel']], $r['fiches']), 't', 'f');
+        $this->assertSame('95', $tels['p1'], 'la version la plus informée l\'emporte sur les plus anciennes, lot compris');
+        $this->assertSame('7', $tels['p3']);
+    }
+
+    public function test_une_ancienne_enveloppe_sans_ordre_reste_lisible_et_la_plus_ancienne(): void
+    {
+        $this->exigerNode();
+        $charges = [
+            ['collection' => 'patients', 'fiche' => 'p1', 'data' => ['tel' => '1']],
+            ['collection' => 'patients', 'fiche' => 'p1', 'data' => ['tel' => '2'], 'ordre' => [1, 10, 'A', 'x']],
+        ];
+        $fiches = $this->node(['action' => 'fiches', 'charges' => $charges, 'collection' => 'patients'])['fiches'];
+        $this->assertCount(1, $fiches);
+        $this->assertSame('2', $fiches[0]['data']['tel'], 'toute version avec ordre l\'emporte sur une version sans ordre');
+        $inverse = $this->node(['action' => 'fiches', 'charges' => array_reverse($charges), 'collection' => 'patients'])['fiches'];
+        $this->assertSame('2', $inverse[0]['data']['tel']);
     }
 
     public function test_la_consultation_est_fermee_aux_visiteurs_et_ouverte_au_superadmin(): void

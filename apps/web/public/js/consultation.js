@@ -46,15 +46,46 @@
     return Array.prototype.map.call(new Uint8Array(clair), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
   }
 
-  /* Le dernier état de chaque fiche d'une collection, du rang le plus ancien au plus récent : une copie plus récente remplace la précédente. */
+  /* L'ORDRE D'UNE VERSION : [nOps, hlc, appareil, id] (voir packages/sync_dart/lib/src/ordre_copie.dart). Sans `ordre` (ancienne enveloppe) = la plus ancienne.
+     Total et indépendant de l'ordre de lecture : une version plus ancienne qui arrive après une plus récente ne la remplace jamais. */
+  function comparerOrdre(a, b) {
+    if (!a && !b) return 0; if (!a) return -1; if (!b) return 1;
+    for (var i = 0; i < 4; i++) { if (a[i] < b[i]) return -1; if (a[i] > b[i]) return 1; }
+    return 0;
+  }
+  /* Deux versions de même ordre (ou sans ordre) : départage déterministe par le contenu, jamais par l'ordre de lecture. */
+  function plusRecente(x, y) {
+    var c = comparerOrdre(x.ordre, y.ordre);
+    if (c !== 0) return c > 0 ? x : y;
+    return JSON.stringify(x.data) + (x.archive ? '1' : '0') >= JSON.stringify(y.data) + (y.archive ? '1' : '0') ? x : y;
+  }
+  /* Range UNE charge (fiche seule ou lot) dans la table {collection/fiche → version retenue}. Rend le nombre de fiches modifiées. */
+  function retenir(table, charge) {
+    var plat = charge && Array.isArray(charge.lot) ? charge.lot : [charge], n = 0;
+    plat.forEach(function (c) {
+      if (!c || !c.collection) return;
+      var k = c.collection + '/' + c.fiche, d = table[k], v = d ? plusRecente(d, c) : c;
+      if (v !== d) { table[k] = v; n++; }
+    });
+    return n;
+  }
+  /* Les fiches d'une collection : la version retenue de chacune, dans un ordre stable (par identifiant), quel que soit l'ordre des charges. */
   function fichesDe(charges, collection) {
-    var out = {};
-    /* Une charge est une fiche {collection, fiche, data, archive} OU un lot {lot: [fiches…]} (copie consolidée de la mère). */
-    var plat = [];
-    charges.forEach(function (c) { if (c && Array.isArray(c.lot)) c.lot.forEach(function (x) { plat.push(x); }); else plat.push(c); });
-    plat.forEach(function (c) { if (c && c.collection === collection) out[c.fiche] = c; });
-    return Object.keys(out).map(function (k) { return out[k]; });
+    var table = {};
+    charges.forEach(function (c) { retenir(table, c); });
+    return Object.keys(table).filter(function (k) { return table[k].collection === collection; }).sort().map(function (k) { return table[k]; });
+  }
+  /* Déchiffre les enveloppes PAR LOTS en rendant la main au navigateur entre deux lots : la page reste utilisable pendant un gros chargement. [surLot](n) rend compte. */
+  async function dechiffrerParLots(enveloppes, cle, table, surLot, taille) {
+    taille = taille || 200;
+    for (var i = 0; i < enveloppes.length; i += taille) {
+      var lot = enveloppes.slice(i, i + taille);
+      var clairs = await Promise.all(lot.map(function (e) { return dechiffrer(e, cle); }));
+      clairs.forEach(function (c) { retenir(table, c); });
+      if (surLot) surLot(Math.min(i + taille, enveloppes.length), enveloppes.length);
+      await new Promise(function (r) { setTimeout(r, 0); });
+    }
   }
 
-  racine.SighConsultation = { importerCle: importerCle, dechiffrer: dechiffrer, chiffrerCle: chiffrerCle, dechiffrerCle: dechiffrerCle, fichesDe: fichesDe, octetsDeCle: octetsDeCle };
+  racine.SighConsultation = { importerCle: importerCle, dechiffrer: dechiffrer, chiffrerCle: chiffrerCle, dechiffrerCle: dechiffrerCle, fichesDe: fichesDe, retenir: retenir, comparerOrdre: comparerOrdre, dechiffrerParLots: dechiffrerParLots, octetsDeCle: octetsDeCle };
 })(typeof window !== 'undefined' ? window : globalThis);

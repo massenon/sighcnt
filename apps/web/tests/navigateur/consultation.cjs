@@ -29,11 +29,15 @@ const json = async (m, p, corps, h) => { const r = await fetch(BASE + p, { metho
     const jeton = (await json('POST', '/appairage', { code, uuid })).json.jeton; const auth = { Authorization: 'Bearer ' + jeton };
     const cle = Buffer.from(CLE, 'hex'); let n = 0;
     const deposer = async (charge) => { n += 1; const r = await json('POST', '/depot', { enveloppe: chiffrer(cle, charge, { id: `${uuid}-copie-${n}`, appareil: uuid, dir: 'copie', n }) }, auth); if (r.status !== 200) throw new Error('dépôt refusé ' + JSON.stringify(r)); };
-    await deposer({ collection: 'patients', fiche: 'p1', data: { nom: 'AKPO', prenom: 'Awa', tel: '90' }, archive: false });
-    await deposer({ collection: 'patients', fiche: 'p2', data: { nom: 'KOUA', prenom: 'Bio' }, archive: false });
-    await deposer({ collection: 'patients', fiche: 'p1', data: { nom: 'AKPO', prenom: 'Awa', tel: '91' }, archive: false }); // version plus récente
-    await deposer({ collection: 'patients', fiche: 'p2', data: { nom: 'KOUA', prenom: 'Bio' }, archive: true });              // archivée
-    await deposer({ lot: [{ collection: 'patients', fiche: 'p3', data: { nom: 'DOSSOU', prenom: 'Zeb' }, archive: false }] });  // lot de la mère
+    /* chaque version porte son ordre [nOps, hlc, appareil, idOp] : la page retient la plus informée, quel que soit l'ordre de dépôt/lecture */
+    await deposer({ collection: 'patients', fiche: 'p1', data: { nom: 'AKPO', prenom: 'Awa', tel: '90' }, archive: false, ordre: [1, 1000, 'A', 'o1'] });
+    await deposer({ collection: 'patients', fiche: 'p2', data: { nom: 'KOUA', prenom: 'Bio' }, archive: false, ordre: [1, 1001, 'A', 'o2'] });
+    await deposer({ collection: 'patients', fiche: 'p1', data: { nom: 'AKPO', prenom: 'Awa', tel: '91' }, archive: false, ordre: [2, 1002, 'A', 'o3'] }); // version plus récente
+    await deposer({ collection: 'patients', fiche: 'p2', data: { nom: 'KOUA', prenom: 'Bio' }, archive: true, ordre: [2, 1003, 'A', 'o4'] });             // archivée
+    await deposer({ lot: [{ collection: 'patients', fiche: 'p3', data: { nom: 'DOSSOU', prenom: 'Zeb' }, archive: false, ordre: [1, 1004, 'B', 'o5'] }] }); // lot de la mère
+    /* une version OBSOLÈTE d'un autre appareil arrive APRÈS : elle ne remplace jamais la plus récente */
+    await deposer({ collection: 'patients', fiche: 'p1', data: { nom: 'AKPO', prenom: 'Awa', tel: '89' }, archive: false, ordre: [1, 999, 'C', 'o0'] });
+    await deposer({ collection: 'patients', fiche: 'p2', data: { nom: 'KOUA', prenom: 'Bio' }, archive: false, ordre: [1, 998, 'C', 'o9'] });
 
     navigateur = await chromium.launch({ args: ['--no-sandbox'] });
     const page = await (await navigateur.newContext({ viewport: { width: 1280, height: 900 }, deviceScaleFactor: 1 })).newPage();
@@ -61,7 +65,7 @@ const json = async (m, p, corps, h) => { const r = await fetch(BASE + p, { metho
     const lignes = await page.locator('tbody tr').allTextContents();
     const texte = lignes.join(' | ');
     verifier('la bonne clé affiche les dossiers déchiffrés (trois fiches, lot de la mère compris)', lignes.length === 3 && /AKPO/.test(texte) && /KOUA/.test(texte) && /DOSSOU/.test(texte), lignes);
-    verifier('la version la plus récente remplace la précédente (tel 91, pas 90)', /91/.test(texte) && !/\b90\b/.test(texte), texte);
+    verifier('la version la plus informée l\'emporte, même si une version obsolète arrive après (tel 91, ni 90 ni 89)', /91/.test(texte) && !/\b90\b/.test(texte) && !/\b89\b/.test(texte), texte);
     const archives = await page.locator('tbody tr', { hasText: 'KOUA' }).locator('td').nth(2).textContent();
     verifier('l\'archivage s\'affiche (p2 archivée : oui)', archives.trim() === 'oui', archives);
 

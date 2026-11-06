@@ -13,6 +13,11 @@ try {
     process.stdout.write(JSON.stringify({ coffre }));
   } else if (entree.action === 'fiches') {
     process.stdout.write(JSON.stringify({ fiches: S.fichesDe(entree.charges, entree.collection) }));
+  } else if (entree.action === 'convergence') {
+    // toutes les permutations de lecture (n <= 7) : le résultat doit être UN SEUL (convergence indépendante de l'ordre de lecture)
+    const perms = (a) => a.length <= 1 ? [a] : a.flatMap((x, i) => perms([...a.slice(0, i), ...a.slice(i + 1)]).map((p) => [x, ...p]));
+    const issues = new Set(perms(entree.charges).map((p) => JSON.stringify(S.fichesDe(p, entree.collection))));
+    process.stdout.write(JSON.stringify({ distincts: issues.size, permutations: perms(entree.charges).length, fiches: [...issues].map((x) => JSON.parse(x))[0] }));
   } else if (entree.action === 'ouvrir') {
     process.stdout.write(JSON.stringify({ cle: await S.dechiffrerCle(entree.coffre, entree.phrase) }));
   } else {

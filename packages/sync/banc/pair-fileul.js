@@ -11,6 +11,7 @@ const nodeCrypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 const { chiffrer, dechiffrer } = require('./crypto');
 const { Horloge, etat, droitsBanc } = require('./pair');
+const { ordresDesFiches, chargeCopie, contenu } = require('./copie-ordre');
 
 const arg = (n, d) => { const a = process.argv.find((x) => x.startsWith('--' + n + '=')); return a ? a.split('=').slice(1).join('=') : d; };
 const PORT = +arg('port', 0); const RELAIS = arg('relais', ''); const DB = arg('db', ':memory:'); const NOM = arg('nom', 'poste');
@@ -93,15 +94,15 @@ async function relever() {
 const tx = (f) => { db.exec('BEGIN'); try { f(); db.exec('COMMIT'); } catch (e) { db.exec('ROLLBACK'); throw e; } };
 function preparerCopie() {
   const uuid = meta('uuid'); if (!uuid || !COPIE.size) return;
-  const fiches = etat(toutesOps(), droitsBanc).fiches;
+  const ops = toutesOps(); const fiches = etat(ops, droitsBanc).fiches; const ordres = ordresDesFiches(ops);
   for (const [cle, f] of Object.entries(fiches)) {
     const i = cle.indexOf('/'); const col = cle.slice(0, i); if (!COPIE.has(col)) continue;
-    const texte = JSON.stringify({ collection: col, fiche: cle.slice(i + 1), data: f.data, archive: f.archive === true });
+    const charge = chargeCopie(cle, f, ordres); const texte = contenu(charge);
     const deja = db.prepare('SELECT empreinte FROM copie_etat WHERE cle=?').get(cle);
     if (deja && deja.empreinte === texte) continue;
     tx(() => {
       const n = db.prepare('SELECT COALESCE(MAX(n),0) AS m FROM copie_sortie').get().m + 1;
-      db.prepare('INSERT INTO copie_sortie(n,id,charge) VALUES(?,?,?)').run(n, `${uuid}-copie-${n}`, texte);
+      db.prepare('INSERT INTO copie_sortie(n,id,charge) VALUES(?,?,?)').run(n, `${uuid}-copie-${n}`, JSON.stringify(charge));
       db.prepare('INSERT INTO copie_etat(cle,empreinte) VALUES(?,?) ON CONFLICT(cle) DO UPDATE SET empreinte=excluded.empreinte').run(cle, texte);
     });
   }

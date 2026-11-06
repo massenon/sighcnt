@@ -22,22 +22,27 @@
             <h2>Dossiers patients</h2>
             <button type="button" @click="charger()">Charger et déchiffrer</button>
             <p class="note" x-text="message" role="status"></p>
-            <input type="search" x-model="recherche" placeholder="Rechercher un dossier" aria-label="Rechercher un dossier">
+            <input type="search" x-model="recherche" @input.debounce.200ms="page = 0; filtrer()" placeholder="Rechercher un dossier" aria-label="Rechercher un dossier">
             <table>
                 <thead><tr><th>Fiche</th><th>Contenu</th><th>Archivé</th></tr></thead>
                 <tbody>
-                    <template x-for="f in filtrees()" :key="f.fiche">
+                    <template x-for="f in visibles" :key="f.fiche">
                         <tr><td x-text="f.fiche"></td><td x-text="resume(f)"></td><td x-text="f.archive ? 'oui' : 'non'"></td></tr>
                     </template>
                 </tbody>
             </table>
+            <p class="note" role="status" x-show="nbFiltrees > 0" x-text="'Fiches ' + (page * taillePage + 1) + ' à ' + Math.min((page + 1) * taillePage, nbFiltrees) + ' sur ' + nbFiltrees"></p>
+            <button type="button" @click="page = Math.max(0, page - 1); filtrer()" :disabled="page === 0">Précédent</button>
+            <button type="button" @click="page = page + 1; filtrer()" :disabled="(page + 1) * taillePage >= nbFiltrees">Suivant</button>
         </div>
     </div>
     <script>
         document.addEventListener('alpine:init', function () {
             window.Alpine.data('consultation', function (urlAppareils, urlEnveloppes) {
+                /* La table des versions retenues vit HORS de la réactivité d'Alpine : 18 000 fiches rendues réactives coûteraient plus cher que le déchiffrement. */
+                var table = {}, index = [];
                 return {
-                    cle: '', coffre: '', phrase: '', message: '', recherche: '', volume: 'Mesure en cours…', charges: [],
+                    cle: '', coffre: '', phrase: '', message: '', recherche: '', volume: 'Mesure en cours…', visibles: [], nbFiltrees: 0, page: 0, taillePage: 50,
                     async init() {
                         try {
                             var r = await (await fetch(urlAppareils, { headers: { Accept: 'application/json' } })).json();
@@ -47,27 +52,38 @@
                         } catch (e) { this.volume = 'Mesure indisponible.'; }
                     },
                     async charger() {
-                        this.message = ''; this.charges = [];
+                        this.message = ''; table = {}; index = []; this.visibles = []; this.nbFiltrees = 0; this.page = 0;
                         try {
-                            var cle = await window.SighConsultation.importerCle(this.cle);
+                            var cle = await window.SighConsultation.importerCle(this.cle), vue = this, lu = 0;
                             for (var a of (this.appareils || [])) {
                                 var depuis = 0;
                                 for (;;) {
-                                    var r = await (await fetch(urlEnveloppes + '?appareil=' + encodeURIComponent(a.uuid) + '&depuis_n=' + depuis, { headers: { Accept: 'application/json' } })).json();
-                                    for (var e of r.env) { this.charges.push(await window.SighConsultation.dechiffrer(e, cle)); depuis = e.n; }
+                                    var r = await (await fetch(urlEnveloppes + '?appareil=' + encodeURIComponent(a.uuid) + '&depuis_n=' + depuis + '&limite=200', { headers: { Accept: 'application/json' } })).json();
+                                    await window.SighConsultation.dechiffrerParLots(r.env, cle, table);
+                                    lu += r.env.length; if (r.env.length) depuis = r.env[r.env.length - 1].n;
+                                    vue.message = lu + ' enveloppe(s) déchiffrée(s)…';
                                     if (r.fin) break;
                                 }
+                                vue.reconstruire();
                             }
-                            this.message = this.filtrees().length + ' dossier(s) lisible(s).';
+                            this.message = this.nbFiltrees + ' dossier(s) lisible(s).';
                         } catch (e) { this.message = 'Déchiffrement impossible : clé incorrecte ou copie altérée.'; }
                     },
                     async ouvrirCoffre() {
                         try { this.cle = await window.SighConsultation.dechiffrerCle(JSON.parse(this.coffre), this.phrase); this.message = 'Clé retrouvée.'; }
                         catch (e) { this.message = 'Coffre ou phrase secrète incorrects.'; }
                     },
-                    filtrees() {
-                        var q = this.recherche.toLowerCase();
-                        return window.SighConsultation.fichesDe(this.charges, 'patients').filter(function (f) { return !q || JSON.stringify(f.data).toLowerCase().indexOf(q) >= 0 || String(f.fiche).toLowerCase().indexOf(q) >= 0; });
+                    /* L'index de recherche (texte en minuscules) se construit UNE fois par chargement ; filtrer() ne rend que la page courante. */
+                    reconstruire() {
+                        index = Object.keys(table).sort().filter(function (k) { return table[k].collection === 'patients'; })
+                            .map(function (k) { return { f: table[k], t: (k + ' ' + JSON.stringify(table[k].data)).toLowerCase() }; });
+                        this.filtrer();
+                    },
+                    filtrer() {
+                        var q = this.recherche.toLowerCase().trim();
+                        var res = q ? index.filter(function (x) { return x.t.indexOf(q) >= 0; }) : index;
+                        this.nbFiltrees = res.length;
+                        this.visibles = res.slice(this.page * this.taillePage, (this.page + 1) * this.taillePage).map(function (x) { return x.f; });
                     },
                     resume(f) { return Object.keys(f.data || {}).map(function (k) { return k + ' : ' + f.data[k]; }).join(' · '); },
                 };

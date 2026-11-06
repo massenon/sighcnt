@@ -622,6 +622,7 @@ async function restaurer() {
  * habilitée) le fait par une décision `trancher`, publiée de la même façon.
  * ========================================================================== */
 const pairMod = require('./pair');
+const copieOrdre = require('./copie-ordre');
 db.exec(`CREATE TABLE IF NOT EXISTS pair_ops (id TEXT PRIMARY KEY, json TEXT, seq INTEGER);
   CREATE TABLE IF NOT EXISTS pair_curseurs (appareil TEXT PRIMARY KEY, n INTEGER);
   CREATE TABLE IF NOT EXISTS pair_sortie (n INTEGER PRIMARY KEY, enveloppe TEXT, depose INTEGER DEFAULT 0);`);
@@ -676,14 +677,14 @@ async function pairRelever() {
 db.exec(`CREATE TABLE IF NOT EXISTS copie_sortie (n INTEGER PRIMARY KEY, enveloppe TEXT, depose INTEGER DEFAULT 0);
   CREATE TABLE IF NOT EXISTS copie_etat (cle TEXT PRIMARY KEY, empreinte TEXT);`);
 async function pairCopie() {
-  const fiches = pairMod.etat(pairOps(), pairMod.droitsBanc).fiches; const lot = []; const empreintes = [];
+  const ops = pairOps(); const fiches = pairMod.etat(ops, pairMod.droitsBanc).fiches; const ordres = copieOrdre.ordresDesFiches(ops); const lot = []; const empreintes = [];
   for (const [cle, f] of Object.entries(fiches)) {
     const i = cle.indexOf('/'); const col = cle.slice(0, i);
     if (pairMod.FAMILLES[col] !== 'A') continue;
-    const texte = JSON.stringify({ collection: col, fiche: cle.slice(i + 1), data: f.data, archive: f.archive === true });
+    const charge = copieOrdre.chargeCopie(cle, f, ordres); const texte = copieOrdre.contenu(charge);
     const deja = db.prepare('SELECT empreinte FROM copie_etat WHERE cle=?').get(cle);
     if (deja && deja.empreinte === texte) continue;
-    lot.push(JSON.parse(texte)); empreintes.push([cle, texte]);
+    lot.push(charge); empreintes.push([cle, texte]);
   }
   if (lot.length) {
     tx(() => {
