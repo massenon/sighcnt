@@ -1292,7 +1292,10 @@ async function viderMessages(page) {
       await new Promise((r) => setTimeout(r, 400));
       return (document.querySelector('#toast-host') || {}).textContent || '';
     });
-    verifier('L’anomalie est enregistrée', /Anomalie signalée/.test(bug), bug.slice(0, 80));
+    /* Vague 79 : l'écran dit la vérité. Sans messagerie configurée, l'anomalie est ENREGISTRÉE et le toast dit qu'aucun courriel n'est parti
+       (l'ancien « Anomalie signalée » laissait croire à un envoi). */
+    verifier('L’anomalie est enregistrée, et le toast dit qu’aucun courriel n’est parti (messagerie non configurée)',
+      /Anomalie enregistrée/.test(bug) && /SUP-2026-\d{4}/.test(bug) && /Aucun courriel/.test(bug), bug.slice(0, 120));
 
     /* Téléphone : le ruban ne mange plus l'écran */
     await page.setViewport({ width: 390, height: 780 });
@@ -7486,14 +7489,20 @@ async function viderMessages(page) {
 
     /* --- Les vues par service demandeur ------------------------------------ */
     await ouvrir('m5-demandes-maternite.html');
+    /* La sonde lit la RÈGLE DE L'ÉCRAN (E145 : le service se lit dans `secteurDemandeur` OU dans `serviceDemandeur`) et compare au chiffre
+       que l'écran AFFICHE, trouvé par son nom. L'ancienne version recopiait une règle plus stricte (`serviceDemandeur === 'maternite'`) et ne
+       tenait que par les demandes insérées par le scénario « RBAC métier », joué avant : seule, elle comptait 0 (dépendance d'ordre, E2262). */
     const vueMat = await page.evaluate(() => {
       const S = window.SIGH.store;
       const mat = S.collection('demandesAnalyses').active()
-        .filter((r) => /MATERN/i.test(String(r.secteurDemandeur || '')) || r.serviceDemandeur === 'maternite');
-      return { compte: mat.length, monte: /Demandes du service/.test(document.body.textContent) };
+        .filter((r) => /MATERN/i.test(String(r.secteurDemandeur || '')) || /MATERN/i.test(String(r.serviceDemandeur || '')));
+      const lab = [...document.querySelectorAll('#page-content *')].find((n) => n.childElementCount === 0 && n.textContent.trim() === 'Demandes du service');
+      const bloc = lab && (lab.closest('.card') || lab.parentElement.parentElement);
+      const affiche = bloc ? (bloc.textContent.replace(/[\u202f\u00a0\s]/g, '').match(/\d+/) || [null])[0] : null;
+      return { compte: mat.length, affiche: affiche == null ? null : +affiche, monte: !!lab };
     });
-    verifier('La vue maternité monte et le registre porte des demandes du service',
-      vueMat.monte && vueMat.compte > 0, vueMat.compte + ' demande(s)');
+    verifier('La vue maternité monte et son indicateur « Demandes du service » vaut le compte du registre (règle de l’écran), non nul',
+      vueMat.monte && vueMat.compte > 0 && vueMat.affiche === vueMat.compte, JSON.stringify(vueMat));
     await ouvrir('m5-demandes-hospitalisation.html');
     const vueHosp = await page.evaluate(() =>
       /Demandes du service/.test(document.body.textContent));
