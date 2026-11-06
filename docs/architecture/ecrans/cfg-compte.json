@@ -18,6 +18,8 @@
   "Configuration Clinique"
  ],
  "regle": [
+  "Ces informations viennent du compte tenu par l’administrateur (écran « Utilisateurs »). Elles ne se modifient pas depuis cet écran dans la maquette.",
+  "Le changement du mot de passe personnel et l’authentification à deux facteurs ne sont pas disponibles dans la maquette : rien ne serait enregistré. L’administrateur définit ou réinitialise le mot de passe depuis « Utilisateurs ».",
   "Politique en vigueur : 8 caractères minimum, majuscules, minuscules, chiffre et caractère spécial, renouvellement tous les 90 jours, verrouillage après trois tentatives infructueuses."
  ],
  "onglets": [],
@@ -30,20 +32,12 @@
  ],
  "tableaux": [],
  "commandes": [
-  "Enregistrer",
-  "Modifier le mot de passe",
   "Matrice RBAC"
  ],
  "champs": [
-  "Nom et prénoms *",
+  "Nom et prénoms",
   "Identifiant de connexion",
-  "Poste",
-  "Téléphone",
-  "Adresse électronique",
-  "Mot de passe actuel *",
-  "Nouveau mot de passe *",
-  "Confirmer le nouveau mot de passe *",
-  "Activer l’authentification à deux facteurs"
+  "Poste"
  ],
  "nbTableaux": 0,
  "nbKpis": 0

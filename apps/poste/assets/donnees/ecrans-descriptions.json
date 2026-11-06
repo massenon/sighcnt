@@ -19,7 +19,7 @@
   },
   "cfg-branding": {
    "titre": "Identité & papier à en-tête",
-   "description": "Paramétrage de l’identité visuelle et des mentions légales reprises sur tous les documents édités."
+   "description": "Paramétrage de l’identité visuelle et des coordonnées reprises sur tous les documents édités."
   },
   "cfg-catalogue": {
    "titre": "Catalogue tarifaire (deux prix)",
@@ -35,7 +35,7 @@
   },
   "cfg-comptabilite": {
    "titre": "Paramètres comptables & obligations",
-   "description": "Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances."
+   "description": "Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances, vérifiées et validées, modifiables par versions datées."
   },
   "cfg-compte": {
    "titre": "Mon compte",
@@ -47,7 +47,7 @@
   },
   "cfg-fiscalite": {
    "titre": "Paramètres fiscaux (IFU / RCCM)",
-   "description": "Identifiants fiscaux, numérotation des documents et paramètres de la facturation normalisée."
+   "description": "Identité fiscale de l’établissement (vérifiée et validée), numérotation des documents et calendrier des obligations."
   },
   "cfg-imagerie-catalogue": {
    "titre": "Catalogue de l’imagerie",
@@ -691,7 +691,7 @@
   },
   "m14-utilisateurs": {
    "titre": "Utilisateurs",
-   "description": "Comptes individuels, rôles attribués, état d’activation et double facteur."
+   "description": "Registre des comptes individuels : rôles attribués, état d’activation et double facteur (fiches de gestion)."
   },
   "m2-affichage": {
    "titre": "Écran d’appel des patients",
@@ -961,10 +961,6 @@
    "titre": "Statistiques maternité & naissances",
    "description": "Indicateurs DHIS2/SNIS : CPN, SP, MILDA, GAR, accouchements, PF, vaccination et mortalité."
   },
-  "m5-banque-sang": {
-   "titre": "Banque de sang",
-   "description": "Gestion des poches de sang par groupe, dates de péremption et demandes de transfusion."
-  },
   "m5-catalogue": {
    "titre": "Catalogue des analyses",
    "description": "Référentiel des 48 analyses réalisées par le laboratoire de la clinique, avec catégorie, échantillon, délai et tarif."
@@ -980,10 +976,6 @@
   "m5-demandes": {
    "titre": "Demandes d’analyses",
    "description": "File des prescriptions de laboratoire, rattachées au dossier patient et à la facturation."
-  },
-  "m5-donneurs": {
-   "titre": "Donneurs & transfusions",
-   "description": "Registre des donneurs de sang, dons réalisés et transfusions effectuées avec leur agrément."
   },
   "m5-impression-resultats": {
    "titre": "Impression des résultats",

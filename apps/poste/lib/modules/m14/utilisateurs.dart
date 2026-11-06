@@ -25,7 +25,7 @@ class EcranUtilisateurs extends StatelessWidget with EcranMaquette {
 
   @override
   String get description =>
-      'Comptes individuels, rôles attribués, état d’activation et double facteur.';
+      'Registre des comptes individuels : rôles attribués, état d’activation et double facteur (fiches de gestion).';
 
   @override
   String get regle =>

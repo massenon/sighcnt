@@ -43,7 +43,13 @@
  ],
  "commandes": [
   "Colonnes",
-  "Exporter"
+  "Exporter",
+  "Délivrer",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5"
  ],
  "champs": [],
  "nbTableaux": 1,

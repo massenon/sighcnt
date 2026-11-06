@@ -21,7 +21,8 @@
  "onglets": [
   "Exercices",
   "Périodes de l’exercice",
-  "Lettrage des tiers"
+  "Lettrage des tiers",
+  "Comptes de résultat"
  ],
  "kpis": [
   "Exercice affiché",
@@ -47,6 +48,7 @@
   "Exercices",
   "Périodes de l’exercice",
   "Lettrage des tiers",
+  "Comptes de résultat",
   "Colonnes",
   "Exporter",
   "Pré-clôture"

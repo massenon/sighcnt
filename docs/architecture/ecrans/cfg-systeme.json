@@ -24,7 +24,8 @@
   "Installation et données",
   "Corbeille",
   "Barème NS",
-  "Jeux de test"
+  "Jeux de test",
+  "Relais en ligne"
  ],
  "kpis": [
   "Collections de données",
@@ -46,15 +47,17 @@
  ],
  "commandes": [
   "Installation et données",
-  "Corbeille2",
+  "Corbeille4",
   "Barème NS 131",
   "Jeux de test",
+  "Relais en ligne",
   "Colonnes",
   "Exporter",
   "1",
   "2",
   "3",
   "4",
+  "5",
   "Réinitialiser le jeu de données",
   "Exporter les données",
   "Plan du site",

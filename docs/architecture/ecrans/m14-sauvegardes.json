@@ -14,12 +14,12 @@
  ],
  "actions": [
   "Utilisateurs",
-  "Rôles & permissions (RBAC)",
+  "Sécurité des utilisateurs",
   "Sécurité & Utilisateurs"
  ],
  "regle": [
   "4 sauvegarde(s) en échec. Une alerte est adressée à l’Administrateur système à chaque échec ; la procédure de restauration doit être testée périodiquement.",
-  "La sauvegarde hebdomadaire est automatique ; l’utilisateur est invité à en télécharger une copie sur un support externe. Une sauvegarde qui reste sur le poste ne protège de rien."
+  "La sauvegarde hebdomadaire est automatique ; l’utilisateur est invité à en télécharger une copie sur un support externe. Une sauvegarde qui reste sur le poste ne protège de rien. La sauvegarde serveur se lance depuis « Tâches planifiées » ; le test de restauration relève de api/restaurer.php (simulation par défaut), hors de cet écran."
  ],
  "onglets": [],
  "kpis": [
@@ -58,8 +58,6 @@
   "Exporter",
   "Générer une sauvegarde",
   "Importer par module",
-  "Lancer une sauvegarde manuelle",
-  "Tester une restauration",
   "Exporter le journal des sauvegardes",
   "Restaurer",
   "1",

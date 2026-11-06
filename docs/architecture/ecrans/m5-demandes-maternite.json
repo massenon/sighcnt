@@ -28,12 +28,27 @@
  "cartes": [
   "Demandes — maternité"
  ],
- "tableaux": [],
+ "tableaux": [
+  [
+   "N°",
+   "Origine",
+   "Date",
+   "Patient",
+   "Analyse",
+   "Échantillon",
+   "Prescripteur",
+   "Priorité",
+   "État"
+  ]
+ ],
  "commandes": [
   "Colonnes",
-  "Exporter"
+  "Exporter",
+  "1",
+  "2",
+  "3"
  ],
  "champs": [],
- "nbTableaux": 0,
+ "nbTableaux": 1,
  "nbKpis": 4
 }

@@ -18,7 +18,8 @@
   "Configuration Clinique"
  ],
  "regle": [
-  "À faire sur le serveur local uniquement. Exige l’adresse du relais, le secret de la mère et la clé de clinique."
+  "À faire sur le serveur local uniquement. Exige l’adresse du relais, le secret de la mère et la clé de clinique.",
+  "Prototype : simulation. Aucune déclaration au relais ni démarrage de service n’a lieu, et rien n’est enregistré : le poste redevient fileul au rechargement de l’écran."
  ],
  "onglets": [],
  "kpis": [

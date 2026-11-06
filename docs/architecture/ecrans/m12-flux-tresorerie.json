@@ -18,8 +18,8 @@
   "Tableau de bord comptable"
  ],
  "regle": [
-  "Exercice 2026 : calculé — arrêté au 30/10/2026 (410 ligne(s) d’écriture validée(s) retenue(s)) · Exercice au 31/12/2025 : déposé — liasse BK505416. 90 brouillon(s) écarté(s) : un brouillon n’est pas un fait comptable, et le compter donnerait un résultat qui change quand le comptable rectifie une saisie.",
-  "Exercice 2026 (calculé) — contrôle du formulaire : trésorerie des comptes de classe 5 au 30/10/2026 = -6 362 456 FCFA, trésorerie par les flux (ZH) = -6 362 456 FCFA. Les deux concordent : chaque mouvement de trésorerie est expliqué par une ligne du tableau.",
+  "Exercice 2026 : calculé — arrêté au 06/11/2026 (419 ligne(s) d’écriture validée(s) retenue(s)) · Exercice au 31/12/2025 : déposé — liasse BK505416. 100 brouillon(s) écarté(s) : un brouillon n’est pas un fait comptable, et le compter donnerait un résultat qui change quand le comptable rectifie une saisie.",
+  "Exercice 2026 (calculé) — contrôle du formulaire : trésorerie des comptes de classe 5 au 06/11/2026 = -6 339 106 FCFA, trésorerie par les flux (ZH) = -6 339 106 FCFA. Les deux concordent : chaque mouvement de trésorerie est expliqué par une ligne du tableau.",
   "La trésorerie au 1er janvier 2026 se lit dans le journal : sans à-nouveaux (bilan d’ouverture), elle vaut zéro. La liasse déposée porte 6 300 639 FCFA au 31/12/2025 — reporter les soldes par le bilan d’ouverture pour les faire coïncider."
  ],
  "onglets": [],
@@ -43,7 +43,7 @@
    "NOTE",
    "EXERCICE 2026 (N)",
    "EXERCICE AU 31/12/2025 (N-1)",
-   "calculé — arrêté au 30/10/2026",
+   "calculé — arrêté au 06/11/2026",
    "déposé — liasse BK505416"
   ],
   [

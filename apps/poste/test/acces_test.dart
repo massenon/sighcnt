@@ -442,26 +442,25 @@ void main() {
 
   // ============================================================================================================================ OUBLI / RÉINITIALISATION / 2FA
   group('mot de passe oublié, réinitialisation, double facteur', () {
-    cas('mot de passe oublié : le geste est journalisé, le message est celui de la maquette, puis la réinitialisation s’ouvre', (t) async {
+    cas('mot de passe oublié : le geste est journalisé, le message est celui du poste (écart assumé E2279 : la maquette dit ne rien enregistrer), puis la réinitialisation s’ouvre', (t) async {
       final m = poste();
       await monter(t, m, ecran: 'auth-forgot');
       final o = obj(v['oubli']);
       for (final texte in (o['textes'] as List).cast<String>().skip(10)) {
+        if (texte.contains('n’enregistre aucune demande')) continue; // écart assumé E2279 : le poste, branché, journalise la demande
         expect(ex.textesVisibles(t).any((x) => x.contains(ex.normaliser(texte))), isTrue, reason: texte);
       }
       await bouton(t, 'Envoyer les instructions');
       expect(find.text('Renseigner l’identifiant ou l’adresse électronique.'), findsOneWidget, reason: 'champ obligatoire');
       await saisir(t, 'acces:identifiant', 'a.kassa');
       await bouton(t, 'Envoyer les instructions');
-      final toast = fl(o['toasts']).single;
-      expect(find.text('${toast['titre']}'), findsOneWidget);
-      expect(find.text('${toast['detail']}'), findsOneWidget);
+      expect(find.text('Demande transmise à l’administrateur système.'), findsOneWidget, reason: 'le poste enregistre la demande, contrairement à la maquette');
       expect(audit(m, 'Demande de réinitialisation du mot de passe').single['reference'], 'a.kassa');
       // Branché sur le mécanisme : le compte porte la demande, que l'administrateur lit avant de définir un nouveau mot de passe.
       final kassa = m.collection('utilisateurs').toutes.firstWhere((u) => u['identifiant'] == 'a.kassa');
       expect(kassa['reinitialisationDemandeeLe'], isNotNull);
       await t.pump(const Duration(milliseconds: 1300));
-      expect(find.text('Réinitialiser le mot de passe'), findsWidgets, reason: 'navigation vers auth-reset (${(o['navigation'] as List).single})');
+      expect(find.text('Réinitialiser le mot de passe'), findsWidgets, reason: 'navigation vers auth-reset (le poste, branché, y mène ; la maquette ne navigue plus)');
       await fin(t);
     });
 
