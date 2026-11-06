@@ -1,325 +1,74 @@
 [
   {
-    "nom": "Vague 71 — le vidage retire masse salariale, fiches de poste et calculs de paie : écrans vides, « non calculable » dit",
+    "nom": "Vague 78 — échanges entre postes (mode pair) : clé affichée une seule fois, refus nommés, récupération par courriel fermée par défaut, admin et DA seulement",
     "etapes": [
       {
-        "libelle": "Le jeu frais porte une masse salariale et des fiches de poste (le cas qui survivait au vidage)",
+        "libelle": "L’écran porte ses quatre cartes et ses champs nommés ; désactivé et non appairé au départ",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le calcul de la paie du jeu frais calcule des agents",
+        "libelle": "La récupération par courriel est FERMÉE par défaut : ni courriel ni phrase secrète n’apparaissent",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le vidage retire les valeurs de démonstration du personnel et vide les fiches de poste",
+        "libelle": "Une adresse sans http(s):// est refusée en le disant, rien n’est écrit",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Après relecture depuis la base : l’effectif reste, mais plus aucun salaire ni numéro CNSS de démonstration",
+        "libelle": "Activer sans clé générée est refusé en nommant la cause",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Plus de fiche de poste, de bulletin, d’heure supplémentaire, d’avance ni de prêt",
+        "libelle": "La clé est affichée UNE fois : 64 caractères hexadécimaux (256 bits), avec ses deux commandes",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le référentiel essentiel de la paie survit : paramètres, grille des primes, régimes, barème NS 131, soignants",
+        "libelle": "Le stockage du poste ne contient AUCUN bit de la clé, seulement le fait qu’elle existe",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Tableau de bord Paie : « Non calculable », aucun montant, avertissement nommé",
+        "libelle": "Après « J’ai noté la clé », elle ne s’affiche PLUS jamais (ni champ, ni texte), et l’écran dit où elle en est",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Calcul de la paie : zéro agent, masses « Non calculable », aucune ligne de calcul",
+        "libelle": "Rouvrir l’écran ne la montre pas davantage",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le tableau du calcul ne porte aucune ligne d’agent",
+        "libelle": "Avec relais, nom et clé, le mode pair s’active ; l’adresse est normalisée (sans barre finale) et le code n’est pas conservé",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Redevance ORTB : non calculable, sans compte d’agents ni montant dû",
+        "libelle": "Ouvrir la récupération par courriel fait apparaître le courriel et la phrase secrète, qui ne sont jamais stockés",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Cotisations : CNSS, ITS, VPS et masse brute « Non calculable »",
+        "libelle": "Une phrase secrète de moins de huit caractères est refusée en le disant",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Coût global de l’agent : un agent sans salaire dit « pas calculable » et n’affiche aucun coût",
+        "libelle": "Seuls l’administrateur et la DAF ouvrent l’écran",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Fiches de poste : aucune fiche, aucun poste recensé d’office, et l’écran dit comment les retrouver",
+        "libelle": "La carte figure dans les Paramètres système de la DAF et jamais dans ceux de la direction (RG-13)",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Ouvrir l’écran ne fait pas renaître les fiches (amorçage gardé)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Personnel : l’effectif reste, la masse et le salaire moyen sont « non renseignés »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Tableau de bord RH : masse salariale non renseignée",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Heures supplémentaires, bulletins et prêts : vides, et le bulletin ne chiffre pas une masse inexistante",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune de ces collections n’a été ré-amorcée par l’ouverture des écrans",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le ruban dit « Prêts et avances » et « Importation Grand Stock » ; l’ancien écran de reprise n’existe plus",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "« Régénérer » rend les salaires de démonstration et les fiches de poste, et lève le drapeau",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript sur ces écrans",
-        "ok": true,
-        "detail": null
-      }
-    ],
-    "ok": true
-  },
-  {
-    "nom": "Vague 71 — sessions : « Clôturer » change le statut (journal, KPI, filtre, refus nommés, poste visé renvoyé à la connexion) et écran Sécurité des utilisateurs",
-    "etapes": [
-      {
-        "libelle": "Le registre porte douze sessions de démonstration et la session réelle de ce poste, aucune clôturée",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le KPI « Sessions ouvertes » compte les sessions actives et suspendues",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "« Clôturer » est offerte sur une session ouverte",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La confirmation nomme l’agent, le poste et dit qu’une session clôturée ne se rouvre pas",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Annuler la confirmation ne change rien",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le statut de la fiche passe à « clôturée » avec date, heure et auteur (RG-12)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La clôture est journalisée en tête du journal (module M14, référence = la session)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Rien n’est supprimé (RG-14) : la fiche clôturée reste au registre",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Les KPI suivent : une ouverte de moins, une clôturée de plus",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La ligne affiche « Clôturée » et n’offre plus « Clôturer »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le filtre « État : Clôturées » ne montre que les sessions clôturées",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une session clôturée ne se rouvre ni ne se reclôture : refus nommé DEJA_CLOTUREE avec son geste",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Session inconnue : refus nommé",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Clôturer SA propre session sans confirmation explicite est refusé en le disant, rien n’est écrit",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Un profil sans droit d’édition sur M14 (caissier) est refusé : DROIT_REFUSE",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le poste B (accueil) a sa propre fiche de session au registre",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La session du poste B apparaît au registre de l’administrateur sans recharger",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "L’administrateur clôture la session de l’accueil par le geste",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le poste B reçoit la clôture par la synchronisation",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Au prochain geste, le poste B retombe sur la connexion avec le motif",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La connexion dit pourquoi : « session clôturée par un administrateur »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La fermeture de la session du poste B est journalisée par ce poste (RG-12)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Sa propre session demande une confirmation qui le DIT (« votre propre session », déconnexion immédiate)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Après confirmation, l’agent est ramené à la connexion",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La session propre est clôturée au registre, marquée comme telle, et l’entrée « Session fermée par clôture » est au journal",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Se reconnecter ouvre une AUTRE session : l’ancienne ne rouvre pas",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "L’écran existe, avec ses six indicateurs et ses quatre onglets (politique, comptes, tentatives, sessions)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La politique affiche huit lignes avec leur source, dont « proposition à valider » pour l’historique",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Valeurs de référence : 12 caractères, 90 jours, 3 échecs, 15 minutes de verrou, 15 minutes d’inactivité",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une valeur hors bornes est refusée en nommant la règle, la politique ne change pas",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le délai d’inactivité de la politique s’applique au verrou de session (10 min), journalisé, puis revient à 15",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Refus nommés : motif obligatoire, compte inconnu, déblocage d’un compte non bloqué, blocage de son propre compte",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Bloquer un compte par le geste (modale, motif) écrit blocage, motif, auteur et date",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le KPI « Comptes bloqués » suit",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le serveur de la maquette refuse la connexion d’un compte bloqué (423, refus nommé)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Débloquer rend l’accès, remet les échecs à zéro et signe le geste",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Une fois débloqué, le serveur ouvre de nouveau la session",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Imposer la réinitialisation pose l’obligation (auteur, date), refuse de la poser deux fois, et ne touche à aucun secret",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "« Clôturer les sessions » d’un compte ferme toutes ses sessions ouvertes ; recommencer est refusé (AUCUNE_SESSION)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Droits : l’écran Sécurité des utilisateurs est ouvert à l’administrateur seul (direction, DAF et autres refusés)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Ouvrir l’écran sous la Direction renvoie à la page 403",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "libelle": "Aucune erreur JavaScript",
         "ok": true,
         "detail": null
       }
