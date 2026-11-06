@@ -119,6 +119,14 @@ Future<void> ouvrir(WidgetTester t, String id, M f) async {
   }
 }
 
+/// Écarts ASSUMÉS (E2279) : phrases où la maquette dit honnêtement qu'elle ne branche rien (« Maquette : ... »). Le poste, lui, est branché
+/// (demande inscrite au journal, mot de passe tenu par l'administrateur) : recopier ces phrases serait faux pour lui. Tout autre libellé reste exigé.
+const ecartsAssumes = <String, List<String>>{
+  'auth-forgot': ['cette page n’enregistre aucune demande'],
+  'auth-reset': ['maquette : cette page ne modifie aucun mot de passe'],
+  'auth-2fa': ['maquette non branchée'],
+};
+
 const ecrans = ['index', 'auth-forgot', 'auth-reset', 'auth-2fa', 'auth-lock', 'error-404', 'error-403', 'plan-du-site', 'enquete-publique'];
 
 void main() {
@@ -146,7 +154,8 @@ void main() {
         }
       }
       final courtsManquants = [for (final c in courts) if (!textes.contains(c) && !p.manquants.contains(c)) c];
-      final manquants = [...p.manquants, ...courtsManquants];
+      final assumes = ecartsAssumes[id] ?? const <String>[];
+      final manquants = [for (final m in [...p.manquants, ...courtsManquants]) if (!assumes.any((a) => m.contains(a))) m];
       rapport[id] = {'attendus': p.attendus, 'presents': p.attendus - manquants.length, 'manquants': manquants, 'courtsStricts': courts.length};
       expect(manquants, isEmpty, reason: '$id : ${p.attendus - manquants.length}/${p.attendus} présents, manquants $manquants');
       await fin(t);

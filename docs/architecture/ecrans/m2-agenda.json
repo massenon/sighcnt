@@ -8,7 +8,6 @@
  "description": "Vue calendaire des rendez-vous et consultations, par praticien et par jour.",
  "fil": [
   "Accueil",
-  "Accueil",
   "RDV, Visites & Consultations",
   "Agenda"
  ],
@@ -26,7 +25,7 @@
   "Praticiens"
  ],
  "cartes": [
-  "Du 28/10/2026 au 03/11/2026 — 7 jour(s)",
+  "Du 04/11/2026 au 10/11/2026 — 7 jour(s)",
   "Charge par praticien (30 derniers jours)",
   "Répartition par type"
  ],

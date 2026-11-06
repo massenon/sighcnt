@@ -8,7 +8,6 @@
  "description": "Appels entrants et sortants liés à la prise de rendez-vous, aux résultats et au suivi des patients.",
  "fil": [
   "Accueil",
-  "Accueil",
   "RDV, Visites & Consultations",
   "Registre des appels"
  ],

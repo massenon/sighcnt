@@ -8,7 +8,6 @@
  "description": "Affichage de salle d’attente : numéros appelés et numéros suivants, sans aucune donnée médicale.",
  "fil": [
   "Accueil",
-  "Accueil",
   "RDV, Visites & Consultations",
   "Écran d’appel des patients"
  ],

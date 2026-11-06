@@ -18,7 +18,6 @@
    "Identifiant",
    "Mot de passe",
    "Mot de passe oublié ?",
-   "Se souvenir de ce poste",
    "Identifiant ou mot de passe incorrect.",
    "Se connecter",
    "CLINIQUE NASSIERA TOO SARL — IFU 3201642748214"
@@ -57,14 +56,6 @@
     "placeholder": "••••••••",
     "requis": true,
     "autocomplete": "current-password"
-   },
-   {
-    "id": null,
-    "type": "checkbox",
-    "valeur": "on",
-    "placeholder": "",
-    "requis": false,
-    "autocomplete": null
    }
   ],
   "nbSelect": 0,
@@ -106,7 +97,7 @@
    "CLINIQUE NASSIERA TOO",
    "Votre santé, notre raison de vivre",
    "Mot de passe oublié",
-   "La réinitialisation est prise en charge par l’Administrateur système et journalisée.",
+   "La réinitialisation est faite par l’Administrateur système. Cette page n’enregistre aucune demande : contactez-le directement.",
    "Identifiant ou adresse électronique",
    "Envoyer les instructions",
    "← Retour à la connexion",
@@ -118,13 +109,11 @@
   },
   "toasts": [
    {
-    "titre": "Demande transmise à l’administrateur système.",
-    "detail": "La réinitialisation est effectuée par l’Administrateur (CDCT §12.2)."
+    "titre": "Demande non transmise : cette maquette ne l’enregistre pas.",
+    "detail": "Adressez-vous à l’Administrateur système, qui réinitialise le mot de passe depuis « Utilisateurs » (CDCT §12.2)."
    }
   ],
-  "navigation": [
-   "pages/auth-reset.php"
-  ]
+  "navigation": []
  },
  "reinit": {
   "textes": [
@@ -141,7 +130,7 @@
    "CLINIQUE NASSIERA TOO",
    "Votre santé, notre raison de vivre",
    "Réinitialiser le mot de passe",
-   "Politique de mot de passe de la clinique (CDCT §12.2).",
+   "Politique de mot de passe de la clinique (CDCT §12.2). Maquette : cette page ne modifie aucun mot de passe.",
    "Nouveau mot de passe",
    "Confirmer le mot de passe",
    "Définir le mot de passe",
@@ -157,22 +146,18 @@
   "navDiscordance": [],
   "faible": [
    {
-    "titre": "Mot de passe mis à jour.",
-    "detail": ""
+    "titre": "Mot de passe non modifié : cette page n’enregistre rien.",
+    "detail": "Le mot de passe se change par l’Administrateur système (écran « Utilisateurs »)."
    }
   ],
-  "navFaible": [
-   "index.php"
-  ],
+  "navFaible": [],
   "ok": [
    {
-    "titre": "Mot de passe mis à jour.",
-    "detail": ""
+    "titre": "Mot de passe non modifié : cette page n’enregistre rien.",
+    "detail": "Le mot de passe se change par l’Administrateur système (écran « Utilisateurs »)."
    }
   ],
-  "navigation": [
-   "index.php"
-  ],
+  "navigation": [],
   "regles": []
  },
  "doubleFacteur": {
@@ -190,7 +175,7 @@
    "CLINIQUE NASSIERA TOO",
    "Votre santé, notre raison de vivre",
    "Vérification en 2 étapes",
-   "Exigée pour les profils à privilèges élevés : Administrateur et Direction (CDCT §12.2).",
+   "Prévue pour les profils à privilèges élevés : Administrateur et Direction (CDCT §12.2). Maquette non branchée : aucun code n’est vérifié.",
    "Vérifier",
    "Code non reçu ? Un nouvel envoi est possible dans 30 secondes.",
    "← Utiliser un autre compte",
@@ -210,13 +195,11 @@
   "focusApresSaisie": true,
   "toasts": [
    {
-    "titre": "Vérification réussie.",
-    "detail": ""
+    "titre": "Code non vérifié : la double authentification n’est pas branchée.",
+    "detail": "Cette page est une maquette ; elle ne valide aucun code."
    }
   ],
-  "navigation": [
-   "pages/dash-receptionniste.php"
-  ],
+  "navigation": [],
   "retourSansSession": null
  },
  "erreurs": {
@@ -2469,7 +2452,8 @@
     "module": "M8",
     "description": "Le reçu ne se détaille pas",
     "etapes": "1. Encaisser 2. Imprimer",
-    "capture": null
+    "capture": null,
+    "captureDonnees": null
    },
    {
     "statut": "actif",

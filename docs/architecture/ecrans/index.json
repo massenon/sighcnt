@@ -27,8 +27,7 @@
   "prenom.nom",
   "Mot de passe",
   "••••••••",
-  "Afficher le mot de passe",
-  "Se souvenir de ce poste"
+  "Afficher le mot de passe"
  ],
  "commandes": [
   "Mot de passe oublié ?",

@@ -8,7 +8,6 @@
  "description": "Gestion des files par poste : ordre d’arrivée tempéré par la priorité de triage.",
  "fil": [
   "Accueil",
-  "Accueil",
   "RDV, Visites & Consultations",
   "File d’attente"
  ],
