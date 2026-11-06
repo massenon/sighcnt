@@ -63,7 +63,7 @@ void main() {
       expect(find.text('Mot de passe'), findsOneWidget);
       expect(find.byKey(const Key('acces:oeil')), findsOneWidget);
       expect(find.text('Mot de passe oublié ?'), findsOneWidget);
-      expect(find.text('Se souvenir de ce poste'), findsOneWidget);
+      expect(find.text('Se souvenir de ce poste'), findsNothing, reason: 'case retirée : elle ne retenait rien (fausse sauvegarde)');
       expect(find.text('Se connecter'), findsOneWidget);
       await fin(t);
     });
