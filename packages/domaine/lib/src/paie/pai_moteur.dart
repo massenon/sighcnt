@@ -11,6 +11,7 @@ import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../comptabilite/cpa_referentiels.dart' show cpaCompteLibelle, cpaJournalLibelle;
 import '../referentiels/regles.dart' show joursEntre;
+import '../referentiels/versions_datees.dart' show isoJour, versionEnVigueur;
 
 typedef PaiFiche = Map<String, Object?>;
 
@@ -58,6 +59,38 @@ class PaiRedevance {
   /// Mois de prélèvement, de 0 (janvier) à 11.
   final int mois;
   final num? seuilMin, seuilMax;
+
+  /// Une redevance relue d'une fiche du magasin (ligne de `redevances` de la fiche `ORTB-PARAMETRES`, ou ligne stockée d'un bulletin : `montantAnnuel`
+  /// y tient lieu de `montant`). Un champ absent retombe sur la redevance de MÊME identifiant de la semence, sinon sur une valeur vide, jamais inventée.
+  factory PaiRedevance.depuisFiche(Map<String, Object?> r) {
+    final s = paiRedevances.where((x) => x.id == r['id']).firstOrNull;
+    num? n(Object? v) => v == null || v == '' ? null : nombreOuZero(v);
+    return PaiRedevance(
+        id: '${r['id'] ?? s?.id ?? ''}',
+        code: '${r['code'] ?? s?.code ?? ''}',
+        categorie: '${r['categorie'] ?? s?.categorie ?? ''}',
+        libelle: '${r['libelle'] ?? s?.libelle ?? ''}',
+        montant: n(r['montant']) ?? n(r['montantAnnuel']) ?? s?.montant ?? 0,
+        mois: (n(r['mois']) ?? s?.mois ?? 0).toInt(),
+        moisLabel: '${r['moisLabel'] ?? s?.moisLabel ?? ''}',
+        seuilMin: r.containsKey('seuilMin') ? n(r['seuilMin']) : s?.seuilMin,
+        seuilMax: r.containsKey('seuilMax') ? n(r['seuilMax']) : s?.seuilMax,
+        assiette: '${r['assiette'] ?? s?.assiette ?? ''}');
+  }
+
+  /// La redevance sur la forme de la fiche `ORTB-PARAMETRES` (`D.PARAM_PAIE.ortb.redevances[]`).
+  Map<String, Object?> get fiche => {
+        'id': id,
+        'code': code,
+        'categorie': categorie,
+        'libelle': libelle,
+        'montant': montant,
+        'mois': mois,
+        'moisLabel': moisLabel,
+        'seuilMin': seuilMin,
+        'seuilMax': seuilMax,
+        'assiette': assiette,
+      };
 }
 
 /// Radio : 1 000 F pour TOUS les salariés, en mars. Télé : 3 000 F au-delà de 60 000 F de brut, en juin, EN SUS.
@@ -87,6 +120,61 @@ const List<PaiRedevance> paiRedevances = [
 ];
 const num paiSeuilTele = 60000;
 const num paiCumulMaximum = 4000;
+
+/// La fiche de paramètres ORTB du magasin : `type: 'parametres'`, `code: 'ORTB-PARAMETRES'` dans `obligationsFiscales` (versions antérieures dans
+/// `historiqueObligations`).
+const String paiCodeParametresOrtb = 'ORTB-PARAMETRES';
+
+/// LES PARAMÈTRES ORTB SONT UNE DONNÉE DE RÉFÉRENCE DATÉE (Direction, 06/11/2026). Les constantes ci-dessus ([paiRedevances], [paiSeuilTele],
+/// [paiCumulMaximum]) sont la SEMENCE ; le magasin porte la version en vigueur (fiche `ORTB-PARAMETRES`) et son historique, et c'est la version
+/// EN VIGUEUR À LA DATE DU BULLETIN qui calcule la retenue : un seuil relevé en août ne touche pas le bulletin de juin, qui garde ses lignes.
+class PaiParametresOrtb {
+  const PaiParametresOrtb({required this.seuilTele, required this.redevances, required this.cumulMaximum, this.dateEffet});
+
+  /// `D.PARAM_PAIE.ortb` : radio 1 000 F pour tous en mars, télé 3 000 F au-delà de 60 000 F en juin, EN SUS (cumul 4 000 F).
+  static const semence = PaiParametresOrtb(seuilTele: paiSeuilTele, redevances: paiRedevances, cumulMaximum: paiCumulMaximum);
+
+  /// La fiche `ORTB-PARAMETRES` (courante ou copie d'historique) relue ; `null` : la semence.
+  factory PaiParametresOrtb.depuisFiche(Map<String, Object?>? f) {
+    if (f == null) return semence;
+    final reds = f['redevances'];
+    final liste = reds is List ? [for (final r in reds.whereType<Map>()) PaiRedevance.depuisFiche(r.cast<String, Object?>())] : paiRedevances;
+    return PaiParametresOrtb(
+        seuilTele: f['seuilTele'] == null ? paiSeuilTele : nombreOuZero(f['seuilTele']),
+        redevances: liste,
+        cumulMaximum: f['cumulMaximum'] == null ? liste.fold<num>(0, (a, r) => a + r.montant) : nombreOuZero(f['cumulMaximum']),
+        dateEffet: f['dateEffet'] == null ? null : isoJour(f['dateEffet']));
+  }
+
+  /// Les paramètres en vigueur à une date, lus dans les listes du magasin ([paiFicheOrtbALaDate]) ; sans fiche : la semence.
+  factory PaiParametresOrtb.aLaDate(DateTime date, {required Iterable<PaiFiche> obligations, required Iterable<PaiFiche> historique}) =>
+      PaiParametresOrtb.depuisFiche(paiFicheOrtbALaDate(obligations, historique, isoJour(date)));
+
+  final num seuilTele, cumulMaximum;
+  final List<PaiRedevance> redevances;
+
+  /// La date d'effet de la version (ISO) ; `null` : la version d'origine.
+  final String? dateEffet;
+
+  PaiRedevance? get radio => redevances.where((r) => r.id == 'radio').firstOrNull;
+  PaiRedevance? get tele => redevances.where((r) => r.id == 'tele').firstOrNull;
+
+  /// Les champs de la fiche `ORTB-PARAMETRES` que portent ces paramètres (sans id, statut ni champs de version).
+  Map<String, Object?> get fiche => {
+        'seuilTele': seuilTele,
+        'redevances': [for (final r in redevances) r.fiche],
+        'cumulMaximum': cumulMaximum,
+        'dateEffet': dateEffet,
+      };
+}
+
+/// `D.ortbALaDate(date)` sur les listes du magasin : la fiche `ORTB-PARAMETRES` active si sa date d'effet est nulle ou passée, sinon la copie
+/// d'historique qui couvre la date ; `null` quand le magasin n'en porte aucune (repli : la semence, chez l'appelant).
+Map<String, Object?>? paiFicheOrtbALaDate(Iterable<PaiFiche> obligations, Iterable<PaiFiche> historique, String dateIso) {
+  bool estParametres(PaiFiche f) => f['type'] == 'parametres' && f['code'] == paiCodeParametresOrtb && f['statut'] != 'archive';
+  final courante = obligations.where(estParametres).firstOrNull;
+  return versionEnVigueur(courante, historique.where(estParametres), dateIso);
+}
 
 /// Une prime de la note NS 132/07/DM/DA/CNT/2026 : `fixe` = forfait mensuel, `occurrence` = selon le nombre de gardes / permanences.
 class PaiPrime {
@@ -230,13 +318,19 @@ class PaiOrtb {
   String get resume => lignes.map((l) => '${l.categorie} ${money(l.montantAnnuel, avecDevise: false)} en ${l.moisLabel}').join(' · ');
 }
 
-/// `calculOrtb(brut, mois)` : UNE LIGNE PAR CATÉGORIE APPLICABLE, chacune ne portant son montant que sur le bulletin de SON mois — la compter chaque
-/// mois majorerait les retenues de onze douzièmes. Les deux redevances se CUMULENT : filtrer pour n'en garder qu'une dispenserait de la radio les
-/// salaires élevés. Le seuil se lit sur le BRUT (avant sanction).
-PaiOrtb paiCalculOrtb(num brut, int mois) => PaiOrtb([
-      for (final r in paiRedevances)
+/// `calculOrtb(brut, mois, date)` : UNE LIGNE PAR CATÉGORIE APPLICABLE, chacune ne portant son montant que sur le bulletin de SON mois — la compter
+/// chaque mois majorerait les retenues de onze douzièmes. Les deux redevances se CUMULENT : filtrer pour n'en garder qu'une dispenserait de la radio
+/// les salaires élevés. Le seuil se lit sur le BRUT (avant sanction). [parametres] : la version EN VIGUEUR À LA DATE DU BULLETIN
+/// ([PaiParametresOrtb.aLaDate], ou [paiCalculOrtbALaDate]) ; par défaut la semence, ce que la maquette fait sans magasin.
+PaiOrtb paiCalculOrtb(num brut, int mois, {PaiParametresOrtb parametres = PaiParametresOrtb.semence}) => PaiOrtb([
+      for (final r in parametres.redevances)
         if ((r.seuilMin == null || brut >= r.seuilMin!) && (r.seuilMax == null || brut <= r.seuilMax!)) PaiLigneOrtb(r, mois == r.mois ? r.montant : 0, mois == r.mois)
     ]);
+
+/// `calculOrtb(brut, mois, date)` de `m11-paie.js` : les paramètres sont ceux en vigueur à [date] (le premier jour de la période de paie) dans les
+/// listes du magasin (`obligationsFiscales`, `historiqueObligations`) ; sans fiche, la semence.
+PaiOrtb paiCalculOrtbALaDate(num brut, int mois, DateTime date, {required Iterable<PaiFiche> obligations, required Iterable<PaiFiche> historique}) =>
+    paiCalculOrtb(brut, mois, parametres: PaiParametresOrtb.aLaDate(date, obligations: obligations, historique: historique));
 
 /// Une ligne de retenue ORTB d'un bulletin (`lignesOrtb`) : une catégorie non prélevée ce mois-ci reste affichée (tiret) — le bulletin dit de quoi
 /// l'agent est redevable, pas seulement ce qu'il paie ce mois.
@@ -253,14 +347,16 @@ List<PaiLigneRetenueOrtb> paiLignesOrtb(PaiOrtb? d) {
   ];
 }
 
-/// Le détail ORTB tel que le bulletin STOCKÉ le porte (`detailOrtb` : lignes, id, libellé, mois, montants) — relu en [PaiOrtb].
+/// Le détail ORTB tel que le bulletin STOCKÉ le porte (`detailOrtb` : lignes, id, libellé, mois, montants) — relu en [PaiOrtb]. Un bulletin
+/// déjà calculé n'est JAMAIS recalculé : ses lignes sont relues telles qu'écrites (libellé, mois, montant annuel de SA version des paramètres),
+/// et non reconstruites depuis les paramètres du jour.
 PaiOrtb? paiOrtbDeFiche(Object? detail) {
   if (detail is! Map) return null;
   final lignes = detail['lignes'];
   if (lignes is! List) return null;
   return PaiOrtb([
     for (final l in lignes.whereType<Map>())
-      if (paiRedevances.where((r) => r.id == l['id']).firstOrNull case final r?) PaiLigneOrtb(r, _n(l['montant']), l['du'] == true)
+      if (l['id'] != null) PaiLigneOrtb(PaiRedevance.depuisFiche(l.cast<String, Object?>()), _n(l['montant']), l['du'] == true)
   ]);
 }
 
@@ -352,8 +448,13 @@ class PaiEntrees {
       this.grille = const [],
       this.historique = const [],
       this.heuresSup = const [],
-      this.prets = const []});
+      this.prets = const [],
+      this.obligationsFiscales = const [],
+      this.historiqueObligations = const []});
   final List<PaiFiche> planning, evaluations, avances, participations, grille, historique, heuresSup, prets;
+
+  /// Les paramètres ORTB datés : la collection `obligationsFiscales` (fiche `ORTB-PARAMETRES`) et `historiqueObligations`. Vides : la semence.
+  final List<PaiFiche> obligationsFiscales, historiqueObligations;
 }
 
 class PaiLignePrime {
@@ -467,7 +568,9 @@ PaiCalcul paiCalculer(PaiFiche employe, int annee, int mois, PaiEntrees e, DateT
   final cnssPatronale = arrondiJs(brutApresSanction * paiCnssPatronale / 100);
   final vps = arrondiJs(brutApresSanction * paiVpsTaux / 100);
   final its = paiCalculIts(brutApresSanction - cnssOuvriere);
-  final detailOrtb = paiCalculOrtb(brut, mois);
+  // Les paramètres ORTB en vigueur au PREMIER JOUR de la période de paie (`calculer()` de la maquette passe cette date) : un bulletin de juin
+  // calculé après un relèvement du seuil en août garde la télé due.
+  final detailOrtb = paiCalculOrtbALaDate(brut, mois, DateTime(annee, mois + 1, 1), obligations: e.obligationsFiscales, historique: e.historiqueObligations);
   final ortb = detailOrtb.montant;
 
   final avancesEnCours = e.avances.where(_actif).where((a) => a['employeId'] == id && a['statutAvance'] == 'en_cours').toList();

@@ -56,12 +56,12 @@ class CfaNs145 {
 /// `C.BRAND` — ce que l'écran d'identité affiche en plus de `IdentiteClinique` (arbitrage du 31/08/2026 : UNE identité légale).
 class CfaIdentite {
   const CfaIdentite._();
-  static const forme = 'Société à Responsabilité Limitée';
-  static const adresse = 'Quartier Tchirimina, Natitingou';
-  static const telephoneRdv = '60 33 92 92';
-  static const autorisationExerciceMotif =
-      'Non applicable — l’inscription à l’ordre suffit depuis la loi 2025-1 de juin 2026. L’autorisation d’exercice n’est plus imprimée sur les états.';
-  static const logo = 'assets/img/logo.jpeg';
+  // Depuis le 06/11/2026 ces champs vivent sur la SEMENCE de l'identité légale ([IdentiteClinique]) : ils sont lus là, jamais recopiés ici.
+  static const forme = IdentiteClinique.forme;
+  static const adresse = IdentiteClinique.adresse;
+  static const telephoneRdv = IdentiteClinique.telephoneRdv;
+  static const autorisationExerciceMotif = IdentiteClinique.autorisationExerciceMotif;
+  static const logo = IdentiteClinique.logo;
 }
 
 /// `D.FAMILLES_TARIF` : (code, libellé, icône).

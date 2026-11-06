@@ -120,6 +120,62 @@ void main() {
     });
   });
 
+  group('ORTB DATÉ (Direction, 06/11/2026) : les paramètres en vigueur à la date du bulletin, rejoués sur fiscal-date.json', () {
+    final fd = lireVecteurs('fiscal-date');
+    final vc = m(fd['calculOrtbDate']);
+    final avant = PaiParametresOrtb.depuisFiche(m(vc['parametresAvant']));
+    final apres = PaiParametresOrtb.depuisFiche(m(vc['parametresApres']));
+
+    test('une fiche ORTB-PARAMETRES se relit : seuil, redevances, cumul, date d’effet ; la semence est celle des constantes', () {
+      expect([avant.seuilTele, avant.cumulMaximum, avant.dateEffet, avant.tele!.seuilMin], [60000, 4000, null, 60001]);
+      expect([apres.seuilTele, apres.cumulMaximum, apres.dateEffet, apres.tele!.seuilMin, apres.tele!.assiette], [80000, 4000, '2026-08-01', 80001, 'Salaire brut supérieur à 80 000 FCFA']);
+      expect(PaiParametresOrtb.depuisFiche(null), PaiParametresOrtb.semence);
+      expect(PaiParametresOrtb.semence.fiche['redevances'], [for (final r in paiRedevances) r.fiche]);
+      expect(PaiRedevance.depuisFiche(const {'id': 'tele'}).montant, 3000, reason: 'un champ absent retombe sur la redevance de même identifiant de la semence');
+    });
+
+    test('les onze bulletins du vecteur : avant le 01/08 la version d’origine, à partir du 01/08 le seuil à 80 000 ; sans date, aujourd’hui (16/08)', () {
+      for (final c in liste(vc['cas'])) {
+        final date = c['date'] == null ? '${fd['aujourdhui']}' : '${c['date']}';
+        final p = date.compareTo('${apres.dateEffet}') >= 0 ? apres : avant;
+        final r = paiCalculOrtb(c['brut'] as num, c['mois'] as int, parametres: p);
+        final ctx = '${c['brut']} / mois ${c['mois']} / $date';
+        expect([r.montant, r.montantAnnuel, r.du], [c['montant'], c['montantAnnuel'], c['du']], reason: ctx);
+        expect([for (final l in r.lignes) [l.id, l.montant, l.montantAnnuel, l.du]], [for (final l in liste(c['lignes'])) [l['id'], l['montant'], l['montantAnnuel'], l['du']]], reason: ctx);
+      }
+      // MUTATION « date ignorée » : à 70 000 F, le bulletin de juin 2026 doit la télé (3 000), celui de septembre 2026 ne la doit plus
+      expect(paiCalculOrtb(70000, 5, parametres: avant).montant, 3000);
+      expect(paiCalculOrtb(70000, 5, parametres: apres).montant, 0);
+      expect(paiCalculOrtb(70000, 2, parametres: apres).montant, 1000, reason: 'la radio reste due à tous');
+    });
+
+    test('un bulletin déjà calculé garde ses lignes ORTB : relues telles qu’écrites, pas reconstruites depuis les paramètres du jour', () {
+      final juin = paiCalculOrtb(70000, 5, parametres: avant);
+      final relu = paiOrtbDeFiche(paiOrtbVersFiche(juin))!;
+      expect(relu.montant, 3000);
+      expect(relu.tele!.montantAnnuel, 3000);
+      expect(relu.tele!.def.assiette, 'Salaire brut supérieur à 60 000 FCFA', reason: 'l’assiette de SA version, pas celle du jour');
+      final autre = PaiParametresOrtb(seuilTele: 60000, cumulMaximum: 4500, redevances: [
+        paiRedevances.first,
+        PaiRedevance.depuisFiche({...paiRedevances.last.fiche, 'montant': 3500, 'libelle': 'Redevance ORTB / Télé (2027)'})
+      ]);
+      final relu2 = paiOrtbDeFiche(paiOrtbVersFiche(paiCalculOrtb(70000, 5, parametres: autre)))!;
+      expect([relu2.tele!.montant, relu2.tele!.montantAnnuel, relu2.tele!.libelle], [3500, 3500, 'Redevance ORTB / Télé (2027)']);
+    });
+
+    test('`paiCalculer` lit les paramètres au PREMIER JOUR de la période de paie : juin 2026 doit la télé, septembre 2026 n’y est plus assujetti à 70 000 F', () {
+      // Fonction sans prime fixe ni ancienneté : le brut du bulletin est exactement 70 000 F (un infirmier porterait la prime de bloc fixe).
+      final employe = <String, Object?>{'id': 'E1', 'matricule': '1', 'nomComplet': 'TEST Agent', 'fonction': 'accueil', 'salaireBase': 70000, 'statut': 'actif', 'dateEmbauche': '2026-01-15'};
+      final e = PaiEntrees(obligationsFiscales: [m(vc['parametresApres'])], historiqueObligations: [m(vc['parametresAvant'])]);
+      final juin = paiCalculer(employe, 2026, 5, e, auj);
+      final septembre = paiCalculer(employe, 2026, 8, e, auj);
+      expect(juin.ortbTele, 3000);
+      expect(juin.detailOrtb.tele, isNotNull);
+      expect(septembre.detailOrtb.tele, isNull, reason: 'au 01/09/2026 le seuil est à 80 000 : la télé n’est plus applicable');
+      expect(paiCalculer(employe, 2026, 8, const PaiEntrees(), auj).detailOrtb.tele, isNotNull, reason: 'sans magasin : la semence');
+    });
+  });
+
   for (final nom in ['S0', 'S1']) {
     final s = m(scenarios[nom]);
     final e = m(s['entrees']);

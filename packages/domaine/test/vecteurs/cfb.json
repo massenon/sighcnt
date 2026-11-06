@@ -589,6 +589,7 @@
    "valorisationsSage",
    "ambulances",
    "materiel",
+   "comptesResultat",
    "utilisateurs",
    "rbac",
    "modulesActifs",
@@ -599,6 +600,9 @@
    "baremeNS131",
    "historiqueBareme",
    "beneficiairesPrimes",
+   "identiteLegale",
+   "obligationsFiscales",
+   "historiqueObligations",
    "examensLabo",
    "unitesLabo",
    "variablesLabo",
@@ -1516,7 +1520,7 @@
    },
    "fiche": [
     {
-     "id": "CCxmvuswn40r4mye",
+     "id": "CCxmvuswn40j1dr8",
      "statut": "actif",
      "libelle": "Centre Test Alpha",
      "code": "CC08",
@@ -1563,7 +1567,7 @@
    },
    "fiche": [
     {
-     "id": "CCxmvuswn403u09s",
+     "id": "CCxmvuswn40d52eb",
      "statut": "actif",
      "libelle": "Centre Test Beta",
      "code": "XYZ",
@@ -2320,11 +2324,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -2392,21 +2419,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -2418,7 +2451,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -2589,9 +2622,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -2624,11 +2658,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "4 échéance(s) dans les trente jours : ITS le 12/10/2026 · AIB le 12/10/2026 · VPS le 12/10/2026 · CNSS le 12/10/2026. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -2696,21 +2753,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -2722,7 +2785,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -2893,9 +2956,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -2928,11 +2992,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "4 échéance(s) dans les trente jours : ITS le 11/01/2027 · AIB le 11/01/2027 · VPS le 11/01/2027 · CNSS le 11/01/2027. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -3000,21 +3087,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -3026,7 +3119,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -3197,9 +3290,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -3232,11 +3326,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "5 échéance(s) dans les trente jours : ITS le 11/01/2027 · AIB le 11/01/2027 · VPS le 11/01/2027 · CNSS le 11/01/2027 …. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -3304,21 +3421,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -3330,7 +3453,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -3501,9 +3624,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -3536,11 +3660,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "6 échéance(s) dans les trente jours : ITS le 10/02/2027 · AIB le 10/02/2027 · VPS le 10/02/2027 · CNSS le 10/02/2027 …. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -3608,21 +3755,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -3634,7 +3787,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -3805,9 +3958,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -3840,11 +3994,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "1 échéance(s) dans les trente jours : ORTB-RADIO le 30/03/2027. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -3912,21 +4089,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -3938,7 +4121,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -4109,9 +4292,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -4144,11 +4328,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "4 échéance(s) dans les trente jours : ITS le 10/05/2027 · AIB le 10/05/2027 · VPS le 10/05/2027 · CNSS le 10/05/2027. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -4216,21 +4423,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -4242,7 +4455,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -4413,9 +4626,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -4448,11 +4662,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "8 échéance(s) dans les trente jours : ITS le 10/02/2026 · AIB le 10/02/2026 · VPS le 10/02/2026 · CNSS le 10/02/2026 …. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -4520,21 +4757,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -4546,7 +4789,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -4717,9 +4960,10 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    },
@@ -4752,11 +4996,34 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "4 échéance(s) dans les trente jours : ITS le 11/05/2026 · AIB le 11/05/2026 · VPS le 11/05/2026 · CNSS le 11/05/2026. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -4824,21 +5091,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -4850,7 +5123,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -5021,18 +5294,20 @@
      }
     ],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ]
    }
   ],
   "reference": {
    "cartesTexte": [
-    "Identification fiscale de l’établissement Configuration MECeF Dénomination sociale CLINIQUE NASSIERA TOO SARL Forme juridique Société à Responsabilité Limitée IFU 3201642748214 RCCM RB/NAT/2016-B-268 Autorisation d’ouverture N° 066/MS/DC/SGM/CJ/DNSP/SRS/SA/058SGG20/N°20 du 02/07/2020 Adresse fiscale BP : 507 NATITINGOU (Rép. du Bénin) Devise FCFA (XOF) Régime de TVA Taux normal 18 %",
+    "Identification fiscale de l’établissement IDENTIFICATION FISCALE DE L’ÉTABLISSEMENT (VERSION 1 EN FORCE) Dénomination sociale Se modifie à l’écran Identité & papier à en-tête. Forme juridique IFU (13 chiffres) * RCCM * Autorisation d’ouverture Adresse fiscale (adresse postale imprimée) Devise Code ISO de la devise Régime de TVA Porté tel qu’affiché ; le MECeF applique l’exonération relevée sur la facture de référence (divergence signalée, E2272). Enregistrer Valider l’identité légale Configuration MECeF",
+    "Versions de l’identité légale VERSION EN FORCE DU AU IFU / RCCM VALIDÉE MOTIF v1 Aujourd’hui ouverture du dossier en force 3201642748214 / RB/NAT/2016-B-268 À valider semence (arbitrage du 31/08/2026)",
     "Numérotation des documents TYPE DE DOCUMENT PRÉFIXE FORMAT SÉQUENCE Facture normalisée FN-2026- FN-AAAA-NNNNN Strictement séquentielle Facture pro-forma PRO-2026- PRO-AAAA-NNNNN Indépendante Avoir AV-2026- AV-AAAA-NNNN Strictement séquentielle Dossier patient CNT CNT/[n°]/[AA] Par année civile (RG-01) Bon de commande BC-2026- BC-AAAA-NNNN Par exercice Bon d’expression de besoins BEB-2026- BEB-AAAA-NNNN Par exercice Bulletin de paie BP- BP-NNNNN Par période de paie Écriture comptable [JOURNAL]-2026- JJJ-AAAA-NNNNN Par journal",
-    "Obligations déclaratives DÉCLARATION PÉRIODICITÉ ÉCHÉANCE ÉCRAN PRODUCTEUR Cotisations CNSS Mensuelle 15 du mois suivant Éditer Impôt sur les traitements et salaires (ITS) Mensuelle 10 du mois suivant Éditer Versement patronal de solidarité (VPS) Mensuelle 10 du mois suivant Éditer Transmission des factures normalisées Continue À l’émission Éditer États financiers de synthèse Annuelle Clôture de l’exercice Éditer",
+    "Obligations déclaratives (dérivées des obligations en vigueur) DÉCLARATION PÉRIODICITÉ ÉCHÉANCE ÉCRAN PRODUCTEUR Impôt sur les traitements salariaux (ITS) Mensuelle le 10 du mois suivant Éditer Acompte sur impôt assis sur les bénéfices (AIB) Mensuelle le 10 du mois suivant Éditer Versement patronal sur salaires (VPS) Mensuelle le 10 du mois suivant Éditer Cotisations sociales CNSS (CNSS) Mensuelle le 10 du mois suivant Éditer Transmission des factures normalisées Continue À l’émission Éditer États financiers de synthèse Annuelle Clôture de l’exercice, dépôt au 30 avril Éditer",
     "Calendrier fiscal et social Périodicité Mensuelle Annuelle Colonnes Exporter CODE OBLIGATION PÉRIODICITÉ PROCHAINE ÉCHÉANCE DANS RÈGLE APPLIQUÉE ITS Impôt sur les traitements salariaux Mensuelle 10/11/2026 11 j Le 10 du mois suivant le mois d’exercice. Reporté au jour ouvrable suivant si l’échéance tombe un week-end. AIB Acompte sur impôt assis sur les bénéfices Mensuelle 10/11/2026 11 j Le 10 de chaque mois, après la déclaration préalable. VPS Versement patronal sur salaires Mensuelle 10/11/2026 11 j Le 10 du mois suivant le mois d’exercice. CNSS Cotisations sociales CNSS Mensuelle 10/11/2026 11 j Le 10 du mois suivant. Part patronale 16,4 %, part ouvrière 3,6 %. IS-4 Impôt sur les sociétés — 4e acompte Annuelle 10/12/2026 41 j Quatrième acompte trimestriel. PATENTE-DECL Patente — déclaration prévisionnelle Annuelle 01/02/2027 reportée — jour ouvrable 94 j Date limite de la déclaration prévisionnelle de la patente. PATENTE-1 Patente — 1er acompte Annuelle 10/02/2027 103 j Première moitié. La patente se paie une fois par an, avec possibilité de régler en deux tranches. CCIB-DECL CCIB — déclaration prévisionnelle Annuelle 01/03/2027 reportée — jour ouvrable 122 j La déclaration prévisionnelle s’effectue à la FIN DU MOIS, avant le premier acompte — confirmé par la Direction le 25/08/2026. IS-1 Impôt sur les sociétés — 1er acompte Annuelle 10/03/2027 131 j Premier des quatre acomptes trimestriels, assis sur l’impôt de l’exercice précédent divisé par quatre. Le 10 mars — confirmé par la Direction le 25/08/2026. CCIB-1 CCIB — 1re tranche Annuelle 10/03/2027 131 j Contribution annuelle de 300 000 FCFA, réglée en deux tranches égales de 150 000 FCFA. Premier acompte le 10 mars (50 %) — confirmé par la Direction le 25/08/2026. ORTB-RADIO Redevance ORTB / Radio Annuelle 30/03/2027 151 j Prélevée sur TOUS les salariés sans exception — 1 000 FCFA par agent, au mois de mars. IS-SOLDE Liquidation du solde de l’impôt sur les sociétés Annuelle 30/04/2027 182 j Le 30 avril de chaque année, PRÉALABLEMENT au dépôt des états financiers. Ajuste à la hausse ou à la baisse les acomptes versés l’exercice précédent — confirmé par la Direction le 25/08/2026. ETATS-FIN Dépôt des états financiers Annuelle 30/04/2027 182 j Le 30 avril de l’année suivant l’exercice clos, après la liquidation du solde. PATENTE-2 Patente — solde Annuelle 30/04/2027 182 j Seconde moitié, au 30 avril. TVM Taxe sur véhicules à moteur Annuelle 30/04/2027 182 j Une fois par an, au plus tard le 30 avril. IS-2 Impôt sur les sociétés — 2e acompte Annuelle 10/06/2027 223 j Deuxième acompte trimestriel. CCIB-2 CCIB — 2e tranche Annuelle 10/06/2027 223 j Seconde tranche de 150 000 FCFA, le 10 juin (50 %) — confirmé par la Direction le 25/08/2026. ORTB-TELE Redevance ORTB / Télé Annuelle 30/06/2027 243 j Prélevée en SUS de la radio sur les salaires supérieurs à 60 000 FCFA — 3 000 FCFA par agent, au mois de juin. IS-3 Impôt sur les sociétés — 3e acompte Annuelle 10/09/2027 315 j Troisième acompte trimestriel. Affichage de 1 à 19 sur 19 enregistrements"
    ],
    "lecture": {
@@ -5060,12 +5335,35 @@
     ],
     "onglets": [],
     "cartes": [
-     "Identification fiscale de l’établissement Configuration MECeF",
+     "Identification fiscale de l’établissement",
+     "Versions de l’identité légale",
      "Numérotation des documents",
-     "Obligations déclaratives",
+     "Obligations déclaratives (dérivées des obligations en vigueur)",
      "Calendrier fiscal et social"
     ],
     "tableaux": [
+     {
+      "entetes": [
+       "VERSION",
+       "EN FORCE",
+       "DU",
+       "AU",
+       "IFU / RCCM",
+       "VALIDÉE",
+       "MOTIF"
+      ],
+      "lignes": [
+       [
+        "v1",
+        "Aujourd’hui",
+        "ouverture du dossier",
+        "en force",
+        "3201642748214 / RB/NAT/2016-B-268",
+        "À valider",
+        "semence (arbitrage du 31/08/2026)"
+       ]
+      ]
+     },
      {
       "entetes": [
        "TYPE DE DOCUMENT",
@@ -5133,21 +5431,27 @@
       ],
       "lignes": [
        [
-        "Cotisations CNSS",
+        "Impôt sur les traitements salariaux (ITS)",
         "Mensuelle",
-        "15 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Impôt sur les traitements et salaires (ITS)",
+        "Acompte sur impôt assis sur les bénéfices (AIB)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
-        "Versement patronal de solidarité (VPS)",
+        "Versement patronal sur salaires (VPS)",
         "Mensuelle",
-        "10 du mois suivant",
+        "le 10 du mois suivant",
+        "Éditer"
+       ],
+       [
+        "Cotisations sociales CNSS (CNSS)",
+        "Mensuelle",
+        "le 10 du mois suivant",
         "Éditer"
        ],
        [
@@ -5159,7 +5463,7 @@
        [
         "États financiers de synthèse",
         "Annuelle",
-        "Clôture de l’exercice",
+        "Clôture de l’exercice, dépôt au 30 avril",
         "Éditer"
        ]
       ]
@@ -5330,17 +5634,22 @@
      }
     ],
     "notes": [
-     "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
+     "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+     "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
      "4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026. Une déclaration précède généralement le paiement.",
      "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
     ],
     "boutons": [
+     "Enregistrer",
+     "Valider l’identité légale",
      "Colonnes",
      "Exporter",
      "Tout désélectionner"
     ]
    },
    "boutons": [
+    "Enregistrer",
+    "Valider l’identité légale",
     "Colonnes",
     "Exporter",
     "Tout désélectionner"
@@ -5349,6 +5658,10 @@
     [
      "Configuration MECeF",
      "pages/mecef-config.php"
+    ],
+    [
+     "Éditer",
+     "pages/m11-cotisations.php"
     ],
     [
      "Éditer",
@@ -5378,7 +5691,7 @@
   "lecture": {
    "kpis": [
     {
-     "libelle": "Obligations suivies",
+     "libelle": "Obligations en vigueur",
      "valeur": "19",
      "indice": null
     },
@@ -5400,10 +5713,11 @@
    ],
    "onglets": [],
    "cartes": [
-    "Obligations mensuelles — le 10 du mois suivant",
-    "Impôt sur les sociétés — quatre acomptes et une liquidation",
-    "Patente, CCIB et TVM — une fois par an",
-    "Redevances ORTB — prélevées sur les salaires Suivi nominatif",
+    "Obligations mensuelles : le 10 du mois suivant",
+    "Impôt sur les sociétés : quatre acomptes et une liquidation",
+    "Patente, CCIB et TVM : une fois par an",
+    "Redevances ORTB : prélevées sur les salaires Modifier les paramètres ORTB Suivi nominatif",
+    "Versions antérieures des obligations et des paramètres ORTB",
     "Principes de tenue"
    ],
    "tableaux": [
@@ -5412,32 +5726,41 @@
       "CODE",
       "OBLIGATION",
       "ÉCHÉANCE",
-      "DÉCLARATION PRÉALABLE"
+      "DÉCLARATION PRÉALABLE",
+      "VERSION"
      ],
      "lignes": [
       [
        "ITS",
        "Impôt sur les traitements salariaux",
        "le 10 du mois suivant",
-       "Déclaration mensuelle avant paiement"
+       "Déclaration mensuelle avant paiement",
+       "d’origine",
+       ""
       ],
       [
        "AIB",
        "Acompte sur impôt assis sur les bénéfices",
        "le 10 du mois suivant",
-       "Déclaration mensuelle avant paiement"
+       "Déclaration mensuelle avant paiement",
+       "d’origine",
+       ""
       ],
       [
        "VPS",
        "Versement patronal sur salaires",
        "le 10 du mois suivant",
-       "Déclaration mensuelle avant paiement"
+       "Déclaration mensuelle avant paiement",
+       "d’origine",
+       ""
       ],
       [
        "CNSS",
        "Cotisations sociales CNSS",
        "le 10 du mois suivant",
-       "Déclaration mensuelle avant paiement"
+       "Déclaration mensuelle avant paiement",
+       "d’origine",
+       ""
       ]
      ]
     },
@@ -5451,22 +5774,47 @@
       [
        "Impôt sur les sociétés — 1er acompte",
        "le 10 mars",
-       "25 % de l’impôt de l’exercice précédent"
+       "25 % de l’impôt de l’exercice précédent",
+       ""
       ],
       [
        "Impôt sur les sociétés — 2e acompte",
        "le 10 juin",
-       "25 % de l’impôt de l’exercice précédent"
+       "25 % de l’impôt de l’exercice précédent",
+       ""
       ],
       [
        "Impôt sur les sociétés — 3e acompte",
        "le 10 septembre",
-       "25 % de l’impôt de l’exercice précédent"
+       "25 % de l’impôt de l’exercice précédent",
+       ""
       ],
       [
        "Impôt sur les sociétés — 4e acompte",
        "le 10 décembre",
-       "25 % de l’impôt de l’exercice précédent"
+       "25 % de l’impôt de l’exercice précédent",
+       ""
+      ]
+     ]
+    },
+    {
+     "entetes": [
+      "CODE",
+      "OBLIGATION",
+      "ÉCHÉANCE"
+     ],
+     "lignes": [
+      [
+       "IS-SOLDE",
+       "Liquidation du solde de l’impôt sur les sociétés",
+       "le 30 avril",
+       ""
+      ],
+      [
+       "ETATS-FIN",
+       "Dépôt des états financiers",
+       "le 30 avril",
+       ""
       ]
      ]
     },
@@ -5497,27 +5845,67 @@
     }
    ],
    "notes": [
-    "ITS, AIB, VPS et CNSS se paient le 10 de chaque mois, pour le mois d’exercice précédent. Une déclaration précède le paiement. Si le 10 tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi.",
-    "ASSIETTES CNSS — part patronale 16.4 %, part ouvrière 3.6 %. VPS — 4 % du salaire brut. ITS — barème progressif par tranches. AIB — acompte assis sur les bénéfices.",
-    "L’impôt se paie par anticipation : l’impôt de l’exercice précédent est divisé en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable — un impôt de 2 000 000 FCFA en 2025 donne quatre acomptes de 500 000 FCFA en 2026.",
-    "LE 30 AVRIL DE L’ANNÉE SUIVANTE Deux opérations, dans cet ordre : la liquidation du solde ajuste ce qui a été versé en acomptes — la clinique complète si l’impôt réel dépasse les acomptes, l’État rembourse dans le cas inverse — puis intervient le dépôt des états financiers de l’exercice clos.",
-    "Patente Une fois par an, avec possibilité de régler en deux tranches. 31 janvier Date limite de la déclaration prévisionnelle 10 février 1er acompte — 50 % 30 avril Solde — 50 %",
-    "CCIB 300 000 FCFA par an, en deux tranches égales de 150 000 FCFA. Fin de mois Déclaration prévisionnelle, avant le 1er acompte 10 mars 1re tranche — 50 % 10 juin 2e tranche — 50 %",
-    "TVM Taxe sur véhicules à moteur. Une fois par an, en une seule fois. 30 avril Paiement, au plus tard",
-    "Deux redevances distinctes, qui se cumulent — et non deux tranches exclusives d’un même barème. La radio est due par tous les salariés sans exception ; la télé s’y ajoute au-delà de 60 000 de salaire brut. Un agent au-dessus du seuil acquitte donc 4 000 sur l’exercice, et non 3 000 seulement.",
-    "CE QUE SUPPORTE UN AGENT Salaire brut jusqu’à 60 000 — 1 000 au titre de la radio, en mars. Salaire brut supérieur à 60 000 — 1 000 en mars pour la radio, puis 3 000 en juin pour la télé, soit 4 000 sur l’année.",
-    "Le prélèvement est annuel, non mensuel : chaque redevance n’apparaît que sur le bulletin de son mois. Les porter chaque mois majorerait les retenues de onze douzièmes. Les deux parts restent distinguées jusqu’au bulletin et à l’état des cotisations."
+    "liste des obligations à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+    "ITS, AIB, VPS, CNSS se paient chaque mois, pour le mois d’exercice précédent, au jour porté par chaque obligation. Une déclaration précède le paiement. Si le jour tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi.",
+    "ASSIETTES ARRÊTÉES PAR LE CDCT §10.10 (LECTURE SEULE) CNSS : part patronale 16.4 %, part ouvrière 3.6 %. VPS : 4 % du salaire brut. ITS : barème progressif par tranches. AIB : acompte assis sur les bénéfices. Ces taux ne se modifient pas ici : ils sont arrêtés par le cahier des charges ; les rendre datés est un chantier nommé.",
+    "L’impôt se paie par anticipation : l’impôt de l’exercice précédent est divisé en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable : un impôt de 2 000 000 FCFA en 2025 donne quatre acomptes de 500 000 FCFA en 2026.",
+    "LE 30 AVRIL DE L’ANNÉE SUIVANTE Deux opérations, dans cet ordre : la liquidation du solde ajuste ce qui a été versé en acomptes (la clinique complète si l’impôt réel dépasse les acomptes, l’État rembourse dans le cas inverse), puis intervient le dépôt des états financiers de l’exercice clos.",
+    "Patente Une fois par an, avec possibilité de régler en deux tranches. 31 janvier Patente — déclaration prévisionnelle 10 février Patente — 1er acompte (50 %) 30 avril Patente — solde (50 %)",
+    "CCIB 300 000 FCFA par an, en deux tranches égales de 150 000 FCFA (montant à confirmer par le cabinet comptable). 28 février CCIB — déclaration prévisionnelle 10 mars CCIB — 1re tranche (50 %) 10 juin CCIB — 2e tranche (50 %)",
+    "TVM Taxe sur véhicules à moteur. Une fois par an, en une seule fois. 30 avril Taxe sur véhicules à moteur (100 %)",
+    "Deux redevances distinctes, qui se cumulent, et non deux tranches exclusives d’un même barème. La radio est due par tous les salariés sans exception ; la télé s’y ajoute au-delà de 60 000 de salaire brut. Un agent au-dessus du seuil acquitte donc 4 000 sur l’exercice, et non 3 000 seulement.",
+    "CE QUE SUPPORTE UN AGENT Salaire brut jusqu’à 60 000 : 1 000 au titre de la radio, en mars. Salaire brut supérieur à 60 000 : 1 000 en mars pour la radio, puis 3 000 en juin pour la télé, soit 4 000 sur l’année.",
+    "Le prélèvement est annuel, non mensuel : chaque redevance n’apparaît que sur le bulletin de son mois. Les porter chaque mois majorerait les retenues de onze douzièmes. Les deux parts restent distinguées jusqu’au bulletin et à l’état des cotisations. Paramètres d’origine (précision de la Direction du 20/08/2026)."
    ],
    "boutons": [
+    "Nouvelle obligation",
+    "Valider les obligations",
+    "Suivi des échéances",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier (version datée)",
+    "Retirer (version datée)",
+    "Modifier les paramètres ORTB",
     "Suivi nominatif"
    ]
   },
   "cartesTexte": [
-   "Obligations mensuelles — le 10 du mois suivant ITS, AIB, VPS et CNSS se paient le 10 de chaque mois, pour le mois d’exercice précédent. Une déclaration précède le paiement. Si le 10 tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi. CODE OBLIGATION ÉCHÉANCE DÉCLARATION PRÉALABLE ITS Impôt sur les traitements salariaux le 10 du mois suivant Déclaration mensuelle avant paiement AIB Acompte sur impôt assis sur les bénéfices le 10 du mois suivant Déclaration mensuelle avant paiement VPS Versement patronal sur salaires le 10 du mois suivant Déclaration mensuelle avant paiement CNSS Cotisations sociales CNSS le 10 du mois suivant Déclaration mensuelle avant paiement ASSIETTES CNSS — part patronale 16.4 %, part ouvrière 3.6 %. VPS — 4 % du salaire brut. ITS — barème progressif par tranches. AIB — acompte assis sur les bénéfices.",
-   "Impôt sur les sociétés — quatre acomptes et une liquidation L’impôt se paie par anticipation : l’impôt de l’exercice précédent est divisé en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable — un impôt de 2 000 000 FCFA en 2025 donne quatre acomptes de 500 000 FCFA en 2026. ACOMPTE ÉCHÉANCE PART Impôt sur les sociétés — 1er acompte le 10 mars 25 % de l’impôt de l’exercice précédent Impôt sur les sociétés — 2e acompte le 10 juin 25 % de l’impôt de l’exercice précédent Impôt sur les sociétés — 3e acompte le 10 septembre 25 % de l’impôt de l’exercice précédent Impôt sur les sociétés — 4e acompte le 10 décembre 25 % de l’impôt de l’exercice précédent LE 30 AVRIL DE L’ANNÉE SUIVANTE Deux opérations, dans cet ordre : la liquidation du solde ajuste ce qui a été versé en acomptes — la clinique complète si l’impôt réel dépasse les acomptes, l’État rembourse dans le cas inverse — puis intervient le dépôt des états financiers de l’exercice clos.",
-   "Patente, CCIB et TVM — une fois par an Patente Une fois par an, avec possibilité de régler en deux tranches. 31 janvier Date limite de la déclaration prévisionnelle 10 février 1er acompte — 50 % 30 avril Solde — 50 % CCIB 300 000 FCFA par an, en deux tranches égales de 150 000 FCFA. Fin de mois Déclaration prévisionnelle, avant le 1er acompte 10 mars 1re tranche — 50 % 10 juin 2e tranche — 50 % TVM Taxe sur véhicules à moteur. Une fois par an, en une seule fois. 30 avril Paiement, au plus tard",
-   "Redevances ORTB — prélevées sur les salaires Suivi nominatif Deux redevances distinctes, qui se cumulent — et non deux tranches exclusives d’un même barème. La radio est due par tous les salariés sans exception ; la télé s’y ajoute au-delà de 60 000 de salaire brut. Un agent au-dessus du seuil acquitte donc 4 000 sur l’exercice, et non 3 000 seulement. REDEVANCE CATÉGORIE ASSIETTE MONTANT MOIS DE PRÉLÈVEMENT Redevance ORTB / Radio Radio Tous les salariés, sans exception 1 000 mars Redevance ORTB / Télé Télé Salaire brut supérieur à 60 000 FCFA 3 000 juin CE QUE SUPPORTE UN AGENT Salaire brut jusqu’à 60 000 — 1 000 au titre de la radio, en mars. Salaire brut supérieur à 60 000 — 1 000 en mars pour la radio, puis 3 000 en juin pour la télé, soit 4 000 sur l’année. Le prélèvement est annuel, non mensuel : chaque redevance n’apparaît que sur le bulletin de son mois. Les porter chaque mois majorerait les retenues de onze douzièmes. Les deux parts restent distinguées jusqu’au bulletin et à l’état des cotisations.",
-   "Principes de tenue Report d’échéance Une échéance tombant un samedi ou un dimanche est reportée au jour ouvrable suivant. Déclaration préalable Six obligations exigent une déclaration avant paiement — elle est signalée à l’échéance. Équilibre des écritures RG-10 — aucune écriture ne se valide si le débit ne balance pas le crédit. Continuité de l’exercice Le logiciel ne se clôture pas en fin d’année : verrouiller une période empêche d’y saisir, pas d’y lire. Valorisation des sorties Paramétrable — prix de vente par défaut, conformément à l’annotation du 30/12/2024. Journalisation RG-12 — chaque paiement validé porte son auteur, sa date et son montant."
+   "Obligations mensuelles : le 10 du mois suivant ITS, AIB, VPS, CNSS se paient chaque mois, pour le mois d’exercice précédent, au jour porté par chaque obligation. Une déclaration précède le paiement. Si le jour tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi. CODE OBLIGATION ÉCHÉANCE DÉCLARATION PRÉALABLE VERSION ITS Impôt sur les traitements salariaux le 10 du mois suivant Déclaration mensuelle avant paiement d’origine AIB Acompte sur impôt assis sur les bénéfices le 10 du mois suivant Déclaration mensuelle avant paiement d’origine VPS Versement patronal sur salaires le 10 du mois suivant Déclaration mensuelle avant paiement d’origine CNSS Cotisations sociales CNSS le 10 du mois suivant Déclaration mensuelle avant paiement d’origine ASSIETTES ARRÊTÉES PAR LE CDCT §10.10 (LECTURE SEULE) CNSS : part patronale 16.4 %, part ouvrière 3.6 %. VPS : 4 % du salaire brut. ITS : barème progressif par tranches. AIB : acompte assis sur les bénéfices. Ces taux ne se modifient pas ici : ils sont arrêtés par le cahier des charges ; les rendre datés est un chantier nommé.",
+   "Impôt sur les sociétés : quatre acomptes et une liquidation L’impôt se paie par anticipation : l’impôt de l’exercice précédent est divisé en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable : un impôt de 2 000 000 FCFA en 2025 donne quatre acomptes de 500 000 FCFA en 2026. ACOMPTE ÉCHÉANCE PART Impôt sur les sociétés — 1er acompte le 10 mars 25 % de l’impôt de l’exercice précédent Impôt sur les sociétés — 2e acompte le 10 juin 25 % de l’impôt de l’exercice précédent Impôt sur les sociétés — 3e acompte le 10 septembre 25 % de l’impôt de l’exercice précédent Impôt sur les sociétés — 4e acompte le 10 décembre 25 % de l’impôt de l’exercice précédent LE 30 AVRIL DE L’ANNÉE SUIVANTE Deux opérations, dans cet ordre : la liquidation du solde ajuste ce qui a été versé en acomptes (la clinique complète si l’impôt réel dépasse les acomptes, l’État rembourse dans le cas inverse), puis intervient le dépôt des états financiers de l’exercice clos. CODE OBLIGATION ÉCHÉANCE IS-SOLDE Liquidation du solde de l’impôt sur les sociétés le 30 avril ETATS-FIN Dépôt des états financiers le 30 avril",
+   "Patente, CCIB et TVM : une fois par an Patente Une fois par an, avec possibilité de régler en deux tranches. 31 janvier Patente — déclaration prévisionnelle 10 février Patente — 1er acompte (50 %) 30 avril Patente — solde (50 %) CCIB 300 000 FCFA par an, en deux tranches égales de 150 000 FCFA (montant à confirmer par le cabinet comptable). 28 février CCIB — déclaration prévisionnelle 10 mars CCIB — 1re tranche (50 %) 10 juin CCIB — 2e tranche (50 %) TVM Taxe sur véhicules à moteur. Une fois par an, en une seule fois. 30 avril Taxe sur véhicules à moteur (100 %)",
+   "Redevances ORTB : prélevées sur les salaires Modifier les paramètres ORTB Suivi nominatif Deux redevances distinctes, qui se cumulent, et non deux tranches exclusives d’un même barème. La radio est due par tous les salariés sans exception ; la télé s’y ajoute au-delà de 60 000 de salaire brut. Un agent au-dessus du seuil acquitte donc 4 000 sur l’exercice, et non 3 000 seulement. REDEVANCE CATÉGORIE ASSIETTE MONTANT MOIS DE PRÉLÈVEMENT Redevance ORTB / Radio Radio Tous les salariés, sans exception 1 000 mars Redevance ORTB / Télé Télé Salaire brut supérieur à 60 000 FCFA 3 000 juin CE QUE SUPPORTE UN AGENT Salaire brut jusqu’à 60 000 : 1 000 au titre de la radio, en mars. Salaire brut supérieur à 60 000 : 1 000 en mars pour la radio, puis 3 000 en juin pour la télé, soit 4 000 sur l’année. Le prélèvement est annuel, non mensuel : chaque redevance n’apparaît que sur le bulletin de son mois. Les porter chaque mois majorerait les retenues de onze douzièmes. Les deux parts restent distinguées jusqu’au bulletin et à l’état des cotisations. Paramètres d’origine (précision de la Direction du 20/08/2026).",
+   "Versions antérieures des obligations et des paramètres ORTB Aucune version antérieure : les obligations sont celles du calendrier confirmé le 25/08/2026.",
+   "Principes de tenue Report d’échéance Une échéance tombant un samedi ou un dimanche est reportée au jour ouvrable suivant. Déclaration préalable 6 obligations exigent une déclaration avant paiement : elle est signalée à l’échéance. Versions datées Une obligation modifiée ou retirée garde sa version antérieure à l’historique ; les échéances payées ne bougent jamais. Équilibre des écritures RG-10 : aucune écriture ne se valide si le débit ne balance pas le crédit. Continuité de l’exercice Le logiciel ne se clôture pas en fin d’année : verrouiller une période empêche d’y saisir, pas d’y lire. Valorisation des sorties Paramétrable, prix de vente par défaut, conformément à l’annotation du 30/12/2024. Journalisation RG-12 : chaque paiement validé, chaque version et chaque validation porte son auteur et sa date."
   ],
   "go": [
    [
@@ -6702,7 +7090,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "311",
+     "valeur": "313",
      "indice": null
     },
     {
@@ -6717,7 +7105,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "309",
+     "valeur": "311",
      "indice": null
     }
    ],
@@ -6981,7 +7369,7 @@
     "boutons": []
    }
   ],
-  "tousEcrans": 311,
+  "tousEcrans": 313,
   "modulesListe": [
    [
     "M2",
@@ -7107,7 +7495,7 @@
     "Configuration Clinique",
     "sliders-horizontal",
     "Système",
-    19
+    21
    ],
    [
     "IMP",
@@ -7148,7 +7536,7 @@
   "fermerM7Confirmation": "Fermer « Module — Achats & Fournisseurs » ? Le module M7 entier disparaîtra du méga-menu, de la recherche globale et de ses adresses, pour tous les rôles, administrateur compris. Aucune donnée n’est supprimée : la réouverture rend les écrans en l’état. Motif (consigné dans le journal d’audit) Annuler Fermer l’activité",
   "fermerM7": {
    "fiche": {
-    "id": "MODxmvuswn40fckmu",
+    "id": "MODxmvuswn40o9tr6",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7183,7 +7571,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "311",
+     "valeur": "313",
      "indice": null
     },
     {
@@ -7198,7 +7586,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "300",
+     "valeur": "302",
      "indice": null
     }
    ],
@@ -7408,7 +7796,7 @@
   "rouvrirM7Confirmation": "Rouvrir « Module — Achats & Fournisseurs » ? Le module M7 réapparaîtra au méga-menu, avec leurs données inchangées. Annuler Rouvrir l’activité",
   "rouvrirM7": {
    "fiche": {
-    "id": "MODxmvuswn40fckmu",
+    "id": "MODxmvuswn40o9tr6",
     "statut": "actif",
     "code": "MODULE-M7",
     "module": "M7",
@@ -7440,7 +7828,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "311",
+     "valeur": "313",
      "indice": null
     },
     {
@@ -7455,7 +7843,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "309",
+     "valeur": "311",
      "indice": null
     }
    ],
@@ -7576,11 +7964,11 @@
      "DASH — Tableaux de bord par poste"
     ]
    ],
-   "nbEcrans": 311
+   "nbEcrans": 313
   },
   "declarerCfg": {
    "fiche": {
-    "id": "MODxmvuswn40hw29n",
+    "id": "MODxmvuswn40hdiou",
     "statut": "actif",
     "libelle": "Activité noyau test",
     "module": "CFG",
@@ -7611,7 +7999,7 @@
   },
   "declarerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn40278ku",
+    "id": "MODxmvuswn40rl76l",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
@@ -7636,7 +8024,7 @@
   },
   "fermerEcrans": {
    "fiche": {
-    "id": "MODxmvuswn40278ku",
+    "id": "MODxmvuswn40rl76l",
     "statut": "actif",
     "libelle": "Écrans de test",
     "module": "M6",
@@ -7659,7 +8047,7 @@
    "kpis": [
     {
      "libelle": "Écrans au périmètre",
-     "valeur": "311",
+     "valeur": "313",
      "indice": null
     },
     {
@@ -7674,7 +8062,7 @@
     },
     {
      "libelle": "Écrans ouverts",
-     "valeur": "307",
+     "valeur": "309",
      "indice": null
     }
    ],
@@ -7731,7 +8119,8 @@
    "Installation et données",
    "Corbeille2",
    "Barème NS 131",
-   "Jeux de test"
+   "Jeux de test",
+   "Relais en ligne"
   ],
   "regleCartes": [
    "Contenu du jeu de données Colonnes Exporter COLLECTION ENREGISTREMENTS ACTIFS ARCHIVÉS planning 1394 1394 — presences 1100 1100 — mouvements 678 678 — ecritures 502 502 — taches 451 451 — factures 409 409 — audit 400 400 — participations 387 387 — demandesAnalyses 358 358 — soins 354 354 — lots 346 346 — consultations 282 282 — variablesImagerie 280 280 — releves 270 270 — documents 220 220 — patients 210 210 — depenses 190 190 — produits 184 184 — variablesLabo 163 163 — prescriptions 158 158 — resultatsImagerie 156 156 — catalogueTarifs 147 147 — ordonnances 132 132 — administrations 125 125 — comptes 112 112 — notifications 100 100 — documentsPatient 99 99 — admissions 91 91 — constantes 91 91 — pieces 90 90 — Affichage de 1 à 30 sur 147 enregistrements 1 2 3 4 5",
@@ -7965,6 +8354,7 @@
     "Corbeille2",
     "Barème NS 131",
     "Jeux de test",
+    "Relais en ligne",
     "Colonnes",
     "Exporter",
     "Tout désélectionner",
@@ -8972,13 +9362,14 @@
   },
   "bareme": {
    "avant": {
-    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Le barème d’évaluation NS 131/07/DM/DA/CNT/2026 fixe les retenues appliquées au salaire brut. Sa modification est fermée par défaut. L’ouvrir ici rend le barème modifiable à l’écran « Évaluations » — et l’ouverture est journalisée. Chaque modification demandera ensuite sa portée : évaluations à venir seulement, ou évaluations déjà prononcées comprises. Modification du barème État Fermée Référence NS 131/07/DM/DA/CNT/2026 En vigueur depuis 13/07/2026 Critères au barème 4 Versions antérieures 0 Autoriser la modification",
+    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Relais en ligne Le barème d’évaluation NS 131/07/DM/DA/CNT/2026 fixe les retenues appliquées au salaire brut. Sa modification est fermée par défaut. L’ouvrir ici rend le barème modifiable à l’écran « Évaluations » — et l’ouverture est journalisée. Chaque modification demandera ensuite sa portée : évaluations à venir seulement, ou évaluations déjà prononcées comprises. Modification du barème État Fermée Référence NS 131/07/DM/DA/CNT/2026 En vigueur depuis 13/07/2026 Critères au barème 4 Versions antérieures 0 Autoriser la modification",
     "ouverte": false,
     "boutons": [
      "Installation et données",
      "Corbeille2",
      "Barème NS 131",
      "Jeux de test",
+     "Relais en ligne",
      "Autoriser la modification"
     ]
    },
@@ -9002,12 +9393,13 @@
      "poste": "POSTE-LOCAL",
      "succes": true
     },
-    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Le barème d’évaluation NS 131/07/DM/DA/CNT/2026 fixe les retenues appliquées au salaire brut. Sa modification est fermée par défaut. L’ouvrir ici rend le barème modifiable à l’écran « Évaluations » — et l’ouverture est journalisée. Chaque modification demandera ensuite sa portée : évaluations à venir seulement, ou évaluations déjà prononcées comprises. Modification du barème État Ouverte Référence NS 131/07/DM/DA/CNT/2026 En vigueur depuis 13/07/2026 Critères au barème 4 Versions antérieures 0 Refermer la modification",
+    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Relais en ligne Le barème d’évaluation NS 131/07/DM/DA/CNT/2026 fixe les retenues appliquées au salaire brut. Sa modification est fermée par défaut. L’ouvrir ici rend le barème modifiable à l’écran « Évaluations » — et l’ouverture est journalisée. Chaque modification demandera ensuite sa portée : évaluations à venir seulement, ou évaluations déjà prononcées comprises. Modification du barème État Ouverte Référence NS 131/07/DM/DA/CNT/2026 En vigueur depuis 13/07/2026 Critères au barème 4 Versions antérieures 0 Refermer la modification",
     "boutons": [
      "Installation et données",
      "Corbeille2",
      "Barème NS 131",
      "Jeux de test",
+     "Relais en ligne",
      "Refermer la modification"
     ]
    },
@@ -9030,7 +9422,7 @@
      "poste": "POSTE-LOCAL",
      "succes": true
     },
-    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Le barème d’évaluation NS 131/07/DM/DA/CNT/2026 fixe les retenues appliquées au salaire brut. Sa modification est fermée par défaut. L’ouvrir ici rend le barème modifiable à l’écran « Évaluations » — et l’ouverture est journalisée. Chaque modification demandera ensuite sa portée : évaluations à venir seulement, ou évaluations déjà prononcées comprises. Modification du barème État Fermée Référence NS 131/07/DM/DA/CNT/2026 En vigueur depuis 13/07/2026 Critères au barème 4 Versions antérieures 0 Autoriser la modification"
+    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Relais en ligne Le barème d’évaluation NS 131/07/DM/DA/CNT/2026 fixe les retenues appliquées au salaire brut. Sa modification est fermée par défaut. L’ouvrir ici rend le barème modifiable à l’écran « Évaluations » — et l’ouverture est journalisée. Chaque modification demandera ensuite sa portée : évaluations à venir seulement, ou évaluations déjà prononcées comprises. Modification du barème État Fermée Référence NS 131/07/DM/DA/CNT/2026 En vigueur depuis 13/07/2026 Critères au barème 4 Versions antérieures 0 Autoriser la modification"
    }
   },
   "reinit": {
@@ -9066,9 +9458,10 @@
      "Installation et données",
      "Corbeille2",
      "Barème NS 131",
-     "Jeux de test"
+     "Jeux de test",
+     "Relais en ligne"
     ],
-    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Réinitialisation Verrouillée Aucun effacement possible Tables d’activité 104 9 523 enregistrements Tables de paramétrage préservées 43 Tarifs, secteurs, conventions, comptes Autorisation Autoriser la réinitialisation des jeux de test sur ce poste À laisser fermé sur un poste en service. Le déverrouillage et le verrouillage sont journalisés. Ce qui serait effacé, ce qui serait conservé EFFACÉ — DONNÉES D’ACTIVITÉ patients (210) lots (346) consultations (282) admissions (91) soins (354) releves (270) factures (409) mouvements (678) ecritures (502) planning (1394) ordonnances (132) avoirs (0) pvReceptions (6) taches (451) depenses (190) pieces (90) prescriptions (158) administrations (125) crOperatoires (26) checklistsBloc (52) echeancesFiscales (63) crMaternite (65) resultatsImagerie (156) fichesReference (30) CONSERVÉ — PARAMÉTRAGE ET RÉFÉRENTIELS actes (73) analyses (48) produits (184) assureurs (13) fournisseurs (6) comptes (112) banques (4) naturesFacture (14) centresCouts (9) secteurs (14) postes (16) personnel (44) soignants (15) ressources (0) souscripteurs (9) garanties (0) certificats (0) typesPiece (14) catalogueTarifs (147) objectifsPilotage (8) valorisationsSage (34) ambulances (5) materiel (18) utilisateurs (48) rbac (22) modulesActifs (2) regimesTravail (8) grillePrimes (11) historiquePrimes (0) baremeNS131 (4) historiqueBareme (0) examensLabo (70) unitesLabo (23) variablesLabo (163) plagesReactif (0) examensImagerie (24) variablesImagerie (280) pathologies (55) modelesBadge (1) modelesMessage (6) enquetes (1) emplacements (24) audit (400) L’administrateur, les réglages et les référentiels administrés par la clinique ne sont jamais effacés. La réinitialisation ne retire que les données engendrées pour la démonstration — patients, consultations, factures, mouvements. Réinitialisation Réinitialisation verrouillée — activer l’autorisation ci-dessus pour la rendre possible."
+    "texte": "Installation et données Corbeille2 Barème NS 131 Jeux de test Relais en ligne Réinitialisation Verrouillée Aucun effacement possible Tables d’activité 104 9 523 enregistrements Tables de paramétrage préservées 43 Tarifs, secteurs, conventions, comptes Autorisation Autoriser la réinitialisation des jeux de test sur ce poste À laisser fermé sur un poste en service. Le déverrouillage et le verrouillage sont journalisés. Ce qui serait effacé, ce qui serait conservé EFFACÉ — DONNÉES D’ACTIVITÉ patients (210) lots (346) consultations (282) admissions (91) soins (354) releves (270) factures (409) mouvements (678) ecritures (502) planning (1394) ordonnances (132) avoirs (0) pvReceptions (6) taches (451) depenses (190) pieces (90) prescriptions (158) administrations (125) crOperatoires (26) checklistsBloc (52) echeancesFiscales (63) crMaternite (65) resultatsImagerie (156) fichesReference (30) CONSERVÉ — PARAMÉTRAGE ET RÉFÉRENTIELS actes (73) analyses (48) produits (184) assureurs (13) fournisseurs (6) comptes (112) banques (4) naturesFacture (14) centresCouts (9) secteurs (14) postes (16) personnel (44) soignants (15) ressources (0) souscripteurs (9) garanties (0) certificats (0) typesPiece (14) catalogueTarifs (147) objectifsPilotage (8) valorisationsSage (34) ambulances (5) materiel (18) utilisateurs (48) rbac (22) modulesActifs (2) regimesTravail (8) grillePrimes (11) historiquePrimes (0) baremeNS131 (4) historiqueBareme (0) examensLabo (70) unitesLabo (23) variablesLabo (163) plagesReactif (0) examensImagerie (24) variablesImagerie (280) pathologies (55) modelesBadge (1) modelesMessage (6) enquetes (1) emplacements (24) audit (400) L’administrateur, les réglages et les référentiels administrés par la clinique ne sont jamais effacés. La réinitialisation ne retire que les données engendrées pour la démonstration — patients, consultations, factures, mouvements. Réinitialisation Réinitialisation verrouillée — activer l’autorisation ci-dessus pour la rendre possible."
    },
    "autoriserConfirmation": "Autoriser la réinitialisation des jeux de test ? Une fois autorisée, la réinitialisation devient possible depuis ce poste. Sur un poste en production, la laisser fermée est la seule position raisonnable : elle protège les données réelles de l’établissement. Annuler Autoriser",
    "autorisee": {
@@ -9095,6 +9488,7 @@
      "Corbeille2",
      "Barème NS 131",
      "Jeux de test",
+     "Relais en ligne",
      "Vider les jeux de test",
      "Régénérer le jeu de démonstration complet"
     ],

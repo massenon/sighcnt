@@ -61,6 +61,24 @@ void main() {
     });
   }
 
+  test('le ticket imprime l’identité qu’on lui passe (la version en force à la date de la pièce) ; sans rien, la semence', () {
+    final e = EntreeTicket(operateur: 'CAISSE', numero: 'FN-2026-00001', date: DateTime(2026, 8, 16, 9), total: 1000, partPatient: 1000);
+    final semence = lignesTicket(e).map((l) => l.brut).toList();
+    expect(semence.first, IdentiteClinique.nomCourt);
+    expect(semence, contains('RCCM ${IdentiteClinique.rccm}'));
+    expect(IdentiteImprimee.semence.nomCourt, IdentiteClinique.nomCourt);
+    expect(IdentiteImprimee.semence.mentionLegale, IdentiteClinique.mentionLegale);
+    expect(IdentiteImprimee.semence.fiche.keys.toList(), champsIdentiteLegale);
+    final v2 = IdentiteImprimee.depuisFiche({'nom': 'CLINIQUE TEST SA', 'rccm': 'RB/NAT/2027-B-1', 'telephones': '01 00 00 00 00 / 01 11 11 11 11', 'version': 2, 'debut': '2027-01-01'});
+    final datee = lignesTicket(e, identite: v2).map((l) => l.brut).toList();
+    expect(datee.first, 'CLINIQUE TEST');
+    expect(datee, contains('RCCM RB/NAT/2027-B-1'));
+    expect(datee, contains('TÉL. 01 00 00 00 00 / 01 11 11 11 11'));
+    expect(datee, contains('IFU ${IdentiteClinique.ifu}'), reason: 'un champ absent de la version retombe sur la semence');
+    expect(v2.version, 2);
+    expect(semence.length, datee.length);
+  });
+
   test(
       'le total d’un état est REFAIT depuis les lignes imprimées, jamais fourni',
       () {

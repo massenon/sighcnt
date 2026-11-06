@@ -15,6 +15,27 @@ const jeuDir = '../../apps/poste/assets/donnees/jeu';
 List<M> jeu(String nom) => liste(jsonDecode(File('$jeuDir/$nom.json').readAsStringSync()));
 List<M> actives(String nom) => [for (final f in jeu(nom)) if (f['statut'] != 'archive') f];
 
+/// Les rangées du manifeste de navigation, depuis `packages/referentiels/data/manifeste.json` (ENGENDRÉ par `prototype_html/build/extraire.js`),
+/// sur la forme des fiches `modulesManifeste` du poste : `ecrans` = [[id, libellé de la rangée], …].
+List<M> rangeesManifeste() {
+  final m = obj(jsonDecode(File('../../packages/referentiels/data/manifeste.json').readAsStringSync()));
+  final libelles = {for (final e in liste(m['ecrans'])) '${e['id']}': '${e['label']}'};
+  return [
+    for (final r in liste(m['modules']))
+      {
+        'code': r['code'],
+        'label': r['label'],
+        'domaine': r['domaine'],
+        'icone': r['icone'],
+        'alias': r['alias'] == true,
+        'secondaire': r['secondaire'] == true,
+        'ecrans': [
+          for (final id in (r['ecrans'] as List)) [id, (r['libellesEcrans'] is Map ? (r['libellesEcrans'] as Map)[id] : null) ?? libelles['$id'] ?? id]
+        ],
+      }
+  ];
+}
+
 /// Les espaces (ordinaires, fines, insécables) ne comptent pas dans une comparaison de libellés.
 String s(Object? v) => '$v'.replaceAll(RegExp(r'[\s  ]'), '');
 
@@ -176,9 +197,11 @@ void main() {
         } else {
           expect(attNote.single, note);
         }
-        // le tableau : trié par délai (stable), 6 colonnes
+        // le tableau du calendrier : trié par délai (stable), 6 colonnes. Il se cherche par ses EN-TÊTES, jamais par son rang : depuis le 06/11/2026
+        // l'écran porte avant lui le tableau des versions de l'identité légale.
         final tri = trierPar(l, (e) => e.jours);
-        final att = (liste(j['tableaux'])[2]['lignes'] as List).cast<List>();
+        final calendrier = liste(j['tableaux']).where((t) => (t['entetes'] as List).contains('PROCHAINE ÉCHÉANCE')).single;
+        final att = (calendrier['lignes'] as List).cast<List>();
         expect(tri.length, att.length);
         for (var i = 0; i < att.length; i++) {
           expect(tri[i].code, att[i][0], reason: 'rang $i');
@@ -270,7 +293,10 @@ void main() {
 
   group('cfg-modules', () {
     final md = obj(v['modules']);
-    final rangees = jeu('modulesManifeste');
+    // Les rangées du manifeste se lisent à la SOURCE UNIQUE engendrée (`packages/referentiels/data/manifeste.json`, le même geste que le ruban),
+    // sur la forme que le jeu du poste leur donne ([[id, libellé], …]) : la copie `modulesManifeste.json` du jeu peut être en retard d'une
+    // régénération (elle le fut : cfg-pair et cfg-smtp), et un test qui la lisait mesurait ce retard, pas la règle.
+    final rangees = rangeesManifeste();
     final fiches = jeu('modulesActifs');
     test('écrans au périmètre et modules du logiciel = ceux du manifeste de la maquette', () {
       expect(cfbTousEcrans(rangees).length, md['tousEcrans']);

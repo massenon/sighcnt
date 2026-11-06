@@ -91,16 +91,18 @@ const _sep = '--------------------------------';
 bool _vrai(num? v) => v != null && v != 0;
 
 /// Suite des lignes du rouleau de caisse, dans l'ordre exact de `P.ticket` (print.js) — vérifiée contre les vecteurs de la maquette.
-List<LigneTicket> lignesTicket(EntreeTicket o) {
+/// [identite] est l'identité EN FORCE À LA DATE DE LA PIÈCE (`cfbIdentiteALaDate` sur la collection `identiteLegale`, relue par
+/// [IdentiteImprimee.depuisFiche]) ; sans magasin, la semence. Le ticket ne lit aucune constante lui-même.
+List<LigneTicket> lignesTicket(EntreeTicket o, {IdentiteImprimee identite = IdentiteImprimee.semence}) {
   const sep = LigneTicket.texte(_sep, style: StyleLigne.separateur);
   final l = <LigneTicket>[
-    const LigneTicket.texte(IdentiteClinique.nomCourt, style: StyleLigne.titre),
-    const LigneTicket.texte(IdentiteClinique.bp, style: StyleLigne.centre),
-    LigneTicket.texte('TÉL. ${IdentiteClinique.telephones.join(' / ')}',
+    LigneTicket.texte(identite.nomCourt, style: StyleLigne.titre),
+    LigneTicket.texte(identite.bp, style: StyleLigne.centre),
+    LigneTicket.texte('TÉL. ${identite.telephones.join(' / ')}',
         style: StyleLigne.centre),
-    const LigneTicket.texte('IFU ${IdentiteClinique.ifu}',
+    LigneTicket.texte('IFU ${identite.ifu}',
         style: StyleLigne.centre),
-    const LigneTicket.texte('RCCM ${IdentiteClinique.rccm}',
+    LigneTicket.texte('RCCM ${identite.rccm}',
         style: StyleLigne.centre),
     sep,
   ];
@@ -163,11 +165,11 @@ List<LigneTicket> lignesTicket(EntreeTicket o) {
     l.add(
         LigneTicket.paire('BASE MECeF', money(o.baseMecef, avecDevise: false)));
   l.add(sep);
-  l.add(const LigneTicket.texte('${IdentiteClinique.formuleArrete} :'));
+  l.add(LigneTicket.texte('${identite.formuleArrete} :'));
   l.add(LigneTicket.texte(montantEnLettres(o.partPatient),
       style: StyleLigne.lettres));
   l.add(sep);
-  l.add(const LigneTicket.texte(IdentiteClinique.formulePolitesse,
+  l.add(LigneTicket.texte(identite.formulePolitesse,
       style: StyleLigne.centreGras));
   return l;
 }

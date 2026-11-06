@@ -1,7 +1,7 @@
 import '../format/format_fr.dart';
 import '../format/js.dart';
 import '../format/recherche.dart' show trierPar;
-import '../paie/pai_moteur.dart' show paiRedevances, paiSeuilTele, paiCnssOuvriere, paiCnssPatronale, paiVpsTaux;
+import '../paie/pai_moteur.dart' show PaiParametresOrtb, paiCnssOuvriere, paiCnssPatronale, paiVpsTaux;
 import 'cfa_regles.dart' show CfaKpi, CfaFiche, cfaVrai, cfaTexte;
 import 'cfb_donnees.dart';
 
@@ -165,8 +165,9 @@ CfbEcheance cfbProchaineEcheance(CfbObligation e, DateTime auj) {
   return CfbEcheance(e, ouvrable, arrondiJs(ouvrable.difference(auj).inMilliseconds / 86400000).toInt(), reporte);
 }
 
-/// Les échéances du calendrier à une date, dans l'ordre du calendrier (le tableau les trie par délai).
-List<CfbEcheance> cfbEcheances(DateTime auj) => [for (final e in cfbCalendrierFiscal) cfbProchaineEcheance(e, auj)];
+/// Les échéances du calendrier à une date, dans l'ordre du calendrier (le tableau les trie par délai). [obligations] : les obligations EN VIGUEUR
+/// lues au magasin (`cfbObligationsALaDate` puis `cfbObligationDepuisFiche`) ; par défaut la semence `D.CALENDRIER_FISCAL`.
+List<CfbEcheance> cfbEcheances(DateTime auj, {Iterable<CfbObligation> obligations = cfbCalendrierFiscal}) => [for (final e in obligations) cfbProchaineEcheance(e, auj)];
 
 /// Celles qui tombent dans les trente jours.
 List<CfbEcheance> cfbEcheancesProches(List<CfbEcheance> l) => [for (final e in l) if (e.jours >= 0 && e.jours <= 30) e];
@@ -196,38 +197,47 @@ String cfbLibelleDelai(int jours) => jours < 0 ? 'passée' : '$jours j';
 // cfg-comptabilite
 // =============================================================================================================================================
 
-List<CfaKpi> cfbKpisComptabilite() => [
-      CfaKpi('Obligations suivies', nombre(cfbCalendrierFiscal.length), 'book-open-check', 'navy'),
-      CfaKpi('Mensuelles', nombre(cfbCalendrierFiscal.where((e) => e.periodicite == 'mensuelle').length), 'calendar-days', 'info', 'ITS, AIB, VPS, CNSS'),
-      CfaKpi('Annuelles', nombre(cfbCalendrierFiscal.where((e) => e.periodicite == 'annuelle').length), 'calendar-range', 'neutral', 'IS, patente, CCIB, TVM, ORTB'),
-      CfaKpi('Réglées en tranches', nombre(cfbCalendrierFiscal.where((e) => e.part != null && e.part! < 100).length), 'divide', 'warning'),
-    ];
+/// Les quatre indicateurs de `cfg-comptabilite`, sur les obligations EN VIGUEUR (06/11/2026 : « Obligations en vigueur », lues au magasin ;
+/// par défaut la semence).
+List<CfaKpi> cfbKpisComptabilite({Iterable<CfbObligation> obligations = cfbCalendrierFiscal}) {
+  final l = obligations.toList();
+  return [
+    CfaKpi('Obligations en vigueur', nombre(l.length), 'book-open-check', 'navy'),
+    CfaKpi('Mensuelles', nombre(l.where((e) => e.periodicite == 'mensuelle').length), 'calendar-days', 'info', 'ITS, AIB, VPS, CNSS'),
+    CfaKpi('Annuelles', nombre(l.where((e) => e.periodicite == 'annuelle').length), 'calendar-range', 'neutral', 'IS, patente, CCIB, TVM, ORTB'),
+    CfaKpi('Réglées en tranches', nombre(l.where((e) => e.part != null && e.part! < 100).length), 'divide', 'warning'),
+  ];
+}
 
-/// « CNSS — part patronale 16.4 %, part ouvrière 3.6 %. VPS — 4 % … » : les taux s'écrivent comme JavaScript les écrit (16.4, 4).
-String cfbTexteAssiettes() => 'CNSS — part patronale ${cfaTexte(paiCnssPatronale)} %, part ouvrière ${cfaTexte(paiCnssOuvriere)} %. '
-    'VPS — ${cfaTexte(paiVpsTaux)} % du salaire brut. ITS — barème progressif par tranches. AIB — acompte assis sur les bénéfices.';
+/// « CNSS : part patronale 16.4 %, part ouvrière 3.6 %. VPS : 4 % … » : les taux s'écrivent comme JavaScript les écrit (16.4, 4). Ces assiettes
+/// restent arrêtées par le CDCT §10.10 (lecture seule) ; les rendre datées est un chantier nommé.
+String cfbTexteAssiettes() => 'CNSS : part patronale ${cfaTexte(paiCnssPatronale)} %, part ouvrière ${cfaTexte(paiCnssOuvriere)} %. '
+    'VPS : ${cfaTexte(paiVpsTaux)} % du salaire brut. ITS : barème progressif par tranches. AIB : acompte assis sur les bénéfices.';
 
-/// Les acomptes de l'impôt sur les sociétés (IS-1 … IS-4) du calendrier.
-List<CfbObligation> cfbAcomptesIs() => [for (final e in cfbCalendrierFiscal) if (RegExp(r'^IS-\d$').hasMatch(e.code)) e];
+/// Les acomptes de l'impôt sur les sociétés (IS-1 … IS-4) des obligations en vigueur (par défaut la semence).
+List<CfbObligation> cfbAcomptesIs({Iterable<CfbObligation> obligations = cfbCalendrierFiscal}) => [for (final e in obligations) if (RegExp(r'^IS-\d$').hasMatch(e.code)) e];
 
 const _moisCap = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 
 /// « le 10 mars » (la maquette écrit le mois en minuscules).
 String cfbEcheanceAcompte(CfbObligation e) => 'le ${e.jour} ${_moisCap[e.mois!]}';
 
-/// Le cumul maximal ORTB d'un agent au-dessus du seuil : radio + télé.
-num cfbCumulOrtbMaximum() => paiRedevances.fold<num>(0, (a, r) => a + r.montant);
+/// Le cumul maximal ORTB d'un agent au-dessus du seuil : radio + télé, sur la version des paramètres donnée (par défaut la semence).
+num cfbCumulOrtbMaximum([PaiParametresOrtb parametres = PaiParametresOrtb.semence]) => parametres.redevances.fold<num>(0, (a, r) => a + r.montant);
 
-/// La note orange de la carte ORTB et la phrase « Ce que supporte un agent ».
-(String, String) cfbTextesOrtb() {
-  final seuil = money(paiSeuilTele, avecDevise: false);
-  final cumul = money(cfbCumulOrtbMaximum(), avecDevise: false);
-  final radio = money(1000, avecDevise: false);
-  final tele = money(3000, avecDevise: false);
+/// La note orange de la carte ORTB et la phrase « Ce que supporte un agent », sur la version des paramètres EN VIGUEUR (par défaut la semence) :
+/// un seuil relevé se lit sur la carte le jour même.
+(String, String) cfbTextesOrtb([PaiParametresOrtb parametres = PaiParametresOrtb.semence]) {
+  final seuil = money(parametres.seuilTele, avecDevise: false);
+  final cumul = money(cfbCumulOrtbMaximum(parametres), avecDevise: false);
+  final radio = money(parametres.radio?.montant ?? 0, avecDevise: false);
+  final tele = money(parametres.tele?.montant ?? 0, avecDevise: false);
+  final moisRadio = parametres.radio?.moisLabel ?? 'mars';
+  final moisTele = parametres.tele?.moisLabel ?? 'juin';
   return (
-    'Deux redevances distinctes, qui se cumulent — et non deux tranches exclusives d’un même barème. La radio est due par tous les salariés sans exception ; '
+    'Deux redevances distinctes, qui se cumulent, et non deux tranches exclusives d’un même barème. La radio est due par tous les salariés sans exception ; '
         'la télé s’y ajoute au-delà de $seuil de salaire brut. Un agent au-dessus du seuil acquitte donc $cumul sur l’exercice, et non $tele seulement.',
-    'Salaire brut jusqu’à $seuil — $radio au titre de la radio, en mars. Salaire brut supérieur à $seuil — $radio en mars pour la radio, puis $tele en juin pour la télé, '
+    'Salaire brut jusqu’à $seuil : $radio au titre de la radio, en $moisRadio. Salaire brut supérieur à $seuil : $radio en $moisRadio pour la radio, puis $tele en $moisTele pour la télé, '
         'soit $cumul sur l’année.'
   );
 }
