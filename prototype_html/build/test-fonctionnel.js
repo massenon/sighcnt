@@ -2034,6 +2034,21 @@ async function viderMessages(page) {
        les jeux de démonstration ont pu être consommés par les scénarios
        précédents, et c'est la RÈGLE qu'on veut éprouver, pas l'amorçage. */
     await ouvrir('m5-resultats.html');
+    /* E2262 (corrigé le 06/11/2026) : le JEU porte le secteur du PRESCRIPTEUR lu à l'organigramme, jamais celui de la session
+       qui l'a semé (l'installateur, ADMINISTRATION). Mesuré sur les demandes semées seules (origine autre que « manuelle »). */
+    const seme = await page.evaluate(() => {
+      const S = window.SIGH.store, PR = window.SIGH.parcours, D = window.SIGH.data;
+      const rows = S.collection('demandesAnalyses').active().filter((r) => r.origine !== 'manuelle');
+      const parSecteur = {};
+      rows.forEach((r) => { const k = String(r.secteurDemandeur); parSecteur[k] = (parSecteur[k] || 0) + 1; });
+      S.setSession({ role: 'infirmier', nom: 'BADO BANI Z.', fonction: 'sage_femme', secteur: 'MAT' });
+      const rendus = rows.filter((r) => D.resultatRendu(r.etatAnalyse));
+      return { total: rows.length, parSecteur, maternite: parSecteur['Maternité'] || 0, visibles: PR.filtrerResultats(rendus).length };
+    });
+    verifier('Le jeu semé ne porte AUCUNE demande au secteur ADMINISTRATION (le secteur de la session qui l’a semé)',
+      seme.total > 0 && !seme.parSecteur.ADMINISTRATION, JSON.stringify(seme.parSecteur));
+    verifier('Le jeu porte des demandes de la MATERNITÉ, et la sage-femme voit des résultats rendus de son secteur',
+      seme.maternite > 0 && seme.visibles > 0, JSON.stringify(seme));
     await page.evaluate(() => {
       const S = window.SIGH.store;
       const col = S.collection('demandesAnalyses');

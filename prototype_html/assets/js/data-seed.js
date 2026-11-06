@@ -66,6 +66,20 @@
   }
   function soignantsQui(pred) { return soignants().filter(pred); }
 
+  /* LE SECTEUR DU PRESCRIPTEUR SE LIT À L'ORGANIGRAMME (E2262, corrigé le 06/11/2026) : le service de l'agent ramené aux six
+     secteurs (D.secteurNormalise), sinon son poste, sinon sa fonction (médecin : Consultation ; sage-femme : Maternité) ; sans rien
+     de cela, null, jamais une valeur inventée. Sans ce champ, PR.prescrire retombait sur le secteur de la SESSION qui ouvrait la
+     première page (l'installateur) : 327 demandes semées portaient « ADMINISTRATION » et aucune sage-femme ne voyait rien. */
+  function secteurPrescripteur(agent) {
+    if (!agent) return null;
+    var d = D();
+    var s = d.secteurNormalise(agent.service) || d.secteurNormalise(agent.poste);
+    if (s) return s;
+    if (agent.fonction === 'medecin') return 'Consultation';
+    if (agent.fonction === 'sage_femme') return 'Maternité';
+    return null;
+  }
+
   function unDe(rnd, liste) { return liste.length ? C.pick(rnd, liste) : null; }
 
   /* ==========================================================================
@@ -81,6 +95,9 @@
     var meds = S().collection('produits').active().filter(function (p) { return p.stock > 20; });
     var analyses = (d.ANALYSES || []).filter(function (a) { return a.prix; });
     var medecins = parFonction('medecin').filter(function (a) { return !/Échographiste/i.test(a.poste || ''); });
+    /* Les sages-femmes PRESCRIVENT (doctrine : 3 médecins et 3 sages-femmes prescripteurs) : le suivi de grossesse d'une patiente
+       part de la maternité, et sa demande porte ce secteur. Choix sans tirage : la suite aléatoire du jeu ne bouge pas. */
+    var sagesFemmes = parFonction('sage_femme');
     var bio = soignantsQui(function (x) { return x.qualite === 'medecin'; });
     var faits = { prescriptions: 0, encaisses: 0, resultats: 0, rendus: 0 };
     if (!medecins.length || !analyses.length) return faits;
@@ -108,12 +125,17 @@
       if (!codes.length && !lignesMed.length) continue;
 
       var ord;
+      /* Le diagnostic se tire ICI, au même rang qu'avant dans la suite aléatoire (il était tiré dans l'appel). */
+      var diagnostic = C.pick(rnd, ['Paludisme simple', 'Fièvre typhoïde', 'Infection urinaire',
+        'Anémie', 'Hypertension artérielle', 'Gastro-entérite', 'Bilan de santé',
+        'Suivi de grossesse', 'Bronchite aiguë', 'Diabète — bilan']);
+      var prescripteur = (diagnostic === 'Suivi de grossesse' && sagesFemmes.length && p.sexe === 'F')
+        ? sagesFemmes[i % sagesFemmes.length] : med;
       try {
         ord = pr.prescrire({
-          patientCode: p.code, medecin: med.nomComplet, date: date,
-          diagnostic: C.pick(rnd, ['Paludisme simple', 'Fièvre typhoïde', 'Infection urinaire',
-            'Anémie', 'Hypertension artérielle', 'Gastro-entérite', 'Bilan de santé',
-            'Suivi de grossesse', 'Bronchite aiguë', 'Diabète — bilan']),
+          patientCode: p.code, medecin: prescripteur.nomComplet, date: date,
+          diagnostic: diagnostic,
+          secteurDemandeur: secteurPrescripteur(prescripteur),
           analyses: codes, medicaments: lignesMed,
           urgent: rnd() > 0.88,
         });
@@ -2367,7 +2389,9 @@
              secteurs (vague 55) : c’est lui que l’onglet « hospitalisation »
              de l’accueil reconnaît. */
           serviceDemandeur: pl[2], hospitalise: pl[3],
-          secteurDemandeur: pl[3] ? 'Hospitalisation et soins' : null,
+          /* E2262 : le service de la clinique qui reçoit le patient externe EST son secteur (Maternité, Médecine : Consultation) ;
+             il valait null et la sage-femme ne voyait aucun de ces bilans. */
+          secteurDemandeur: pl[3] ? 'Hospitalisation et soins' : D().secteurNormalise(pl[2]),
           urgence: 'aucune', analyses: codes,
           date: horodatage(date, C.between(rnd, 7, 12), C.between(rnd, 0, 59)),
         }));
@@ -2868,6 +2892,7 @@
         try {
           var ord = pr.prescrire({
             patientCode: p.code, medecin: md.nomComplet, date: horodatage(dateP, 10, 15),
+            secteurDemandeur: secteurPrescripteur(md),
             diagnostic: 'Syndrome fébrile — bilan', analyses: codes,
             medicaments: prod2 ? [{ produitId: prod2.id, quantite: 2, posologie: '1 cp x 3/j', duree: '5 jours' }] : [],
           });
