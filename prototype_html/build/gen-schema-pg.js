@@ -24,6 +24,17 @@ const path = require('path');
 const RACINE = path.resolve(__dirname, '..');
 const magasin = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 
+/* UNE COLLECTION SANS DONNÉE GARDE SA FORME (06/11/2026, E2264). Le générateur déduit les colonnes des données : lancé sur un magasin PARTIEL (une base
+   où seuls quelques écrans ont semé leurs collections) il faisait disparaître les tables des autres, et une collection présente mais vide devenait
+   une table sans identifiant (« _rang »). Toute collection absente ou vide du magasin d'entrée reprend donc sa définition dans le manifeste PRÉCÉDENT
+   (--avec-manifeste=<fichier>, par défaut api/schema/manifeste.json). Une collection NOUVELLE exige de la donnée : sans elle, elle est NOMMÉE en fin de sortie. */
+const PREC = (function () {
+  const a = process.argv.find((x) => x.startsWith('--avec-manifeste='));
+  const f = a ? a.slice('--avec-manifeste='.length) : path.join(path.resolve(__dirname, '..'), 'api/schema/manifeste.json');
+  try { return JSON.parse(fs.readFileSync(f, 'utf8')).tables || {}; } catch (e) { return {}; }
+})();
+const REPRISES = [];
+
 /* --- Module de chaque collection : lu dans les sources, jamais deviné -------- */
 const sources = [];
 (function lire(d) {
@@ -116,12 +127,22 @@ function analyser(lignes) {
 /* Une collection dont aucune entrée n'est un objet (liste de codes, de chaînes) n'a rien à mettre en colonnes. */
 const estFiche = (r) => r && typeof r === 'object' && !Array.isArray(r);
 const IGNOREES = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && magasin[n].length && !magasin[n].some(estFiche)).sort();
+const aDesFiches = (n) => Array.isArray(magasin[n]) && magasin[n].some(estFiche);
 const noms = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && IGNOREES.indexOf(n) < 0).sort();
+const nomsTables = Array.from(new Set(noms.concat(Object.keys(PREC)))).filter((n) => aDesFiches(n) || PREC[n]).sort();
 const tables = {};
 const ids = {};
 noms.forEach((n) => { ids[n] = new Set(magasin[n].map((r) => r && r.id).filter((x) => x !== undefined && x !== null).map(String)); });
 
-noms.forEach((nom) => {
+nomsTables.forEach((nom) => {
+  if (!aDesFiches(nom) && PREC[nom]) {
+    const p = PREC[nom];
+    const re = (cs) => cs.map((c) => ({ champ: c.champ, col: c.col, typ: c.typ, presents: 0 }));
+    tables[nom] = { collection: nom, schema: p.schema, table: p.table, aId: !!p.aId, lignes: 0, colonnes: re(p.colonnes),
+      enfants: (p.enfants || []).map((f) => ({ champ: f.champ, table: f.table, colonnes: re(f.colonnes), lignes: 0 })) };
+    REPRISES.push(nom);
+    return;
+  }
   const lignes = magasin[nom].filter((r) => r && typeof r === 'object' && !Array.isArray(r));
   const schema = schemaDe(nom);
   const champs = analyser(lignes);
@@ -140,6 +161,18 @@ noms.forEach((nom) => {
     ch.forEach((e, kk) => { cols.push({ champ: kk, col: unique(snake(kk), pc), typ: typeSql(e.classes), presents: e.presents }); });
     return { champ: k, table: unique(snake(nom + '_' + k), new Set()), colonnes: cols, lignes: objets.length };
   });
+  /* UNION AVEC LA FORME PRÉCÉDENTE : un champ que les données présentes n'ont pas (un jeu plus pauvre que celui d'où venait le manifeste) ne retire pas sa colonne. */
+  const prec = PREC[nom];
+  if (prec) {
+    const deja = new Set(colonnes.map((c) => c.champ));
+    prec.colonnes.forEach((c) => { if (!deja.has(c.champ) && !pris.has(c.col)) { pris.add(c.col); colonnes.push({ champ: c.champ, col: c.col, typ: c.typ, presents: 0 }); } });
+    (prec.enfants || []).forEach((pf) => {
+      const f = fils.find((x) => x.champ === pf.champ);
+      if (!f) { fils.push({ champ: pf.champ, table: pf.table, colonnes: pf.colonnes.map((c) => ({ champ: c.champ, col: c.col, typ: c.typ, presents: 0 })), lignes: 0 }); return; }
+      const dc = new Set(f.colonnes.map((c) => c.champ)); const pc = new Set(f.colonnes.map((c) => c.col).concat(['extra', 'parent_id', 'rang']));
+      pf.colonnes.forEach((c) => { if (!dc.has(c.champ) && !pc.has(c.col)) { pc.add(c.col); f.colonnes.push({ champ: c.champ, col: c.col, typ: c.typ, presents: 0 }); } });
+    });
+  }
   tables[nom] = { collection: nom, schema, table: snake(nom), aId: !!aId, lignes: lignes.length, colonnes, enfants: fils };
 });
 /* Deux collections peuvent donner le même nom de table dans le même schéma : on suffixe. */
@@ -160,8 +193,9 @@ Object.values(tables).forEach((t) => {
   t.colonnes.forEach((c) => {
     const cib = cible(c.champ);
     if (!cib || cib === t.collection) return;
-    const valeurs = magasin[t.collection].map((r) => r && r[c.champ]).filter((v) => v !== undefined && v !== null && v !== '');
+    const valeurs = (magasin[t.collection] || []).map((r) => r && r[c.champ]).filter((v) => v !== undefined && v !== null && v !== '');
     if (!valeurs.length || c.typ !== 'text') return;
+    if (!ids[cib]) return;
     const orphelins = valeurs.filter((v) => !ids[cib].has(String(v))).length;
     c.ref = { collection: cib, orphelins, utilises: valeurs.length };
     if (orphelins === 0) { c.fk = cib; fks.push({ de: t.collection, col: c.col, vers: cib }); }
@@ -267,6 +301,9 @@ Object.values(tables).sort((a, b) => (a.schema + a.table).localeCompare(b.schema
 });
 fs.writeFileSync(path.resolve(RACINE, '../docs/architecture/DICTIONNAIRE-DONNEES.md'), dico.join('\n'));
 const nbT = Object.keys(tables).length, nbF = Object.values(tables).reduce((a, t) => a + t.enfants.length, 0);
+console.log('Reprises du manifeste précédent (collection absente ou vide du magasin d\'entrée) : ' + REPRISES.length + (REPRISES.length ? ' — ' + REPRISES.join(', ') : ''));
+const NOUVELLES_SANS_DONNEE = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && !aDesFiches(n) && !PREC[n] && IGNOREES.indexOf(n) < 0 && n !== '_fichesDemo');
+if (NOUVELLES_SANS_DONNEE.length) console.log('ATTENTION collections NOUVELLES sans donnée (aucune table possible) : ' + NOUVELLES_SANS_DONNEE.join(', '));
 console.log('Ignorées (sans fiche objet) : ' + IGNOREES.join(', '));
 console.log('Collections : ' + nbT + ' → tables ' + nbT + ' + filles ' + nbF + ' · schémas ' + Object.keys(parSchema).length + ' · clés étrangères ' + fks.length);
 const sansModule = Object.values(tables).filter((t) => t.schema === 'socle').map((t) => t.collection);

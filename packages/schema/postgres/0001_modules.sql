@@ -133,6 +133,112 @@ CREATE TABLE IF NOT EXISTS "cfg"."examens_imagerie" (
 COMMENT ON TABLE "cfg"."examens_imagerie" IS 'Collection « examensImagerie » — Configuration';
 CREATE INDEX IF NOT EXISTS "ix_examens_imagerie_code" ON "cfg"."examens_imagerie" ("code");
 CREATE INDEX IF NOT EXISTS "ix_examens_imagerie_statut" ON "cfg"."examens_imagerie" ("statut");
+CREATE TABLE IF NOT EXISTS "cfg"."historique_obligations" (
+  "id" text PRIMARY KEY,
+  "code" text,
+  "type" text,
+  "motif" text,
+  "source" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "date_fin" date,
+  "famille" text,
+  "libelle" text,
+  "retiree" boolean,
+  "cree_par" text,
+  "valide_le" text,
+  "date_effet" text,
+  "modifie_le" text,
+  "seuil_tele" integer,
+  "valide_par" text,
+  "archive_le" timestamptz,
+  "modifie_le_2" timestamptz,
+  "modifie_par" text,
+  "archive_par" text,
+  "modifie_par_2" text,
+  "remplacee_le" timestamptz,
+  "cumul_maximum" integer,
+  "obligation_id" text,
+  "remplacee_par" text,
+  "motif_archivage" text,
+  "motif_remplacement" text,
+  "jour" integer,
+  "mois" integer,
+  "note" text,
+  "part" integer,
+  "declaration" text,
+  "periodicite" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."historique_obligations" IS 'Collection « historiqueObligations » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_historique_obligations_code" ON "cfg"."historique_obligations" ("code");
+CREATE INDEX IF NOT EXISTS "ix_historique_obligations_type" ON "cfg"."historique_obligations" ("type");
+CREATE INDEX IF NOT EXISTS "ix_historique_obligations_statut" ON "cfg"."historique_obligations" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_historique_obligations_obligation_id" ON "cfg"."historique_obligations" ("obligation_id");
+CREATE TABLE IF NOT EXISTS "cfg"."historique_obligations_redevances" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "id" text,
+  "code" text,
+  "mois" integer,
+  "libelle" text,
+  "montant" integer,
+  "assiette" text,
+  "seuil_max" text,
+  "seuil_min" integer,
+  "categorie" text,
+  "mois_label" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "cfg"."historique_obligations" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "cfg"."historique_obligations_redevances" IS 'Lignes « redevances » de « historiqueObligations »';
+CREATE TABLE IF NOT EXISTS "cfg"."identite_legale" (
+  "bp" text,
+  "id" text PRIMARY KEY,
+  "fin" text,
+  "ifu" text,
+  "nom" text,
+  "logo" text,
+  "pays" text,
+  "rccm" text,
+  "debut" date,
+  "email" text,
+  "forme" text,
+  "motif" text,
+  "sigle" text,
+  "cree_le" timestamptz,
+  "devise" text,
+  "slogan" text,
+  "source" text,
+  "statut" text,
+  "cree_le_2" timestamptz,
+  "adresse" text,
+  "cree_par" text,
+  "version" integer,
+  "cree_par_2" text,
+  "valide_le" text,
+  "regime_tva" text,
+  "valide_par" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
+  "code_devise" text,
+  "telephones" jsonb,
+  "archive_par" text,
+  "modifie_par" text,
+  "autorisation" text,
+  "telephone_rdv" text,
+  "formule_arrete" text,
+  "motif_archivage" text,
+  "formule_politesse" text,
+  "autorisation_exercice" text,
+  "autorisation_exercice_motif" text,
+  "modifie_le_2" text,
+  "modifie_par_2" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."identite_legale" IS 'Collection « identiteLegale » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_identite_legale_statut" ON "cfg"."identite_legale" ("statut");
 CREATE TABLE IF NOT EXISTS "cfg"."modeles_message" (
   "id" text PRIMARY KEY,
   "actif" boolean,
@@ -174,6 +280,54 @@ CREATE TABLE IF NOT EXISTS "cfg"."natures_facture" (
 COMMENT ON TABLE "cfg"."natures_facture" IS 'Collection « naturesFacture » — Configuration';
 CREATE INDEX IF NOT EXISTS "ix_natures_facture_code" ON "cfg"."natures_facture" ("code");
 CREATE INDEX IF NOT EXISTS "ix_natures_facture_statut" ON "cfg"."natures_facture" ("statut");
+CREATE TABLE IF NOT EXISTS "cfg"."obligations_fiscales" (
+  "id" text PRIMARY KEY,
+  "code" text,
+  "jour" integer,
+  "mois" integer,
+  "note" text,
+  "part" integer,
+  "type" text,
+  "motif" text,
+  "source" text,
+  "statut" text,
+  "famille" text,
+  "libelle" text,
+  "valide_le" text,
+  "date_effet" text,
+  "modifie_le" text,
+  "valide_par" text,
+  "modifie_le_2" timestamptz,
+  "modifie_par" text,
+  "modifie_par_2" text,
+  "declaration" text,
+  "periodicite" text,
+  "seuil_tele" integer,
+  "cumul_maximum" integer,
+  "extra" jsonb
+);
+COMMENT ON TABLE "cfg"."obligations_fiscales" IS 'Collection « obligationsFiscales » — Configuration';
+CREATE INDEX IF NOT EXISTS "ix_obligations_fiscales_code" ON "cfg"."obligations_fiscales" ("code");
+CREATE INDEX IF NOT EXISTS "ix_obligations_fiscales_type" ON "cfg"."obligations_fiscales" ("type");
+CREATE INDEX IF NOT EXISTS "ix_obligations_fiscales_statut" ON "cfg"."obligations_fiscales" ("statut");
+CREATE TABLE IF NOT EXISTS "cfg"."obligations_fiscales_redevances" (
+  "parent_id" text NOT NULL,
+  "rang" integer NOT NULL,
+  "id" text,
+  "code" text,
+  "mois" integer,
+  "libelle" text,
+  "montant" integer,
+  "assiette" text,
+  "seuil_max" text,
+  "seuil_min" integer,
+  "categorie" text,
+  "mois_label" text,
+  "extra" jsonb,
+  PRIMARY KEY ("parent_id", "rang"),
+  FOREIGN KEY ("parent_id") REFERENCES "cfg"."obligations_fiscales" ("id") ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED
+);
+COMMENT ON TABLE "cfg"."obligations_fiscales_redevances" IS 'Lignes « redevances » de « obligationsFiscales »';
 CREATE TABLE IF NOT EXISTS "cfg"."postes" (
   "id" text PRIMARY KEY,
   "chef" boolean,
@@ -261,18 +415,26 @@ CREATE TABLE IF NOT EXISTS "ged"."documents" (
   "format" text,
   "statut" text,
   "taille" integer,
+  "cree_le" timestamptz,
   "archive" boolean,
+  "contenu" text,
   "libelle" text,
   "version" integer,
+  "cree_par" text,
+  "resultat" integer,
   "categorie" text,
   "depose_par" text,
+  "empreinte" text,
   "rattache_a" text,
   "reference" text,
   "conservation" integer,
   "rattachement" text,
   "consultations" integer,
   "etat_validation" text,
+  "archive_exercice" text,
   "code_rattachement" text,
+  "empreinte_balance" text,
+  "manifeste_empreinte" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "ged"."documents" IS 'Collection « documents » — GED';
@@ -529,29 +691,33 @@ CREATE INDEX IF NOT EXISTS "ix_modeles_badge_statut" ON "m10"."modeles_badge" ("
 CREATE TABLE IF NOT EXISTS "m10"."participations" (
   "id" text PRIMARY KEY,
   "mode" text,
+  "recu" text,
   "agent" text,
-  "nature" text,
   "statut" text,
   "cree_le" timestamptz,
   "montant" integer,
-  "service" text,
   "cree_par" text,
-  "fonction" text,
   "employe_id" text,
-  "matricule" text,
-  "reference" text,
-  "evenement_id" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
+  "encaisse_par" text,
   "date_paiement" date,
-  "date_evenement" date,
   "periode_retenue" text,
   "statut_paiement" text,
   "evenement_libelle" text,
+  "nature" text,
+  "service" text,
+  "fonction" text,
+  "matricule" text,
+  "reference" text,
+  "evenement_id" text,
+  "date_evenement" date,
   "extra" jsonb
 );
 COMMENT ON TABLE "m10"."participations" IS 'Collection « participations » — M10 Ressources humaines';
-CREATE INDEX IF NOT EXISTS "ix_participations_nature" ON "m10"."participations" ("nature");
 CREATE INDEX IF NOT EXISTS "ix_participations_statut" ON "m10"."participations" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_participations_employe_id" ON "m10"."participations" ("employe_id");
+CREATE INDEX IF NOT EXISTS "ix_participations_nature" ON "m10"."participations" ("nature");
 CREATE INDEX IF NOT EXISTS "ix_participations_reference" ON "m10"."participations" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_participations_evenement_id" ON "m10"."participations" ("evenement_id");
 CREATE TABLE IF NOT EXISTS "m10"."personnel" (
@@ -647,26 +813,53 @@ COMMENT ON TABLE "m10"."regimes_travail" IS 'Collection « regimesTravail » —
 CREATE INDEX IF NOT EXISTS "ix_regimes_travail_statut" ON "m10"."regimes_travail" ("statut");
 CREATE TABLE IF NOT EXISTS "m11"."avances" (
   "id" text PRIMARY KEY,
-  "date" date,
-  "motif" text,
   "statut" text,
+  "cree_le" timestamptz,
   "employe" text,
   "montant" integer,
-  "service" text,
+  "cree_par" text,
   "employe_id" text,
-  "matricule" text,
   "reference" text,
   "rembourse" integer,
+  "modifie_le" timestamptz,
   "mensualite" integer,
+  "modifie_par" text,
   "statut_avance" text,
   "nb_mensualites" integer,
+  "date" date,
+  "motif" text,
+  "service" text,
+  "matricule" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m11"."avances" IS 'Collection « avances » — M11 Paie & primes';
-CREATE INDEX IF NOT EXISTS "ix_avances_date" ON "m11"."avances" ("date");
 CREATE INDEX IF NOT EXISTS "ix_avances_statut" ON "m11"."avances" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_avances_employe_id" ON "m11"."avances" ("employe_id");
 CREATE INDEX IF NOT EXISTS "ix_avances_reference" ON "m11"."avances" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_avances_date" ON "m11"."avances" ("date");
+CREATE TABLE IF NOT EXISTS "m11"."bulletins" (
+  "id" text PRIMARY KEY,
+  "mois" integer,
+  "ortb" integer,
+  "annee" integer,
+  "sonde" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "periode" text,
+  "cree_par" text,
+  "ortb_tele" integer,
+  "employe_id" text,
+  "ortb_radio" integer,
+  "archive_le" timestamptz,
+  "archive_par" text,
+  "motif_archivage" text,
+  "extra" jsonb
+);
+COMMENT ON TABLE "m11"."bulletins" IS 'Collection « bulletins » — M11 Paie & primes';
+CREATE INDEX IF NOT EXISTS "ix_bulletins_annee" ON "m11"."bulletins" ("annee");
+CREATE INDEX IF NOT EXISTS "ix_bulletins_statut" ON "m11"."bulletins" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_bulletins_periode" ON "m11"."bulletins" ("periode");
+CREATE INDEX IF NOT EXISTS "ix_bulletins_employe_id" ON "m11"."bulletins" ("employe_id");
 CREATE TABLE IF NOT EXISTS "m11"."heures_sup" (
   "id" text PRIMARY KEY,
   "motif" text,
@@ -691,21 +884,24 @@ CREATE INDEX IF NOT EXISTS "ix_heures_sup_employe_id" ON "m11"."heures_sup" ("em
 CREATE INDEX IF NOT EXISTS "ix_heures_sup_reference" ON "m11"."heures_sup" ("reference");
 CREATE TABLE IF NOT EXISTS "m11"."prets_etudes" (
   "id" text PRIMARY KEY,
-  "agent" text,
   "objet" text,
   "nature" text,
   "statut" text,
   "cree_le" timestamptz,
+  "employe" text,
   "montant" integer,
   "cree_par" text,
   "retenues" jsonb,
   "employe_id" text,
-  "matricule" text,
   "reference" text,
-  "date_accord" date,
-  "autorise_par" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "nb_echeances" integer,
   "premiere_echeance" text,
+  "agent" text,
+  "matricule" text,
+  "date_accord" date,
+  "autorise_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m11"."prets_etudes" IS 'Collection « pretsEtudes » — M11 Paie & primes';
@@ -715,28 +911,30 @@ CREATE INDEX IF NOT EXISTS "ix_prets_etudes_employe_id" ON "m11"."prets_etudes" 
 CREATE INDEX IF NOT EXISTS "ix_prets_etudes_reference" ON "m11"."prets_etudes" ("reference");
 CREATE TABLE IF NOT EXISTS "m12"."archives_exercice" (
   "id" text PRIMARY KEY,
-  "statut" text,
-  "reference" text,
-  "annee" integer,
-  "version" integer,
-  "cree_le" timestamptz,
   "par" text,
-  "cl_numero" text,
+  "annee" integer,
+  "cree_le" timestamptz,
+  "statut" text,
+  "cree_le_2" timestamptz,
+  "version" integer,
+  "cree_par" text,
   "an_numero" text,
+  "cl_numero" text,
+  "reference" text,
   "manifeste_empreinte" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."archives_exercice" IS 'Collection « archivesExercice » — M12 Comptabilité SYSCOHADA';
+CREATE INDEX IF NOT EXISTS "ix_archives_exercice_annee" ON "m12"."archives_exercice" ("annee");
 CREATE INDEX IF NOT EXISTS "ix_archives_exercice_statut" ON "m12"."archives_exercice" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_archives_exercice_reference" ON "m12"."archives_exercice" ("reference");
-CREATE INDEX IF NOT EXISTS "ix_archives_exercice_annee" ON "m12"."archives_exercice" ("annee");
 CREATE TABLE IF NOT EXISTS "m12"."archives_exercice_fichiers" (
   "parent_id" text NOT NULL,
   "rang" integer NOT NULL,
   "nom" text,
   "type" text,
-  "contenu" text,
   "taille" integer,
+  "contenu" text,
   "empreinte" text,
   "extra" jsonb,
   PRIMARY KEY ("parent_id", "rang"),
@@ -790,31 +988,33 @@ CREATE INDEX IF NOT EXISTS "ix_centres_couts_type" ON "m12"."centres_couts" ("ty
 CREATE INDEX IF NOT EXISTS "ix_centres_couts_statut" ON "m12"."centres_couts" ("statut");
 CREATE TABLE IF NOT EXISTS "m12"."clotures" (
   "id" text PRIMARY KEY,
-  "statut" text,
-  "annee" integer,
-  "type" text,
-  "cl_numero" text,
-  "an_numero" text,
-  "resultat" integer,
-  "par" text,
   "le" timestamptz,
+  "par" text,
+  "type" text,
+  "annee" integer,
   "motif" text,
-  "empreinte" text,
-  "cree_par" text,
+  "statut" text,
   "cree_le" timestamptz,
+  "cree_par" text,
+  "an_numero" text,
+  "cl_numero" text,
+  "resultat" integer,
+  "empreinte" text,
   "contre_passe" jsonb,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."clotures" IS 'Collection « clotures » — M12 Comptabilité SYSCOHADA';
-CREATE INDEX IF NOT EXISTS "ix_clotures_statut" ON "m12"."clotures" ("statut");
-CREATE INDEX IF NOT EXISTS "ix_clotures_annee" ON "m12"."clotures" ("annee");
 CREATE INDEX IF NOT EXISTS "ix_clotures_type" ON "m12"."clotures" ("type");
+CREATE INDEX IF NOT EXISTS "ix_clotures_annee" ON "m12"."clotures" ("annee");
+CREATE INDEX IF NOT EXISTS "ix_clotures_statut" ON "m12"."clotures" ("statut");
 CREATE TABLE IF NOT EXISTS "m12"."comptes_resultat" (
   "id" text PRIMARY KEY,
-  "statut" text,
   "sens" text,
   "compte" text,
+  "statut" text,
   "libelle" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."comptes_resultat" IS 'Collection « comptesResultat » — M12 Comptabilité SYSCOHADA';
@@ -858,23 +1058,32 @@ CREATE TABLE IF NOT EXISTS "m12"."echeances_fiscales" (
   "part" integer,
   "paye" boolean,
   "statut" text,
+  "cree_le" timestamptz,
   "famille" text,
   "libelle" text,
   "montant" text,
   "periode" text,
+  "cree_par" text,
   "echeance" date,
   "exercice" integer,
   "reportee" boolean,
   "reference" text,
+  "archive_le" timestamptz,
+  "modifie_le" timestamptz,
   "validee_par" text,
+  "archive_par" text,
+  "modifie_par" text,
   "declaration" text,
   "periodicite" text,
+  "regeneree_le" timestamptz,
   "date_paiement" date,
+  "regeneree_par" text,
+  "motif_archivage" text,
+  "echeance_theorique" date,
+  "version_obligation" date,
   "paye_le" date,
   "paye_par" text,
   "quittance" text,
-  "modifie_le" timestamptz,
-  "modifie_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."echeances_fiscales" IS 'Collection « echeancesFiscales » — M12 Comptabilité SYSCOHADA';
@@ -899,11 +1108,17 @@ CREATE TABLE IF NOT EXISTS "m12"."ecritures" (
   "piece_numero" text,
   "compte_libelle" text,
   "journal_libelle" text,
-  "valide_le" date,
-  "valide_par" text,
+  "centre_cout" text,
+  "piece_origine" text,
+  "origine_cloture" text,
+  "contre_passe_de" text,
+  "archive_le" timestamptz,
   "modifie_le" timestamptz,
   "modifie_par" text,
-  "centre_cout" text,
+  "motif_archivage" text,
+  "lettrage" text,
+  "valide_le" date,
+  "valide_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."ecritures" IS 'Collection « ecritures » — M12 Comptabilité SYSCOHADA';
@@ -920,8 +1135,23 @@ CREATE TABLE IF NOT EXISTS "m12"."exercices" (
   "motif" text,
   "source" text,
   "statut" text,
-  "valide_le" date,
+  "valide_le" timestamptz,
   "valide_par" text,
+  "an_numero" text,
+  "cl_numero" text,
+  "resultat" integer,
+  "demande_le" timestamptz,
+  "empreinte" text,
+  "rouvert_le" timestamptz,
+  "modifie_le" timestamptz,
+  "demande_par" text,
+  "rouvert_par" text,
+  "modifie_par" text,
+  "resultat_prevu" integer,
+  "motif_reouverture" text,
+  "nb_ecritures_archivees" integer,
+  "repris_le" timestamptz,
+  "repris_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m12"."exercices" IS 'Collection « exercices » — M12 Comptabilité SYSCOHADA';
@@ -1170,21 +1400,27 @@ CREATE INDEX IF NOT EXISTS "ix_reunions_reference" ON "m13"."reunions" ("referen
 CREATE TABLE IF NOT EXISTS "m14"."audit" (
   "_rang" integer PRIMARY KEY,
   "id" text,
-  "poste" text,
+  "role" text,
+  "apres" text,
+  "avant" text,
   "action" text,
   "entite" text,
+  "statut" text,
+  "reference" text,
+  "horodatage" timestamptz,
+  "utilisateur" text,
+  "poste" text,
   "module" text,
   "succes" boolean,
   "date_heure" timestamptz,
-  "reference" text,
-  "utilisateur" text,
   "ancienne_valeur" text,
   "nouvelle_valeur" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."audit" IS 'Collection « audit » — M14 Sécurité & audit';
-CREATE INDEX IF NOT EXISTS "ix_audit_date_heure" ON "m14"."audit" ("date_heure");
+CREATE INDEX IF NOT EXISTS "ix_audit_statut" ON "m14"."audit" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_audit_reference" ON "m14"."audit" ("reference");
+CREATE INDEX IF NOT EXISTS "ix_audit_date_heure" ON "m14"."audit" ("date_heure");
 CREATE TABLE IF NOT EXISTS "m14"."comptes" (
   "id" text PRIMARY KEY,
   "num" text,
@@ -1246,8 +1482,11 @@ CREATE TABLE IF NOT EXISTS "m14"."politique_securite" (
   "cree_le" date,
   "cree_par" text,
   "echecs_max" integer,
+  "modifie_le" timestamptz,
   "blocage_min" integer,
   "historique" integer,
+  "modifiee_le" timestamptz,
+  "modifie_par" text,
   "longueur_min" integer,
   "inactivite_min" integer,
   "expiration_jours" integer,
@@ -1290,11 +1529,20 @@ CREATE TABLE IF NOT EXISTS "m14"."sessions_utilisateur" (
   "nom_complet" text,
   "identifiant" text,
   "derniere_activite" timestamptz,
+  "cloture_le" timestamptz,
+  "modifie_le" timestamptz,
+  "cloture_par" text,
+  "modifie_par" text,
+  "cloture_motif" text,
+  "cloture_propre" boolean,
+  "cloture_par_identifiant" text,
+  "utilisateur_id" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."sessions_utilisateur" IS 'Collection « sessionsUtilisateur » — M14 Sécurité & audit';
 CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_etat" ON "m14"."sessions_utilisateur" ("etat");
 CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_statut" ON "m14"."sessions_utilisateur" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_sessions_utilisateur_utilisateur_id" ON "m14"."sessions_utilisateur" ("utilisateur_id");
 CREATE TABLE IF NOT EXISTS "m14"."soignants" (
   "id" text PRIMARY KEY,
   "poste" text,
@@ -1314,10 +1562,19 @@ COMMENT ON TABLE "m14"."soignants" IS 'Collection « soignants » — M14 Sécur
 CREATE INDEX IF NOT EXISTS "ix_soignants_statut" ON "m14"."soignants" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_soignants_personnel_id" ON "m14"."soignants" ("personnel_id");
 CREATE TABLE IF NOT EXISTS "m14"."tentatives_connexion" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "nom" text,
+  "role" text,
+  "motif" text,
+  "poste" text,
+  "statut" text,
+  "traitee" boolean,
+  "horodatage" timestamptz,
+  "identifiant" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."tentatives_connexion" IS 'Collection « tentativesConnexion » — M14 Sécurité & audit';
+CREATE INDEX IF NOT EXISTS "ix_tentatives_connexion_statut" ON "m14"."tentatives_connexion" ("statut");
 CREATE TABLE IF NOT EXISTS "m14"."utilisateurs" (
   "id" text PRIMARY KEY,
   "mfa" boolean,
@@ -1334,6 +1591,17 @@ CREATE TABLE IF NOT EXISTS "m14"."utilisateurs" (
   "employe_id" text,
   "matricule" text,
   "note" text,
+  "bloque" boolean,
+  "bloque_le" timestamptz,
+  "bloque_par" text,
+  "modifie_le" timestamptz,
+  "debloque_le" timestamptz,
+  "modifie_par" text,
+  "bloque_motif" text,
+  "debloque_par" text,
+  "doit_changer_mot_de_passe" boolean,
+  "reinitialisation_imposee_le" timestamptz,
+  "reinitialisation_imposee_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m14"."utilisateurs" IS 'Collection « utilisateurs » — M14 Sécurité & audit';
@@ -2744,26 +3012,14 @@ CREATE TABLE IF NOT EXISTS "m5"."demandes_analyses" (
   "analyse_" text,
   "origine" text,
   "patient" text,
-  "recu_par" text,
   "regle_le" timestamptz,
-  "saisi_le" timestamptz,
-  "valeurs" jsonb,
-  "version" integer,
   "cree_par" text,
-  "resultat" text,
-  "saisi_par" text,
-  "valide_le" timestamptz,
-  "anormales" integer,
   "categorie" text,
   "date_heure" timestamptz,
   "patient_id" text,
-  "preleve_le" timestamptz,
   "reference" text,
   "modifie_le" timestamptz,
-  "conclusion" text,
   "laborantin" text,
-  "preleve_par" text,
-  "recu_labo_le" timestamptz,
   "modifie_par" text,
   "analyse_code" text,
   "code_analyse" text,
@@ -2771,18 +3027,30 @@ CREATE TABLE IF NOT EXISTS "m5"."demandes_analyses" (
   "etat_analyse" text,
   "patient_code" text,
   "ordonnance_id" text,
-  "preleve_par_id" text,
   "prescripteur" text,
   "statut_paiement" text,
   "ordonnance_numero" text,
   "secteur_demandeur" text,
   "bloque_par_paiement" boolean,
+  "dossier_consultation_id" text,
+  "recu_par" text,
+  "saisi_le" timestamptz,
+  "valeurs" jsonb,
+  "version" integer,
+  "resultat" text,
+  "saisi_par" text,
+  "valide_le" timestamptz,
+  "anormales" integer,
+  "preleve_le" timestamptz,
+  "conclusion" text,
+  "preleve_par" text,
+  "recu_labo_le" timestamptz,
+  "preleve_par_id" text,
   "qualite_validateur" text,
   "resultat_structure" boolean,
   "valide_technique_le" timestamptz,
   "valide_technique_par" text,
   "valide_biologique_par" text,
-  "dossier_consultation_id" text,
   "facture_id" text,
   "indication" text,
   "hospitalise" boolean,
@@ -2799,8 +3067,8 @@ CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_date_heure" ON "m5"."demandes_a
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_patient_id" ON "m5"."demandes_analyses" ("patient_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_reference" ON "m5"."demandes_analyses" ("reference");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_ordonnance_id" ON "m5"."demandes_analyses" ("ordonnance_id");
-CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_preleve_par_id" ON "m5"."demandes_analyses" ("preleve_par_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_dossier_consultation_id" ON "m5"."demandes_analyses" ("dossier_consultation_id");
+CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_preleve_par_id" ON "m5"."demandes_analyses" ("preleve_par_id");
 CREATE INDEX IF NOT EXISTS "ix_demandes_analyses_facture_id" ON "m5"."demandes_analyses" ("facture_id");
 CREATE TABLE IF NOT EXISTS "m5"."donneurs" (
   "_rang" integer PRIMARY KEY,
@@ -3359,10 +3627,24 @@ CREATE TABLE IF NOT EXISTS "m9"."factures_mere_souscripteurs" (
 );
 COMMENT ON TABLE "m9"."factures_mere_souscripteurs" IS 'Lignes « souscripteurs » de « facturesMere »';
 CREATE TABLE IF NOT EXISTS "m9"."garanties" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "code" text,
+  "taux" integer,
+  "statut" text,
+  "cree_le" timestamptz,
+  "libelle" text,
+  "plafond" integer,
+  "cree_par" text,
+  "assureur" text,
+  "categorie" text,
+  "unite_plafond" text,
+  "souscripteur_id" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "m9"."garanties" IS 'Collection « garanties » — M9 Assurances & créances';
+CREATE INDEX IF NOT EXISTS "ix_garanties_code" ON "m9"."garanties" ("code");
+CREATE INDEX IF NOT EXISTS "ix_garanties_statut" ON "m9"."garanties" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_garanties_souscripteur_id" ON "m9"."garanties" ("souscripteur_id");
 CREATE TABLE IF NOT EXISTS "m9"."souscripteurs" (
   "id" text PRIMARY KEY,
   "nom" text,
@@ -3460,7 +3742,28 @@ CREATE INDEX IF NOT EXISTS "ix_visites_hospi_type" ON "socle"."visites_hospi" ("
 CREATE INDEX IF NOT EXISTS "ix_visites_hospi_statut" ON "socle"."visites_hospi" ("statut");
 CREATE INDEX IF NOT EXISTS "ix_visites_hospi_admission_id" ON "socle"."visites_hospi" ("admission_id");
 CREATE TABLE IF NOT EXISTS "sup"."support" (
-  "_rang" integer PRIMARY KEY,
+  "id" text PRIMARY KEY,
+  "date" date,
+  "etat" text,
+  "type" text,
+  "objet" text,
+  "auteur" text,
+  "etapes" text,
+  "module" text,
+  "statut" text,
+  "cree_le" timestamptz,
+  "capture" text,
+  "cree_par" text,
+  "courriel" text,
+  "reference" text,
+  "description" text,
+  "modifie_le" timestamptz,
+  "modifie_par" text,
   "extra" jsonb
 );
 COMMENT ON TABLE "sup"."support" IS 'Collection « support » — Support';
+CREATE INDEX IF NOT EXISTS "ix_support_date" ON "sup"."support" ("date");
+CREATE INDEX IF NOT EXISTS "ix_support_etat" ON "sup"."support" ("etat");
+CREATE INDEX IF NOT EXISTS "ix_support_type" ON "sup"."support" ("type");
+CREATE INDEX IF NOT EXISTS "ix_support_statut" ON "sup"."support" ("statut");
+CREATE INDEX IF NOT EXISTS "ix_support_reference" ON "sup"."support" ("reference");

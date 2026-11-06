@@ -31,6 +31,12 @@ function sigh_proj_manifeste(): ?array
     return $m;
 }
 
+/** Vrai si le schéma exécutable de la copie relationnelle manque : le fichier est engendré par `node build/gen-schema-pg.js`. */
+function sigh_proj_schema_absent(): bool
+{
+    return !is_file(__DIR__ . '/schema/schema.sql');
+}
+
 /** Crée les tables au premier usage ; le script est rejouable. */
 function sigh_proj_installer(PDO $pdo): bool
 {
@@ -40,6 +46,12 @@ function sigh_proj_installer(PDO $pdo): bool
     }
     $fait = false;
     if (!sigh_est_postgres() || sigh_proj_manifeste() === null) {
+        return false;
+    }
+    /* Sans `schema/schema.sql` la copie relationnelle n'existe pas : elle se DÉCLARE indisponible (jamais un fatal, jamais un corps vide) ;
+       `sigh_proj_schema_absent()` donne la commande pour le régénérer. La projection ne fait JAMAIS échouer une écriture. */
+    if (!is_file(__DIR__ . '/schema/schema.sql')) {
+        $fait = false;
         return false;
     }
     $pdo->exec('CREATE TABLE IF NOT EXISTS projection_erreurs (

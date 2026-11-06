@@ -23,6 +23,8 @@ prototype_html/api/config.local.php
 *.sql
 !packages/schema/**/*.sql
 !infra/**/*.sql
+# Le schéma relationnel EXÉCUTABLE de la maquette (lu à l'exécution par api/projection.php) n'est pas un export de données : il se versionne.
+!prototype_html/api/schema/schema.sql
 *.dump
 *.sqlite
 *.sqlite3

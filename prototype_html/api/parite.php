@@ -21,6 +21,11 @@ $session = sigh_exiger_session($pdo);
 if (!in_array($session['role'] ?? '', ['admin', 'da', 'direction'], true)) {
     sigh_repondre(['erreur' => 'accès refusé', 'detail' => 'Le contrôle de la copie relationnelle est réservé à l’administration.'], 403);
 }
+if (sigh_est_postgres() && sigh_proj_schema_absent()) {
+    sigh_repondre(['erreur' => 'schema_absent', 'detail' => 'api/schema/schema.sql manque : la copie relationnelle n’a pas son schéma exécutable. '
+        . 'Le régénérer : psql -At -c "select json_object_agg(nom, donnees) from collections" > magasin.json && node build/gen-schema-pg.js magasin.json',
+        'commande' => 'node build/gen-schema-pg.js magasin.json'], 501);
+}
 if (!sigh_proj_installer($pdo)) {
     sigh_repondre(['erreur' => 'copie relationnelle indisponible', 'detail' => 'Base non PostgreSQL ou schéma absent.'], 501);
 }
