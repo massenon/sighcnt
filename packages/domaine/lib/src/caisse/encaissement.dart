@@ -204,9 +204,11 @@ String numeroPieceCaisse(Map<String, Object?> facture, String date,
 List<Map<String, Object?>> ecritureEncaissement(
     Map<String, Object?> facture, double montantRegle, String aujourdhui,
     [List<Map<String, Object?>> ecritures = const []]) {
+  // L'EN-TÊTE d'une facture porte `partAssurance` ; `partAssureur` n'existe que sur les LIGNES (E2260) : lire ce dernier sur l'en-tête donnait zéro,
+  // et la créance de l'assureur (débit 411, crédit 706) n'entrait jamais au journal.
   final partAssureur = creanceAssureurConstatee(facture, ecritures)
       ? 0.0
-      : _n(facture['partAssureur']);
+      : _n(facture['partAssurance'] ?? facture['partAssureur']);
   final total = montantRegle + partAssureur;
   if (total <= 0) return const [];
 

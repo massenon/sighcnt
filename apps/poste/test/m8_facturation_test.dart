@@ -127,6 +127,10 @@ void main() {
     expect(f['baseMecef'], 1000);
     expect(f['volet'], isNull);
     expect(f['numeroMecef'], isNotNull);
+    // E2260 : l'écriture est posée à l'émission (571 = 706 = ce qui est réglé).
+    final ecr1 = m.collection('ecritures').actives.where((e) => e['pieceId'] == f['id']).toList();
+    expect(ecr1.fold<num>(0, (a, e) => a + n(e['debit'])), 1000);
+    expect(ecr1.fold<num>(0, (a, e) => a + n(e['credit'])), 1000);
     expect(find.textContaining('encaissé'), findsWidgets);
     // Annuler retire la pièce (archivage, RG-14) — visible dans le compte des actives.
     await toucher(t, find.text('Annuler').last);
@@ -185,6 +189,19 @@ void main() {
     expect(nouvelles[0]['numeroPolice'], isNotNull);
     // La base MECeF ne porte que ce que le patient a réglé.
     expect(nouvelles[0]['baseMecef'], nouvelles[0]['montantPaye']);
+    // E2260 : « Enregistrer et encaisser » pose l'écriture de chaque pièce : 571 du réglé, 411 de la part assureur, 706 du total, équilibrée.
+    for (final p in nouvelles) {
+      final ecr = m.collection('ecritures').actives.where((e) => e['pieceId'] == p['id']).toList();
+      num som(String c, String k) => ecr.where((e) => '${e['compte']}'.startsWith(c)).fold<num>(0, (a, e) => a + n(e[k]));
+      expect(som('571', 'debit'), n(p['montantPaye']), reason: '${p['numero']}');
+      expect(som('411', 'debit'), n(p['partAssurance']), reason: '${p['numero']} : créance de l’assureur');
+      expect(som('706', 'credit'), som('571', 'debit') + som('411', 'debit'), reason: '${p['numero']}');
+      expect(ecr.length, greaterThanOrEqualTo(2), reason: '${p['numero']}');
+    }
+    expect(n(nouvelles[0]['partAssurance']), greaterThan(0));
+    // Annuler l'émission archive aussi ses écritures (RG-14).
+    await toucher(t, find.text('Annuler').last);
+    expect(m.collection('ecritures').actives.where((e) => nouvelles.any((p) => p['id'] == e['pieceId'])), isEmpty);
   });
 
   cas('pro-forma : rien d\'encaissé, pas de numéro MECeF', (t) async {

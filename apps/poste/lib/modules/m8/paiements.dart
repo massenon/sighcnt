@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/icones.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
+import '../../donnees/parcours_caisse.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
 import 'commun.dart';
@@ -246,28 +247,38 @@ class _EcranPaiementsState extends State<EcranPaiements> {
                           type: TypeToast.erreur);
                       return;
                     }
-                    final nouveau = n(f['montantPaye']) + montant;
-                    final restant = n(f['partPatient']) - nouveau;
+                    // L'encaissement passe par le MOTEUR (E2260) : lignes réglées, analyses et imagerie libérées, tâches d'aval, base MECeF et ÉCRITURE
+                    // comptable (571, 411 de la part assureur, 706). Un encaissement ne s'annule pas : remboursement ou avoir.
                     final c = ContexteEcran.of(ctx);
-                    final annuler = _col!.mettreAJour(f['id'], {
-                      'montantPaye': nouveau,
-                      'reliquat': restant,
-                      'modePaiement': v['modePaiement'],
-                      'statutPaiement': restant <= 0 ? 'soldee' : 'partielle',
-                      'dernierReglement': {
-                        'montant': montant,
-                        'encaissePar': acteur(c).nom,
-                        'le': iso(c.aujourdhui)
-                      },
-                    });
+                    final ResultatCaisse res;
+                    try {
+                      res = encaisserFacture(c.magasin, '${f['id']}',
+                          montant: montant,
+                          mode: '${v['modePaiement']}',
+                          maintenant: c.aujourdhui);
+                    } on RefusCaisse catch (e) {
+                      ToastsSigh.afficher(ctx, 'Encaissement refusé.',
+                          type: TypeToast.erreur,
+                          detail: e.motif,
+                          duree: const Duration(seconds: 9));
+                      return;
+                    }
+                    if (!(res.montantRegle > 0)) {
+                      ToastsSigh.afficher(ctx,
+                          'Ce versement ne couvre entièrement aucune ligne de la pièce : régler une ou plusieurs prestations en entier.',
+                          type: TypeToast.erreur);
+                      return;
+                    }
                     fermer();
-                    ToastsSigh.afficher(
-                        ctx, 'Encaissement de ${money(montant)} enregistré.',
+                    ToastsSigh.afficher(ctx,
+                        'Encaissement de ${money(res.montantRegle)} enregistré.',
                         type: TypeToast.succes,
-                        detail: restant > 0
-                            ? 'Reliquat de ${money(restant)}.'
-                            : 'Facture soldée.',
-                        annuler: annuler);
+                        detail: (res.restantDu > 0
+                                ? 'Reliquat de ${money(res.restantDu)}.'
+                                : 'Facture soldée.') +
+                            (res.ecritures.isNotEmpty
+                                ? ' Écriture comptable posée en brouillon.'
+                                : ''));
                     imprimerRecu(ctx, _col!.parId(f['id'])!,
                         versement: {'montant': montant, ...v});
                   }),

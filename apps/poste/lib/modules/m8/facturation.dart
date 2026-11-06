@@ -424,6 +424,17 @@ class _EtatFacturation extends State<EcranFacturation> {
       final ins = factures.inserer(fiche, prefixe: 'FAC');
       creees.add(ins.fiche);
       annulations.add(ins.annuler);
+      // LE COMPTABLE EST INFORMÉ DÈS L'ÉMISSION (E2260) : l'écriture du moteur d'encaissement (571 du réglé, 411 de la part assureur, 706 du total),
+      // équilibrée (RG-10), en brouillon. Une pro-forma n'est pas une pièce comptable. Annuler l'émission archive ses écritures (RG-14).
+      if (!proforma) {
+        final ecrs = m.collection('ecritures');
+        final lignesEcr = ecritureEncaissement(ins.fiche, n(ins.fiche['montantPaye']).toDouble(),
+            iso(c.aujourdhui), ecrs.actives);
+        for (final e in lignesEcr) {
+          final pose = ecrs.inserer(e, prefixe: 'ECR');
+          annulations.add(pose.annuler);
+        }
+      }
     }
     // Sortie automatique du stock pour les médicaments facturés (CDCT §10.7) : RG-03, justificatif = numéro de la pièce.
     final produits = m.collection('produits');

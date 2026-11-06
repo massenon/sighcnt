@@ -97,12 +97,14 @@ void main() {
   });
 
   testWidgets(
-      'encaisser le reste solde la facture, l’annulation la rétablit et le dit ; le reçu s’ouvre',
+      'encaisser le reste solde la facture PAR LE MOTEUR : écriture posée (571, 411 de l’assureur, 706), reçu ouvert, aucune annulation offerte (E2260)',
       (t) async {
     final m = magasin();
     final avantTout = {
       for (final x in m.collection('factures').actives) x['id']: {...x}
     };
+    num n(Object? v) => v is num ? v : (num.tryParse('${v ?? ''}') ?? 0);
+    final ecrAvant = m.collection('ecritures').actives.length;
     await ouvrir(t, m, 'm8-paiements');
     await toucher(t, find.widgetWithText(BoutonSigh, 'Encaisser').first);
     await toucher(t, find.text('Valider l’encaissement'));
@@ -119,18 +121,28 @@ void main() {
     expect(apres['reliquat'], 0);
     expect(apres['statutPaiement'], 'soldee');
     expect(apres['montantPaye'], (f['montantPaye'] as num) + reste);
+    // L'écriture : 571 du versement, 411 de la part assureur (une fois), 706 du total, équilibrée.
+    final ecr = m
+        .collection('ecritures')
+        .actives
+        .where((e) => e['pieceId'] == f['id'])
+        .toList();
+    expect(m.collection('ecritures').actives.length, greaterThan(ecrAvant));
+    num som(String c, String k) => ecr
+        .where((e) => '${e['compte']}'.startsWith(c))
+        .fold<num>(0, (a, e) => a + n(e[k]));
+    expect(som('571', 'debit'), reste);
+    expect(som('411', 'debit'), n(f['partAssurance']),
+        reason: 'la créance de l’assureur est constatée');
+    expect(som('706', 'credit'), som('571', 'debit') + som('411', 'debit'));
     expect(find.text('Reçu de paiement'), findsWidgets,
         reason: 'le reçu détaillé s’ouvre après l’encaissement');
     expect(find.textContaining('ENCAISSÉ CE JOUR'), findsOneWidget);
-    expect(find.text('Facture soldée.'), findsOneWidget);
-    // On ferme l'aperçu puis on annule.
+    expect(find.text('Facture soldée.', findRichText: true), findsNothing);
+    expect(find.textContaining('Facture soldée.'), findsOneWidget);
+    // Un encaissement ne s'annule pas : remboursement ou avoir.
     await toucher(t, find.text('Fermer').last);
-    await toucher(t, find.widgetWithText(BoutonSigh, 'Annuler').last);
-    final retabli = m.collection('factures').parId(f['id'])!;
-    expect(retabli['reliquat'], reste);
-    expect(retabli.containsKey('dernierReglement'),
-        f.containsKey('dernierReglement'));
-    expect(find.text('Action annulée.'), findsOneWidget);
+    expect(find.widgetWithText(BoutonSigh, 'Annuler'), findsNothing);
     await t.pump(const Duration(seconds: 10));
   });
 
