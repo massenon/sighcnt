@@ -61,6 +61,14 @@ async function demarrerPhp(racine) {
     return { php: null, raison: 'PHP est absent du PATH : les scénarios ne peuvent pas '
       + 'être éprouvés contre la base.' };
   }
+  /* UN PORT QUI RÉPOND DÉJÀ N'EST PAS LE NÔTRE (E2263). Le banc se rattachait en silence à ce qui l'occupait : tous les passages « isolés » par
+     SIGH_BASE_TEST partageaient alors UN serveur resté d'un banc précédent, SON arbre de fichiers (pas celui de la copie propre qu'on croyait
+     tester) et SA base, remise à neuf par chacun sous les pieds des autres. Les résultats venaient d'un état inconnu, et rien ne le disait. */
+  if (await joignable(PORT_PHP)) {
+    return { php: null, raison: 'Le port ' + PORT_PHP + ' répond déjà : un autre serveur (un banc en cours, ou un serveur resté d’un banc précédent) '
+      + 'l’occupe, et s’y rattacher ferait éprouver SON arbre de fichiers et SA base. Choisir un port libre (SIGH_PORT_PHP=<port>) et une base à soi '
+      + '(SIGH_BASE_TEST=<nom>), ou arrêter l’ancien serveur (ps aux | grep "php -S").' };
+  }
   const proc = spawn('php', ['-S', '127.0.0.1:' + PORT_PHP, '-t', racine], {
     cwd: racine,
     env: Object.assign({}, process.env, { SIGH_BASE: BASE_TEST, SIGH_BANC: '1' }),

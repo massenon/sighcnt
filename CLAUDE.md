@@ -10,6 +10,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Le poste démarre maximisé (barre des tâches visible), plein écran sur F11.
 
+**Piège des bancs payé le 06/11/2026 (E2263) : le serveur PHP d'un banc écoute sur `SIGH_PORT_PHP` (8099 par défaut), PAS sur `SIGH_PORT_TEST` ; la base se choisit par `SIGH_BASE_TEST`.** Deux bancs lancés en même temps avec les valeurs par défaut (ou avec un seul des deux réglages) partageaient un serveur, son arbre de fichiers et sa base : la remise à neuf de l'un effaçait le jeu de l'autre (HTTP 500, « Cannot read properties of undefined » ailleurs que dans l'écran testé) et une « copie propre » d'un commit éprouvait en réalité l'arbre principal. Le harnais REFUSE désormais de se rattacher à un port qui répond. Pour tout passage isolé : `SIGH_PORT_PHP=<port libre> SIGH_BASE_TEST=<base à soi, créée au besoin> SIGH_PORT_TEST=<port libre> CHROME_PATH=/opt/pw-browsers/chromium node build/test-fonctionnel.js --seul=…`, et `ps aux | grep "php -S"` avant de croire un résultat.
+
 **Règle de rédaction (31/10/2026)** : ne pas employer de tiret cadratin (—), de demi-cadratin (–) ni de trait d'union comme ponctuation dans le code, les commentaires, les textes d'interface et les paragraphes `text-xs text-info-900` (règles d'écran) ; utiliser la virgule, les deux-points, les parenthèses ou le point. Les identifiants (ids, noms de fichiers, intervalles, dates) restent de la syntaxe. L'existant n'est repris qu'à la pièce, quand on retouche un texte (la parité N1 compare les libellés).
 
 
