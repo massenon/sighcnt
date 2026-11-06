@@ -49,6 +49,7 @@ Index : [`prd/README.md`](prd/README.md).
 | [`architecture/MODULES-MOBILE`](architecture/MODULES-MOBILE.md) | Simulateur mobile (iPhone 14 / Pixel 8) : 21 écrans, 4 profils, règles vérifiées |
 | [`architecture/ECARTS-MAQUETTE`](architecture/ECARTS-MAQUETTE.md) | Écarts de la maquette relevés au portage (portés fidèlement, signalés, à arbitrer) |
 | [`specs/SPEC-protocole-synchronisation`](specs/SPEC-protocole-synchronisation.md) | **Protocole de synchronisation** : poste mère, fileuls, mobiles, relais en ligne ; appairage, journal, curseurs, conflits, restauration, recette | brouillon 29/10/2026 |
+| [`specs/SPEC-configuration-fiscale-validee`](specs/SPEC-configuration-fiscale-validee.md) | **Configuration fiscale validée** : identité légale et obligations fiscales en versions datées (`identiteLegale`, `obligationsFiscales`, `historiqueObligations`), formulaires `cfg-branding` / `cfg-fiscalite` / `cfg-comptabilite`, validation Direction / DAF / admin, échéances et ORTB datés, détection d'installation par validation | décidée 06/11/2026, Vague 81 à faire |
 
 Index : [`plans/README.md`](plans/README.md). Les spécifications d'écran vont dans [`specs/`](specs/README.md).
 
