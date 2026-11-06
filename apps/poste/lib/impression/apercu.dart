@@ -8,6 +8,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../kit/kit.dart';
 import '../shell/contexte_ecran.dart';
 import 'feuilles.dart';
+import 'identite_poste.dart';
 import 'pdf.dart';
 import 'piece.dart';
 
@@ -68,9 +69,12 @@ class ImpressionPoste {
 }
 
 /// Aperçu commun (`afficher()` de print.js) : la feuille dans une modale large, « Fermer » et « Imprimer / PDF ».
-Future<void> afficherApercu(BuildContext context, PieceA4 piece) {
+Future<void> afficherApercu(BuildContext context, PieceA4 piece0) {
   // « Archiver » (`afficher(…, archivable)` de print.js) : l'édition est journalisée (RG-12, module RAP) — c'est ce journal que lit l'historique des éditions.
   final magasin = ContexteEcran.maybeOf(context)?.magasin;
+  // L'EN-TÊTE LÉGAL EST CELUI DE LA DATE DE LA PIÈCE (`P.etat({date})`) : une pièce qui ne fixe pas son identité (état du jour) reçoit la version en force à la
+  // date d'édition, lue au magasin ; une facture, un avoir, un reçu l'ont fixée à leur date.
+  final piece = piece0.identite != null || magasin == null ? piece0 : piece0.avecIdentite(identiteImprimeeDe(magasin, piece0.edite));
   return afficherModale<void>(
       context,
       titre: piece.titre,
@@ -116,8 +120,10 @@ Future<void> afficherApercu(BuildContext context, PieceA4 piece) {
 
 /// Aperçu du ROULEAU de caisse 80 mm (`P.ticket`) : gabarit distinct du A4, même modale, même enregistrement PDF.
 Future<void> afficherApercuTicket(
-        BuildContext context, EntreeTicket entree, String reference) =>
-    afficherModale<void>(
+        BuildContext context, EntreeTicket entree, String reference) {
+  final magasin = ContexteEcran.maybeOf(context)?.magasin;
+  final identite = magasin == null ? IdentiteImprimee.semence : identiteImprimeeDe(magasin, entree.date);
+  return afficherModale<void>(
       context,
       titre: 'Ticket de caisse',
       sousTitre: reference,
@@ -128,7 +134,7 @@ Future<void> afficherApercuTicket(
         child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Center(
-                child: FeuilleTicket(entree: entree, reference: reference))),
+                child: FeuilleTicket(entree: entree, reference: reference, identite: identite))),
       ),
       pied: (fermer) => [
         BoutonSigh(
@@ -141,7 +147,7 @@ Future<void> afficherApercuTicket(
             variante: VarianteBouton.secondaire,
             onPressed: () async {
               final p = await PolicesPdf.charger();
-              final octets = await pdfTicket(entree, reference, p);
+              final octets = await pdfTicket(entree, reference, p, identite: identite);
               final chemin =
                   await ImpressionPoste.enregistrer(octets, reference);
               if (context.mounted) {
@@ -151,3 +157,4 @@ Future<void> afficherApercuTicket(
             }),
       ],
     );
+}

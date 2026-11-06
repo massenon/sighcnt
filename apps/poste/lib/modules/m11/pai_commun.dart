@@ -36,10 +36,13 @@ PaiEntrees entreesPaie(Magasin mag) => PaiEntrees(
       historique: mag.collection('historiquePrimes').actives,
       heuresSup: mag.collection('heuresSup').actives,
       prets: mag.collection('pretsEtudes').actives,
+      // Les paramètres ORTB DATÉS (Direction, 06/11/2026) : le bulletin d'un mois lit la version en vigueur au premier de ce mois.
+      obligationsFiscales: mag.collection('obligationsFiscales').toutes,
+      historiqueObligations: mag.collection('historiqueObligations').toutes,
     );
 
 /// Les collections que le calcul de la paie lit : un écran se redessine quand l'une d'elles bouge.
-const collectionsPaie = ['personnel', 'planning', 'evaluations', 'avances', 'participations', 'grillePrimes', 'historiquePrimes', 'heuresSup', 'pretsEtudes'];
+const collectionsPaie = ['personnel', 'planning', 'evaluations', 'avances', 'participations', 'grillePrimes', 'historiquePrimes', 'heuresSup', 'pretsEtudes', 'obligationsFiscales', 'historiqueObligations'];
 
 Listenable ecoutePaie(ContexteEcran c, [List<String> enPlus = const []]) => ecoute(c, [...collectionsPaie, ...enPlus]);
 

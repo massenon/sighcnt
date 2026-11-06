@@ -52,7 +52,9 @@ PieceA4 pieceFacture(Fiche f,
     Fiche? jumelle,
     required String utilisateur,
     required DateTime edite,
-    required String reference}) {
+    required String reference,
+    IdentiteImprimee identite = IdentiteImprimee.semence}) {
+  final i = identite;
   final lignes = lignesDe(f);
   final avecAssurance =
       lignes.any((l) => n(l['partAssureur']) > 0) || f['assureur'] != null;
@@ -145,8 +147,9 @@ PieceA4 pieceFacture(Fiche f,
             : 'Aucune'
       ),
       ('N° de police', '${f['numeroPolice'] ?? '—'}'),
-      ('RCCM', IdentiteClinique.rccm),
+      ('RCCM', i.rccm),
     ],
+    identite: i,
     blocs: [
       if (f['libelleVolet'] != null)
         BlocTexte(
@@ -155,7 +158,7 @@ PieceA4 pieceFacture(Fiche f,
       BlocTableau(TableauEtat(colonnes: colonnes, lignes: lignes)),
       BlocTableau(rep),
       BlocTexte(
-          '${IdentiteClinique.formuleArrete} : ${montantEnLettres(f['partPatient'])}.',
+          '${i.formuleArrete} : ${montantEnLettres(f['partPatient'])}.',
           gras: true),
       BlocTexte(
           proforma
@@ -164,8 +167,8 @@ PieceA4 pieceFacture(Fiche f,
           italique: true),
       if (!proforma && f['numeroMecef'] != null)
         BlocTexte(
-            'Identifiant fiscal MECeF : ${f['numeroMecef']} — IFU : ${IdentiteClinique.ifu} — RCCM : ${IdentiteClinique.rccm} — Statut de transmission : ${f['statutMecef'] == 'valide' ? 'validée par l’administration fiscale' : f['statutMecef']}'),
-      const BlocTexte(IdentiteClinique.formulePolitesse, gras: true),
+            'Identifiant fiscal MECeF : ${f['numeroMecef']} — IFU : ${i.ifu} — RCCM : ${i.rccm} — Statut de transmission : ${f['statutMecef'] == 'valide' ? 'validée par l’administration fiscale' : f['statutMecef']}'),
+      BlocTexte(i.formulePolitesse, gras: true),
     ],
     // Pas de signature patient sur une pièce de caisse : c'est la caisse qui atteste l'encaissement.
     signatures: const [
@@ -179,7 +182,9 @@ PieceA4 pieceRecu(Fiche f,
     {Fiche? versement,
     required String utilisateur,
     required DateTime edite,
-    required String reference}) {
+    required String reference,
+    IdentiteImprimee identite = IdentiteImprimee.semence}) {
+  final i = identite;
   final lignes = lignesDe(f).where((l) => l['designation'] != null).toList();
   final payees = lignes.where((l) => l['statutPaiement'] == 'paye').toList();
   final dues = lignes.where((l) => l['statutPaiement'] != 'paye').toList();
@@ -239,8 +244,9 @@ PieceA4 pieceRecu(Fiche f,
       ('Mode de règlement', modeLabel(mode)),
       ('Encaissé par', utilisateur),
       ('Référence transaction', '${versement?['reference'] ?? '—'}'),
-      ('RCCM', IdentiteClinique.rccm),
+      ('RCCM', i.rccm),
     ],
+    identite: i,
     blocs: [
       if (payees.isNotEmpty)
         BlocTableau(tl(payees), titre: 'Prestations réglées'),
@@ -269,7 +275,7 @@ PieceA4 pieceRecu(Fiche f,
         {'k': 'RESTE À PAYER', 'v': m(f['reliquat'])},
       ])),
       BlocTexte(
-          '${IdentiteClinique.formuleArrete} : ${montantEnLettres(f['montantPaye'] ?? 0)}.'),
+          '${i.formuleArrete} : ${montantEnLettres(f['montantPaye'] ?? 0)}.'),
       const BlocTexte(
           'Reçu délivré par la caisse de la CLINIQUE NASSIERA TOO SARL. À conserver et à présenter au laboratoire et à la pharmacie.',
           italique: true),
@@ -285,7 +291,8 @@ PieceA4 pieceRecu(Fiche f,
 PieceA4 pieceEngagement(Fiche f,
     {required String utilisateur,
     required DateTime edite,
-    required String reference}) {
+    required String reference,
+    IdentiteImprimee? identite}) {
   final e = (f['engagement'] as Map?)?.cast<String, Object?>() ?? const {};
   final montant = n(e['montant'] ?? f['reliquat']);
   final tr = (n(e['tranches']).toInt()).clamp(1, 12);
@@ -300,6 +307,7 @@ PieceA4 pieceEngagement(Fiche f,
       }
   ];
   return PieceA4(
+    identite: identite,
     titre: 'Engagement de paiement',
     sousTitre: '${f['numero']} — ${f['patient']}',
     reference: reference,

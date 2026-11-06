@@ -29,12 +29,12 @@ const _mm = PdfPageFormat.mm;
 
 /// Rouleau 80 mm : largeur fixe, hauteur selon le contenu (les imprimantes thermiques coupent au bout).
 Future<Uint8List> pdfTicket(EntreeTicket e, String reference, PolicesPdf p,
-    {bool compresser = true}) async {
+    {bool compresser = true, IdentiteImprimee identite = IdentiteImprimee.semence}) async {
   final doc = pw.Document(
       compress: compresser,
       title: 'Ticket $reference',
-      author: IdentiteClinique.nom);
-  final lignes = lignesTicket(e);
+      author: identite.nom);
+  final lignes = lignesTicket(e, identite: identite);
   pw.Widget ligne(LigneTicket l) {
     if (l.estPaire) {
       final s = pw.TextStyle(font: l.gras ? p.monoGras : p.mono, fontSize: 7);
@@ -82,8 +82,9 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
   final doc = pw.Document(
       compress: compresser,
       title: x.titre,
-      author: IdentiteClinique.nom,
+      author: x.identiteImprimee.nom,
       subject: x.reference);
+  final i = x.identiteImprimee;
   pw.TextStyle s(double t, {pw.Font? f}) =>
       pw.TextStyle(font: f ?? p.sans, fontSize: t);
   final logo = pw.MemoryImage(
@@ -99,17 +100,17 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
           pw.Image(logo, width: 48, height: 48),
           pw.SizedBox(width: 12),
           pw.Column(children: [
-            pw.Text(IdentiteClinique.nomCourt, style: s(18, f: p.gras)),
+            pw.Text(i.nomCourt, style: s(18, f: p.gras)),
             pw.Text(
-                '${IdentiteClinique.bp}   TÉL. : ${IdentiteClinique.telephones.join('  /  ')}',
+                '${i.bp}   TÉL. : ${i.telephones.join('  /  ')}',
                 style: s(7.5)),
-            pw.Text('AUTORISATION D’OUVERTURE ${IdentiteClinique.autorisation}',
+            pw.Text('AUTORISATION D’OUVERTURE ${i.autorisation}',
                 style: s(7)),
             pw.Text(
-                'IFU : ${IdentiteClinique.ifu}   RCCM : ${IdentiteClinique.rccm}',
+                'IFU : ${i.ifu}   RCCM : ${i.rccm}',
                 style: s(7, f: p.gras)),
-            pw.Text('E-mail : ${IdentiteClinique.email}', style: s(7)),
-            pw.Text(IdentiteClinique.slogan, style: s(7, f: p.italique)),
+            pw.Text('E-mail : ${i.email}', style: s(7)),
+            pw.Text(i.slogan, style: s(7, f: p.italique)),
           ]),
           pw.SizedBox(width: 12),
           pw.SizedBox(width: 48, height: 48),
@@ -129,7 +130,7 @@ Future<Uint8List> pdfA4(PieceA4 x, PolicesPdf p,
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
-                        '${IdentiteClinique.nom} — ${IdentiteClinique.rccm} — IFU ${IdentiteClinique.ifu}',
+                        '${i.nom} — ${i.rccm} — IFU ${i.ifu}',
                         style: s(6)),
                     pw.Text(
                         'Document généré par ${x.utilisateur} le ${dateHeure(x.edite)}',

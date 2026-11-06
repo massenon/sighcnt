@@ -498,6 +498,9 @@ class Magasin {
     'objectifsPilotage': 'M12',
     'modulesActifs': 'CFG',
     'reglages': 'CFG',
+    'identiteLegale': 'CFG',
+    'obligationsFiscales': 'CFG',
+    'historiqueObligations': 'CFG',
     'support': 'SUP',
   };
 
@@ -738,6 +741,9 @@ class Magasin {
     'exercices',
     'objectifsPilotage',
     'modulesActifs',
+    'identiteLegale',
+    'obligationsFiscales',
+    'historiqueObligations',
     'support'
   ];
 }

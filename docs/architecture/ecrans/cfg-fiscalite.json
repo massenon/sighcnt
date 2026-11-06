@@ -5,7 +5,7 @@
  "libelleManifeste": "Paramètres fiscaux (IFU / RCCM)",
  "acces": "ouvert",
  "titre": "Paramètres fiscaux (IFU / RCCM)",
- "description": "Identifiants fiscaux, numérotation des documents et paramètres de la facturation normalisée.",
+ "description": "Identité fiscale de l’établissement (vérifiée et validée), numérotation des documents et calendrier des obligations.",
  "fil": [
   "Accueil",
   "Système",
@@ -18,9 +18,9 @@
   "Configuration Clinique"
  ],
  "regle": [
-  "Ces paramètres sont partagés avec le module MECeF. Toute modification s’applique immédiatement aux prochains documents émis.",
-  "4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026. Une déclaration précède généralement le paiement.",
-  "Impôt sur les sociétés. L’impôt de l’exercice se paie par anticipation : l’impôt de l’année précédente est divisé en quatre acomptes, versés les 10 mars, 10 juin, 10 septembre et 10 décembre. Le 30 avril de l’année suivante, la liquidation du solde ajuste à la hausse ou à la baisse, en même temps que le dépôt des états financiers."
+  "identité légale à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+  "Ces paramètres sont partagés avec le module MECeF. Une modification s’applique aux documents émis à partir de sa date d’effet ; les pièces antérieures gardent leur en-tête.",
+  "4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026. Une déclaration précède généralement le paiement."
  ],
  "onglets": [],
  "kpis": [
@@ -31,11 +31,21 @@
  ],
  "cartes": [
   "Identification fiscale de l’établissement",
+  "Versions de l’identité légale",
   "Numérotation des documents",
-  "Obligations déclaratives",
+  "Obligations déclaratives (dérivées des obligations en vigueur)",
   "Calendrier fiscal et social"
  ],
  "tableaux": [
+  [
+   "Version",
+   "En force",
+   "Du",
+   "Au",
+   "IFU / RCCM",
+   "Validée",
+   "Motif"
+  ],
   [
    "Type de document",
    "Préfixe",
@@ -58,12 +68,24 @@
   ]
  ],
  "commandes": [
+  "Enregistrer",
+  "Valider l’identité légale",
   "Configuration MECeF",
   "Éditer",
   "Colonnes",
   "Exporter"
  ],
- "champs": [],
- "nbTableaux": 3,
+ "champs": [
+  "Dénomination sociale",
+  "Forme juridique",
+  "IFU (13 chiffres) *",
+  "RCCM *",
+  "Autorisation d’ouverture",
+  "Adresse fiscale (adresse postale imprimée)",
+  "Devise",
+  "Code ISO de la devise",
+  "Régime de TVA"
+ ],
+ "nbTableaux": 4,
  "nbKpis": 4
 }

@@ -44,7 +44,30 @@ class PieceA4 {
     this.signatures = const [],
     this.lieuDate = true,
     this.filigrane,
+    this.identite,
   }) : blocs = [...blocs, for (final t in tableaux) BlocTableau(t)];
+
+  /// L'IDENTITÉ LÉGALE que la pièce imprime (en-tête et pied) : la version en force À LA DATE DE LA PIÈCE (`P.etat({date})`, Direction 06/11/2026). Une
+  /// facture, un avoir ou un reçu la fixent à leur date ; `null` : l'aperçu la résout à la date d'édition depuis le magasin (sans magasin, la semence).
+  final IdentiteImprimee? identite;
+
+  /// La même pièce, avec son identité fixée.
+  PieceA4 avecIdentite(IdentiteImprimee i) => PieceA4(
+      titre: titre,
+      reference: reference,
+      utilisateur: utilisateur,
+      edite: edite,
+      sousTitre: sousTitre,
+      blocs: blocs,
+      cartouche: cartouche,
+      filtres: filtres,
+      signatures: signatures,
+      lieuDate: lieuDate,
+      filigrane: filigrane,
+      identite: i);
+
+  /// L'identité effectivement imprimée : celle fixée, sinon la semence.
+  IdentiteImprimee get identiteImprimee => identite ?? IdentiteImprimee.semence;
 
   final String titre;
   final String? sousTitre;

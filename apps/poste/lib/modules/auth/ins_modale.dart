@@ -16,6 +16,7 @@ import '../../kit/kit.dart';
 /// Les écrans de l'étape B, dans l'ordre : ce sont les écrans `cfg-*` de la maquette (arbitrage de la Direction, 02/11/2026).
 const List<(String id, String libelle)> ecransConfigurationsInstallation = [
   ('cfg-entetes', 'Papier à en-tête officiel'),
+  ('cfg-fiscalite', 'Paramètres fiscaux (IFU / RCCM)'),
   ('cfg-modules', 'Activité des modules'),
   ('cfg-tarifs', 'Référentiel tarifaire'),
   ('cfg-natures-facture', 'Natures de facture'),
@@ -131,13 +132,17 @@ class _EtatCorps extends State<_Corps> {
   }
 
   /// Une ligne de l'étape B : l'écran, ce que la détection en a vu (écrit, vérifié, à faire), et « Rien à changer » pour un écran qu'on a regardé sans le modifier.
+  /// Une configuration qui se VALIDE (identité légale, obligations fiscales) n'est faite que validée : ni une écriture ni « Rien à changer » ne la cochent.
   Widget _ligneConfiguration(String id, String libelle, ({bool ecrit, bool verifie}) l) {
     final fait = l.ecrit || l.verifie;
+    final parValidation = ServiceInstallation.configurationsAValider.contains(id);
     return Row(mainAxisSize: MainAxisSize.min, children: [
       _lien(id, libelle),
       const SizedBox(width: 6),
       if (fait)
-        BadgeSigh(l.ecrit ? 'Configurée' : 'Vérifiée', ton: TonSigh.succes)
+        BadgeSigh(parValidation ? 'Validée' : (l.ecrit ? 'Configurée' : 'Vérifiée'), ton: TonSigh.succes)
+      else if (parValidation)
+        Text('À valider', key: Key('ins:a-valider-$id'), style: const TextStyle(color: JetonsShell.warning700, fontSize: 12, fontWeight: FontWeight.w500))
       else
         InkWell(
             key: Key('ins:verifier-$id'),

@@ -5,6 +5,7 @@ import 'package:sigh_domaine/sigh_domaine.dart';
 import '../../core/jetons_shell.dart';
 import '../../donnees/magasin.dart';
 import '../../impression/apercu.dart';
+import '../../impression/identite_poste.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
@@ -24,12 +25,14 @@ String _suite(Object? r) => r == 'especes' ? 'Remboursé en espèces' : 'Créanc
 PieceA4 pieceAvoir(Fiche a,
     {required String utilisateur,
     required DateTime edite,
-    required String reference}) {
+    required String reference,
+    IdentiteImprimee? identite}) {
   final lignes = [
     for (final l in (a['lignesAnnulees'] as List? ?? const []))
       (l as Map).cast<String, Object?>()
   ];
   return PieceA4(
+    identite: identite,
     titre: 'FACTURE D’AVOIR',
     sousTitre: '${a['reference']} — rectifie ${a['factureNumero']}',
     filigrane: 'AVOIR',
@@ -79,7 +82,9 @@ Future<void> imprimerAvoir(BuildContext ctx, Fiche a) {
           utilisateur: acteur(c).nom,
           edite: c.aujourdhui,
           reference:
-              PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero())));
+              PieceA4.reference_(c.aujourdhui, ImpressionPoste.prochainNumero()),
+          // L'avoir imprime l'identité en force À SA DATE (Direction, 06/11/2026).
+          identite: identiteImprimeeDe(c.magasin, datePiece(a, c.aujourdhui))));
 }
 
 /// Le détail d'un avoir, tel que le tiroir de la maquette le lit.

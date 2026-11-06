@@ -5,7 +5,7 @@
  "libelleManifeste": "Paramètres comptables & obligations",
  "acces": "ouvert",
  "titre": "Paramètres comptables & obligations",
- "description": "Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances.",
+ "description": "Obligations fiscales et sociales de la clinique : périodicités, tranches, déclarations préalables et redevances, vérifiées et validées, modifiables par versions datées.",
  "fil": [
   "Accueil",
   "Système",
@@ -18,22 +18,23 @@
   "Configuration Clinique"
  ],
  "regle": [
-  "ITS, AIB, VPS et CNSS se paient le 10 de chaque mois, pour le mois d’exercice précédent. Une déclaration précède le paiement. Si le 10 tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi.",
-  "AssiettesCNSS — part patronale 16.4 %, part ouvrière 3.6 %. VPS — 4 % du salaire brut. ITS — barème progressif par tranches. AIB — acompte assis sur les bénéfices.",
-  "L’impôt se paie par anticipation : l’impôt de l’exercice précédent est divisé en quatre acomptes égaux, versés au cours de l’exercice courant. Exemple donné par le comptable — un impôt de 2 000 000 FCFA en 2025 donne quatre acomptes de 500 000 FCFA en 2026."
+  "liste des obligations à valider (première configuration) : vérifier chaque mention, corriger ce qui doit l’être, puis Valider. La validation appartient à la Direction, à la DAF ou à l’administrateur système.",
+  "ITS, AIB, VPS, CNSS se paient chaque mois, pour le mois d’exercice précédent, au jour porté par chaque obligation. Une déclaration précède le paiement. Si le jour tombe un samedi ou un dimanche, le jour ouvrable qui suit immédiatement fait foi.",
+  "Assiettes arrêtées par le CDCT §10.10 (lecture seule)CNSS : part patronale 16.4 %, part ouvrière 3.6 %. VPS : 4 % du salaire brut. ITS : barème progressif par tranches. AIB : acompte assis sur les bénéfices. Ces taux ne se modifient pas ici : ils sont arrêtés par le cahier des charges ; les rendre datés est un chantier nommé."
  ],
  "onglets": [],
  "kpis": [
-  "Obligations suivies",
+  "Obligations en vigueur",
   "Mensuelles",
   "Annuelles",
   "Réglées en tranches"
  ],
  "cartes": [
-  "Obligations mensuelles — le 10 du mois suivant",
-  "Impôt sur les sociétés — quatre acomptes et une liquidation",
-  "Patente, CCIB et TVM — une fois par an",
-  "Redevances ORTB — prélevées sur les salaires",
+  "Obligations mensuelles : le 10 du mois suivant",
+  "Impôt sur les sociétés : quatre acomptes et une liquidation",
+  "Patente, CCIB et TVM : une fois par an",
+  "Redevances ORTB : prélevées sur les salaires",
+  "Versions antérieures des obligations et des paramètres ORTB",
   "Principes de tenue"
  ],
  "tableaux": [
@@ -41,12 +42,18 @@
    "Code",
    "Obligation",
    "Échéance",
-   "Déclaration préalable"
+   "Déclaration préalable",
+   "Version"
   ],
   [
    "Acompte",
    "Échéance",
    "Part"
+  ],
+  [
+   "Code",
+   "Obligation",
+   "Échéance"
   ],
   [
    "Redevance",
@@ -57,9 +64,13 @@
   ]
  ],
  "commandes": [
+  "Nouvelle obligation",
+  "Valider les obligations",
+  "Suivi des échéances",
+  "Modifier les paramètres ORTB",
   "Suivi nominatif"
  ],
  "champs": [],
- "nbTableaux": 3,
+ "nbTableaux": 4,
  "nbKpis": 4
 }

@@ -10,6 +10,7 @@ import '../../impression/apercu.dart';
 import '../../impression/piece.dart';
 import '../../kit/kit.dart';
 import '../../shell/contexte_ecran.dart';
+import '../cfg/cfb_configuration_fiscale.dart';
 import 'cpc_commun.dart';
 
 /// `m12-echeances` — « Échéances fiscales & paiements » : le SUIVI des obligations du calendrier fiscal (ce qui est dû, ce qui approche, ce qui est
@@ -18,6 +19,10 @@ import 'cpc_commun.dart';
 /// Une échéance dépassée et non réglée est un risque de pénalité : elle est signalée à l'ouverture (barre de notification et alerte), pas seulement
 /// listée. La validation d'un paiement porte son auteur, sa date et sa référence de quittance (RG-12) ; elle s'annule avec un motif, la trace du paiement
 /// initial restant au journal d'audit. Règles dans `cpc_echeances.dart` (rejouées sur les vecteurs de la maquette).
+///
+/// Les échéances d'un exercice sans échéance sont ENGENDRÉES à l'ouverture depuis la version des obligations EN VIGUEUR au premier de chaque mois
+/// (`amorcerEcheances` de la maquette, Direction 06/11/2026), sans quittance inventée ; une obligation modifiée à une date d'effet les RÉGÉNÈRE depuis
+/// `cfg-comptabilite` (les payées ne bougent jamais). Chaque échéance porte la version qui l'a engendrée (`versionObligation`).
 ///
 /// Écarts : E804 (corrigé dans la maquette d'abord : « La prochaine obligation tombe le undefined ») ; E806 (la maquette offre « Valider le paiement » et
 /// « Annuler la validation » à tout profil qui ouvre l'écran, y compris en lecture seule — au poste elles sont ABSENTES sans le droit d'écrire) ; E807
@@ -58,6 +63,9 @@ class _EtatEcheances extends State<EcranEcheances> {
     if (_demarre) return;
     _demarre = true;
     final c = ContexteEcran.of(context);
+    // Un exercice sans échéance les reçoit depuis la version EN VIGUEUR des obligations (jamais pendant un rendu : les écouteurs se déclencheraient en pleine construction).
+    ConfigurationFiscalePoste.amorcer(c.magasin);
+    ConfigurationFiscalePoste(c).amorcerEcheances(c.aujourdhui.year);
     // « Le comptable ne consulte pas l'écran tous les jours ; c'est l'écran qui doit l'avertir » : l'alerte part 800 ms après l'ouverture.
     _alerte = Timer(const Duration(milliseconds: 800), () {
       if (!mounted) return;
@@ -224,6 +232,8 @@ class _EtatEcheances extends State<EcranEcheances> {
             ('Montant réglé', e['montant'] != null && e['montant'] != 0 ? money(e['montant']) : '—'),
             ('Quittance', '${e['reference'] ?? '—'}'),
             ('Validé par', '${e['valideePar'] ?? '—'}'),
+            ('Version de l’obligation', e['versionObligation'] != null ? 'en vigueur depuis le ${_d(e['versionObligation'])}' : 'd’origine'),
+            if (e['regenereeLe'] != null) ('Régénérée', 'le ${_d(e['regenereeLe'])} par ${e['regenereePar'] ?? '—'}'),
           ]),
           const SizedBox(height: 16),
           NoteSigh('${e['note'] ?? ''}'),

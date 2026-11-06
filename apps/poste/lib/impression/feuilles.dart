@@ -14,13 +14,16 @@ const _mono = 'LiberationMono';
 /// Rouleau de caisse 80 mm (`P.ticket`) : largeur 80 mm, marge 4 mm, police chasse fixe, tailles 7–11 px de la maquette.
 class FeuilleTicket extends StatelessWidget {
   const FeuilleTicket(
-      {super.key, required this.entree, required this.reference});
+      {super.key, required this.entree, required this.reference, this.identite = IdentiteImprimee.semence});
   final EntreeTicket entree;
   final String reference;
 
+  /// L'identité en force à la date du ticket (`P.ticket({date})`).
+  final IdentiteImprimee identite;
+
   @override
   Widget build(BuildContext context) {
-    final lignes = lignesTicket(entree);
+    final lignes = lignesTicket(entree, identite: identite);
     return Container(
       key: const Key('impression:ticket'),
       width: mm(80),
@@ -144,7 +147,9 @@ class FeuilleA4 extends StatelessWidget {
         ),
       );
 
-  Widget _entete() => Container(
+  Widget _entete() {
+    final i = piece.identiteImprimee;
+    return Container(
         key: const Key('impression:entete'),
         padding: const EdgeInsets.only(bottom: 8),
         decoration: const BoxDecoration(
@@ -155,35 +160,37 @@ class FeuilleA4 extends StatelessWidget {
           const SizedBox(width: 16),
           Flexible(
             child: Column(children: [
-              const Text(IdentiteClinique.nomCourt,
-                  style: TextStyle(
+              Text(i.nomCourt,
+                  key: const Key('impression:entete:nom'),
+                  style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
                       height: 1.25,
                       letterSpacing: -0.5,
                       color: JetonsShell.navy950)),
               Text(
-                  '${IdentiteClinique.bp}   TÉL. : ${IdentiteClinique.telephones.join('  /  ')}',
+                  '${i.bp}   TÉL. : ${i.telephones.join('  /  ')}',
                   style: const TextStyle(
                       fontSize: 10,
                       height: 1.375,
                       color: JetonsShell.slate700)),
-              const Text(
-                  'AUTORISATION D’OUVERTURE ${IdentiteClinique.autorisation}',
-                  style: TextStyle(
+              Text(
+                  'AUTORISATION D’OUVERTURE ${i.autorisation}',
+                  style: const TextStyle(
                       fontSize: 9, height: 1.375, color: JetonsShell.slate700)),
-              const Text(
-                  'IFU : ${IdentiteClinique.ifu}   RCCM : ${IdentiteClinique.rccm}',
-                  style: TextStyle(
+              Text(
+                  'IFU : ${i.ifu}   RCCM : ${i.rccm}',
+                  key: const Key('impression:entete:ifu-rccm'),
+                  style: const TextStyle(
                       fontSize: 9,
                       height: 1.375,
                       fontWeight: FontWeight.w600,
                       color: JetonsShell.slate800)),
-              const Text('E-mail : ${IdentiteClinique.email}',
-                  style: TextStyle(
+              Text('E-mail : ${i.email}',
+                  style: const TextStyle(
                       fontSize: 9, height: 1.375, color: JetonsShell.slate700)),
-              const Text(IdentiteClinique.slogan,
-                  style: TextStyle(
+              Text(i.slogan,
+                  style: const TextStyle(
                       fontSize: 9,
                       height: 1.375,
                       fontWeight: FontWeight.w600,
@@ -195,6 +202,7 @@ class FeuilleA4 extends StatelessWidget {
           const SizedBox(width: 64, height: 64),
         ]),
       );
+  }
 
   Widget _filtres() => Container(
         key: const Key('impression:filtres'),
@@ -360,8 +368,8 @@ class FeuilleA4 extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text(
-                      '${IdentiteClinique.nom} — ${IdentiteClinique.rccm} — IFU ${IdentiteClinique.ifu}'),
+                  Text(
+                      '${piece.identiteImprimee.nom} — ${piece.identiteImprimee.rccm} — IFU ${piece.identiteImprimee.ifu}'),
                   Text(
                       'Document généré par ${piece.utilisateur} le ${dateHeure(piece.edite)}'),
                 ]),

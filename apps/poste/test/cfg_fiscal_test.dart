@@ -21,7 +21,7 @@ void main() {
     expect(find.textContaining('300 000'), findsWidgets);
     expect(find.textContaining('4 échéance(s) dans les trente jours : ITS le 10/11/2026 · AIB le 10/11/2026 · VPS le 10/11/2026 · CNSS le 10/11/2026.'), findsOneWidget);
     expect(find.text('11 j'), findsNWidgets(4));
-    expect(find.text('reportée — jour ouvrable'), findsNWidgets(2), reason: 'PATENTE-DECL (31/01/2027, un dimanche) et CCIB-DECL (28/02/2027, un dimanche)');
+    expect(find.text('reportée : jour ouvrable'), findsNWidgets(2), reason: 'PATENTE-DECL (31/01/2027, un dimanche) et CCIB-DECL (28/02/2027, un dimanche)');
     expect(find.text('01/02/2027'), findsOneWidget);
     expect(find.text('01/03/2027'), findsOneWidget);
   });
@@ -30,7 +30,7 @@ void main() {
     final m = magasinM14();
     await ouvrirM14(t, m, 'cfg-fiscalite', horloge: DateTime(2026, 10, 1, 10));
     expect(find.text('12/10/2026'), findsNWidgets(4));
-    expect(find.text('reportée — jour ouvrable'), findsWidgets);
+    expect(find.text('reportée : jour ouvrable'), findsWidgets);
     expect(find.text('10/10/2026'), findsNothing);
   });
 
@@ -44,22 +44,24 @@ void main() {
   casM14('identification fiscale UNIQUE (arbitrage du 31/08/2026), numérotation, obligations déclaratives : aucune saisie, aucune commande d’écriture', (t) async {
     final m = magasinM14();
     await ouvrirM14(t, m, 'cfg-fiscalite');
-    for (final k in ['3201642748214', 'RB/NAT/2016-B-268', 'CLINIQUE NASSIERA TOO SARL', 'FN-AAAA-NNNNN', 'CNT/[n°]/[AA]', 'Cotisations CNSS']) {
+    for (final k in ['3201642748214', 'RB/NAT/2016-B-268', 'FN-AAAA-NNNNN', 'CNT/[n°]/[AA]', 'Impôt sur les traitements salariaux (ITS)']) {
       expect(find.text(k), findsWidgets, reason: k);
     }
-    expect(find.widgetWithText(BoutonSigh, 'Éditer'), findsNWidgets(5));
+    // Le formulaire d'identité est l'écran (Direction, 06/11/2026) ; la table des obligations déclaratives est DÉRIVÉE des quatre mensuelles + deux fixes.
+    expect(find.widgetWithText(BoutonSigh, 'Éditer'), findsNWidgets(6));
     expect(find.widgetWithText(BoutonSigh, 'Configuration MECeF'), findsOneWidget);
+    expect(find.widgetWithText(BoutonSigh, 'Enregistrer'), findsOneWidget);
+    expect(find.widgetWithText(BoutonSigh, 'Valider l’identité légale'), findsOneWidget);
     expect(find.widgetWithText(BoutonSigh, 'Nouveau'), findsNothing);
-    expect(find.byTooltip('Modifier'), findsNothing);
   });
 
   casM14('comptabilité : obligations, acomptes d’IS, tranches, redevances ORTB radio 1 000 + télé 3 000 = 4 000 au-dessus de 60 000 F', (t) async {
     final m = magasinM14();
     await ouvrirM14(t, m, 'cfg-comptabilite');
-    for (final k in ['Obligations suivies', 'Mensuelles', 'Annuelles', 'Réglées en tranches']) {
+    for (final k in ['Obligations en vigueur', 'Mensuelles', 'Annuelles', 'Réglées en tranches']) {
       expect(find.text(k), findsWidgets, reason: k);
     }
-    expect(find.textContaining('CNSS — part patronale 16.4 %, part ouvrière 3.6 %. VPS — 4 % du salaire brut.'), findsOneWidget);
+    expect(find.textContaining('CNSS : part patronale 16.4 %, part ouvrière 3.6 %. VPS : 4 % du salaire brut.'), findsOneWidget);
     expect(find.text('le 10 septembre'), findsOneWidget);
     expect(find.textContaining('Un agent au-dessus du seuil acquitte donc'), findsOneWidget);
     expect(find.byWidgetPredicate((w) => w is Text && (w.data ?? '').replaceAll(RegExp(r'[\s\u202f\u00a0]'), '').contains('soit4000surl’année.')), findsOneWidget);
@@ -67,6 +69,6 @@ void main() {
     expect(find.text('Redevance ORTB / Télé'), findsOneWidget);
     expect(find.textContaining('par an, en deux tranches égales de'), findsOneWidget);
     expect(find.widgetWithText(BoutonSigh, 'Suivi nominatif'), findsOneWidget);
-    expect(find.text('Six obligations exigent une déclaration avant paiement — elle est signalée à l’échéance.'), findsOneWidget);
+    expect(find.textContaining('obligations exigent une déclaration avant paiement : elle est signalée à l’échéance.'), findsOneWidget);
   });
 }

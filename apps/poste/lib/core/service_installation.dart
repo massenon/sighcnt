@@ -198,18 +198,36 @@ class ServiceInstallation extends ChangeNotifier {
   int? appareilsAppaires;
 
   /// Les collections que chaque écran de configuration écrit : l'`entite` de ses entrées de journal. Une configuration est « faite » quand une écriture
-  /// la concerne depuis l'installation, ou quand l'administrateur l'a vérifiée sans rien y changer.
+  /// la concerne depuis l'installation, ou quand l'administrateur l'a vérifiée sans rien y changer. EXCEPTION ([configurationsAValider]) : l'identité
+  /// légale et les obligations fiscales se VALIDENT (Direction, 06/11/2026) ; leur ligne n'est faite que si TOUTES leurs fiches actives portent `valideLe`.
   static const Map<String, Set<String>> collectionsDesConfigurations = {
     'cfg-entetes': {'ressources'},
+    'cfg-fiscalite': {'identiteLegale'},
     'cfg-modules': {'modulesActifs'},
     'cfg-tarifs': {'actes', 'analyses', 'catalogueTarifs', 'produits', 'typesPiece'},
     'cfg-natures-facture': {'naturesFacture'},
-    'cfg-comptabilite': {'reglages'},
+    'cfg-comptabilite': {'obligationsFiscales'},
     'mecef-config': {'reglages'},
     'm14-roles': {'rbac'},
   };
 
-  /// Pour chaque écran de configuration : a-t-il été configuré (écriture au journal depuis l'installation) ou vérifié ?
+  /// Les écrans dont la ligne se coche PAR VALIDATION seulement : ni une écriture au journal, ni la case « vérifié » ne comptent.
+  static const Set<String> configurationsAValider = {'cfg-fiscalite', 'cfg-comptabilite'};
+
+  /// La configuration d'un écran à valider est-elle validée ? Toutes les fiches actives de sa collection portent `valideLe` (une fiche sans validation,
+  /// ou une collection vide, rend faux : rien n'a été vérifié par la Direction, la DAF ou l'administrateur).
+  bool configurationValidee(String ecran) {
+    final cols = collectionsDesConfigurations[ecran] ?? const <String>{};
+    for (final n in cols) {
+      final actives = _magasin.collection(n).actives;
+      if (actives.isEmpty) return false;
+      if (actives.any((f) => f['valideLe'] == null || '${f['valideLe']}'.trim().isEmpty)) return false;
+    }
+    return cols.isNotEmpty;
+  }
+
+  /// Pour chaque écran de configuration : a-t-il été configuré (écriture au journal depuis l'installation) ou vérifié ? Pour un écran à valider, `ecrit`
+  /// vaut « validé » et `verifie` reste faux quoi qu'ait coché l'administrateur.
   Map<String, ({bool ecrit, bool verifie})> lignesConfiguration() {
     final depuis = _etat.creeLe;
     final ecrites = <String>{};
@@ -221,7 +239,9 @@ class ServiceInstallation extends ChangeNotifier {
     }
     return {
       for (final e in collectionsDesConfigurations.entries)
-        e.key: (ecrit: e.value.any(ecrites.contains), verifie: _etat.lignesVerifiees.contains(e.key)),
+        e.key: configurationsAValider.contains(e.key)
+            ? (ecrit: configurationValidee(e.key), verifie: false)
+            : (ecrit: e.value.any(ecrites.contains), verifie: _etat.lignesVerifiees.contains(e.key)),
     };
   }
 

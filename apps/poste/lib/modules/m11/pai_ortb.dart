@@ -12,6 +12,10 @@ import 'pai_commun.dart';
 /// Télé 3 000 F, salaire brut supérieur à 60 000 F, en juin, EN SUS. Un agent au-dessus du seuil acquitte donc 4 000 F sur l'exercice. L'écran montre,
 /// agent par agent, la part radio, la part télé, ce qui est déjà prélevé et ce qui reste à prélever — la question du comptable au moment de reverser.
 /// Chacune n'apparaît que sur le bulletin de son mois : les porter chaque mois majorerait les retenues de onze douzièmes.
+///
+/// LES PARAMÈTRES SONT DATÉS (Direction, 06/11/2026 ; E2277) : montants, mois et seuil sont lus dans la version de `ORTB-PARAMETRES` en vigueur au premier
+/// du mois de paie choisi (`PaiParametresOrtb.aLaDate`), plus dans les constantes de la semence. Un seuil relevé en septembre ne touche pas le bulletin
+/// de juin.
 class EcranOrtb extends StatefulWidget with EcranMaquette {
   const EcranOrtb({super.key});
 
@@ -33,8 +37,10 @@ class EcranOrtb extends StatefulWidget with EcranMaquette {
 class _EtatOrtb extends State<EcranOrtb> {
   ControleurFormulaire? _mois;
 
-  static final _radio = paiRedevances.firstWhere((r) => r.id == 'radio');
-  static final _tele = paiRedevances.firstWhere((r) => r.id == 'tele');
+  /// Les paramètres en vigueur au premier du mois choisi, lus au magasin.
+  PaiParametresOrtb _parametres(ContexteEcran c) => PaiParametresOrtb.aLaDate(DateTime(paiAnnee, _m + 1, 1),
+      obligations: c.magasin.collection('obligationsFiscales').toutes, historique: c.magasin.collection('historiqueObligations').toutes);
+  PaiRedevance _red(PaiParametresOrtb p, String id) => p.redevances.firstWhere((r) => r.id == id, orElse: () => paiRedevances.firstWhere((r) => r.id == id));
 
   @override
   void didChangeDependencies() {
@@ -80,6 +86,8 @@ class _EtatOrtb extends State<EcranOrtb> {
   static String _mf(num v) => money(v, avecDevise: false);
 
   void _imprimer(BuildContext ctx, ContexteEcran c) {
+    final p = _parametres(c);
+    final radio = _red(p, 'radio'), tele = _red(p, 'tele');
     final rows = trierPar(_lignes(c).where((r) => r.categorie != 'aucune').toList(), (r) => r.agent);
     num somme(num Function(PaiLigneOrtbAgent) f) => rows.fold<num>(0, (a, r) => a + f(r));
     afficherApercu(
@@ -90,8 +98,8 @@ class _EtatOrtb extends State<EcranOrtb> {
             cartouche: [
               ('Période', '${paiMois[_m]} $paiAnnee'),
               ('Agents redevables', nombre(rows.length)),
-              ('ORTB Radio', '${nombre(rows.where((r) => r.radio > 0).length)} agents — ${_mf(_radio.montant)} en ${_radio.moisLabel}'),
-              ('ORTB Télé', '${nombre(rows.where((r) => r.tele > 0).length)} agents — ${_mf(_tele.montant)} en ${_tele.moisLabel}'),
+              ('ORTB Radio', '${nombre(rows.where((r) => r.radio > 0).length)} agents — ${_mf(radio.montant)} en ${radio.moisLabel}'),
+              ('ORTB Télé', '${nombre(rows.where((r) => r.tele > 0).length)} agents — ${_mf(tele.montant)} en ${tele.moisLabel}'),
               ('Dû sur le mois', money(somme((r) => r.duCeMois))),
               ('Total de l’exercice', money(somme((r) => r.totalAnnuel))),
             ],
@@ -118,6 +126,8 @@ class _EtatOrtb extends State<EcranOrtb> {
     return ListenableBuilder(
       listenable: ecoutePaie(c),
       builder: (context, _) {
+        final p = _parametres(c);
+        final radio = _red(p, 'radio'), tele = _red(p, 'tele');
         final rows = _lignes(c);
         final avecTele = rows.where((r) => r.tele > 0).toList();
         final duCeMois = rows.fold<num>(0, (a, r) => a + r.duCeMois);
@@ -140,19 +150,19 @@ class _EtatOrtb extends State<EcranOrtb> {
                 libelle: 'ORTB Radio — tous les salariés',
                 valeur: nombre(rows.length),
                 icone: LucideIcons.radioTower,
-                indice: '${money(rows.length * _radio.montant)} en ${_radio.moisLabel}'),
+                indice: '${money(rows.length * radio.montant)} en ${radio.moisLabel}'),
             KpiSigh(
-                libelle: 'ORTB Télé — au-delà de ${_mf(paiSeuilTele)}',
+                libelle: 'ORTB Télé — au-delà de ${_mf(p.seuilTele)}',
                 valeur: nombre(avecTele.length),
                 icone: LucideIcons.tv,
                 ton: TonSigh.info,
-                indice: '${money(avecTele.length * _tele.montant)} en ${_tele.moisLabel}'),
+                indice: '${money(avecTele.length * tele.montant)} en ${tele.moisLabel}'),
             KpiSigh(
                 libelle: 'Cumul par agent au-delà du seuil',
-                valeur: money(paiCumulMaximum),
+                valeur: money(p.cumulMaximum),
                 icone: LucideIcons.layers,
                 ton: TonSigh.neutre,
-                indice: '${_mf(_radio.montant)} radio + ${_mf(_tele.montant)} télé'),
+                indice: '${_mf(radio.montant)} radio + ${_mf(tele.montant)} télé'),
             KpiSigh(
                 libelle: 'Dû sur ${paiMois[_m]}',
                 valeur: money(duCeMois),
@@ -162,9 +172,10 @@ class _EtatOrtb extends State<EcranOrtb> {
           ]),
           const SizedBox(height: 16),
           NoteSigh(
-              'La radio et la télé sont deux redevances distinctes qui se cumulent : un salaire supérieur à ${_mf(paiSeuilTele)} n’est pas dispensé de la radio, il acquitte les deux. '
-              'Total dû sur l’exercice $paiAnnee : ${money(totalExercice)} — ${money(rows.length * _radio.montant)} en ${_radio.moisLabel} (radio) et '
-              '${money(avecTele.length * _tele.montant)} en ${_tele.moisLabel} (télé).',
+              'La radio et la télé sont deux redevances distinctes qui se cumulent : un salaire supérieur à ${_mf(p.seuilTele)} n’est pas dispensé de la radio, il acquitte les deux. '
+              'Total dû sur l’exercice $paiAnnee : ${money(totalExercice)} — ${money(rows.length * radio.montant)} en ${radio.moisLabel} (radio) et '
+              '${money(avecTele.length * tele.montant)} en ${tele.moisLabel} (télé)'
+              '${p.fiche['dateEffet'] != null ? ' ; paramètres en vigueur depuis le ${dateFR(DateTime.parse(isoJour(p.fiche['dateEffet'])))}' : ''}.',
               ton: TonSigh.info,
               icone: LucideIcons.landmark),
           const SizedBox(height: 16),
