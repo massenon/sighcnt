@@ -8,6 +8,7 @@ Les règles de gestion (RG-01→14), la doctrine et les pièges sont dans [`CLAU
 | Document | Pour quoi faire |
 |---|---|
 | [`guides/GUIDE-DEMARRAGE.md`](guides/GUIDE-DEMARRAGE.md) | **Cloner, tester, mettre à jour, repartir d'une base propre** (installation, bancs d'essai, sauvegarde, restauration) |
+| [`guides/PANNE-DE-CONNEXION.md`](guides/PANNE-DE-CONNEXION.md) | **Panne de connexion** : ce qui continue sur un fileul coupé de la mère et sur la mère coupée d'Internet, ce qui attend, ce qui se passe au retour, avec la preuve de chaque affirmation |
 | [`guides/BIBLIOTHEQUE-DOCUMENTAIRE.md`](guides/BIBLIOTHEQUE-DOCUMENTAIRE.md) | Les ~40 documents demandés le 27/10/2026 : matière existante, compétence productrice, statut |
 
 ## Architecture et décisions

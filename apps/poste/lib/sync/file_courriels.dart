@@ -13,6 +13,11 @@ import 'config_pair.dart';
 /// États : `en_file` (prochain essai à une heure dite), `en_cours` (un essai est parti), `parti`, `echec_definitif` (les essais sont épuisés ; le bouton « Renvoyer » le
 /// remet en file). Délais entre essais : 1 min, 5 min, 30 min, 2 h, puis 12 h ; huit essais au plus.
 ///
+/// ENVOI DIRECT D'ABORD, FILE ENSUITE (décision de la Direction du 06/11/2026) : `ajouter()` écrit le message puis TENTE L'ENVOI TOUT DE SUITE ; connecté, le
+/// courriel part sans attendre la minuterie et l'écran dit « Parti » ; coupé, il reste en file avec l'étape en échec nommée et les reprises espacées. Le VERROU
+/// est PAR MESSAGE : l'état `en_cours` est écrit de façon synchrone avant le premier `await`, si bien que l'essai immédiat et la minuterie ne peuvent jamais
+/// envoyer deux fois le même courriel ; il n'y a plus de verrou global, qui faisait attendre un envoi immédiat derrière un tour de minuterie.
+///
 /// GARANTIE : AU MOINS UNE FOIS, jamais « exactement une ». Au redémarrage, un message resté `en_cours` repart. S'il avait été interrompu ENTRE la commande DATA et la
 /// réponse du serveur, le serveur a pu l'accepter sans que le poste l'apprenne : le destinataire en reçoit alors deux. Le `Message-ID` est STABLE (l'identifiant du
 /// message de la file) pour que sa messagerie puisse dédoublonner. Éviter le doublon exigerait de perdre un courriel sur une coupure : c'est le mauvais côté.
@@ -115,7 +120,6 @@ class FileCourriels extends ChangeNotifier {
 
   final List<MessageCourriel> _messages = [];
   Timer? _minuterie;
-  bool _enTraitement = false;
 
   /// Non nul si `courriels.json` n'a pas pu être lu : la file refuse alors toute écriture plutôt que d'écraser ce qu'elle ne comprend pas.
   String? erreur;
@@ -164,8 +168,10 @@ class FileCourriels extends ChangeNotifier {
   }
 
   // --- gestes -----------------------------------------------------------------------------------------------------------------------------------------
-  /// Met un courriel en file : il est ÉCRIT sur disque avant que cette méthode rende la main (rien à perdre ensuite). Lève [StateError] si la file est illisible.
-  MessageCourriel ajouter({required String destinataire, required String sujet, required String corps, String? reference}) {
+  /// Met un courriel en file : il est ÉCRIT sur disque avant que cette méthode rende la main (rien à perdre ensuite), puis, par défaut, l'essai d'envoi part
+  /// TOUT DE SUITE en arrière-plan ([immediat] ; `false` pour laisser la minuterie faire, ou pour attendre soi-même l'issue par [essayer]). Lève [StateError] si la
+  /// file est illisible.
+  MessageCourriel ajouter({required String destinataire, required String sujet, required String corps, String? reference, bool immediat = true}) {
     final m = MessageCourriel(
       id: _identifiant(),
       destinataire: destinataire,
@@ -183,6 +189,14 @@ class FileCourriels extends ChangeNotifier {
       rethrow;
     }
     notifyListeners();
+    if (immediat) unawaited(essayer(m.id));
+    return m;
+  }
+
+  /// Met en file PUIS attend l'issue du premier essai : l'appelant sait, au retour, si le courriel est parti ou pourquoi il attend.
+  Future<MessageCourriel> ajouterEtEnvoyer({required String destinataire, required String sujet, required String corps, String? reference}) async {
+    final m = ajouter(destinataire: destinataire, sujet: sujet, corps: corps, reference: reference, immediat: false);
+    await essayer(m.id);
     return m;
   }
 
@@ -213,48 +227,53 @@ class FileCourriels extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Traite les messages dus. Chacun passe `en_cours` (écrit sur disque) AVANT l'envoi : une interruption le laisse repérable. Un seul traitement à la fois.
-  Future<void> traiter() async {
-    if (_enTraitement || erreur != null) return;
-    _enTraitement = true;
+  /// UN essai pour UN message. Le message passe `en_cours` sur disque AVANT l'envoi (une interruption le laisse repérable), de façon SYNCHRONE : c'est le verrou
+  /// par message. Un message qui n'est plus `en_file` (déjà en cours, parti, ou en échec définitif) est ignoré : l'essai immédiat et la minuterie ne se doublent pas.
+  Future<void> essayer(String id) async {
+    if (erreur != null) return;
+    final m = message(id);
+    if (m == null || m.etat != 'en_file') return;
+    m.etat = 'en_cours';
+    _ecrire();
+    notifyListeners();
+    IssueEnvoi issue;
     try {
-      for (final m in _messages.where((m) => m.etat == 'en_file' && !(m.prochainEssaiLe ?? _maintenant()).isAfter(_maintenant())).toList()) {
-        m.etat = 'en_cours';
-        _ecrire();
-        notifyListeners();
-        IssueEnvoi issue;
-        try {
-          issue = await envoyer(m);
-        } catch (e) {
-          issue = IssueEnvoi.echec('envoi', 'Erreur inattendue : $e');
-        }
-        m.essais += 1;
-        if (issue.ok) {
-          m
-            ..etat = 'parti'
-            ..partiLe = _maintenant()
-            ..prochainEssaiLe = null
-            ..etapeEchec = null
-            ..detailEchec = null;
-        } else {
-          m
-            ..etapeEchec = issue.etape
-            ..detailEchec = issue.detail;
-          if (m.essais >= maxEssais) {
-            m
-              ..etat = 'echec_definitif'
-              ..prochainEssaiLe = null;
-          } else {
-            m
-              ..etat = 'en_file'
-              ..prochainEssaiLe = _maintenant().add(delais[(m.essais - 1).clamp(0, delais.length - 1)]);
-          }
-        }
-        _ecrire();
-        notifyListeners();
+      issue = await envoyer(m);
+    } catch (e) {
+      issue = IssueEnvoi.echec('envoi', 'Erreur inattendue : $e');
+    }
+    m.essais += 1;
+    if (issue.ok) {
+      m
+        ..etat = 'parti'
+        ..partiLe = _maintenant()
+        ..prochainEssaiLe = null
+        ..etapeEchec = null
+        ..detailEchec = null;
+    } else {
+      m
+        ..etapeEchec = issue.etape
+        ..detailEchec = issue.detail;
+      if (m.essais >= maxEssais) {
+        m
+          ..etat = 'echec_definitif'
+          ..prochainEssaiLe = null;
+      } else {
+        m
+          ..etat = 'en_file'
+          ..prochainEssaiLe = _maintenant().add(delais[(m.essais - 1).clamp(0, delais.length - 1)]);
       }
-    } finally {
-      _enTraitement = false;
+    }
+    _ecrire();
+    notifyListeners();
+  }
+
+  /// Traite les messages DUS (la minuterie, ou un appel explicite), l'un après l'autre. Un message déjà en cours d'envoi est laissé à son essai.
+  Future<void> traiter() async {
+    if (erreur != null) return;
+    final auj = _maintenant();
+    for (final m in _messages.where((m) => m.etat == 'en_file' && !(m.prochainEssaiLe ?? auj).isAfter(auj)).toList()) {
+      await essayer(m.id);
     }
   }
 

@@ -326,9 +326,10 @@ class _EtatContact extends State<EcranContactEditeur> {
       ToastsSigh.afficher(context, accToastCourrielNonParti, type: TypeToast.attention, detail: 'Messagerie non configurée. Référence $reference.');
       return;
     }
-    final m = file.ajouter(destinataire: '${(accEditeur['emails'] as List).first}', sujet: '[SIGH-CNT] ${donnees['objet']}', corps: texte, reference: reference);
+    // L'essai d'envoi est IMMÉDIAT et l'écran attend son issue ; la fiche est rattachée au message AVANT l'essai, pour afficher « Envoi en cours » pendant.
+    final m = file.ajouter(destinataire: '${(accEditeur['emails'] as List).first}', sujet: '[SIGH-CNT] ${donnees['objet']}', corps: texte, reference: reference, immediat: false);
     col.mettreAJour(r.fiche['id'], {'courriel': 'file', 'courrielId': m.id});
-    await file.traiter();
+    await file.essayer(m.id);
     if (!mounted) return;
     final etat = file.message(m.id);
     if (etat?.etat == 'parti') {
