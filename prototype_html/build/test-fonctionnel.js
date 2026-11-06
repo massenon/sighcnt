@@ -12498,6 +12498,88 @@ async function viderMessages(page) {
   }
 
   {
+    scenario('Vague 78 — échanges entre postes (mode pair) : clé affichée une seule fois, refus nommés, récupération par courriel fermée par défaut, admin et DA seulement');
+    const profil = (role) => ({ role: role, fonction: role, nom: 'Sonde ' + role, nomComplet: 'Sonde ' + role, identifiant: role });
+    const poser = async (role) => { await ouvrir('m1-patients.html'); await page.evaluate((s) => window.SIGH.store.setSession(s), profil(role)); };
+    await poser('admin');
+    await page.evaluate(() => { try { localStorage.removeItem('sigh-cnt:pair'); } catch (e) { /* sans stockage */ } });
+    await ouvrir('cfg-pair.html');
+    erreursJS = [];
+    const lireEcran = () => page.evaluate(() => ({
+      texte: document.querySelector('#page-content').innerText.replace(/\s+/g, ' '),
+      champs: [...document.querySelectorAll('#page-content label')].map((l) => l.textContent.trim()),
+      boutons: [...document.querySelectorAll('#page-content button')].map((b) => b.textContent.trim()).filter(Boolean),
+      toasts: [...document.querySelectorAll('.toast, [role="status"]')].map((t) => t.textContent.trim()),
+      cle: (document.querySelector('input[aria-label="Clé unique de la clinique"]') || {}).value || null,
+      stock: (function () { try { return localStorage.getItem('sigh-cnt:pair') || ''; } catch (e) { return ''; } })(),
+    }));
+    const cliquer = (libelle) => page.evaluate(async (l) => {
+      const b = [...document.querySelectorAll('#page-content button')].find((x) => x.textContent.trim() === l);
+      if (b) b.click();
+      await new Promise((r) => setTimeout(r, 250));
+      return !!b;
+    }, libelle);
+    const saisir = (id, v) => page.evaluate((a) => { const e = document.getElementById(a[0]); e.value = a[1]; e.dispatchEvent(new Event('input', { bubbles: true })); e.dispatchEvent(new Event('change', { bubbles: true })); }, [id, v]);
+
+    const e0 = await lireEcran();
+    verifier('L’écran porte ses quatre cartes et ses champs nommés ; désactivé et non appairé au départ',
+      /Mode pair Désactivé/.test(e0.texte) && /Appairage Non appairé/.test(e0.texte) && e0.champs.includes('Adresse du relais *') && e0.champs.includes('Nom de ce poste *') && e0.champs.some((c) => /Code d’appairage/.test(c)), JSON.stringify([e0.texte.slice(0, 200), e0.champs]));
+    verifier('La récupération par courriel est FERMÉE par défaut : ni courriel ni phrase secrète n’apparaissent', !e0.champs.some((c) => /courriel de récupération|Phrase secrète/.test(c)), JSON.stringify(e0.champs));
+
+    await saisir('f_relais', 'relais-sans-schema'); await saisir('f_nom', 'Poste test');
+    await cliquer('Enregistrer la configuration');
+    const e1 = await lireEcran();
+    verifier('Une adresse sans http(s):// est refusée en le disant, rien n’est écrit', e1.toasts.some((t) => /http:\/\/ ou https:\/\//.test(t)) && !/relais-sans-schema/.test(e1.stock), JSON.stringify([e1.toasts, e1.stock]));
+
+    await saisir('f_relais', 'https://relais.exemple.bj/');
+    await page.evaluate(() => { const c = document.getElementById('f_actif'); c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await cliquer('Enregistrer la configuration');
+    const e2 = await lireEcran();
+    verifier('Activer sans clé générée est refusé en nommant la cause', e2.toasts.some((t) => /Générer d’abord la clé/.test(t)) && !/"actif":true/.test(e2.stock), JSON.stringify([e2.toasts, e2.stock]));
+
+    await cliquer('Générer la clé');
+    const e3 = await lireEcran();
+    verifier('La clé est affichée UNE fois : 64 caractères hexadécimaux (256 bits), avec ses deux commandes', /^[0-9a-f]{64}$/.test(e3.cle || '') && e3.boutons.includes('Copier la clé') && e3.boutons.includes('J’ai noté la clé'), JSON.stringify([e3.cle, e3.boutons]));
+    verifier('Le stockage du poste ne contient AUCUN bit de la clé, seulement le fait qu’elle existe', !!e3.cle && !e3.stock.includes(e3.cle) && /"cleGeneree":true/.test(e3.stock) && !/[0-9a-f]{16}/.test(e3.stock.replace(/"cleLe":"[^"]*"/, '')), JSON.stringify(e3.stock));
+    const cleMontree = e3.cle;
+    await cliquer('J’ai noté la clé');
+    const e4 = await lireEcran();
+    verifier('Après « J’ai noté la clé », elle ne s’affiche PLUS jamais (ni champ, ni texte), et l’écran dit où elle en est', e4.cle === null && !e4.texte.includes(cleMontree) && /n’est plus affichée/.test(e4.texte), JSON.stringify([e4.cle, e4.texte.slice(0, 300)]));
+    await ouvrir('cfg-pair.html');
+    const e5 = await lireEcran();
+    verifier('Rouvrir l’écran ne la montre pas davantage', e5.cle === null && !e5.texte.includes(cleMontree) && e5.boutons.includes('Générer une nouvelle clé'), JSON.stringify([e5.cle, e5.boutons]));
+
+    await saisir('f_relais', 'https://relais.exemple.bj/'); await saisir('f_nom', 'Poste test');
+    await page.evaluate(() => { const c = document.getElementById('f_actif'); c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); });
+    await cliquer('Enregistrer la configuration');
+    const e6 = await lireEcran();
+    verifier('Avec relais, nom et clé, le mode pair s’active ; l’adresse est normalisée (sans barre finale) et le code n’est pas conservé',
+      /"actif":true/.test(e6.stock) && /"relais":"https:\/\/relais\.exemple\.bj"/.test(e6.stock) && !/code/.test(e6.stock), JSON.stringify(e6.stock));
+
+    const bascule = await page.evaluate(async () => { const c = document.getElementById('f_recuperation'); if (!c) return false; c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); await new Promise((r) => setTimeout(r, 300)); return true; });
+    const e7 = await lireEcran();
+    verifier('Ouvrir la récupération par courriel fait apparaître le courriel et la phrase secrète, qui ne sont jamais stockés',
+      bascule && e7.champs.some((c) => /courriel de récupération/.test(c)) && e7.champs.some((c) => /Phrase secrète/.test(c)) && !/phrase/i.test(e7.stock), JSON.stringify([bascule, e7.champs, e7.stock]));
+    await saisir('f_courriel', 'dg@clinique.bj'); await saisir('f_phrase', 'court');
+    await cliquer('Envoyer la clé par courriel');
+    const e8 = await lireEcran();
+    verifier('Une phrase secrète de moins de huit caractères est refusée en le disant', e8.toasts.some((t) => /au moins 8 caractères/.test(t)), JSON.stringify(e8.toasts));
+
+    const droits = {};
+    for (const role of ['admin', 'da', 'direction', 'comptable', 'reception', 'medecin', 'caissier']) {
+      await poser(role);
+      droits[role] = await page.evaluate((r) => { const e = window.SIGH.nav.get('cfg-pair'); return window.SIGH.nav.can(r, { id: 'cfg-pair', roles: e.roles, module: e.module }); }, role);
+    }
+    verifier('Seuls l’administrateur et la DAF ouvrent l’écran', droits.admin && droits.da && !droits.direction && !droits.comptable && !droits.reception && !droits.medecin && !droits.caissier, JSON.stringify(droits));
+    await poser('da'); await ouvrir('parametres-hub.html');
+    const carteDa = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-pair/.test(a.getAttribute('href') || '')));
+    await poser('direction'); await ouvrir('parametres-hub.html');
+    const carteDir = await page.evaluate(() => [...document.querySelectorAll('#page-content a.hub-card')].some((a) => /cfg-pair/.test(a.getAttribute('href') || '')));
+    verifier('La carte figure dans les Paramètres système de la DAF et jamais dans ceux de la direction (RG-13)', carteDa === true && carteDir === false, JSON.stringify([carteDa, carteDir]));
+    verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
+  }
+
+  {
     scenario('Vague 75 — archive légale d’une clôture : CSV des écritures SYSCOHADA, balance, états, manifeste SHA-256, immuable, vérifiée au téléchargement');
     const ADMIN = { role: 'admin', fonction: 'direction', nom: 'BASSONGUI Chabi Séko', nomComplet: 'BASSONGUI Chabi Séko', identifiant: 'admin' };
     await ouvrir('m1-patients.html');

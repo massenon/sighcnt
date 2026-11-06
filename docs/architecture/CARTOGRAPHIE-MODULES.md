@@ -59,7 +59,7 @@
 | Rangée | Module | Type | Écrans | Rôles d'origine |
 |---|---|---|---|---|
 | Sécurité & Utilisateurs | M14 | canonique | 8 | admin, direction, da |
-| Configuration Clinique | CFG | canonique | 19 | admin, da, direction |
+| Configuration Clinique | CFG | canonique | 20 | admin, da, direction |
 | Importation de données | IMP | canonique | 10 | admin, da, direction, stock, reception, agentadmin, comptable, laborantin |
 
 ## Poste mère

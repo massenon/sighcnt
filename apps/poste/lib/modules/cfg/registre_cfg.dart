@@ -16,6 +16,7 @@ import 'cfb_modules.dart';
 import 'cfb_notifications.dart';
 import 'cfb_regles.dart';
 import 'cfb_systeme.dart';
+import 'cfg_pair.dart';
 
 typedef ConstruireEcran = Widget Function(BuildContext contexte, ConfigPoste config);
 
@@ -41,4 +42,5 @@ final Map<String, ConstruireEcran> ecransCFG = {
   'cfg-compte': (c, cfg) => const EcranCompte(),
   'cfg-modules': (c, cfg) => const EcranModules(),
   'cfg-systeme': (c, cfg) => EcranSysteme(estMere: cfg.estMere),
+  'cfg-pair': (c, cfg) => const EcranPair(),
 };

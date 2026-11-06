@@ -4106,4 +4106,129 @@
     },
   });
 
+  /* ==========================================================================
+   * ÉCHANGES ENTRE POSTES (MODE PAIR) — ADR-0006
+   * --------------------------------------------------------------------------
+   * Le réglage PROPRE à ce poste : où se trouve le relais, sous quelle clé unique de la clinique les opérations sont chiffrées, sous quel nom ce poste
+   * s'annonce, et le code d'appairage à usage unique. Rien de tout cela ne voyage : un réglage de poste qui se synchroniserait enverrait la clé aux autres
+   * postes par le chemin même qu'elle protège. La clé s'affiche UNE SEULE FOIS, à sa génération ; ensuite l'écran ne la montre plus jamais. La récupération
+   * par courriel est un réglage FERMÉ par défaut : la clé n'y part que chiffrée par une phrase secrète que le système ne garde pas.
+   * Prototype : simulation locale (aucun relais joint), le geste et ses refus sont ceux du poste.
+   * ========================================================================== */
+  global.SIGH.screen('cfg-pair', {
+    title: 'Échanges entre postes (mode pair)',
+    description: 'Réglage de ce poste pour échanger ses opérations avec les autres postes par le relais, sans passer par la mère.',
+    regle: 'Les opérations sont <strong>chiffrées de bout en bout</strong> avec la clé unique de la clinique : le relais ne voit que des enveloppes. La clé <strong>ne s’affiche qu’une seule fois</strong>, à sa génération, et ne voyage jamais.',
+    render: function (root) {
+      var CLE = 'sigh-cnt:pair';
+      var lire = function () { try { return JSON.parse(S.storage.get(CLE) || '{}') || {}; } catch (e) { return {}; } };
+      var ecrire = function (o) { S.storage.set(CLE, JSON.stringify(o)); };
+      var hote = el('div.space-y-4');
+      var cleMontree = null; /* la clé en clair n'existe qu'en mémoire, le temps de l'écran */
+
+      function hex() {
+        var a = new Uint8Array(32); (global.crypto || global.msCrypto).getRandomValues(a);
+        return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+      }
+
+      function peindre() {
+        var c = lire();
+        C.clear(hote);
+        hote.appendChild(U.kpiGrid([
+          { label: 'Mode pair', value: c.actif ? 'Activé' : 'Désactivé', icon: 'git-compare-arrows', tone: c.actif ? 'success' : 'neutral' },
+          { label: 'Appairage', value: c.appaire ? 'Appairé' : 'Non appairé', icon: 'link', tone: c.appaire ? 'success' : 'warning' },
+          { label: 'Conflits à trancher', value: 0, icon: 'git-merge', tone: 'neutral' },
+          { label: 'Opérations en attente', value: 0, icon: 'cloud-upload', tone: 'neutral' },
+        ]));
+
+        var f = U.form([
+          { name: 'relais', label: 'Adresse du relais', required: true, col: 'full', value: c.relais || '', help: 'Exemple : https://relais.exemple.bj' },
+          { name: 'nom', label: 'Nom de ce poste', required: true, value: c.nom || '' },
+          { name: 'code', label: 'Code d’appairage (usage unique)', value: '', help: 'Délivré par le relais. Consommé au premier lancement, jamais gardé.' },
+          { name: 'actif', label: 'Activer le mode pair sur ce poste', type: 'checkbox', col: 'full', value: !!c.actif },
+        ], {});
+        hote.appendChild(U.card('Configuration du mode pair', el('div', null, [
+          f,
+          el('div.mt-4', null, K.commande('Enregistrer la configuration', {
+            variant: 'primary', icon: 'save',
+            onclick: function () {
+              var v = f.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              if (!/^https?:\/\/[^\s/]+/.test(v.relais)) { U.toast('L’adresse du relais doit commencer par http:// ou https://.', { type: 'error' }); return; }
+              if (v.actif && !c.cleGeneree) { U.toast('Générer d’abord la clé unique de la clinique : sans elle, aucune opération ne peut être chiffrée.', { type: 'error' }); return; }
+              var n = Object.assign({}, c, { relais: v.relais.replace(/\/+$/, ''), nom: v.nom, actif: !!v.actif });
+              if (v.code) n.appaire = true; /* le code est consommé, jamais conservé */
+              ecrire(n);
+              S.log('Modification', 'CFG', 'Mode pair', n.nom, { actif: !!c.actif }, { actif: n.actif, relais: n.relais, appaire: !!n.appaire });
+              U.toast('Configuration enregistrée (simulation : aucun relais joint).', { type: 'success' });
+              peindre();
+            },
+          })),
+        ])));
+
+        var corpsCle = el('div.space-y-3');
+        corpsCle.appendChild(K.note('La clé est <strong>unique pour toute la clinique</strong> : tous les postes doivent porter la même. Notez-la ou copiez-la maintenant, elle ne sera plus affichée.', { tone: 'warning', icon: 'key-round' }));
+        if (cleMontree) {
+          var champ = el('input.input.font-mono.text-xs', { type: 'text', readonly: true, value: cleMontree, 'aria-label': 'Clé unique de la clinique' });
+          corpsCle.appendChild(champ);
+          corpsCle.appendChild(el('div.flex.gap-2', null, [
+            K.btn('Copier la clé', { variant: 'secondary', icon: 'copy', onclick: function () {
+              try { global.navigator.clipboard.writeText(cleMontree); } catch (e) { /* presse-papiers indisponible */ }
+              U.toast('Clé copiée.', { type: 'success' });
+            } }),
+            K.btn('J’ai noté la clé', { variant: 'primary', icon: 'check', onclick: function () { cleMontree = null; peindre(); } }),
+          ]));
+        } else {
+          corpsCle.appendChild(el('p.text-sm.text-slate-600', { text: c.cleGeneree ? 'La clé a été générée le ' + C.dateFR(c.cleLe) + '. Elle n’est plus affichée.' : 'Aucune clé n’a encore été générée sur ce poste.' }));
+          corpsCle.appendChild(K.commande(c.cleGeneree ? 'Générer une nouvelle clé' : 'Générer la clé', {
+            variant: c.cleGeneree ? 'danger' : 'primary', icon: 'key-round',
+            onclick: function () {
+              var faire = function () {
+                cleMontree = hex();
+                ecrire(Object.assign({}, lire(), { cleGeneree: true, cleLe: C.isoLocal ? C.isoLocal().slice(0, 10) : new Date().toISOString().slice(0, 10) }));
+                S.log('Création', 'CFG', 'Clé du mode pair', 'clé de la clinique', null, { generee: true });
+                peindre();
+              };
+              if (!c.cleGeneree) { faire(); return; }
+              U.confirm({ title: 'Générer une nouvelle clé ?', message: 'Les enveloppes déjà déposées au relais resteront chiffrées avec l’ancienne clé : tous les postes devront recevoir la nouvelle. Cette action ne peut pas être annulée.', confirmLabel: 'Générer une nouvelle clé', danger: true }).then(function (ok) { if (ok) faire(); });
+            },
+          }));
+        }
+        hote.appendChild(U.card('Clé unique de la clinique', corpsCle));
+
+        var r = U.form([
+          { name: 'recuperation', label: 'Permettre la récupération de la clé par courriel', type: 'checkbox', col: 'full', value: !!c.recuperation },
+          c.recuperation ? { name: 'courriel', label: 'Adresse de courriel de récupération', type: 'email', required: true, value: c.courriel || '' } : null,
+          c.recuperation ? { name: 'phrase', label: 'Phrase secrète', type: 'password', required: true, help: 'Chiffre la clé avant l’envoi. Le système ne la garde pas : la perdre rend la clé irrécupérable.' } : null,
+        ], {});
+        var cb = r.querySelector('#f_recuperation');
+        if (cb) cb.addEventListener('change', function () { ecrire(Object.assign({}, lire(), { recuperation: cb.checked })); peindre(); });
+        hote.appendChild(U.card('Récupération de la clé par courriel', el('div.space-y-3', null, [
+          K.note('Réglage <strong>fermé par défaut</strong> : tant qu’il l’est, la perte de la clé ne se rattrape que sur un autre poste de la clinique.', { tone: 'info', icon: 'mail' }),
+          r,
+          c.recuperation ? K.commande('Envoyer la clé par courriel', {
+            variant: 'primary', icon: 'send',
+            onclick: function () {
+              var v = r.collect();
+              if (!v) { U.toast('Le formulaire comporte des erreurs.', { type: 'error' }); return; }
+              if (String(v.phrase).length < 8) { U.toast('La phrase secrète doit comporter au moins 8 caractères.', { type: 'error' }); return; }
+              if (!c.cleGeneree) { U.toast('Aucune clé à envoyer : la générer d’abord.', { type: 'error' }); return; }
+              ecrire(Object.assign({}, lire(), { courriel: v.courriel }));
+              S.log('Modification', 'CFG', 'Récupération de la clé', v.courriel, null, { envoi: 'simulé' });
+              U.toast('Simulation : la clé, chiffrée par la phrase secrète, serait envoyée à ' + v.courriel + '.', { type: 'info' });
+            },
+          }) : null,
+        ])));
+
+        hote.appendChild(U.card('État du mode pair', U.descList([
+          ['Relais', c.relais || 'Non renseigné'],
+          ['Nom de ce poste', c.nom || 'Non renseigné'],
+          ['Clé de la clinique', c.cleGeneree ? 'Générée' : 'Absente'],
+          ['Derniers échanges', 'Aucun (simulation)'],
+        ])));
+      }
+      root.appendChild(hote); peindre(); return null;
+    },
+  });
+
 })(window);

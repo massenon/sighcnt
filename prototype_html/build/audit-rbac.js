@@ -119,7 +119,10 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
   const cachees = [];     /* droit accordé, aucune commande */
   let sondes = 0;
 
+  /* --roles=admin,da : ne sonder que ces profils (l'audit complet dépasse la demi-heure sous charge). */
+  const SEULS = ((process.argv.find((a) => a.startsWith('--roles=')) || '').slice(8)).split(',').filter(Boolean);
   for (const [role, fonction] of PROFILS) {
+    if (SEULS.length && SEULS.indexOf(role) < 0) continue;
     await page.evaluate((r, f) => localStorage.setItem('sigh-cnt:session', JSON.stringify({
       role: r, nom: 'Audit ' + r, nomComplet: 'Audit ' + r, identifiant: 'audit', fonction: f,
     })), role, fonction);
@@ -144,8 +147,12 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
       try { await page.evaluate(() => !!window.SIGH); break; }
       catch (e) { await new Promise((r) => setTimeout(r, 1500)); }
     }
-    await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav), { timeout: 60000 }).catch(() => null);
-    const accessibles = await page.evaluate((r) => {
+    /* Le cadre peut être détaché par le rebond lui-même : l'attente lève alors de façon SYNCHRONE, que `.catch` ne rattrape pas. */
+    for (let essai = 0; essai < 5; essai++) {
+      try { await page.waitForFunction(() => !!(window.SIGH && window.SIGH.store && window.SIGH.nav), { timeout: 60000 }); break; }
+      catch (e) { await new Promise((r) => setTimeout(r, 1500)); }
+    }
+    const sonderAccessibles = (r) => {
       const N = window.SIGH.nav;
       const out = [];
       (N.NAV || []).forEach((dom) => (dom.modules || []).forEach((mod) => {
@@ -167,7 +174,13 @@ const ANNULATION = /^(archiver|supprimer|annuler|restaurer|clôturer)/i;
         });
       }));
       return out;
-    }, role);
+    };
+    let accessibles = null;
+    for (let essai = 0; essai < 6 && accessibles === null; essai++) {
+      try { accessibles = await page.evaluate(sonderAccessibles, role); }
+      catch (e) { await new Promise((r) => setTimeout(r, 2000)); await page.waitForFunction(() => !!(window.SIGH && window.SIGH.nav), { timeout: 60000 }).catch(() => null); }
+    }
+    if (accessibles === null) throw new Error('profil ' + role + ' : page instable, sondage impossible');
 
     for (const e of accessibles) {
       await page.goto('http://127.0.0.1:' + PORT + '/pages/' + e.id + '.php', { waitUntil: 'domcontentloaded' });

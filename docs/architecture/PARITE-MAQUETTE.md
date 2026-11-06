@@ -5,13 +5,13 @@
 
 | Mesure | Valeur |
 |---|---|
-| Écrans du manifeste (hors hubs de module) | **333** |
+| Écrans du manifeste (hors hubs de module) | **334** |
 | Hubs de module (un par module, engendrés) | 23 |
-| Écrans nommés par au moins un scénario de la maquette | 213 (64 %) |
+| Écrans nommés par au moins un scénario de la maquette | 214 (64 %) |
 | Écrans **sans** scénario (recette à écrire) | 120 |
 | Écrans portés | 333 |
 | Écrans recettés | 0 |
-| Scénarios de la maquette analysés | 83 |
+| Scénarios de la maquette analysés | 84 |
 
 > « Nommé par un scénario » est une **estimation par analyse du texte** du banc (un identifiant d'écran cité dans le scénario) : elle dit où une recette existe déjà à reprendre, pas qu'elle couvre tout l'écran.
 
@@ -24,7 +24,7 @@
 | 3 · laboratoire (imagerie : rangée M2) | 24 | 21 | 24 | 0 |
 | 4 · parcours clinique (M1–M4) | 67 | 50 | 67 | 0 |
 | 5 · assurances et comptabilité | 31 | 21 | 31 | 0 |
-| 6 · RH, paie, administration, pilotage, configuration | 167 | 91 | 167 | 0 |
+| 6 · RH, paie, administration, pilotage, configuration | 168 | 92 | 167 | 0 |
 
 ## Par écran
 
@@ -128,7 +128,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m1-numerisation` | Plan de numérisation | M1 | 8 | 31 | porté |
 | `m1-patient-nouveau` | Ouvrir un dossier patient | M1 | 15 | 1 | porté |
 | `m1-patient-profil` | Fiche patient | M1 | 14 | 13, 22, 31, 39, 63 | porté |
-| `m1-patients` | Répertoire des patients | M1 | 15 | 1, 9, 14, 20, 22, 26, 31, 42, 45, 54, 63, 70, 73, 77, 78, 79, 80, 81, 82, 83 | porté |
+| `m1-patients` | Répertoire des patients | M1 | 15 | 1, 9, 14, 20, 22, 26, 31, 42, 45, 54, 63, 70, 73, 77, 78, 79, 80, 81, 82, 83, 84 | porté |
 | `m1-pieces` | Certificats & attestations | M1 | 9 | 40, 51 | porté |
 | `m1-reference` | Fiches de référence | M1 | 9 | 40 | porté |
 | `m2-affichage` | Écran d’appel des patients | M2 | 8 | 43 | porté |
@@ -205,7 +205,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `m12-baseline-2025` | Baseline 2025 | M12 | 5 | 37 | porté |
 | `m12-bfr` | Besoin en fonds de roulement | M12 | 5 | 65 | porté |
 | `m12-budgets` | Budgets | M12 | 5 | — | porté |
-| `m12-cloture` | Exercices & clôtures | M12 | 4 | 42, 68, 70, 74, 78, 81, 83 | porté |
+| `m12-cloture` | Exercices & clôtures | M12 | 4 | 42, 68, 70, 74, 78, 81, 84 | porté |
 | `m12-compte-resultat` | Compte de résultat | M12 | 5 | 39, 62 | porté |
 | `m12-cout-activite` | Coût à l’activité | M12 | 5 | — | porté |
 | `m12-dashboard` | Tableau de bord comptable | M12 | 5 | 80 | porté |
@@ -246,6 +246,7 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `cfg-natures-facture` | Natures de facture | CFG | 3 | 16 | porté |
 | `cfg-notifications` | Notifications | CFG | 3 | — | porté |
 | `cfg-organisation` | Organisation & organigramme | CFG | 3 | 16 | porté |
+| `cfg-pair` | Échanges entre postes (mode pair) | CFG | 2 | 83 | non commencé |
 | `cfg-poste` | Ce poste (mode fileul / mère) | CFG | 2 | — | porté |
 | `cfg-rappels` | Rappels & messages | CFG | 3 | — | porté |
 | `cfg-regles` | Règles métier versionnées | CFG | 3 | 24 | porté |
@@ -391,5 +392,5 @@ Colonnes : **Rôles** = nombre de rôles qui voient l'écran (matrice effective)
 | `rls-tableau` | Tableau de bord du relais | RLS | 1 | — | porté |
 | `aide-apropos` | Aide & À propos | SUP | 20 | 14 | porté |
 | `contact-editeur` | Contactez l’éditeur | SUP | 20 | 14 | porté |
-| `parametres-hub` | Paramètres système | SUP | 20 | 82 | porté |
+| `parametres-hub` | Paramètres système | SUP | 20 | 82, 83 | porté |
 

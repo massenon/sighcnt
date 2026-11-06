@@ -434,7 +434,8 @@
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
-        "cfg-poste"
+        "cfg-poste",
+        "cfg-pair"
        ]
       },
       {
@@ -622,7 +623,8 @@
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
-        "cfg-poste"
+        "cfg-poste",
+        "cfg-pair"
        ]
       },
       {
@@ -1816,7 +1818,8 @@
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
-        "cfg-poste"
+        "cfg-poste",
+        "cfg-pair"
        ]
       },
       {
@@ -1989,7 +1992,8 @@
         "cfg-compte",
         "cfg-modules",
         "cfg-systeme",
-        "cfg-poste"
+        "cfg-poste",
+        "cfg-pair"
        ]
       },
       {

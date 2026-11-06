@@ -29,6 +29,7 @@ import 'sync/configuration_sync.dart';
 import 'core/plages_codes.dart';
 import 'sync/pont_activite.dart';
 import 'sync/config_pair.dart';
+import 'sync/etat_pair.dart';
 import 'sync/moteur_pair.dart';
 import 'sync/modale_trancher.dart';
 import 'sync/reservation_stock.dart';
@@ -252,6 +253,7 @@ Future<void> main() async {
   final session = sessionDemarrage();
   // MODE PAIR (ADR-0006) : seulement si `pair.json` l'active. Les écritures du poste passent par le moteur pair, le relais ne voit que des enveloppes chiffrées.
   MoteurPair? moteurPair;
+  EtatPairPoste.dossier = dossierDonnees;
   try {
     final cp = ConfigPairPoste.lire(dossierDonnees);
     if (cp != null) {
@@ -267,6 +269,8 @@ Future<void> main() async {
       if (!moteurPair.appaire && cp.code != null) {
         try {
           await moteurPair.appairer(cp.code!);
+          // Le code est à usage unique : consommé, il ne reste pas sur le disque.
+          ConfigPairPoste.ecrire(dossierDonnees, code: '');
         } catch (e) {
           debugPrint('mode pair : $e');
         }
@@ -274,6 +278,10 @@ Future<void> main() async {
       moteurPair
         ..demarrer()
         ..pont(role: () => session?.role ?? roleDev).demarrer();
+      final etatPair = ValueNotifier<InstantanePair>(InstantanePair.depuis(moteurPair.etat()));
+      EtatPairPoste.source = etatPair;
+      final suivi = moteurPair;
+      Timer.periodic(const Duration(seconds: 2), (_) => etatPair.value = InstantanePair.depuis(suivi.etat()));
     }
   } on FormatException catch (e) {
     debugPrint('mode pair non démarré : ${e.message}');

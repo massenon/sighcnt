@@ -69,6 +69,10 @@
    "titre": "Organisation & organigramme",
    "description": "Secteurs de la clinique, structure hiérarchique et rôles qui en découlent."
   },
+  "cfg-pair": {
+   "titre": "Échanges entre postes (mode pair)",
+   "description": "Réglage de ce poste pour échanger ses opérations avec les autres postes par le relais, sans passer par la mère."
+  },
   "cfg-poste": {
    "titre": "Ce poste",
    "description": "Mode du poste : fileul ou mère. La mère est le même logiciel avec ses modules complémentaires (synchronisation, supervision, sauvegardes)."
@@ -1320,6 +1324,10 @@
   "mere-supervision": {
    "titre": "Supervision",
    "description": "Santé de la mère d’un coup d’œil : base, disque, sauvegarde, relais, postes, horloges, intégrité."
+  },
+  "parametres-hub": {
+   "titre": "Paramètres système",
+   "description": "Les écrans du système que votre profil peut ouvrir, en cartes."
   },
   "rapports-bibliotheque": {
    "titre": "Bibliothèque des états",

@@ -30,6 +30,7 @@ const ecransMesures = [
   'cfg-modules',
   'cfg-systeme',
   'cfg-poste',
+  'cfg-pair',
 ];
 
 void main() {

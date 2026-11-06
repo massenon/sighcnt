@@ -668,7 +668,8 @@
     "cfg-compte",
     "cfg-modules",
     "cfg-systeme",
-    "cfg-poste"
+    "cfg-poste",
+    "cfg-pair"
    ]
   },
   {
@@ -5593,6 +5594,22 @@
    "id": "cfg-poste",
    "label": "Ce poste (mode fileul / mère)",
    "icone": "server-cog",
+   "module": "CFG",
+   "moduleLabel": "Configuration Clinique",
+   "domaine": "Système",
+   "hub": false,
+   "standalone": false,
+   "universel": false,
+   "servant": null,
+   "roles": [
+    "admin",
+    "da"
+   ]
+  },
+  {
+   "id": "cfg-pair",
+   "label": "Échanges entre postes (mode pair)",
+   "icone": "git-compare-arrows",
    "module": "CFG",
    "moduleLabel": "Configuration Clinique",
    "domaine": "Système",

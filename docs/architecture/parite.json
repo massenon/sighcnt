@@ -259,7 +259,8 @@
     80,
     81,
     82,
-    83
+    83,
+    84
    ],
    "statut": "porté"
   },
@@ -3399,7 +3400,7 @@
     74,
     78,
     81,
-    83
+    84
    ],
    "statut": "porté"
   },
@@ -4907,6 +4908,23 @@
    ],
    "scenarios": [],
    "statut": "porté"
+  },
+  {
+   "id": "cfg-pair",
+   "label": "Échanges entre postes (mode pair)",
+   "module": "CFG",
+   "domaine": "Système",
+   "tranche": 6,
+   "standalone": false,
+   "universel": false,
+   "roles": [
+    "admin",
+    "da"
+   ],
+   "scenarios": [
+    83
+   ],
+   "statut": "non commencé"
   },
   {
    "id": "imp-accueil",
@@ -6596,7 +6614,8 @@
     "aide_comptable"
    ],
    "scenarios": [
-    82
+    82,
+    83
    ],
    "statut": "porté"
   },
