@@ -83,3 +83,16 @@ L1 (inspection, sans agent) puis L3 (un agent Sonnet par groupe de 20 constats, 
 | Fond des modales | Pas encore testé (branche non clonée) ; à reprendre au retour de test |
 | Courriel du poste | Envoi direct, file avec reprise seulement en cas d'échec : figé |
 | Planning individuel Q1 à Q8 | En attente de validation (voir PRD) |
+
+## 9. Planning individuel : décisions Q1 à Q8 (07/11/2026)
+
+| # | Décision |
+|---|---|
+| Q1 | Le régime individuel ne REMPLACE pas celui de la catégorie. Sa phrase est restée coupée ; lecture retenue : il déroge champ par champ (durée, repos, honoraire), le reste suit la catégorie. **À reconfirmer** si la fin de phrase disait autre chose. |
+| Q2 | Le surveillant valide pour son service ; la DAF valide pour l'ensemble et peut valider seule. |
+| Q3 | Congés et ordres de mission : même circuit, validation DAF ; l'ordre de mission porte en plus l'avis du chef de service. |
+| Q4 | L'agent propose un échange, le surveillant valide ; il ne modifie pas seul son planning. |
+| Q5 | Fiche de paie sur le téléphone : copie chiffrée locale de la pièce émise de l'agent seul, désactivable par réglage. |
+| Q6 | Tout le personnel a un smartphone (le poste partagé de secours reste prévu). |
+| Q7 | Le badge servira de pointage PLUS TARD : prévoir un réglage système pour l'activer ou le désactiver ; désactivé par défaut. |
+| Q8 | « Mon assurance du personnel » reste en lecture seule (soins à 100 %). |
