@@ -5,7 +5,7 @@
  "libelleManifeste": "Utilisateurs",
  "acces": "ouvert",
  "titre": "Utilisateurs",
- "description": "Comptes individuels, rôles attribués, état d’activation et double facteur.",
+ "description": "Registre des comptes individuels : rôles attribués, état d’activation et double facteur (fiches de gestion).",
  "fil": [
   "Accueil",
   "Système",
@@ -13,8 +13,8 @@
   "Utilisateurs"
  ],
  "actions": [
+  "Sécurité des utilisateurs",
   "Rôles & permissions (RBAC)",
-  "Prescripteurs & exécutants de soins",
   "Sécurité & Utilisateurs"
  ],
  "regle": [],
