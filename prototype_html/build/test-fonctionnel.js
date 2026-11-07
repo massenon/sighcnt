@@ -6050,12 +6050,14 @@ async function viderMessages(page) {
        l'annuaire servi par api/auth.php — et non plus sur le texte de la page. */
     await page.goto('http://127.0.0.1:' + PORT + '/index.php', { waitUntil: 'networkidle2' });
     await pause(600);
-    const conn = await page.evaluate(async () => {
+    /* L'ANNUAIRE EST FERMÉ (vague 83) : on le lit avec la session admin du banc. */
+    const jetonAnnuaire = ((await BANC.connecter(BANC.SESSION_BANC.identifiant)) || {}).jeton || '';
+    const conn = await page.evaluate(async (jetonA) => {
       const roles = window.SIGH.nav.ROLES;
       const labels = Object.keys(roles).map((k) => roles[k].label + ' ' + (roles[k].court || ''));
       let comptes = [];
       try {
-        const r = await fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json' } });
+        const r = await fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json', 'X-Sigh-Jeton': jetonA } });
         comptes = ((await r.json()).comptes || []).map((c) => c.nom + ' ' + c.identifiant);
       } catch (e) { comptes = ['(annuaire injoignable : ' + e.message + ')']; }
       const t = document.body.textContent;
@@ -6078,7 +6080,7 @@ async function viderMessages(page) {
         identifiantVide: (document.getElementById('identifiant') || {}).value === '',
         motDePasseVide: (document.getElementById('motdepasse') || {}).value === '',
       };
-    });
+    }, jetonAnnuaire);
     verifier('« Laborantin » est devenu « Biologiste médical » au manifeste des rôles',
       conn.biologiste && !conn.laborantin);
     verifier('Le rôle d’ingénieur biomédical est supprimé : ni annuaire, ni manifeste, ni tableau de bord',
@@ -6592,11 +6594,12 @@ async function viderMessages(page) {
        ne liste aucun compte depuis le 20/10/2026. --------------------------- */
     await page.goto('http://127.0.0.1:' + PORT + '/index.php', { waitUntil: 'networkidle2' });
     await pause(400);
-    const selecteur = await page.evaluate(async () => {
+    const jetonAnnuaire2 = ((await BANC.connecter(BANC.SESSION_BANC.identifiant)) || {}).jeton || '';
+    const selecteur = await page.evaluate(async (jetonA) => {
       const labels = Object.values(window.SIGH.nav.ROLES).map((r) => r.label);
       let roles = [];
       try {
-        const r = await fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json' } });
+        const r = await fetch('api/auth.php?action=comptes', { headers: { Accept: 'application/json', 'X-Sigh-Jeton': jetonA } });
         roles = ((await r.json()).comptes || []).map((c) => c.role);
       } catch (e) { roles = []; }
       return {
@@ -6605,7 +6608,7 @@ async function viderMessages(page) {
           .every((l) => labels.some((t) => t.indexOf(l) === 0)),
         troisComptes: ['chirurgien', 'anesthesiste', 'aide_comptable'].every((r) => roles.indexOf(r) >= 0),
       };
-    });
+    }, jetonAnnuaire2);
     verifier('La connexion ne propose plus de sélecteur de profil', selecteur.sansSelecteur);
     verifier('Les trois nouveaux rôles figurent au manifeste', selecteur.troisNouveaux);
     verifier('Les trois nouveaux rôles ont un compte à l’annuaire', selecteur.troisComptes);
@@ -12784,7 +12787,8 @@ async function viderMessages(page) {
     verifier('Le toast dit « Aucun courriel n’a été envoyé » et rien n’arrive au puits', /Aucun courriel n’a été envoyé/.test(toast) && puits.messages.length === avantSans, toast.slice(0, 200));
 
     /* --- droits --- */
-    const comptes = await page.evaluate(async () => (await (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/auth.php?action=comptes')).json()).comptes || []);
+    const jetonAnnuaire3 = ((await BANC.connecter(BANC.SESSION_BANC.identifiant)) || {}).jeton || '';
+    const comptes = await page.evaluate(async (jetonA) => (await (await fetch((document.documentElement.getAttribute('data-root') || '') + 'api/auth.php?action=comptes', { headers: { 'X-Sigh-Jeton': jetonA } })).json()).comptes || [], jetonAnnuaire3);
     const caissier = comptes.find((c) => c.role === 'caissier');
     const rc = caissier ? await BANC.connecter(caissier.identifiant) : null;
     const refusRole = rc && rc.jeton ? await api('etat', null, rc.jeton) : { statut: -1 };
@@ -13580,6 +13584,234 @@ async function viderMessages(page) {
     /* ---- 12. Pas de régression ---- */
     erreurs82.push(...erreursJS);
     verifier('Aucune erreur JavaScript pendant tout le scénario', erreurs82.length === 0, erreurs82.join(' | '));
+  });
+
+  /* =========================================================================
+   * Vague 83 : connexion, refus nommés, verrou, changement imposé, comptes
+   * -------------------------------------------------------------------------
+   * Chaque sonde appelle le SERVEUR (api/auth.php) depuis la page et lit le code HTTP ET le `code`
+   * nommé, jamais un texte copié. Les comptes sont JETABLES (identifiants v83.*, créés par
+   * `creer_compte` sous la session admin du banc) ; les fiches du magasin (utilisateurs, rbac,
+   * tentativesConnexion) sont sauvegardées avant et RESTAURÉES en sortant, les lignes jetables de
+   * la table `utilisateurs` sont retirées par SQL (base de banc, jetable).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 83 : connexion, refus nommés, verrou, changement imposé, comptes');
+    const { execFileSync } = require('child_process');
+    const erreurs83 = [];
+    const sql = (texte) => execFileSync('su', ['postgres', '-c', 'psql -q -At ' + BANC.BASE_TEST], { input: texte, encoding: 'utf8' }).trim();
+    const lireCol = (nom) => { const t = sql("SELECT donnees::text FROM collections WHERE nom = '" + nom + "';"); return t ? JSON.parse(t) : null; };
+    const ecrireCol = (nom, arr) => {
+      if (arr === null) { sql("DELETE FROM collections WHERE nom = '" + nom + "';"); return; }
+      sql("INSERT INTO collections (nom, donnees, fiches) VALUES ('" + nom + "', $j$" + JSON.stringify(arr) + "$j$::jsonb, " + arr.length + ") ON CONFLICT (nom) DO UPDATE SET donnees = EXCLUDED.donnees, fiches = EXCLUDED.fiches;");
+    };
+    const nettoyerTables = () => sql("DELETE FROM sessions_poste WHERE identifiant LIKE 'v83.%'; DELETE FROM echecs_connexion WHERE identifiant LIKE 'v83.%'; DELETE FROM changements_requis WHERE identifiant LIKE 'v83.%'; DELETE FROM utilisateurs WHERE identifiant LIKE 'v83.%';");
+    const attendreSql = async (pred, ms) => { const fin = Date.now() + (ms || 8000); while (Date.now() < fin) { try { if (pred()) return true; } catch (e) { /* relire */ } await pause(300); } return false; };
+    const appel = (methode, chemin, corps, jeton) => page.evaluate(async (m, c, b, j) => {
+      const racine = document.documentElement.getAttribute('data-root') || '';
+      const h = { 'Content-Type': 'application/json' };
+      if (j) h['X-Sigh-Jeton'] = j;
+      const r = await fetch(racine + 'api/' + c, { method: m, headers: h, body: b ? JSON.stringify(b) : undefined });
+      const t = await r.text(); let o = {}; try { o = JSON.parse(t); } catch (e) { /* corps non JSON */ }
+      return { statut: r.status, o: o, brut: t };
+    }, methode, chemin, corps || null, jeton || null);
+    const auth = (corps, jeton) => appel('POST', 'auth.php', corps, jeton);
+    const connexion = (id, mdp) => auth({ action: 'connexion', identifiant: id, motDePasse: mdp, poste: 'sonde 83' });
+    const nommer = (r, statut, code) => r.statut === statut && (code === undefined || r.o.code === code);
+    const MDP_PROV = 'Provisoire-83a', MDP_NEUF = 'Nouveau-Secret-83x';
+
+    await ouvrir('m14-utilisateurs.html');
+    const sauve = { utilisateurs: lireCol('utilisateurs'), rbac: lireCol('rbac'), tentatives: lireCol('tentativesConnexion') };
+    verifier('Départ : le magasin du banc porte les fiches de comptes et la matrice (sauvegardées pour restauration)', Array.isArray(sauve.utilisateurs) && sauve.utilisateurs.length > 0 && Array.isArray(sauve.rbac) && sauve.rbac.some((f) => f.role === 'anesthesiste'), JSON.stringify([sauve.utilisateurs && sauve.utilisateurs.length, sauve.rbac && sauve.rbac.length]));
+    nettoyerTables();
+    const adm = ((await BANC.connecter('c.bassongui')) || {}).jeton;
+    const compta = ((await BANC.connecter('a.kassa')) || {}).jeton;
+    const da = ((await BANC.connecter('a.taki')) || {}).jeton;
+    verifier('Les trois sessions de départ (admin, comptable, da) sont ouvertes par le serveur', !!adm && !!compta && !!da, JSON.stringify([!!adm, !!compta, !!da]));
+
+    const ouvrirCompte = async (id, role, nom) => {
+      const c = await auth({ action: 'creer_compte', identifiant: id, nom: nom || ('Sonde 83 ' + id), role: role, motDePasse: MDP_PROV }, adm);
+      if (c.statut !== 201) return { creation: c };
+      const x = await connexion(id, MDP_PROV);
+      const ch = await auth({ action: 'changer_mot_de_passe', jetonChangement: x.o.jetonChangement, ancienMotDePasse: MDP_PROV, nouveauMotDePasse: MDP_NEUF });
+      return { creation: c, jeton: ch.o.jeton, changement: ch };
+    };
+    try {
+      /* ---- 7 (première moitié) et 8 : qui crée un compte, qui lit l'annuaire ---- */
+      const sansSession = await auth({ action: 'creer_compte', identifiant: 'v83.sans', nom: 'Sans', role: 'stock', motDePasse: MDP_PROV });
+      verifier('creer_compte sans session : 401', sansSession.statut === 401, JSON.stringify([sansSession.statut, sansSession.o]));
+      const parComptable = await auth({ action: 'creer_compte', identifiant: 'v83.cpt', nom: 'Par comptable', role: 'stock', motDePasse: MDP_PROV }, compta);
+      verifier('creer_compte sous session comptable : 403 DROIT_INSUFFISANT', nommer(parComptable, 403, 'DROIT_INSUFFISANT'), JSON.stringify([parComptable.statut, parComptable.o]));
+      const parDa = await auth({ action: 'creer_compte', identifiant: 'v83.da1', nom: 'Par da', role: 'stock', motDePasse: MDP_PROV }, da);
+      verifier('La da crée un compte non administrateur : 201, changement imposé', parDa.statut === 201 && parDa.o.doitChanger === true && parDa.o.role === 'stock', JSON.stringify([parDa.statut, parDa.o]));
+      const adminParDa = await auth({ action: 'creer_compte', identifiant: 'v83.adm0', nom: 'Admin par da', role: 'admin', motDePasse: MDP_PROV }, da);
+      verifier('La da ne crée PAS un administrateur : 403 DROIT_INSUFFISANT', nommer(adminParDa, 403, 'DROIT_INSUFFISANT'), JSON.stringify([adminParDa.statut, adminParDa.o]));
+      const adminParAdmin = await auth({ action: 'creer_compte', identifiant: 'v83.adm1', nom: 'Admin par admin', role: 'admin', motDePasse: MDP_PROV }, adm);
+      verifier('Seul un administrateur crée un administrateur : 201', adminParAdmin.statut === 201 && adminParAdmin.o.role === 'admin', JSON.stringify([adminParAdmin.statut, adminParAdmin.o]));
+      const doublon = await auth({ action: 'creer_compte', identifiant: 'v83.da1', nom: 'Doublon', role: 'stock', motDePasse: MDP_PROV }, adm);
+      const doublonCasse = await auth({ action: 'creer_compte', identifiant: 'V83.DA1', nom: 'Doublon casse', role: 'stock', motDePasse: MDP_PROV }, adm);
+      verifier('Un identifiant déjà pris est refusé : 409 IDENTIFIANT_EXISTANT (même en autre casse)', nommer(doublon, 409, 'IDENTIFIANT_EXISTANT') && nommer(doublonCasse, 409, 'IDENTIFIANT_EXISTANT'), JSON.stringify([doublon.statut, doublon.o.code, doublonCasse.statut, doublonCasse.o.code]));
+
+      const ann0 = await appel('GET', 'auth.php?action=comptes', null, null);
+      verifier('Annuaire sans session : 401', ann0.statut === 401, JSON.stringify([ann0.statut, ann0.o]));
+      const ann1 = await appel('GET', 'auth.php?action=comptes', null, compta);
+      verifier('Annuaire sous session comptable : 403 DROIT_INSUFFISANT', nommer(ann1, 403, 'DROIT_INSUFFISANT') && !ann1.o.comptes, JSON.stringify([ann1.statut, ann1.o]));
+      const annDa = await appel('GET', 'auth.php?action=comptes', null, da);
+      const ann2 = await appel('GET', 'auth.php?action=comptes', null, adm);
+      const liste = ann2.o.comptes || [];
+      const cles = [...new Set([].concat(...liste.map((c) => Object.keys(c))))].sort().join(',');
+      verifier('Annuaire sous session admin : 200 avec la liste, sans haché ni mot de passe',
+        ann2.statut === 200 && liste.length >= 17 && liste.some((c) => c.identifiant === 'a.kassa') && liste.some((c) => c.identifiant === 'v83.da1')
+        && cles === 'fonction,identifiant,nom,role,secteur,statut' && !/\$2y\$|mdp|password|motDePasse/i.test(ann2.brut), JSON.stringify([ann2.statut, liste.length, cles]));
+      verifier('Annuaire sous session da : 200', annDa.statut === 200 && (annDa.o.comptes || []).length === liste.length, JSON.stringify([annDa.statut]));
+      const sessionFausse = await appel('GET', 'auth.php?action=comptes', null, 'jeton-qui-n-existe-pas');
+      verifier('Annuaire avec un jeton inconnu : 401', sessionFausse.statut === 401, String(sessionFausse.statut));
+
+      /* ---- 1 : identifiant inconnu et mot de passe faux, même réponse ---- */
+      const a = await auth({ action: 'creer_compte', identifiant: 'v83.a', nom: 'Sonde 83 A', role: 'comptable', motDePasse: MDP_PROV }, adm);
+      verifier('Compte jeté v83.a créé avec mot de passe provisoire (201)', a.statut === 201, JSON.stringify([a.statut, a.o]));
+      const inconnu = await connexion('v83.inconnu', 'Mauvais-mdp-83');
+      const faux = await connexion('v83.a', 'Mauvais-mdp-83');
+      verifier('Identifiant inconnu et mot de passe faux : MÊME réponse (401 IDENTIFIANTS_REFUSES, même detail)',
+        nommer(inconnu, 401, 'IDENTIFIANTS_REFUSES') && nommer(faux, 401, 'IDENTIFIANTS_REFUSES') && inconnu.o.detail === faux.o.detail && inconnu.o.detail && inconnu.brut === faux.brut,
+        JSON.stringify([inconnu.statut, inconnu.o, faux.statut, faux.o]));
+
+      /* ---- 2 : mot de passe provisoire, jeton de changement, changement ---- */
+      const prov = await connexion('v83.a', MDP_PROV);
+      verifier('Mot de passe provisoire : 200 CHANGEMENT_REQUIS, SANS jeton de session, avec un jeton de changement',
+        nommer(prov, 200, 'CHANGEMENT_REQUIS') && prov.o.jeton === undefined && typeof prov.o.jetonChangement === 'string' && prov.o.jetonChangement.length >= 32 && prov.o.doitChanger === true, JSON.stringify([prov.statut, Object.keys(prov.o)]));
+      const jc = prov.o.jetonChangement;
+      const magJc = await appel('POST', 'magasin.php', { collections: {} }, jc);
+      const crudJc = await auth({ action: 'creer_compte', identifiant: 'v83.jc', nom: 'Par jeton de changement', role: 'stock', motDePasse: MDP_PROV }, jc);
+      const annJc = await appel('GET', 'auth.php?action=comptes', null, jc);
+      const moiJc = await appel('GET', 'auth.php?action=moi', null, jc);
+      verifier('Le jeton de changement n\'est PAS une session : le magasin (écriture), creer_compte, l\'annuaire et « moi » le refusent (401)',
+        magJc.statut === 401 && crudJc.statut === 401 && annJc.statut === 401 && moiJc.statut === 401, JSON.stringify([magJc.statut, crudJc.statut, annJc.statut, moiJc.statut]));
+      const ancienFaux = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: 'Pas-le-bon-83', nouveauMotDePasse: MDP_NEUF });
+      verifier('changer_mot_de_passe, ancien erroné : 401 ANCIEN_MDP_ERRONE', nommer(ancienFaux, 401, 'ANCIEN_MDP_ERRONE'), JSON.stringify([ancienFaux.statut, ancienFaux.o]));
+      const court = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: MDP_PROV, nouveauMotDePasse: 'Court1' });
+      verifier('changer_mot_de_passe, nouveau trop court : 400 MDP_TROP_COURT', nommer(court, 400, 'MDP_TROP_COURT'), JSON.stringify([court.statut, court.o]));
+      const bon = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: MDP_PROV, nouveauMotDePasse: MDP_NEUF });
+      verifier('changer_mot_de_passe correct : 200, session ouverte (jeton) au rôle de la table', bon.statut === 200 && bon.o.ok === true && typeof bon.o.jeton === 'string' && bon.o.utilisateur.role === 'comptable' && bon.o.utilisateur.doitChanger === false, JSON.stringify([bon.statut, bon.o]));
+      const moi = await appel('GET', 'auth.php?action=moi', null, bon.o.jeton);
+      const magOk = await appel('POST', 'magasin.php', { collections: {} }, bon.o.jeton);
+      verifier('La session issue du changement est reconnue (moi 200, magasin 200)', moi.statut === 200 && moi.o.session.identifiant === 'v83.a' && magOk.statut === 200, JSON.stringify([moi.statut, magOk.statut]));
+      const rejeu = await auth({ action: 'changer_mot_de_passe', jetonChangement: jc, ancienMotDePasse: MDP_NEUF, nouveauMotDePasse: 'Autre-Secret-83y' });
+      verifier('Le jeton de changement est à usage unique : rejeu 401 SESSION_ABSENTE', nommer(rejeu, 401, 'SESSION_ABSENTE'), JSON.stringify([rejeu.statut, rejeu.o]));
+      const reco = await connexion('v83.a', MDP_NEUF);
+      verifier('Après changement, la connexion ordinaire ouvre une session (200 avec jeton, sans changement requis)', reco.statut === 200 && !!reco.o.jeton && reco.o.code === undefined, JSON.stringify([reco.statut, reco.o.code]));
+      const dump = execFileSync('su', ['postgres', '-c', 'pg_dump ' + BANC.BASE_TEST], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 });
+      verifier('Aucun mot de passe en clair (provisoire ni définitif) dans la base : collections, journal, tentatives, tables', !dump.includes(MDP_PROV) && !dump.includes(MDP_NEUF) && !dump.includes('Mauvais-mdp-83') && !dump.includes('Pas-le-bon-83'), 'trouvé : ' + [MDP_PROV, MDP_NEUF, 'Mauvais-mdp-83', 'Pas-le-bon-83'].filter((m) => dump.includes(m)).join(','));
+
+      /* ---- 3 : fiche archivée, désactivée, bloquée ; le geste de déblocage ---- */
+      const ficheId = 'USR-V83-A';
+      const g1 = await page.evaluate((id) => {
+        const S = window.SIGH.store;
+        const r = S.collection('utilisateurs').insert({ id: id, identifiant: 'v83.a', nom: 'Sonde 83 A', role: 'comptable', actif: true });
+        return !!r;
+      }, ficheId);
+      const syncF = (pred) => attendreSql(() => { const t = lireCol('utilisateurs') || []; const f = t.find((x) => x.id === ficheId); return !!f && pred(f); });
+      verifier('La fiche jetable est écrite au serveur (collection utilisateurs)', g1 && await syncF(() => true));
+      const okFiche = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche active et compte sain : la connexion est ouverte (200 avec jeton)', okFiche.statut === 200 && !!okFiche.o.jeton, JSON.stringify([okFiche.statut, okFiche.o.code]));
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').archive(id, 'Sonde 83'), ficheId);
+      await syncF((f) => f.statut === 'archive');
+      const arch = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche archivée : 403 COMPTE_INACTIF', nommer(arch, 403, 'COMPTE_INACTIF') && !arch.o.jeton, JSON.stringify([arch.statut, arch.o]));
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').restore(id), ficheId);
+      await syncF((f) => f.statut !== 'archive');
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').update(id, { actif: false }), ficheId);
+      await syncF((f) => f.actif === false);
+      const inactif = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche actif:false : 403 COMPTE_INACTIF', nommer(inactif, 403, 'COMPTE_INACTIF') && !inactif.o.jeton, JSON.stringify([inactif.statut, inactif.o]));
+      await page.evaluate((id) => window.SIGH.store.collection('utilisateurs').update(id, { actif: true }), ficheId);
+      await syncF((f) => f.actif === true);
+      const bl = await page.evaluate((id) => { const r = window.SIGH.securiteUtilisateurs.bloquer(id, 'Sonde 83 : blocage'); return { ok: r.ok, code: r.code }; }, ficheId);
+      await syncF((f) => f.bloque === true);
+      const bloque = await connexion('v83.a', MDP_NEUF);
+      verifier('Fiche bloquée (geste « Bloquer ») : 423 COMPTE_BLOQUE', bl.ok && nommer(bloque, 423, 'COMPTE_BLOQUE') && !bloque.o.jeton, JSON.stringify([bl, bloque.statut, bloque.o]));
+      const debl = await page.evaluate((id) => { const r = window.SIGH.securiteUtilisateurs.debloquer(id); return { ok: r.ok, code: r.code }; }, ficheId);
+      await syncF((f) => f.bloque === false);
+      await pause(600);
+      const debloque = await connexion('v83.a', MDP_NEUF);
+      verifier('Après le déblocage par l\'administrateur (geste « Débloquer »), la connexion est rendue (200 avec jeton)', debl.ok && debloque.statut === 200 && !!debloque.o.jeton, JSON.stringify([debl, debloque.statut, debloque.o.code]));
+
+      /* ---- 5 : élévation impossible ---- */
+      const e = await ouvrirCompte('v83.e', 'stock', 'Sonde 83 E');
+      verifier('Compte jeté v83.e (rôle stock en TABLE) prêt, session obtenue', !!e.jeton, JSON.stringify([e.creation && e.creation.statut, e.changement && e.changement.o]));
+      await page.evaluate(() => { window.SIGH.store.collection('utilisateurs').insert({ id: 'USR-V83-E', identifiant: 'v83.e', nom: 'Sonde 83 E', role: 'admin', actif: true }); });
+      await attendreSql(() => (lireCol('utilisateurs') || []).some((x) => x.id === 'USR-V83-E' && x.role === 'admin'));
+      const elev = await connexion('v83.e', MDP_NEUF);
+      const moiE = elev.o.jeton ? await appel('GET', 'auth.php?action=moi', null, elev.o.jeton) : { statut: -1, o: {} };
+      const creerE = elev.o.jeton ? await auth({ action: 'creer_compte', identifiant: 'v83.pirate', nom: 'Pirate', role: 'stock', motDePasse: MDP_PROV }, elev.o.jeton) : { statut: -1, o: {} };
+      const annE = elev.o.jeton ? await appel('GET', 'auth.php?action=comptes', null, elev.o.jeton) : { statut: -1, o: {} };
+      verifier('Élévation impossible : la fiche dit admin, la session reçue a le rôle de la TABLE (stock), et n\'ouvre ni creer_compte ni l\'annuaire',
+        elev.statut === 200 && elev.o.utilisateur.role === 'stock' && moiE.o.session && moiE.o.session.role === 'stock' && nommer(creerE, 403, 'DROIT_INSUFFISANT') && nommer(annE, 403, 'DROIT_INSUFFISANT'),
+        JSON.stringify([elev.statut, elev.o.utilisateur && elev.o.utilisateur.role, moiE.o.session && moiE.o.session.role, creerE.statut, annE.statut]));
+
+      /* ---- 4 : rôle archivé ---- */
+      const r = await ouvrirCompte('v83.r', 'anesthesiste', 'Sonde 83 R');
+      verifier('Compte jeté v83.r (rôle anesthesiste) prêt, session obtenue', !!r.jeton, JSON.stringify([r.creation && r.creation.statut]));
+      const archRole = await page.evaluate(() => { const c = window.SIGH.store.collection('rbac'); const f = c.get('RBAC18'); if (!f || f.role !== 'anesthesiste') return false; return !!c.archive('RBAC18', 'Sonde 83'); });
+      await attendreSql(() => ((lireCol('rbac') || []).find((x) => x.id === 'RBAC18') || {}).statut === 'archive');
+      const avantTent = (lireCol('tentativesConnexion') || []).length;
+      const roleArch = await connexion('v83.r', MDP_NEUF);
+      const tent = (lireCol('tentativesConnexion') || []);
+      const derniere = tent.find((t) => t.identifiant === 'v83.r' && /Rôle archivé/.test(t.motif));
+      verifier('Rôle archivé : 403 ROLE_ARCHIVE sans jeton, tentative écrite dans tentativesConnexion SANS le mot de passe',
+        archRole && nommer(roleArch, 403, 'ROLE_ARCHIVE') && !roleArch.o.jeton && !!derniere && tent.length > avantTent && !JSON.stringify(derniere).includes(MDP_NEUF) && derniere.role === 'anesthesiste',
+        JSON.stringify([archRole, roleArch.statut, roleArch.o.code, !!derniere, avantTent, tent.length]));
+      const creerArch = await auth({ action: 'creer_compte', identifiant: 'v83.r2', nom: 'Sur rôle archivé', role: 'anesthesiste', motDePasse: MDP_PROV }, adm);
+      verifier('Aucun compte ne se crée sur un rôle archivé : 409 ROLE_ARCHIVE', nommer(creerArch, 409, 'ROLE_ARCHIVE'), JSON.stringify([creerArch.statut, creerArch.o]));
+      await page.evaluate(() => window.SIGH.store.collection('rbac').restore('RBAC18'));
+      await attendreSql(() => ((lireCol('rbac') || []).find((x) => x.id === 'RBAC18') || {}).statut !== 'archive');
+      const roleRendu = await connexion('v83.r', MDP_NEUF);
+      verifier('Rôle restauré : la connexion est rendue (200 avec jeton)', roleRendu.statut === 200 && !!roleRendu.o.jeton, JSON.stringify([roleRendu.statut, roleRendu.o.code]));
+
+      /* ---- 6 : verrou ---- */
+      const l = await ouvrirCompte('v83.l', 'comptable', 'Sonde 83 L');
+      verifier('Compte jeté v83.l prêt', !!l.jeton, JSON.stringify([l.creation && l.creation.statut]));
+      const cinq = [];
+      for (let i = 0; i < 5; i++) cinq.push((await connexion('v83.l', 'Echec-numero-' + i)).statut);
+      const verrou = await connexion('v83.l', MDP_NEUF);
+      verifier('5 échecs (401) puis 423 COMPTE_VERROUILLE, MÊME avec le bon mot de passe', cinq.every((s) => s === 401) && nommer(verrou, 423, 'COMPTE_VERROUILLE') && !verrou.o.jeton, JSON.stringify([cinq, verrou.statut, verrou.o.code]));
+      const cinqF = [];
+      for (let i = 0; i < 5; i++) cinqF.push((await connexion('v83.fantome', 'Echec-fantome-' + i)).statut);
+      const verrouF = await connexion('v83.fantome', 'Echec-fantome-5');
+      verifier('Un identifiant INCONNU se verrouille de la même façon (423 COMPTE_VERROUILLE : le verrou ne révèle aucun compte)', cinqF.every((s) => s === 401) && nommer(verrouF, 423, 'COMPTE_VERROUILLE'), JSON.stringify([cinqF, verrouF.statut, verrouF.o.code]));
+      const devParCompta = await auth({ action: 'deverrouiller', identifiant: 'v83.l' }, compta);
+      const toujours = await connexion('v83.l', MDP_NEUF);
+      verifier('deverrouiller par un comptable : 403 DROIT_INSUFFISANT, le verrou reste', nommer(devParCompta, 403, 'DROIT_INSUFFISANT') && nommer(toujours, 423, 'COMPTE_VERROUILLE'), JSON.stringify([devParCompta.statut, devParCompta.o.code, toujours.statut, toujours.o.code]));
+      const devSans = await auth({ action: 'deverrouiller', identifiant: 'v83.l' });
+      verifier('deverrouiller sans session : 401', devSans.statut === 401, String(devSans.statut));
+      const devParAdmin = await auth({ action: 'deverrouiller', identifiant: 'v83.l' }, adm);
+      const devFantome = await auth({ action: 'deverrouiller', identifiant: 'v83.fantome' }, da);
+      const leve = await connexion('v83.l', MDP_NEUF);
+      const leveF = await connexion('v83.fantome', 'Echec-fantome-6');
+      verifier('deverrouiller par l\'administrateur (et par la da) lève le verrou : 200 avec jeton, et l\'inconnu retombe sur 401 IDENTIFIANTS_REFUSES',
+        devParAdmin.statut === 200 && devFantome.statut === 200 && leve.statut === 200 && !!leve.o.jeton && nommer(leveF, 401, 'IDENTIFIANTS_REFUSES'), JSON.stringify([devParAdmin.statut, devFantome.statut, leve.statut, leveF.statut, leveF.o.code]));
+    } finally {
+      /* ---- Restauration : ce que le scénario a posé disparaît, ce qu'il a modifié revient ---- */
+      await page.evaluate(() => {
+        const S = window.SIGH.store, t = S.collection('utilisateurs').all();
+        for (let i = t.length - 1; i >= 0; i--) { if (/^v83\./.test(t[i].identifiant || '')) t.splice(i, 1); }
+      });
+      await pause(800);
+      nettoyerTables();
+      ecrireCol('utilisateurs', sauve.utilisateurs);
+      ecrireCol('rbac', sauve.rbac);
+      ecrireCol('tentativesConnexion', sauve.tentatives);
+      await pause(300);
+    }
+    const reste = sql("SELECT COUNT(*) FROM utilisateurs WHERE identifiant LIKE 'v83.%';");
+    const fichesReste = (lireCol('utilisateurs') || []).filter((f) => /^v83\./.test(f.identifiant || '')).length;
+    const rbacRend = ((lireCol('rbac') || []).find((x) => x.id === 'RBAC18') || {}).statut;
+    verifier('Nettoyage : plus aucun compte v83.* (table ni fiches), la matrice est rendue telle qu\'avant', reste === '0' && fichesReste === 0 && rbacRend === 'actif', JSON.stringify([reste, fichesReste, rbacRend]));
+
+    /* ---- 9 : aucune erreur JS. Les refus 401/403/409/423 attendus sont journalisés par Chrome
+       (« Failed to load resource ») : ce sont des réponses sondées, pas des erreurs de la page. ---- */
+    erreurs83.push(...erreursJS.filter((m) => !/Failed to load resource: the server responded with a status of (400|401|403|409|423)/.test(m)));
+    verifier('Aucune erreur JavaScript pendant le scénario (hors refus HTTP sondés)', erreurs83.length === 0, erreurs83.join(' | '));
   });
 
   await browser.close();

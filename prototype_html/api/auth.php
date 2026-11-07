@@ -35,7 +35,7 @@
  *   POST {action:'deverrouiller', identifiant}   (session admin ou da)
  *   POST {action:'deconnexion'}                          -> ferme la session
  *   GET  ?action=moi          (en-tête X-Sigh-Jeton)     -> la session en cours
- *   GET  ?action=comptes                                 -> la liste des postes
+ *   GET  ?action=comptes      (session admin ou da)      -> l'annuaire des comptes
  * ========================================================================== */
 
 require_once __DIR__ . '/_commun.php';
@@ -106,9 +106,17 @@ $methode = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $corps   = $methode === 'POST' ? sigh_corps() : [];
 $action  = (string) ($corps['action'] ?? $_GET['action'] ?? '');
 
-/* --- La liste des postes, pour le sélecteur de l'écran de connexion -------
-   Elle ne porte NI mot de passe NI jeton : c'est un annuaire, pas une clé. */
+/* --- L'annuaire des comptes : RÉSERVÉ à une session admin ou da -----------
+   L'écran de connexion ne liste plus les comptes (20/10/2026) : servir noms et
+   rôles sans session offrait l'énumération des comptes à qui frappe à la porte.
+   La session est vérifiée côté serveur (en-tête X-Sigh-Jeton), jamais sur ce que
+   le client annonce. Ni mot de passe ni haché ne sortent. */
 if ($action === 'comptes') {
+    $s = sigh_exiger_session($pdo, $corps);
+    if (!in_array($s['role'], SIGH_ROLES_GESTION_COMPTES, true)) {
+        sigh_repondre(['erreur' => 'droit insuffisant', 'code' => 'DROIT_INSUFFISANT',
+            'detail' => 'Seuls l’administrateur et la Directrice Administrative consultent l’annuaire des comptes.'], 403);
+    }
     $q = $pdo->query('SELECT identifiant, nom, role, fonction, secteur, statut
                         FROM utilisateurs WHERE statut = \'actif\' ORDER BY nom');
     sigh_repondre(['comptes' => $q->fetchAll()]);
