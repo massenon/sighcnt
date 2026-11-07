@@ -18,6 +18,32 @@
   function personnel() { return S.collection('personnel').active(); }
   function roleLabel(id) { return N.ROLES[id] ? N.ROLES[id].label : id; }
 
+  /* --- Appel SYNCHRONE à api/auth.php ---------------------------------------
+     Une création de compte doit être acceptée ou refusée par le serveur AVANT
+     que la fiche n'existe : la fiche sans compte de connexion serait un compte
+     qui n'ouvre rien. L'appel est donc synchrone (la modale du kit n'offre pas
+     de point d'attente), court, et porte le jeton de la session de l'appelant.
+     Retourne { ok, status, corps } ; status 0 = serveur injoignable (repli
+     navigateur : aucune connexion n'existe alors, la fiche seule est écrite). */
+  function appelAuth(corps) {
+    var racine = '';
+    try { racine = (global.document.documentElement.getAttribute('data-root')) || ''; } catch (e) { racine = ''; }
+    var jeton = '';
+    try { jeton = (S.session() || {}).jeton || global.localStorage.getItem('sigh-cnt:jeton') || ''; } catch (e) { jeton = ''; }
+    try {
+      var x = new global.XMLHttpRequest();
+      x.open('POST', racine + 'api/auth.php', false);
+      x.setRequestHeader('Content-Type', 'application/json');
+      if (jeton) x.setRequestHeader('X-Sigh-Jeton', jeton);
+      x.send(JSON.stringify(corps));
+      var o = null;
+      try { o = JSON.parse(x.responseText); } catch (e) { o = null; }
+      return { ok: x.status >= 200 && x.status < 300, status: x.status, corps: o };
+    } catch (e) {
+      return { ok: false, status: 0, corps: null };
+    }
+  }
+
   /* --- Amorçage des comptes utilisateurs ----------------------------------- */
   function utilisateurs() {
     var col = S.collection('utilisateurs', { module: 'M14', entite: 'Utilisateur' });
@@ -132,9 +158,11 @@
     description: 'Registre des comptes individuels : rôles attribués, état d’activation et double facteur (fiches de gestion).',
     regle: '<strong>Aucun compte partagé</strong> : chaque agent dispose d’un identifiant individuel. '
       + 'Le double facteur est marqué pour les profils à privilèges élevés (Administrateur et Direction). '
-      + '<strong>Non appliqué par la maquette</strong> : la connexion lit la table des comptes du serveur, pas ces fiches. '
-      + 'Le rôle, l’état actif, l’archivage, l’identifiant et le double facteur modifiés ici ne changent pas la connexion, '
-      + 'et un compte créé ici n’ouvre pas de session (le mot de passe saisi n’est conservé nulle part).',
+      + 'La connexion croise la fiche à chaque ouverture de session : un compte <strong>archivé ou désactivé</strong> est refusé, '
+      + 'un compte <strong>bloqué</strong> aussi, et le <strong>rôle de la fiche</strong> est celui de la session. Un compte créé ici reçoit '
+      + 'un mot de passe provisoire (haché par le serveur, jamais conservé dans la fiche) à changer à la première connexion. '
+      + 'Le double facteur est marqué mais pas encore vérifié par le serveur de la maquette ; une modification faite ici vaut à la <strong>prochaine</strong> connexion, '
+      + 'pas pour une session déjà ouverte.',
     render: function (root) {
       utilisateurs();
       return K.crud({
@@ -215,8 +243,8 @@
             record ? null : { type: 'section', label: 'Mot de passe' },
             record ? null : {
               name: 'motDePasse', label: 'Mot de passe', type: 'password', required: true,
-              help: 'Huit caractères au minimum (contrôlé à la saisie). Maquette : il n’est conservé nulle part, '
-                + 'ni en clair ni haché ; seule la date de définition est écrite. Le compte ne permet pas encore de se connecter.',
+              help: 'Huit caractères au minimum. Mot de passe provisoire : le serveur le hache et ne le renvoie jamais ; '
+                + 'la fiche ne garde que la date de définition. L’agent devra le changer à sa première connexion.',
             },
             record ? null : {
               name: 'motDePasseConfirmation', label: 'Confirmer le mot de passe',
@@ -262,6 +290,13 @@
             }
             if (mdp !== String(v.motDePasseConfirmation || '')) {
               return 'Les deux mots de passe saisis ne correspondent pas.';
+            }
+            /* Le serveur crée le compte de connexion (haché, changement imposé) ou refuse, en nommant pourquoi. */
+            var r = appelAuth({ action: 'creer_compte', identifiant: v.identifiant, role: v.role,
+              nom: (personnel().filter(function (x) { return x.id === v.employeId; })[0] || {}).nomComplet || v.identifiant,
+              motDePasse: mdp });
+            if (!r.ok && r.status !== 0) {
+              return (r.corps && r.corps.detail) || 'Le serveur a refusé la création du compte.';
             }
           }
           return null;
@@ -1432,8 +1467,8 @@
    * document ne fixe est marqué « proposition à valider » : la profondeur de
    * l'historique des mots de passe n'a aucune source. Et chaque paramètre dit
    * s'il est APPLIQUÉ par la maquette : seul le délai d'inactivité l'est
-   * (verrou de session) ; le verrou après échecs est appliqué par le poste
-   * (A5), pas par le serveur de la maquette, qui bloque à la main.
+   * (verrou de session) ; le verrou après échecs est appliqué par le serveur (5 échecs en
+   * 15 minutes) et par le poste (A5).
    *
    * Un mot de passe ne passe jamais ici : « imposer la réinitialisation »
    * oblige l'agent à en choisir un nouveau à sa prochaine connexion, rien de
@@ -1445,7 +1480,7 @@
   var PARAMETRES_POLITIQUE = [
     { cle: 'longueurMin', libelle: 'Longueur minimale du mot de passe', unite: 'caractères', min: 8, max: 64,
       source: 'Politique affichée par l’écran de réinitialisation (écart E1107)',
-      application: 'Affichée, non appliquée : la création de compte exige 8 caractères' },
+      application: 'Appliquée : 8 caractères minimum à la création et au changement (serveur)' },
     { cle: 'expirationJours', libelle: 'Durée de validité du mot de passe', unite: 'jours', min: 0, max: 365,
       source: 'Renouvellement à 90 jours affiché par la maquette (écart E1107)',
       application: 'Calculée par cet écran (mots de passe à renouveler)' },
@@ -1454,10 +1489,10 @@
       application: 'Non appliquée par la maquette' },
     { cle: 'echecsMax', libelle: 'Échecs de connexion avant blocage', unite: 'échecs', min: 1, max: 10,
       source: 'CDCT §12.2 (verrouillage après échecs successifs) ; trois échecs retenus au poste (A5)',
-      application: 'Appliquée par le poste ; la maquette bloque à la main et refuse la connexion d’un compte bloqué' },
+      application: 'Serveur de la maquette : verrou après 5 échecs en 15 minutes (valeur fixe, non liée à ce paramètre), compte bloqué refusé' },
     { cle: 'blocageMin', libelle: 'Durée du verrou après échecs', unite: 'minutes', min: 1, max: 1440,
       source: 'Quinze minutes retenues au poste (A5)',
-      application: 'Appliquée par le poste, non par le serveur de la maquette' },
+      application: 'Serveur de la maquette : 15 minutes fixes, levées par le temps ou par « Débloquer »' },
     { cle: 'inactiviteMin', libelle: 'Inactivité avant verrouillage de l’écran', unite: 'minutes', min: 1, max: 120,
       source: 'CDCT §12.2 (déconnexion automatique sur poste partagé : 15 minutes)',
       application: 'Appliquée : verrou de session de ce poste' },
@@ -1539,6 +1574,8 @@
     var r = S.collection('utilisateurs').update(id, {
       bloque: false, echecs: 0, debloqueLe: new Date().toISOString(), debloquePar: S.currentUser(),
     });
+    /* Lève aussi le verrou d'échecs du serveur (5 échecs en 15 minutes), sans attendre le temps. */
+    if (r) appelAuth({ action: 'deverrouiller', identifiant: u.identifiant });
     return r ? { ok: true, compte: r.record } : refusSecurite('ECRITURE_REFUSEE', 'Le magasin a refusé l’écriture.', 'Réessayer.');
   }
   function imposerReinitialisation(id) {
@@ -1582,7 +1619,7 @@
     description: 'Politique de mot de passe, verrouillage, double facteur, comptes bloqués et tentatives de connexion.',
     regle: 'Écran réservé à l’<strong>administrateur système</strong>. La politique est une fiche unique ; chaque paramètre dit sa <strong>source</strong> '
       + 'et s’il est <strong>appliqué</strong> par la maquette. Un mot de passe ne s’affiche ni ne se conserve ici : on <strong>marque</strong> '
-      + 'la réinitialisation comme imposée (marquage non lu par la connexion de la maquette). Bloquer, débloquer et clôturer sont journalisés (RG-12) ; rien n’est supprimé (RG-14).',
+      + 'la réinitialisation comme imposée (le serveur la lit à la connexion suivante et impose le changement avant toute session). Bloquer, débloquer et clôturer sont journalisés (RG-12) ; rien n’est supprimé (RG-14).',
     render: function (root) {
       utilisateurs();
       amorcerSessions();
@@ -1651,7 +1688,7 @@
         rows.push({ cle: 'mfa', libelle: 'Double facteur obligatoire pour les rôles',
           valeur: ROLES_DOUBLE_FACTEUR.map(function (r) { return roleLabel(r); }).join(', '),
           source: 'CDCT §12.2 nomme l’Administrateur et la Direction ; la création de compte l’impose aussi à la DAF et au Directeur Médical',
-          application: 'Appliquée à la création d’un compte (m14-utilisateurs)' });
+          application: 'Marqué à la création d’un compte ; la connexion le transmet mais le serveur de la maquette ne vérifie pas encore de second facteur' });
         var corps = el('div.space-y-4');
         corps.appendChild(K.note('Les valeurs de cette liste sont celles que la maquette <strong>affiche</strong> ou que le poste <strong>applique</strong>. '
           + 'La profondeur de l’historique des mots de passe est une <strong>proposition à valider</strong> : aucun document ne la fixe.', { tone: 'info', icon: 'info' }));
@@ -1738,7 +1775,7 @@
                   agir('Débloquer', debloquerCompte, r, 'Le compte retrouve l’accès et son compteur d’échecs repart de zéro. L’opération est journalisée.'); } })
                 : (r.actif ? K.commande('Bloquer', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'lock', onclick: function () { demanderBlocage(r); } }) : null),
               r.imposee ? null : K.commande('Imposer la réinitialisation', { moduleCode: 'M14', size: 'sm', icon: 'key-round', onclick: function () {
-                agir('Imposer la réinitialisation', imposerReinitialisation, r, 'Le compte est marqué « réinitialisation imposée » et l’opération est journalisée. Non appliqué par la maquette : la connexion ne lit pas ce marquage, l’agent se connecte comme avant. Aucun mot de passe n’est affiché ni conservé ici.'); } }),
+                agir('Imposer la réinitialisation', imposerReinitialisation, r, 'Le compte est marqué « réinitialisation imposée » et l’opération est journalisée. À sa prochaine connexion, l’agent doit choisir un nouveau mot de passe avant d’ouvrir la session. Aucun mot de passe n’est affiché ni conservé ici.'); } }),
               r.sessions ? K.commande('Clôturer les sessions', { moduleCode: 'M14', size: 'sm', variant: 'danger', icon: 'log-out', onclick: function () {
                 agir('Clôturer les sessions', cloturerSessionsDe, r, 'Les ' + r.sessions + ' session(s) ouverte(s) de ce compte seront clôturées ; le poste retombe sur la connexion à son prochain geste.'); } }) : null,
             ].filter(Boolean);

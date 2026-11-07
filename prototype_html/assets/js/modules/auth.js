@@ -217,6 +217,17 @@
           return r.json().then(function (o) { return { ok: r.ok, o: o }; });
         }).then(function (res) {
           submit.disabled = false;
+          /* LE SERVEUR A DÉCIDÉ, NOUS NE REJUGEONS PAS. Un rôle archivé a sa modale
+             explicite ; un mot de passe provisoire ouvre le changement AVANT tout
+             écran (aucune session n'existe tant qu'il n'est pas remplacé). */
+          if (res.o && res.o.code === 'ROLE_ARCHIVE') {
+            refuserRoleArchive((res.o.utilisateur && res.o.utilisateur.role) || '', res.o.utilisateur);
+            return;
+          }
+          if (res.ok && res.o && res.o.code === 'CHANGEMENT_REQUIS' && res.o.jetonChangement) {
+            demanderChangement(res.o, pwField.value);
+            return;
+          }
           if (!res.ok || !res.o.jeton) {
             tentatives++;
             erreur.className = 'flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-3 py-2';
@@ -224,27 +235,7 @@
               || 'Connexion refusée.';
             return;
           }
-          var u = res.o.utilisateur;
-
-          /* Le rôle a-t-il été archivé depuis la matrice des droits ? Le compte
-             peut être valide en base et son RÔLE retiré : le refus doit être
-             NOMMÉ, et l'administrateur informé. */
-          if (N.roleArchive(u.role)) {
-            refuserRoleArchive(u.role, u);
-            return;
-          }
-
-          /* Le JETON vient du serveur : on l'adopte, on n'en invente pas. */
-          S.setSession({
-            nouvelleSession: true,
-            jeton: res.o.jeton, role: u.role, nom: u.nom,
-            poste: (N.ROLES[u.role] && N.ROLES[u.role].label) || u.role,
-            identifiant: u.identifiant, fonction: u.fonction, secteur: u.secteur,
-          });
-          /* La connexion demande l'ouverture du centre de notifications sur la
-             page d'accueil du profil (consommé une seule fois par app.js). */
-          try { global.sessionStorage.setItem('sigh-cnt:notifs-ouverture', '1'); } catch (e) { /* sans effet */ }
-          global.location.href = url((N.ROLES[u.role] && N.ROLES[u.role].home) || 'dash-admin');
+          ouvrirSession(res.o);
         }).catch(function () {
           submit.disabled = false;
           erreur.className = 'flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-3 py-2';
@@ -253,23 +244,86 @@
         });
       });
 
+      /* La session s'ouvre avec le JETON du serveur : on l'adopte, on n'en invente pas. */
+      function ouvrirSession(o) {
+        var u = o.utilisateur;
+        S.setSession({
+          nouvelleSession: true,
+          jeton: o.jeton, role: u.role, nom: u.nom,
+          poste: (N.ROLES[u.role] && N.ROLES[u.role].label) || u.role,
+          identifiant: u.identifiant, fonction: u.fonction, secteur: u.secteur,
+        });
+        /* La connexion demande l'ouverture du centre de notifications sur la
+           page d'accueil du profil (consommé une seule fois par app.js). */
+        try { global.sessionStorage.setItem('sigh-cnt:notifs-ouverture', '1'); } catch (e) { /* sans effet */ }
+        global.location.href = url((N.ROLES[u.role] && N.ROLES[u.role].home) || 'dash-admin');
+      }
+
+      /* ----------------------------------------------------------------------
+       * CHANGEMENT DE MOT DE PASSE IMPOSÉ, AVANT TOUT ÉCRAN.
+       * Le mot de passe provisoire ne donne aucune session : le serveur n'a
+       * délivré qu'un jeton de changement, à usage unique. L'ancien mot de passe
+       * est celui que l'agent vient de saisir ; le nouveau compte huit caractères
+       * au moins. Rien n'est conservé ici.
+       * -------------------------------------------------------------------- */
+      function demanderChangement(o, ancien) {
+        var nouveau = el('input.input', { type: 'password', autocomplete: 'new-password', id: 'nouveau-mdp' });
+        var confirmation = el('input.input', { type: 'password', autocomplete: 'new-password', id: 'confirmation-mdp' });
+        var message = el('p.hidden.text-xs.text-danger-700', { role: 'alert' });
+        var m = null;
+        function valider() {
+          message.className = 'hidden text-xs text-danger-700';
+          if (String(nouveau.value).length < 8) {
+            message.textContent = 'Le nouveau mot de passe doit compter au moins huit caractères.';
+            message.className = 'text-xs text-danger-700'; return;
+          }
+          if (nouveau.value !== confirmation.value) {
+            message.textContent = 'Les deux mots de passe saisis ne correspondent pas.';
+            message.className = 'text-xs text-danger-700'; return;
+          }
+          global.fetch('api/auth.php', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'changer_mot_de_passe', jetonChangement: o.jetonChangement,
+              ancienMotDePasse: ancien, nouveauMotDePasse: nouveau.value, poste: (global.location.hostname || 'poste') }),
+          }).then(function (r) {
+            return r.json().then(function (b) { return { ok: r.ok, b: b }; });
+          }).then(function (res) {
+            if (!res.ok || !res.b.jeton) {
+              message.textContent = (res.b && res.b.detail) || 'Changement refusé.';
+              message.className = 'text-xs text-danger-700';
+              return;
+            }
+            if (m) m.close();
+            ouvrirSession(res.b);
+          }).catch(function () {
+            message.textContent = 'Connexion perdue avec le serveur : réessayer.';
+            message.className = 'text-xs text-danger-700';
+          });
+        }
+        m = U.modal({
+          title: 'Choisir un nouveau mot de passe', size: 'md',
+          body: el('div.space-y-3', null, [
+            el('p.text-sm.text-slate-700', { text: 'Ce compte utilise un mot de passe provisoire ou une réinitialisation a été imposée. '
+              + 'Choisissez un nouveau mot de passe avant d’accéder au logiciel.' }),
+            el('div', null, [el('label.label', { for: 'nouveau-mdp', text: 'Nouveau mot de passe (8 caractères au minimum)' }), nouveau]),
+            el('div', null, [el('label.label', { for: 'confirmation-mdp', text: 'Confirmer le nouveau mot de passe' }), confirmation]),
+            message,
+          ]),
+          footer: [
+            K.btn('Annuler', { onclick: function () { m.close(); } }),
+            K.btn('Changer le mot de passe', { variant: 'primary', onclick: valider }),
+          ],
+        });
+      }
+
       /* --------------------------------------------------------------------
        * Refus de connexion — rôle archivé.
        * L'administrateur retrouve la tentative dans « Rôles & permissions ».
        * ------------------------------------------------------------------ */
       function refuserRoleArchive(role, compte) {
         var libelle = N.ROLES[role] ? N.ROLES[role].label : role;
-        S.collection('tentativesConnexion', { module: 'M14', entite: 'tentative', prefix: 'TNT' }).insert({
-          identifiant: (compte && compte.identifiant) || idField.value.trim(),
-          nom: (compte && compte.nom) || idField.value.trim(),
-          role: role,
-          motif: 'Rôle archivé — accès retiré par l’administrateur',
-          horodatage: new Date().toISOString(),
-          poste: 'Écran de connexion', traitee: false,
-        });
-        S.log('Connexion refusée', 'M14', 'Session', (compte && compte.identifiant) || idField.value.trim(),
-          null, { role: role, motif: 'rôle archivé' });
-
+        /* La tentative est écrite PAR LE SERVEUR (api/auth.php, `tentativesConnexion`) :
+           sans session, le navigateur n'a pas le droit d'écrire, et un doublon serait journalisé. */
         erreur.className = 'flex items-start gap-2 rounded-lg border border-danger-200 bg-danger-50 px-3 py-2';
         erreurTexte.textContent = 'Connexion refusée — le profil « ' + libelle + ' » a été retiré.';
 
