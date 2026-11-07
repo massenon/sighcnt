@@ -60,6 +60,8 @@ const PROFILS = [
   ['aide_soignant', 'aide_soignant'], ['echographiste', 'medecin'],
   ['surveillant', 'infirmier'], ['assistant_comptable', 'comptable'],
   ['agentadmin', 'entretien'], ['ambulancier', 'chauffeur'],
+  /* Ajoutés le 07/11/2026 : l'audit ne sondait que 15 des 22 rôles, et les trois créés à la phase 2 (31/08) n'avaient jamais été sondés. */
+  ['direction', 'direction'], ['chirurgien', 'medecin'], ['anesthesiste', 'medecin'], ['aide_comptable', 'comptable'],
 ];
 
 /* Ce qu'on considère comme une commande d'ÉCRITURE. */
