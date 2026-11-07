@@ -3,6 +3,54 @@
  "module": "M5",
  "domaine": "Soins",
  "libelleManifeste": "Banque de sang",
- "acces": "erreur",
- "erreur": "page.waitForSelector: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#page-content') to be visible\u001b[22"
+ "acces": "ouvert",
+ "titre": "Banque de sang",
+ "description": "Gestion des poches de sang par groupe, dates de péremption et demandes de transfusion.",
+ "fil": [
+  "Accueil",
+  "Soins",
+  "Laboratoire",
+  "Banque de sang"
+ ],
+ "actions": [
+  "Demandes d’analyses",
+  "Demandes — maternité",
+  "Laboratoire"
+ ],
+ "regle": [],
+ "onglets": [],
+ "kpis": [
+  "Poches en stock",
+  "Disponibles",
+  "Péremption sous 7 jours",
+  "Périmées à détruire"
+ ],
+ "cartes": [
+  "Disponibilité par groupe sanguin",
+  "Poches de sang"
+ ],
+ "tableaux": [
+  [
+   "N° poche",
+   "Groupe",
+   "Volume",
+   "Prélèvement",
+   "Péremption",
+   "Reste",
+   "Donneur",
+   "Réservée",
+   "Actions"
+  ]
+ ],
+ "commandes": [
+  "Bon de demande de sang",
+  "Colonnes",
+  "Exporter",
+  "1",
+  "2",
+  "3"
+ ],
+ "champs": [],
+ "nbTableaux": 1,
+ "nbKpis": 4
 }

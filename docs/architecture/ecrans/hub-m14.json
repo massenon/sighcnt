@@ -13,12 +13,11 @@
  ],
  "actions": [
   "Utilisateurs",
-  "Sécurité des utilisateurs",
+  "Rôles & permissions (RBAC)",
   "Sécurité & Utilisateurs"
  ],
  "regle": [
-  "Configuration Clinique",
-  "Importation de données"
+  "Configuration Clinique"
  ],
  "onglets": [],
  "kpis": [],

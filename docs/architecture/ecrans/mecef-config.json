@@ -18,7 +18,6 @@
   "MECeF — Facture normalisée"
  ],
  "regle": [
-  "Lecture seule. Ces valeurs sont celles des référentiels du logiciel : les modifier ici ne conserverait rien. L’identité légale se règle à « Identité & papier à en-tête ».",
   "Le régime exonéré est celui relevé sur la facture de référence certifiée MECeF, où la TVA est portée à zéro et le net à payer vaut le hors-taxes augmenté du seul AIB. Ce choix doit être confirmé par le service comptable pour les prestations de la clinique.",
   "Le prototype simule les échanges avec le dispositif fiscal. L’interfaçage réel s’effectuera avec la machine électronique certifiée de facturation lors de la mise en œuvre."
  ],
@@ -31,6 +30,7 @@
  ],
  "tableaux": [],
  "commandes": [
+  "Enregistrer les paramètres",
   "Tester la connexion au dispositif"
  ],
  "champs": [

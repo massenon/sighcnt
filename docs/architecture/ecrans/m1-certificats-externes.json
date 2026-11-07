@@ -8,6 +8,7 @@
  "description": "Page de renvoi : les pièces des patients externes figurent au registre unique.",
  "fil": [
   "Accueil",
+  "Accueil",
   "Patients & Dossier médical",
   "Certificats — patients externes"
  ],

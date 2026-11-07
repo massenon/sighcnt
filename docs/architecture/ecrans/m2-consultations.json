@@ -8,6 +8,7 @@
  "description": "Enregistrement des consultations, diagnostics et actes réalisés, avec édition du compte rendu.",
  "fil": [
   "Accueil",
+  "Accueil",
   "RDV, Visites & Consultations",
   "Consultations"
  ],

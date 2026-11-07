@@ -663,9 +663,9 @@
    "acces": "ouvert",
    "titre": "Demandes — maternité",
    "kpis": 4,
-   "tableaux": 1,
+   "tableaux": 0,
    "onglets": 0,
-   "commandes": 5
+   "commandes": 2
   },
   {
    "id": "m5-demandes-hospitalisation",
@@ -800,7 +800,7 @@
    "kpis": 4,
    "tableaux": 1,
    "onglets": 0,
-   "commandes": 8
+   "commandes": 2
   },
   {
    "id": "m6-pharmacie-externe",
@@ -809,7 +809,7 @@
    "kpis": 4,
    "tableaux": 1,
    "onglets": 0,
-   "commandes": 8
+   "commandes": 7
   },
   {
    "id": "m6-dashboard",
@@ -920,6 +920,15 @@
    "commandes": 10
   },
   {
+   "id": "m6-import-grand-stock",
+   "acces": "ouvert",
+   "titre": "Importation Grand Stock",
+   "kpis": 5,
+   "tableaux": 1,
+   "onglets": 3,
+   "commandes": 12
+  },
+  {
    "id": "m6-point-ventes",
    "acces": "ouvert",
    "titre": "Suivi des ventes",
@@ -941,10 +950,10 @@
    "id": "m6-import-grand-stock",
    "acces": "ouvert",
    "titre": "Importation Grand Stock",
-   "kpis": 9,
-   "tableaux": 2,
-   "onglets": 3,
-   "commandes": 15
+   "kpis": 4,
+   "tableaux": 1,
+   "onglets": 0,
+   "commandes": 5
   },
   {
    "id": "hub-m7",
@@ -1304,7 +1313,7 @@
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 1
+   "commandes": 2
   },
   {
    "id": "hub-m12",
@@ -1474,8 +1483,8 @@
    "titre": "Exercices & clôtures",
    "kpis": 4,
    "tableaux": 1,
-   "onglets": 4,
-   "commandes": 7
+   "onglets": 3,
+   "commandes": 6
   },
   {
    "id": "m12-ouverture",
@@ -1691,7 +1700,7 @@
    "kpis": 4,
    "tableaux": 1,
    "onglets": 0,
-   "commandes": 7
+   "commandes": 6
   },
   {
    "id": "m10-prestataires",
@@ -2009,15 +2018,6 @@
    "commandes": 8
   },
   {
-   "id": "m14-securite-utilisateurs",
-   "acces": "ouvert",
-   "titre": "Sécurité des utilisateurs",
-   "kpis": 6,
-   "tableaux": 1,
-   "onglets": 4,
-   "commandes": 7
-  },
-  {
    "id": "m14-roles",
    "acces": "ouvert",
    "titre": "Rôles & permissions (RBAC)",
@@ -2039,7 +2039,7 @@
    "id": "m14-sessions",
    "acces": "ouvert",
    "titre": "Sessions actives",
-   "kpis": 5,
+   "kpis": 4,
    "tableaux": 1,
    "onglets": 0,
    "commandes": 3
@@ -2060,7 +2060,7 @@
    "kpis": 4,
    "tableaux": 2,
    "onglets": 0,
-   "commandes": 9
+   "commandes": 11
   },
   {
    "id": "m14-taches",
@@ -2096,7 +2096,7 @@
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 4
+   "commandes": 3
   },
   {
    "id": "cfg-tarifs",
@@ -2132,7 +2132,7 @@
    "kpis": 4,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 2
+   "commandes": 0
   },
   {
    "id": "cfg-types-piece",
@@ -2193,18 +2193,18 @@
    "acces": "ouvert",
    "titre": "Paramètres fiscaux (IFU / RCCM)",
    "kpis": 4,
-   "tableaux": 4,
+   "tableaux": 3,
    "onglets": 0,
-   "commandes": 6
+   "commandes": 4
   },
   {
    "id": "cfg-comptabilite",
    "acces": "ouvert",
    "titre": "Paramètres comptables & obligations",
    "kpis": 4,
-   "tableaux": 4,
+   "tableaux": 3,
    "onglets": 0,
-   "commandes": 5
+   "commandes": 1
   },
   {
    "id": "cfg-notifications",
@@ -2222,7 +2222,7 @@
    "kpis": 0,
    "tableaux": 0,
    "onglets": 0,
-   "commandes": 1
+   "commandes": 3
   },
   {
    "id": "cfg-modules",
@@ -2239,8 +2239,8 @@
    "titre": "Paramètres système",
    "kpis": 4,
    "tableaux": 1,
-   "onglets": 5,
-   "commandes": 16
+   "onglets": 4,
+   "commandes": 15
   },
   {
    "id": "cfg-poste",
@@ -2250,24 +2250,6 @@
    "tableaux": 0,
    "onglets": 0,
    "commandes": 1
-  },
-  {
-   "id": "cfg-pair",
-   "acces": "ouvert",
-   "titre": "Échanges entre postes (mode pair)",
-   "kpis": 4,
-   "tableaux": 0,
-   "onglets": 0,
-   "commandes": 2
-  },
-  {
-   "id": "cfg-smtp",
-   "acces": "ouvert",
-   "titre": "Messagerie (SMTP)",
-   "kpis": 4,
-   "tableaux": 0,
-   "onglets": 0,
-   "commandes": 2
   },
   {
    "id": "hub-imp",
@@ -3089,15 +3071,6 @@
    "commandes": 1
   },
   {
-   "id": "parametres-hub",
-   "acces": "ouvert",
-   "titre": "Paramètres système",
-   "kpis": 0,
-   "tableaux": 0,
-   "onglets": 0,
-   "commandes": 0
-  },
-  {
    "id": "contact-editeur",
    "acces": "ouvert",
    "titre": "Contactez l’éditeur",
@@ -3204,6 +3177,24 @@
    "tableaux": 0,
    "onglets": 0,
    "commandes": 1
+  },
+  {
+   "id": "index",
+   "acces": "ouvert",
+   "titre": "Système Intégré de Gestion Hospitalière",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 2
+  },
+  {
+   "id": "plan-du-site",
+   "acces": "ouvert",
+   "titre": "Plan du site",
+   "kpis": 0,
+   "tableaux": 0,
+   "onglets": 0,
+   "commandes": 338
   }
  ]
 }

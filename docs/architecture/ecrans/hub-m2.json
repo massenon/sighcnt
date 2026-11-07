@@ -8,6 +8,7 @@
  "description": "Tous les écrans du module M2 — RDV, Visites & Consultations.",
  "fil": [
   "Accueil",
+  "Accueil",
   "RDV, Visites & Consultations"
  ],
  "actions": [

@@ -18,7 +18,7 @@
   "Tableau de bord comptable"
  ],
  "regle": [
-  "Exercice 2026 : calculé — arrêté au 06/11/2026 (419 ligne(s) d’écriture validée(s) retenue(s)) · Exercice au 31/12/2025 : déposé — liasse BK505416. 100 brouillon(s) écarté(s) : un brouillon n’est pas un fait comptable, et le compter donnerait un résultat qui change quand le comptable rectifie une saisie.",
+  "Exercice 2026 : calculé — arrêté au 30/10/2026 (410 ligne(s) d’écriture validée(s) retenue(s)) · Exercice au 31/12/2025 : déposé — liasse BK505416. 90 brouillon(s) écarté(s) : un brouillon n’est pas un fait comptable, et le compter donnerait un résultat qui change quand le comptable rectifie une saisie.",
   "MARGE COMMERCIALE (XA) — RG-02 facture les médicaments au prix d’achat, sans marge : ce solde doit être nul ou quasi nul, et il l’est à la liasse déposée. S’il cessait de l’être, ce serait un signal, pas une bonne nouvelle.",
   "EXCÉDENT BRUT D’EXPLOITATION (XD) — ce qui reste après avoir payé les hommes et l’État. Il ignore les amortissements et le financement, qui dépendent de décisions passées : c’est lui qu’on regarde pour savoir si l’exploitation tient debout."
  ],
@@ -44,7 +44,7 @@
    "NOTE",
    "EXERCICE 2026 (N)",
    "EXERCICE AU 31/12/2025 (N-1)",
-   "NET (1) — calculé — arrêté au 06/11/2026",
+   "NET (1) — calculé — arrêté au 30/10/2026",
    "NET (1) — déposé — liasse BK505416"
   ]
  ],

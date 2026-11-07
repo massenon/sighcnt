@@ -20,7 +20,7 @@
  "regle": [
   "5 indicateur(s) au-delà du seuil d’alerte : DSO — délai moyen de règlement client / assureur · Ancienneté maximale d’une créance assureur · BFR exprimé en jours de chiffre d’affaires · Rotation annuelle du stock · Couverture du stock.",
   "Le facturé et l’encaissé sont deux grandeurs distinctes : la première est un chiffre d’affaires, la seconde de la trésorerie. Les confondre ferait prendre une créance pour de l’argent en caisse.",
-  "Période retenue : journée du 06/11/2026 — du 06/11/2026 au 06/11/2026. Comparée à journée du 05/11/2026 (du 05/11/2026 au 05/11/2026)."
+  "Période retenue : journée du 30/10/2026 — du 30/10/2026 au 30/10/2026. Comparée à journée du 29/10/2026 (du 29/10/2026 au 29/10/2026)."
  ],
  "onglets": [
   "Jour",
@@ -42,7 +42,7 @@
  ],
  "cartes": [
   "Trésorerie & besoin en fonds de roulement",
-  "Répartition du chiffre d’affaires — journée du 06/11/2026"
+  "Répartition du chiffre d’affaires — journée du 30/10/2026"
  ],
  "tableaux": [
   [
