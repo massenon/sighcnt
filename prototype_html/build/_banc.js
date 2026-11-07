@@ -72,7 +72,7 @@ async function demarrerPhp(racine) {
   const proc = spawn('php', ['-S', '127.0.0.1:' + PORT_PHP, '-t', racine], {
     cwd: racine,
     env: Object.assign({}, process.env, { SIGH_BASE: BASE_TEST, SIGH_BANC: '1' }),
-    stdio: ['ignore', 'ignore', 'ignore'],
+    stdio: ['ignore', 'ignore', process.env.SIGH_PHP_LOG ? require('fs').openSync(process.env.SIGH_PHP_LOG, 'a') : 'ignore'],
   });
   for (let i = 0; i < 40; i++) {
     await attendre(250);

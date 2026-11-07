@@ -97,12 +97,21 @@ function sigh_proj_installer(PDO $pdo): bool
             foreach ($pdo->query('SELECT nom, donnees FROM collections') as $l) {
                 $tout[$l['nom']] = json_decode($l['donnees'], true);
             }
+            /* Appelée au milieu d'une écriture du magasin, la mise à niveau est DÉJÀ dans une transaction :
+               en ouvrir une seconde échouait, et le rattrapage annulait la transaction de l'appelant
+               (« There is no active transaction » au COMMIT, HTTP 500 sur la première écriture après
+               un changement de schéma). On ne possède la transaction que si personne ne l'a ouverte. */
+            $possede = !$pdo->inTransaction();
             try {
-                $pdo->beginTransaction();
+                if ($possede) {
+                    $pdo->beginTransaction();
+                }
                 sigh_proj_projeter($pdo, $tout);
-                $pdo->commit();
+                if ($possede) {
+                    $pdo->commit();
+                }
             } catch (Throwable $e) {
-                if ($pdo->inTransaction()) {
+                if ($possede && $pdo->inTransaction()) {
                     $pdo->rollBack();
                 }
             }
