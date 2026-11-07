@@ -1,153 +1,145 @@
 [
   {
-    "nom": "Vague 79 — messagerie SMTP : un vrai message part par le protocole (puits de test), refus nommés par étape, mot de passe jamais relu ni écrit en clair, « Contactez l’éditeur » honnête",
+    "nom": "Vague 70 — tables PostgreSQL de tous les modules : parité, écriture suivie, lignes filles",
     "etapes": [
       {
-        "libelle": "L’écran porte ses champs nommés ; non configurée au départ",
+        "libelle": "Les tables existent pour tous les modules : au moins quinze schémas de module",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Rien n’étant enregistré, le formulaire PROPOSE la configuration de la clinique (non secrète) : serveur, port 587, STARTTLS, identifiant, expéditeur, nom, délai 20, « Répondre à »",
+        "libelle": "Parité magasin ↔ tables : zéro écart sur toutes les collections",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le mot de passe n’a AUCUNE valeur par défaut, et les valeurs proposées ne rendent pas la messagerie « configurée » tant qu’on n’enregistre pas",
+        "libelle": "Plus de cent collections projetées",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Enregistrée : configurée, mot de passe « Défini » ET le champ est vidé (jamais relu)",
+        "libelle": "Aucune erreur de projection récente",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le test montre les étapes : connexion, chiffrement, authentification, envoi",
+        "libelle": "Une fiche créée par un écran apparaît dans la table m1.patients, colonnes typées",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le puits a REÇU le message par le protocole : expéditeur, destinataire, objet",
+        "libelle": "Une modification est suivie, et un champ inconnu du schéma est CONSERVÉ dans « extra » au lieu d’être perdu",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le corps arrive intact, accents et symbole € compris ; le nom affiché est décodé",
+        "libelle": "Les lignes d’une facture ont leur table fille et la parité des lignes est vérifiée avec le reste",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "L’en-tête Reply-To est REÇU (adresse et nom décodés) : les réponses iront à la boîte de la clinique",
-        "ok": false,
-        "detail": ""
-      },
-      {
-        "libelle": "Le puits a vu STARTTLS puis une authentification réussie (le mot de passe n’a pas circulé avant le chiffrement)",
+        "libelle": "RG-14 : archiver ne supprime pas — la ligne reste en table avec son statut",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Le dernier test réussi est retenu côté serveur",
+        "libelle": "Après ces écritures, la parité reste à zéro écart",
         "ok": true,
         "detail": null
       },
       {
-        "libelle": "Un mauvais mot de passe est refusé à l’étape « Authentification », sans envoi",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Un port fermé est refusé à l’étape « Connexion au serveur »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Un destinataire refusé par le serveur est refusé à l’étape « Destinataire »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Avec le contrôle du certificat actif, le certificat auto-signé du puits est refusé à l’étape « Chiffrement »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le mot de passe n’apparaît ni dans le magasin exporté, ni dans le stockage du navigateur, ni dans le journal",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "L’API ne renvoie jamais le mot de passe ni son chiffré",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Sur le disque, le mot de passe est CHIFFRÉ (aucun clair dans le fichier de configuration)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le journal côté serveur garde les essais (test d’envoi) sans le mot de passe",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Messagerie configurée ET testée : « Envoyer aussi par courriel » est coché d’emblée, sans mention « seulement enregistrée »",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le courriel part vraiment à l’éditeur : destinataire, objet préfixé, corps et référence",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le point d’envoi ne sert QU’à l’éditeur : une autre adresse est refusée (pas de relais ouvert)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "L’administrateur retire la configuration : la messagerie redevient non configurée",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Messagerie non configurée : aucune case, et l’écran dit que la demande est seulement enregistrée et où configurer",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le toast dit « Aucun courriel n’a été envoyé » et rien n’arrive au puits",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Le serveur refuse la lecture de la configuration à un rôle qui ne la règle pas (caissier)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Mais « disponible » répond à tout agent connecté, sans le moindre réglage",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Seuls l’administrateur et la DAF ouvrent l’écran",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "La carte « Messagerie » figure aux Paramètres système de la DAF et jamais à ceux de la direction (RG-13)",
-        "ok": true,
-        "detail": null
-      },
-      {
-        "libelle": "Aucune erreur JavaScript",
+        "libelle": "Sans session, le contrôle est refusé (401)",
         "ok": true,
         "detail": null
       }
     ],
-    "ok": false
+    "ok": true
+  },
+  {
+    "nom": "Vague 70 — deux postes : l’écriture de l’un apparaît chez l’autre sans recharger, pastille d’état",
+    "etapes": [
+      {
+        "libelle": "La pastille d’état de la synchronisation est présente et dit « Synchronisé » sur un poste relié (attente bornée à 15 s)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le poste A voit la fiche créée par le poste B sans geste ni rechargement, en moins de 8 secondes",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Et sans que le document ait été rechargé",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre affiché par le poste A montre la nouvelle fiche (recherche sur son nom)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Une saisie en cours n’est pas repeinte : le champ garde sa valeur et un bandeau propose d’actualiser",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Serveur injoignable : la pastille passe à « Hors ligne » puis revient à « Synchronisé » au retour",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Un poste ne relit pas ses propres écritures (aucun écho)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript côté poste A",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
+  },
+  {
+    "nom": "Vague 70 — exercice : colonne N-1 du journal, archive de clôture dans la GED, MECeF et M9 qui suivent l’exercice",
+    "etapes": [
+      {
+        "libelle": "L’archive de clôture est déposée dans la GED : conservée dix ans, signée, empreinte SHA-256 et balance en CSV",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "L’archiver une seconde fois ne crée pas de seconde archive (une seule vérité à conserver)",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le bilan porte la colonne « Exercice 2027 (journal) » (actif ET passif) quand le journal tient l’exercice précédent",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Le registre fiscal MECeF porte le sélecteur d’exercice et ne montre que les factures de l’exercice choisi",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "La facture mensuelle assureur suit l’exercice : les mois sont ceux de 2025, plus « 2026 » écrit en dur",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Les créances (un encours) ne suivent PAS l’exercice : une créance d’un exercice précédent reste due",
+        "ok": true,
+        "detail": null
+      },
+      {
+        "libelle": "Aucune erreur JavaScript sur ces écrans",
+        "ok": true,
+        "detail": null
+      }
+    ],
+    "ok": true
   }
 ]

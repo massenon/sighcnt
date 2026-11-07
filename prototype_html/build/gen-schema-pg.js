@@ -137,7 +137,8 @@ const estFiche = (r) => r && typeof r === 'object' && !Array.isArray(r);
     if (vide && !PREC[n]) magasin[n] = [g[n].fiche];
   });
 })();
-const IGNOREES = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && magasin[n].length && !magasin[n].some(estFiche)).sort();
+/* `_fichesDemo` est une carte de repérage du jeu de démonstration, pas une collection de fiches : toujours ignorée, même si le magasin d'extraction n'en porte pas. */
+const IGNOREES = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && magasin[n].length && !magasin[n].some(estFiche)).concat(['_fichesDemo']).filter((n, i, a) => a.indexOf(n) === i).sort();
 const aDesFiches = (n) => Array.isArray(magasin[n]) && magasin[n].some(estFiche);
 const noms = Object.keys(magasin).filter((n) => Array.isArray(magasin[n]) && IGNOREES.indexOf(n) < 0).sort();
 const nomsTables = Array.from(new Set(noms.concat(Object.keys(PREC)))).filter((n) => aDesFiches(n) || PREC[n]).sort();

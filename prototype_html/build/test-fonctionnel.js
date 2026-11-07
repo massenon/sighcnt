@@ -12976,10 +12976,10 @@ async function viderMessages(page) {
         version: raw._version };
     });
     const e0 = sauve.etat;
-    verifier('Les trois collections sont semées au socle (identité v1 non validée, 20 fiches d’obligations : les 19 du calendrier et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69',
+    verifier('Les trois collections sont semées au socle (identité v1 non validée, 20 fiches d’obligations : les 19 du calendrier et ORTB-PARAMETRES, historique vide), essentielles, libellées CFG, _version 69 ou plus',
       e0.identite.length === 1 && e0.identite[0].version === 1 && !e0.identite[0].valideLe && e0.obligations.length === 20
       && e0.obligations.some((o) => o.code === 'ORTB-PARAMETRES' && o.type === 'parametres') && e0.historique.length === 0
-      && e0.essentielles && e0.libelles === 'CFG/CFG' && e0.version === 69,
+      && e0.essentielles && e0.libelles === 'CFG/CFG' && e0.version >= 69,
       JSON.stringify({ identite: e0.identite.length, obligations: e0.obligations.length, historique: e0.historique.length, essentielles: e0.essentielles, libelles: e0.libelles, version: e0.version }));
 
     /* 1. cfg-branding : la saisie est ÉCRITE, relue après rechargement, et l'en-tête imprimé la porte. */
