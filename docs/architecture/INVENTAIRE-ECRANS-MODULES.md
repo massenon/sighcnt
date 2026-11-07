@@ -507,3 +507,33 @@ Source : `prototype_html/build/mesures/inventaire-fonctions-ecrans.json`, mesur�
 | Poste | ne pose ni `_modifieLe` ni `_archiveLe` (la maquette si) ; `fiche_impression.dart` les lit | constats lot 3 |
 | 111 constats « doute » de l'audit | non triés | `AUDIT-FAUSSES-SAUVEGARDES-INVENTAIRE-BRUT.json` |
 | Mise en page | toute la grille à passer en revue (décision du 06/11) ; `Colors.white` en dur (114 usages) | lot L7 |
+
+# Inventaire par application (07/11/2026)
+
+Lecture : « existe » = relevé dans le code ou les statuts engendrés ; « manque » = écart connu. Rien ici n'est une mesure de qualité : seuls l'existence et la parité de libellés (N1) sont mesurées.
+
+## `prototype_html` (maquette, exécutable de référence)
+- **Existe** : 358 écrans au manifeste (321 relevés par l'audit RBAC, 327 par l'inventaire des fonctions, les alias et pages-renvoi expliquent l'écart) ; banc de 90 scénarios, 1453 vérifications, tous verts à `f5d4444` ; connexion serveur durcie (refus nommés, verrou, changement imposé, annuaire fermé, lecture du magasin sous session) ; courriel réel (SMTP, test d'envoi, Reply-To).
+- **Manque** : tout ce que listent les sections précédentes (filtres et CRUD par écran) ; SMS (voir ci-dessous) ; circuit de validation des présences ; espace « Mes » de l'agent ; MECeF boîtier ; filtrage par rôle à la lecture du magasin ; double facteur ; `changer_role` serveur.
+
+## `apps/poste` (Flutter desktop, mères et fileuls)
+- **Existe** : 358 écrans sur 358 au statut « porté » avec N1 mesuré à 100 % (`parite-statuts.json`) ; 402 fichiers Dart ; modes fileul et mère ; moteur pair, copie consultable, mère Dart sur SQLite et PostgreSQL ; courriel direct avec file de repli ; configuration fiscale validée et datée (identité par versions, obligations, ORTB, échéances) ; installation guidée ; suite : 2299 tests passés, 1 échec préexistant (`barre_gestes_test`).
+- **Manque** : les 85 corrections de fausses sauvegardes sont portées au poste seulement pour les fichiers touchés par les cinq lots (les autres écrans non audités côté poste) ; connexion du poste non alignée sur le durcissement du serveur de la maquette (le poste a sa propre authentification Argon2id) ; espace « Mes » et planning individuel ; MECeF boîtier ; SMS ; filtres avancés de la liste des manques ; enquête publique réelle ; `_modifieLe` / `_archiveLe` non écrits ; test d'un bulletin déjà calculé resté inchangé après modification d'un seuil ORTB.
+
+## `apps/mobile` (Flutter, par le relais seulement)
+- **Existe** : 16 écrans : appairage, code PIN, accueil, tournée, dossier, prescription, orientation, note, lot, agenda, à traiter, sage-femme, réception de secours, formulaire de suite, réglages.
+- **Manque** : espace « Mes » de l'agent (fiche de poste, fiche de paie, contrat, planning et gardes, statistiques, présences et absences, congés, ordres de mission, primes, événements, participations, assurance, notes de service) ; CRUD des vacations propres avec validation du surveillant ; pointage par badge (réglage système) ; notifications poussées ; SMS.
+
+## `apps/web` (relais Laravel, opaque, et panneau superadmin)
+- **Existe** : API du relais (appairage, dépôt, relève, compteurs, appareils, révocation, battement, indicateurs, récupération) ; sens pair et sens copie ; consultation déchiffrée dans le navigateur ; panneau Livewire : tableau, appareils, boîtes, codes, indicateurs, alertes, journal, superadmin, paramètres, hébergement, sauvegarde, opacité, consultation, SMTP avec test d'envoi ; 98 tests.
+- **Manque** : adresse unique du coffre de récupération (courriel DA ou superadmin) à imposer pour tout appareil appairé ; passerelle SMS ; page publique d'enquête hébergée ; verrouillage du panneau par double facteur.
+
+## SMS, événements, notifications, relances, souhaits d'anniversaire : état réel
+| Zone | Prototype | Poste | Web (relais) | Mobile |
+|---|---|---|---|---|
+| Choix du canal (appli, SMS, courriel) par type d'alerte | oui (cases dans `cfg-notifications`), **non relu par le moteur d'alertes** | oui (même écran, `cfb_notifications.dart`) | non | non |
+| Modèles de message et rappels (anniversaire, nouvel an, fêtes, rendez-vous) | oui (`cfg-rappels`, `configuration.js` ~4094) : composés et mis en file, **jamais envoyés** | oui (`cfa_rappels.dart`, même limite écrite) | non | non |
+| Configuration d'une **passerelle SMS** (fournisseur, identifiant d'expéditeur, clé, test d'envoi) | **non** | **non** | **non** | non |
+| Envoi réel de SMS | **non** | **non** | **non** | non |
+| Courriel réel | oui (`api/smtp.php`) | oui | oui | non |
+| Consentement du patient à recevoir des messages | non | non | non | non |
