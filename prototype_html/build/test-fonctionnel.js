@@ -13249,6 +13249,339 @@ async function viderMessages(page) {
     verifier('Aucune erreur JavaScript', erreursJS.length === 0, erreursJS.join(' | '));
   });
 
+  /* =========================================================================
+   * Vague 82 : les corrections « fausses sauvegardes » écrivent vraiment, ou refusent en nommant
+   * -------------------------------------------------------------------------
+   * Chaque geste est mené par l'écran (ou par le moteur exposé) et la sonde relit le MAGASIN, jamais
+   * un texte copié ni un rang : une ligne se retrouve par sa référence. Ce scénario MUTE des fiches
+   * (lignes d'écriture, dépense, stock, ordonnance, souscripteur, document, facture, réglage de
+   * reprise, état d'exercice) et les RESTAURE en sortant : ce qu'il a inséré est retiré du tableau
+   * de la collection, ce qu'il a modifié est remis à sa valeur d'origine.
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 82 : les fausses sauvegardes corrigées écrivent vraiment, ou refusent en nommant (lettrage, dépense, pertes, reprise, pharmacie, édition, authentification, conventions, facture, sauvegarde, MECeF)');
+    const erreurs82 = [];
+    const ouvrir82 = async (p) => { erreurs82.push(...erreursJS); await ouvrir(p); };
+    const toastTexte = () => page.evaluate(() => (document.querySelector('#toast-host') || { textContent: '' }).textContent.replace(/\s+/g, ' '));
+    const viderToasts = () => page.evaluate(() => { const h = document.querySelector('#toast-host'); if (h) h.innerHTML = ''; });
+    /* Pose des champs dans la DERNIÈRE modale (les ids f_<nom> se répètent d'une modale à l'autre). */
+    const poserChamps = (champs) => page.evaluate((champs) => {
+      const d = [...document.querySelectorAll('[role="dialog"]')].pop();
+      if (!d) return false;
+      return Object.keys(champs).every((n) => {
+        const e = d.querySelector('#f_' + n);
+        if (!e) return false;
+        e.value = champs[n];
+        ['input', 'change'].forEach((t) => e.dispatchEvent(new Event(t, { bubbles: true })));
+        return true;
+      });
+    }, champs);
+    const clicExact = (label, dansModale) => page.evaluate(async (label, dlg) => {
+      const racine = dlg ? [...document.querySelectorAll('[role="dialog"]')].pop() : document;
+      if (!racine) return false;
+      const b = [...racine.querySelectorAll('button')].find((x) => x.textContent.replace(/\s+/g, ' ').trim() === label);
+      if (!b) return false;
+      b.click();
+      await new Promise((r) => setTimeout(r, 500));
+      return true;
+    }, label, !!dansModale);
+    /* Cherche la ligne par sa RÉFÉRENCE (recherche du tableau) puis clique la commande nommée. */
+    const agirLigne = (ref, titre) => page.evaluate(async (ref, titre) => {
+      const champ = document.querySelector('#page-content input[type="search"]');
+      if (champ) { champ.value = ref; champ.dispatchEvent(new Event('input', { bubbles: true })); await new Promise((r) => setTimeout(r, 450)); }
+      const tr = [...document.querySelectorAll('#page-content tbody tr')].find((t) => t.textContent.includes(ref));
+      const b = tr && [...tr.querySelectorAll('button')].find((x) => ((x.title || '') + ' ' + (x.getAttribute('aria-label') || '') + ' ' + x.textContent).indexOf(titre) >= 0);
+      if (!b) return false;
+      b.click();
+      await new Promise((r) => setTimeout(r, 500));
+      return true;
+    }, ref, titre);
+    /* Retire du tableau d'une collection les fiches que le scénario a posées (aucune suppression métier : c'est du jeu d'essai). */
+    const RETIRER = `(S, nom, pred) => { const t = S.collection(nom).all(); for (let i = t.length - 1; i >= 0; i--) { if (pred(t[i])) t.splice(i, 1); } }`;
+
+    /* ---- 1. Lettrage : posé sur toutes les lignes ; refusé sur un exercice CLOS, sans rien modifier ---- */
+    await ouvrir82('m12-depenses.html');
+    const l1 = await page.evaluate((RET) => {
+      const S = window.SIGH.store, X = window.SIGH.exercice, C = window.SIGH.core, col = S.collection('ecritures');
+      const date = C.iso(C.aujourdhui());
+      const poser = (n, debit, credit) => col.insert({ compte: '411000', date, statut: 'validee', journal: 'OD', libelle: 'Sonde 82', numero: n, debit, credit, sonde: 'Vague 82' });
+      const a = [poser('SONDE82-LA', 7000, 0), poser('SONDE82-LB', 0, 7000)];
+      const ids = (x) => x.map((r) => r && r.record.id);
+      const ok = X.lettrer('411000', ids(a));
+      const lettres = ids(a).map((id) => col.get(id).lettrage);
+      const b = [poser('SONDE82-LC', 3000, 0), poser('SONDE82-LD', 0, 3000)];
+      const fiche = X.de(X.anneeDe(date)); const etatAvant = fiche.etat;
+      let refus;
+      fiche.etat = 'clos';
+      try { refus = X.lettrer('411000', ids(b)); } finally { fiche.etat = etatAvant; }
+      const apresRefus = ids(b).map((id) => col.get(id).lettrage);
+      (new Function('return ' + RET))()(S, 'ecritures', (e) => e.sonde === 'Vague 82');
+      S.save();
+      return { ok: ok.ok, code: ok.code, nb: ok.lignes, lettres, refusOk: refus.ok, refusMotif: refus.motif || '', apresRefus, etatRestaure: fiche.etat === etatAvant };
+    }, RETIRER);
+    verifier('Lettrage : posé sur les deux lignes (même code) ; sur un exercice clos, LETTRAGE_REFUSE et aucune ligne modifiée',
+      l1.ok === true && l1.nb === 2 && l1.lettres.every((x) => x && x === l1.code)
+      && l1.refusOk === false && /LETTRAGE_REFUSE/.test(l1.refusMotif) && l1.apresRefus.every((x) => !x) && l1.etatRestaure, JSON.stringify(l1));
+
+    /* ---- 2. Dépense : refusée en exercice clos = rien d'écrit ; en exercice ouvert = dépense ET écritures, RG-10 ---- */
+    const saisirDepense = async () => {
+      await clicExact('Nouvelle dépense', false);
+      const lignes = [['Sonde82 gants', 4200], ['Sonde82 compresses', 800]];
+      for (const [lib, m] of lignes) {
+        await clicExact('Ajouter une ligne', true);
+        await poserChamps({ libelle: lib, montant: m });
+        await clicExact('Ajouter', true);
+      }
+      await viderToasts();
+      await clicExact('Enregistrer', true);
+      await pause(500);
+    };
+    const compte2 = () => page.evaluate(() => ({ dep: window.SIGH.store.collection('depenses').all().length, ecr: window.SIGH.store.collection('ecritures').all().length }));
+    const avant2 = await compte2();
+    await page.evaluate(() => { const X = window.SIGH.exercice, C = window.SIGH.core; const f = X.de(X.anneeDe(C.iso(C.aujourdhui()))); window.__s82 = { f, etat: f.etat }; f.etat = 'clos'; });
+    await saisirDepense();
+    const toastClos = await toastTexte();
+    const apresClos = await compte2();
+    await clicExact('Annuler', true);
+    await page.evaluate(() => { window.__s82.f.etat = window.__s82.etat; });
+    await saisirDepense();
+    const apresOuvert = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const dep = S.collection('depenses').all().filter((d) => (d.lignes || []).some((l) => l.libelle === 'Sonde82 gants'))[0];
+      if (!dep) return { dep: false };
+      const ecr = S.collection('ecritures').all().filter((e) => e.pieceId === dep.id);
+      const somme = (k) => ecr.reduce((n, e) => n + (e[k] || 0), 0);
+      return { dep: true, montant: dep.montant, nbEcr: ecr.length, debit: somme('debit'), credit: somme('credit'), ids: (dep.ecritureIds || []).length, id: dep.id };
+    });
+    await page.evaluate((RET, id) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      r(S, 'ecritures', (e) => e.pieceId === id); r(S, 'depenses', (d) => d.id === id); S.save();
+    }, RETIRER, apresOuvert.id || '');
+    verifier('Dépense : sur exercice clos, refus dit (« refusée ») et ni dépense ni écriture conservée ; sur exercice ouvert, la dépense ET ses 3 écritures existent, débit = crédit = 5 000',
+      /refus/i.test(toastClos) && apresClos.dep === avant2.dep && apresClos.ecr === avant2.ecr
+      && apresOuvert.dep && apresOuvert.montant === 5000 && apresOuvert.nbEcr === 3 && apresOuvert.ids === 3 && apresOuvert.debit === 5000 && apresOuvert.credit === 5000,
+      JSON.stringify({ toastClos: toastClos.slice(0, 160), avant2, apresClos, apresOuvert }));
+
+    /* ---- 3. Pertes : décrémente le magasin choisi ET le total ; au-delà du stock du magasin, refus nommé (RG-03) ---- */
+    await ouvrir82('m6-pertes.html');
+    const p3 = await page.evaluate(() => {
+      const p = window.SIGH.store.collection('produits').active().filter((x) => x.stockDetail >= 3 && x.stockGros >= 2)[0];
+      return p ? { id: p.id, nom: p.designation, detail: p.stockDetail, gros: p.stockGros, total: p.stock } : null;
+    });
+    const lirePertes = () => page.evaluate((id) => {
+      const S = window.SIGH.store, p = S.collection('produits').get(id);
+      return { detail: p.stockDetail, gros: p.stockGros, total: p.stock, mvts: S.collection('mouvements').all().filter((m) => m.justificatif === 'SONDE82-PERTE').length,
+        mvt: S.collection('mouvements').all().filter((m) => m.justificatif === 'SONDE82-PERTE').map((m) => ({ q: m.quantite, mag: m.stockType, sens: m.sens, produitId: m.produitId }))[0] };
+    }, p3.id);
+    const declarer = async (magasin, q) => {
+      await clicExact('Déclarer une perte', false);
+      await poserChamps({ produitId: p3.id, magasin, quantite: q, justificatif: 'SONDE82-PERTE', constatePar: 'Sonde' });
+      await viderToasts();
+      await clicExact('Déclarer la perte', true);
+      await pause(500);
+    };
+    await declarer('gros', 1);
+    const apresPerte = await lirePertes();
+    await declarer('detail', p3.detail + 1);
+    const toastPerte = await toastTexte();
+    const apresRefusPerte = await lirePertes();
+    await page.evaluate((RET, p3) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      S.collection('produits').update(p3.id, { stockDetail: p3.detail, stockGros: p3.gros, stock: p3.total });
+      r(S, 'mouvements', (m) => m.justificatif === 'SONDE82-PERTE'); S.save();
+    }, RETIRER, p3);
+    verifier('Pertes : 1 unité du magasin central décroît stockGros ET stock (détail intact, un mouvement de sortie) ; au-delà du stock du magasin, refus « Perte supérieure » et rien d’écrit (RG-03)',
+      !!p3 && apresPerte.gros === p3.gros - 1 && apresPerte.total === p3.total - 1 && apresPerte.detail === p3.detail && apresPerte.mvts === 1
+      && apresPerte.mvt.q === 1 && apresPerte.mvt.mag === 'gros' && apresPerte.mvt.sens === 'sortie'
+      && /Perte supérieure/.test(toastPerte) && apresRefusPerte.mvts === 1 && apresRefusPerte.detail === p3.detail && apresRefusPerte.gros === p3.gros - 1 && apresRefusPerte.total === p3.total - 1,
+      JSON.stringify({ p3, apresPerte, toastPerte: toastPerte.slice(0, 140), apresRefusPerte }));
+
+    /* ---- 4. Reprise de stock : la seconde validation rend REPRISE_DEJA_VALIDEE ---- */
+    await ouvrir82('m6-import-grand-stock.html');
+    const r4a = await page.evaluate(() => { const S = window.SIGH.store; const v = S.reglage('repriseStock', null); S.setReglage('repriseStock', null); return v; });
+    const validerReprise = async () => {
+      await viderToasts();
+      await clicExact('Valider la reprise', false);
+      await pause(300);
+      await clicExact('Valider la reprise', true);
+      await pause(500);
+      return toastTexte();
+    };
+    const t1 = await validerReprise();
+    const f1 = await page.evaluate(() => JSON.stringify(window.SIGH.store.reglage('repriseStock', null)));
+    const t2 = await validerReprise();
+    const f2 = await page.evaluate(() => JSON.stringify(window.SIGH.store.reglage('repriseStock', null)));
+    await page.evaluate((v) => { window.SIGH.store.setReglage('repriseStock', v); }, r4a);
+    verifier('Reprise de stock : la première validation écrit la fiche (« Reprise validée »), la seconde rend REPRISE_DEJA_VALIDEE et ne réécrit rien',
+      /Reprise validée/.test(t1) && f1 !== 'null' && /REPRISE_DEJA_VALIDEE/.test(t2) && f2 === f1, JSON.stringify({ t1: t1.slice(0, 80), t2: t2.slice(0, 120), egal: f1 === f2 }));
+
+    /* ---- 5. Pharmacie : délivrance = mouvement du DÉTAIL ; ordonnance « servie » seulement quand TOUTES ses lignes le sont ---- */
+    await ouvrir82('m6-pharmacie-externe.html');
+    const o5 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const ps = S.collection('produits').active().filter((x) => x.stockDetail >= 3).slice(0, 2);
+      const pat = S.collection('patients').active()[0];
+      const ord = S.collection('ordonnances').insert({ numero: 'ORD-SONDE82', date: '2099-01-01', patient: pat.nom + ' ' + pat.prenom, patientCode: pat.code, statutPaiement: 'soldee',
+        medicaments: ps.map((p) => ({ produit: p.designation, produitId: p.id, quantite: 1, posologie: '1/j', voie: 'orale' })) }).record;
+      return { id: ord.id, produits: ps.map((p) => ({ id: p.id, detail: p.stockDetail, stock: p.stock })) };
+    });
+    await ouvrir82('m6-pharmacie-externe.html');
+    const lire5 = () => page.evaluate((id) => {
+      const S = window.SIGH.store, o = S.collection('ordonnances').get(id);
+      const mv = S.collection('mouvements').all().filter((m) => m.ordonnanceId === id);
+      return { statut: o.statutDispensation || null, servies: (o.lignesServies || []).slice(), nb: mv.length, types: mv.map((m) => m.stockType + ':' + m.sens + ':' + m.quantite + ':' + m.justificatif) };
+    }, o5.id);
+    const delivrer5 = async () => { await agirLigne('ORD-SONDE82', 'Délivrer'); await pause(300); await clicExact('Délivrer', true); await pause(600); };
+    await delivrer5();
+    const s5a = await lire5();
+    await delivrer5();
+    const s5b = await lire5();
+    await page.evaluate((RET, o5) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      o5.produits.forEach((p) => S.collection('produits').update(p.id, { stockDetail: p.detail, stock: p.stock }));
+      r(S, 'mouvements', (m) => m.ordonnanceId === o5.id); r(S, 'ordonnances', (o) => o.id === o5.id); S.save();
+    }, RETIRER, o5);
+    verifier('Pharmacie : chaque délivrance écrit un mouvement de sortie du DÉTAIL (justificatif = ordonnance) ; l’ordonnance reste non servie après la 1re ligne et n’est « servie » qu’à la 2e',
+      o5.produits.length === 2 && s5a.nb === 1 && s5a.statut !== 'servie' && s5a.servies.length === 1
+      && s5b.nb === 2 && s5b.statut === 'servie' && s5b.servies.length === 2 && s5b.types.every((t) => /^detail:sortie:1:Ordonnance ORD-SONDE82$/.test(t)),
+      JSON.stringify({ s5a, s5b }));
+
+    /* ---- 6. Édition qui recalcule les dérivés : changer le patient d'un document M1 met à jour code et patient ---- */
+    await ouvrir82('m1-documents.html');
+    const d6 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const [p1, p2] = S.collection('patients').active().filter((p) => p.code && p.nom);
+      const modele = S.collection('documentsPatient').active()[0] || {};
+      const doc = S.collection('documentsPatient').insert({ reference: 'DOC-SONDE82', patientId: p1.id, code: p1.code, patient: p1.nom + ' ' + p1.prenom,
+        type: modele.type, date: modele.date || '2026-08-16', etat: 'valide', depose: 'Sonde' }).record;
+      return { id: doc.id, p1: p1.code, p2: { id: p2.id, code: p2.code, nom: p2.nom + ' ' + p2.prenom } };
+    });
+    await ouvrir82('m1-documents.html');
+    const ouvert6 = await agirLigne('DOC-SONDE82', 'Modifier');
+    const pose6 = await poserChamps({ patientId: d6.p2.id });
+    await clicExact('Enregistrer', true);
+    await pause(500);
+    const a6 = await page.evaluate((id) => { const x = window.SIGH.store.collection('documentsPatient').get(id); return { code: x.code, patient: x.patient, patientId: x.patientId }; }, d6.id);
+    await page.evaluate((RET, id) => { const S = window.SIGH.store; (new Function('return ' + RET))()(S, 'documentsPatient', (x) => x.id === id); S.save(); }, RETIRER, d6.id);
+    verifier('Édition d’un document M1 : changer le patient met à jour `patientId`, `code` ET `patient` (les colonnes ne gardent pas l’ancien dossier)',
+      ouvert6 && pose6 && a6.patientId === d6.p2.id && a6.code === d6.p2.code && a6.patient === d6.p2.nom && a6.code !== d6.p1, JSON.stringify({ ouvert6, pose6, a6, d6 }));
+
+    /* ---- 7. Authentification : auth-reset ne change aucun mot de passe et le dit ; « Se souvenir » absent de la connexion ---- */
+    const posts = [];
+    const ecouteur = (rq) => { if (rq.method() === 'POST' && /auth\.php/.test(rq.url())) posts.push(rq.url()); };
+    page.on('request', ecouteur);
+    await ouvrir82('auth-reset.html');
+    const reset = await page.evaluate(async () => {
+      const champs = [...document.querySelectorAll('input[type="password"]')];
+      champs.forEach((c) => { c.value = 'Sonde82-Motdepasse'; c.dispatchEvent(new Event('input', { bubbles: true })); });
+      const b = [...document.querySelectorAll('button')].find((x) => /Définir le mot de passe/.test(x.textContent));
+      if (!b) return { bouton: false };
+      b.click();
+      await new Promise((r) => setTimeout(r, 600));
+      return { bouton: true, nbChamps: champs.length, texte: document.body.textContent.replace(/\s+/g, ' '), page: location.pathname.split('/').pop() };
+    });
+    page.off('request', ecouteur);
+    await page.goto('http://127.0.0.1:' + PORT + '/index.php', { waitUntil: 'domcontentloaded' });
+    await pause(2500);
+    const idx = await page.evaluate(() => ({ mdp: document.querySelectorAll('input[type="password"]').length, cases: document.querySelectorAll('input[type="checkbox"]').length,
+      souvenir: /souvenir/i.test(document.body.textContent) }));
+    verifier('Authentification : auth-reset annonce « non modifié », reste sur sa page et n’envoie aucune écriture à l’authentification ; la connexion ne propose plus « Se souvenir de ce poste »',
+      reset.bouton && reset.nbChamps === 2 && /non modifié/i.test(reset.texte) && /auth-reset/.test(reset.page) && posts.length === 0
+      && idx.mdp >= 1 && idx.cases === 0 && !idx.souvenir, JSON.stringify({ reset: { b: reset.bouton, n: reset.nbChamps, page: reset.page, t: /non modifié/i.test(reset.texte) }, posts: posts.length, idx }));
+
+    /* ---- 8. Conventions M9 : changer la compagnie d'un souscripteur qui porte des garanties est refusé, en nommant le motif ---- */
+    await ouvrir82('m9-conventions.html');
+    const s8 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const sous = S.collection('souscripteurs').insert({ nom: 'SONDE82 Employeur', assureur: 'NSIA', assureurNom: 'NSIA ASSURANCE', police: 'P-SONDE82', categorie: 'entreprise' }).record;
+      const gar = S.collection('garanties').insert({ souscripteurId: sous.id, assureur: 'NSIA', code: 'SONDE82', libelle: 'Sonde', categorie: 'consultation', taux: 50 }).record;
+      return { id: sous.id, gar: gar.id };
+    });
+    await ouvrir82('m9-conventions.html');
+    const ouvert8 = await agirLigne('SONDE82 Employeur', 'Modifier');
+    const pose8 = await poserChamps({ assureur: 'SUNU' });
+    await viderToasts();
+    await clicExact('Enregistrer', true);
+    await pause(500);
+    const toast8 = await toastTexte();
+    const a8 = await page.evaluate((id) => { const x = window.SIGH.store.collection('souscripteurs').get(id); return { assureur: x.assureur, nom: x.assureurNom }; }, s8.id);
+    await page.evaluate((RET, s8) => { const S = window.SIGH.store, r = (new Function('return ' + RET))(); r(S, 'garanties', (g) => g.id === s8.gar); r(S, 'souscripteurs', (x) => x.id === s8.id); S.save(); }, RETIRER, s8);
+    verifier('Conventions M9 : changer la compagnie d’un souscripteur qui porte des garanties est refusé (« Changement de compagnie refusé », garanties nommées) et la fiche garde sa compagnie',
+      ouvert8 && pose8 && /Changement de compagnie refusé/.test(toast8) && /garantie/i.test(toast8) && a8.assureur === 'NSIA' && a8.nom === 'NSIA ASSURANCE', JSON.stringify({ ouvert8, pose8, toast8: toast8.slice(0, 200), a8 }));
+
+    /* ---- 9. Facture émise avec versement partiel : chaque ligne porte `id` et `statutPaiement` ---- */
+    await ouvrir82('m8-facturation.html');
+    const pat9 = await page.evaluate(() => { const p = window.SIGH.store.collection('patients').active().filter((x) => !x.assureur && !x.personnelId)[0]; return p ? p.id : null; });
+    const saisie9 = await page.evaluate(async (pat) => {
+      const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+      const evt = (e, t) => e.dispatchEvent(new Event(t, { bubbles: true }));
+      const c = document.querySelector('.combo');
+      if (c && pat) { c.value = pat; evt(c, 'change'); await attendre(300); }
+      const nature = [...document.querySelectorAll('select')].find((s) => [...s.options].some((o) => o.value === 'libre'));
+      nature.value = 'libre'; evt(nature, 'change'); await attendre(200);
+      const libre = document.querySelector('input[placeholder="Désignation de la prestation"]');
+      const pu = document.querySelector('input.w-32[type="number"]');
+      const ajouter = () => [...document.querySelectorAll('button')].find((b) => b.textContent.replace(/\s+/g, ' ').trim() === 'Ajouter');
+      for (const [lib, prix] of [['Sonde82 prestation A', 1000], ['Sonde82 prestation B', 2000]]) {
+        libre.value = lib; evt(libre, 'input'); pu.value = prix; evt(pu, 'input');
+        ajouter().click(); await attendre(250);
+      }
+      const regle = [...document.querySelectorAll('label')].find((l) => /Montant réglé/.test(l.textContent)).parentElement.querySelector('input');
+      regle.value = 1000; evt(regle, 'input');
+      const b = [...document.querySelectorAll('button')].find((x) => /Enregistrer et encaisser/.test(x.textContent));
+      if (!b) return { bouton: false };
+      b.click(); await attendre(800);
+      return { bouton: true };
+    }, pat9);
+    const f9 = await page.evaluate(() => {
+      const S = window.SIGH.store;
+      const fs = S.collection('factures').all().filter((f) => (f.lignes || []).some((l) => /Sonde82 prestation/.test(l.designation)));
+      const lignes = fs.reduce((a, f) => a.concat(f.lignes || []), []).filter((l) => /Sonde82 prestation/.test(l.designation));
+      return { nbFactures: fs.length, ids: fs.map((f) => f.id), numeros: fs.map((f) => f.numero), lignes: lignes.map((l) => ({ d: l.designation, id: l.id, s: l.statutPaiement })) };
+    });
+    await page.evaluate((RET, ids, numeros) => {
+      const S = window.SIGH.store, r = (new Function('return ' + RET))();
+      r(S, 'ecritures', (e) => ids.indexOf(e.pieceId) >= 0 || numeros.indexOf(e.numero) >= 0 || numeros.indexOf(e.pieceNumero) >= 0);
+      r(S, 'factures', (f) => ids.indexOf(f.id) >= 0); S.save();
+    }, RETIRER, f9.ids, f9.numeros);
+    const sA = f9.lignes.filter((l) => /prestation A/.test(l.d))[0], sB = f9.lignes.filter((l) => /prestation B/.test(l.d))[0];
+    verifier('Facture émise avec versement partiel (1 000 sur 3 000) : chaque ligne porte un `id` et un `statutPaiement` (A « paye », B « du »)',
+      saisie9.bouton && f9.nbFactures >= 1 && f9.lignes.length === 2 && f9.lignes.every((l) => l.id && (l.s === 'paye' || l.s === 'du')) && sA && sA.s === 'paye' && sB && sB.s === 'du',
+      JSON.stringify({ saisie9, f9: { n: f9.nbFactures, lignes: f9.lignes } }));
+
+    /* ---- 10. Sauvegarde M14 : la génération écrit une fiche avec ses métadonnées ; les boutons retirés sont ABSENTS ---- */
+    await ouvrir82('m14-sauvegardes.html');
+    const av10 = await page.evaluate(() => window.SIGH.store.collection('fichiersSauvegarde').all().length);
+    await clicExact('Générer une sauvegarde', false);
+    await pause(900);
+    const s10 = await page.evaluate((av) => {
+      const col = window.SIGH.store.collection('fichiersSauvegarde').all();
+      const nouv = col.length > av ? col[col.length - 1] : null;
+      const textes = [...document.querySelectorAll('button')].map((b) => b.textContent.replace(/\s+/g, ' ').trim());
+      return { nb: col.length, fiche: nouv ? { fichier: nouv.fichier, date: nouv.date, heure: nouv.heure, portee: nouv.portee, tables: nouv.tables, taille: nouv.taille, par: nouv.genereePar, contenu: !!nouv.contenu, id: nouv.id } : null,
+        manuelle: textes.some((t) => /sauvegarde manuelle/i.test(t)), restauration: textes.some((t) => /Tester une restauration/i.test(t)) };
+    }, av10);
+    if (s10.fiche) await page.evaluate((RET, id) => { const S = window.SIGH.store; (new Function('return ' + RET))()(S, 'fichiersSauvegarde', (x) => x.id === id); S.save(); }, RETIRER, s10.fiche.id);
+    verifier('Sauvegarde M14 : « Générer une sauvegarde » écrit une fiche (fichier .json, date, heure, portée, tables, taille, auteur) sans contenu ; « sauvegarde manuelle » et « Tester une restauration » sont absents',
+      !!s10.fiche && s10.nb === av10 + 1 && /\.json$/.test(s10.fiche.fichier) && s10.fiche.date && s10.fiche.heure && s10.fiche.portee && s10.fiche.tables > 0 && s10.fiche.taille > 0 && s10.fiche.par && !s10.fiche.contenu
+      && !s10.manuelle && !s10.restauration, JSON.stringify(s10));
+
+    /* ---- 11. mecef-config : « Enregistrer » absent, note « Lecture seule » présente ---- */
+    await ouvrir82('mecef-config.html');
+    const m11 = await page.evaluate(() => ({
+      enregistrer: [...document.querySelectorAll('button')].some((b) => /^Enregistrer/.test(b.textContent.replace(/\s+/g, ' ').trim())),
+      note: /Lecture seule/.test(document.querySelector('#page-content').textContent),
+      champs: [...document.querySelectorAll('#page-content input:not([type="search"]), #page-content select')].length,
+      actifs: [...document.querySelectorAll('#page-content input:not([type="search"]), #page-content select')].filter((e) => !e.disabled).length,
+    }));
+    verifier('mecef-config : aucun bouton « Enregistrer », la note « Lecture seule » est présente et les champs sont verrouillés',
+      !m11.enregistrer && m11.note && m11.champs > 0 && m11.actifs === 0, JSON.stringify(m11));
+
+    /* ---- 12. Pas de régression ---- */
+    erreurs82.push(...erreursJS);
+    verifier('Aucune erreur JavaScript pendant tout le scénario', erreurs82.length === 0, erreurs82.join(' | '));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
