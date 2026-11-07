@@ -71,4 +71,7 @@ Principe : une demande de bon est une pièce émise, elle ne se réécrit pas (R
 6. Résultats de dépistage transmis par l'ANTS : doivent-ils figurer au registre de la clinique, ou la clinique ne détient-elle que « apte / ajourné » ?
 7. Retire-t-on définitivement la notion de stock de poches (arbitrage à noter comme exception, car archivage normalement) ?
 
+## Décision de la Direction du 07/11/2026
+L'**ANTS n'est qu'un exemple** d'organisme. Il faut donc créer un **écran « Organismes partenaires »** (entreprises et établissements auxquels la clinique adresse des demandes : agence de transfusion, autres fournisseurs de produits sanguins ou de services) et un **formulaire de demande de bon enregistrable** qui choisit l'organisme dans ce registre. Chaque organisme porte ses propres coordonnées, contacts et gabarit de bon, **saisis par l'administration** (aucune coordonnée ni gabarit n'est inventé ou préchargé). Les sept questions du rapport restent à valider ; celle sur les coordonnées de l'ANTS est remplacée par « saisir les organismes dans l'écran ».
+
 Audit lu seulement, aucun code modifié.

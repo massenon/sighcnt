@@ -122,6 +122,10 @@ Mutations (au moins 8) : verrou retiré, vérification du corps retirée, doublo
 | M5 | e-MECeF au relais : création, confirmation, erreurs classées, file « en attente » | relais, poste |
 | M6 | Impression conditionnelle, sondes et mutations, recette avec le vrai boîtier et un vrai compte | tous |
 
+## 11 bis. Décisions de la Direction du 07/11/2026 (reçues)
+
+**Q1 résolue : TOUTE VENTE EST NORMALISÉE À LA CLINIQUE.** Il n'y a donc **pas de « facture simple »** : le choix « simple ou normalisée » de la documentation d'un autre projet est **retiré**. Quand le mode n'est pas « Désactivé », chaque vente encaissée passe par le boîtier (ou e-MECeF). La fenêtre « Facture normalisée » ne sert plus qu'à saisir l'IFU et le nom de l'acheteur, et le taux d'AIB. Conséquences : la déclaration de TVA retient toutes les ventes ; une vente ne peut être remise que normalisée ; l'état `simple` disparaît (restent `normalisee`, `en_attente`, `a_verifier`, `refusee`, `expiree`) ; en mode « Désactivé » (démonstration seulement) le bandeau DEMO reste.
+
 ## 11. Décisions à valider (Direction)
 
 | # | Question | Proposition |
