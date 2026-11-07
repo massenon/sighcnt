@@ -20,10 +20,11 @@
  "regle": [],
  "onglets": [],
  "kpis": [
-  "Consultations au registre",
+  "Consultations réalisées",
   "Ce mois-ci",
   "Praticiens actifs",
-  "À domicile"
+  "À domicile",
+  "Rendez-vous planifiés, non encore honorés"
  ],
  "cartes": [
   "Par praticien — et son service à l’organigramme",
@@ -39,5 +40,5 @@
   "au"
  ],
  "nbTableaux": 0,
- "nbKpis": 4
+ "nbKpis": 5
 }

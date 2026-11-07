@@ -106,22 +106,26 @@ void main() {
 
   group('m2-stats-consultations : par praticien, par type, plage de dates', () {
     final c = cm(vecteurs()['consultations']);
-    casM14('le jeu : 282 consultations, 53 à domicile ; chaque praticien avec son service à l’organigramme', (t) async {
+    casM14('le jeu : 228 consultations réalisées (sur 282 au registre), 46 à domicile, 54 rendez-vous planifiés à part ; chaque praticien avec son service', (t) async {
       await ouvrirM14(t, magasinComplet(), 'm2-stats-consultations');
-      expect(find.text('282'), findsOneWidget);
-      expect(find.text('53'), findsWidgets);
+      expect(find.text('Consultations réalisées'), findsOneWidget);
+      expect(find.text('228'), findsOneWidget);
+      expect(find.text('282'), findsNothing);
+      expect(find.text('46'), findsWidgets);
+      expect(find.text('Rendez-vous planifiés, non encore honorés'), findsOneWidget);
+      expect(find.text('54'), findsOneWidget);
       expect(find.text('BASSONGUI Chabi Séko — Direction'), findsOneWidget);
       expect(find.text('TAKI Orou — Médecine générale'), findsOneWidget);
     });
     casM14('la plage filtre ; « Toute la période » la lève', (t) async {
       await ouvrirM14(t, magasinComplet(), 'm2-stats-consultations');
       await poserChamp(t, 'du', '2026-08-01');
-      final attendu = valeurVecteur(cm(cm(c['scenarios'])['depuis-aout'])['kpis'], 'Consultations au registre');
-      expect(attendu, '43');
-      expect(find.text('282'), findsNothing);
+      final attendu = valeurVecteur(cm(cm(c['scenarios'])['depuis-aout'])['kpis'], 'Consultations réalisées');
+      expect(attendu, '39');
+      expect(find.text('228'), findsNothing);
       expect(find.text(attendu), findsWidgets);
       await toucherM14(t, find.byKey(const Key('pil:toute-periode')));
-      expect(find.text('282'), findsOneWidget);
+      expect(find.text('228'), findsOneWidget);
     });
     casM14('une plage inversée ne compte rien : « Aucune donnée. »', (t) async {
       await ouvrirM14(t, magasinComplet(), 'm2-stats-consultations');

@@ -172,7 +172,7 @@ class EcranStatsConsultations extends StatefulWidget with EcranMaquette {
 
   @override
   String get regle =>
-      'Par praticien et par type, depuis le registre des consultations. Le « secteur » affiché est le service du praticien à l’organigramme — la consultation ne porte pas de secteur propre, et l’écran le dit plutôt que d’inventer une donnée.';
+      'Par praticien et par type, depuis le registre des consultations. Le « secteur » affiché est le service du praticien à l’organigramme — la consultation ne porte pas de secteur propre, et l’écran le dit plutôt que d’inventer une donnée. Seules les consultations qui ont eu lieu (en cours, terminées) sont comptées : les rendez-vous planifiés ou reportés s’affichent à part, les non honorés sont annoncés sous le volume.';
 
   @override
   State<EcranStatsConsultations> createState() => _EtatStatsConsultations();
@@ -196,12 +196,12 @@ class _EtatStatsConsultations extends State<EcranStatsConsultations> {
         final v = pilStatsConsultations(pilActives(c, 'consultations'), pilActives(c, 'personnel'), pilBorne(_f, 'du'), pilBorne(_f, 'au'), c.aujourdhui);
         return pilPile([
           pilBandeauPlage(_f),
-          pilKpis(v.kpis, const [LucideIcons.stethoscope, LucideIcons.calendar, LucideIcons.users, LucideIcons.house]),
+          pilKpis(v.kpis, const [LucideIcons.stethoscope, LucideIcons.calendar, LucideIcons.users, LucideIcons.house, LucideIcons.calendarClock], colonnes: 5),
           CarteSigh(titre: 'Par praticien — et son service à l’organigramme', child: PilClassementSigh(v.classements.first.items)),
           pilDeux(
               _carteGraphique(v, 'Par type', '', LucideIcons.chartColumn),
               _carteGraphique(v, 'Évolution mensuelle', '', LucideIcons.calendar, hauteur: 240)),
-          pilSource('Registre des consultations du magasin — indicateurs recalculés à chaque affichage.'),
+          pilSource(v.notes.first),
         ]);
       },
     );

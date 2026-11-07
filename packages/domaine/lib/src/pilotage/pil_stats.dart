@@ -170,15 +170,68 @@ PilVue pilStatsImagerie(Iterable<PilFiche> demandes, Iterable<PilFiche> comptesR
 // m2-stats-consultations — par praticien (et son service à l'organigramme), par type, dans le temps
 // =====================================================================================================================================================
 
+/// Une consultation COMPTÉE est une consultation qui a eu lieu (vague 90). Le registre `consultations` porte aussi les rendez-vous : planifiés, reportés,
+/// non honorés. Les compter comme des consultations surévaluait le volume. La règle vit ICI, en UNE fonction, lue par les indicateurs, les graphiques et le
+/// tableau de l'écran (`partagerConsultations` de dashboards.js). Un rendez-vous planifié ou reporté n'est pas perdu : il se compte à part. Un rendez-vous
+/// non honoré ne compte nulle part comme consultation : il est annoncé sous le volume, jamais retiré en silence.
+const List<String> statutsConsultationTenue = ['en_cours', 'terminee'];
+const List<String> statutsRdvAVenir = ['planifiee', 'reporte'];
+
+class ConsultationsPartagees {
+  ConsultationsPartagees(this.tenues, this.aVenir, this.nonHonores, this.autres);
+  final List<PilFiche> tenues, aVenir, nonHonores, autres;
+}
+
+ConsultationsPartagees consultationsPartagees(Iterable<PilFiche> registre) {
+  final tenues = <PilFiche>[], aVenir = <PilFiche>[], nonHonores = <PilFiche>[], autres = <PilFiche>[];
+  for (final r in registre) {
+    final st = r['statut'];
+    if (statutsConsultationTenue.contains(st)) {
+      tenues.add(r);
+    } else if (statutsRdvAVenir.contains(st)) {
+      aVenir.add(r);
+    } else if (st == 'non_honore') {
+      nonHonores.add(r);
+    } else {
+      autres.add(r);
+    }
+  }
+  return ConsultationsPartagees(tenues, aVenir, nonHonores, autres);
+}
+
+/// Le service d'une consultation est celui du praticien à l'organigramme : la consultation ne porte pas de service propre. Praticien introuvable :
+/// « Non renseigné », jamais le type de consultation (`serviceDuPraticien` de dashboards.js).
+String serviceDuPraticien(PilFiche r, Iterable<PilFiche> personnel) {
+  PilFiche? a;
+  for (final x in personnel) {
+    if (pilVrai(r['medecinId']) ? x['id'] == r['medecinId'] : (pilVrai(r['medecin']) && x['nomComplet'] == r['medecin'])) {
+      a = x;
+      break;
+    }
+  }
+  if (a == null && pilVrai(r['medecin'])) {
+    for (final x in personnel) {
+      if (x['nomComplet'] == r['medecin']) {
+        a = x;
+        break;
+      }
+    }
+  }
+  return a != null && pilVrai(a['service']) ? '${a['service']}' : 'Non renseigné';
+}
+
 PilVue pilStatsConsultations(Iterable<PilFiche> consultations, Iterable<PilFiche> personnel, String du, String au, DateTime auj) {
-  final rows = [for (final r in consultations) if (pilDansPlage(r['date'], du, au)) r];
+  final registre = [for (final r in consultations) if (pilDansPlage(r['date'], du, au)) r];
+  final partage = consultationsPartagees(registre);
+  final rows = partage.tenues;
   final agents = <String, PilFiche>{for (final a in personnel) '${a['nomComplet']}': a};
   final moisCourant = iso(auj).substring(0, 7);
   final v = PilVue(kpis: [
-    PilKpi('Consultations au registre', nombre(rows.length), ton: 'navy'),
+    PilKpi('Consultations réalisées', nombre(rows.length), ton: 'navy', indice: 'en cours ou terminées'),
     PilKpi('Ce mois-ci', nombre(rows.where((r) => pilMois(r['date']) == moisCourant).length), ton: 'info'),
     PilKpi('Praticiens actifs', nombre({for (final r in rows) pilCle(r['medecin'])}.length)),
     PilKpi('À domicile', nombre(rows.where((r) => r['type'] == 'Domicile').length)),
+    PilKpi('Rendez-vous planifiés, non encore honorés', nombre(partage.aVenir.length), ton: 'attention', indice: 'planifiés ou reportés, hors volume'),
   ]);
   final parPraticien = <String, int>{};
   for (final r in rows) {
@@ -196,6 +249,11 @@ PilVue pilStatsConsultations(Iterable<PilFiche> consultations, Iterable<PilFiche
   }
   v.graphiques.add(PilGraphique('anneau', parType.keys.toList(), [PilSerie('', parType.values.toList())], titre: 'Par type'));
   v.graphiques.add(_evolutionMensuelle(rows, 'date', 'Consultations'));
+  // La source dit ce qui est compté, ce qui est à part et ce qui est hors volume : rien ne disparaît sans le dire.
+  v.notes.add('Registre des consultations du magasin — indicateurs recalculés à chaque affichage. '
+      'Comptées : ${nombre(rows.length)} consultation(s) tenue(s). À part : ${nombre(partage.aVenir.length)} rendez-vous planifié(s) ou reporté(s). '
+      'Hors volume : ${nombre(partage.nonHonores.length)} non honoré(s)'
+      '${partage.autres.isNotEmpty ? ' et ${nombre(partage.autres.length)} de statut inconnu' : ''}.');
   return v;
 }
 

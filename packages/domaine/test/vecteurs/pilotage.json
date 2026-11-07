@@ -3562,9 +3562,9 @@
     },
     "kpis": [
      [
-      "Consultations au registre",
+      "Consultations réalisées",
       "0",
-      null
+      "en cours ou terminées"
      ],
      [
       "Ce mois-ci",
@@ -3580,6 +3580,11 @@
       "À domicile",
       "0",
       null
+     ],
+     [
+      "Rendez-vous planifiés, non encore honorés",
+      "0",
+      "planifiés ou reportés, hors volume"
      ]
     ],
     "graphiques": [
@@ -3624,9 +3629,9 @@
     },
     "kpis": [
      [
-      "Consultations au registre",
+      "Consultations réalisées",
       "0",
-      null
+      "en cours ou terminées"
      ],
      [
       "Ce mois-ci",
@@ -3642,6 +3647,11 @@
       "À domicile",
       "0",
       null
+     ],
+     [
+      "Rendez-vous planifiés, non encore honorés",
+      "0",
+      "planifiés ou reportés, hors volume"
      ]
     ],
     "graphiques": [
@@ -3686,9 +3696,9 @@
     },
     "kpis": [
      [
-      "Consultations au registre",
-      "43",
-      null
+      "Consultations réalisées",
+      "39",
+      "en cours ou terminées"
      ],
      [
       "Ce mois-ci",
@@ -3704,6 +3714,11 @@
       "À domicile",
       "11",
       null
+     ],
+     [
+      "Rendez-vous planifiés, non encore honorés",
+      "4",
+      "planifiés ou reportés, hors volume"
      ]
     ],
     "graphiques": [
@@ -3717,8 +3732,8 @@
       ],
       "series": [
        11,
-       11,
-       12,
+       9,
+       10,
        9
       ]
      },
@@ -3731,7 +3746,7 @@
        {
         "label": "Consultations",
         "data": [
-         43
+         39
         ]
        }
       ]
@@ -3746,22 +3761,22 @@
        },
        {
         "label": "AHOHOU Rodrigue — Imagerie / Échographie",
-        "value": 12
-       },
-       {
-        "label": "BASSONGUI Chabi Séko — Direction",
-        "value": 9
+        "value": 10
        },
        {
         "label": "YENI M’PO Florent — Médecine générale",
         "value": 8
        },
        {
+        "label": "BASSONGUI Chabi Séko — Direction",
+        "value": 7
+       },
+       {
         "label": "BADO BANI A. B. Zoulehath — Maternité",
         "value": 1
        }
       ],
-      "texte": "TAKI Orou — Médecine générale13AHOHOU Rodrigue — Imagerie / Échographie12BASSONGUI Chabi Séko — Direction9YENI M’PO Florent — Médecine générale8BADO BANI A. B. Zoulehath — Maternité1"
+      "texte": "TAKI Orou — Médecine générale13AHOHOU Rodrigue — Imagerie / Échographie10YENI M’PO Florent — Médecine générale8BASSONGUI Chabi Séko — Direction7BADO BANI A. B. Zoulehath — Maternité1"
      }
     ],
     "tables": [],
@@ -3783,9 +3798,9 @@
     },
     "kpis": [
      [
-      "Consultations au registre",
-      "239",
-      null
+      "Consultations réalisées",
+      "189",
+      "en cours ou terminées"
      ],
      [
       "Ce mois-ci",
@@ -3799,8 +3814,13 @@
      ],
      [
       "À domicile",
-      "42",
+      "35",
       null
+     ],
+     [
+      "Rendez-vous planifiés, non encore honorés",
+      "50",
+      "planifiés ou reportés, hors volume"
      ]
     ],
     "graphiques": [
@@ -3813,10 +3833,10 @@
        "Urgence"
       ],
       "series": [
-       42,
-       40,
-       116,
-       41
+       35,
+       34,
+       91,
+       29
       ]
      },
      {
@@ -3835,10 +3855,10 @@
         "data": [
          2,
          1,
-         25,
-         71,
-         67,
-         72
+         24,
+         54,
+         49,
+         58
         ]
        }
       ]
@@ -3849,19 +3869,19 @@
       "items": [
        {
         "label": "BASSONGUI Chabi Séko — Direction",
-        "value": 67
-       },
-       {
-        "label": "TAKI Orou — Médecine générale",
-        "value": 57
-       },
-       {
-        "label": "YENI M’PO Florent — Médecine générale",
-        "value": 56
+        "value": 50
        },
        {
         "label": "AHOHOU Rodrigue — Imagerie / Échographie",
-        "value": 56
+        "value": 49
+       },
+       {
+        "label": "TAKI Orou — Médecine générale",
+        "value": 46
+       },
+       {
+        "label": "YENI M’PO Florent — Médecine générale",
+        "value": 41
        },
        {
         "label": "ADAM Colette — Maternité",
@@ -3872,7 +3892,7 @@
         "value": 1
        }
       ],
-      "texte": "BASSONGUI Chabi Séko — Direction67TAKI Orou — Médecine générale57YENI M’PO Florent — Médecine générale56AHOHOU Rodrigue — Imagerie / Échographie56ADAM Colette — Maternité2BADO BANI A. B. Zoulehath — Maternité1"
+      "texte": "BASSONGUI Chabi Séko — Direction50AHOHOU Rodrigue — Imagerie / Échographie49TAKI Orou — Médecine générale46YENI M’PO Florent — Médecine générale41ADAM Colette — Maternité2BADO BANI A. B. Zoulehath — Maternité1"
      }
     ],
     "tables": [],
@@ -3894,9 +3914,9 @@
     },
     "kpis": [
      [
-      "Consultations au registre",
+      "Consultations réalisées",
       "0",
-      null
+      "en cours ou terminées"
      ],
      [
       "Ce mois-ci",
@@ -3912,6 +3932,11 @@
       "À domicile",
       "0",
       null
+     ],
+     [
+      "Rendez-vous planifiés, non encore honorés",
+      "0",
+      "planifiés ou reportés, hors volume"
      ]
     ],
     "graphiques": [
@@ -3956,9 +3981,9 @@
     },
     "kpis": [
      [
-      "Consultations au registre",
+      "Consultations réalisées",
       "0",
-      null
+      "en cours ou terminées"
      ],
      [
       "Ce mois-ci",
@@ -3974,6 +3999,11 @@
       "À domicile",
       "0",
       null
+     ],
+     [
+      "Rendez-vous planifiés, non encore honorés",
+      "0",
+      "planifiés ou reportés, hors volume"
      ]
     ],
     "graphiques": [
@@ -4018,9 +4048,9 @@
     },
     "kpis": [
      [
-      "Consultations au registre",
+      "Consultations réalisées",
       "0",
-      null
+      "en cours ou terminées"
      ],
      [
       "Ce mois-ci",
@@ -4036,6 +4066,11 @@
       "À domicile",
       "0",
       null
+     ],
+     [
+      "Rendez-vous planifiés, non encore honorés",
+      "0",
+      "planifiés ou reportés, hors volume"
      ]
     ],
     "graphiques": [
@@ -4077,9 +4112,9 @@
   "defaut": {
    "kpis": [
     [
-     "Consultations au registre",
-     "282",
-     null
+     "Consultations réalisées",
+     "228",
+     "en cours ou terminées"
     ],
     [
      "Ce mois-ci",
@@ -4093,8 +4128,13 @@
     ],
     [
      "À domicile",
-     "53",
+     "46",
      null
+    ],
+    [
+     "Rendez-vous planifiés, non encore honorés",
+     "54",
+     "planifiés ou reportés, hors volume"
     ]
    ],
    "graphiques": [
@@ -4107,10 +4147,10 @@
       "Urgence"
      ],
      "series": [
-      53,
-      52,
-      127,
-      50
+      46,
+      44,
+      100,
+      38
      ]
     },
     {
@@ -4128,11 +4168,11 @@
        "label": "Consultations",
        "data": [
         1,
-        25,
-        71,
-        67,
-        72,
-        43
+        24,
+        54,
+        49,
+        58,
+        39
        ]
       }
      ]
@@ -4142,20 +4182,20 @@
     {
      "items": [
       {
-       "label": "BASSONGUI Chabi Séko — Direction",
-       "value": 76
-      },
-      {
        "label": "TAKI Orou — Médecine générale",
-       "value": 70
+       "value": 59
       },
       {
        "label": "AHOHOU Rodrigue — Imagerie / Échographie",
-       "value": 68
+       "value": 59
+      },
+      {
+       "label": "BASSONGUI Chabi Séko — Direction",
+       "value": 57
       },
       {
        "label": "YENI M’PO Florent — Médecine générale",
-       "value": 64
+       "value": 49
       },
       {
        "label": "ADAM Colette — Maternité",
@@ -4166,7 +4206,7 @@
        "value": 2
       }
      ],
-     "texte": "BASSONGUI Chabi Séko — Direction76TAKI Orou — Médecine générale70AHOHOU Rodrigue — Imagerie / Échographie68YENI M’PO Florent — Médecine générale64ADAM Colette — Maternité2BADO BANI A. B. Zoulehath — Maternité2"
+     "texte": "TAKI Orou — Médecine générale59AHOHOU Rodrigue — Imagerie / Échographie59BASSONGUI Chabi Séko — Direction57YENI M’PO Florent — Médecine générale49ADAM Colette — Maternité2BADO BANI A. B. Zoulehath — Maternité2"
     }
    ],
    "tables": [],
@@ -4184,9 +4224,9 @@
   "toutePeriode": {
    "kpis": [
     [
-     "Consultations au registre",
-     "282",
-     null
+     "Consultations réalisées",
+     "228",
+     "en cours ou terminées"
     ],
     [
      "Ce mois-ci",
@@ -4200,8 +4240,13 @@
     ],
     [
      "À domicile",
-     "53",
+     "46",
      null
+    ],
+    [
+     "Rendez-vous planifiés, non encore honorés",
+     "54",
+     "planifiés ou reportés, hors volume"
     ]
    ],
    "graphiques": [
@@ -4214,10 +4259,10 @@
       "Urgence"
      ],
      "series": [
-      53,
-      52,
-      127,
-      50
+      46,
+      44,
+      100,
+      38
      ]
     },
     {
@@ -4235,11 +4280,11 @@
        "label": "Consultations",
        "data": [
         1,
-        25,
-        71,
-        67,
-        72,
-        43
+        24,
+        54,
+        49,
+        58,
+        39
        ]
       }
      ]
@@ -4249,20 +4294,20 @@
     {
      "items": [
       {
-       "label": "BASSONGUI Chabi Séko — Direction",
-       "value": 76
-      },
-      {
        "label": "TAKI Orou — Médecine générale",
-       "value": 70
+       "value": 59
       },
       {
        "label": "AHOHOU Rodrigue — Imagerie / Échographie",
-       "value": 68
+       "value": 59
+      },
+      {
+       "label": "BASSONGUI Chabi Séko — Direction",
+       "value": 57
       },
       {
        "label": "YENI M’PO Florent — Médecine générale",
-       "value": 64
+       "value": 49
       },
       {
        "label": "ADAM Colette — Maternité",
@@ -4273,7 +4318,7 @@
        "value": 2
       }
      ],
-     "texte": "BASSONGUI Chabi Séko — Direction76TAKI Orou — Médecine générale70AHOHOU Rodrigue — Imagerie / Échographie68YENI M’PO Florent — Médecine générale64ADAM Colette — Maternité2BADO BANI A. B. Zoulehath — Maternité2"
+     "texte": "TAKI Orou — Médecine générale59AHOHOU Rodrigue — Imagerie / Échographie59BASSONGUI Chabi Séko — Direction57YENI M’PO Florent — Médecine générale49ADAM Colette — Maternité2BADO BANI A. B. Zoulehath — Maternité2"
     }
    ],
    "tables": [],
@@ -16106,7 +16151,7 @@
      ],
      [
       "service",
-      "Service"
+      "Service du praticien"
      ],
      [
       "motif",
@@ -16184,8 +16229,8 @@
      ],
      "notes": [
       "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-      "Mois Médecin Service Motif",
-      "— aucun — Mois Médecin Service Motif",
+      "Mois Médecin Service du praticien Motif",
+      "— aucun — Mois Médecin Service du praticien Motif",
       "Nombre de consultations Montant facturé",
       "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
      ],
@@ -16320,8 +16365,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -16556,8 +16601,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -16778,8 +16823,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -16890,67 +16935,67 @@
         "titre": null,
         "entetes": [
          "MÉDECIN",
-         "CONSULTATION",
-         "CONTRÔLE",
-         "DOMICILE",
-         "URGENCE",
+         "DIRECTION",
+         "IMAGERIE / ÉCHOGRAPHIE",
+         "MATERNITÉ",
+         "MÉDECINE GÉNÉRALE",
          "TOTAL"
         ],
         "lignes": [
          [
           "BASSONGUI Chabi Séko",
-          "31",
-          "19",
-          "16",
-          "10",
+          "76",
+          "—",
+          "—",
+          "—",
           "76"
          ],
          [
           "TAKI Orou",
-          "29",
-          "10",
-          "18",
-          "13",
+          "—",
+          "—",
+          "—",
+          "70",
           "70"
          ],
          [
           "AHOHOU Rodrigue",
-          "30",
-          "14",
-          "10",
-          "14",
+          "—",
+          "68",
+          "—",
+          "—",
           "68"
          ],
          [
           "YENI M’PO Florent",
-          "35",
-          "7",
-          "9",
-          "13",
+          "—",
+          "—",
+          "—",
+          "64",
           "64"
          ],
          [
           "ADAM Colette",
+          "—",
+          "—",
           "2",
-          "—",
-          "—",
           "—",
           "2"
          ],
          [
           "BADO BANI A. B. Zoulehath",
           "—",
-          "2",
           "—",
+          "2",
           "—",
           "2"
          ],
          [
           "TOTAL",
-          "127",
-          "52",
-          "53",
-          "50",
+          "76",
+          "68",
+          "4",
+          "134",
           "282"
          ]
         ],
@@ -16959,13 +17004,13 @@
       ],
       "cartes": [
        "Construire le croisement",
-       "Nombre de consultations — Médecin × Service",
+       "Nombre de consultations — Médecin × Service du praticien",
        "Les douze premières valeurs — Médecin"
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -16976,70 +17021,70 @@
       ],
       "onglets": [],
       "table": {
-       "titre": "Nombre de consultations — Médecin × Service",
+       "titre": "Nombre de consultations — Médecin × Service du praticien",
        "entetes": [
         "MÉDECIN",
-        "CONSULTATION",
-        "CONTRÔLE",
-        "DOMICILE",
-        "URGENCE",
+        "DIRECTION",
+        "IMAGERIE / ÉCHOGRAPHIE",
+        "MATERNITÉ",
+        "MÉDECINE GÉNÉRALE",
         "TOTAL"
        ],
        "lignes": [
         [
          "BASSONGUI Chabi Séko",
-         "31",
-         "19",
-         "16",
-         "10",
+         "76",
+         "—",
+         "—",
+         "—",
          "76"
         ],
         [
          "TAKI Orou",
-         "29",
-         "10",
-         "18",
-         "13",
+         "—",
+         "—",
+         "—",
+         "70",
          "70"
         ],
         [
          "AHOHOU Rodrigue",
-         "30",
-         "14",
-         "10",
-         "14",
+         "—",
+         "68",
+         "—",
+         "—",
          "68"
         ],
         [
          "YENI M’PO Florent",
-         "35",
-         "7",
-         "9",
-         "13",
+         "—",
+         "—",
+         "—",
+         "64",
          "64"
         ],
         [
          "ADAM Colette",
+         "—",
+         "—",
          "2",
-         "—",
-         "—",
          "—",
          "2"
         ],
         [
          "BADO BANI A. B. Zoulehath",
          "—",
-         "2",
          "—",
+         "2",
          "—",
          "2"
         ],
         [
          "TOTAL",
-         "127",
-         "52",
-         "53",
-         "50",
+         "76",
+         "68",
+         "4",
+         "134",
          "282"
         ]
        ]
@@ -17072,19 +17117,19 @@
        {
         "type": "barres",
         "etiquettes": [
-         "Consultation",
-         "Domicile",
-         "Contrôle",
-         "Urgence"
+         "Médecine générale",
+         "Direction",
+         "Imagerie / Échographie",
+         "Maternité"
         ],
         "series": [
          {
           "label": "Nombre de consultations",
           "data": [
-           127,
-           53,
-           52,
-           50
+           134,
+           76,
+           68,
+           4
           ]
          }
         ]
@@ -17095,30 +17140,30 @@
        {
         "titre": null,
         "entetes": [
-         "SERVICE",
+         "SERVICE DU PRATICIEN",
          "TOTAL",
          "TOTAL"
         ],
         "lignes": [
          [
-          "Consultation",
-          "127",
-          "127"
+          "Médecine générale",
+          "134",
+          "134"
          ],
          [
-          "Domicile",
-          "53",
-          "53"
+          "Direction",
+          "76",
+          "76"
          ],
          [
-          "Contrôle",
-          "52",
-          "52"
+          "Imagerie / Échographie",
+          "68",
+          "68"
          ],
          [
-          "Urgence",
-          "50",
-          "50"
+          "Maternité",
+          "4",
+          "4"
          ],
          [
           "TOTAL",
@@ -17131,13 +17176,13 @@
       ],
       "cartes": [
        "Construire le croisement",
-       "Nombre de consultations — Service",
-       "Les douze premières valeurs — Service"
+       "Nombre de consultations — Service du praticien",
+       "Les douze premières valeurs — Service du praticien"
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -17148,32 +17193,32 @@
       ],
       "onglets": [],
       "table": {
-       "titre": "Nombre de consultations — Service",
+       "titre": "Nombre de consultations — Service du praticien",
        "entetes": [
-        "SERVICE",
+        "SERVICE DU PRATICIEN",
         "TOTAL",
         "TOTAL"
        ],
        "lignes": [
         [
-         "Consultation",
-         "127",
-         "127"
+         "Médecine générale",
+         "134",
+         "134"
         ],
         [
-         "Domicile",
-         "53",
-         "53"
+         "Direction",
+         "76",
+         "76"
         ],
         [
-         "Contrôle",
-         "52",
-         "52"
+         "Imagerie / Échographie",
+         "68",
+         "68"
         ],
         [
-         "Urgence",
-         "50",
-         "50"
+         "Maternité",
+         "4",
+         "4"
         ],
         [
          "TOTAL",
@@ -17210,19 +17255,19 @@
        {
         "type": "barres",
         "etiquettes": [
-         "Consultation",
-         "Domicile",
-         "Contrôle",
-         "Urgence"
+         "Médecine générale",
+         "Direction",
+         "Imagerie / Échographie",
+         "Maternité"
         ],
         "series": [
          {
           "label": "Nombre de consultations",
           "data": [
-           127,
-           53,
-           52,
-           50
+           134,
+           76,
+           68,
+           4
           ]
          }
         ]
@@ -17233,7 +17278,7 @@
        {
         "titre": null,
         "entetes": [
-         "SERVICE",
+         "SERVICE DU PRATICIEN",
          "ASTHÉNIE",
          "BRÛLURES MICTIONNELLES",
          "CONSULTATION PRÉNATALE",
@@ -17264,124 +17309,124 @@
         ],
         "lignes": [
          [
-          "Consultation",
-          "9",
+          "Médecine générale",
+          "10",
+          "1",
+          "8",
           "1",
           "7",
-          "—",
           "8",
-          "6",
-          "7",
-          "8",
+          "10",
           "11",
+          "5",
           "—",
           "1",
+          "5",
+          "6",
+          "1",
+          "10",
+          "5",
           "2",
-          "7",
+          "2",
+          "8",
+          "1",
+          "11",
+          "9",
           "—",
           "9",
-          "12",
-          "—",
-          "—",
-          "7",
-          "—",
-          "10",
-          "7",
-          "2",
-          "10",
-          "—",
-          "3",
-          "127"
-         ],
-         [
-          "Domicile",
-          "2",
-          "—",
-          "4",
-          "—",
-          "4",
-          "4",
-          "3",
-          "4",
-          "3",
-          "—",
-          "—",
-          "3",
-          "2",
-          "—",
-          "3",
-          "3",
-          "2",
-          "—",
           "1",
           "2",
+          "134"
+         ],
+         [
+          "Direction",
+          "3",
+          "—",
+          "2",
+          "—",
+          "10",
+          "2",
+          "3",
+          "5",
+          "7",
+          "1",
+          "—",
+          "4",
+          "5",
+          "1",
+          "2",
+          "8",
+          "—",
+          "—",
+          "3",
+          "1",
+          "6",
+          "5",
+          "—",
+          "4",
+          "3",
+          "1",
+          "76"
+         ],
+         [
+          "Imagerie / Échographie",
+          "4",
+          "—",
+          "6",
+          "—",
+          "2",
+          "4",
+          "7",
           "1",
           "6",
           "—",
-          "1",
-          "4",
-          "1",
-          "53"
-         ],
-         [
-          "Contrôle",
-          "3",
           "—",
-          "3",
-          "1",
-          "4",
-          "1",
-          "3",
-          "3",
-          "1",
           "2",
+          "3",
           "—",
           "4",
-          "5",
-          "2",
-          "4",
-          "4",
+          "9",
           "—",
-          "—",
-          "4",
-          "—",
-          "1",
-          "2",
           "—",
           "5",
           "—",
+          "2",
+          "5",
           "—",
-          "52"
+          "6",
+          "—",
+          "2",
+          "68"
          ],
          [
-          "Urgence",
-          "3",
+          "Maternité",
           "—",
-          "3",
-          "—",
-          "3",
-          "3",
-          "7",
-          "2",
-          "3",
-          "—",
-          "—",
-          "2",
-          "—",
-          "—",
-          "—",
-          "3",
-          "—",
-          "2",
-          "4",
-          "—",
-          "7",
-          "4",
-          "—",
-          "3",
           "—",
           "1",
-          "50"
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "1",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "—",
+          "2",
+          "—",
+          "—",
+          "—",
+          "4"
          ],
          [
           "TOTAL",
@@ -17419,13 +17464,13 @@
       ],
       "cartes": [
        "Construire le croisement",
-       "Nombre de consultations — Service × Motif",
-       "Les douze premières valeurs — Service"
+       "Nombre de consultations — Service du praticien × Motif",
+       "Les douze premières valeurs — Service du praticien"
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -17436,9 +17481,9 @@
       ],
       "onglets": [],
       "table": {
-       "titre": "Nombre de consultations — Service × Motif",
+       "titre": "Nombre de consultations — Service du praticien × Motif",
        "entetes": [
-        "SERVICE",
+        "SERVICE DU PRATICIEN",
         "ASTHÉNIE",
         "BRÛLURES MICTIONNELLES",
         "CONSULTATION PRÉNATALE",
@@ -17469,124 +17514,124 @@
        ],
        "lignes": [
         [
-         "Consultation",
-         "9",
+         "Médecine générale",
+         "10",
+         "1",
+         "8",
          "1",
          "7",
-         "—",
          "8",
-         "6",
-         "7",
-         "8",
+         "10",
          "11",
+         "5",
          "—",
          "1",
+         "5",
+         "6",
+         "1",
+         "10",
+         "5",
          "2",
-         "7",
+         "2",
+         "8",
+         "1",
+         "11",
+         "9",
          "—",
          "9",
-         "12",
-         "—",
-         "—",
-         "7",
-         "—",
-         "10",
-         "7",
-         "2",
-         "10",
-         "—",
-         "3",
-         "127"
-        ],
-        [
-         "Domicile",
-         "2",
-         "—",
-         "4",
-         "—",
-         "4",
-         "4",
-         "3",
-         "4",
-         "3",
-         "—",
-         "—",
-         "3",
-         "2",
-         "—",
-         "3",
-         "3",
-         "2",
-         "—",
          "1",
          "2",
+         "134"
+        ],
+        [
+         "Direction",
+         "3",
+         "—",
+         "2",
+         "—",
+         "10",
+         "2",
+         "3",
+         "5",
+         "7",
+         "1",
+         "—",
+         "4",
+         "5",
+         "1",
+         "2",
+         "8",
+         "—",
+         "—",
+         "3",
+         "1",
+         "6",
+         "5",
+         "—",
+         "4",
+         "3",
+         "1",
+         "76"
+        ],
+        [
+         "Imagerie / Échographie",
+         "4",
+         "—",
+         "6",
+         "—",
+         "2",
+         "4",
+         "7",
          "1",
          "6",
          "—",
-         "1",
-         "4",
-         "1",
-         "53"
-        ],
-        [
-         "Contrôle",
-         "3",
          "—",
-         "3",
-         "1",
-         "4",
-         "1",
-         "3",
-         "3",
-         "1",
          "2",
+         "3",
          "—",
          "4",
-         "5",
-         "2",
-         "4",
-         "4",
+         "9",
          "—",
-         "—",
-         "4",
-         "—",
-         "1",
-         "2",
          "—",
          "5",
          "—",
+         "2",
+         "5",
          "—",
-         "52"
+         "6",
+         "—",
+         "2",
+         "68"
         ],
         [
-         "Urgence",
-         "3",
+         "Maternité",
          "—",
-         "3",
-         "—",
-         "3",
-         "3",
-         "7",
-         "2",
-         "3",
-         "—",
-         "—",
-         "2",
-         "—",
-         "—",
-         "—",
-         "3",
-         "—",
-         "2",
-         "4",
-         "—",
-         "7",
-         "4",
-         "—",
-         "3",
          "—",
          "1",
-         "50"
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "1",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "—",
+         "2",
+         "—",
+         "—",
+         "—",
+         "4"
         ],
         [
          "TOTAL",
@@ -17763,8 +17808,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -18081,8 +18126,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -18428,8 +18473,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -18559,7 +18604,7 @@
        ],
        [
         "Montant facturé",
-        "0 FCFA",
+        "1 487 000 FCFA",
         null
        ],
        [
@@ -18572,27 +18617,27 @@
        {
         "type": "barres",
         "etiquettes": [
+         "juillet 2026",
+         "mai 2026",
+         "juin 2026",
          "août 2026",
          "avril 2026",
-         "décembre 2025",
-         "février 2026",
          "janvier 2026",
-         "juillet 2026",
-         "juin 2026",
-         "mai 2026"
+         "décembre 2025",
+         "février 2026"
         ],
         "series": [
          {
           "label": "Montant facturé",
           "data": [
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0,
-           0
+           394000,
+           378000,
+           349000,
+           225000,
+           129000,
+           6000,
+           3000,
+           3000
           ]
          }
         ]
@@ -18614,94 +18659,94 @@
         ],
         "lignes": [
          [
+          "juillet 2026",
+          "—",
+          "74 000 FCFA",
+          "—",
+          "120 000 FCFA",
+          "90 000 FCFA",
+          "110 000 FCFA",
+          "394 000 FCFA"
+         ],
+         [
+          "mai 2026",
+          "—",
+          "82 000 FCFA",
+          "—",
+          "125 000 FCFA",
+          "83 000 FCFA",
+          "88 000 FCFA",
+          "378 000 FCFA"
+         ],
+         [
+          "juin 2026",
+          "—",
+          "105 000 FCFA",
+          "—",
+          "65 000 FCFA",
+          "80 000 FCFA",
+          "99 000 FCFA",
+          "349 000 FCFA"
+         ],
+         [
           "août 2026",
           "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "0 FCFA"
+          "52 000 FCFA",
+          "3 000 FCFA",
+          "54 000 FCFA",
+          "74 000 FCFA",
+          "42 000 FCFA",
+          "225 000 FCFA"
          ],
          [
           "avril 2026",
           "—",
+          "39 000 FCFA",
           "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "0 FCFA"
-         ],
-         [
-          "décembre 2025",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "0 FCFA"
-         ],
-         [
-          "février 2026",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "0 FCFA"
+          "32 000 FCFA",
+          "34 000 FCFA",
+          "24 000 FCFA",
+          "129 000 FCFA"
          ],
          [
           "janvier 2026",
           "—",
           "—",
+          "3 000 FCFA",
           "—",
+          "3 000 FCFA",
           "—",
-          "—",
-          "—",
-          "0 FCFA"
+          "6 000 FCFA"
          ],
          [
-          "juillet 2026",
+          "décembre 2025",
+          "3 000 FCFA",
           "—",
           "—",
           "—",
           "—",
           "—",
-          "—",
-          "0 FCFA"
+          "3 000 FCFA"
          ],
          [
-          "juin 2026",
+          "février 2026",
+          "3 000 FCFA",
           "—",
           "—",
           "—",
           "—",
           "—",
-          "—",
-          "0 FCFA"
-         ],
-         [
-          "mai 2026",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "0 FCFA"
+          "3 000 FCFA"
          ],
          [
           "TOTAL",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "—",
-          "0 FCFA"
+          "6 000 FCFA",
+          "352 000 FCFA",
+          "6 000 FCFA",
+          "396 000 FCFA",
+          "364 000 FCFA",
+          "363 000 FCFA",
+          "1 487 000 FCFA"
          ]
         ],
         "pied": []
@@ -18714,8 +18759,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -18739,94 +18784,94 @@
        ],
        "lignes": [
         [
+         "juillet 2026",
+         "—",
+         "74 000 FCFA",
+         "—",
+         "120 000 FCFA",
+         "90 000 FCFA",
+         "110 000 FCFA",
+         "394 000 FCFA"
+        ],
+        [
+         "mai 2026",
+         "—",
+         "82 000 FCFA",
+         "—",
+         "125 000 FCFA",
+         "83 000 FCFA",
+         "88 000 FCFA",
+         "378 000 FCFA"
+        ],
+        [
+         "juin 2026",
+         "—",
+         "105 000 FCFA",
+         "—",
+         "65 000 FCFA",
+         "80 000 FCFA",
+         "99 000 FCFA",
+         "349 000 FCFA"
+        ],
+        [
          "août 2026",
          "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "0 FCFA"
+         "52 000 FCFA",
+         "3 000 FCFA",
+         "54 000 FCFA",
+         "74 000 FCFA",
+         "42 000 FCFA",
+         "225 000 FCFA"
         ],
         [
          "avril 2026",
          "—",
+         "39 000 FCFA",
          "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "0 FCFA"
-        ],
-        [
-         "décembre 2025",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "0 FCFA"
-        ],
-        [
-         "février 2026",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "0 FCFA"
+         "32 000 FCFA",
+         "34 000 FCFA",
+         "24 000 FCFA",
+         "129 000 FCFA"
         ],
         [
          "janvier 2026",
          "—",
          "—",
+         "3 000 FCFA",
          "—",
+         "3 000 FCFA",
          "—",
-         "—",
-         "—",
-         "0 FCFA"
+         "6 000 FCFA"
         ],
         [
-         "juillet 2026",
+         "décembre 2025",
+         "3 000 FCFA",
          "—",
          "—",
          "—",
          "—",
          "—",
-         "—",
-         "0 FCFA"
+         "3 000 FCFA"
         ],
         [
-         "juin 2026",
+         "février 2026",
+         "3 000 FCFA",
          "—",
          "—",
          "—",
          "—",
          "—",
-         "—",
-         "0 FCFA"
-        ],
-        [
-         "mai 2026",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "0 FCFA"
+         "3 000 FCFA"
         ],
         [
          "TOTAL",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "—",
-         "0 FCFA"
+         "6 000 FCFA",
+         "352 000 FCFA",
+         "6 000 FCFA",
+         "396 000 FCFA",
+         "364 000 FCFA",
+         "363 000 FCFA",
+         "1 487 000 FCFA"
         ]
        ]
       }
@@ -18864,8 +18909,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -18904,8 +18949,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -18944,8 +18989,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -19035,8 +19080,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -19194,8 +19239,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -19434,8 +19479,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -19720,8 +19765,8 @@
       ],
       "notes": [
        "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-       "Mois Médecin Service Motif",
-       "— aucun — Mois Médecin Service Motif",
+       "Mois Médecin Service du praticien Motif",
+       "— aucun — Mois Médecin Service du praticien Motif",
        "Nombre de consultations Montant facturé",
        "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
       ],
@@ -20007,8 +20052,8 @@
      ],
      "notes": [
       "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-      "Mois Médecin Service Motif",
-      "— aucun — Mois Médecin Service Motif",
+      "Mois Médecin Service du praticien Motif",
+      "— aucun — Mois Médecin Service du praticien Motif",
       "Nombre de consultations Montant facturé",
       "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
      ],
@@ -77184,8 +77229,8 @@
    ],
    "notes": [
     "Consultations Soins prescrits Analyses de laboratoire Mouvements de stock Facturation Patients Personnel Actes réalisés Soins exécutés Gardes et vacations",
-    "Mois Médecin Service Motif",
-    "— aucun — Mois Médecin Service Motif",
+    "Mois Médecin Service du praticien Motif",
+    "— aucun — Mois Médecin Service du praticien Motif",
     "Nombre de consultations Montant facturé",
     "Aujourd’hui 7 derniers jours 30 derniers jours 90 derniers jours 180 derniers jours 12 derniers mois Tout l’historique"
    ],

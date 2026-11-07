@@ -35,6 +35,38 @@
     });
   }
 
+  /* --- Une consultation COMPTÉE est une consultation qui a eu lieu (vague 90) ------
+     Le registre `consultations` porte aussi les rendez-vous : planifiés, reportés, non honorés. Les
+     compter comme des consultations surévaluait le volume. La règle vit ICI, en UNE fonction, lue par
+     les indicateurs, les graphiques et le tableau de l'écran (et portée à l'identique en Dart,
+     `consultationsPartagees` de pil_clinique.dart). Un rendez-vous planifié ou reporté n'est pas perdu :
+     il se compte à part. Un rendez-vous non honoré ne compte nulle part comme consultation : il est
+     annoncé sous le volume, jamais retiré en silence. */
+  var STATUTS_CONSULTATION_TENUE = ['en_cours', 'terminee'];
+  var STATUTS_RDV_A_VENIR = ['planifiee', 'reporte'];
+  function partagerConsultations(rows) {
+    var out = { tenues: [], aVenir: [], nonHonores: [], autres: [] };
+    (rows || []).forEach(function (r) {
+      if (STATUTS_CONSULTATION_TENUE.indexOf(r.statut) >= 0) out.tenues.push(r);
+      else if (STATUTS_RDV_A_VENIR.indexOf(r.statut) >= 0) out.aVenir.push(r);
+      else if (r.statut === 'non_honore') out.nonHonores.push(r);
+      else out.autres.push(r);
+    });
+    return out;
+  }
+  /* Le service d'une consultation est celui du praticien à l'organigramme : la consultation ne porte
+     pas de service propre. Praticien introuvable : « Non renseigné », jamais le type de consultation. */
+  function serviceDuPraticien(r, agents) {
+    var a = null;
+    (agents || []).forEach(function (x) {
+      if (!a && ((r.medecinId && x.id === r.medecinId) || (!r.medecinId && r.medecin && x.nomComplet === r.medecin))) a = x;
+    });
+    if (!a && r.medecin) (agents || []).forEach(function (x) { if (!a && x.nomComplet === r.medecin) a = x; });
+    return (a && a.service) || 'Non renseigné';
+  }
+  global.SIGH.statsConsultations = { partager: partagerConsultations, service: serviceDuPraticien,
+    statutsTenus: STATUTS_CONSULTATION_TENUE, statutsAVenir: STATUTS_RDV_A_VENIR };
+
   /* --- Indicateurs partagés ------------------------------------------------ */
   function caDuMois() { return C.sum(duMois(factures(), 'date'), 'montantTTC'); }
   function encaisseDuMois() { return C.sum(duMois(factures(), 'date'), 'montantPaye'); }
@@ -2516,12 +2548,12 @@
         axes: {
           mois: { label: 'Mois', valeur: function (r) { return mois(r.date); } },
           medecin: { label: 'Médecin', valeur: function (r) { return r.medecin || '—'; } },
-          service: { label: 'Service', valeur: function (r) { return r.service || r.type || '—'; } },
+          service: { label: 'Service du praticien', valeur: function (r) { return serviceDuPraticien(r, S.collection('personnel').active()); } },
           motif: { label: 'Motif', valeur: function (r) { return r.motif || '—'; } },
         },
         mesures: {
           nombre: { label: 'Nombre de consultations', unite: null, valeur: function () { return 1; } },
-          montant: { label: 'Montant facturé', unite: 'FCFA', valeur: function (r) { return r.montant || 0; } },
+          montant: { label: 'Montant facturé', unite: 'FCFA', valeur: function (r) { return Number(r.tarif) || 0; } },
         },
       },
       {
@@ -3951,7 +3983,9 @@
     description: 'L\u2019activit\u00e9 de consultation par praticien, par type et dans le temps \u2014 calcul\u00e9e depuis le registre.',
     regle: 'Par praticien et par type, depuis le registre des consultations. Le \u00ab secteur \u00bb affich\u00e9 est '
       + 'le <strong>service du praticien \u00e0 l\u2019organigramme</strong> \u2014 la consultation ne porte pas de '
-      + 'secteur propre, et l\u2019\u00e9cran le dit plut\u00f4t que d\u2019inventer une donn\u00e9e.',
+      + 'secteur propre, et l\u2019\u00e9cran le dit plut\u00f4t que d\u2019inventer une donn\u00e9e. '
+      + 'Seules les consultations <strong>qui ont eu lieu</strong> (en cours, termin\u00e9es) sont compt\u00e9es : '
+      + 'les rendez-vous planifi\u00e9s ou report\u00e9s s\u2019affichent \u00e0 part, les non honor\u00e9s sont annonc\u00e9s sous le volume.',
     render: function (root) {
       var host = el('div.space-y-4');
       root.appendChild(host);
@@ -3973,25 +4007,31 @@
 
       function afficher() {
       var hostReel = host; var host2 = vueStats; C.clear(vueStats);
-      var rows = S.collection('consultations').active().filter(function (r) {
+      var registre = S.collection('consultations').active().filter(function (r) {
         var d = String(r.date || '').slice(0, 10);
         if (dDebut.value && d < dDebut.value) return false;
         if (dFin.value && d > dFin.value) return false;
         return true;
       });
+      /* La règle de comptage est UNE fonction : indicateurs, graphiques et tableau lisent `rows`. */
+      var partage = partagerConsultations(registre);
+      var rows = partage.tenues;
       var agents = {};
       S.collection('personnel').active().forEach(function (a) { agents[a.nomComplet] = a; });
       var moisCourant = C.iso(new Date()).slice(0, 7);
 
       vueStats.appendChild(U.kpiGrid([
-        { label: 'Consultations au registre', value: C.num(rows.length), icon: 'stethoscope', tone: 'navy' },
+        { label: 'Consultations r\u00e9alis\u00e9es', value: C.num(rows.length), icon: 'stethoscope', tone: 'navy',
+          hint: 'en cours ou termin\u00e9es' },
         { label: 'Ce mois-ci', value: C.num(rows.filter(function (r) { return String(r.date || '').slice(0, 7) === moisCourant; }).length),
           icon: 'calendar', tone: 'info' },
         { label: 'Praticiens actifs', value: C.num(Object.keys(rows.reduce(function (a, r) { a[r.medecin] = 1; return a; }, {})).length),
           icon: 'users', tone: 'neutral' },
         { label: '\u00c0 domicile', value: C.num(rows.filter(function (r) { return r.type === 'Domicile'; }).length),
           icon: 'house', tone: 'neutral' },
-      ]));
+        { label: 'Rendez-vous planifi\u00e9s, non encore honor\u00e9s', value: C.num(partage.aVenir.length),
+          icon: 'calendar-clock', tone: 'warning', hint: 'planifi\u00e9s ou report\u00e9s, hors volume' },
+      ], 'grid-cols-2 lg:grid-cols-5'));
 
       var parPraticien = {};
       rows.forEach(function (r) { parPraticien[r.medecin || '\u2014'] = (parPraticien[r.medecin || '\u2014'] || 0) + 1; });
@@ -4018,7 +4058,10 @@
           return G.barres(mois, [{ label: 'Consultations', data: mois.map(function (m) { return parMois[m]; }) }], { height: 240 });
         } },
       ]));
-      vueStats.appendChild(K.source('Registre des consultations du magasin \u2014 indicateurs recalcul\u00e9s \u00e0 chaque affichage.'));
+      vueStats.appendChild(K.source('Registre des consultations du magasin \u2014 indicateurs recalcul\u00e9s \u00e0 chaque affichage. '
+        + 'Compt\u00e9es : ' + C.num(rows.length) + ' consultation(s) tenue(s). \u00c0 part : ' + C.num(partage.aVenir.length)
+        + ' rendez-vous planifi\u00e9(s) ou report\u00e9(s). Hors volume : ' + C.num(partage.nonHonores.length) + ' non honor\u00e9(s)'
+        + (partage.autres.length ? ' et ' + C.num(partage.autres.length) + ' de statut inconnu' : '') + '.'));
       U.icons(host);
       U.icons(vueStats);
       }

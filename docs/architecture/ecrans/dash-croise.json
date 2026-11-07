@@ -19,8 +19,8 @@
  ],
  "regle": [
   "ConsultationsSoins prescritsAnalyses de laboratoireMouvements de stockFacturationPatientsPersonnelActes réalisésSoins exécutésGardes et vacations",
-  "MoisMédecinServiceMotif",
-  "— aucun —MoisMédecinServiceMotif"
+  "MoisMédecinService du praticienMotif",
+  "— aucun —MoisMédecinService du praticienMotif"
  ],
  "onglets": [],
  "kpis": [

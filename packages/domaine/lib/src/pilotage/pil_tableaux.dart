@@ -18,6 +18,7 @@ import '../format/js.dart';
 import '../hospitalisation/hos_regles.dart' show hosChambres;
 import '../referentiels/regles.dart' show secteurNormalise;
 import '../stock/points.dart' show MethodeValorisation, valeurUnitaire;
+import 'pil_stats.dart' show serviceDuPraticien;
 import 'pil_vue.dart';
 
 // =====================================================================================================================================================
@@ -662,10 +663,10 @@ final List<PilSource> pilSourcesCroise = [
     {
       'mois': PilAxe('Mois', (r, d) => _moisCroise(r['date'])),
       'medecin': PilAxe('Médecin', (r, d) => _ou(r['medecin'], '—')),
-      'service': PilAxe('Service', (r, d) => _ou(r['service'], _ou(r['type'], '—'))),
+      'service': PilAxe('Service du praticien', (r, d) => serviceDuPraticien(r, d.personnel)),
       'motif': PilAxe('Motif', (r, d) => _ou(r['motif'], '—')),
     },
-    {'nombre': PilMesure('Nombre de consultations', null, _un), 'montant': PilMesure('Montant facturé', 'FCFA', (r) => _nb(r['montant']))},
+    {'nombre': PilMesure('Nombre de consultations', null, _un), 'montant': PilMesure('Montant facturé', 'FCFA', (r) => _nb(r['tarif']))},
   ),
   PilSource(
     'prescriptionsSoins',

@@ -13993,6 +13993,112 @@ async function viderMessages(page) {
     verifier('Nettoyage : plus de compte v84.*, d’enquête ni de jeton jetables en base', reste === '0' && resteEnq === 0, JSON.stringify([reste, resteEnq]));
   });
 
+  /* =========================================================================
+   * Vague 90 : statistiques de consultations comptées et croisement
+   * -------------------------------------------------------------------------
+   * D1 : `m2-stats-consultations` ne compte comme consultation que celle qui a eu lieu (en_cours, terminee) ;
+   * les rendez-vous planifiés ou reportés s'affichent À PART, rien ne disparaît sans le dire. D2 : le croisement
+   * `dash-croise` source consultations lit le champ `tarif` (il n'y a pas de `montant`) et son axe « Service »
+   * est le service du praticien à l'organigramme (jamais le type de consultation). Les fiches insérées sont
+   * archivées en sortant (RG-14 : aucune suppression physique, elles quittent active()).
+   * ======================================================================= */
+  await etape(async () => {
+    scenario('Vague 90 : statistiques de consultations comptées et croisement');
+    await page.evaluate(() => {
+      sessionStorage.clear();
+      localStorage.setItem('sigh-cnt:session', JSON.stringify({
+        role: 'direction', fonction: 'direction', nom: 'ADMIN Systeme',
+        nomComplet: 'ADMIN Systeme', identifiant: 'admin', secteur: 'ADM',
+      }));
+    });
+    const lireKpi = () => page.evaluate(() => {
+      const chiffres = (t) => Number(String(t || '').replace(/[^0-9]/g, ''));
+      const kpis = [...document.querySelectorAll('#page-content .kpi')].map((k) => ({
+        label: (k.querySelector('.kpi-label') || {}).textContent || '', valeur: (k.querySelector('.kpi-value') || {}).textContent || '' }));
+      const trouve = (re) => kpis.filter((k) => re.test(k.label))[0];
+      const vol = trouve(/^Consultations/), pla = trouve(/planifi/i), mois = trouve(/Ce mois/);
+      return { volLabel: vol && vol.label, vol: vol ? chiffres(vol.valeur) : null,
+        plaLabel: pla && pla.label, pla: pla ? chiffres(pla.valeur) : null, mois: mois ? chiffres(mois.valeur) : null };
+    });
+    await ouvrir('m2-stats-consultations.html');
+    const avant = await lireKpi();
+    const ins = await page.evaluate(() => {
+      const S = window.SIGH.store, col = S.collection('consultations');
+      const modele = col.active()[0];
+      const maintenant = new Date().toISOString();
+      const ids = [];
+      ['terminee', 'planifiee', 'annulee'].forEach((st) => {
+        const r = col.insert({ patientId: modele.patientId, patient: modele.patient, patientCode: modele.patientCode,
+          medecinId: modele.medecinId, medecin: modele.medecin, date: maintenant, motif: 'Sonde 90', type: 'Consultation',
+          tarif: 7000, statut: st, sonde: 'Vague 90' });
+        ids.push(r.record.id);
+      });
+      return { n: ids.length, ids };
+    });
+    await ouvrir('m2-stats-consultations.html');
+    const apres = await lireKpi();
+    const regle = await page.evaluate(() => {
+      const X = window.SIGH.statsConsultations;
+      if (!X) return { expose: false };
+      const rows = window.SIGH.store.collection('consultations').active();
+      const p = X.partager(rows);
+      const recompte = rows.filter((r) => r.statut === 'terminee' || r.statut === 'en_cours').length;
+      return { expose: true, tenues: p.tenues.length, recompte, aVenir: p.aVenir.length,
+        recompteAVenir: rows.filter((r) => r.statut === 'planifiee' || r.statut === 'reporte').length };
+    });
+    verifier('Magasin : 3 consultations insérées (terminée, planifiée, annulée), le volume affiché augmente de 1 SEULEMENT',
+      ins.n === 3 && avant.vol != null && apres.vol === avant.vol + 1, JSON.stringify({ avant, apres }));
+    verifier('« Ce mois-ci » n’augmente que de la consultation tenue ; le volume est nommé « réalisées », pas « au registre »',
+      apres.mois === avant.mois + 1 && /réalisées/.test(apres.volLabel || ''), JSON.stringify({ avant, apres }));
+    verifier('Les rendez-vous planifiés non encore honorés s’affichent À PART : +1 (la planifiée), l’annulée n’est comptée nulle part',
+      avant.pla != null && apres.pla === avant.pla + 1, JSON.stringify({ avant, apres }));
+    verifier('La règle est UNE fonction exposée (SIGH.statsConsultations) : tenues et à venir égalent le recompte du magasin',
+      regle.expose && regle.tenues === regle.recompte && regle.aVenir === regle.recompteAVenir, JSON.stringify(regle));
+    /* Retrait des fiches de sonde et contrôle de la restitution. */
+    const restitue = await page.evaluate((ids) => {
+      const col = window.SIGH.store.collection('consultations');
+      ids.forEach((id) => col.archive(id, 'Fiche de sonde, vague 90'));
+      return col.active().filter((r) => r.sonde === 'Vague 90').length;
+    }, ins.ids);
+    await ouvrir('m2-stats-consultations.html');
+    const revenu = await lireKpi();
+    verifier('Fiches de sonde retirées : le volume et les planifiés reviennent à leur valeur d’avant',
+      restitue === 0 && revenu.vol === avant.vol && revenu.pla === avant.pla, JSON.stringify({ restitue, avant, revenu }));
+
+    /* ---- D2 : le croisement consultations ---- */
+    await ouvrir('dash-croise.html');
+    const choisir = (libelleSelect, libelleOption) => page.evaluate((ls, lo) => {
+      const sel = [...document.querySelectorAll('#page-content select')]
+        .find((s) => [...s.options].some((o) => o.textContent.trim() === lo) && (!ls || s.previousElementSibling && s.previousElementSibling.textContent.trim() === ls));
+      if (!sel) return false;
+      sel.value = [...sel.options].find((o) => o.textContent.trim() === lo).value;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    }, libelleSelect, libelleOption);
+    const okSource = await choisir('Source', 'Consultations');
+    const okMesure = await choisir('Mesure', 'Montant facturé');
+    const okPeriode = await choisir('Période', 'Tout l’historique');
+    await pause(500);
+    const mesure = await page.evaluate(() => {
+      const chiffres = (t) => Number(String(t || '').replace(/[^0-9]/g, ''));
+      const k = [...document.querySelectorAll('#page-content .kpi')].filter((x) => /Montant factur/.test((x.querySelector('.kpi-label') || {}).textContent || ''))[0];
+      const somme = window.SIGH.store.collection('consultations').active().reduce((a, r) => a + (Number(r.tarif) || 0), 0);
+      return { affiche: k ? chiffres((k.querySelector('.kpi-value') || {}).textContent) : null, somme };
+    });
+    verifier('Croisement consultations : le montant facturé égale la somme des `tarif` du magasin sur la période, et n’est pas nul',
+      okSource && okMesure && okPeriode && mesure.affiche === mesure.somme && mesure.somme > 0, JSON.stringify({ okSource, okMesure, okPeriode, mesure }));
+    const okAxe = await choisir('Lignes', 'Service du praticien');
+    await pause(400);
+    const service = await page.evaluate(() => {
+      const types = ['Consultation', 'Contrôle', 'Urgence', 'Domicile'];
+      const lignes = [...document.querySelectorAll('#page-content table tbody tr')].map((tr) => (tr.cells[0] || {}).textContent.trim()).filter((t) => t && t !== 'TOTAL');
+      const services = new Set(window.SIGH.store.collection('personnel').active().map((a) => a.service));
+      return { lignes, typesParmiLignes: lignes.filter((l) => types.indexOf(l) >= 0), inconnus: lignes.filter((l) => !services.has(l) && l !== 'Non renseigné') };
+    });
+    verifier('Axe « Service » : service du praticien à l’organigramme, jamais le type de consultation',
+      okAxe && service.lignes.length > 0 && service.typesParmiLignes.length === 0 && service.inconnus.length === 0, JSON.stringify(service));
+  });
+
   await browser.close();
   server.close();
   try { php.php.kill(); } catch (e) { /* déjà mort */ }
