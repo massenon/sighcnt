@@ -146,3 +146,25 @@ Le mobile sur un appareil Android réel, la synchronisation sur deux appareils p
 3. **Poste** : écrans, parité N1, espace « Mes » sur poste partagé.
 4. **Mobile** : profil agent, copie locale bornée, saisie hors ligne et validation par le relais (famille W).
 5. **Revue d'écarts** (EX-11) : corrections de priorité haute, puis le reste au fil des retouches.
+
+## Addendum du 07/11/2026 : Q1 précisée, Q7 réglée, complétude du pointage et des présences
+
+### Q1 révisée (réponse de la Direction)
+Le **régime de la catégorie est conservé**. Ce qui se personnalise, c'est le **planning individuel** (les gardes et vacations de l'agent), pas le régime. Deux voies d'écriture, une seule validation :
+- **Depuis le mobile** : l'agent crée, modifie et retire (archive, RG-14) SES vacations et propose ses échanges ; sa saisie naît **à valider**.
+- **Depuis le poste** : l'utilisateur habilité (DAF, surveillant) crée, modifie et archive le planning d'un agent.
+- **Validation** : par le **surveillant** pour son service (la DAF peut valider seule, Q2). Tant qu'elle n'est pas donnée, la vacation est visible mais **ne compte pas** pour les primes (RG-11 : prime calculée sur le planning VALIDÉ). Un régime par catégorie reste le contrôle d'incompatibilité (repos obligatoire) appliqué à toute saisie, quelle que soit la voie.
+- Remplace la lecture « déroge champ par champ » de la version précédente : plus de régime individuel à champs surchargés dans la v1.
+
+### Q7 réglée
+Le badge servira de pointage plus tard : un **réglage système** (CFG, admin et DA) l'active ou le désactive, **désactivé par défaut**. Activé, un badge vérifié VALIDE crée un pointage (arrivée puis départ) rattaché à l'agent ; la présence reste déclarée puis validée tant qu'il est désactivé.
+
+### Le pointage et les présences sont-ils complets ? Non, constat sur le code (07/11/2026)
+| Écran | Aujourd'hui | Manque pour être « complet » |
+|---|---|---|
+| `m10-presences` (« Pointage ») | 2 filtres (état, service), plage de dates, recherche, tri, pagination par 20, export, création et édition de ligne | filtres avancés (agent, matricule, plage horaire, retard minimal, motif, validé ou non, validé par), vue par agent et par service, **circuit de validation** (surveillant puis DAF) absent, justificatif d'absence, motif codé (maladie, mission, congé), régularisation datée avec auteur, export filtré, état imprimable, pointage par badge (réglage Q7) |
+| `m10-planning` | CRUD, régimes par catégorie, incompatibilités | filtres avancés (agent, service, régime, période, statut de validation), proposition d'échange, validation surveillant, vue individuelle « Mon planning » |
+| Registre des vacations | lecture et filtres de base | mêmes filtres avancés, statut de validation, origine de la saisie (mobile ou poste) |
+| Mobile et poste, rubriques « Mes… » | à créer | CRUD des vacations propres, présences propres, statuts de validation visibles |
+
+Exigences ajoutées à la v1 : (1) filtres avancés et options avancées (colonnes, export, impression filtrée, enregistrement d'un filtre) sur ces quatre écrans, avec les filtres relevés SUR LA PAGE par `print.js` ; (2) circuit de validation écrit au moteur, jamais seulement masqué à l'écran (refus nommé `VALIDATION_RESERVEE` pour un rôle non habilité) ; (3) RBAC : surveillant limité à son service (RG-13), agent limité à ses propres lignes.
