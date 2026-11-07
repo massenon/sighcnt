@@ -3528,10 +3528,11 @@
           el('p.mt-0\\.5.text-xs', { class: 'text-' + tone + '-800', text: detail }),
         ]));
         if (cible) {
-          d.appendChild(K.btn('Valider le paiement', {
+          var bValider = K.commande('Valider le paiement', {
             size: 'sm', variant: tone === 'danger' ? 'danger' : 'primary', icon: 'check',
             onclick: function () { validerPaiement(cible); },
-          }));
+          });
+          if (bValider) d.appendChild(bValider);
         }
         return d;
       }
@@ -3644,7 +3645,7 @@
           ]),
           footer: e.paye
             ? [K.btn('Éditer la quittance', { variant: 'primary', icon: 'printer', onclick: function () { imprimerQuittance(e); } })]
-            : [K.btn('Valider le paiement', { variant: 'primary', icon: 'check', onclick: function () { validerPaiement(e); } })],
+            : [K.commande('Valider le paiement', { variant: 'primary', icon: 'check', onclick: function () { validerPaiement(e); } })].filter(Boolean),
         });
       }
 
