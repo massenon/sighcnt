@@ -100,6 +100,23 @@ Scénario « Vague 85 » (maquette), avec mutations des protections :
 
 Au poste : parité N1 à 100 % de `cfg-sms`, tests d'écran, file avec reprise. Au relais : tests PHPUnit (secrets jamais rendus, droits de l'appareil, refus nommés).
 
+## 9 bis. Décisions de la Direction du 07/11/2026 (reçues, avec lecture retenue)
+
+| # | Décision |
+|---|---|
+| M1 | Un compte par fournisseur (Twilio, Vonage) au nom de la clinique, la DA gère le solde. Les identifiants et clés secrètes se fournissent dans les **paramètres de compte, section Paramètres SMS**. |
+| M2 | Plafond de 200 messages par jour ; heures calmes de 21 h à 7 h hors alerte technique. **Validé.** |
+| M3 | **Économie d'unités SMS** : seuls les envois **nécessaires** partent par SMS ; toutes les autres notifications vont en **alerte système** (poste et application mobile), sonore. |
+| M4 | **Patients** : souhaits d'anniversaire, de fêtes, relances et **disponibilité des résultats** par SMS. Consentement **activé par défaut**, **désactivable par patient**, daté et journalisé. À faire relire : un consentement présumé par défaut (retrait possible) est plus faible qu'un consentement explicite ; la Direction en prend la décision. |
+| M5 | **Aucun SMS interne.** Les alertes destinées au personnel (rupture de stock, résultat disponible pour le prescripteur, échec de sauvegarde, etc.) sont des **notifications sonores d'alerte système**, au poste et sur l'application. |
+| M6 | Un rappel de rendez-vous peut nommer le médecin et l'heure, jamais le motif. **Validé.** |
+| M7 | Journal des envois conservé 12 mois, puis archivé. **Validé.** |
+| M8 | Voir ci-dessous : la Direction demande si le `.env` est sûr, sinon la saisie se fait dans le panneau d'administration (poste et web). |
+
+**Lecture retenue de M3 et M5** (à confirmer en une ligne) : M3 listait des alertes internes (rupture de stock, résultat prescripteur) ; M5 supprime tout SMS interne. Je retiens que **le SMS ne part qu'aux patients** (anniversaire, fêtes, relances, résultat disponible, rappel de rendez-vous) et que **toutes** les alertes internes passent par la cloche et le son du poste et du mobile. La matrice de `cfg-notifications` perd donc sa colonne « SMS » pour les alertes internes.
+
+**M8, sécurité du mot de passe SMTP et des clés SMS.** Le `.env` est une pratique courante et acceptable *si* : fichier hors du dossier public, droits de lecture limités au compte du serveur web, jamais versionné. Mais il contient aussi `APP_KEY`, la clé qui déchiffre tout ce que l'application chiffre : celui qui lit le `.env` lit donc aussi les secrets stockés chiffrés en base. **La sécurité est équivalente**, la différence est d'usage : le `.env` oblige un technicien à intervenir (accès aux fichiers du serveur, rechargement) pour tourner une clé, alors que le panneau permet à l'administrateur de la changer lui-même, en saisie à sens unique (chiffrée, jamais relue, jamais journalisée, entrée au journal d'audit sans le secret). **Recommandation : saisie dans le panneau du relais** (poste et web : la section Paramètres SMS et la section SMTP existante), secrets chiffrés par `APP_KEY`, qui reste seule dans le `.env`. Cela revient à la décision du 06/11 pour le SMTP et l'étend aux clés SMS.
+
 ## 9. Décisions de la Direction du 07/11/2026 (reçues) et décisions restantes
 
 **Reçues.** Fournisseur par défaut : **Twilio**, avec **Vonage** disponible. **Couverture du Bénin pour les deux : déclarée par la Direction** (non vérifiée par l'équipe : une vérification de confort reste prévue en recette, non bloquante). **Toutes les gardes sont conservées** : consentement, plafond, heures calmes, aucune donnée médicale, refus nommés, secrets jamais relus. **Bibliothèques installées le 07/11/2026** : `twilio/sdk` 8.14 et `vonage/client` 4.4 (relais : `apps/web/composer.json` et `composer.lock` versionnés ; maquette : `prototype_html/api/composer.json`, `vendor/` non versionné, repli sur l'appel REST direct par cURL si `vendor/` est absent ; le poste n'appelle jamais un fournisseur donc n'embarque aucune bibliothèque). Les sept avis de sécurité que `composer audit` signale concernent des composants Symfony **déjà présents** avant cet ajout, aucune bibliothèque nouvelle n'en porte ; mise à jour à traiter à part.

@@ -125,7 +125,20 @@ Mutations : au moins 6 (enveloppe en clair, doublon accepté, jeton révoqué ac
 - **Biais** : un QR à l'accueil sur-représente les patients satisfaits ou pressés ; l'écran affiche le taux de réponse.
 - **Clé privée de la mère** : si elle est perdue, les enveloppes déposées sont illisibles (même procédure de remise que la clé de clinique).
 
-## 10. Décisions à valider (Direction)
+## 10 bis. Décisions de la Direction du 07/11/2026 (reçues)
+
+| # | Décision |
+|---|---|
+| S1 | Réponses anonymes par défaut ; nominatives seulement avec consentement coché. **Validé.** |
+| S2 | Sept points de collecte (accueil, consultation, laboratoire, pharmacie, maternité, hospitalisation, sortie) **et**, en plus, l'**appréciation du personnel** : comportement des infirmiers, des médecins et des soignants, qualité du travail, du traitement, de l'écoute, du respect, de l'hygiène, des gestes, etc. Ces critères deviennent des **dimensions de questionnaire** par catégorie de personnel. Garde-fou proposé : l'appréciation porte sur une **catégorie** (infirmiers, médecins, soignants, sage-femmes), jamais sur un agent nommé, sauf décision écrite de la Direction (une note négative nominative est une mesure RH, elle relève de la NS 131). |
+| S3 | Alertes : réponse de 2 sur 5 ou moins, ou moyenne de service sous 3,5 sur 7 jours. **Validé.** |
+| S4 | **Français par défaut, uniquement.** Un **champ de sélection de langue** est ajouté (page publique, kiosque, administration) : la Direction active d'autres langues et saisit les traductions du questionnaire ; sans traduction d'une question, la page retombe sur le français. |
+| S5 | La Direction répond hors outil **et peut laisser des commentaires internes et des « dispositions à prendre »** sur une réponse (champ de suivi : texte, auteur, date, état à faire ou fait), jamais visibles du patient. |
+| S6 | Conserver et archiver (RG-14) ; durée active de 3 ans, puis archivage, jamais de suppression. |
+| S7 | Mode kiosque dès la v1, file locale chiffrée. **Validé.** |
+| S8 | Modèles acceptés « à valider », **avec un bouton Valider** qui enregistre la validation (`valideLe`, `validePar`, journal RG-12), fait changer le statut de « à valider » à « validé » et retire le marquage. **Règle étendue à tous les modules** : tout ce qui est marqué « à valider » doit porter son geste de validation (audit en cours : `docs/architecture/AUDIT-marquages-a-valider.md`). |
+
+## 10. Décisions à valider (Direction), état initial (voir 10 bis)
 
 | # | Question | Proposition |
 |---|---|---|
