@@ -16,6 +16,8 @@ Chaque exigence cite sa source dans `docs/cadrage/` ; ce qui n'a pas de source e
 | [PRD-RELAIS-copie-consultable](PRD-RELAIS-copie-consultable.md) | Relais opaque mais consultable : la mère dépose une copie chiffrée de la base, le navigateur la déchiffre avec la clé de clinique (option B) | proposé 05/11/2026 |
 | [PRD-POSTE-installateur-windows](PRD-POSTE-installateur-windows.md) | Installateur Windows du poste : `build_windows.bat` + Inno Setup, identifiant fixe, données hors du dossier d'installation, désinstallation avec sauvegarde et avertissement Non par défaut | proposé 05/11/2026 |
 
+| [PRD-SMS-passerelle-et-test-envoi](PRD-SMS-passerelle-et-test-envoi.md) | Passerelle SMS (Vonage et Twilio) réglable et testable : écran de configuration et Test SMS (maquette, poste, relais), secrets tenus par le relais, journal des envois, consentement, matrice des canaux enfin exécutée | proposé 07/11/2026 |
+
 Ordre de livraison recommandé : SOCLE (P0) → M6 → M12, le socle rendant les deux autres plus
 simples à sonder (pas de rechargement entre les étapes d'un parcours).
 | `PRD-M10-planning-individuel-et-libre-service-agent.md` | Planning et gardes individuels (régime propre à un agent, historique daté), filtres avancés, CRUD du planning, espace « Mes » de l'agent (17 rubriques, mobile et poste, validation DAF) et revue d'écarts des écrans | proposé le 06/11/2026 |

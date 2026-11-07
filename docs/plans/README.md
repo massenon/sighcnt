@@ -10,4 +10,6 @@
 | [PLAN-poste-premiere-installation](PLAN-poste-premiere-installation.md) | Assistant de première installation du poste : premier compte et code de secours, modale de configurations, activation de la mère, second administrateur, rejoindre une clinique (10 étapes) |
 | [PLAN-implementation-laravel-flutter-pwa](PLAN-implementation-laravel-flutter-pwa.md) | Flutter + Laravel (API, panneau Livewire) + PWA Vue, conditionné à ADR-0005 | brouillon 27/10/2026 |
 
+| [PLAN-sms-passerelle](PLAN-sms-passerelle.md) | Passerelle SMS : sept étapes S0 à S6 (décisions et couverture Bénin, maquette avec puits de test, moteur de consentement et de plafond, domaine Dart, relais, poste, recette) | proposé 07/11/2026 |
+
 Le banc à deux postes (étape S3.2 de ce plan) tient lieu de P1 de l'architecture cible.
